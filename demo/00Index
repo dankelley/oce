@@ -1,0 +1,7 @@
+coastline	plot a coastline
+ctd			summarize and plot a a CTD profile
+eos			demonstrate some EOS functions
+geod.dist	geodesic calculation
+lobo		summarize and plot a lobo datafile
+sealevel    summarize and plot a sealevel file         
+section     plot a section of Halifax Harbour

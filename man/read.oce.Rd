@@ -1,0 +1,47 @@
+\name{read.oce}
+\alias{read.oce}
+\title{Read an oceanographic data file}
+\description{
+Read an oceanographic data file, auto-discovering the file type from the
+first line of the file.
+}
+\usage{
+read.oce(file, ...)
+}
+\arguments{
+  \item{file}{a connection or a character string giving the name of the
+    file to load.}
+  \item{...}{arguments to be handed to whichever instrument-specific reading function 
+is selected, based on the header.}
+}
+\details{
+  This function tries to infer the file type from the first line, using
+  \code{\link{magic}}.  If it can be discovered, then an instrument-specific
+  file reading function is called, with the \code{file} and with any additional
+  arguments being supplied.
+}
+\value{
+  On success, an \code{oce} object of type \code{ctd}, \code{sealevel},
+  \code{coastline}, or \code{lobo}.  On failure, an error occurs.
+}
+
+\seealso{
+The file type is determined by 
+\code{\link{magic}}.  If the file type can be determined, then one 
+of the following is called:
+\code{\link{read.ctd}},
+\code{\link{read.coastline}}
+\code{\link{read.lobo}}, 
+or
+\code{\link{read.sealevel}}.
+}
+\examples{
+\dontrun{
+library(oce)
+x <- read.oce("/usr/local/lib/R/library/oce/demo/ctdprofile.cnv")
+plot(x) # summary with TS and profiles
+plot.TS(x) # just the TS
+}
+}
+\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\keyword{misc}
