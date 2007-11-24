@@ -15,7 +15,7 @@ export(
 	latlon.format,
 	lon.format,
 	make.section,
-    oce.as.POSIXlt,
+	oce.as.POSIXlt,
 	magic,
 	plot.TS,
 	plot.coastline,
