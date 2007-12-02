@@ -52,14 +52,12 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 			ss <- x$data$scan[keep]
 			equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x$data$scan)) < 0)
 			keep[equilibration] <- FALSE
-    	}
- 		else {
+    	} else {
 			if (verbose)	cat(paste("column",method,"; parameters ", parameters[1], parameters[2]))
 			l <- length(parameters)
 			if (l == 1) { 		# lower limit
     	  		keep <- (x$data[[method]] > parameters[1]);
-			}
-			else if (l == 2) {	# lower and upper limits
+			} else if (l == 2) {	# lower and upper limits
     	  		keep <- (x$data[[method]] > parameters[1]) & (x$data[[method]] < parameters[2])
 			}
     	}
