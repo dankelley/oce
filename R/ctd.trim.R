@@ -15,10 +15,9 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 				stop("Cannot select indices < 1");
 			if (max(parameters) > n)
 				stop(paste("Cannot select past end of array, i.e. past ", n))
-       		keep <- rep(FALSE, n)
-       		keep[parameters] <- TRUE
-    	}
- 		else if (method == "downcast") {		# BUG: this is crude
+			keep <- rep(FALSE, n)
+			keep[parameters] <- TRUE
+    	} else if (method == "downcast") {		# BUG: this is crude
 			# 1. despike to remove (rare) instrumental problems
 			x$data$pressure <- smooth(x$data$pressure,kind="3R")
 			# 2. keep only in-water data
