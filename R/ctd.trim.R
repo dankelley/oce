@@ -56,19 +56,17 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 			if (verbose)	cat(paste("column",method,"; parameters ", parameters[1], parameters[2]))
 			l <- length(parameters)
 			if (l == 1) { 		# lower limit
-    	  		keep <- (x$data[[method]] > parameters[1]);
+				keep <- (x$data[[method]] > parameters[1]);
 			} else if (l == 2) {	# lower and upper limits
-    	  		keep <- (x$data[[method]] > parameters[1]) & (x$data[[method]] < parameters[2])
+				keep <- (x$data[[method]] > parameters[1]) & (x$data[[method]] < parameters[2])
 			}
-    	}
+		}
   	}
   	result$data <- subset(x$data, keep)
  	if (is.null(parameters)) {
-		result <- processing.log.append(result, 
-			paste("modified by ctd.trim(x, method=\"",method,"\")",sep=""))
+		result <- processing.log.append(result,	paste("modified by ctd.trim(x, method=\"",method,"\")",sep=""))
 	} else {
-		result <- processing.log.append(result, 
-			paste("modified by ctd.trim(x, method=\"",method,"\",parameters=",parameters,")",sep=""))
+		result <- processing.log.append(result,	paste("modified by ctd.trim(x, method=\"",method,"\",parameters=",parameters,")",sep=""))
 	}
 	return(result)
 }
