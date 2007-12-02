@@ -6,16 +6,17 @@
 }
 \usage{
 plot.TS(x,
-    rho.levels = 6,
+	rho.levels = 6,
 	grid = FALSE,
 	col.grid = "lightgray",
-    rho1000 = FALSE,
-    col = par("col"),
+	rho1000 = FALSE,
+	col = par("col"),
 	col.rho = "darkgray",
-    cex.rho = 0.8*par("cex"),
+	cex.rho = 0.8*par("cex"),
 	cex = par("cex"),
 	pch = 20,
 	rotate.rho.labels = FALSE,
+	connect.points = FALSE,
 	\dots)
 }
 \arguments{
@@ -32,6 +33,7 @@ plot.TS(x,
   \item{cex}{size of symbols on graph.}
   \item{pch}{code for symbols on graph.}
   \item{rotate.rho.labels}{if TRUE, labels in right-hand margin are written vertically}
+  \item{connect.points}{if TRUE, the points are connected with line segments, in sequence}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 \details{

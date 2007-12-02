@@ -9,6 +9,7 @@ plot.TS <- function (x,
 	cex=par("cex"),
 	pch=20,
 	rotate.rho.labels=FALSE,
+	connect.points=FALSE,
 	...) 
 {
     if (!inherits(x, "ctd")) 
@@ -22,6 +23,8 @@ plot.TS <- function (x,
 		xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
         ylab = expression(paste("temperature [ ", degree, "C ]")), 
 		cex=cex, pch=pch, col=col, ...)
+	if (connect.points)
+		lines(x$data$salinity, x$data$temperature, col=col, ...)
 	S.axis.min <- par()$usr[1]
 	S.axis.max <- par()$usr[2]
 	T.axis.min <- par()$usr[3]
