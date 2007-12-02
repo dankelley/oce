@@ -1,15 +1,14 @@
 ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 {
-  	if (!inherits(x, "ctd"))
-    	stop("method is only for ctd objects")
-  	result <- x
-  	n <- length(x$data$pressure)
-  	if (n < 2) {
-    	warning("too few data to trim.ctd()")
-  	}
- 	else {
-    	keep <- rep(TRUE, n)
-    	if (method == "index") {
+	if (!inherits(x, "ctd"))
+		stop("method is only for ctd objects")
+	result <- x
+	n <- length(x$data$pressure)
+	if (n < 2) {
+		warning("too few data to trim.ctd()")
+	} else {
+		keep <- rep(TRUE, n)
+		if (method == "index") {
 			if (verbose)	cat("parameters:",parameters,"\n");
 			if (min(parameters) < 1)
 				stop("Cannot select indices < 1");
@@ -17,7 +16,7 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 				stop(paste("Cannot select past end of array, i.e. past ", n))
 			keep <- rep(FALSE, n)
 			keep[parameters] <- TRUE
-    	} else if (method == "downcast") {		# BUG: this is crude
+		} else if (method == "downcast") {		# BUG: this is crude
 			# 1. despike to remove (rare) instrumental problems
 			x$data$pressure <- smooth(x$data$pressure,kind="3R")
 			# 2. keep only in-water data
