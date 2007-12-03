@@ -17,8 +17,8 @@
 }
 \details{
   Creates a four-panel summary plot of data measured in a CTD cast. 
-One panel shows profiles of temperature and salinity, a second
-profiles of density and the square of buoyancy frequency, and a third a TS diagram.  The fourth panels is a panel of information about the cast.
+One panel contains profiles of temperature and salinity, another contains
+profiles of density and the square of buoyancy frequency, and a third contains a TS diagram.  The fourth panel provides information about the cast.
 }
 \value{
   None.
