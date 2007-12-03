@@ -21,32 +21,28 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 			x$data$pressure <- smooth(x$data$pressure,kind="3R")
 			# 2. keep only in-water data
 			keep <- (x$data$pressure > 0)
-			# 3. trim the upcast and anything thereafter (ignore beginning and end)
-			trim.top <- as.integer(0.1*n)
-			trim.bottom <- as.integer(0.9*n)
-			max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
-			max.location <- trim.top + max.spot
-			keep[max.location:n] <- FALSE
-			# 4. trim near-surface equilibration phase
-			dp <- c(0,diff(x$data$pressure))
-			dana<<-x$data$pressure
-			dan0<<-max.location
-			dan1<<-dp[keep]
-			dan2<<-keep
-			dp.sorted <- sort(dp)
-			if (!is.null(parameters)) {
-				dp.cutoff <- t.test(dp[keep], conf.level=parameters[1])$conf.int[1]
-			} else {
-#				print(dp)
-#				print(sum(keep))
-				dp.cutoff <- dp.sorted[0.1*n]
-#				dp.cutoff <- t.test(dp[keep], conf.level=0.95)$conf.int[1]
+			# 3. keep only descending data
+			delta.p <- diff(x$data$pressure)
+			delta.p <- c(delta.p[1], delta.p) # to get right length
+			keep <- keep & (delta.p > 0)
+			if (FALSE) {
+				# 3old. trim the upcast and anything thereafter (ignore beginning and end)
+				trim.top <- as.integer(0.1*n)
+				trim.bottom <- as.integer(0.9*n)
+				max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
+				max.location <- trim.top + max.spot
+				keep[max.location:n] <- FALSE
+				dan0<<-max.location
 			}
-			cat("dp.cutoff",dp.cutoff,"\n")
-			dan3 <<-dp.cutoff
-			dan4 <<- dp
+			# 4. trim a possible near-surface equilibration phase
+			delta.p.sorted <- sort(delta.p)
+			if (!is.null(parameters)) {
+				dp.cutoff <- t.test(delta.p[keep], conf.level=parameters[1])$conf.int[1]
+			} else {
+				dp.cutoff <- delta.p.sorted[0.1*n]
+			}
 			# 4a. remove equilibration data that have very little drop speed
-			keep[dp < dp.cutoff] <- FALSE
+			keep[delta.p < dp.cutoff] <- FALSE
 			# 4b. remove more equilibration data by regression
 			pp <- x$data$pressure[keep]
 			ss <- x$data$scan[keep]

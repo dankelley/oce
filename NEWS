@@ -1,6 +1,7 @@
 0.1.69: - modify documentation slightly
         - fix SF bug 1833719: warnings from read.ctd()
         - add connect.points option to plot.TS()
+        - improve ability of trim.ctd() to ignore spurious initial data
 0.1.68: - add coastline.world dataset, and increase resolution of coastline.maritimes
         - plot.TS() no longer rotates the RH margin isopycnal labels (unless told to)
 0.1.67: - allow sw.rho() and similar routines take matrices as arguments for S, t, etc
