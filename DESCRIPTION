@@ -11,6 +11,6 @@ Description: Supports the analysis of Oceanographic data,
  seawater properties such as density, and derived properties
  such as buoyancy frequency.
 License: GPL (>= 2)
-URL: http://r-oce.sourceforge.net
+URL: http://code.google.com/p/r-oce/
 LazyLoad: yes
 Packaged: Dan Kelley
