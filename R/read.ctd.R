@@ -239,7 +239,7 @@ read.ctd.SBE19 <- function(file,
   	date <- recovery <- NaN
   	header <- c();
   	col.names.inferred <- NULL
-  	found.temperature <- found.salinity <- found.pressure <- FALSE
+  	found.temperature <- found.salinity <- found.pressure <- found.time <- FALSE
   	found.sigma.theta <- found.sigma.t <- found.sigma <- FALSE
 	found.conductivity <- found.conductivity.ratio <- FALSE
 	conductivity.standard <- 4.2914
@@ -255,13 +255,17 @@ read.ctd.SBE19 <- function(file,
 		lline <- tolower(aline);
     	# BUG: the discovery of CTD column names is brittle to file-format changes
     	if (0 < (r <- regexpr("# name ", lline))) {
-	  		if (debug)
-				print(paste("line=",line))
+			if (debug) cat("lline: '",lline,"'\n",sep="")
       		tokens <- strsplit(line, split=" ")
       		name <- tokens[[1]][6]
+			if (debug) cat("  name: '",name,"'\n",sep="")
       		if (0 < regexpr("pressure", lline)) {
         		name <- "pressure"
         		found.pressure <- TRUE
+      		}
+      		if (0 < regexpr("time", lline)) {
+        		name <- "time"
+        		found.time <- TRUE
       		}
       		if (0 < regexpr("salinity", lline)) {
         		name <- "salinity"
