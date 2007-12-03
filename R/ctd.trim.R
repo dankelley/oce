@@ -32,7 +32,6 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 				max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
 				max.location <- trim.top + max.spot
 				keep[max.location:n] <- FALSE
-				dan0<<-max.location
 			}
 			# 4. trim a possible near-surface equilibration phase
 			delta.p.sorted <- sort(delta.p)
