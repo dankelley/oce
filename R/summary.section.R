@@ -1,18 +1,17 @@
 summary.section <- function(object, quiet=FALSE, ...)
 {
-  	if (!inherits(object, "section"))
-    	stop("method is only for section objects")
+	if (!inherits(object, "section")) stop("method is only for section objects")
 	num.stations <- length(object$stations)
-	if (!quiet)
-		cat("Section has stations:\n")
+	if (!quiet) cat("Section has stations:\n")
 	have.water.depth <- !is.na(object$stations[[1]]$water.depth)
-	filename <- lat <- lat.fmt <- lon <- lon.fmt <- distance <- levels <- NULL		
+	filename <- station <-lat <- lat.fmt <- lon <- lon.fmt <- distance <- levels <- NULL		
 	if (have.water.depth)
 		depth <- NULL
 	lat.1 <- object$stations[[1]]$latitude
 	lon.1 <- object$stations[[1]]$longitude
 	for (i in 1:num.stations) {
 		stn <- object$stations[[i]]
+		station  <- c(station,  stn$station)
 		filename <- c(filename, stn$filename)
     	lat      <- c(lat,      stn$latitude)
     	lon      <- c(lon,      stn$longitude)
@@ -25,11 +24,11 @@ summary.section <- function(object, quiet=FALSE, ...)
 	}
 	if (!quiet) {
 		if (have.water.depth) {
-			print(data.frame(Filename=filename, Latitude=lat.fmt, Longitude=lon.fmt, Water.Depth=depth, Distance=distance, Levels=levels))
+			print(data.frame(Filename=filename, Station=station, Latitude=lat.fmt, Longitude=lon.fmt, Water.Depth=depth, Distance=distance, Levels=levels))
 		} else {
-			print(data.frame(Filename=filename, Latitude=lat.fmt, Longitude=lon.fmt, Distance=distance, Levels=levels))
+			print(data.frame(Filename=filename, Station=station, Latitude=lat.fmt, Longitude=lon.fmt, Distance=distance, Levels=levels))
 		}
 		processing.log.summary(object)
 	}
-	invisible(data.frame(filename=filename, latitude=lat, longitude=lon))
+	invisible(data.frame(filename=filename, station=station, latitude=lat, longitude=lon))
 }

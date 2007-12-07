@@ -1,6 +1,15 @@
 make.section <- function(...)
 {
-	args <- list(...)
+	UseMethod("make.section")
+}
+make.section.ctd <- function(...)
+{
+	make.section.list(list(...))
+}
+make.section.list <- function(...)
+{
+	args <- ...
+	demand.equal.pressures <- FALSE
 	num.stations <- length(args)
 	action <- c("created by make.section() with CTD stations originating from the following file names: ")
 	# put together the log entry, and also scan for oddness
@@ -11,7 +20,7 @@ make.section <- function(...)
 		action <- paste(action, "'", args[[i]]$filename, "'", sep="")
 		if (i < num.stations - 1)
 			action <- paste(action, ",", sep="")
-		if (i > 1) {
+		if (demand.equal.pressures && i > 1) {
 			if (length(args[[i]]$data$pressure) != length(args[[1]]$data$pressure))
 				stop("stations 1 and ", i, " have a different number of depths")
 			if (any(args[[i]]$data$pressure != args[[1]]$data$pressure))

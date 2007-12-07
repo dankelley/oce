@@ -15,6 +15,8 @@ export(
 	latlon.format,
 	lon.format,
 	make.section,
+	make.section.ctd,
+	make.section.list,
 	oce.as.POSIXlt,
 	magic,
 	plot.TS,
@@ -58,6 +60,8 @@ S3method(plot, coastline)
 S3method(plot, lobo)
 S3method(plot, sealevel)
 S3method(plot, section)
+S3method(make.section, ctd)
+S3method(make.section, list)
 S3method(summary, ctd)
 S3method(summary, coastline)
 S3method(summary, lobo)
