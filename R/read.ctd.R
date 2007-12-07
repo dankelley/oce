@@ -5,6 +5,7 @@ read.ctd <- function(file,
 	   	type=NULL,
    		debug=FALSE,
 		columns=NULL,
+		station="",
 	   	check.human.headers=TRUE)
 {
 	filename <- NULL
@@ -40,14 +41,15 @@ read.ctd <- function(file,
 		}
 	}
 	switch(type,
-		SBE19 = read.ctd.SBE19(file, filename, debug, columns, check.human.headers=check.human.headers),
-		WOCE  = read.ctd.WOCE(file, filename, debug, columns, missing.value=-999))
+		SBE19 = read.ctd.SBE19(file, filename, debug, columns, station=station, check.human.headers=check.human.headers),
+		WOCE  = read.ctd.WOCE(file, filename, debug, columns, station=station, missing.value=-999))
 }
 
 read.ctd.WOCE <- function(file,
 		filename,
    		debug=FALSE,
 		columns=NULL,
+		station="",
 	   	missing.value=-999)
 {
   	if (is.character(file)) {
@@ -67,7 +69,6 @@ read.ctd.WOCE <- function(file,
 	filename.orig <- NULL
 	sample.interval <- NaN
 	section.id <- NULL
-	station <- NULL
 	system.upload.time <- NULL
   	latitude <- longitude <- NaN
   	start.time <- NULL
@@ -207,6 +208,7 @@ read.ctd.SBE19 <- function(file,
 		filename,
    		debug=FALSE,
 		columns=NULL,
+		station="",
 	   	check.human.headers=TRUE)
 {
 	# I really should add ability to specify column numbers, to avoid wasting time
@@ -231,7 +233,6 @@ read.ctd.SBE19 <- function(file,
 	filename.orig <- NULL
 	sample.interval <- NaN
 	section.id <- NULL
-	station <- NULL
 	system.upload.time <- NULL
   	latitude <- longitude <- NaN
   	start.time <- NULL
