@@ -19,7 +19,6 @@
 \examples{
 \dontrun{
 library(oce)
-data(ctd)
 # http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # ExpoCode 90CT40_1, Chief Scientist Tereschenkov/SOI
 s <- read.section("a03_hy1.csv") 
