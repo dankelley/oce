@@ -55,17 +55,12 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 			p <- pressures
 		}
 	}
-	# BUG only doing S and T
+	# BUG should handle all variables (but how to interpolate on a flag?)
 	res <- section
 	for (i in 1:n) {
 		if (!quiet) cat("Doing station number", i, "\n")
 		d <- section$stations[[i]]$data
 		salinity <- approx(d$pressure, d$salinity, p)$y
-#		if (i==1) {
-#			cat("p=",p,"\n")
-#			cat("DATA:\n");print(data.frame(pressure=d$pressure,salinity=d$salinity))
-#			cat("INTP:\n");print(data.frame(pressure=p,salinity=salinity))
-#		}
 		temperature <- approx(d$pressure, d$temperature, p)$y
 		sigma.theta <- approx(d$pressure, d$sigma.theta, p)$y
 #		flag <- approx(data$pressure, data$sigma, flag)$y # BUG makes no sense

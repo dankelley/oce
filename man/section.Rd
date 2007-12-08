@@ -26,11 +26,11 @@ stn01 <- ctd.decimate(ctd.trim(read.ctd("BED0301.CNV", station="301")),p=p)
 stn11 <- ctd.decimate(ctd.trim(read.ctd("BED0311.CNV", station="311")),p=p)
 stn12 <- ctd.decimate(ctd.trim(read.ctd("BED0312.CNV", station="312")),p=p)
 stn12$latitude <- 44 + 39.894 / 60
-stn12 <- processing.log.append(stn12, "DEK change lat minutes from 39.394 to 39.894 (possible typo)")
+stn12 <- processing.log.append(stn12, "DEK: change lat minutes from 39.394 to 39.894 (typo)")
 stn13 <- ctd.decimate(ctd.trim(read.ctd("BED0313.CNV", station="313")),p=p)
 stn15 <- ctd.decimate(ctd.trim(read.ctd("BED0315.CNV", station="315")),p=p)
 stn15$latitude <- stn15$latitude + 1
-stn15 <- processing.log.append(stn15, "DEK add 1 to latitude, correcting a typo")
+stn15 <- processing.log.append(stn15, "DEK add 1 to lat (typo")
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)
 section$section.id <- "Halifax-Harbour-2003-oct"
 }
