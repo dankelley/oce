@@ -34,7 +34,7 @@ ctd.decimate <- function(x, p=NULL, method=c("boxcar","lm"), e=1)
 		temperature <- NULL
 		salinity <- NULL
 		flag <- NULL
-		sigma <- NULL
+		sigma.theta <- NULL
 		for (i in 1:n) {
 			if (i==1) {
 				focus <- (x$data$pressure >= (pout[i] - e * (pout[i + 1] - pout[  i  ]))) &
@@ -49,12 +49,12 @@ ctd.decimate <- function(x, p=NULL, method=c("boxcar","lm"), e=1)
 			if (sum(focus) > 0) {
 				if (method == "boxcar") {
 					pressure    <- c(pressure,    pout[i])
-					scan        <- c(scan,        mean(x$data$scan[focus]))
-					depth       <- c(depth,       mean(x$data$depth[focus]))
-					temperature <- c(temperature, mean(x$data$temperature[focus]))
-					salinity    <- c(salinity,    mean(x$data$salinity[focus]))
-					flag        <- c(flag,        mean(x$data$flag[focus]))
-					sigma       <- c(sigma,       mean(x$data$sigma[focus]))
+					scan        <- c(scan,        mean(x$data$scan[focus],na.rm=TRUE))
+					depth       <- c(depth,       mean(x$data$depth[focus],na.rm=TRUE))
+					temperature <- c(temperature, mean(x$data$temperature[focus],na.rm=TRUE))
+					salinity    <- c(salinity,    mean(x$data$salinity[focus],na.rm=TRUE))
+					flag        <- c(flag,        mean(x$data$flag[focus],na.rm=TRUE))
+					sigma.theta <- c(sigma.theta, mean(x$data$sigma.theta[focus],na.rm=TRUE))
 				} else if (method == "lm") {
 					pressure    <- c(pressure,    pout[i])
 					xx <- x$data$pressure[focus]
@@ -68,8 +68,8 @@ ctd.decimate <- function(x, p=NULL, method=c("boxcar","lm"), e=1)
 					salinity    <- c(salinity,    predict(lm(yy~xx),list(xx=pout[i])))
 					yy <- x$data$flag[focus]
 					flag        <- c(flag,        predict(lm(yy~xx),list(xx=pout[i])))
-					yy <- x$data$sigma[focus]
-					sigma       <- c(sigma,       predict(lm(yy~xx),list(xx=pout[i])))
+					yy <- x$data$sigma.theta[focus]
+					sigma.theta <- c(sigma.theta, predict(lm(yy~xx),list(xx=pout[i])))
 				} else {
 					stop("unknown method ", method)
 				}
@@ -80,10 +80,12 @@ ctd.decimate <- function(x, p=NULL, method=c("boxcar","lm"), e=1)
 				temperature <- c(temperature, NA)
 				salinity    <- c(salinity,    NA)
 				flag        <- c(flag,        NA)
-				sigma       <- c(sigma,       NA)
+				sigma.theta <- c(sigma.theta, NA)
 			}
 		}
-		result$data <- list(scan=scan, pressure=pressure, depth=depth, temperature=temperature, salinity=salinity, flag=flag, sigma=sigma)
+		result$data <- list(scan=scan, pressure=pressure, depth=depth, 
+			temperature=temperature, salinity=salinity, flag=flag, 
+			sigma.theta=sigma.theta)
 	}
 	result <- processing.log.append(result, log.item)
 	return(result) # FIXME

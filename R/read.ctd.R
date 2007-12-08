@@ -6,7 +6,7 @@ read.ctd <- function(file,
    		debug=FALSE,
 		columns=NULL,
 		station="",
-	   	check.human.headers=TRUE)
+	   	check.human.headers=FALSE)
 {
 	filename <- NULL
 	if (is.null(type)) {
@@ -490,7 +490,7 @@ read.ctd.SBE19 <- function(file,
 		}
 		res <- ctd.add.column(res, S, "salinity", "sal", "salinity", "PSU")
   	}
-	res <- ctd.add.column(res, sw.sigma(res$data$salinity, res$data$temperature, res$data$pressure),
-		"sigma", "sigma", "sigma", "kg/m^3")
+	res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure),
+		"sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
 	return(res)
 }

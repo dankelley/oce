@@ -6,7 +6,7 @@ Read a CTD data file, producing an object of type \code{ctd}.
 }
 \usage{
 read.ctd(file, type=NULL, debug=FALSE,
- 	columns=NULL, station="", check.human.headers=TRUE)
+ 	columns=NULL, station="", check.human.headers=FALSE)
 }
 \arguments{
   \item{file}{a connection or a character string giving the name of the

@@ -17,7 +17,6 @@ provided by teaching assistant Natacha Bernier, at the time a PhD student at
 Dalhousie. Note the alteration of two station locations, to correct errors in
 transcribing field notes (e.g. a hand-written ``8'' was evidently typed as ``3'').
 \preformatted{
-setwd("~/Documents/teaching/5120/field_trip/data2003/raw")
 library(oce)
 p <- seq(0, 30, 0.5)
 stn08 <- ctd.decimate(ctd.trim(read.ctd("BED0308.CNV", station="308")),p=p)
