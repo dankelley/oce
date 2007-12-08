@@ -176,8 +176,8 @@ read.ctd.WOCE <- function(file,
 	pressure[pressure == missing.value] <- NA
 	salinity[salinity == missing.value] <- NA
 	temperature[temperature == missing.value] <- NA
-	sigma <- sw.sigma(salinity, temperature, pressure)
-	data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma=sigma)
+	sigma.theta <- sw.sigma.theta(salinity, temperature, pressure)
+	data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
 	processing.log <- list(time=c(Sys.time()), 
 		action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
   	res <- list(header=header, 

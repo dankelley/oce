@@ -35,16 +35,16 @@ plot.profile <- function (x,
         lines(x$data$temperature, x$data$pressure, col = col.t)
     }
     else if (type == "density") {
-        plot(x$data$sigma, x$data$pressure, ylim = rev(range(x$data$pressure)), 
+        plot(x$data$sigma.theta, x$data$pressure, ylim = rev(range(x$data$pressure)), 
             type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(expression(paste(sigma, " [ ", kg/m^3, " ]")), side = 3, 
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, 
             line = 3, col = col.rho)
         axis(2)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         box()
 		if (grid)
 			grid(col=col.grid)
-        lines(x$data$sigma, x$data$pressure, col = col.rho)
+        lines(x$data$sigma.theta, x$data$pressure, col = col.rho)
     }
     else if (type == "sigmatheta+N2") {
 		st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
@@ -70,7 +70,7 @@ plot.profile <- function (x,
 			grid(col=col.grid)
     }
     else if (type == "N2") {
-	    N2 <- N2(x$data$pressure, x$data$sigma, df = length(x$data$pressure)/4)
+	    N2 <- N2(x$data$pressure, x$data$sigma.theta, df = length(x$data$pressure)/4)
         plot(N2, x$data$pressure, ylim = rev(range(x$data$pressure)), 
             type = "n", xlab = "", ylab = pname, axes = FALSE)
         mtext(expression(paste(N^2, " [ ", (rad/s)^2, " ]")), side = 3, 
