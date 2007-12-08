@@ -1,4 +1,5 @@
 0.1.69: - modify documentation slightly
+		- add read.section()
         - fix SF bug 1833719: warnings from read.ctd()
         - improve ability of trim.ctd() to ignore spurious initial data
         - add "connect.points" option to plot.TS()

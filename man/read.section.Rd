@@ -1,0 +1,30 @@
+\name{read.section}
+\alias{read.section}
+\title{Read a section containing multiple CTD profiles}
+\description{Read a file that contains a series of CTD profiles that make up an oceanographic section.}
+\usage{read.section(file, debug=FALSE)}
+\arguments{
+  \item{file}{Either a CTD object, in which case the rest of the arguments are other CTD objects, or a list of ctd objects.}
+  \item{\dots}{A list of CTD objects, either given as separate arguments (the normal procedure) or as a list.}
+}
+\details{
+  \emph{Caution.} This is still in development, and the syntax may change without notice.  Only ``ewoce'' comma-separated value format is permitted at this time, but other formats may be added later.
+}
+\value{
+  A \code{section} object.  
+}
+\seealso{
+  \code{\link{make.section}} can be used to manually bind together CTD objects into a section.
+}
+\examples{
+\dontrun{
+	library(oce)
+	data(ctd)
+	s <- read.section("a03_hy1.csv") # downloaded from 
+	plot(s)
+	summary(s)
+}
+\references{
+}
+\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\keyword{misc}

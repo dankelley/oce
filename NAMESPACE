@@ -31,6 +31,7 @@ export(
 	read.lobo,
 	read.oce,
 	read.sealevel,
+	read.section,
 	sw.alpha,
 	sw.alpha.over.beta,
  	sw.sound.speed,
