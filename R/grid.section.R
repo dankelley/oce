@@ -1,8 +1,8 @@
-grid.section <- function(section, pressures=NA, quiet=TRUE)
+grid.section <- function(section, pressures=NULL, quiet=TRUE)
 {
 	n <- length(section$stations)
 	dp.list <- NULL
-	if (length(pressures)==1 && is.na(pressures)) {
+	if (is.null(pressures)) {
 		p.max <- 0
 		for (i in 1:n) {
 			p <- section$stations[[i]]$data$pressure
@@ -78,5 +78,10 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 #	dan0 <<- dist
 #	dan1 <<- Tm
 
+	if (is.null(pressures))
+		log.item <- "modified by grid.section(x)"
+	else
+		log.item <- paste("modified by grid.section(x, pressures=",pressures,")",sep="")
+	res <- processing.log.append(res, log.item)
 	res
 }

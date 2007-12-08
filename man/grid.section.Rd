@@ -2,7 +2,7 @@
 \alias{grid.section}
 \title{Grid a section}
 \description{Grid a section, by interpolating to fixed pressure levels.}
-\usage{grid.section(section, pressures=NA, quiet=TRUE)}
+\usage{grid.section(section, pressures=NULL, quiet=TRUE)}
 \arguments{
   \item{section}{A section to be gridded.}
   \item{pressures}{Pressure levels to which interpolation should be done.  If this is not supplied, the profiles will be examined and a vertical grid will be created that has approximately 100 levels at the deepest station.  If a single value is provided, it is taken as a step for a seq() running from 0 to the maximum pressure (rounded to the step).  If a list is given, it is used.  If \code{pressures} is set to the string \code{"levitus"}, then standard levels are used, as in the Levitus atlas.}
