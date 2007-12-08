@@ -1,9 +1,11 @@
 plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 	grid = TRUE, 
-	col.grid="lightgray", 
-	coastline = NULL, ...)
+	col.grid = "lightgray", 
+	coastline = NULL,
+	levels = NA,
+	...)
 {
-	plot.subsection <- function(variable="temperature", title="Temperature")
+	plot.subsection <- function(variable="temperature", title="Temperature", levels, ...)
 	{
 		if (is.null(at)) {
 			plot(range(xx), range(yy),
@@ -24,7 +26,10 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			}
 		}
 		par(new=TRUE)
-		contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
+		if (length(levels) == 1 && is.na(levels))
+			contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
+		else
+			contour(x=xx, y=yy, z=zz, axes=FALSE, levels, ...)
 		legend("topright", title, bg="white", x.intersp=0, y.intersp=0.5)
 	}
 	
@@ -52,7 +57,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 		par(mar=c(4.5,4,1,1))
 		plot.subsection("temperature", "T")
 		plot.subsection("salinity",    "S")
-		plot.subsection("sigma",       expression(sigma))
+		plot.subsection("sigma.theta",  expression(sigma[theta]))
 		ss <- summary(x, quiet=TRUE)
 		if (!is.null(coastline)) {
 			plot.coastline(coastline, col="darkgray")
@@ -65,7 +70,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 		points(ss$longitude[1], ss$latitude[1], pch=22, cex=2*par("cex"), ...)
 		#text(ss$longitude[1], ss$latitude[1], "x=0")
 	} else {
-		plot.subsection(field, field)
+		plot.subsection(field, field, levels, ...)
 	}
 	par(oldpar)
 }

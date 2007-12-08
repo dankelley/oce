@@ -67,9 +67,9 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 #			cat("INTP:\n");print(data.frame(pressure=p,salinity=salinity))
 #		}
 		temperature <- approx(d$pressure, d$temperature, p)$y
-		sigma <- approx(d$pressure, d$sigma, p)$y
+		sigma.theta <- approx(d$pressure, d$sigma.theta, p)$y
 #		flag <- approx(data$pressure, data$sigma, flag)$y # BUG makes no sense
-		res$stations[[i]]$data <- data.frame(pressure=p, salinity=salinity, temperature=temperature, sigma=sigma)
+		res$stations[[i]]$data <- data.frame(pressure=p, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
 	}
 	res
 }

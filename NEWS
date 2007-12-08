@@ -5,6 +5,7 @@
         - improve ability of trim.ctd() to ignore spurious initial data
         - add "connect.points" option to plot.TS()
         - add "station" item to "ctd" object
+		- change as.CTD() to produce sigma.theta instead of sigma
 0.1.68: - add coastline.world dataset, and increase resolution of coastline.maritimes
         - plot.TS() no longer rotates the RH margin isopycnal labels (unless told to)
 0.1.67: - allow sw.rho() and similar routines take matrices as arguments for S, t, etc

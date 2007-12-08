@@ -8,7 +8,7 @@ sample.interval=NA)
 {
 	if (length(p) == 1) # special case
 		p = rep(p, length(S))
-	data <- list(salinity=S, temperature=T, pressure=p, sigma=sw.sigma(S, T, p))
+	data <- list(salinity=S, temperature=T, pressure=p, sigma.theta=sw.sigma.theta(S, T, p))
 	processing.log <- list(time=c(Sys.time()), action=c("created by as.CTD()"))
 	res <- list(header=header,
 	      		filename=filename,

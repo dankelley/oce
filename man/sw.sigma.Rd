@@ -21,9 +21,13 @@ Compute \eqn{\sigma}{sigma}, the \emph{in-situ} density of seawater, minus 1000 
   \emph{In-situ} density anomaly [kg/m\eqn{^3}{^3}].
 }
 \seealso{
-Related density routines include: \code{link{sw.rho}}, 
-  \code{link{sw.sigma.t}}, and
-  \code{link{sw.sigma.theta}}.
+Related density routines include: \code{\link{sw.rho}} 
+to calculate in-situ density,
+\code{\link{sw.sigma.t}} to calculate an archaic quantity found in old
+textbooks, and
+\code{\link{sw.sigma.theta}} to calculate potential density anomaly
+relative to the surface pressure.  If you are thinking of using
+\code{sw.sigma}, you probably want \code{\link{sw.sigma.theta}}.
 }
 \examples{
  sig <- sw.sigma(35, 13, 1000)	# 30.818
