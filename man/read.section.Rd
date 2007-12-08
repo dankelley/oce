@@ -4,8 +4,8 @@
 \description{Read a file that contains a series of CTD profiles that make up an oceanographic section.}
 \usage{read.section(file, debug=FALSE)}
 \arguments{
-  \item{file}{A file containing a set of CTD observations.  At present, only the \emph{exchange BOT} format is accepted (see references).}
-  \item{debug}{Set TRUE to print some information that might be helpful during debugging.}
+  \item{file}{a file containing a set of CTD observations.  At present, only the \emph{exchange BOT} format is accepted (see Details).}
+  \item{debug}{logical. If TRUE, print some information that might be helpful during debugging.}
 }
 \details{
 Only \emph{exchange BOT} comma-separated value format is permitted at this time, but other formats may be added later.
