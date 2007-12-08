@@ -9,10 +9,10 @@
  	field=NULL,
 	at=NULL,
 	labels=TRUE,
-	grid=TRUE,
+	grid=FALSE,
 	col.grid="lightgray",
 	coastline=NULL,
-	levels = NA,
+	levels=NA,
 	\dots)
 }
 \arguments{

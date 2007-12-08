@@ -57,6 +57,9 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 	}
 	# BUG should handle all variables (but how to interpolate on a flag?)
 	res <- section
+	lat0 <- section$stations[[1]]$latitude
+	lon0 <- section$stations[[1]]$longitude
+	dist <- vector("numeric", n)
 	for (i in 1:n) {
 		if (!quiet) cat("Doing station number", i, "\n")
 		d <- section$stations[[i]]$data
@@ -65,6 +68,15 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 		sigma.theta <- approx(d$pressure, d$sigma.theta, p)$y
 #		flag <- approx(data$pressure, data$flag, p)$y # BUG makes no sense
 		res$stations[[i]]$data <- data.frame(pressure=p, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
+		dist[i] <- geod.dist(section$stations[[i]]$latitude, section$stations[[i]]$longitude, lat0, lon0)
 	}
+
+#	Tm <- matrix(NA, nrow=length(p), ncol=n)
+#	for (i in 1:n) {
+#		Tm[, i] <- res$stations[[i]]$data[["temperature"]]
+#	}
+#	dan0 <<- dist
+#	dan1 <<- Tm
+
 	res
 }
