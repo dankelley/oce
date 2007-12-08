@@ -5,7 +5,7 @@
 \usage{read.section(file, debug=FALSE)}
 \arguments{
   \item{file}{Either a CTD object, in which case the rest of the arguments are other CTD objects, or a list of ctd objects.}
-  \item{\dots}{A list of CTD objects, either given as separate arguments (the normal procedure) or as a list.}
+  \item{debug}{Set TRUE to print some information that might be helpful during debugging.}
 }
 \details{
   \emph{Caution.} This is still in development, and the syntax may change without notice.  Only ``ewoce'' comma-separated value format is permitted at this time, but other formats may be added later.
