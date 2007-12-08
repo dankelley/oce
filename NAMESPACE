@@ -11,6 +11,7 @@ export(
 	ctd.write,
 	geod.dist,
 	gravity,
+	grid.section,
 	lat.format,
 	latlon.format,
 	lon.format,
