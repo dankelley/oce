@@ -10,6 +10,10 @@
 \details{
 Only ``exchange BOT'' comma-separated value format is permitted at this time, but other formats may be added later.
 
+This function is very limited at the moment. As it evolves, the ``section'' object
+is likely to be modified (in a user-transparent way), and
+\code{\link{make.section}} will be modified as well.
+
 \emph{Bug 1:} the parsing is primitive, having been designed by inspection of the
 A03 data set (see Examples). For example, it is assumed that the header names the
 salinity column as \code{CTDSAL}, and if another name is used, no salinity will be
@@ -18,6 +22,9 @@ read from the file.  (Possibly this is not a problem; the author has just not ch
 \emph{Bug 2:} the routine does not read measurements other than temperature
 (CTDTMP), salinity (CTDSAL) and pressure (CTDPRS). It should check for other
 items, e.g. nutrients and tracers.
+
+\emph{Bug 3:} missing-value codes are ignored.
+
 }
 \value{
   A \code{section} object.  
