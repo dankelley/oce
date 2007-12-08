@@ -23,7 +23,10 @@
   \item{col.grid}{color of grid lines.}
   \item{coastline}{if supplied, this is a \code{coastline} object, to be used in a station map}
   \item{\dots}{optional arguments passed to plotting functions, e.g. using
-     \code{labcex=1} will increase the size of contour labels.}
+     \code{labcex=1} will increase the size of contour labels.  Probably the most
+common use, though, is to specify contours for individually plotted fields, e.g. 
+\code{plot.section(sectoin, field="temperature", levels=seq(0,30,1))} to
+get temperature contours from 0 to 30C in intervals of 1C.}
 }
 \details{
 Creates a summary plot for a CTD section. If a \code{field} is supplied, then just that single

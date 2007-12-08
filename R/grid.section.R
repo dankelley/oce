@@ -1,6 +1,5 @@
 grid.section <- function(section, pressures=NA, quiet=TRUE)
 {
-	res <- section
 	n <- length(section$stations)
 	dp.list <- NULL
 	if (length(pressures)==1 && is.na(pressures)) {
@@ -11,21 +10,29 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 			p.max <- max(c(p.max, p))
 		}
 		dp <- mean(dp.list)
-		if (debug) cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
-		if (dp < 20) { # to nearest dbar
+		if (!quiet) cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
+		if (dp < 0.01) {
+			dp <- 0.01 # prevent scale less 1 cm.
+		} else if (dp < 2) {
+			dp <- round(dp, 1)
+			if (dp == 0) dp <- 0.1
+			p.max <- round(p.max, 1)
+		} else if (dp < 20) { # to nearest dbar
 			dp <- round(dp, 0)
+			if (dp == 0) dp <- 1
 			p.max <- round(p.max, 0)
 		} else if (dp < 200){ # to nearest 10 dbar
 			dp <- round(dp, -1)
+			if (dp == 0) dp <- 10
 			p.max <- round(p.max, -1)
 		} else { # to nearest 100 dbar
 			dp <- round(dp, -2)
+			if (dp == 0) dp <- 100
 			p.max <- round(p.max, -2)
 		}
-		if (debug) cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
+		if (!quiet) cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
 		p <- seq(0, p.max, dp)
-		if (debug) cat("Using auto-selected pressures: ", p, "\n");
-		#warning("Unspecified pressure case is not implemented yet")
+		if (!quiet) cat("Using auto-selected pressures: ", p, "\n");
 	} else {
 		if (length(pressures) == 1) {
 			if (pressures=="levitus") {
@@ -33,7 +40,7 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 					250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
 					1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
 					4500, 5000, 5500)
-				#if (debug) cat("Using Levitus pressures: ", p, "\n");
+				if (!quiet) cat("Using stanard atlas pressures: ", p, "\n")
 			} else { # FIXME should insist numeric
 				# find max in dataset
 				p.max <- 0
@@ -42,15 +49,27 @@ grid.section <- function(section, pressures=NA, quiet=TRUE)
 					p.max <- max(c(p.max, p))
 				}
 				p <- seq(0, p.max, pressures)
-				#warning("Single pressure case is not implemented yet")
+				if (!quiet) cat("Pressures: ", p, "\n")
 			}
 		} else {
 			p <- pressures
-			#warning("Multiple pressure case is not implemented yet")
 		}
 	}
-	if (debug) cat("Pressures: ", p, "\n")
-	stop("Should now interpolate everything to these pressures... not coded yet")
-	res <- section # FIXME do something here!
+	# BUG only doing S and T
+	res <- section
+	for (i in 1:n) {
+		if (!quiet) cat("Doing station number", i, "\n")
+		d <- section$stations[[i]]$data
+		salinity <- approx(d$pressure, d$salinity, p)$y
+#		if (i==1) {
+#			cat("p=",p,"\n")
+#			cat("DATA:\n");print(data.frame(pressure=d$pressure,salinity=d$salinity))
+#			cat("INTP:\n");print(data.frame(pressure=p,salinity=salinity))
+#		}
+		temperature <- approx(d$pressure, d$temperature, p)$y
+		sigma <- approx(d$pressure, d$sigma, p)$y
+#		flag <- approx(data$pressure, data$sigma, flag)$y # BUG makes no sense
+		res$stations[[i]]$data <- data.frame(pressure=p, salinity=salinity, temperature=temperature, sigma=sigma)
+	}
 	res
 }
