@@ -37,9 +37,10 @@ items, e.g. nutrients and tracers.
 library(oce)
 # http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # ExpoCode 90CT40_1, Chief Scientist Tereschenkov/SOI
-s <- read.section("a03_hy1.csv") 
-plot(s)
-summary(s)
+a03 <- read.section("a03_hy1.csv") 
+summary(a03)
+a03.gridded <- grid.section(a03, pressure="levitus")
+plot(a03.gridded)
 }
 }
 \references{
