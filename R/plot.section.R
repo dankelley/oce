@@ -5,7 +5,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 	levels = NA,
 	...)
 {
-	plot.subsection <- function(variable="temperature", title="Temperature", levels, ...)
+	plot.subsection <- function(variable="temperature", title="Temperature", levels=NA, ...)
 	{
 		if (is.null(at)) {
 			plot(range(xx), range(yy),
