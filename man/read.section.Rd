@@ -4,13 +4,13 @@
 \description{Read a file that contains a series of CTD profiles that make up an oceanographic section.}
 \usage{read.section(file, debug=FALSE)}
 \arguments{
-  \item{file}{A file containing a set of CTD observations.  At present, only the ``exchange BOT'' format is accepted (see references).}
+  \item{file}{A file containing a set of CTD observations.  At present, only the \emph{exchange BOT} format is accepted (see references).}
   \item{debug}{Set TRUE to print some information that might be helpful during debugging.}
 }
 \details{
-Only ``exchange BOT'' comma-separated value format is permitted at this time, but other formats may be added later.
+Only \emph{exchange BOT} comma-separated value format is permitted at this time, but other formats may be added later.
 
-This function is very limited at the moment. As it evolves, the ``section'' object
+This function is very limited at the moment. As it evolves, the \code{section} object
 is likely to be modified (in a user-transparent way), and
 \code{\link{make.section}} will be modified as well.
 
