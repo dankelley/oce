@@ -2,7 +2,7 @@ summary.section <- function(object, quiet=FALSE, ...)
 {
 	if (!inherits(object, "section")) stop("method is only for section objects")
 	num.stations <- length(object$stations)
-	if (!quiet) cat("Section has stations:\n")
+	if (!quiet) cat("Section", object$section.id, "has stations:\n")
 	have.water.depth <- !is.na(object$stations[[1]]$water.depth)
 	filename <- station <-lat <- lat.fmt <- lon <- lon.fmt <- distance <- levels <- NULL		
 	if (have.water.depth)

@@ -43,15 +43,14 @@ read.section <- function(file, debug=FALSE)
 	nd <- n - header.length - 1
 	nv <- length(var.names)
 	data <- array(dim=c(nd, nv - 2))
-	expcode <- vector("character", nd)
 	stn.id <- vector("character", nd)
-	sect.id <- vector("character", nd)
+	section.id <- ""
 	for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
 #		cat(length(strsplit(lines[l], split=",")[[1]]), "\n")
 #		cat(lines[l], "\n")
 		contents <- strsplit(lines[l], split=",")[[1]]
-		expcode[l - header.length] <- sub(" *","", contents[1]) # FIXME: do as p,T,S
-		sect.id[l - header.length] <- sub(" *","", contents[2])
+		if (l == (header.length + 1))
+			section.id <- sub(" *","", contents[2])
 		stn.id[l - header.length] <- sub(" *","", contents[3])
 		data[l - header.length,] <- contents[3:nv]
 		# FIXME: maybe should just scan this thing; it might work better anyway
@@ -70,7 +69,8 @@ read.section <- function(file, debug=FALSE)
 		this.station <- as.CTD(S=S[select], T=T[select], p=p[select],
 			latitude=latitude[select[1]], 
 			longitude=longitude[select[1]],
-			station=stn.id[select[1]])
+			station=stn.id[select[1]],
+			filename=filename)
 		if (debug) cat("station at ", latitude[select[1]], "N and ", longitude[select[1]], "W\n")
         stations[[i]] <- this.station
 	}
@@ -78,7 +78,7 @@ read.section <- function(file, debug=FALSE)
 #		p=p, t=t, S=S, latitude=latitude,longitude=longitude, stations=stations)
    	action <- paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep="")
     processing.log <- list(time = c(Sys.time()), action = action)
-    res <- list(processing.log = processing.log, stations = stations)
+    res <- list(processing.log = processing.log, section.id=section.id, stations = stations)
     class(res) <- "section"
 	res
 }

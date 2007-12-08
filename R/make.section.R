@@ -31,7 +31,7 @@ make.section <- function(item, ...)
 	#cat("num.stations = ", num.stations, "\n")
 	action <- "created by make.section()"
 	processing.log <- list(time=c(Sys.time()), action=action)
-	res <- list(processing.log=processing.log, stations=stations)
+	res <- list(processing.log=processing.log, section.id="", stations=stations)
   	class(res) <- "section"
 	res
 }
