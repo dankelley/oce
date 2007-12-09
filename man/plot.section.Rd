@@ -12,8 +12,8 @@
 	grid=FALSE,
 	col.grid="lightgray",
 	station.indices,
-	coastline,
-	map.xlim,
+	coastline=NULL,
+	map.xlim=NULL,
 	\dots)
 }
 \arguments{
@@ -62,6 +62,7 @@ plot(section, coastline=coastline.halifax)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 a03 <- read.section("a03_hy1.csv")
 a03g <- grid.section(a03, pressures=seq(0,2000,10))
+data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,
 	station.indices=seq(124, 102),

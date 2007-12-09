@@ -1,5 +1,8 @@
-grid.section <- function(section, pressures=NULL, quiet=TRUE)
+grid.section <- function(section, pressures=NULL,
+	algorithm=c("smooth.spline","approx"), ...)
 {
+	algorithm <- match.arg(algorithm)
+	algorithm.code <- switch(algorithm, smooth.spline = 1, approx = 2)
 	n <- length(section$stations)
 	dp.list <- NULL
 	if (is.null(pressures)) {
@@ -10,7 +13,7 @@ grid.section <- function(section, pressures=NULL, quiet=TRUE)
 			p.max <- max(c(p.max, p))
 		}
 		dp <- mean(dp.list) / 1.5 # make it a little smaller
-		if (!quiet) cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
+		# cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
 		if (dp < 0.01) {
 			dp <- 0.01 # prevent scale less 1 cm.
 		} else if (dp < 5) { # to nearest 1 db
@@ -29,9 +32,9 @@ grid.section <- function(section, pressures=NULL, quiet=TRUE)
 			dp <- 100 * floor(0.5 + dp / 100)
 			p.max <- 100 * floor(1 + p.max / 100)
 		}
-		if (!quiet) cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
+		# cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
 		p <- seq(0, p.max, dp)
-		if (!quiet) cat("Using auto-selected pressures: ", p, "\n");
+		# cat("Using auto-selected pressures: ", p, "\n");
 	} else {
 		if (length(pressures) == 1) {
 			if (pressures=="levitus") {
@@ -39,7 +42,7 @@ grid.section <- function(section, pressures=NULL, quiet=TRUE)
 					250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
 					1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
 					4500, 5000, 5500)
-				if (!quiet) cat("Using stanard atlas pressures: ", p, "\n")
+				# cat("Using stanard atlas pressures: ", p, "\n")
 			} else { # FIXME should insist numeric
 				# find max in dataset
 				p.max <- 0
@@ -48,7 +51,7 @@ grid.section <- function(section, pressures=NULL, quiet=TRUE)
 					p.max <- max(c(p.max, p))
 				}
 				p <- seq(0, p.max, pressures)
-				if (!quiet) cat("Pressures: ", p, "\n")
+				# cat("Pressures: ", p, "\n")
 			}
 		} else {
 			p <- pressures
@@ -60,12 +63,27 @@ grid.section <- function(section, pressures=NULL, quiet=TRUE)
 	lon0 <- section$stations[[1]]$longitude
 	dist <- vector("numeric", n)
 	for (i in 1:n) {
-		#if (!quiet) cat("Doing station number", i, "\n")
-		d <- section$stations[[i]]$data
-		dpressure <- d$pressure # may speed things up
-		salinity <- approx(dpressure, d$salinity, p, ties=mean)$y
-		temperature <- approx(dpressure, d$temperature, p, ties=mean)$y
-		sigma.theta <- approx(dpressure, d$sigma.theta, p, ties=mean)$y
+		#if cat("Doing station number", i, "\n")
+		d <- section$stations[[i]]$data # simplies coding; may speed up
+		# Cannot fit a smoothing spline with too few points
+		if (algorithm.code == 1 && sum(!is.na(d$salinity)) > 4) {
+			salinity.sp <- smooth.spline(d$pressure, d$salinity, ...)
+			salinity <- predict(salinity.sp, p)$y
+			temperature.sp <- smooth.spline(d$pressure, d$temperature, ...)
+			temperature <- predict(temperature.sp, p)$y
+			sigma.theta.sp <- smooth.spline(d$pressure, d$sigma.theta, ...)
+			sigma.theta <- predict(sigma.theta.sp, p)$y
+			# trim bottom (since the spline predicts through whole domain)
+			p.max <- max(d$pressure, na.rm=TRUE)
+			trim <- p > p.max
+			salinity[trim] <- NA
+			temperature[trim] <- NA
+			sigma.theta[trim] <- NA
+		} else {
+			salinity <- approx(d$pressure, d$salinity, p, ties=mean)$y
+			temperature <- approx(d$pressure, d$temperature, p, ties=mean)$y
+			sigma.theta <- approx(d$pressure, d$sigma.theta, p, ties=mean)$y
+		}
 		res$stations[[i]]$data <- data.frame(pressure=p, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
 		dist[i] <- geod.dist(section$stations[[i]]$latitude, section$stations[[i]]$longitude, lat0, lon0)
 	}
