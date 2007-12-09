@@ -17,7 +17,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			}
 			asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
 			if (!is.null(map.xlim))
-				plot(lon, lat, xlim=map.xlim, asp=asp, type='n')
+				plot(lon, lat, xlim=map.xlim, asp=asp, type='n', xlab="Latitude", ylab="Longitude")
 			else
 				plot(lon, lat, asp=asp, type='n')
 			if (!is.null(coastline)) {
