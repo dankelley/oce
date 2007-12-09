@@ -438,24 +438,20 @@ The site \url{http://r-oce.sourceforge.net} provides a window on the development
 between the CRAN releases of the package. Please visit the site to report bugs, to suggest new
 features, and to help others with work they are doing with \verb@oce@.
 
-\begin{center}
+%\begin{center}
+%\vspace{2cm}
+%
+%------
+%
+%\vspace{2cm}
+%
+%See the end of the document for answers to exercises.
+%
+%\end{center}
+%
+%\newpage	
 
-\vspace{2cm}
-
-------
-
-\vspace{2cm}
-
-See the end of the document for answers to exercises.
-
-\end{center}
-
-
-
-\newpage	
-	
 \section*{Answers to exercises}
-
 
 \workedanswer{1}
 <<>>=
