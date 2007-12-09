@@ -300,7 +300,11 @@ data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
 @
-produces Figure~\ref{f:sectiona03}.
+produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was travelling
+westward from the Mediterranean towards North America, taking 124 stations in total;
+the \verb@station.indices@ value selects the last few stations of the section, during
+which the ship heading was changed to run in a northwesterly direction, to cross
+isobaths (and perhaps, the Gulf Stream) at right angles.
 
 \begin{figure}
 \begin{center}
