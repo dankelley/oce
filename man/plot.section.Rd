@@ -50,7 +50,7 @@ be the same as for \code{\link{axis}}.
   None.
 }
 \seealso{
-Sections are created with \code{\link{make.section}}, and may
+Sections may be created with \code{\link{make.section}} or \code{\link{read.section}}, and may
 be summarized with \code{\link{summary.section}}.
 }
 \examples{
