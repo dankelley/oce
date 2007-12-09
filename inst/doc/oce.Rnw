@@ -267,7 +267,7 @@ data(coastline.halifax)
 plot(section, coastline=coastline.halifax)
 @
 will plot a summary diagram (Figure~\ref{fig:section}) containing sections of $T$, $S$, and
-$\sigma$, along with a chart indicating station locations. In addition to such overview
+$\sigma_\theta$, along with a chart indicating station locations. In addition to such overview
 diagrams, \verb@plot@ can also create individual plots of individual properties.
 
 \begin{figure}
@@ -277,18 +277,16 @@ diagrams, \verb@plot@ can also create individual plots of individual properties.
 <<sectionplot>>
 @
 \end{center}
-\caption{CTD section of data acquired in Halifax Harbour in the autumn of 2003
-by students in the \emph{Introduction to Physical Oceanography} class at
-Dalhousie University.  (Dan Kelley
-teaches this class, but the work at sea was
-supervised by his teaching assistant
-Natacha Bernier, who received her PhD from Dalhousie in 2005.)
-The stations go from a site near
-the Sackville river inflow at the northwest portion of Bedford Basin
-to site at the entrance of the harbour.}
-\label{fig:section}
+\caption{\label{fig:section}
+CTD section of data acquired in Halifax Harbour in the autumn
+of 2003 by students in the \emph{Introduction to Physical
+Oceanography} class at Dalhousie University.  (Dan Kelley teaches this
+class, and the work at sea was supervised by his teaching assistant
+Natacha Bernier, who received her PhD from Dalhousie in 2005.)  The
+stations go from a site near the Sackville river inflow at the
+northwest portion of Bedford Basin to site at the entrance of the
+harbour.}
 \end{figure}
-
 
 
 \section{Coastline data}
