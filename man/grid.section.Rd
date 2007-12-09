@@ -22,7 +22,8 @@ Sections are normally created with \code{\link{read.section}} or \code{\link{mak
 \dontrun{
 library(oce)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
-a03 <- read.section("a03_hy1.csv")
+# a03 <- read.section("a03_hy1.csv")
+data(a03)
 a03g <- grid.section(a03, pressures=seq(0,2000,50))
 data(coastline.world)
 # Select the Gulf Stream region
