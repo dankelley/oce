@@ -7,6 +7,18 @@ This is line A03 (ExpoCode 90CT40\_1, with nominal sampling date
 1993-09-11).  The chief scientist was Tereschenkov of SOI, working
 aboard the Russian ship MULTANOVSKY.
 }
+\examples{
+library(oce)
+data(section)
+data(coastline.halifax)
+plot(section, coastline=coastline.halifax)
+\dontrun{
+data(a03)
+a03g <- grid.section(a03, pressures=seq(0,2000,50))
+data(coastline.world)
+# Select the Gulf Stream region
+plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
+}}
 \usage{data(a03)}
 \source{\url{http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1} (use the \emph{BOT} link in the \emph{Exchange} section of this page.)}
 \references{\url{http://cchdo.ucsd.edu}}
