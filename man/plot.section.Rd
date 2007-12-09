@@ -11,8 +11,9 @@
 	labels=TRUE,
 	grid=FALSE,
 	col.grid="lightgray",
-	coastline=NULL,
-	levels=NA,
+	station.indices,
+	coastline,
+	map.xlim,
 	\dots)
 }
 \arguments{
@@ -22,9 +23,10 @@
   \item{labels}{either a logical, indicating whether to put labels on the x axis, or a vector that is a list of labels to be placed at the x positions indicated by \code{at}.}
   \item{grid}{if \code{TRUE}, grid lines will be drawn on plots.}
   \item{col.grid}{color of grid lines.}
-  \item{coastline}{if supplied, this is a \code{coastline} object, to be used in a station map}
-  \item{levels}{if supplied, and if only a single panel is being plotted, this will be the levels to be used for contours.}
-  \item{\dots}{optional arguments passed to plotting functions, e.g. using
+  \item{station.indices}{optional list of the indices of stations to use.  Note that these are indices, not the names of stations, e.g. to focus on the first four stations, use \code{station.numbers=c(1,4)}.}
+  \item{coastline}{optional \code{coastline} to be used in a station map}
+  \item{map.xlim}{optional xlim for station location, which can be helpful in ensuring that a recognizable coastline can be seen}
+  \item{\dots}{optional arguments passed to the contouring function, e.g. using
      \code{labcex=1} will increase the size of contour labels.  Probably the most
 common use, though, is to specify contours for individually plotted fields, e.g.  \code{plot.section(section, field="temperature", levels=seq(0,30,1))} gives
 temperature contours from 0 to 30C in intervals of 1C.}
@@ -56,6 +58,16 @@ library(oce)
 data(section)
 data(coastline.halifax)
 plot(section, coastline=coastline.halifax)
+\dontrun{
+# File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
+a03 <- read.section("a03_hy1.csv")
+a03g <- grid.section(a03, pressures=seq(0,2000,10))
+# Select the Gulf Stream region
+plot(a03g,
+	station.indices=seq(124, 102),
+	coastline=coastline.world,
+	map.xlim=c(-85,-65))
+}
 }
 \author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
 \keyword{misc}

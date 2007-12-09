@@ -1,11 +1,12 @@
 plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
-	grid = FALSE, 
+	grid = FALSE,
 	col.grid = "lightgray", 
-	coastline = NULL,
-	levels = NA,
+	station.indices,
+	coastline,
+	map.xlim,
 	...)
 {
-	plot.subsection <- function(variable="temperature", title="Temperature", levels=NA, ...)
+	plot.subsection <- function(variable="temperature", title="Temperature", ...)
 	{
 		if (is.null(at)) {
 			plot(range(xx), range(yy),
@@ -20,57 +21,72 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			box()
 		}
 		for (i in 1:num.stations) {
-			zz[i,] <- rev(x$stations[[i]]$data[[variable]])
+			zz[i,] <- rev(x$stations[[station.indices[i]]]$data[[variable]])
 			if (grid) {
 				abline(v = xx[i], col=col.grid, lty="dotted")
 			}
 		}
 		par(new=TRUE)
-		if (length(levels) == 1 && is.na(levels))
-			contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
-		else
-			contour(x=xx, y=yy, z=zz, axes=FALSE, levels, ...)
+		contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
 		legend("topright", title, bg="white", x.intersp=0, y.intersp=0.5)
 	}
 	
-    if (!inherits(x, "section")) 
-        stop("method is only for section objects")
-    oldpar <- par(no.readonly = TRUE)
-	num.stations <- length(x$stations)
-	if (num.stations < 2)
-		stop("cannot plot a section containing less than 2 stations")
-	num.depths <- length(x$stations[[1]]$data$pressure)
-	#cat("num.stations", num.stations, " num.depths",num.depths, "\n")
+	if (!inherits(x, "section")) stop("method is only for section objects")
+	oldpar <- par(no.readonly = TRUE)
+
+	if (missing(station.indices)) {
+		num.stations <- length(x$stations)
+		station.indices <- 1:num.stations
+	} else {
+		num.stations <- length(station.indices)		
+	}
+	if (num.stations < 2) stop("cannot plot a section containing less than 2 stations")
+	num.depths <- length(x$stations[[station.indices[1]]]$data$pressure)
 	zz <- matrix(nrow=num.stations, ncol=num.depths)
 	xx <- array(NA, num.stations)
+	yy <- array(NA, num.depths)
 	if (is.null(at)) {
+		lat0 <- x$stations[[station.indices[1]]]$latitude
+		lon0 <- x$stations[[station.indices[1]]]$longitude
 		for (ix in 1:num.stations) {
-			xx[ix] <- geod.dist(x$stations[[1]]$latitude, x$stations[[1]]$longitude,
-				x$stations[[ix]]$latitude, x$stations[[ix]]$longitude)
+			j <- station.indices[ix]
+			xx[ix] <- geod.dist(lat0, lon0,x$stations[[j]]$latitude, x$stations[[j]]$longitude)
 		}
 	} else {
 		xx <- at
 	}
-	yy <- x$stations[[1]]$data$pressure
+	yy <- x$stations[[station.indices[1]]]$data$pressure
 	if (is.null(field)) {
 		par(mfrow=c(2,2))
 		par(mar=c(4.5,4,1,1))
-		plot.subsection("temperature", "T")
-		plot.subsection("salinity",    "S")
-		plot.subsection("sigma.theta",  expression(sigma[theta]))
-		ss <- summary(x, quiet=TRUE)
-		if (!is.null(coastline)) {
-			plot.coastline(coastline, col="darkgray")
-		} else {
-			asp <- 1 / cos(mean(range(ss$latitude,na.rm=TRUE))*pi/180)
-		    plot(ss$longitude, ss$latitude, asp=asp, type="p", xlab="", ylab="")
+		plot.subsection("temperature", "T", ...)
+		plot.subsection("salinity",    "S", ...)
+		plot.subsection("sigma.theta",  expression(sigma[theta]), ...)
+		# Map
+		lat <- array(NA, num.stations)
+		lon <- array(NA, num.stations)
+		for (i in 1:num.stations) {
+			lat[i] <- x$stations[[station.indices[i]]]$latitude
+			lon[i] <- x$stations[[station.indices[i]]]$longitude
 		}
-		lines(ss$longitude, ss$latitude, ...)
-		points(ss$longitude, ss$latitude, pch=20, ...)
-		points(ss$longitude[1], ss$latitude[1], pch=22, cex=2*par("cex"), ...)
-		#text(ss$longitude[1], ss$latitude[1], "x=0")
+		asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
+		if (!missing(map.xlim))
+			plot(lon, lat, xlim=map.xlim, asp=asp, type='n')
+		else
+			plot(lon, lat, asp=asp, type='n')
+		if (!missing(coastline)) {
+			if (mean(lon, na.rm=TRUE) > 0)
+				lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
+			else 
+				lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
+		}
+		lines(lon, lat)
+		points(lon, lat, pch=20)
+		points(lon[1], lat[1], pch=22, cex=2*par("cex"))
 	} else {
-		plot.subsection(field, field, levels, ...)
+		field.name <- field
+		if (field == "sigma.theta") field.name <- expression(sigma[theta])
+		plot.subsection(field, field.name, ...)
 	}
 	par(oldpar)
 }

@@ -2,6 +2,7 @@
 		- add read.section()
 		- add grid.section(), not really working yet
         - fix SF bug 1833719: warnings from read.ctd()
+		- fix Issue 8: read.coastline() not producing data
         - improve ability of trim.ctd() to ignore spurious initial data
         - add "connect.points" option to plot.TS()
         - add "station" item to "ctd" object

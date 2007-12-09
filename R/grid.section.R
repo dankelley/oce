@@ -9,26 +9,25 @@ grid.section <- function(section, pressures=NULL, quiet=TRUE)
 			dp.list <- c(dp.list, mean(diff(p)))
 			p.max <- max(c(p.max, p))
 		}
-		dp <- mean(dp.list)
+		dp <- mean(dp.list) / 1.5 # make it a little smaller
 		if (!quiet) cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
 		if (dp < 0.01) {
 			dp <- 0.01 # prevent scale less 1 cm.
-		} else if (dp < 2) {
-			dp <- round(dp, 1)
-			if (dp == 0) dp <- 0.1
-			p.max <- round(p.max, 1)
-		} else if (dp < 20) { # to nearest dbar
-			dp <- round(dp, 0)
-			if (dp == 0) dp <- 1
-			p.max <- round(p.max, 0)
+		} else if (dp < 5) { # to nearest 1 db
+			dp <- 1 * floor(0.5 + dp / 1)
+			p.max <- 1 * floor(1 + p.max / 1)
+		} else if (dp < 20) { # to nearest 5 db
+			dp <- 5 * floor(0.5 + dp / 5)
+			p.max <- 5 * floor(1 + p.max / 5)
+		} else if (dp < 100){ # to nearest 10 dbar
+			dp <- 10 * floor(0.5 + dp / 10)
+			p.max <- 10 * floor(1 + p.max / 10)
 		} else if (dp < 200){ # to nearest 10 dbar
-			dp <- round(dp, -1)
-			if (dp == 0) dp <- 10
-			p.max <- round(p.max, -1)
+			dp <- 50 * floor(0.5 + dp / 50)
+			p.max <- 50 * floor(1 + p.max / 50)
 		} else { # to nearest 100 dbar
-			dp <- round(dp, -2)
-			if (dp == 0) dp <- 100
-			p.max <- round(p.max, -2)
+			dp <- 100 * floor(0.5 + dp / 100)
+			p.max <- 100 * floor(1 + p.max / 100)
 		}
 		if (!quiet) cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
 		p <- seq(0, p.max, dp)
@@ -61,12 +60,12 @@ grid.section <- function(section, pressures=NULL, quiet=TRUE)
 	lon0 <- section$stations[[1]]$longitude
 	dist <- vector("numeric", n)
 	for (i in 1:n) {
-		if (!quiet) cat("Doing station number", i, "\n")
+		#if (!quiet) cat("Doing station number", i, "\n")
 		d <- section$stations[[i]]$data
-		salinity <- approx(d$pressure, d$salinity, p)$y
-		temperature <- approx(d$pressure, d$temperature, p)$y
-		sigma.theta <- approx(d$pressure, d$sigma.theta, p)$y
-#		flag <- approx(data$pressure, data$flag, p)$y # BUG makes no sense
+		dpressure <- d$pressure # may speed things up
+		salinity <- approx(dpressure, d$salinity, p, ties=mean)$y
+		temperature <- approx(dpressure, d$temperature, p, ties=mean)$y
+		sigma.theta <- approx(dpressure, d$sigma.theta, p, ties=mean)$y
 		res$stations[[i]]$data <- data.frame(pressure=p, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
 		dist[i] <- geod.dist(section$stations[[i]]$latitude, section$stations[[i]]$longitude, lat0, lon0)
 	}

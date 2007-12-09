@@ -17,8 +17,8 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 	        open(file, "r")
 	        on.exit(close(file))
 	    }
-		d <- read.table(file,header=FALSE, col.names=c("longitude","latitude"))
-		res <- list(processing.log=processing.log, data)
+		data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
+		res <- list(processing.log=processing.log, data=data)
 	} else if (type == "mapgen") {
 		header <- scan(file, what=character(0), nlines=1, quiet=TRUE);
 		if (debug) {
