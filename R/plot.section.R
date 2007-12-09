@@ -19,7 +19,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			if (!is.null(map.xlim))
 				plot(lon, lat, xlim=map.xlim, asp=asp, type='n', xlab="Latitude", ylab="Longitude")
 			else
-				plot(lon, lat, asp=asp, type='n')
+				plot(lon, lat, asp=asp, type='n', xlab="Latitude", ylab="Longitude")
 			if (!is.null(coastline)) {
 				if (mean(lon, na.rm=TRUE) > 0)
 					lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
