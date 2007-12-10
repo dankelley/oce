@@ -3,6 +3,10 @@ grid.section <- function(section, pressures=NULL,
 {
 	algorithm <- match.arg(algorithm)
 	algorithm.code <- switch(algorithm, smooth.spline = 1, approx = 2)
+	if (algorithm.code == 1) {
+		dots <- list(...)
+		if (!is.null(dots[["df"]]))	df <- dots[["df"]] else df <- NA
+	}
 	n <- length(section$stations)
 	dp.list <- NULL
 	if (is.null(pressures)) {
@@ -66,12 +70,19 @@ grid.section <- function(section, pressures=NULL,
 		#if cat("Doing station number", i, "\n")
 		d <- section$stations[[i]]$data # simplies coding; may speed up
 		# Cannot fit a smoothing spline with too few points
-		if (algorithm.code == 1 && sum(!is.na(d$salinity)) > 4) {
-			salinity.sp <- smooth.spline(d$pressure, d$salinity, ...)
+		nok <- sum(!is.na(d$salinity))
+		if (algorithm.code == 1 && nok > 4) {
+			if (is.na(df)) {
+				salinity.sp <- smooth.spline(d$pressure, d$salinity, df=nok/2, ...)
+				temperature.sp <- smooth.spline(d$pressure, d$temperature, df=nok/2, ...)
+				sigma.theta.sp <- smooth.spline(d$pressure, d$sigma.theta, df=nok/2, ...)
+			} else {
+				salinity.sp <- smooth.spline(d$pressure, d$salinity, ...)
+				temperature.sp <- smooth.spline(d$pressure, d$temperature, ...)
+				sigma.theta.sp <- smooth.spline(d$pressure, d$sigma.theta, ...)
+			}
 			salinity <- predict(salinity.sp, p)$y
-			temperature.sp <- smooth.spline(d$pressure, d$temperature, ...)
 			temperature <- predict(temperature.sp, p)$y
-			sigma.theta.sp <- smooth.spline(d$pressure, d$sigma.theta, ...)
 			sigma.theta <- predict(sigma.theta.sp, p)$y
 			# trim bottom (since the spline predicts through whole domain)
 			p.max <- max(d$pressure, na.rm=TRUE)
