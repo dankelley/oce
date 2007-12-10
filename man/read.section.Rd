@@ -5,6 +5,7 @@
 \usage{read.section(file, debug=FALSE)}
 \arguments{
   \item{file}{a file containing a set of CTD observations.  At present, only the \emph{exchange BOT} format is accepted (see Details).}
+  \item{section.id}{optional string indicating the name for the section.}
   \item{debug}{logical. If TRUE, print some information that might be helpful during debugging.}
 }
 \details{
