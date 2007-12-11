@@ -1,5 +1,5 @@
 grid.section <- function(section, pressures=NULL,
-	algorithm=c("smooth.spline","approx"), ...)
+	algorithm=c("approx","smooth.spline"), ...)
 {
 	algorithm <- match.arg(algorithm)
 	algorithm.code <- switch(algorithm, smooth.spline = 1, approx = 2)

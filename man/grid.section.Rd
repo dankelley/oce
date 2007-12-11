@@ -2,15 +2,17 @@
 \alias{grid.section}
 \title{Grid a section}
 \description{Grid a section, by interpolating to fixed pressure levels.}
-\usage{grid.section(section, pressures=NULL, algorithm=c("smooth.spline","approx"), ...)}
+\usage{grid.section(section, pressures=NULL, algorithm=c("approx","smooth.spline"), ...)}
 \arguments{
   \item{section}{A section to be gridded.}
   \item{pressures}{Pressure levels to which interpolation should be done.  If this is not supplied, the profiles will be examined and a vertical grid will be created that has approximately 100 levels at the deepest station.  If a single value is provided, it is taken as a step for a seq() running from 0 to the maximum pressure (rounded to the step).  If a list is given, it is used.  If \code{pressures} is set to the string \code{"levitus"}, then standard levels are used, as in the Levitus atlas.}
-  \item{algorithm}{algorithm to use for interpolation.  The default \code{\link{smooth.spline}} method employs a smoothing spline, which generally runs very close to the data and has the advantage of producing smoothly varying results.  The \code{\link{approx}} is a linear interpolation between adjacent points, which has the advantage of being predictable, but it has two disadvantages: (1) the resultant profiles will have discontinous second derivatives, and (2) the algorithm uses only nearest-neighbours, and thus it discards data.}
-  \item{...}{optional arguments to be supplied to the interpolation algorithm}
+  \item{algorithm}{algorithm to use for interpolation, either the default \code{"approx"} to use the \code{\link{approx}} R function, or \code{"smooth.spline"} to use \code{\link{smooth.spline}} R function (see Details).}
+  \item{...}{optional arguments to be supplied to the interpolation algorithm, e.g. \code{df} might be used with the \code{smooth.spline} method.}
 }
 \details{
-This is not coded yet; the returned value is just the supplied value.
+The \code{"approx"} method uses \code{\link{approx}} to perform a linear interpolation between adjacent points.  Since this only uses data points that are immediate neighbors of prediction points, it has the disadvantage of discarding some data.  However, it has the strong advantage, compared with any interpolation scheme with which the author is familiar, of completely eliminating overshoots under all conditions.  The \code{"smooth.spline"} method calls \code{\link{smooth.spline}} to fit a smoothing spline.  This uses all the data, and produces smooth curves (which can make contours look better), but it overshoots in some circumstances.  The author has found, with the \code{a03} dataset, that the smoothing spline produces overshoots for about 10 percent of stations, yielding spurious patterns in contoured fields.  
+
+It is probably best to start with \code{algorithm="approx"}.
 }
 \value{
   A \code{section} object.  
