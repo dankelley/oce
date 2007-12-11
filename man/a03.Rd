@@ -5,7 +5,7 @@
 \description{
 This is line A03 (ExpoCode 90CT40\_1, with nominal sampling date
 1993-09-11).  The chief scientist was Tereschenkov of SOI, working
-aboard the Russian ship MULTANOVSKY.
+aboard the Russian ship Multanovsky.
 }
 \examples{
 library(oce)
