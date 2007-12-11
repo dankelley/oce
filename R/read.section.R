@@ -49,7 +49,7 @@ read.section <- function(file, section.id, debug=FALSE)
 #		cat(length(strsplit(lines[l], split=",")[[1]]), "\n")
 #		cat(lines[l], "\n")
 		contents <- strsplit(lines[l], split=",")[[1]]
-		if (l == (header.length + 1))
+		if (missing(section.id) && l == (header.length + 1))
 			section.id <- sub(" *","", contents[2])
 		stn.id[l - header.length] <- sub(" *","", contents[3])
 		data[l - header.length,] <- contents[3:nv]
