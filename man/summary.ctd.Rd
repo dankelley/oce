@@ -9,6 +9,7 @@
 }
 \arguments{
   \item{object}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{\dots}{passed to children.}
 }
 \details{
   Pertinent summary information is presented, including the sampling

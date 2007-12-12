@@ -10,11 +10,9 @@ are also clearly evident in the pressure record.  With such
 real-world wrinkles, this dataset provides a good example of 
 data that need trimming with \code{\link{ctd.trim}}.}  
 \usage{data(ctd.raw)}
-\format{}
 \source{The data were acquired near the centre of 
 the Bedford Basin of the Halifax Harbour, during an 
 October 2003 field trip of Dalhousie University's 
 Oceanography 4120/5120 class.}
-\references{}
 \author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
 \keyword{misc}

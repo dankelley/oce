@@ -1,4 +1,4 @@
-summary.ctd <- function(object)
+summary.ctd <- function(object, ...)
 {
   	if (!inherits(object, "ctd"))
     	stop("method is only for ctd objects")

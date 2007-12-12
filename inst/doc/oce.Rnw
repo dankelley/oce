@@ -460,7 +460,7 @@ sw.rho(S=34, t=10, p=100)
 sw.theta(S=34, t=10, p=100)
 sw.rho(S=34, t=sw.theta(S=34, t=10, p=100), p=0)
 sw.rho(S=34, t=sw.theta(S=34, t=10, p=100, pref=200), p=200)
-plot.TS(as.CTD(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
+plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 
 \workedanswer{2}
@@ -496,7 +496,7 @@ mtext("M2",at=1/12.42,side=3)
 
 \workedanswer{5}
 The resampling with \verb@i@ is to avoid obscuring colours by overplotting.  Note 
-the use of \verb@as.CTD@ to assemble the data into something that \verb@plot.TS@ can handle.
+the use of \verb@as.ctd@ to assemble the data into something that \verb@plot.TS@ can handle.
 This is an example of the practicality of \verb@oce@; eventually, \verb@plot.TS@ may be altered to take simple columns of data, but for now it seems reasonable to require the user to assemble
 these data into a CTD object, and to spend development time on something that will pay
 off better.
@@ -506,7 +506,7 @@ data(lobo)
 i <- sample(length(lobo$T))
 a <- as.numeric(lobo$time[i] - lobo$time[1])
 col <- hsv(0.5 * a / max(a), 1, 1)
-plot.TS(as.CTD(lobo$S[i], lobo$T[i], 0), col=col, pch=1)
+plot.TS(as.ctd(lobo$S[i], lobo$T[i], 0), col=col, pch=1)
 @
 
 \end{document}

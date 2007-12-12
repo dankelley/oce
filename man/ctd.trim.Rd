@@ -74,7 +74,7 @@ any subsequent data.
   samples).
 }
 \value{
-  A new \code{ctd} object.
+  A new \code{ctd} object that has been trimmed in some way.
 }
 
 \seealso{
@@ -84,9 +84,9 @@ any subsequent data.
 }
 \examples{
 library(oce)
-data(ctd) 
-ctd.trimmed <- ctd.trim(ctd, "pressure", c(3, 5))
-summary(ctd.trimmed)
+data(ctd.raw) 
+plot(ctd.raw) # barely recognizable, due to pre- and post-cast junk
+plot(ctd.trim(ctd.raw)) # looks like a real profile
 }
 \references{
   The Seabird CTD instrument is described at
