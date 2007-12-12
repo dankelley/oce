@@ -66,7 +66,7 @@ read.section <- function(file, section.id, debug=FALSE)
 	stations <- vector("list", num.stations)
     for (i in 1:num.stations) {
 		select <- which(station == station.list[i])
-		this.station <- as.CTD(S=S[select], T=T[select], p=p[select],
+		this.station <- as.ctd(S=S[select], T=T[select], p=p[select],
 			latitude=latitude[select[1]], 
 			longitude=longitude[select[1]],
 			station=stn.id[select[1]],
