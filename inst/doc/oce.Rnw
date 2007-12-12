@@ -463,6 +463,8 @@ features, or just to see how \verb@oce@ development is coming along.
 %
 %\newpage	
 
+\goodbreak
+
 \section*{Answers to exercises}
 
 \workedanswer{1}
