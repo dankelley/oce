@@ -429,16 +429,26 @@ and using plotting tricks to reduce the obscuring of this time signal.}
 
 \section{The future of oce}
 
-The present version of \verb@oce@ can only handle \emph{data types} that I have been using
-lately in my research. New data types will be added as the need arises in my own work, or in
-the work of others who make a good case that a particular data type is of interest to a broad
-community. (The data types need not be restricted to Physical Oceanography.) Omissions in the
-category of oceanographic \emph{algorithms} include tidal analysis, formulae for air-sea
-fluxes, etc.
+The present version of \verb@oce@ can only handle data types that the
+author has been using lately in his research. New data types will be
+added as the need arises in that work.  The author would be happy to
+add other data types, if a convincing argument is made that they will
+be useful to the Oceanographic community.  (The data types need not be
+restricted to Physical Oceanography, but the author will need some
+help in dealing with other types of data, given his research focus.)
 
-The site \url{http://r-oce.sourceforge.net} provides a window on the development that goes on
-between the CRAN releases of the package. Please visit the site to report bugs, to suggest new
-features, and to help others with work they are doing with \verb@oce@.
+As for algorithms, there are plenty of gaps in \verb@oce@.  The
+package should have routines for tidal decomposition, for example, but
+that is just one example of many that could be listed.  
+
+Two principles will guide the addition of data types and functions:
+(a) the need, as perceived by the author or by other contributors and
+(b) the ease with which the additions can be made.  
+
+The site \url{http://code.google.com/p/r-oce/} provides a window on
+the development that goes on between the CRAN releases of the
+package. Please visit the site to report bugs, to suggest new
+features, or just to see how \verb@oce@ development is coming along.
 
 %\begin{center}
 %\vspace{2cm}
