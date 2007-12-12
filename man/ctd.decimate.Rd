@@ -5,22 +5,22 @@
 Smooth and decimate a CTD profile.  
 }
 \usage{
-ctd.decimate(x, p=NULL, method=c("boxcar","lm"), e=1)
+ctd.decimate(x, p, method=c("boxcar","lm"), e=1)
 }
 \arguments{
 \item{x}{a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-\item{p}{controls the selection of pressure levels, as follows.
-If \code{NULL} (the default), then the list of pressures for the decimation is to be selected automatically, using \code{\link{pretty}}.  If a single
+\item{p}{an optional pressure increment, or series of pressures.  (a) If this is not supplied, then the list of pressures for the decimation is to determined automatically, using \code{\link{pretty}} on the mean inter-sample pressure difference.  (b) If a single
 value is supplied, then the pressure list starts at the surface and increments
-with the indicated value, down to the bottom.  If a list is supplied,
-then this is taken to be the desired pressure list.}
+with the indicated value, down to the bottom.  (c) If a list is supplied, then values are interpolated to these pressures.}
 \item{method}{Method for calculating decimated values.
-Use \code{"boxcar"} (the default)
-for boxcar averaging within the pressure region.
-Use \code{"lm"} to use the prediction of a linear
-model applied to each pressure region.    (See \code{e}
-for an explanation of the region.)}
-\item{e}{is an expansion coefficient used to calculate the smoothing neighbourhoods.
+Use \code{"approx"} (the default) for linear interpolation between
+neighboring points.  If some element of smoothing is desired,
+use \code{"boxcar"}
+for boxcar averaging within the pressure region, or
+\code{"lm"} for prediction based on a linear
+model applied to each pressure region (see
+\code{e} for an explanation of the region).)}
+\item{e}{is an expansion coefficient used to calculate the smoothing neighbourhoods for the \code{"boxcar"} and \code{"lm"} methods.
 If \code{e=1}, then the neighbourhood for the i-th pressure extends from the (\code{i-1})-th pressure
 to the (\code{i+1})-th pressure.  (At the endpoints it is assumed that the outside bin is of the
 same pressure range as the first inside bin.)  For other values of \code{e}, the neighbourhood
@@ -39,7 +39,7 @@ numerical cabeling effect, and if you would like to avoid this, just do as follo
 
 \preformatted{
 xd <- ctd.decimate(x)
-xd$data$sigma <- sw.sigma(xd$data$salinity, xd$data$temperature, xd$data$pressure)
+xd$data$sigma.theta <- sw.sigma.theta(xd$data$salinity, xd$data$temperature, xd$data$pressure)
 }
 
 }
