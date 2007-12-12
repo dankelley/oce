@@ -58,7 +58,7 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
 	# BUG should handle all variables (but how to interpolate on a flag?)
 	res <- section
 	for (i in 1:n) {
-		cat("Doing station number", i, "\n")
+		#cat("Doing station number", i, "\n")
 		res$stations[[i]] <- ctd.decimate(section$stations[[i]], p=pt, method=method, ...)
 	}
 	if (is.null(p))
