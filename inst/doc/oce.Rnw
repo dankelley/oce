@@ -285,7 +285,8 @@ class, and the work at sea was supervised by his teaching assistant
 Natacha Bernier, who received her PhD from Dalhousie in 2005.)  The
 stations go from a site near the Sackville river inflow at the
 northwest portion of Bedford Basin to site at the entrance of the
-harbour.}
+harbour. (The author's office at Dalhousie is located near
+the bottom axis at 63.58W.!)}
 \end{figure}
 
 The Halifax section is supplied in a pre-gridded format, but some
