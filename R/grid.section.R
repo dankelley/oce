@@ -1,12 +1,7 @@
 grid.section <- function(section, pressures=NULL,
-	algorithm=c("approx","smooth.spline"), ...)
+	method=c("approx","boxcar","lm"), ...)
 {
-	algorithm <- match.arg(algorithm)
-	algorithm.code <- switch(algorithm, smooth.spline = 1, approx = 2)
-	if (algorithm.code == 1) {
-		dots <- list(...)
-		if (!is.null(dots[["df"]]))	df <- dots[["df"]] else df <- NA
-	}
+	method <- match.arg(method)
 	n <- length(section$stations)
 	dp.list <- NULL
 	if (is.null(pressures)) {
@@ -63,49 +58,10 @@ grid.section <- function(section, pressures=NULL,
 	}
 	# BUG should handle all variables (but how to interpolate on a flag?)
 	res <- section
-	lat0 <- section$stations[[1]]$latitude
-	lon0 <- section$stations[[1]]$longitude
-	dist <- vector("numeric", n)
 	for (i in 1:n) {
-		#if cat("Doing station number", i, "\n")
-		d <- section$stations[[i]]$data # simplies coding; may speed up
-		# Cannot fit a smoothing spline with too few points
-		nok <- sum(!is.na(d$salinity))
-		if (algorithm.code == 1 && nok > 4) {
-			if (is.na(df)) {
-				salinity.sp <- smooth.spline(d$pressure, d$salinity, df=nok/2, ...)
-				temperature.sp <- smooth.spline(d$pressure, d$temperature, df=nok/2, ...)
-				sigma.theta.sp <- smooth.spline(d$pressure, d$sigma.theta, df=nok/2, ...)
-			} else {
-				salinity.sp <- smooth.spline(d$pressure, d$salinity, ...)
-				temperature.sp <- smooth.spline(d$pressure, d$temperature, ...)
-				sigma.theta.sp <- smooth.spline(d$pressure, d$sigma.theta, ...)
-			}
-			salinity <- predict(salinity.sp, p)$y
-			temperature <- predict(temperature.sp, p)$y
-			sigma.theta <- predict(sigma.theta.sp, p)$y
-			# trim bottom (since the spline predicts through whole domain)
-			p.max <- max(d$pressure, na.rm=TRUE)
-			trim <- p > p.max
-			salinity[trim] <- NA
-			temperature[trim] <- NA
-			sigma.theta[trim] <- NA
-		} else {
-			salinity <- approx(d$pressure, d$salinity, p, ties=mean)$y
-			temperature <- approx(d$pressure, d$temperature, p, ties=mean)$y
-			sigma.theta <- approx(d$pressure, d$sigma.theta, p, ties=mean)$y
-		}
-		res$stations[[i]]$data <- data.frame(pressure=p, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
-		dist[i] <- geod.dist(section$stations[[i]]$latitude, section$stations[[i]]$longitude, lat0, lon0)
+		cat("Doing station number", i, "\n")
+		res$stations[[i]] <- ctd.decimate(section$stations[[i]], p=p, method=method)
 	}
-
-#	Tm <- matrix(NA, nrow=length(p), ncol=n)
-#	for (i in 1:n) {
-#		Tm[, i] <- res$stations[[i]]$data[["temperature"]]
-#	}
-#	dan0 <<- dist
-#	dan1 <<- Tm
-
 	if (is.null(pressures))
 		log.item <- "modified by grid.section(x)"
 	else

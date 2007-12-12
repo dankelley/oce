@@ -49,7 +49,6 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
 				focus <- (x$data$pressure >= (pt[i] - e * (pt[  i  ] - pt[i - 1]))) &
 					(x$data$pressure <= (pt[i] + e * (pt[i + 1] - pt[  i  ])))
 			}
-			#cat("focus: ");print(focus)
 			if (sum(focus, na.rm=TRUE) > 0) {
 				if (method == "boxcar") {
 					for (datum.name in data.names) {
@@ -57,14 +56,11 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
 							data.new[[datum.name]][i] <- mean(x$data[[datum.name]][focus],na.rm=TRUE)
 						}
 					}
-				} else if (method == "lm") {
-					#cat("lm...\n")
+				} else if (method == "lm") { # FIXME: this is far too slow
 					xvar <- x$data[["pressure"]][focus]
 					for (datum.name in data.names) {
-						#cat("working on", datum.name,"...\n")
 						if (datum.name != "pressure") {
 							yvar <- x$data[[datum.name]][focus]
-							#cat("data in focus region:");print(yvar)
 							m <- lm(yvar ~ xvar)
 							data.new[[datum.name]][i] <- predict(m, newdata=list(xvar=pt[i]))
 						}
