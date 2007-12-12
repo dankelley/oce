@@ -1,4 +1,4 @@
-ctd.decimate <- function(x, p, method=c("boxcar","lm"), e=1)
+ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
 # ADD: BIO method; spline; supsmu; ...
 {
   	if (!inherits(x, "ctd"))
@@ -30,84 +30,61 @@ ctd.decimate <- function(x, p, method=c("boxcar","lm"), e=1)
 	data.names <- names(x$data)
 	data.new <- as.data.frame(array(NA, dim=c(npt, dim(x$data)[2])))
 	names(data.new) <- data.names
-	for (datum.name in data.names) {
-		if (datum.name != "pressure") {
-			data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt)$y
+  	method <- match.arg(method)
+	if (method == "approx") {
+		for (datum.name in data.names) {
+			if (datum.name != "pressure") {
+				data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt)$y
+			}
+		}
+	} else {
+		for (i in 1:npt) {
+			if (i==1) {
+				focus <- (x$data$pressure >= (pt[i] - e * (pt[i + 1] - pt[  i  ]))) &
+					(x$data$pressure <= (pt[i] + e * (pt[i + 1] - pt[  i  ])))
+			} else if (i == npt) {
+				focus <- (x$data$pressure >= (pt[i] - e * (pt[  i  ] - pt[i - 1]))) &
+					(x$data$pressure <= (pt[i] + e * (pt[  i  ] - pt[i - 1])))
+			} else {
+				focus <- (x$data$pressure >= (pt[i] - e * (pt[  i  ] - pt[i - 1]))) &
+					(x$data$pressure <= (pt[i] + e * (pt[i + 1] - pt[  i  ])))
+			}
+			#cat("focus: ");print(focus)
+			if (sum(focus, na.rm=TRUE) > 0) {
+				if (method == "boxcar") {
+					for (datum.name in data.names) {
+						if (datum.name != "pressure") {
+							data.new[[datum.name]][i] <- mean(x$data[[datum.name]][focus],na.rm=TRUE)
+						}
+					}
+				} else if (method == "lm") {
+					#cat("lm...\n")
+					xvar <- x$data[["pressure"]][focus]
+					for (datum.name in data.names) {
+						#cat("working on", datum.name,"...\n")
+						if (datum.name != "pressure") {
+							yvar <- x$data[[datum.name]][focus]
+							#cat("data in focus region:");print(yvar)
+							m <- lm(yvar ~ xvar)
+							data.new[[datum.name]][i] <- predict(m, newdata=list(xvar=pt[i]))
+						}
+					}
+				} else {
+					stop("impossible to get here -- developer error")
+				}
+			} else {
+				# No data in the focus region
+				for (datum.name in data.names) {
+					if (datum.name != "pressure") {
+						data.new[[datum.name]][i] <- NA
+					}
+				}
+			}
 		}
 	}
 	# Now replace pressure
 	data.new[["pressure"]] <- pt
 	res$data <- data.new
 	res <- processing.log.append(res, log.item)
-	warning("NOTE: not doing boxcar or anything else -- code in development")
 	return(res)
-	stop()
-  	if (n < 2) { 
-		warning("too few data to trim.decimate()")
-  	} else {
-	  	method <- match.arg(method)
-		n <- length(pout)
-		# FIXME: should probably do this based on names(x$data)
-		# FIXME: maybe should do this with apply()???
-		scan <- NULL
-		pressure <- NULL
-		depth <- NULL
-		temperature <- NULL
-		salinity <- NULL
-		flag <- NULL
-		sigma.theta <- NULL
-		for (i in 1:n) {
-			if (i==1) {
-				focus <- (x$data$pressure >= (pout[i] - e * (pout[i + 1] - pout[  i  ]))) &
-				 	     (x$data$pressure <= (pout[i] + e * (pout[i + 1] - pout[  i  ])))
-			} else if (i == n) {
-				focus <- (x$data$pressure >= (pout[i] - e * (pout[  i  ] - pout[i - 1]))) &
-				 	     (x$data$pressure <= (pout[i] + e * (pout[  i  ] - pout[i - 1])))
-			} else {
-				focus <- (x$data$pressure >= (pout[i] - e * (pout[  i  ] - pout[i - 1]))) &
-					     (x$data$pressure <= (pout[i] + e * (pout[i + 1] - pout[  i  ])))
-			}
-			if (sum(focus) > 0) {
-				if (method == "boxcar") {
-					pressure    <- c(pressure,    pout[i])
-					scan        <- c(scan,        mean(x$data$scan[focus],na.rm=TRUE))
-					depth       <- c(depth,       mean(x$data$depth[focus],na.rm=TRUE))
-					temperature <- c(temperature, mean(x$data$temperature[focus],na.rm=TRUE))
-					salinity    <- c(salinity,    mean(x$data$salinity[focus],na.rm=TRUE))
-					flag        <- c(flag,        mean(x$data$flag[focus],na.rm=TRUE))
-					sigma.theta <- c(sigma.theta, mean(x$data$sigma.theta[focus],na.rm=TRUE))
-				} else if (method == "lm") {
-					pressure    <- c(pressure,    pout[i])
-					xx <- x$data$pressure[focus]
-					yy <- x$data$scan[focus]
-					scan        <- c(scan,        predict(lm(yy~xx),list(xx=pout[i])))
-					yy <- x$data$depth[focus];
-					depth       <- c(depth,       predict(lm(yy~xx),list(xx=pout[i])))
-					yy <- x$data$temperature[focus]
-					temperature <- c(temperature, predict(lm(yy~xx),list(xx=pout[i])))
-					yy <- x$data$salinity[focus]
-					salinity    <- c(salinity,    predict(lm(yy~xx),list(xx=pout[i])))
-					yy <- x$data$flag[focus]
-					flag        <- c(flag,        predict(lm(yy~xx),list(xx=pout[i])))
-					yy <- x$data$sigma.theta[focus]
-					sigma.theta <- c(sigma.theta, predict(lm(yy~xx),list(xx=pout[i])))
-				} else {
-					stop("unknown method ", method)
-				}
-			} else {
-				scan        <- c(scan,        NA)
-				pressure    <- c(pressure,    pout[i])
-				depth       <- c(depth,       NA)
-				temperature <- c(temperature, NA)
-				salinity    <- c(salinity,    NA)
-				flag        <- c(flag,        NA)
-				sigma.theta <- c(sigma.theta, NA)
-			}
-		}
-		result$data <- list(scan=scan, pressure=pressure, depth=depth, 
-			temperature=temperature, salinity=salinity, flag=flag, 
-			sigma.theta=sigma.theta)
-	}
-	result <- processing.log.append(result, log.item)
-	return(result) # FIXME
 }

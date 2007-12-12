@@ -1,4 +1,4 @@
-summary.ctd <- function(object, ...)
+summary.ctd <- function(object)
 {
   	if (!inherits(object, "ctd"))
     	stop("method is only for ctd objects")
@@ -37,11 +37,13 @@ summary.ctd <- function(object, ...)
 	if (!is.null(object$water.depth))
   		cat("  Water depth:        ", object$water.depth, "\n")
   	cat("  No. of levels:      ", length(object$data$temperature),  "\n")
-  	cat(sprintf("   %5s  %10s %10s %10s %10s %10s\n", "ITEM", "min", "Q1", "median", "Q3", "max"));
-  	f<-fivenum(object$data$pressure);    cat(sprintf("    %5s %10.1f %10.1f %10.1f %10.1f %10.1f\n", "  P  ", f[1], f[2], f[3], f[4], f[5]))
-  	f<-fivenum(object$data$temperature); cat(sprintf("    %5s %10.1f %10.1f %10.1f %10.1f %10.1f\n", "  T  ", f[1], f[2], f[3], f[4], f[5]))
-  	f<-fivenum(object$data$salinity);    cat(sprintf("    %5s %10.1f %10.1f %10.1f %10.1f %10.1f\n", "  S  ", f[1], f[2], f[3], f[4], f[5]))
-  	f<-fivenum(object$data$sigma.theta); cat(sprintf("    %5s %10.1f %10.1f %10.1f %10.1f %10.1f\n", "sigma.theta", f[1], f[2], f[3], f[4], f[5]))
+  	cat(sprintf("   %15s  %10s %10s %10s %10s %10s\n", "ITEM", "min", "Q1", "median", "Q3", "max"));
+	names <- names(object$data)
+	for (name in names) {
+  		f <- fivenum(object$data[[name]])
+    	cat(sprintf("    %15s %10.1f %10.1f %10.1f %10.1f %10.1f\n", name, f[1], f[2], f[3], f[4], f[5]))
+	}
 	processing.log.summary(object)
+	return()
 }
  
