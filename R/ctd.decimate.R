@@ -15,7 +15,7 @@ ctd.decimate <- function(x, p, method=c("boxcar","lm"), e=1)
 		dp.exact <- median(abs(diff(x$data$pressure)))
 		dp <- pretty(3 * dp.exact)[2] # try for 3 data at least
 		pt <- seq(0, dp * floor(max(x$data$pressure) / dp), dp)
-		log.item <- paste("modified by ctd.decimate(x, p=NULL, method=\"", method[1], "\")",sep="")
+		log.item <- paste("modified by ctd.decimate(x, method=\"", method[1], "\")",sep="")
 	} else {
 		if (length(p) == 1) {
 			pt <- seq(0, p * floor(max(x$data$pressure) / p), p)
@@ -28,22 +28,18 @@ ctd.decimate <- function(x, p, method=c("boxcar","lm"), e=1)
 	npt <- length(pt)
 	# Step through each variable.
 	data.names <- names(x$data)
-	cat("A\n")
+	data.new <- as.data.frame(array(NA, dim=c(npt, dim(x$data)[2])))
+	names(data.new) <- data.names
 	for (datum.name in data.names) {
-		cat("B\n")
 		if (datum.name != "pressure") {
-			cat("C1\n")
-			cat(datum.name, ":")
-			length(res$data[[datum.name]]) <- npt
-			cat("C2\n")
-			res$data[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt)$y
-			cat("C3\n")
+			data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt)$y
 		}
 	}
 	# Now replace pressure
-#	length(res$data[["pressure"]]) <- npt
-	res$data[["pressure"]][1:npt] <- pt
+	data.new[["pressure"]] <- pt
+	res$data <- data.new
 	res <- processing.log.append(res, log.item)
+	warning("NOTE: not doing boxcar or anything else -- code in development")
 	return(res)
 	stop()
   	if (n < 2) { 
