@@ -332,7 +332,8 @@ produce a map of the coastline of Eastern Canada (Figure~\ref{fig:coastline}). S
 data are available from a variety of sources. The NOAA site
 \url{http://www.ngdc.noaa.gov/mgg_coastline/}
 is particularly popular, and it has the advantage
-of providing data in Splus format.
+of providing data in Splus format.  The function \verb@read.coastline@ can handle
+reading that format (plus some other formats).
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.5\textwidth}
