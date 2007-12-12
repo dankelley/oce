@@ -40,7 +40,7 @@ library(oce)
 # ExpoCode 90CT40_1, Chief Scientist Tereschenkov/SOI
 a03 <- read.section("a03_hy1.csv") 
 summary(a03)
-a03.gridded <- grid.section(a03, pressure="levitus")
+a03.gridded <- section.grid(a03, pressure="levitus")
 plot(a03.gridded)
 }
 }

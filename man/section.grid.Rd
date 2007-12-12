@@ -1,8 +1,8 @@
-\name{grid.section}
-\alias{grid.section}
+\name{section.grid}
+\alias{section.grid}
 \title{Grid a section}
 \description{Grid a section, by interpolating to fixed pressure levels.}
-\usage{grid.section(section, p, method=c("approx","boxcar","lm"), ...)}
+\usage{section.grid(section, p, method=c("approx","boxcar","lm"), ...)}
 \arguments{
   \item{section}{A section to be gridded.}
   \item{p}{optional indication of the pressure levels to which interpolation should be done.  If this is not supplied, the pressure levels will be calculated based on the typical spacing in the ctd profiles stored within \code{section}.  If a single numerical value is provided, it is taken as a step for a seq() running from 0 to the maximum pressure (rounded to that step).  If \code{p="levitus"}, then the levels of the Levitus atlas are used.  If a list of numerical values is provided, then it is used as is.}
@@ -24,7 +24,7 @@ library(oce)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-a03g <- grid.section(a03, p=seq(0,2000,50))
+a03g <- section.grid(a03, p=seq(0,2000,50))
 data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))

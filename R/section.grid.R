@@ -1,4 +1,4 @@
-grid.section <- function(section, p, method=c("approx","boxcar","lm"), ...)
+section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
 {
 	method <- match.arg(method)
 	n <- length(section$stations)
