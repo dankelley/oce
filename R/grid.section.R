@@ -1,10 +1,9 @@
-grid.section <- function(section, pressures=NULL,
-	method=c("approx","boxcar","lm"), ...)
+grid.section <- function(section, p, method=c("approx","boxcar","lm"), ...)
 {
 	method <- match.arg(method)
 	n <- length(section$stations)
 	dp.list <- NULL
-	if (is.null(pressures)) {
+	if (missing(p)) {
 		p.max <- 0
 		for (i in 1:n) {
 			p <- section$stations[[i]]$data$pressure
@@ -32,12 +31,12 @@ grid.section <- function(section, pressures=NULL,
 			p.max <- 100 * floor(1 + p.max / 100)
 		}
 		# cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
-		p <- seq(0, p.max, dp)
+		pt <- seq(0, p.max, dp)
 		# cat("Using auto-selected pressures: ", p, "\n");
 	} else {
-		if (length(pressures) == 1) {
-			if (pressures=="levitus") {
-				p <- c(0,   10,   20,   30,   50,   75,  100,  125,  150,  200,
+		if (length(p) == 1) {
+			if (p=="levitus") {
+				pt <- c(0,   10,   20,   30,   50,   75,  100,  125,  150,  200,
 					250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
 					1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
 					4500, 5000, 5500)
@@ -49,23 +48,23 @@ grid.section <- function(section, pressures=NULL,
 					p <- section$stations[[i]]$data$pressure
 					p.max <- max(c(p.max, p))
 				}
-				p <- seq(0, p.max, pressures)
+				p <- seq(0, p.max, p)
 				# cat("Pressures: ", p, "\n")
 			}
 		} else {
-			p <- pressures
+			pt <- p
 		}
 	}
 	# BUG should handle all variables (but how to interpolate on a flag?)
 	res <- section
 	for (i in 1:n) {
 		cat("Doing station number", i, "\n")
-		res$stations[[i]] <- ctd.decimate(section$stations[[i]], p=p, method=method)
+		res$stations[[i]] <- ctd.decimate(section$stations[[i]], p=pt, method=method, ...)
 	}
-	if (is.null(pressures))
+	if (is.null(p))
 		log.item <- "modified by grid.section(x)"
 	else
-		log.item <- paste("modified by grid.section(x, pressures=",pressures,")",sep="")
+		log.item <- paste("modified by grid.section(x, p=",p,")",sep="")
 	res <- processing.log.append(res, log.item)
 	res
 }

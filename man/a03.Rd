@@ -14,7 +14,7 @@ to run across the nominal Gulf Stream axis.
 library(oce)
 # Gulf Stream
 data(a03)
-a03g <- grid.section(a03, pressures=seq(0,2000,50))
+a03g <- grid.section(a03, p=seq(0,2000,50))
 data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
