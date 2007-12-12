@@ -86,7 +86,8 @@ any subsequent data.
 library(oce)
 data(ctd.raw) 
 plot(ctd.raw) # barely recognizable, due to pre- and post-cast junk
-plot(ctd.trim(ctd.raw)) # looks like a real profile
+plot(ctd.trim(ctd.raw)) # looks like a real profile ...
+plot(ctd.decimate(ctd.trim(ctd.raw),method="boxcar")) # ... smoothed
 }
 \references{
   The Seabird CTD instrument is described at
