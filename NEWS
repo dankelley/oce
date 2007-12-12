@@ -1,4 +1,5 @@
 0.1.69: - modify documentation slightly
+	    - rename as.CTD() to as.ctd(), to make it consistent with similar functions
 		- add read.section()
 		- add grid.section(), which only grids in p at the moment
 		- add a03 dataset

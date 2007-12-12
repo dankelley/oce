@@ -1,7 +1,7 @@
 useDynLib(oce)
 export(
 	as.coastline,
-	as.CTD,
+	as.ctd,
 	as.sealevel,
 	coriolis,
 	ctd.add.column,
