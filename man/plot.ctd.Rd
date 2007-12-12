@@ -25,7 +25,7 @@ profiles of density and the square of buoyancy frequency, and a third contains a
 }
 \seealso{
   The profiles are plotted with \code{\link{plot.profile}}, and the TS diagram is plotted
-with \code{\link{plot.TS}}.  CTD data can be created with \code{\link{as.CTD}} or read with
+with \code{\link{plot.TS}}.  CTD data can be created with \code{\link{as.ctd}} or read with
   \code{\link{read.ctd}}.  Summaries of CTD data are provided by
   \code{\link{summary.ctd}}.
 }

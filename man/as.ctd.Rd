@@ -2,7 +2,7 @@
 \alias{as.ctd}
 \title{Coerce data into ctd dataset}
 \description{
-  Coerces a dataset into a CTD dataset.
+  Coerces a dataset into a ctd dataset.
 }
 \usage{
 thectd <- as.ctd(
@@ -48,7 +48,7 @@ library(oce)
 p <- seq(0,100,1)
 T <- 10 - p / 100
 S <- 35 - p / 100
-ctd <- as.CTD(S, T, p)
+ctd <- as.ctd(S, T, p)
 summary(ctd)
 }
 \references{

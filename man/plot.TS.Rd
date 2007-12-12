@@ -60,7 +60,7 @@ Srange <- c(34.15, 35.94)
 Trange <- c(3.3,18)
 SS <- Srange[1] + (Srange[2] - Srange[1]) *(1:N)/(N-1) + 0.01*rnorm(N)
 TT <- Trange[1] + (Trange[2] - Trange[1]) *(1:N)/(N-1) + 0.01*rnorm(N)
-plot.TS(as.CTD(S=SS, T=TT, p=0))
+plot.TS(as.ctd(S=SS, T=TT, p=0))
 }
 }
 \references{}
