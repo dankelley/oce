@@ -1,11 +1,11 @@
-\name{as.CTD}
-\alias{as.CTD}
-\title{Coerce data into CTD dataset}
+\name{as.ctd}
+\alias{as.ctd}
+\title{Coerce data into ctd dataset}
 \description{
   Coerces a dataset into a CTD dataset.
 }
 \usage{
-thectd <- as.CTD(
+thectd <- as.ctd(
 S, T, p, header=NULL, filename=NA, ship=NA, scientist=NA,
 institute=NA, address=NA, cruise=NA, station=NA,
 date=NA, start.time=NA, 

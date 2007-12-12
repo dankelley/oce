@@ -9,18 +9,18 @@
 }
 \arguments{
   \item{object}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{\dots}{Passed to children.}
 }
 \details{
   Pertinent summary information is presented, including the sampling
   location, data ranges, etc.
 }
 \value{
-  (fill in later)
+  NULL
 }
 
 \seealso{
-  The \code{ctd} object may be read with \code{\link{read.ctd}}.
+A \code{ctd} object may be read with \code{\link{read.ctd}}
+or created with \code{\link{as.ctd}}.
 }
 \examples{
 \dontrun{
