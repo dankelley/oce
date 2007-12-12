@@ -55,10 +55,11 @@ be summarized with \code{\link{summary.section}}.
 }
 \examples{
 library(oce)
+# Halifax Harbour
 data(section)
 data(coastline.halifax)
 plot(section, coastline=coastline.halifax)
-\dontrun{
+# Gulf Stream
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
@@ -66,6 +67,6 @@ a03g <- grid.section(a03, pressures=seq(0,2000,50))
 data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
-}}
+}
 \author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
 \keyword{misc}

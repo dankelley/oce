@@ -21,7 +21,7 @@ It is probably best to start with \code{algorithm="approx"}.
 Sections are normally created with \code{\link{read.section}} or \code{\link{make.section}}.
 }
 \examples{
-\dontrun{
+# Gulf Stream
 library(oce)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
@@ -30,7 +30,7 @@ a03g <- grid.section(a03, pressures=seq(0,2000,50))
 data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
-}}
+}
 \references{
 }
 \author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
