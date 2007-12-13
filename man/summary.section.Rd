@@ -24,7 +24,9 @@ stored in
 }
 
 \seealso{
-  A \code{section} object may be created with \code{\link{make.section}}.
+A \code{section} object may be created by using \code{\link{make.section}}
+to assemble individual \code{ctd} objects, or it may be created by reading
+a section data file with \code{\link{read.section}}.
 }
 \examples{
 library(oce)
