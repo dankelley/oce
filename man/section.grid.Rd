@@ -24,7 +24,7 @@ library(oce)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-a03g <- section.grid(a03, p=seq(0,2000,50))
+a03g <- section.grid(a03, p=seq(0,2000,10))
 data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
