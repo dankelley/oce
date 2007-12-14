@@ -5,19 +5,23 @@
 Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.
 }
 \usage{
-rho <- sw.rho(S, t, p);
+rho <- sw.rho(S, t=NULL, p=NULL);
 }
 \arguments{
-  \item{S}{\emph{in-situ} salinity [PSU]}
+  \item{S}{\emph{in-situ} salinity [PSU], or a ctd object}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{\emph{in-situ} pressure [dbar]}
 }
 \details{
-  The density is calculated using the UNESCO equation of state
-  for seawater, assuming that input variables are defined
-  according to modern calibrations.
-  In conventional Oceanographic notation, the calculated quantity is
-  \eqn{\rho(S,t,p)}{rho(S,t,p)}
+If the first argument is a \code{ctd} object, then the salinity, temperature
+and pressure are extracted from the object, and the calculation
+is done with these values.  
+
+The density is calculated using the UNESCO equation of state for
+seawater, assuming that input variables are defined according to
+modern calibrations.  In conventional Oceanographic notation, the
+calculated quantity is \eqn{\rho(S,t,p)}{rho(S,t,p)}
+
 }
 \value{
   \emph{In-situ} density [kg/m\eqn{^3}{^3}].
