@@ -1,5 +1,10 @@
-sw.alpha.over.beta <- function(S, t, p, is.theta = FALSE)
+sw.alpha.over.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
 {
+	if ("ctd" == class(S)) {
+		t <- S$data$temperature
+		p <- S$data$pressure
+		S <- S$data$salinity # note: this destroys the ctd object
+	}
 	dim <- dim(S)
   	nS <- length(S)
   	nt <- length(t)
