@@ -12,11 +12,11 @@
 % \VignetteKeyword{oceanography}
 
 \newcommand{\workedexercise}[2]{
-	\vspace{1ex}
+	\vspace{2ex plus 2ex minus 1ex}
 	\begin{boxedminipage}[c]{0.95\linewidth}
 		{\textbf{Exercise #1}.\hspace{1em}#2}
 	\end{boxedminipage}
-	\vspace{1ex}
+	\vspace{2ex plus 2ex minus 1ex}
 }
 \newcommand{\workedanswer}[1]{
 \goodbreak
@@ -44,6 +44,8 @@ research setting.  These things are illustrated here with practical examples.
 \end{abstract}
 
 \section{Introduction}
+
+\index{hello}
 
 Oceanographers must deal with measurements made by a wide variety of instruments, a task that
 is complicated by the delight instrument manufacturers seem to take in inventing new data

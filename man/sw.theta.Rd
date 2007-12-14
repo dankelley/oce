@@ -46,7 +46,9 @@ agree to a few millidegrees.
 Potential temperature [\eqn{^\circ}{deg}C] of seawater.
 }
 \seealso{
-  N/A.
+The corresponding potential density anomaly
+\eqn{\sigma_\theta}{sigma-theta} can be calculated with
+\code{\link{sw.sigma.theta}}.
 }
 \examples{
 library(oce)
