@@ -6,10 +6,12 @@ Compute
 \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater profile.
 }
 \usage{
-buoy.freq.2 <- sw.N2(p, sigma.theta, \dots)
+N2 <- sw.N2(ctd, \dots)
+N2 <- sw.N2(p, sigma.theta=NULL, \dots)
 }
 \arguments{
-  \item{p}{\emph{in-situ} pressure [dbar]}
+  \item{ctd}{a \code{ctd} object}
+  \item{p}{pressure [dbar]}
   \item{sigma.theta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}
   \item{\dots}{Extra arguments that will be passed to 
     \code{smooth.spline} if supplied.  A common example is to set \code{df}, 
@@ -17,14 +19,18 @@ buoy.freq.2 <- sw.N2(p, sigma.theta, \dots)
     to the value \code{length(p)/4}.}
 }
 \details{
-  The result is calculated from the derivative of a smoothing cubic
-  spline fitted to the density profile using \code{smooth.spline}.
-  Optional arguments in \dots are passed to this routine, and this gives
-  the user a great deal of control over the smoothing technique; see
-  the documentation on \code{smooth.spline} for details.  For
-  example, \code{\link{plot.profile}} uses \code{df=length(x$p)/4} as an
-  optional argument to \code{N2} to do some smoothing of the
-  density profile.
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted, used to calculate
+sigma.theta, and then used for the calculation of the square of the buoyancy
+frequency.
+
+The result is calculated from the derivative of a smoothing cubic
+spline fitted to the density profile using \code{smooth.spline}.
+Optional arguments in \dots are passed to this routine, and this gives
+the user a great deal of control over the smoothing technique; see the
+documentation on \code{smooth.spline} for details.  For example,
+\code{\link{plot.profile}} uses \code{df=length(x$p)/4} as an optional
+argument to \code{N2} to do some smoothing of the density profile.
 }
 \value{
   Square of buoyancy frequency [radian/s].

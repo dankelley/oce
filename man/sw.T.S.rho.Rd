@@ -5,7 +5,7 @@
   Compute \emph{in-situ} temperature, given salinity, density, and pressure.
 }
 \usage{
-  temperature <- sw.T.S.rho(S, sig, p);
+temperature <- sw.T.S.rho(S, sig, p)
 }
 \arguments{
   \item{S}{\emph{in-situ} salinity [PSU]}

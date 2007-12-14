@@ -5,16 +5,22 @@
 Compute \eqn{\alpha/\beta}{alpha/beta} using McDougall's (1987) algorithm.
 }
 \usage{
-ab <- sw.alpha.over.beta(S, t, p, is.theta=FALSE);
+ab <- sw.alpha.over.beta(ctd, is.theta=FALSE);
+ab <- sw.alpha.over.beta(S, t=NULL, p=NULL, is.theta=FALSE);
 }
 \arguments{
+  \item{ctd}{a \code{ctd} object}
   \item{S}{salinity [PSU]}
-  \item{t}{Temperature or potential temperature [\eqn{^\circ}{deg}C], according to is.theta}
+  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{pressure [dbar]}
   \item{is.theta}{Set TRUE if t is theta or FALSE if t is in-situ}
 }
 \details{
-  McDougall (1987).  Note the use of potential temperature, not temperature.
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
+McDougall (1987).  Note the use of potential temperature, not temperature.
 }
 \value{
   Value in psu/degC.

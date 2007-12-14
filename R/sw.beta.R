@@ -1,10 +1,14 @@
-sw.beta <- function(S, t, p, is.theta = FALSE)
+sw.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
 {
+	if ("ctd" == class(S)) {
+		t <- S$data$temperature
+		p <- S$data$pressure
+		S <- S$data$salinity # note: this destroys the ctd object
+	}
 	dim <- dim(S)
   	nS <- length(S)
   	nt <- length(t)
-	if (!is.theta)
-		t = oce::sw.theta(S, t, p)
+	if (!is.theta) t = oce::sw.theta(S, t, p)
   	np <- length(p)
   	if (nS != nt)
     	stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")

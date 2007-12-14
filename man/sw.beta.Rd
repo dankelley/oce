@@ -6,16 +6,22 @@ Compute \eqn{\beta}{beta} using McDougall's (1987) algorithm. NOTE: this conflic
 be sure to prefix as sw.beta().
 }
 \usage{
-  b <- sw.beta(S, t, p, is.theta=FALSE);
+b <- sw.beta(ctd, is.theta=FALSE)
+b <- sw.beta(S, t, p, is.theta=FALSE)
 }
 \arguments{
+  \item{ctd}{a \code{ctd} object}
   \item{S}{salinity [PSU]}
-  \item{t}{Temperature or potential temperature [\eqn{^\circ}{deg}C], according to is.theta}
+  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{pressure [dbar]}
   \item{is.theta}{Set TRUE if t is theta or FALSE if t is in-situ}
 }
 \details{
-  McDougall (1987).  Note the use of potential temperature, not temperature.
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
+McDougall (1987).  Note the use of potential temperature, not temperature.
 }
 \value{
   Value in 1/psu.

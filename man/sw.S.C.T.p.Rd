@@ -5,7 +5,7 @@
   Compute salinity, given conductivity ratio, temperature, and pressure.
 }
 \usage{
-  S <- sw.S.C.T.p(C, t, p);
+S <- sw.S.C.T.p(C, t, p)
 }
 \arguments{
   \item{C}{conductivity ratio [unitless]}
@@ -13,12 +13,12 @@
   \item{p}{pressure [dbar]}
 }
 \details{
-  Calculate S from what is actually measured by the CTD, \emph{i.e.} the
-  conductivity ratio C, the \emph{in-situ} temperature T, and the pressure p.
-  Often this is done by the CTD processing software, but sometimes it is helpful
-  to do this directly, \emph{e.g.} when there is a concern about mismatches in
-  sensor response times.   S is calculated using the UNESCO algorithm 
-  described by Fofonoff and Millard (1983).
+Calculate S from what is actually measured by the CTD, \emph{i.e.} the
+conductivity ratio C, the \emph{in-situ} temperature T, and the
+pressure p.  Often this is done by the CTD processing software, but
+sometimes it is helpful to do this directly, \emph{e.g.} when there is
+a concern about mismatches in sensor response times.  S is calculated
+using the UNESCO algorithm described by Fofonoff and Millard (1983).
 }
 \value{
   Salinity [PSU].

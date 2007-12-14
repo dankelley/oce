@@ -6,15 +6,21 @@ Compute \eqn{\sigma_\theta}{sigma-theta}, the
 potential density of seawater, minus 1000 kg/m\eqn{^3}{^3}.
 }
 \usage{
-  sigma.theta <- sw.sigma.theta(S, t, p);
+sigma.theta <- sw.sigma.theta(ctd)
+sigma.theta <- sw.sigma.theta(S, t=NULL, p=NULL)
 }
 \arguments{
-  \item{S}{\emph{in-situ} salinity [PSU]}
+  \item{ctd}{a \code{ctd} object}
+  \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{\emph{in-situ} pressure [dbar]}
+  \item{p}{pressure [dbar]}
 }
 \details{
-  Definition:
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
+Definition:
   \eqn{\sigma_\theta=\rho(S,\theta(S,t,p),0}{sigma_theta=rho(S,theta(S,t,p),0)}
   - 1000 kg/m\eqn{^3}{^3}.
 }

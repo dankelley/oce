@@ -1,5 +1,10 @@
-sw.theta <- function(S, t, p, pref=0, method=c("UNESCO1983", "Bryden1973"))
+sw.theta <- function(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983", "Bryden1973"))
 {
+	if ("ctd" == class(S)) {
+		t <- S$data$temperature
+		p <- S$data$pressure
+		S <- S$data$salinity # note: this destroys the ctd object
+	}
 	dim <- dim(S)
   	nS <- length(S)
   	nt <- length(t)

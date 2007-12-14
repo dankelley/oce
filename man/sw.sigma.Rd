@@ -5,15 +5,21 @@
 Compute \eqn{\sigma}{sigma}, the \emph{in-situ} density of seawater, minus 1000 kg/m\eqn{^3}{^3}.
 }
 \usage{
-  sig <- sw.sigma(S, t, p);
+sig <- sw.sigma(ctd)
+sig <- sw.sigma(S, t=NULL, p=NULL);
 }
 \arguments{
-  \item{S}{\emph{in-situ} salinity [PSU]}
+  \item{ctd}{a \code{ctd} object}
+  \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{\emph{in-situ} pressure [dbar]}
+  \item{p}{pressure [dbar]}
 }
 \details{
-  Definition:
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
+Definition:
   \eqn{\rho(S,t,p)}{rho(S,t,p)}
   - 1000 kg/m\eqn{^3}{^3}.
 }

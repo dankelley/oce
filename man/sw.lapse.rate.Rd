@@ -5,15 +5,21 @@
   Compute adiabatic lapse rate
 }
 \usage{
-  lr <- sw.lapse.rate(S, t, p);
+lr <- sw.lapse.rate(ctd)
+lr <- sw.lapse.rate(S, t=NULL, p=NULL)
 }
 \arguments{
+  \item{ctd}{a \code{ctd} object}
   \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{pressure [dbar]}
 }
 \details{
-  Compute lapse rate using Fofonoff and Millard's (1983) formula.
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
+Compute lapse rate using Fofonoff and Millard's (1983) formula.
 }
 \value{
   Lapse rate [\eqn{deg}{deg}C/m].

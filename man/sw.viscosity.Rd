@@ -5,29 +5,25 @@
   Compute viscosity of seawater, in \eqn{Pa\cdot s}{Pa*s}
 }
 \usage{
-  v <- sw.viscosity(S, t);
+v <- sw.viscosity(ctd)
+v <- sw.viscosity(S, t=NULL)
 }
 \arguments{
-  \item{S}{\emph{in-situ} salinity [PSU]}
+  \item{ctd}{a \code{ctd} object}
+  \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
 }
 \details{
-  Derived from a curve fit to table 87 of Dorsey (1940).
-  The fit matches the table to 
-  within 0.2 percent at worst, and with average
-  absolute error of 0.07 percent.  
-  The maximum
-  deviation from the table is one unit in the
-  last decimal place.
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
 
-  No pressure dependence was reported by Dorsey (1940).
+Derived from a curve fit to table 87 of Dorsey (1940). The fit matches the table to within
+0.2 percent at worst, and with average absolute error of 0.07 percent. The maximum deviation
+from the table is one unit in the last decimal place.
 
-  It would be a good idea to look for other values 
-  to check those used here, and of course to
-  get an idea of pressure dependence.  Therefore,
-  this subroutine is provisional.
-  
-  -- Dan Kelley 2006-01-21.
+No pressure dependence was reported by Dorsey (1940).
+
 }
 \value{
   Viscosity of seawater in \eqn{Pa\cdot s}{Pa*s}.  Divide

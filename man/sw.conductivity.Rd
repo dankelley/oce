@@ -5,18 +5,30 @@
   Compute seawater conductivity, in \eqn{W m^{-1\circ}C^{-1}}{W/(m*degC)}
 }
 \usage{
-  c <- sw.conductivity(S, t, p);
+con <- sw.conductivity(ctd)
+con <- sw.conductivity(S, t, p)
 }
 \arguments{
+  \item{ctd}{a \code{ctd} object}
   \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{pressure [\eqn{db}{db}]}
+  \item{p}{pressure [dbar]}
 }
 \details{
- (\strong{To do:} Fill in a summary of Caldwell's technique.)
- \strong{Caution.} The results differ from Fofonoff's (1962)
- table 5 by 0.1 percent at 35PSU, and by under 1 percent 
- for fresh water.  (\strong{To do:} Compare this with Caldwell's stated uncertainty.)
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
+\strong{Provisional code only!} 
+
+\strong{To do:} Fill in a summary of Caldwell's technique.
+
+\strong{To do:} Compare this with Caldwell's stated uncertainty.
+
+\strong{Caution.} The results differ from Fofonoff's (1962)
+table 5 by 0.1 percent at 35PSU, and by under 1 percent 
+for fresh water.
+
 }
 \value{
   Conductivity of seawater in \eqn{W m^{-1\,\circ}C^{-1}}{W/(m*degC)}.  

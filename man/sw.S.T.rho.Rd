@@ -5,7 +5,7 @@
   Compute \emph{in-situ} salinity, given temperature, density, and pressure.
 }
 \usage{
-  S <- sw.S.T.rho(t, sig, p);
+S <- sw.S.T.rho(t, sig, p)
 }
 \arguments{
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
@@ -13,10 +13,11 @@
   \item{p}{\emph{in-situ} pressure [dbar]}
 }
 \details{
-  Finds the salinity that yields the given density, with the given temperature and pressure.
-  The method is a bisection search with a salinity tolerance of
-  0.001.  The isopycnal lines on
-  temperature-salinity diagrams (\code{\link{plot.TS}}) are computed with this function.
+Finds the salinity that yields the given density, with the given
+temperature and pressure.  The method is a bisection search with a
+salinity tolerance of 0.001.  The isopycnal lines on
+temperature-salinity diagrams (\code{\link{plot.TS}}) are computed
+with this function.
 }
 \value{
   \emph{In-situ} salinity [PSU].

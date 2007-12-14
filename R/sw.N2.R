@@ -1,5 +1,9 @@
-sw.N2 <- function(p, sigma.theta, ...) # BUG: think more about best density measure
+sw.N2 <- function(p, sigma.theta=NULL, ...) # BUG: think more about best density measure
 {
+	if ("ctd" == class(p)) {
+		sigma.theta <- oce::sw.sigma.theta(p$data$salinity, p$data$temperature, p$data$pressure)
+		p <- p$data$pressure # over-writes p
+	}
 	args <- list(...)
 	df <- if (is.null(args$df)) length(p)/4 else args$df;
 	ok <- !is.na(p) & !is.na(sigma.theta)

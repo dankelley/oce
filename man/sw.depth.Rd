@@ -5,20 +5,23 @@
   Compute depth from pressure and latitude.
 }
 \usage{
-  d <- sw.depth(p, lat, degrees=TRUE);
+d <- sw.depth(ctd)
+d <- sw.depth(p, lat, degrees=TRUE)
 }
 \arguments{
-  \item{p}{Pressure [dbar].}
+  \item{ctd}{a \code{ctd} object}
+  \item{p}{Pressure [dbar]}
   \item{lat}{Latitude in \eqn{^\circ}{deg}N or radians north of the equator.}
   \item{degrees}{Flag indicating whether degrees are used for latitude;
     if set to \code{FALSE}, radians are used.}
 }
 \details{
+In the first form, the argument is a \code{ctd} object, from which the
+pressure and latitude are extracted and used to for the calculation.
+
 The information given below is adapted from the fortran code at 
-
-\code{http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f},
-
-which is where this R code came from.
+\url{http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f},
+on which this R code was based.
 
 Depth in meters from pressure in decibars using
 Saunders and Fofonoff's method, with the 

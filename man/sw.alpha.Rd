@@ -7,16 +7,21 @@ as the product of \eqn{\alpha/\beta}{alpha/beta} and \eqn{\beta}{beta}, each
 calculated from McDougall's (1987) algorithm.
 }
 \usage{
-  a <- sw.alpha(S, t, p, is.theta=FALSE);
+a <- sw.alpha(ctd, is.theta=FALSE)
+a <- sw.alpha(S, t=NULL, p=NULL, is.theta=FALSE)
 }
 \arguments{
+  \item{ctd}{a \code{ctd} object}
   \item{S}{salinity [PSU]}
-  \item{t}{Temperature or potential temperature [\eqn{^\circ}{deg}C], according to is.theta}
-  \item{p}{pressure [dbar]}
+  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{is.theta}{Set TRUE if t is theta or FALSE if t is in-situ}
 }
 \details{
-  McDougall (1987).  Note the use of potential temperature, not temperature.
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
+McDougall (1987).  Note the use of potential temperature, not temperature.
 }
 \value{
   Value in 1/degC.

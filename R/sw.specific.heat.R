@@ -1,7 +1,12 @@
 # Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
 # check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
-sw.specific.heat <- function(S, t, p)
+sw.specific.heat <- function(S, t=NULL, p=NULL)
 {
+	if ("ctd" == class(S)) {
+		t <- S$data$temperature
+		p <- S$data$pressure
+		S <- S$data$salinity # note: this destroys the ctd object
+	}
 	dim <- dim(S)
   	nS <- length(S)
   	nt <- length(t)

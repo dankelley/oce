@@ -5,13 +5,18 @@
   Compute freezing temperature of seawater.
 }
 \usage{
-  T.freeze <- sw.T.freeze(S, p);
+T.freeze <- sw.T.freeze(ctd)
+T.freeze <- sw.T.freeze(S, p=NULL)
 }
 \arguments{
-  \item{S}{\emph{in-situ} salinity [PSU]}
-  \item{p}{\emph{in-situ} pressure [dbar]}
+  \item{ctd}{a \code{ctd} object}
+  \item{S}{salinity [PSU]}
+  \item{p}{pressure [dbar]}
 }
 \details{
+In the first form, the argument is a \code{ctd} object, from which the
+salinity and pressure values are extracted and used to
+for the calculation.
 }
 \value{
   Temperature [\eqn{^\circ}{deg}C]

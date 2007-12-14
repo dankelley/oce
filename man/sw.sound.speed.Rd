@@ -5,14 +5,20 @@
 Compute the seawater speed of sound.
 }
 \usage{
-speed <- sw.sound.speed(S, t, p);
+speed <- sw.sound.speed(ctd)
+speed <- sw.sound.speed(S, t=NULL, p=NULL)
 }
 \arguments{
-  \item{S}{\emph{in-situ} salinity [PSU]}
+  \item{ctd}{a \code{ctd} object}
+  \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{\emph{in-situ} pressure [dbar]}
+  \item{p}{pressure [dbar]}
 }
 \details{
+In the first form, the argument is a \code{ctd} object, from which the
+salinity, temperature and pressure values are extracted and used to
+for the calculation.
+
 The sound speed is calculated using the formulation in section 9 of
 Fofonoff and Millard (1983).
 }

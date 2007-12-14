@@ -76,6 +76,8 @@ Note that the names of functions relating to seawater material properties start 
 ``\verb@sw.@''; future versions of \verb@oce@ may add similarly named functions for the
 properties of air, sediment, organisms, etc.
 
+The \verb@sw.@ functions can also take a \verb@ctd@ object instead of the \verb@(S, t, p)@ arguments.
+
 \looseness=1
 Most of the functions use the UNESCO formulations of seawater properties, but new formulations
 may be added as they come into use in the literature.
@@ -136,8 +138,12 @@ to learn about these metadata, and use
 <<ctdnames2,eval=false>>=
 names(ctd$data)
 @
-to find out what sensors were attached to the instrument, thus providing data columns. It is
-possible to plot the components individually, either by accessing the data directly (see the
+to find out what sensors were attached to the instrument, thus providing data columns. 
+
+As noted above, the seawater-property functions (whose names begin with \verb@sw.@) can take a \verb@ctd@ object instead of the individual arguments \verb@S@, \verb@t@, and \verb@p@.
+
+It is
+possible to plot the components of a \verb@ctd@ object individually, either by accessing the data directly (see the
 WOCE section, below, for an example) or by using more specialized functions such as
 \verb@plot.TS@ and \verb@plot.profile@.
 \begin{figure}
