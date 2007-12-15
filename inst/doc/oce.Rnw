@@ -4,6 +4,8 @@
 \usepackage{url}
 \usepackage{fullpage}
 \usepackage{boxedminipage}
+\usepackage{makeidx} 
+\makeindex
 
 \parskip=1.25ex plus 1ex minus 1.25ex
 
@@ -45,8 +47,6 @@ research setting.  These things are illustrated here with practical examples.
 
 \section{Introduction}
 
-\index{hello}
-
 Oceanographers must deal with measurements made by a wide variety of instruments, a task that
 is complicated by the delight instrument manufacturers seem to take in inventing new data
 formats. The manufacturers often provide software for scanning the data files and producing
@@ -65,6 +65,9 @@ today, and should keep it relevant as it grows to incorporate new features.
 
 \section{Calculations of seawater properties}
 
+\index{calculation!seawater properties}
+\index{seawater properties, calculations of}
+
 The \verb@oce@ package provides many functions for dealing with seawater properties. Probably
 the most used is \verb@sw.rho(S,t,p)@, which computes seawater density $\rho$ as a function of
 salinity $S$ (PSU), in-situ temperature $t$ ($^\circ$C \dots\/ note the use of lower-case in
@@ -81,6 +84,7 @@ properties of air, sediment, organisms, etc.
 The \verb@sw.@ functions can also take a \verb@ctd@ object instead of the \verb@(S, t, p)@ arguments.
 
 \looseness=1
+\index{dynamic height}
 Most of the functions use the UNESCO formulations of seawater properties, but new formulations
 may be added as they come into use in the literature.
 A partial list of seawater functions is as follows:
@@ -120,6 +124,8 @@ $100$dbar, with salinity $34$PSU and temperature $10^\circ$C?
 
 \section{CTD data}
 \subsection{Example with pre-trimmed data}
+
+\index{data!ctd profile \verb@ctd@}
 
 To get you started with CTD data, \verb@oce@ provides a sample data set that has been trimmed to just the downcast portion of the sampling.  (See the next section to learn how to do this trimming.).  The commands
 <<label=ctdplot,include=FALSE>>=
@@ -200,6 +206,8 @@ ctd.trimmed <- ctd.trim(ctd.raw)
 It should be noted that \verb@ctd.trim@ inserts entries into the object's log file, so that you
 (or anyone else with whom you share the objec) will be able to track exactly how this trimming
 was done.
+
+\index{reading!ctd profile}
 
 Once the profile has been trimmed, you may wish to use \texttt{ctd.decimate()} to smooth the
 data and interpolate the smoothed results to uniformly-spaced pressure values. For example, a
@@ -298,6 +306,9 @@ harbour. (The author's office at Dalhousie is located near
 the bottom axis at 63.58W.)}
 \end{figure}
 
+\index{reading!ctd section}
+\index{data!section \verb@a03@, North Atlantic along 36$^\circ$N}
+
 The Halifax section is supplied in a pre-gridded format, but some
 datasets have different pressure levels at each station.  For such
 cases, the \verb@section.grid@ function may be used, e.g.
@@ -331,6 +342,9 @@ Portion of CTD A03, showing the region of the Gulf Stream.
 
 
 \section{Coastline data}
+
+\section{data!coastline}
+
 The commands
 <<label=coastlineplot,include=FALSE>>=
 library(oce)
@@ -533,5 +547,5 @@ col <- hsv(0.5 * a / max(a), 1, 1)
 plot.TS(as.ctd(lobo$S[i], lobo$T[i], 0), col=col, pch=1)
 @
 
+\printindex
 \end{document}
-
