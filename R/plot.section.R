@@ -12,8 +12,8 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			lat <- array(NA, num.stations)
 			lon <- array(NA, num.stations)
 			for (i in 1:num.stations) {
-				lat[i] <- x$stations[[station.indices[i]]]$latitude
-				lon[i] <- x$stations[[station.indices[i]]]$longitude
+				lat[i] <- x$station[[station.indices[i]]]$latitude
+				lon[i] <- x$station[[station.indices[i]]]$longitude
 			}
 			asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
 			if (!is.null(map.xlim))
@@ -44,11 +44,11 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			}
 			water.depth <- NULL
 			for (i in 1:num.stations) {
-				zz[i,] <- rev(x$stations[[station.indices[i]]]$data[[variable]])
+				zz[i,] <- rev(x$station[[station.indices[i]]]$data[[variable]])
 				if (grid) {
 					abline(v = xx[i], col=col.grid, lty="dotted")
 				}
-				water.depth <- c(water.depth, x$stations[[station.indices[i]]]$water.depth)
+				water.depth <- c(water.depth, x$station[[station.indices[i]]]$water.depth)
 			}
 			lines(x=xx, y=water.depth, lwd=3, col="gray") # bottom trace
 			par(new=TRUE)
@@ -61,27 +61,27 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 	oldpar <- par(no.readonly = TRUE)
 
 	if (missing(station.indices)) {
-		num.stations <- length(x$stations)
+		num.stations <- length(x$station)
 		station.indices <- 1:num.stations
 	} else {
 		num.stations <- length(station.indices)		
 	}
 	if (num.stations < 2) stop("cannot plot a section containing less than 2 stations")
-	num.depths <- length(x$stations[[station.indices[1]]]$data$pressure)
+	num.depths <- length(x$station[[station.indices[1]]]$data$pressure)
 	zz <- matrix(nrow=num.stations, ncol=num.depths)
 	xx <- array(NA, num.stations)
 	yy <- array(NA, num.depths)
 	if (is.null(at)) {
-		lat0 <- x$stations[[station.indices[1]]]$latitude
-		lon0 <- x$stations[[station.indices[1]]]$longitude
+		lat0 <- x$station[[station.indices[1]]]$latitude
+		lon0 <- x$station[[station.indices[1]]]$longitude
 		for (ix in 1:num.stations) {
 			j <- station.indices[ix]
-			xx[ix] <- geod.dist(lat0, lon0,x$stations[[j]]$latitude, x$stations[[j]]$longitude)
+			xx[ix] <- geod.dist(lat0, lon0,x$station[[j]]$latitude, x$station[[j]]$longitude)
 		}
 	} else {
 		xx <- at
 	}
-	yy <- x$stations[[station.indices[1]]]$data$pressure
+	yy <- x$station[[station.indices[1]]]$data$pressure
 	if (is.null(field)) {
 		par(mfrow=c(2,2))
 		par(mar=c(4.5,4,1,1))

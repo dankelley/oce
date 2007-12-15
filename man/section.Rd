@@ -18,17 +18,17 @@ Dalhousie. Note the alteration of two station locations, to correct errors in
 transcribing field notes (e.g. a hand-written ``8'' was evidently typed as ``3'').
 \preformatted{
 library(oce)
-p <- seq(0, 30, 0.5)
-stn08 <- ctd.decimate(ctd.trim(read.ctd("BED0308.CNV", station="308")),p=p)
-stn09 <- ctd.decimate(ctd.trim(read.ctd("BED0309.CNV", station="309")),p=p)
-stn10 <- ctd.decimate(ctd.trim(read.ctd("BED0310.CNV", station="310")),p=p)
-stn01 <- ctd.decimate(ctd.trim(read.ctd("BED0301.CNV", station="301")),p=p)
-stn11 <- ctd.decimate(ctd.trim(read.ctd("BED0311.CNV", station="311")),p=p)
-stn12 <- ctd.decimate(ctd.trim(read.ctd("BED0312.CNV", station="312")),p=p)
+p <- seq(0, 30, 0.25)
+stn08 <- ctd.decimate(ctd.trim(read.ctd("BED0308.CNV", station="308")),p=p,method="boxcar")
+stn09 <- ctd.decimate(ctd.trim(read.ctd("BED0309.CNV", station="309")),p=p,method="boxcar")
+stn10 <- ctd.decimate(ctd.trim(read.ctd("BED0310.CNV", station="310")),p=p,method="boxcar")
+stn01 <- ctd.decimate(ctd.trim(read.ctd("BED0301.CNV", station="301")),p=p,method="boxcar")
+stn11 <- ctd.decimate(ctd.trim(read.ctd("BED0311.CNV", station="311")),p=p,method="boxcar")
+stn12 <- ctd.decimate(ctd.trim(read.ctd("BED0312.CNV", station="312")),p=p,method="boxcar")
 stn12$latitude <- 44 + 39.894 / 60
 stn12 <- processing.log.append(stn12, "DEK: change lat minutes from 39.394 to 39.894 (typo)")
-stn13 <- ctd.decimate(ctd.trim(read.ctd("BED0313.CNV", station="313")),p=p)
-stn15 <- ctd.decimate(ctd.trim(read.ctd("BED0315.CNV", station="315")),p=p)
+stn13 <- ctd.decimate(ctd.trim(read.ctd("BED0313.CNV", station="313")),p=p,method="boxcar")
+stn15 <- ctd.decimate(ctd.trim(read.ctd("BED0315.CNV", station="315")),p=p,method="boxcar")
 stn15$latitude <- stn15$latitude + 1
 stn15 <- processing.log.append(stn15, "DEK add 1 to lat (typo")
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)

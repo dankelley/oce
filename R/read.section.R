@@ -55,25 +55,35 @@ read.section <- function(file, section.id, debug=FALSE)
 	water.depth  <- as.numeric(data[,which(var.names=="DEPTH") - 2])
 	latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - 2])
 	longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - 2])
-	station <- data[,which(var.names=="STNNBR") - 2]
-	station.list <- unique(station)
+	station.id <- data[,which(var.names=="STNNBR") - 2]
+	station.list <- unique(station.id)
 	num.stations <- length(station.list)
-	stations <- vector("list", num.stations)
+	station <- vector("list", num.stations)
+	stn <- vector("character", num.stations)
+	lon <- vector("numeric", num.stations)
+	lat <- vector("numeric", num.stations)
     for (i in 1:num.stations) {
-		select <- which(station == station.list[i])
-		this.station <- as.ctd(S=S[select], T=T[select], p=p[select],
-			latitude=latitude[select[1]], 
-			longitude=longitude[select[1]],
+		if (debug) cat("procession station ",i,"\n")
+		select <- which(station.id == station.list[i])
+		stn[i] <- sub("^ *", "", station.id[select[1]])
+		lat[i] <- latitude[select[1]]
+		lon[i] <- longitude[select[1]]
+		this.station <<- as.ctd(S=S[select], T=T[select], p=p[select],
+			latitude=lat[i],
+			longitude=lon[i],
 			cruise=section.id[i],
-			station=sub("^ *", "", station[select[1]]),
+			station=stn[i],
 			water.depth=water.depth[select[1]],
 			filename=filename)
-		if (debug) cat("station at ", latitude[select[1]], "N and ", longitude[select[1]], "W\n")
-        stations[[i]] <- this.station
+		if (debug) cat("station at ", lat[i], "N and ", lon[i], "W\n")
+        station[[i]] <- this.station
 	}
    	action <- paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep="")
     processing.log <- list(time = c(Sys.time()), action = action)
-    res <- list(processing.log = processing.log, section.id=section.id, stations = stations)
+    res <- list(header=header, section.id=section.id, 
+		station.id=stn, latitude=lat, longitude=lon,
+		station=station,
+		processing.log = processing.log)
     class(res) <- "section"
 	res
 }

@@ -6,20 +6,28 @@
 \arguments{
   \item{file}{a file containing a set of CTD observations.  At present, only the \emph{exchange BOT} format is accepted (see Details).}
   \item{section.id}{optional string indicating the name for the section.  If not provided, the section ID is determined by examination of the file header.}
-  \item{debug}{logical. If TRUE, print some information that might be helpful during debugging.}
+  \item{debug}{logical. If \code{TRUE}, print some information that might be helpful during debugging.}
 }
-\details{
-Only \emph{exchange BOT} comma-separated value format is permitted at this time, but other formats may be added later.  It should also be noted that 
-the parsing scheme was developed after inspection of the A03 data set (see
-Examples). This may cause problems if the format is not universal. For example, the header
-must name the salinity column "\code{CTDSAL}"; if not, salinity values will not be read from the file.
-}
+
+\details{Only \emph{exchange BOT} comma-separated value format is
+permitted at this time, but other formats may be added later.  It
+should also be noted that the parsing scheme was developed after
+inspection of the A03 data set (see Examples). This may cause problems
+if the format is not universal. For example, the header must name the
+salinity column "\code{CTDSAL}"; if not, salinity values will not be
+read from the file.}
 \value{
-  A \code{section} object.  
+A \code{section} object, which is a list containing the following items
+\itemize\item{header}{the header from the data file.}
+\item{section.id}{a name for the section.}
+\item{station.id}{a vector of station IDs, one per station.}
+\item{latitude}{a vector of station latitudes, decimal and positive in northern hemisphere.}
+\item{longitude}{a vector of station latitudes, decimal and positive in eastern hemisphere.}
+\item{station}{a list of \code{ctd} objects, one per station.}
+\item{processing.log}{a processing log.}
 }
-\seealso{
-  \code{\link{make.section}} can be used to manually bind together \code{ctd} objects into a section.
-}
+
+\seealso{\code{\link{make.section}} can be used to bind together \code{ctd} objects into a section.}
 \examples{
 library(oce)
 data(a03)

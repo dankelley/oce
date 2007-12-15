@@ -14,7 +14,7 @@
   be in some spatial or temporal order, etc.  
 }
 \value{
-  A \code{section} object.  
+A \code{section} object, as described at \code{\link{read.section}}.
 }
 \seealso{
   \code{\link{read.ctd}} reads CTD data.

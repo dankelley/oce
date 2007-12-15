@@ -21,8 +21,7 @@ col.grid="lightgray",
     \itemize{
       \item{\code{S}}{Profile of salinity.}
       \item{\code{T}}{Profile of \emph{in-situ} temperature.}
-      \item{\code{sigmatheta}}{Profile of density (expressed as
-	\eqn{\sigma_\theta}{sigma_theta}).}
+      \item{\code{sigmatheta}}{Profile of density (expressed as \eqn{\sigma_\theta}{sigma_theta}).}
       \item{\code{S+T}}{Profile of salinity and temperature within a single axis frame.}
       \item{\code{N2}}{Profile of square of buoyancy frequency
 	\eqn{N^2}{N^2}, calculated with \code{\link{sw.N2}} with an
