@@ -14,7 +14,7 @@ h <- sw.dynamic.height(ctd, pref=0)
 \details{
 
 A piecewise-linear model of the density variation with pressure is
-developed using \code{\link{[stats]approxfun}}.  (The option \code{rule=2} is
+developed using \code{\link[stats]{approxfun}}.  (The option \code{rule=2} is
 used to extrapolate the uppermost density up to the surface,
 preventing a possible a bias for bottle data, in which the first depth
 may be a few metres below the surface.)  A second function is
