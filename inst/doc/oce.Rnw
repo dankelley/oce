@@ -84,6 +84,7 @@ The \verb@sw.@ functions can also take a \verb@ctd@ object instead of the \verb@
 Most of the functions use the UNESCO formulations of seawater properties, but new formulations
 may be added as they come into use in the literature.
 A partial list of seawater functions is as follows:
+\verb@sw.dynamic.height@ (dynamic height),
 \verb@sw.N2@ (buoyancy freqency),
 \verb@sw.S.C.T.p@ (salinity $S$ from $C$, $T$ and $p$),
 \verb@sw.S.T.rho@ ($S$ from $T$ and $\rho$),

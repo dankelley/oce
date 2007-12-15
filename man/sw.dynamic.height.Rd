@@ -35,17 +35,43 @@ If the water column is too short to have bottom pressure exceeding \code{pref}, 
 value is reported.
 }
 \value{
-In the first form, a list containing \code{distance}, the distance [km] from the first
-station in the section and \code{height}, the dynamic height [m].
+In the first form, a list containing \code{distance}, the distance
+[km] from the first station in the section and \code{height}, the
+dynamic height [m].
 
-In the second form, dynamic height [m].
+In the second form, a single value, containing the dynamic height [m].
 }
 \examples{
 library(oce)
 data(a03)
+
+# Dynamic height and geostrophy
+par(mfcol=c(2,2))
+par(mar=c(4.5,4.5,2,1))
+
+# Left-hand column: whole section
+# (The smoothing lowers Gulf Stream speed greatly)
+a03.west.to.east <- section.subset(a03, 124:1)
+dh <- sw.dynamic.height(a03.west.to.east)
+plot(dh$distance, dh$height, type='p', xlab="", ylab="Dyn. Height [m]")
+ok <- !is.na(dh$height)
+smu <- supsmu(dh$distance, dh$height)
+lines(smu, col="blue")
+f <- coriolis(a03$station[[1]]$latitude)
+g <- gravity(a03$station[[1]]$latitude)
+v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
+plot(smu$x[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
+abline(h=0)
+
+# Right-hand column: Gulf Stream region, unsmoothed
 Gulf.Stream <- section.subset(a03, 124:102)
-dh <- sw.dynamic.height(Gulf.Stream)
-plot(dh$distance, dh$height, type='b', xlab="Distance along track [km]", ylab="Dynamic Height [m]")
+dh.GS <- sw.dynamic.height(Gulf.Stream)
+plot(dh.GS$distance, dh.GS$height, type='b', xlab="", ylab="Dyn. Height [m]")
+grid()
+v <- diff(dh.GS$height)/diff(dh.GS$distance) * g / f / 1e3
+plot(dh.GS$distance[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
+grid()
+abline(h=0)
 }
 \references{
 Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, 
