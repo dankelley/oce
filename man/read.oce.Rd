@@ -43,5 +43,5 @@ plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
 }
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

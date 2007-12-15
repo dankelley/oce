@@ -22,7 +22,5 @@ Format a latitude-longitude pair, using "S" for negative latitudes, etc.
 }
 \examples{
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

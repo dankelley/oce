@@ -64,5 +64,5 @@ summary(sl)
 \references{
   \url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

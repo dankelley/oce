@@ -35,5 +35,5 @@ Compute lapse rate using Fofonoff and Millard's (1983) formula.
  fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
  Science}, \bold{44}, 53 pp.  (Section 7, pages 38-40)
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

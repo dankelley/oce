@@ -28,7 +28,5 @@ A POSIXlt object.
 }
 \examples{
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

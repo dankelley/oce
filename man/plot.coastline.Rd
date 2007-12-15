@@ -27,7 +27,5 @@ library(oce)
 data(coastline.world)
 plot(coastline.world)
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

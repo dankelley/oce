@@ -61,7 +61,5 @@ plot(ctd)
 plot.profile(ctd, type="T")
 }
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

@@ -65,5 +65,5 @@ to the topic, with the Canadian Hurricane Centre's
 \url{http://www.atl.ec.gc.ca/weather/hurricane/juan/summary_e.html}
 filling in some more technical details.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

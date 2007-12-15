@@ -25,7 +25,5 @@ stn15$latitude <- stn15$latitude + 1
 stn15 <- processing.log.append(stn15, "DEK: add 1 to latitude, correcting a typo")
 }
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

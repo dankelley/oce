@@ -29,9 +29,6 @@ No pressure dependence was reported by Dorsey (1940).
   Viscosity of seawater in \eqn{Pa\cdot s}{Pa*s}.  Divide
   by density to get kinematic viscosity in \eqn{m^2/s}{m^2/s}.
 }
-\seealso{
-  N/A.
-}
 \examples{
  v <- sw.viscosity(30,10); # 0.001383779
 }
@@ -41,5 +38,5 @@ No pressure dependence was reported by Dorsey (1940).
  American Chemical Society Monograph Series.
  Reinhold Publishing.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

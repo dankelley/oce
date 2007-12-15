@@ -51,5 +51,5 @@ bottle data"} should turn up other sites, if this one ceases to exist. Only the
 so-called \emph{exchange BOT} data format can be processed by read.section() at
 this time.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

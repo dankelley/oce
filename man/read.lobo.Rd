@@ -69,5 +69,5 @@ summary(lobo)
 \url{http://www.satlantic.com/default.asp?mn=1.15.27.139}
 \url{http://www.mbari.org/lobo/}
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

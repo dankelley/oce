@@ -37,5 +37,5 @@ coastline.halifax<-as.coastline(latitude[c(HH,GI)],longitude[c(HH,GI)]-360)
 The NOAA site \url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html}
 is a good source for coastline data files.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

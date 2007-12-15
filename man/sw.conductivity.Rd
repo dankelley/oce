@@ -50,5 +50,5 @@ for fresh water.
  Fofonoff, N. P., 1962.  Physical properties of sea-water,
  \emph{The Sea}, \bold{1}, 3-30.
 }     
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

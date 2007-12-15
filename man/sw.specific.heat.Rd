@@ -36,5 +36,5 @@ Millero et. al., J. Geophys. Res. 78 (1973), 4499-4507
 
 Millero et. al., UNESCO report 38 (1981), 99-188.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

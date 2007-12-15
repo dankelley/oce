@@ -36,5 +36,5 @@ s <- sw.sound.speed(40, 40, 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
  fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
  Science}, \bold{44}, 53 pp.  (See section 9.)
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

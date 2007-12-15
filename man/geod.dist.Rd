@@ -44,5 +44,5 @@ along the track starting from zero.
  km <- geod.dist(45, 100, 46, 100)/1000 
 }
 \references{}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca} packaged this, based on R code sent to him by Darren Gillis, who in 2003 had modified Fortran code written in 1974 by (according to comment cards in the source) L. Pfeifer and J. G. Gergen.}
+\author{Dan Kelley packaged this, based on R code sent to him by Darren Gillis, who in 2003 had modified Fortran code written in 1974 by (according to comment cards in the source) L. Pfeifer and J. G. Gergen.}
 \keyword{misc}

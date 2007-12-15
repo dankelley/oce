@@ -46,5 +46,5 @@ relative to the surface pressure.  If you are thinking of using
  Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, 
  Academic Press, New York, 662 pp.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

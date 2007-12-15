@@ -12,5 +12,5 @@ western longitudes have negative values.}
 \code{\link{read.coastline}}, or created with
 \code{\link{as.coastline}}; see these for details of the data format.  Other coastline datasets provided with
 oce are \code{\link{coastline.halifax}} and \code{\link{coastline.maritimes}}.}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

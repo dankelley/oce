@@ -42,5 +42,5 @@ the lovely Point Pleasant Park.
 A summary of the stations can be obtained from \code{\link{summary.section}},
 and a plot can be created with \code{\link{plot.section}}.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

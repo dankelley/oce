@@ -39,5 +39,5 @@ A state variable for characterizing water masses and their diffusive
 stability: spiciness.   \emph{Progr. Oceanog.}, 
 \bold{54}, 493-501.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

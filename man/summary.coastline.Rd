@@ -30,5 +30,5 @@ plot(cl)
 \references{
 http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

@@ -93,5 +93,5 @@ plot(ctd.decimate(ctd.trim(ctd.raw),method="boxcar")) # ... smoothed
   The Seabird CTD instrument is described at
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

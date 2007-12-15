@@ -14,5 +14,5 @@ data that need trimming with \code{\link{ctd.trim}}.}
 the Bedford Basin of the Halifax Harbour, during an 
 October 2003 field trip of Dalhousie University's 
 Oceanography 4120/5120 class.}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

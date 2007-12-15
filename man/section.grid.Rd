@@ -29,7 +29,5 @@ data(coastline.world)
 # Select the Gulf Stream region
 plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

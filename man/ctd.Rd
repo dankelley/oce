@@ -18,5 +18,5 @@ column.}
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  
   See link{read.ctd} for the data format.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

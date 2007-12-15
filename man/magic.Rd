@@ -22,5 +22,5 @@ magic(file)
 \seealso{
 This is used mainly by \code{\link{read.oce}}.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

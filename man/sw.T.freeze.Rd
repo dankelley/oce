@@ -32,5 +32,5 @@ UNESCO tech. papers in the marine science no. 28. 1978
 eighth report JPOTS
 Annex 6 freezing point of seawater F.J. Millero pp.29-35.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

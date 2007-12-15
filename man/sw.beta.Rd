@@ -38,5 +38,5 @@ McDougall (1987).  Note the use of potential temperature, not temperature.
 McDougall, T.J. 1987. "Neutral Surfaces"
 Journal of Physical Oceanography vol 17 pages 1950-1964
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

@@ -29,7 +29,5 @@ section <- make.section(ctd, ctd.warmed)
 summary(section)
 plot(section, at=c(1,2), labels=c("Original","Warmed"))
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

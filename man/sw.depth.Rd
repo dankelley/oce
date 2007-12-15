@@ -42,5 +42,5 @@ above for standard ocean: t=0 deg. celsuis ; s=35 (ipss-78)
 \references{
 (authors), 1976, (title), Deep-Sea Res., 23, 109-111.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

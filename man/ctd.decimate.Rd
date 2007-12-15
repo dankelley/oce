@@ -59,7 +59,5 @@ data(ctd.raw)
 ctd.clean <- ctd.decimate(ctd.trim(ctd.raw))
 summary(ctd.clean)
 }
-%\references{
-%}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

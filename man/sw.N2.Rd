@@ -52,6 +52,5 @@ abline(v=0)
 lines(sw.N2(p,sigthe,df=length(p)/4), -p)
 abline(v=0)
 }
-\references{}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

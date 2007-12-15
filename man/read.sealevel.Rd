@@ -61,6 +61,6 @@ provides a graphical interface for downloading sealevel data; the format is desc
 \url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}. The MEDS data are at
 \url{http://www.meds-sdmm.dfo-mpo.gc.ca/meds/Databases/TWL/TWL_inventory_e.htm}.}
 
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 
 \keyword{misc}

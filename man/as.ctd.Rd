@@ -51,7 +51,5 @@ S <- 35 - p / 100
 ctd <- as.ctd(S, T, p)
 summary(ctd)
 }
-\references{
-}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

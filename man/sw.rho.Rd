@@ -45,5 +45,5 @@ Related density routines include
  Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, 
  Academic Press, New York, 662 pp.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

@@ -32,5 +32,5 @@ Compute \eqn{g}{g}, the acceleration due to gravity, as a function of latitude.
  \strong{Caution:} Fofonoff and Millard (1983 UNESCO) use a different
 formula.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

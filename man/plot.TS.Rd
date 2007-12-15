@@ -63,6 +63,5 @@ TT <- Trange[1] + (Trange[2] - Trange[1]) *(1:N)/(N-1) + 0.01*rnorm(N)
 plot.TS(as.ctd(S=SS, T=TT, p=0))
 }
 }
-\references{}
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

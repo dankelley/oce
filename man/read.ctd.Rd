@@ -111,5 +111,5 @@ it does a reasonable job in many instances.
 The WOCE-exchange format is described at
 \url{http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm}
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

@@ -37,5 +37,5 @@ print(sw.S.C.T.p(0.65,5,1500)) # 27.99535
  fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
  Science}, \bold{44}, 53 pp
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

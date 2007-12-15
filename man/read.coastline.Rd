@@ -55,5 +55,5 @@ lines(cl$data$longitude-360, cl$data$latitude)
 The NOAA site \url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html}
 is a good source for coastline data files.
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}

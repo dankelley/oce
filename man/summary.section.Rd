@@ -33,5 +33,5 @@ library(oce)
 data(section)
 summary(section)
 }
-\author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
+\author{Dan Kelley}
 \keyword{misc}
