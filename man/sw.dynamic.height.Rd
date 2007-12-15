@@ -14,14 +14,14 @@ h <- sw.dynamic.height(ctd, pref=0)
 \details{
 
 A piecewise-linear model of the density variation with pressure is
-developed using \code{\link{approxfun}}.  (The option \code{rule=2} is
+developed using \code{\link{[stats]approxfun}}.  (The option \code{rule=2} is
 used to extrapolate the uppermost density up to the surface,
 preventing a possible a bias for bottle data, in which the first depth
 may be a few metres below the surface.)  A second function is
 constructed as the density of water with salinity 35PSU, temperature
 of 0\eqn{^\circ}{deg}C, and pressure as in the \code{ctd}.  The
 reciprocal difference of these densities is then integrated using
-\code{\link{integrate}} with pressure limits \code{0} to \code{pref},
+\code{\link[stats]{integrate}} with pressure limits \code{0} to \code{pref},
 and divided by the acceleration due to gravity, to calculate the
 dynamic height.
 
@@ -34,8 +34,8 @@ Dynamic height [m].
 \examples{
 library(oce)
 data(a03)
-x<-NULL
-h<-NULL
+x <- NULL
+h <- NULL
 for (i in 102:124) { # Gulf Stream
     x <- c(x, a03$stations[[i]]$longitude)
     h <- c(h, sw.dynamic.height(a03$stations[[i]]))
