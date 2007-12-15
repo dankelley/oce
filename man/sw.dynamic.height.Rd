@@ -43,7 +43,8 @@ for (i in 102:124) { # Gulf Stream
 plot(x,h, type='b', xlab="Longitude [W]", ylab="Dynamic Height [m]")
 }
 \references{
-Gill 1982 or Knauss (date?)
+Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, 
+Academic Press, New York, 662 pp.
 }
 \author{Dan Kelley \email{Dan.Kelley@Dal.Ca}}
 \keyword{misc}
