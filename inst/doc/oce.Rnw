@@ -4,6 +4,7 @@
 \usepackage{url}
 \usepackage{fullpage}
 \usepackage{boxedminipage}
+\usepackage{hyperref}
 \usepackage{makeidx} 
 \makeindex
 
@@ -20,10 +21,10 @@
 	\end{boxedminipage}
 	\vspace{2ex plus 2ex minus 1ex}
 }
-\newcommand{\workedanswer}[1]{
+\newcommand{\workedanswer}[2]{
 \goodbreak
 \vskip 1.5ex plus 0.5ex minus 0.5ex
-\noindent\textbf{Exercise #1.}
+\noindent\textbf{Exercise #1: #2}
 }
 
 
@@ -309,6 +310,8 @@ the bottom axis at 63.58W.)}
 \index{reading!ctd section}
 \index{data!section \verb@a03@, North Atlantic along 36$^\circ$N}
 
+\index{Gulf Stream}
+
 The Halifax section is supplied in a pre-gridded format, but some
 datasets have different pressure levels at each station.  For such
 cases, the \verb@section.grid@ function may be used, e.g.
@@ -340,6 +343,7 @@ Portion of CTD A03, showing the region of the Gulf Stream.
 }
 \end{figure}
 
+\workedexercise{3}{Focus on the spike in sealevel that was caused by Hurricane Juan.}
 
 \section{Coastline data}
 
@@ -402,7 +406,7 @@ hurricanes to ever hit Canada.}
 \label{fig:sealevel}
 \end{figure}
 
-\workedexercise{3}{Focus on the spike in sealevel that was caused by Hurricane Juan.}
+\workedexercise{4}{Plot dynamic height across the Gulf Stream, and show the corresponding geostrophic velocity.}
 
 Note: An upcoming version of \verb@oce@ will also provide tidal constituent analysis. Some of
 this has been developed already. The regression works, so that the amplitudes and phases can be
@@ -412,7 +416,7 @@ and deep-water cases. If you understand these things, and would like to test the
 being developed, please contact the author. Otherwise, you should wait until the code is
 working properly, and until the user interface has settled into a firmer state.
 
-\workedexercise{4}{Draw a spectrum of sealevel variation, with the M2 tidal component indicated.}
+\workedexercise{5}{Draw a spectrum of sealevel variation, with the M2 tidal component indicated.}
 
 
 \goodbreak
@@ -447,7 +451,7 @@ the time of the 2007 Spring bloom.}
 \label{fig:lobo}
 \end{figure}
 
-\workedexercise{5}{Draw a $T-S$ plot for these data, using a colour coding to indicate time,
+\workedexercise{6}{Draw a $T-S$ plot for these data, using a colour coding to indicate time,
 and using plotting tricks to reduce the obscuring of this time signal.}
 
 
@@ -491,7 +495,7 @@ features, or just to see how \verb@oce@ development is coming along.
 
 \section*{Answers to exercises}
 
-\workedanswer{1}
+\workedanswer{1}{Seawater properties}
 <<>>=
 library(oce)
 sw.rho(S=34, t=10, p=100)
@@ -501,7 +505,7 @@ sw.rho(S=34, t=sw.theta(S=34, t=10, p=100, pref=200), p=200)
 plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 
-\workedanswer{2}
+\workedanswer{2}{Profile plots}
 Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5bar to 12dbar range.
 <<>>=
 library(oce)
@@ -510,7 +514,8 @@ pycnocline <- ctd.trim(ctd, "pressure", c(5,12))
 plot.profile(pycnocline, type="sigmatheta+N2")
 @
 
-\workedanswer{3} A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28.
+\workedanswer{3}{Sealevel plot}
+A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28.
 The author can verify that the strongest winds occurred a bit after midnight -- that was the time
 he moved to a room without windows, in fear of flying glass.
 <<>>=
@@ -521,7 +526,28 @@ abline(v=as.POSIXct("2003-09-28 23:30:00"), col="red", lty="dotted")
 mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-28 23:30:00"), col="red")
 @
 
-\workedanswer{4}
+\workedanswer{4}{Gulf Stream}
+
+\index{Gulf Stream!geostrophic calculation}
+Try \verb@?sw.dynamic.height@ for hints on smoothing.
+<<>>=
+library(oce)
+data(a03)
+Gulf.Stream <- section.subset(a03, 124:102)
+dh <- sw.dynamic.height(Gulf.Stream)
+par(mfrow=c(2,1))
+plot(dh$distance, dh$height, type='b', xlab="", ylab="Dyn. Height [m]")
+grid()
+# 1e3 metres per kilometre
+f <- coriolis(Gulf.Stream$station[[1]]$latitude)
+g <- gravity(Gulf.Stream$station[[1]]$latitude)
+v <- diff(dh$height)/diff(dh$distance) * g / f / 1e3
+plot(dh$distance[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
+grid()
+abline(h=0)
+@
+
+\workedanswer{5}{Sealevel spectrum}
 Notice the use of \verb@(object)$data$(item)@ here.  All \verb@oce@ objects are lists, 
 and all of them contain a \verb@data@ element of a similar form to this.
 <<>>=
@@ -532,7 +558,7 @@ abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @
 
-\workedanswer{5}
+\workedanswer{6}{Lobo plot}
 The resampling with \verb@i@ is to avoid obscuring colours by overplotting.  Note 
 the use of \verb@as.ctd@ to assemble the data into something that \verb@plot.TS@ can handle.
 This is an example of the practicality of \verb@oce@; eventually, \verb@plot.TS@ may be altered to take simple columns of data, but for now it seems reasonable to require the user to assemble
