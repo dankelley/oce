@@ -2,7 +2,7 @@
 \alias{ctd.update.header}
 \title{Update a CTD header}
 \description{
-  Update the header of a CTD object
+  Update the header of a \code{ctd} object
 }
 \usage{
 ctd.update.header(x, debug=FALSE)
@@ -12,7 +12,7 @@ ctd.update.header(x, debug=FALSE)
   \item{debug}{Set to \code{TRUE} for debugging.}
 }
 \details{
-  Update the header of a CTD object, e.g. adjusting \code{nvalues} and
+  Update the header of a \code{ctd} object, e.g. adjusting \code{nvalues} and
   the \code{span} of each column. This is done automatically 
   by \code{ctd.trim}, for example.
 }
@@ -20,7 +20,7 @@ ctd.update.header(x, debug=FALSE)
   A new \code{ctd} object.
 }
 \seealso{
-\code{read.ctd} reads a CTD object, and \code{write.ctd} writes one.
+\code{read.ctd} reads a \code{ctd} object, and \code{write.ctd} writes one.
 }
 \examples{
 library(oce)

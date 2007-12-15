@@ -2,7 +2,7 @@
 \alias{ctd.add.column}
 \title{Add a column to a CTD file}
 \description{
-  Add a column to a CTD file, updating the header as appropriate.
+  Add a column to a \code{ctd} file, updating the header as appropriate.
 }
 \usage{
 ctd.add.column(x, column=NULL, column.name="", 
@@ -28,7 +28,7 @@ ctd.add.column(x, column=NULL, column.name="",
   A new \code{ctd} object.
 }
 \seealso{
-\code{read.ctd} reads a CTD object, and \code{write.ctd} writes one.
+\code{read.ctd} reads a \code{ctd} object, and \code{write.ctd} writes one.
 }
 \examples{
 library(oce)

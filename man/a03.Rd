@@ -12,16 +12,16 @@ to run across the nominal Gulf Stream axis.
 }
 \examples{
 library(oce)
-# Gulf Stream
+# Gulf Stream (note that section runs east to west)
 data(a03)
-a03g <- section.grid(a03, p=seq(0,2000,10))
+Gulf.Stream <- section.subset(a03, 124:102)
+Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 10))
 data(coastline.world)
-# Select the Gulf Stream region
-plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
+plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 }
 \usage{data(a03)}
 \source{\url{http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1} (use the \emph{BOT} link in the \emph{Exchange} section of this page.)}
 \references{\url{http://cchdo.ucsd.edu}}
-\seealso{This was read with \code{\link{read.section}(a03_hy1.csv)}, working a data file downloaded from the CCHDO site mentioned above.}
+\seealso{This was read with \code{\link{read.section}("a03_hy1.csv")}, working a data file downloaded from the CCHDO site mentioned above.}
 \author{Dan Kelley}
 \keyword{misc}

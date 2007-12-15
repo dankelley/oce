@@ -34,10 +34,11 @@ Dynamic height [m].
 \examples{
 library(oce)
 data(a03)
+Gulf.Stream <- section.subset(a03, 124:102)
 x <- NULL
 h <- NULL
-for (i in 102:124) { # Gulf Stream
-    x <- c(x, a03$stations[[i]]$longitude)
+for (i in length(Gulf.Stream$stations)) { # Gulf Stream
+    x <- c(x, Gulf.Stream$stations[[i]]$longitude)
     h <- c(h, sw.dynamic.height(a03$stations[[i]]))
 }
 plot(x,h, type='b', xlab="Longitude [W]", ylab="Dynamic Height [m]")

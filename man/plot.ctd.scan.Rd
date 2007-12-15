@@ -17,16 +17,16 @@ plot.ctd.scan(x, name = "scan",
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 \details{
-  Plots CTD data as time-series against the scan number, as an 
+  Plots \code{ctd} data as time-series against the scan number, as an 
   aide to trimming to downcasts, \emph{etc}.
 }
 \value{
   None.
 }
 \seealso{
-  \code{\link{summary.ctd}} summarizes a CTD object
-  \code{\link{plot.ctd}} plot summary diagram of CTD object.
-  \code{\link{read.ctd}} scans CTD object from a file.
+  \code{\link{summary.ctd}} summarizes a \code{ctd} object
+  \code{\link{plot.ctd}} plot summary diagram of \code{ctd} object.
+  \code{\link{read.ctd}} scans \code{ctd} object from a file.
 }
 \examples{
 library(oce)

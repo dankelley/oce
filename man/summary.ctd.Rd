@@ -2,7 +2,7 @@
 \alias{summary.ctd}
 \title{Summarize a seawater (CTD) data object}
 \description{
-  Summarizes some of the data in a CTD object.
+  Summarizes some of the data in a \code{ctd} object.
 }
 \usage{
 \method{summary}{ctd}(object, \dots)

@@ -36,28 +36,23 @@ read.section <- function(file, section.id, debug=FALSE)
 	close(ccc)
 	if (length(var.units) != length(var.names)) stop("length mismatch in variable lists")
 	header <- lines[1:header.length]
-#	cat(length(var.names), "\n")
-#	cat(var.names, "\n")
-#	cat(length(var.units), "\n")
-#	cat(var.units, "\n")
 	nd <- n - header.length - 1
 	nv <- length(var.names)
 	data <- array(dim=c(nd, nv - 2))
 	stn.id <- vector("character", nd)
-	section.id <- ""
+	section.id <- NA
 	for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
-#		cat(length(strsplit(lines[l], split=",")[[1]]), "\n")
-#		cat(lines[l], "\n")
 		contents <- strsplit(lines[l], split=",")[[1]]
-		if (missing(section.id) && l == (header.length + 1))
+		if (is.na(section.id) && l == (header.length + 1))
 			section.id <- sub(" *","", contents[2])
-		stn.id[l - header.length] <- sub(" *","", contents[3])
+		stn.id[l - header.length] <- sub("^ *","", contents[3])
 		data[l - header.length,] <- contents[3:nv]
 		# FIXME: maybe should just scan this thing; it might work better anyway
 	}
 	p <- as.numeric(data[,which(var.names=="CTDPRS") - 2])
 	T <- as.numeric(data[,which(var.names=="CTDTMP") - 2])
 	S <- as.numeric(data[,which(var.names=="CTDSAL") - 2])
+	water.depth  <- as.numeric(data[,which(var.names=="DEPTH") - 2])
 	latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - 2])
 	longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - 2])
 	station <- data[,which(var.names=="STNNBR") - 2]
@@ -69,13 +64,13 @@ read.section <- function(file, section.id, debug=FALSE)
 		this.station <- as.ctd(S=S[select], T=T[select], p=p[select],
 			latitude=latitude[select[1]], 
 			longitude=longitude[select[1]],
-			station=stn.id[select[1]],
+			cruise=section.id[i],
+			station=sub("^ *", "", station[select[1]]),
+			water.depth=water.depth[select[1]],
 			filename=filename)
 		if (debug) cat("station at ", latitude[select[1]], "N and ", longitude[select[1]], "W\n")
         stations[[i]] <- this.station
 	}
-#	rval <- list(names=var.names, units=var.units, expcode=expcode, sect.id=sect.id, data=data,
-#		p=p, t=t, S=S, latitude=latitude,longitude=longitude, stations=stations)
    	action <- paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep="")
     processing.log <- list(time = c(Sys.time()), action = action)
     res <- list(processing.log = processing.log, section.id=section.id, stations = stations)

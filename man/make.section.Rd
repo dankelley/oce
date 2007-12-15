@@ -4,8 +4,8 @@
 \description{Combine a series of CTD profiles together to create a section.}
 \usage{make.section(item, \dots)}
 \arguments{
-  \item{item}{Either a CTD object, in which case the rest of the arguments are other CTD objects, or a list of ctd objects.}
-  \item{\dots}{A list of CTD objects, either given as separate arguments (the normal procedure) or as a list.}
+  \item{item}{Either a \code{ctd} object, in which case the rest of the arguments are other \code{ctd} objects, or a list of \code{ctd} objects.}
+  \item{\dots}{A list of \code{ctd} objects, either given as separate arguments (the normal procedure) or as a list.}
 }
 \details{
   \emph{Caution.} This is still in development, and the syntax may change without notice.

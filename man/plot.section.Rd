@@ -60,13 +60,11 @@ data(section)
 data(coastline.halifax)
 plot(section, coastline=coastline.halifax)
 # Gulf Stream
-# File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
-# a03 <- read.section("a03_hy1.csv")
 data(a03)
-a03g <- section.grid(a03, p=seq(0,2000,10))
+Gulf.Stream <- section.subset(a03, 124:102)
+Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0,2000,10))
 data(coastline.world)
-# Select the Gulf Stream region
-plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
+plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 }
 \author{Dan Kelley}
 \keyword{misc}

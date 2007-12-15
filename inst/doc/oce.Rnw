@@ -304,10 +304,10 @@ cases, the \verb@section.grid@ function may be used, e.g.
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-a03g <- section.grid(a03, p=seq(0,2000,10))
+Gulf.Stream <- section.subset(a03, 124:102)
+Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 10))
 data(coastline.world)
-# Select the Gulf Stream region
-plot(a03g,station.indices=seq(124,102),coastline=coastline.world,map.xlim=c(-80,-60))
+plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 @
 produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was travelling
 westward from the Mediterranean towards North America, taking 124 stations in total;
@@ -324,6 +324,7 @@ isobaths (and perhaps, the Gulf Stream) at right angles.
 \end{center}
 \caption{\label{fig:sectiona03}
 Portion of CTD A03, showing the region of the Gulf Stream.
+(Cruise chief scientist: Tereschenkov, SOI.)
 }
 \end{figure}
 

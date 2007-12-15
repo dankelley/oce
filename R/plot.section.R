@@ -42,12 +42,15 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 				axis(2)
 				box()
 			}
+			water.depth <- NULL
 			for (i in 1:num.stations) {
 				zz[i,] <- rev(x$stations[[station.indices[i]]]$data[[variable]])
 				if (grid) {
 					abline(v = xx[i], col=col.grid, lty="dotted")
 				}
+				water.depth <- c(water.depth, x$stations[[station.indices[i]]]$water.depth)
 			}
+			lines(x=xx, y=water.depth, lwd=3, col="gray") # bottom trace
 			par(new=TRUE)
 			contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
 			legend("topright", title, bg="white", x.intersp=0, y.intersp=0.5)

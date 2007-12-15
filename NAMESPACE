@@ -33,6 +33,7 @@ export(
 	read.sealevel,
 	read.section,
 	section.grid,
+	section.subset,
 	sw.alpha,
 	sw.alpha.over.beta,
  	sw.sound.speed,

@@ -2,7 +2,7 @@
 \alias{section.subset}
 \title{Subset a section}
 \description{Subset a section, by removing stations or rearranging their order.}
-\usage{section.subset <- function(section, indices=1:length(section$stations))}
+\usage{subset <- section.subset(section, indices=1:length(section$stations))}
 \arguments{
   \item{section}{a section to be subsetted.}
   \item{indices}{the index numbers of stations to keep, e.g. the first station in the section has index 1.}
