@@ -1,4 +1,5 @@
 0.1.70: - let sw.rho() and similar sw. functions take a ctd object as a single argument
+	- add sw.dynamic.height()
 0.1.69: - modify documentation slightly
 	- rename as.CTD() to as.ctd(), to make it consistent with similar functions
 	- add read.section()

@@ -22,8 +22,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             }
         }
     }
-    if (!inherits(x, "ctd")) 
-        stop("method is only for ctd objects")
+    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     oldpar <- par(no.readonly = TRUE)
     par(mfrow = c(2, 2))
 	par(mar=c(4,4,5,2))

@@ -17,7 +17,7 @@ sw.alpha.over.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
 		p <- rep(p[1], np)
 	}
  	if (!is.theta)
-		t = oce::sw.theta(S, t, p)
+		t = sw.theta(S, t, p)
  	if (nS != np)
     	stop("lengths of S and p must agree, but they are ", nS, " and ", np, ", respectively")
   	rval <- .C("sw_alpha_over_beta",

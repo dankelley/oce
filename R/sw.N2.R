@@ -1,7 +1,7 @@
 sw.N2 <- function(p, sigma.theta=NULL, ...) # BUG: think more about best density measure
 {
 	if ("ctd" == class(p)) {
-		sigma.theta <- oce::sw.sigma.theta(p$data$salinity, p$data$temperature, p$data$pressure)
+		sigma.theta <- sw.sigma.theta(p$data$salinity, p$data$temperature, p$data$pressure)
 		p <- p$data$pressure # over-writes p
 	}
 	args <- list(...)

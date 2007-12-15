@@ -39,6 +39,7 @@ export(
 	sw.beta,
 	sw.conductivity,
 	sw.depth,
+	sw.dynamic.height,
 	sw.lapse.rate,
 	sw.N2,
 	sw.rho,

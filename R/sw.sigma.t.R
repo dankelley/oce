@@ -6,5 +6,5 @@ sw.sigma.t <- function(S, t=NULL, p=NULL)
 		S <- S$data$salinity # note: this destroys the ctd object
 	}
   	p.top <- rep(0, length(S))
-  	oce::sw.rho(S, t, p.top) - 1000
+  	sw.rho(S, t, p.top) - 1000
 }
