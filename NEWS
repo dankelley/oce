@@ -1,7 +1,7 @@
-0.1.70: - let sw.rho() and similar sw. functions take a ctd object as a single argument
+0.1.70	- let sw.rho() and similar sw. functions take a ctd object as a single argument
 	- add sw.dynamic.height()
 	- make section.grid() and ctd.decimate() extrapolate to surface in "approx" method
-0.1.69: - modify documentation slightly
+0.1.69	- modify documentation slightly
 	- rename as.CTD() to as.ctd(), to make it consistent with similar functions
 	- add read.section()
 	- add section.grid(), which only grids in p at the moment
@@ -12,102 +12,102 @@
 	- add "connect.points" option to plot.TS()
 	- add "station" item to "ctd" object
 	- change as.CTD() to produce sigma.theta instead of sigma
-0.1.68: - add coastline.world dataset, and increase resolution of coastline.maritimes
-        - plot.TS() no longer rotates the RH margin isopycnal labels (unless told to)
-0.1.67: - allow sw.rho() and similar routines take matrices as arguments for S, t, etc
-0.1.66: - fix bug in plot.TS() that prevented it from showing some isopycnals if min(S)=0
-0.1.65: - switch to using UNESCO formulation for sw potential temperature by default
-        - prevent warnings with C90 compiler on some machines
-0.1.64: - add read.oce(), a generic function for reading several oceanographic files
-        - make read.ctd() understand WOCE-exchange files
-        - make read.sealevel() understand comma-separated data from MEDS
-        - make plot.sealevel() skip the spectral graphs, if the timeseries has NA values
-        - improve aesthetics of plot.ctd()
-        - extend plot.sealevel() by adding focus.time argument
-        - add ctd.decimate()
-        - add oce.as.POSIXlt()
-        - add latlon.format(), lat.format(), and lon.format()
-        - add as.coastline()
-        - add make.section()
-        - add summary.section()
-        - add plot.section()
-        - add data(section)
-0.1.63: - add sw.sound.speed()
-0.1.62: - add processing.log.append() and related code
-        - improve ctd.trim()
-0.1.61: - add rudimentary read/summary/plot functions for lobo datasets
-0.1.60: - add vignette; address some build-stage warning messages
-0.1.59: - set up data files to permit latin1 encoding of some content
-0.1.58: - rename all seawater-related functions, e.g. theta() as sw.theta(), to allow for atmospheric analogs
-0.1.57: - make as.CTD() accept length(p)=1, e.g. for surface plots
-0.1.56: - make read.coastline() handle S files
-0.1.55: - keep theta() from complaining if length(p) = 1
-0.1.54: - add alpha() and beta()
-0.1.53: - add alpha.over.beta()
-0.1.52: - document the use of 'df' in N2(), plot.ctd(), etc.
-0.1.51: - permit 'rho()' (and similar) to take NAs in args (bug B32)
-0.1.50: - permit 'rho()' and descendants to take scalar pressure.
-0.1.49: - add 'as.CTD()'
-0.1.48: - add "UNESCO1983" formulation to theta() as an alternative
-0.1.47: - speed up 'theta()' by moving vector work from R to C
-0.1.46: - make 'geod.dist()' accept a vector for location 1 and a scalar for location 2
-0.1.45: - make 'read.coastline()' understand matlab and Splus formats in addition to mapgen format
-0.1.44: - make 'plot.coastline()' scale lat and lon correctly
-0.1.43: - add 'read.coastline()', 'summary.coastline()', and 'plot.coastline()'
-0.1.42: - add 'as.sealevel()'
-0.1.41: - add 'read.sealevel()', 'summary.sealevel()', and 'plot.sealevel()'
-0.1.40: - add 'name' option to plot.ctd.scan()
-0.1.39: - add lapse.rate()
-0.1.38: - fix B27 (header not updated for columns added during read.ctd)
-0.1.37: - rename trim.ctd() as ctd.trim()
-        - rename write.ctd() as ctd.write()
-0.1.36: - add write.ctd()
-        - add ctd.add.column()
-        - add ctd.update.header()
-0.1.35: - add plot.ctd.scan()
-0.1.34: - make read.ctd() calculate S if missing but C, T, and p are given
-        - add S.C.T.p()
-0.1.33: - add conductivity()
-0.1.32: - rename oce.rho() as rho(), etc., now that a namespace exists
-0.1.31: - use namespace
-0.1.30: - add oce.viscosity()
-0.1.29: - fix B23 (not done yet)
-        - fix B22 (not done within oce; done at system level)
-0.1.28: - add 'pressure' method to trim.ctd()
-0.1.27: - vectorize rho() since it was too slow on large datasets
-0.1.26: - make demo(oce.ctd) print data
-0.1.25: - fix some documentation errors that the 2.0.0 CHECK noticed
-0.1.24: - profiles have correct y-axis
-        - OSX port, but must first do e.g. 'export PKG_LIBS="-L/sw/lib"'
-0.1.23: - OSX port (you must first do 'export PKG_LIBS="-L/sw/lib"')
-0.1.22: - add trim.ctd()
-0.1.21: - permit lat/lon with the "N"-type indicator at start
-0.1.20: - fix bug B16 (label the isopycnals on TS diagram)
-0.1.19: - make read.ctd handle more file types
-0.1.18: - add oce.coriolis, oce.depth, oce.gravity, oce.t.freeze
-0.1.17: - add oce.specific.heat oce.N2; fix bug B18
-0.1.16: - get data(ctd) working
-0.1.15: - add oce.S.t.rho
-0.1.14: - fix bug B15 (maybe)
-0.1.13: - add oce.t.S.rho
-0.1.12: - fix bugs B10, B11, and B13
-0.1.11: - fix bugs B6, B7, and B12
-0.1.10: - Add geod.dist()
-        - Add plot.ctd(), which is rudimentary for now
-        - fix bug B8
-0.1.9:  - Add spice() function
-0.1.8:  - Permit all eos functions to handle missing values
-        - fix bug B4
-0.1.7:  - Add summary(ctd) method.
-        - Make read.ctd() return an object of type 'ctd'.
-        - Get tests/ working.
-0.1.6:  - Create tests/oce.test1.R
-0.1.5:  - Add ocesigma(), ocesigma.t(), ocesigma.theta()
-0.1.4:  - Permit various EOS functions to handle lists
-        - fix bug B3
-0.1.3:  - Add ocerho()
-0.1.2:  - Fix file-path bug
-        - fix bug B2
-0.1.1:  - Add theta()   
-        - fix bug B1
-0.1.0:  - Add read.ctd()
+0.1.68	- add coastline.world dataset, and increase resolution of coastline.maritimes
+	- plot.TS() no longer rotates the RH margin isopycnal labels (unless told to)
+0.1.67	- allow sw.rho() and similar routines take matrices as arguments for S, t, etc
+0.1.66	- fix bug in plot.TS() that prevented it from showing some isopycnals if min(S)=0
+0.1.65	- switch to using UNESCO formulation for sw potential temperature by default
+	- prevent warnings with C90 compiler on some machines
+0.1.64	- add read.oce(), a generic function for reading several oceanographic files
+	- make read.ctd() understand WOCE-exchange files
+	- make read.sealevel() understand comma-separated data from MEDS
+	- make plot.sealevel() skip the spectral graphs, if the timeseries has NA values
+	- improve aesthetics of plot.ctd()
+	- extend plot.sealevel() by adding focus.time argument
+	- add ctd.decimate()
+	- add oce.as.POSIXlt()
+	- add latlon.format(), lat.format(), and lon.format()
+	- add as.coastline()
+	- add make.section()
+	- add summary.section()
+	- add plot.section()
+	- add data(section)
+0.1.63	- add sw.sound.speed()
+0.1.62	- add processing.log.append() and related code
+	- improve ctd.trim()
+0.1.61	- add rudimentary read/summary/plot functions for lobo datasets
+0.1.60	- add vignette; address some build-stage warning messages
+0.1.59	- set up data files to permit latin1 encoding of some content
+0.1.58	- rename all seawater-related functions, e.g. theta() as sw.theta(), to allow for atmospheric analogs
+0.1.57	- make as.CTD() accept length(p)=1, e.g. for surface plots
+0.1.56	- make read.coastline() handle S files
+0.1.55	- keep theta() from complaining if length(p) = 1
+0.1.54	- add alpha() and beta()
+0.1.53	- add alpha.over.beta()
+0.1.52	- document the use of 'df' in N2(), plot.ctd(), etc.
+0.1.51	- permit 'rho()' (and similar) to take NAs in args (bug B32)
+0.1.50	- permit 'rho()' and descendants to take scalar pressure.
+0.1.49	- add 'as.CTD()'
+0.1.48	- add "UNESCO1983" formulation to theta() as an alternative
+0.1.47	- speed up 'theta()' by moving vector work from R to C
+0.1.46	- make 'geod.dist()' accept a vector for location 1 and a scalar for location 2
+0.1.45	- make 'read.coastline()' understand matlab and Splus formats in addition to mapgen format
+0.1.44	- make 'plot.coastline()' scale lat and lon correctly
+0.1.43	- add 'read.coastline()', 'summary.coastline()', and 'plot.coastline()'
+0.1.42	- add 'as.sealevel()'
+0.1.41	- add 'read.sealevel()', 'summary.sealevel()', and 'plot.sealevel()'
+0.1.40	- add 'name' option to plot.ctd.scan()
+0.1.39	- add lapse.rate()
+0.1.38	- fix B27 (header not updated for columns added during read.ctd)
+0.1.37	- rename trim.ctd() as ctd.trim()
+	- rename write.ctd() as ctd.write()
+0.1.36	- add write.ctd()
+	- add ctd.add.column()
+	- add ctd.update.header()
+0.1.35	- add plot.ctd.scan()
+0.1.34	- make read.ctd() calculate S if missing but C, T, and p are given
+	- add S.C.T.p()
+0.1.33	- add conductivity()
+0.1.32	- rename oce.rho() as rho(), etc., now that a namespace exists
+0.1.31	- use namespace
+0.1.30	- add oce.viscosity()
+0.1.29	- fix B23 (not done yet)
+	- fix B22 (not done within oce; done at system level)
+0.1.28	- add 'pressure' method to trim.ctd()
+0.1.27	- vectorize rho() since it was too slow on large datasets
+0.1.26	- make demo(oce.ctd) print data
+0.1.25	- fix some documentation errors that the 2.0.0 CHECK noticed
+0.1.24	- profiles have correct y-axis
+	- OSX port, but must first do e.g. 'export PKG_LIBS="-L/sw/lib"'
+0.1.23	- OSX port (you must first do 'export PKG_LIBS="-L/sw/lib"')
+0.1.22	- add trim.ctd()
+0.1.21	- permit lat/lon with the "N"-type indicator at start
+0.1.20	- fix bug B16 (label the isopycnals on TS diagram)
+0.1.19	- make read.ctd handle more file types
+0.1.18	- add oce.coriolis, oce.depth, oce.gravity, oce.t.freeze
+0.1.17	- add oce.specific.heat oce.N2; fix bug B18
+0.1.16	- get data(ctd) working
+0.1.15	- add oce.S.t.rho
+0.1.14	- fix bug B15 (maybe)
+0.1.13	- add oce.t.S.rho
+0.1.12	- fix bugs B10, B11, and B13
+0.1.11	- fix bugs B6, B7, and B12
+0.1.10	- Add geod.dist()
+	- Add plot.ctd(), which is rudimentary for now
+	- fix bug B8
+0.1.9:	- Add spice() function
+0.1.8:	- Permit all eos functions to handle missing values
+	- fix bug B4
+0.1.7:	- Add summary(ctd) method.
+	- Make read.ctd() return an object of type 'ctd'.
+	- Get tests/ working.
+0.1.6:	- Create tests/oce.test1.R
+0.1.5:	- Add ocesigma(), ocesigma.t(), ocesigma.theta()
+0.1.4:	- Permit various EOS functions to handle lists
+	- fix bug B3
+0.1.3:	- Add ocerho()
+0.1.2:	 - Fix file-path bug
+	- fix bug B2
+0.1.1:	- Add theta()
+	- fix bug B1
+0.1.0:	- Add read.ctd()
