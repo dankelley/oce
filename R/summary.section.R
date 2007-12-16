@@ -9,14 +9,11 @@ summary.section <- function(object, quiet=FALSE, ...)
 	depth <- vector("numeric", num.stations)
 	distance <- vector("numeric", num.stations)
 	levels <- vector("numeric", num.stations)
-	station.id <- vector("character", num.stations)
-	lat.fmt <- vector("character", num.stations)
-	lon.fmt <- vector("character", num.stations)
+	station.id <- object$station.id
+   	lat.fmt  <- lat.format(object$latitude)
+   	lon.fmt  <- lon.format(object$longitude)
 	for (i in 1:num.stations) {
 		stn <- object$station[[i]]
-		station.id[i]  <- object$station.id[i]
-    	lat.fmt[i]  <- lat.format(object$latitude[i])
-    	lon.fmt[i]  <- lon.format(object$longitude[i])
 		depth[i] <- if (have.water.depth) stn$water.depth else max(stn$data$pressure, na.rm=TRUE)
 		distance[i] <- sprintf("%.1fkm", geod.dist(lat1, lon1, stn$latitude, stn$longitude))
 		levels[i] <- length(object$station[[i]]$data$pressure)

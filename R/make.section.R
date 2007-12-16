@@ -7,13 +7,13 @@ make.section <- function(item, ...)
 		}
 		num.stations <- 1 + length(extra.args)
 		station <- vector("list", num.stations)
-		station[[1]] <- item
 		stn <- vector("character", num.stations)
 		lon <- vector("numeric", num.stations)
 		lat <- vector("numeric", num.stations)
-		stn[1] <- extra.args[[1]]$station
-		lat[1] <- extra.args[[1]]$latitude
-		lon[1] <- extra.args[[1]]$longitude
+		stn[1] <- item$station
+		lat[1] <- item$latitude
+		lon[1] <- item$longitude
+		station[[1]] <- item
 		for (i in 2:num.stations) {
 			stn[i] <- extra.args[[i-1]]$station
 			lat[i] <- extra.args[[i-1]]$latitude
