@@ -49,7 +49,7 @@ the earth.
  km <- geod.dist(45, 100, 46, 100)/1000 
 }
 \references{
-T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the Ellipsoid with Application of Nested Equations", Survey Review, April 1975.
+T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on the Ellipsoid with Application of Nested Equations", Survey Review, April 1975.  (As of late 2007, this is available at \url{http://www.ngs.noaa.gov/PUBS_LIB/inverse.pdf}.)
 }
 \author{Dan Kelley packaged this, based on R code sent to him by Darren Gillis, who in 2003 had modified Fortran code written in 1974 by (according to comment cards in the source) L. Pfeifer and J. G. Gergen.}
 \keyword{misc}

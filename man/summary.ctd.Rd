@@ -28,7 +28,6 @@ library(oce)
 data(ctd)
 #ctd <- read.ctd("ctdprofile.cnv")
 summary(ctd)
-summary(ct)
 }
 \references{
   The Seabird CTD instrument is described at
