@@ -32,9 +32,11 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
 	names(data.new) <- data.names
   	method <- match.arg(method)
 	if (method == "approx") {
+		too.deep <- pt > max(x$data[["pressure"]], na.rm=TRUE)
 		for (datum.name in data.names) {
 			if (datum.name != "pressure") {
-				data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt)$y
+				data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt, rule=2)$y
+				data.new[[datum.name]][too.deep] <- NA
 			}
 		}
 	} else {

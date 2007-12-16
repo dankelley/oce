@@ -10,7 +10,6 @@
 	at=NULL,
 	labels=TRUE,
 	grid=FALSE,
-	col.grid="lightgray",
 	station.indices,
 	coastline=NULL,
 	map.xlim=NULL,
@@ -21,8 +20,7 @@
   \item{field}{is the field to plot.  Common options are \code{"temperature"}, \code{"salinity"}, and \code{"density"}, although \code{plot.section} will accept any named field that is present in the constituent CTD profiles. If \code{NULL} (the default) is given, then temperature, salinity and density are graphed.}
   \item{at}{if \code{NULL} (the default), the x axis will indicate the distance of the stations from the first in the section.  (This may give errors in the contouring routine, if the stations are not present in a geographical order.)  If a list, then it indicates the values at which stations will be plotted.}
   \item{labels}{either a logical, indicating whether to put labels on the x axis, or a vector that is a list of labels to be placed at the x positions indicated by \code{at}.}
-  \item{grid}{if \code{TRUE}, grid lines will be drawn on plots.}
-  \item{col.grid}{color of grid lines.}
+  \item{grid}{if \code{TRUE}, points are drawn at data locations.}
   \item{station.indices}{optional list of the indices of stations to use.  Note that these are indices, not the names of stations, e.g. to focus on the first four stations, use \code{station.numbers=c(1,4)}.}
   \item{coastline}{optional \code{coastline} to be used in a station map}
   \item{map.xlim}{optional xlim for station location, which can be helpful in ensuring that a recognizable coastline can be seen}

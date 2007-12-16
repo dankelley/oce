@@ -1,15 +1,24 @@
 section.subset <- function(section, indices=1:length(section$station))
 {
 	n <- length(indices)
-    stations <- vector("list", n)
-    for (i in 1:n)
-		stations[[i]] <- section$station[[indices[i]]]
-    processing.log <- section$processing.log
-	section.id <- section$section.id
-    res <- list(processing.log = processing.log, section.id = section.id, 
-        stations = stations)
+    station <- vector("list", n)
+	stn <- vector("character", n)
+	lon <- vector("numeric", n)
+	lat <- vector("numeric", n)
+    for (i in 1:n) {
+		ii <- indices[i]
+		stn[i] <- section$station.id[ii]
+		lat[i] <- section$latitude[ii]
+		lon[i] <- section$longitude[ii]
+		station[[i]] <- section$station[[ii]]
+	}
+    res <- list(header=section$header,
+	 	section.id=section$section.id, 
+		station.id=stn, latitude=lat, longitude=lon,
+		station=station,
+		processing.log = section$processing.log)
 	log.item <- paste("modified by section.subset(x, indices=c(",paste(indices,collapse=","),"))",sep="")
-	res <- processing.log.append(res, log.item)
     class(res) <- "section"
+	res <- processing.log.append(res, log.item)
 	res
 }
