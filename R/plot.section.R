@@ -25,7 +25,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 				else 
 					lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
 			}
-			lines(lon, lat)
+			lines(lon, lat, col="lightgray")
 			points(lon, lat, pch=20)
 			points(lon[1], lat[1], pch=22, cex=2*par("cex"))
 			if (indicate.stations) {
@@ -39,14 +39,17 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 				text(xlab, ylab, x$station.id[num.stations])
 			}
 		} else {
-			# FIXME: contours don't get to plot edges with axs="i"
+			# FIXME: contours don't get to plot edges
+			xxrange <- range(xx)
+			yyrange <- range(yy)
+			#yyrange[1] <- -1
 			if (is.null(at)) {
-				plot(range(xx), range(yy),
-		 			xaxs="i", yaxs="r", ylim=rev(range(yy)), col="white", 
+				plot(xxrange, yyrange,
+		 			xaxs="i", yaxs="i", ylim=rev(yyrange), col="white", 
 					xlab="Distance [ km ]",	ylab="Pressure [ dbar ]")
 			} else {
-				plot(range(xx), range(yy),
-		 			xaxs="i", yaxs="r", ylim=rev(range(yy)), col="white", 
+				plot(xxrange, yyrange,
+		 			xaxs="i", yaxs="i", ylim=rev(yyrange), col="white", 
 					xlab="", ylab="Pressure [ dbar ]", axes=FALSE)
 				axis(1, at=at, labels=labels)
 				axis(2)
@@ -100,6 +103,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 		xx <- at
 	}
 	yy <- x$station[[station.indices[1]]]$data$pressure
+	#yy[1] <- yy[1] + 0.1 * (yy[2]-yy[1])
 	if (is.null(field)) {
 		par(mfrow=c(2,2))
 		par(mar=c(4.5,4,1,1))
