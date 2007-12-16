@@ -23,7 +23,7 @@ summary.section <- function(object, quiet=FALSE, ...)
 	}
 	if (!quiet) {
 		if (have.water.depth) {
-			print(data.frame(Station=station.id, Latitude=lat.fmt, Longitude=lon.fmt, Water.Depth=depth, Distance=distance, Levels=levels))
+			print(data.frame(Station=station.id, Latitude=lat.fmt, Longitude=lon.fmt, Depth=depth, Distance=distance, Levels=levels))
 		} else {
 			print(data.frame(Station=station.id, Latitude=lat.fmt, Longitude=lon.fmt, Distance=distance, Levels=levels))
 		}
