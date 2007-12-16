@@ -24,12 +24,11 @@ A \code{ctd} object may be read with \code{\link{read.ctd}}
 or created with \code{\link{as.ctd}}.
 }
 \examples{
-\dontrun{
 library(oce)
-profile <- read.ctd("/usr/local/lib/R/library/oce/demo/ctdprofile.cnv")
-summary.ctd(profile)
-summary(profile)
-}
+data(ctd)
+#ctd <- read.ctd("ctdprofile.cnv")
+summary(ctd)
+summary(ct)
 }
 \references{
   The Seabird CTD instrument is described at

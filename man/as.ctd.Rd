@@ -38,10 +38,20 @@ sample.interval=NA)
  This is helpful if data were created, not read in from a file.
 }
 \value{
-  A \code{ctd} object.  
+A \code{ctd} object (see \code{\link{read.ctd}}).
 }
 \seealso{
-  \code{\link{read.ctd}} reads data,
+A file containing CTD profile data may be read with \code{\link{read.ctd}}.
+A \code{ctd} object may be summarized with \code{\link{summary.ctd}}.
+Overview plots may be made with \code{\link{plot.ctd}}, while
+\code{\link{plot.TS}} produces TS plots and
+\code{\link{plot.ctd.scan}} produces scan plots that may help with data editing.
+Extraneous data such as those collected during upcasts and equilibration intervals
+may be trimmed with \code{\link{ctd.trim}},
+and the data may be cast onto specified pressure levels with \code{\link{ctd.decimate}}.
+Low-level manipulation may be done with \code{\link{ctd.add.column}}
+and \code{\link{ctd.update.header}}, as well as by direct manipulation of the items
+within \code{ctd} objects.
 }
 \examples{
 library(oce)

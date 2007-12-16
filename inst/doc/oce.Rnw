@@ -288,7 +288,7 @@ will plot a summary diagram (Figure~\ref{fig:section}) containing sections of $T
 $\sigma_\theta$, along with a chart indicating station locations. In addition to such overview
 diagrams, \verb@plot@ can also create individual plots of individual properties.
 
-\workedexercise{3}{Draw a TS diagram for the \verb@section@ data, colour-coded by station}
+\workedexercise{3}{Draw a TS diagram for the section data, colour-coded by station}
 
 \begin{figure}
 \begin{center}

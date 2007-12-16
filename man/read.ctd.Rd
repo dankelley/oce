@@ -11,15 +11,16 @@ read.ctd(file, type=NULL, debug=FALSE,
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{type}{if \code{NULL}, then the first line is studied, in order to determine the file type.  If \code{type="SBE19"}, then a \emph{Seabird 19} (or similar) CTD
-format is assumed. If \code{type="WOCE"} then a 
-WOCE-exchange file is assumed.}
+  \item{type}{if \code{NULL}, then the first line is studied, in order to determine the
+    file type.  If \code{type="SBE19"}, then a \emph{Seabird 19} (or similar) CTD
+    format is assumed. If \code{type="WOCE"} then a 
+    WOCE-exchange file is assumed.}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
   \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column names from the
-                 header.  If a list, then it will be taken to be the list
-				 of columns.  The list must include \code{"pressure"}, \code{"temperature"}
-				 and either \code{"conductivity"} or \code{"salinity"}, or else very little
-				 can be done with the file.}
+    header.  If a list, then it will be taken to be the list
+    of columns.  The list must include \code{"pressure"}, \code{"temperature"}
+    and either \code{"conductivity"} or \code{"salinity"}, or else very little
+    can be done with the file.}
   \item{station}{Station number.}
   \item{check.human.headers}{produces warnings for missing human-written header items.}
 }
@@ -78,18 +79,26 @@ WOCE-exchange file is assumed.}
     names are discovered from the header, and may thus differ from file
     to file.  For example, some CTD instruments may have a fluorometer
     connected, others may not.  The following vectors are normally
-    present: \code{data$pressure}, 
-    \code{data$salinity}, \code{data$temperature}, and \code{data$sigma}.
-    Note that \code{data$sigma} is calculated 
-    from the pressure, salinity, and temperature in the file, using 
-    \code{\link{sw.sigma}}.}
+    present: \code{data$pressure}, \code{data$salinity}, \code{data$temperature},
+    and \code{data$sigma.theta}. Note: even if a \code{data$sigma.theta} data 
+    item is present in the file, the value returned is recalculated 
+    using \code{\link{sw.sigma}}, to ensure consistency.}
 }
 
 \seealso{
 The generic function \code{\link{read.oce}} provides an alternative to this.
 
-A \code{ctd} object may be summarized with \code{\link{summary.ctd}} and plotted
-with \code{\link{plot.ctd}}.
+Data from a CTD cast may be assembled into a \code{ctd} object using \code{\link{as.ctd}}.  
+A \code{ctd} object may be summarized with \code{\link{summary.ctd}}.
+Overview plots may be made with \code{\link{plot.ctd}}, while
+\code{\link{plot.TS}} produces TS plots and
+\code{\link{plot.ctd.scan}} produces scan plots that may help with data editing.
+Extraneous data such as those collected during upcasts and equilibration intervals
+may be trimmed with \code{\link{ctd.trim}},
+and the data may be cast onto specified pressure levels with \code{\link{ctd.decimate}}.
+Low-level manipulation may be done with \code{\link{ctd.add.column}}
+and \code{\link{ctd.update.header}}, as well as by direct manipulation of the items
+within \code{ctd} objects.
 }
 \examples{
 \dontrun{
