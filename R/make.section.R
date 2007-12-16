@@ -8,11 +8,14 @@ make.section <- function(item, ...)
 		num.stations <- 1 + length(extra.args)
 		stations <- vector("list", num.stations)
 		stations[[1]] <- item
+		stn <- vector("character", num.stations)
 		lon <- vector("numeric", num.stations)
 		lat <- vector("numeric", num.stations)
+		stn[1] <- extra.args[[1]]$station
 		lat[1] <- extra.args[[1]]$latitude
 		lon[1] <- extra.args[[1]]$longitude
 		for (i in 2:num.stations) {
+			stn[i] <- extra.args[[i-1]]$station
 			lat[i] <- extra.args[[i-1]]$latitude
 			lon[i] <- extra.args[[i-1]]$longitude
 			stations[[i]] <- extra.args[[i-1]]
@@ -27,9 +30,11 @@ make.section <- function(item, ...)
 		}
 		num.stations <- length(args)
 		stations <- vector("list", num.stations)
+		stn <- vector("character", num.stations)
 		lon <- vector("numeric", num.stations)
 		lat <- vector("numeric", num.stations)
 		for (i in 1:num.stations) {
+			stn[i] <- args[[i]]$station
 			lat[i] <- args[[i]]$latitude
 			lon[i] <- args[[i]]$longitude
 			stations[[i]] <- args[[i]]
@@ -42,7 +47,8 @@ make.section <- function(item, ...)
 	action <- "created by make.section()"
 	processing.log <- list(time=c(Sys.time()), action=action)
 	res <- list(header="", section.id="",
-		latitude=lat, longitude=lon, stations = stations,
+		station.id=stn, latitude=lat, longitude=lon, 
+		stations = stations,
 		processing.log = processing.log)
   	class(res) <- "section"
 	res
