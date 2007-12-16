@@ -25,6 +25,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 				else 
 					lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
 			}
+			lines(lon, lat)
 			points(lon, lat, pch=20)
 			points(lon[1], lat[1], pch=22, cex=2*par("cex"))
 			if (indicate.stations) {
