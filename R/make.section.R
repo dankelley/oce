@@ -6,8 +6,8 @@ make.section <- function(item, ...)
 			stop("cannot make a section from one station")
 		}
 		num.stations <- 1 + length(extra.args)
-		stations <- vector("list", num.stations)
-		stations[[1]] <- item
+		station <- vector("list", num.stations)
+		station[[1]] <- item
 		stn <- vector("character", num.stations)
 		lon <- vector("numeric", num.stations)
 		lat <- vector("numeric", num.stations)
@@ -18,7 +18,7 @@ make.section <- function(item, ...)
 			stn[i] <- extra.args[[i-1]]$station
 			lat[i] <- extra.args[[i-1]]$latitude
 			lon[i] <- extra.args[[i-1]]$longitude
-			stations[[i]] <- extra.args[[i-1]]
+			station[[i]] <- extra.args[[i-1]]
 			summary(extra.args[i-1])
 			#cat("dood i=",i,"\n")
 		}
@@ -29,7 +29,7 @@ make.section <- function(item, ...)
 			stop("cannot make a section from one station")
 		}
 		num.stations <- length(args)
-		stations <- vector("list", num.stations)
+		station <- vector("list", num.stations)
 		stn <- vector("character", num.stations)
 		lon <- vector("numeric", num.stations)
 		lat <- vector("numeric", num.stations)
@@ -37,7 +37,7 @@ make.section <- function(item, ...)
 			stn[i] <- args[[i]]$station
 			lat[i] <- args[[i]]$latitude
 			lon[i] <- args[[i]]$longitude
-			stations[[i]] <- args[[i]]
+			station[[i]] <- args[[i]]
 		}
 		#cat("CASE 2\n")
 	} else {
@@ -48,7 +48,7 @@ make.section <- function(item, ...)
 	processing.log <- list(time=c(Sys.time()), action=action)
 	res <- list(header="", section.id="",
 		station.id=stn, latitude=lat, longitude=lon, 
-		stations = stations,
+		station=station,
 		processing.log = processing.log)
   	class(res) <- "section"
 	res

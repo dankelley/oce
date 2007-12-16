@@ -68,7 +68,7 @@ read.section <- function(file, section.id, debug=FALSE)
 		stn[i] <- sub("^ *", "", station.id[select[1]])
 		lat[i] <- latitude[select[1]]
 		lon[i] <- longitude[select[1]]
-		this.station <<- as.ctd(S=S[select], T=T[select], p=p[select],
+		this.station <- as.ctd(S=S[select], T=T[select], p=p[select],
 			latitude=lat[i],
 			longitude=lon[i],
 			cruise=section.id[i],

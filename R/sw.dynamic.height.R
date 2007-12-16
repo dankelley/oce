@@ -11,9 +11,9 @@ sw.dynamic.height <- function(x, pref=2000)
 		integrate(integrand, 0, pref)$value
 	}
 	if ("section" == class(x)) {
-		lon0 <- x$stations[[1]]$longitude
-		lat0 <- x$stations[[1]]$latitude
-		ns <- length(x$stations)
+		lon0 <- x$station[[1]]$longitude
+		lat0 <- x$station[[1]]$latitude
+		ns <- length(x$station)
 		d <- vector("numeric", ns)
 		h <- vector("numeric", ns)
 		for (i in 1:ns) {

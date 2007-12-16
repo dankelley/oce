@@ -66,7 +66,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 	} else {
 		num.stations <- length(station.indices)		
 	}
-	if (num.stations < 2) stop("cannot plot a section containing less than 2 stations")
+	if (num.stations < 2) stop("cannot plot a section containing fewer than 2 stations")
 	num.depths <- length(x$station[[station.indices[1]]]$data$pressure)
 	zz <- matrix(nrow=num.stations, ncol=num.depths)
 	xx <- array(NA, num.stations)

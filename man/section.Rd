@@ -5,8 +5,8 @@
 \description{A CTD section running the length of Halifax Harbour.}
 \usage{data(section)}
 \format{
-The individual stations are available as \code{section$stations[[1]]} through
-to \code{section$stations[[7]]}, each of which is an object of type
+The individual stations are available as \code{section$station[[1]]} through
+to \code{section$station[[7]]}, each of which is an object of type
 \code{ctd}.
 }
 \source{
