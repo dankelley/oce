@@ -79,11 +79,11 @@ read.section <- function(file, section.id, debug=FALSE)
         station[[i]] <- this.station
 	}
    	action <- paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep="")
-    processing.log <- list(time = c(Sys.time()), action = action)
+    log <- list(time = c(Sys.time()), action = action)
     res <- list(header=header, section.id=section.id, 
 		station.id=stn, latitude=lat, longitude=lon,
 		station=station,
-		processing.log = processing.log)
+		log = log)
     class(res) <- "section"
 	res
 }

@@ -105,7 +105,7 @@ read.sealevel <- function(file, debug=FALSE)
 			stop("require units to be MM")
 		}
 	}
-	processing.log <- list(time=c(Sys.time()), 
+	log <- list(time=c(Sys.time()), 
 		action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
 	num.missing <- sum(is.na(eta))
 	if (num.missing > 0) {
@@ -126,5 +126,5 @@ read.sealevel <- function(file, debug=FALSE)
 		decimation.method=decimation.method,
 		reference.offset=reference.offset,
 		reference.code=reference.code,
-		processing.log=processing.log)
+		log=log)
 }

@@ -48,7 +48,7 @@ ctd.add.column <- function (x, column=NULL, column.name="",
 			paste("# ", flag, " ", flags, " = ", content, sep=""),
 			h[after:n]))
 	}
-	h <- result$header
+	h <- result$metadata$header
 	h <- insert.in.header(h, "name", sprintf("%s: %s, [%s]", code, name, unit))
 	r <- range(column)
 	h <- insert.in.header(h, "span", sprintf("%f, %f",r[1],r[2]))
@@ -56,7 +56,7 @@ ctd.add.column <- function (x, column=NULL, column.name="",
 		cat("Original header:", result$header,sep="\n")
 		cat("Modified header:", h,sep="\n")
 	}
-	result$header <- h
+	result$metadata$header <- h
     result$data[,column.name] <- column
 	log.item <- paste("modified by ctd.add.column(x, column, column.name=\"", 
 		column.name, 
@@ -64,6 +64,6 @@ ctd.add.column <- function (x, column=NULL, column.name="",
 		"\", name=\"", name, 
 		"\", unit=\"", unit, 
 		"\", debug)",sep="")
-	result <- processing.log.append(result, log.item)
+	result <- log.append(result, log.item)
 	return(result)
 }

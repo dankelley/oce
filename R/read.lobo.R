@@ -20,9 +20,9 @@ read.lobo <- function(file, cols=7) {
 		T            <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
 		p            <- rep(0, length(S))
 		time <- as.POSIXlt(time)
-		processing.log <- list(time=c(Sys.time()), 
+		log <- list(time=c(Sys.time()), 
 			action=c(paste("created by read.lobo(\"",file,"\", cols=",cols,")",sep="")))
-		res <- list(processing.log=processing.log,
+		res <- list(log=log,
 			time=time, u=u, v=v, nitrate=nitrate, fluorescence=fluorescence, S=S, T=T, p=p, header=header, data=d)
 		class(res) = "lobo"
 		res

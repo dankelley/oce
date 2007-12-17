@@ -1,6 +1,6 @@
 ctd.update.header <- function (x, debug = FALSE)
 {
-	if (length(x$header) < 1)
+	if (length(x$metadata$header) < 1)
 		stop("there is no header in this CTD object")
 	if (length(x$data) < 1)
 		stop("there are no data in this CTD object")
@@ -19,7 +19,7 @@ ctd.update.header <- function (x, debug = FALSE)
 	# adjust column ranges
 	nquan <- length(x$data)
 	xret <- x
-	h <- xret$header
+	h <- xret$metadata$header
 	for (i in 1:nquan) {
 		r <- range(x$data[[i]])
 		prefix <- sprintf("^#[\t ]*span[\t ]*%d[\t ]*=", i)

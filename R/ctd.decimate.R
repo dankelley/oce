@@ -83,6 +83,6 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
 	# Now replace pressure
 	data.new[["pressure"]] <- pt
 	res$data <- data.new
-	res <- processing.log.append(res, log.item)
+	res <- log.append(res, log.item)
 	return(res)
 }

@@ -24,7 +24,7 @@ summary.section <- function(object, quiet=FALSE, ...)
 		} else {
 			print(data.frame(Station=station.id, Latitude=lat.fmt, Longitude=lon.fmt, Distance=distance, Levels=levels))
 		}
-		processing.log.summary(object)
+		log.summary(object)
 	}
 	invisible(data.frame(station=station.id, latitude=object$latitude, longitude=object$longitude))
 }

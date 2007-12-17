@@ -16,9 +16,9 @@ section.subset <- function(section, indices=1:length(section$station))
 	 	section.id=section$section.id, 
 		station.id=stn, latitude=lat, longitude=lon,
 		station=station,
-		processing.log = section$processing.log)
+		log = section$log)
 	log.item <- paste("modified by section.subset(x, indices=c(",paste(indices,collapse=","),"))",sep="")
     class(res) <- "section"
-	res <- processing.log.append(res, log.item)
+	res <- log.append(res, log.item)
 	res
 }

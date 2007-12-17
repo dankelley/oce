@@ -65,6 +65,6 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
 		log.item <- paste("modified by section.grid(x,method=\"", method, "\")")
 	else
 		log.item <- paste("modified by section.grid(x, p=c(",paste(p,collapse=","),"),method=\"",method,"\")",sep="")
-	res <- processing.log.append(res, log.item)
+	res <- log.append(res, log.item)
 	res
 }

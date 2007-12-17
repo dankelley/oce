@@ -12,5 +12,5 @@ summary.lobo <- function(object, ...)
   	f<-fivenum(object$T);               cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  T            ", f[1], f[2], f[3], f[4], f[5]))
   	f<-fivenum(object$u);               cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  u            ", f[1], f[2], f[3], f[4], f[5]))
   	f<-fivenum(object$v);               cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  v            ", f[1], f[2], f[3], f[4], f[5]))
-	processing.log.summary(object)
+	log.summary(object)
 }

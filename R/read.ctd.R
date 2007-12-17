@@ -174,9 +174,7 @@ read.ctd.WOCE <- function(file,
 	temperature[temperature == missing.value] <- NA
 	sigma.theta <- sw.sigma.theta(salinity, temperature, pressure)
 	data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
-	processing.log <- list(time=c(Sys.time()), 
-		action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
-  	res <- list(header=header, 
+	metadata <- list(
 	      		filename=filename, # provided to this routine
 			    filename.orig=filename.orig, # from instrument
 				system.upload.time=system.upload.time,
@@ -192,9 +190,9 @@ read.ctd.WOCE <- function(file,
               	longitude=longitude,
               	recovery=recovery,
               	water.depth=water.depth,
-              	sample.interval=sample.interval,
-				processing.log=processing.log,
-              	data=data);
+              	sample.interval=sample.interval)
+	log <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
+	res <- list(data=data, metadata=metadata, log=log)
   	class(res) <- "ctd"
 	res
 }
@@ -444,9 +442,8 @@ read.ctd.SBE19 <- function(file,
   	#DELETED# data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
 #  	data <- read.table(file,col.names=col.names.forced,colClasses="numeric");
   	data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
-	processing.log <- list(time=c(Sys.time()), 
-		action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
-  	res <- list(header=header, 
+	metadata <- list(
+		header=header, 
 		filename=filename, # provided to this routine
 		filename.orig=filename.orig, # from instrument
 		system.upload.time=system.upload.time,
@@ -462,9 +459,9 @@ read.ctd.SBE19 <- function(file,
 		longitude=longitude,
 		recovery=recovery,
 		water.depth=water.depth,
-		sample.interval=sample.interval,
-		processing.log=processing.log,
-		data=data);
+		sample.interval=sample.interval)
+	log <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
+	res <- list(data=data, metadata=metadata, log=log)
   	class(res) <- "ctd"
 	# Add standard things, if missing
   	if (!found.salinity) {

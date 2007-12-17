@@ -48,27 +48,19 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
 	cex <- 0.9
     text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
     yloc <- yloc - d.yloc
-	if (!is.null(x$filename))
-    	text.item(x$filename,    " File:     ", cex=cex)
-	if (!is.null(x$scientist))
-		text.item(x$scientist,   " Scientist:", cex=cex);
-	if (!is.null(x$institute))
-		text.item(x$institute,   " Institute:", cex=cex);
-	if (!is.null(x$date))
-    	text.item(x$date,        " Date:     ", cex=cex)
-	if (!is.null(x$ship))
-		text.item(x$ship,	     " Ship:     ", cex=cex);
-	if (!is.null(x$cruise))
-    	text.item(x$cruise,      " Cruise:   ", cex=cex)
-	if (!is.null(x$station))
-    	text.item(x$station,     " Station:  ", cex=cex)
-	if (!is.null(x$water.depth))
-    	text.item(x$water.depth, " Depth:    ", cex=cex)
-    if (!is.na(x$longitude) && !is.na(x$latitude)) { # See similar code in summary.ctd
-    	text.item(latlon.format(x$latitude, x$longitude),         " Location: ", cex=cex)
+	if (!is.null(x$metadata$filename))    	text.item(x$metadata$filename,    " File:     ", cex=cex)
+	if (!is.null(x$metadata$scientist))		text.item(x$metadata$scientist,   " Scientist:", cex=cex)
+	if (!is.null(x$metadata$institute))		text.item(x$metadata$institute,   " Institute:", cex=cex)
+	if (!is.null(x$metadata$date))    		text.item(x$metadata$date,        " Date:     ", cex=cex)
+	if (!is.null(x$metadata$ship))			text.item(x$metadata$ship,	      " Ship:     ", cex=cex)
+	if (!is.null(x$metadata$cruise))    	text.item(x$metadata$cruise,      " Cruise:   ", cex=cex)
+	if (!is.null(x$metadata$station))    	text.item(x$metadata$station,     " Station:  ", cex=cex)
+	if (!is.null(x$metadata$water.depth))  	text.item(x$metadata$water.depth, " Depth:    ", cex=cex)
+    if (!is.na(x$metadata$longitude) && !is.na(x$metadata$latitude)) { # See similar code in summary.ctd
+    	text.item(latlon.format(x$metadata$latitude, x$metadata$longitude),         " Location: ", cex=cex)
 	}
     if (!is.na(ref.lat) && !is.na(ref.lon)) {
-        dist <- geod.dist(x$latitude, x$longitude, ref.lat, 
+        dist <- geod.dist(x$metadata$latitude, x$metadata$longitude, ref.lat, 
             ref.lon)
         kms <- sprintf("%.2f km", dist/1000)
         rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon), 
