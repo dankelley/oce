@@ -21,7 +21,9 @@ read.ctd(file, type=NULL, debug=FALSE,
     of columns.  The list must include \code{"pressure"}, \code{"temperature"}
     and either \code{"conductivity"} or \code{"salinity"}, or else very little
     can be done with the file.}
-  \item{station}{Station number.}
+  \item{station}{optional character string containing an identifying name (or
+    number) for the station. (This can be useful if the routine cannot determine
+    the name automatically, or if another name is preferred.)}
   \item{check.human.headers}{produces warnings for missing human-written header items.}
 }
 \details{
