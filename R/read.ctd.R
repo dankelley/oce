@@ -5,7 +5,7 @@ read.ctd <- function(file,
 	   	type=NULL,
    		debug=FALSE,
 		columns=NULL,
-		station="",
+		station=NULL,
 	   	check.human.headers=FALSE)
 {
 	filename <- NULL
@@ -49,7 +49,7 @@ read.ctd.WOCE <- function(file,
 		filename,
    		debug=FALSE,
 		columns=NULL,
-		station="",
+		station=NULL,
 	   	missing.value=-999)
 {
   	if (is.character(file)) {
@@ -203,7 +203,7 @@ read.ctd.SBE19 <- function(file,
 		filename,
    		debug=FALSE,
 		columns=NULL,
-		station="",
+		station=NULL,
 	   	check.human.headers=TRUE)
 {
 	# I really should add ability to specify column numbers, to avoid wasting time
@@ -274,8 +274,7 @@ read.ctd.SBE19 <- function(file,
 				if (0 < regexpr("ratio", lline)) {
 					found.conductivity.ratio <- TRUE;
 					name <- "conductivityratio";
-				}
-				else {
+				} else {
 					found.conductivity <- TRUE;
 					name <- "conductivity";
 				}
@@ -288,8 +287,7 @@ read.ctd.SBE19 <- function(file,
       		if (0 < regexpr("sigma-theta", lline)) {
         		name <- "sigma.theta"
         		found.sigma.theta <- TRUE
-      		}
-			else {
+      		} else {
         		if (0 < regexpr("sigma-t", lline)) {
           			name <- "sigma.t"
         			found.sigma.t <- TRUE
@@ -329,8 +327,7 @@ read.ctd.SBE19 <- function(file,
         		if (!north) {
           			latitude <- -(latitude)
         		}
-      		}
-			else {
+      		} else {
         		warning("cannot parse Latitude in header since need 2 items but got ", length(lat[[1]]), " items in '", line, "'\n")
       		}
     	}
@@ -350,8 +347,7 @@ read.ctd.SBE19 <- function(file,
         		if (!east) {
           			longitude <- -(longitude)
         		}
-      		}
- 			else {
+      		} else {
         		warning("cannot parse Longitude in header since need 2 items but got ", length(lon[[1]]), " items in '", line, "'\n")
       		}
     	}
@@ -372,6 +368,10 @@ read.ctd.SBE19 <- function(file,
       		address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line); # full string
     	if (0 < (r<-regexpr("cruise:", lline)))
       		cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line); # full string
+		if (is.null(station)) {
+    		if (0 < (r<-regexpr("station:", lline)))
+      			station <- sub("(.*)station:([ ])*", "", ignore.case=TRUE, line); # full string
+		}
     	if (0 < (r<-regexpr("recovery:", lline)))
       		recovery <- sub("(.*)recovery:([ ])*", "", lline);
     	if (0 < (r<-regexpr("water depth:", lline))) {
@@ -383,8 +383,7 @@ read.ctd.SBE19 <- function(file,
       		if (!is.na(unit)) {
         		if (unit == "m") {
           			water.depth <- as.numeric(value)
-        		}
-				else {
+        		} else {
           			if (rtmp[[1]][2] == "km") {
             			water.depth <- as.numeric(value) * 1000
           			}
@@ -402,16 +401,13 @@ read.ctd.SBE19 <- function(file,
       		sample.interval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
       		if (rtmp[[1]][3] == "seconds") {
         		;
-      		}
-			else {
+      		} else {
         		if (rtmp[[1]][3] == "minutes") {
           			sample.interval <- sample.interval / 60;
-        		}
- 				else {
+        		} else {
           			if (rtmp[[1]][3] == "hours") {
             			sample.interval <- sample.interval / 3600;
-          			}
-					else {
+          			} else {
             			warning("cannot understand `",rtmp[[1]][2],"' as a unit of time for sample.interval");
           			}
         		}
@@ -451,24 +447,24 @@ read.ctd.SBE19 <- function(file,
 	processing.log <- list(time=c(Sys.time()), 
 		action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
   	res <- list(header=header, 
-	      		filename=filename, # provided to this routine
-			    filename.orig=filename.orig, # from instrument
-				system.upload.time=system.upload.time,
-              	ship=ship,
-              	scientist=scientist,
-              	institute=institute,
-              	address=address,
-              	cruise=cruise,
-				station=station,
-              	date=date,
-	      		start.time=start.time,
-              	latitude=latitude,
-              	longitude=longitude,
-              	recovery=recovery,
-              	water.depth=water.depth,
-              	sample.interval=sample.interval,
-				processing.log=processing.log,
-              	data=data);
+		filename=filename, # provided to this routine
+		filename.orig=filename.orig, # from instrument
+		system.upload.time=system.upload.time,
+		ship=ship,
+		scientist=scientist,
+		institute=institute,
+		address=address,
+		cruise=cruise,
+		station=station,
+		date=date,
+		start.time=start.time,
+		latitude=latitude,
+		longitude=longitude,
+		recovery=recovery,
+		water.depth=water.depth,
+		sample.interval=sample.interval,
+		processing.log=processing.log,
+		data=data);
   	class(res) <- "ctd"
 	# Add standard things, if missing
   	if (!found.salinity) {
