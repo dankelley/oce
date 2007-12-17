@@ -20,7 +20,7 @@ as.sealevel(t=NULL,
   decimation.method=NA,
   reference.offset=NA,
   reference.code=NA,
-  processing.log=NULL)
+  log=NULL)
 }
 \arguments{
   \item{t}{a list of times, in POSIXct format.}
@@ -37,7 +37,7 @@ as.sealevel(t=NULL,
   \item{decimation.method}{a coded value, with 1 meaning filtered, 2 meaning a simple average of all samples, 3 meaning spot readings, and 4 meaning some other method.}
   \item{reference.offset}{?}
   \item{reference.code}{?}
-  \item{processing.log}{a processing log}
+  \item{log}{a processing log}
 }
 \details{
   The arguments are based on the standard data format, as described

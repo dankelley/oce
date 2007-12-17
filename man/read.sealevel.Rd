@@ -37,7 +37,7 @@ means, and then to use \code{\link{as.sealevel}} to create the \code{sealevel} o
   \item{units}{unit of observations (normally "MM")}
   \item{n}{number of observations}
   \item{data}{a list containing \code{t}, times of observations and \code{eta}, the sealevel observations, in units \code{units} (normally, mm)}
-  \item{processing.log}{a processing log.}
+  \item{log}{a processing log.}
 }
 
 \seealso{

@@ -27,7 +27,7 @@ BUG: the 'arc/info ungenerate' format is not yet understood.
 }
 \value{
   A \code{coastline} object containing
-  \item{processing.log}{A processing log in the standard oce format.}
+  \item{log}{A processing log in the standard oce format.}
   \item{data}{a list containing \code{longitude}, in decimal degrees positive east of Greenwich, and \code{latitude}, in decimal degrees positive north of the equator.}
 }
 

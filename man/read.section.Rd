@@ -24,7 +24,7 @@ A \code{section} object, which is a list containing the following items
 \item{latitude}{a vector of station latitudes, decimal and positive in northern hemisphere.}
 \item{longitude}{a vector of station latitudes, decimal and positive in eastern hemisphere.}
 \item{station}{a list of \code{ctd} objects (see e.g. \code{\link{read.ctd}}), one per station.}
-\item{processing.log}{a processing log.}
+\item{log}{a processing log.}
 }
 
 \seealso{\code{\link{make.section}} can be used to bind together \code{ctd} objects into a section.}

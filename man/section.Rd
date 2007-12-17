@@ -26,11 +26,11 @@ stn01 <- ctd.trim(read.ctd("BED0301.CNV", station="1"))
 stn11 <- ctd.trim(read.ctd("BED0311.CNV", station="11"))
 stn12 <- ctd.trim(read.ctd("BED0312.CNV", station="12"))
 stn12$latitude <- 44 + 39.894 / 60
-stn12 <- processing.log.append(stn12, "DEK/typo - lat minutes from 39.394 to 39.894")
+stn12 <- log.append(stn12, "DEK/typo - lat minutes from 39.394 to 39.894")
 stn13 <- ctd.trim(read.ctd("BED0313.CNV", station="13"))
 stn15 <- ctd.trim(read.ctd("BED0315.CNV", station="15"))
 stn15$latitude <- stn15$latitude + 1
-stn15 <- processing.log.append(stn15, "DEK/typo - add 1 to lat")
+stn15 <- log.append(stn15, "DEK/typo - add 1 to lat")
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)
 section$section.id <- "Halifax-Harbour-2003-oct"
 section <- section.grid(section, p=p, method="boxcar")

@@ -61,6 +61,18 @@ read.ctd(file, type=NULL, debug=FALSE,
   package, if they prove to be of little use in practice, or if they prove
   to have been idiosyncratic features of the particular files used in
   early development of \code{oce}.)
+  \item{data}{a data table containing the profile data.  The column
+    names are discovered from the header, and may differ from file
+    to file.  For example, some CTD instruments may have a fluorometer
+    connected, others may not.  The order of the columns may vary from
+    case to case, and so it is important to refer to them by name.
+    The following vectors are normally present: \code{data$pressure},
+    \code{data$salinity}, \code{data$temperature}, and
+    \code{data$sigma.theta}. (The last of these is calculated using
+    \code{\link{sw.sigma.theta}}, whether or not values are present
+    in the data file.)}
+  \item{metadata}{a list containing the following items
+	\itemize{
   \item{header}{the header itself, normally containing several dozen lines of
     information.}
   \item{filename}{name of the file passed to \code{read.ctd}.}
@@ -81,17 +93,8 @@ read.ctd(file, type=NULL, debug=FALSE,
   \item{recovery}{date of recovery of CTD.}
   \item{water.depth}{the water depth at the site.}
   \item{sample.interval}{time interval between samples, in seconds.}
-  \item{processing.log}{a processing log.}
-  \item{data}{a data table containing the profile data.  The column
-    names are discovered from the header, and may differ from file
-    to file.  For example, some CTD instruments may have a fluorometer
-    connected, others may not.  The order of the columns may vary from
-    case to case, and so it is important to refer to them by name.
-    The following vectors are normally present: \code{data$pressure},
-    \code{data$salinity}, \code{data$temperature}, and
-    \code{data$sigma.theta}. (The last of these is calculated using
-    \code{\link{sw.sigma.theta}}, whether or not values are present
-    in the data file.)}
+}}
+  \item{log}{a processing log.}
 }
 
 \seealso{
@@ -112,7 +115,7 @@ within \code{ctd} objects.
 \examples{
 \dontrun{
 library(oce)
-x <- read.ctd("/usr/local/lib/R/library/oce/demo/ctdprofile.cnv")
+x <- read.ctd("BED0301.cnv")
 plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
 }
