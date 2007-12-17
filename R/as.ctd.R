@@ -12,6 +12,8 @@ sample.interval=NA)
 	processing.log <- list(time=c(Sys.time()), action=c("created by as.ctd()"))
 	res <- list(header=header,
 	      		filename=filename,
+				filename.orig=NULL,
+				system.upload.time=NULL,
               	ship=ship,
               	scientist=scientist,
               	institute=institute,

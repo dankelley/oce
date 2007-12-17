@@ -18,12 +18,12 @@ salinity column "\code{CTDSAL}"; if not, salinity values will not be
 read from the file.}
 \value{
 A \code{section} object, which is a list containing the following items
-\itemize\item{header}{the header from the data file.}
+\item{header}{the header from the data file.}
 \item{section.id}{a name for the section.}
 \item{station.id}{a vector of station IDs, one per station.}
 \item{latitude}{a vector of station latitudes, decimal and positive in northern hemisphere.}
 \item{longitude}{a vector of station latitudes, decimal and positive in eastern hemisphere.}
-\item{station}{a list of \code{ctd} objects, one per station.}
+\item{station}{a list of \code{ctd} objects (see e.g. \code{\link{read.ctd}}), one per station.}
 \item{processing.log}{a processing log.}
 }
 

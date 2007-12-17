@@ -68,7 +68,6 @@ read.ctd.WOCE <- function(file,
 	scientist <- ship <- institute <- address <- NULL
 	filename.orig <- NULL
 	sample.interval <- NaN
-	section.id <- NULL
 	system.upload.time <- NULL
   	latitude <- longitude <- NaN
   	start.time <- NULL
@@ -119,9 +118,6 @@ read.ctd.WOCE <- function(file,
 				header <- c(header, line)
 				if ((0 < (r<-regexpr("LATITUDE",  line))))
 					latitude  <- as.numeric(sub("[a-zA-Z =]*","", line))
-				# The section ID appears in various ways ("SECT", "SECTION_ID")
-				if ((0 < (r<-regexpr("SECT",  line))))
-					section.id <- sub("(.*)[ \t]*=[ \t]*", "", line)
 				if ((0 < (r<-regexpr("LONGITUDE", line))))
 					longitude <- as.numeric(sub("(.*) =","", line))
 				if ((0 < (r<-regexpr("DATE", line)))) {
@@ -189,7 +185,6 @@ read.ctd.WOCE <- function(file,
               	institute=institute,
               	address=address,
               	cruise=NULL,
-				section.id=section.id,
 				station=station,
               	date=date,
 	      		start.time=start.time,
@@ -232,7 +227,6 @@ read.ctd.SBE19 <- function(file,
 	scientist <- ship <- institute <- address <- NULL
 	filename.orig <- NULL
 	sample.interval <- NaN
-	section.id <- NULL
 	system.upload.time <- NULL
   	latitude <- longitude <- NaN
   	start.time <- NULL
@@ -465,7 +459,6 @@ read.ctd.SBE19 <- function(file,
               	institute=institute,
               	address=address,
               	cruise=cruise,
-				section.id=section.id,
 				station=station,
               	date=date,
 	      		start.time=start.time,

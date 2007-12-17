@@ -46,36 +46,41 @@ read.ctd(file, type=NULL, debug=FALSE,
   like \code{object$latitude <- 33 + 1/3}.
 
   It should be noted that different file types provide different meta-information.
-  For example, the WOCE exchange format binds together the institute name and the initials
-  of the chief scientist into a single string that \code{read.ctd} cannot parse, so
-  both \code{object$institute} and \code{object$scientist} are left blank for WOCE files.
+  For example, the WOCE exchange format binds together the institute name and the
+  initials of the chief scientist into a single string that \code{read.ctd} cannot
+  parse, so both \code{object$institute} and \code{object$scientist} are left 
+  blank for WOCE files.
 }
 \value{
-  A \code{ctd} object containing information about the station
-  (e.g. \code{latitude}, etc.), along with vectors containing the
-  acquired data (e.g. \code{S}, etc.).  The full header is also
-  contained in the list.  The returned list is as follows, but the reader
-  is cautioned that some items may be blank for some file formats.
-  \item{header[]}{the header itself, normally containing several dozen lines of information}
+  A \code{ctd} object, which is a list with elements detailed below.  The
+  most important elements are the station name and position, along
+  with the profile data that are contained in the data frame named \code{data}.
+  (Other elements in the list may be deleted in future versions of the
+  package, if they prove to be of little use in practice, or if they prove
+  to have been idiosyncratic features of the particular files used in
+  early development of \code{oce}.)
+  \item{header}{the header itself, normally containing several dozen lines of
+    information}
   \item{filename}{name of the file passed to read.ctd}
-  \item{filename.orig}{name of the original file saved by the instrument (normally a hex file)}
+  \item{filename.orig}{name of the original file saved by the instrument
+    (normally a hex file)}
   \item{system.upload.time}{system upload time}
   \item{ship}{name of the ship from which the CTD was deployed}
   \item{scientist}{name of the scientist taking the data}
   \item{institute}{name of the institute}
   \item{address}{the address of the institute where the scientist}
   \item{cruise}{name of cruise}
-  \item{section.id}{name of section}
   \item{station}{station number or name}
   \item{date}{date of lowering of CTD into the water}
+  \item{start.time}{time when instrument started recording data}
   \item{latitude}{latitude, in decimal degrees, positive north of equator}
   \item{longitude}{longitude, in decimal degrees, positive if east
     of Greenwich and west of dateline} 
   \item{recovery}{date of recovery of CTD}
-  \item{sample.interval}{time interval between samples [s]}
   \item{water.depth}{the water depth at the site [m]}
-  \item{processing.log}{A processing log.}
-  \item{data}{A data table containing the profile data as vectors.  The column
+  \item{sample.interval}{time interval between samples [s]}
+  \item{processing.log}{a processing log.}
+  \item{data}{A data table containing the profile data.  The column
     names are discovered from the header, and may thus differ from file
     to file.  For example, some CTD instruments may have a fluorometer
     connected, others may not.  The following vectors are normally

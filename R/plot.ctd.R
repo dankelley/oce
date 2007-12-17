@@ -60,8 +60,6 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
 		text.item(x$ship,	     " Ship:     ", cex=cex);
 	if (!is.null(x$cruise))
     	text.item(x$cruise,      " Cruise:   ", cex=cex)
-	if (!is.null(x$section))
-    	text.item(x$section,     " Section:  ", cex=cex)
 	if (!is.null(x$station))
     	text.item(x$station,     " Station:  ", cex=cex)
 	if (!is.null(x$water.depth))

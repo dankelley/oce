@@ -11,7 +11,6 @@ summary.ctd <- function(object, ...)
 	if (!is.null(object$ship))               cat("  Ship:               ", object$ship, "\n")
 	if (!is.null(object$cruise))             cat("  Cruise:             ", object$cruise, "\n")
 	if (!is.na(object$latitude))             cat("  Location:           ", latlon.format(object$latitude, object$longitude), "\n")
-	if (!is.null(object$section.id))         cat("  Section ID:         ", object$section.id, "\n")
 	if (!is.null(object$station))            cat("  Station:            ", object$station, "\n")
 	if (!is.null(object$start.time))         cat(paste("  Start time:         ", as.POSIXct(object$start.time), "\n"))
 	if (!is.null(object$deployed)) {
