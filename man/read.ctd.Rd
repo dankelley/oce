@@ -60,34 +60,36 @@ read.ctd(file, type=NULL, debug=FALSE,
   to have been idiosyncratic features of the particular files used in
   early development of \code{oce}.)
   \item{header}{the header itself, normally containing several dozen lines of
-    information}
-  \item{filename}{name of the file passed to read.ctd}
+    information.}
+  \item{filename}{name of the file passed to \code{read.ctd}.}
   \item{filename.orig}{name of the original file saved by the instrument
-    (normally a hex file)}
-  \item{system.upload.time}{system upload time}
-  \item{ship}{name of the ship from which the CTD was deployed}
-  \item{scientist}{name of the scientist taking the data}
-  \item{institute}{name of the institute}
-  \item{address}{the address of the institute where the scientist}
-  \item{cruise}{name of cruise}
-  \item{station}{station number or name}
-  \item{date}{date of lowering of CTD into the water}
-  \item{start.time}{time when instrument started recording data}
-  \item{latitude}{latitude, in decimal degrees, positive north of equator}
+    (normally a hex file).}
+  \item{system.upload.time}{system upload time.}
+  \item{ship}{name of the ship from which the CTD was deployed.}
+  \item{scientist}{name of the scientist taking the data.}
+  \item{institute}{name of the institute.}
+  \item{address}{the address of the institute where the scientist.}
+  \item{cruise}{name of cruise.}
+  \item{station}{station number or name.}
+  \item{date}{date of lowering of CTD into the water.}
+  \item{start.time}{time when instrument started recording data.}
+  \item{latitude}{latitude, in decimal degrees, positive north of equator.}
   \item{longitude}{longitude, in decimal degrees, positive if east
-    of Greenwich and west of dateline} 
-  \item{recovery}{date of recovery of CTD}
-  \item{water.depth}{the water depth at the site [m]}
-  \item{sample.interval}{time interval between samples [s]}
+    of Greenwich and west of dateline.}
+  \item{recovery}{date of recovery of CTD.}
+  \item{water.depth}{the water depth at the site.}
+  \item{sample.interval}{time interval between samples, in seconds.}
   \item{processing.log}{a processing log.}
-  \item{data}{A data table containing the profile data.  The column
-    names are discovered from the header, and may thus differ from file
+  \item{data}{a data table containing the profile data.  The column
+    names are discovered from the header, and may differ from file
     to file.  For example, some CTD instruments may have a fluorometer
-    connected, others may not.  The following vectors are normally
-    present: \code{data$pressure}, \code{data$salinity}, \code{data$temperature},
-    and \code{data$sigma.theta}. Note: even if a \code{data$sigma.theta} data 
-    item is present in the file, the value returned is recalculated 
-    using \code{\link{sw.sigma}}, to ensure consistency.}
+    connected, others may not.  The order of the columns may vary from
+    case to case, and so it is important to refer to them by name.
+    The following vectors are normally present: \code{data$pressure},
+    \code{data$salinity}, \code{data$temperature}, and
+    \code{data$sigma.theta}. (The last of these is calculated using
+    \code{\link{sw.sigma.theta}}, whether or not values are present
+    in the data file.)}
 }
 
 \seealso{
