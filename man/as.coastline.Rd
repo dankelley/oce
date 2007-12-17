@@ -15,11 +15,9 @@ as.coastline(latitude, longitude)
 This may be used when \code{\link{read.coastline}} cannot read a file, or when
 the data have been manipulated.
 }
-\value{
-  A \code{coastline} object containing
-  \item{log}{A processing log in the standard oce format.}
-  \item{data}{a list containing \code{longitude}, in decimal degrees positive east of Greenwich, and \code{latitude}, in decimal degrees positive north of the equator.}
-}
+
+\value{A \code{coastline} object as described at \code{\link{read.coastline}}.}
+
 \seealso{
 You may also use \code{\link{read.coastline}} to read a coastline file.
 Plotting is typically done with \code{\link{plot.coastline}}, although
