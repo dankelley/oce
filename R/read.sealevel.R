@@ -44,7 +44,7 @@ read.sealevel <- function(file, debug=FALSE)
 		latitude       <- as.numeric(strsplit(header[3], ",")[[1]][2])
 		longitude      <- as.numeric(strsplit(header[4], ",")[[1]][2])
 		x <- read.csv(file, skip=header.length, header=FALSE)
-		eta <- as.numeric(x$V2)
+		eta <- as.numeric(x$V)
 		t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
 	} else {
 		d <- readLines(file)
@@ -95,7 +95,7 @@ read.sealevel <- function(file, debug=FALSE)
 			}
 			last.day.portion <- day.portion
 		}                  
-		t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1))))#, "GMT")
+		t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)))
 		eta[eta==9999] <- NA
 		if (tolower(units) == "mm") {
 			eta <- eta / 1000 

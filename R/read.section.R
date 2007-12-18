@@ -78,7 +78,7 @@ read.section <- function(file, section.id, debug=FALSE)
 		if (debug) cat("station at ", lat[i], "N and ", lon[i], "W\n")
         station[[i]] <- this.station
 	}
-	data <- data.frame(station=station)
+	data <- list(station=station)
 	metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
 	log.item <- list(time = c(Sys.time()),
 		 action = paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep=""))

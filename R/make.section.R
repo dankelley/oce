@@ -38,7 +38,7 @@ make.section <- function(item, ...)
 	} else {
 		stop("first argument must be of class \"ctd\" or a \"list\"")
 	}
-	data <- data.frame(station=station)
+	data <- list(station=station)
 	metadata <- list(header="",section.id="",station.id=stn,latitude=lat,longitude=lon)
 	log.item <- list(time=c(Sys.time()), action="created by make.section")
 	res <- list(data=data, metadata=metadata, processing.log=log.item)

@@ -12,7 +12,7 @@ section.subset <- function(section, indices=1:length(section$data$station))
 		lon[i] <- section$metadata$longitude[ii]
 		station[[i]] <- section$data$station[[ii]]
 	}
-	data <- data.frame(station=station)
+	data <- list(station=station)
 	metadata <- list(header=section$header,section.id=section$section.id,station.id=stn,latitude=lat,longitude=lon)
 	log.item <- list(time = c(Sys.time()),
 		paste("modified by section.subset(x, indices=c(",paste(indices,collapse=","),"))",sep=""))

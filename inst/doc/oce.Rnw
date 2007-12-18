@@ -40,28 +40,30 @@
 
 \begin{abstract}
 
-The \verb@oce@ package makes it easy to read, summarize and plot data from a variety of
-Oceanographic instruments, isolating the researcher from the quirky data formats that are
-common in this field. It also provides functions for working with basic seawater properties
-such as the equation of state, and with derived quantities such as the buoyancy frequency.
-Although simple enough to be used in a teaching context, \verb@oce@ is powerful enough for a
-research setting.  These things are illustrated here with practical examples.
+The \verb@oce@ package makes it easy to read, summarize and plot data from a
+variety of Oceanographic instruments, isolating the researcher from the quirky
+data formats that are common in this field. It also provides functions for
+working with basic seawater properties such as the equation of state, and with
+derived quantities such as the buoyancy frequency.  Although simple enough to be
+used in a teaching context, \verb@oce@ is powerful enough for a research
+setting.  These things are illustrated here with practical examples.
 
 \end{abstract}
 
 \section{Introduction}
 
-Oceanographers must deal with measurements made by a wide variety of instruments, a task that
-is complicated by the delight instrument manufacturers seem to take in inventing new data
-formats. The manufacturers often provide software for scanning the data files and producing
-some standard plots, but this is of limited use to researchers who work with several instrument
-types at the same time, and who need to carry the analysis beyond the first step.
+Oceanographers must deal with measurements made by a wide variety of
+instruments, a task that is complicated by the delight instrument manufacturers
+seem to take in inventing new data formats. The manufacturers often provide
+software for scanning the data files and producing some standard plots, but this
+is of limited use to researchers who work with several instrument types at the
+same time, and who need to carry the analysis beyond the first step.
 
 The need to scan diverse data files was just one motivation for the creation of
 \verb@oce@. The other aim was to provide a system in which oceanographic data
 could be analyzed easily in R.  This second goal influenced the design of the
 objects in \verb@oce@, which follow a uniform design, a list with three
-components: (a) \verb@data@, a list or data frame containing the actual data,
+components: (a) \verb@data@, a list or a data frame containing the actual data,
 for a CTD object, this will contain pressure, temperature, etc., (b)
 \verb@metadata@, a list containing data such things as file headers, the
 location of a CTD cast, etc., and (c) \verb@processing.log@, a list that
@@ -76,20 +78,22 @@ and may keep keep it so as it grows.
 \index{calculation!seawater properties}
 \index{seawater properties, calculations of}
 
-The \verb@oce@ package provides many functions for dealing with seawater properties. Probably
-the most used is \verb@sw.rho(S,t,p)@, which computes seawater density $\rho$ as a function of
-salinity $S$ (PSU), in-situ temperature $t$ ($^\circ$C \dots\/ note the use of lower-case in
-this and related functions, to avoid confusion with \verb@T@, an abbreviation used sometimes in
-R programs) and pressure $p$ (decibar). The result is a number in the order of $1000$kg/m$^3$.
-For many purposes, Oceanographers prefer to use the density anomaly $\sigma=\rho-1000$kg/m$^3$,
-provided with \verb@sw.sigma(S,t,p)@, or its adiabatic cousin $\sigma_\theta$, provided with
-\verb@sw.sigma.theta(S,t,p)@.
+The \verb@oce@ package provides many functions for dealing with seawater
+properties. Probably the most used is \verb@sw.rho(S,t,p)@, which computes
+seawater density $\rho$ as a function of salinity $S$ (PSU), in-situ temperature
+$t$ ($^\circ$C \dots\/ note the use of lower-case in this and related functions,
+to avoid confusion with \verb@T@, an abbreviation used sometimes in R programs)
+and pressure $p$ (decibar). The result is a number in the order of
+$1000$kg/m$^3$.  For many purposes, Oceanographers prefer to use the density
+anomaly $\sigma=\rho-1000$kg/m$^3$, provided with \verb@sw.sigma(S,t,p)@, or its
+adiabatic cousin $\sigma_\theta$, provided with \verb@sw.sigma.theta(S,t,p)@.
 
-Note that the names of functions relating to seawater material properties start with
-``\verb@sw.@''; future versions of \verb@oce@ may add similarly named functions for the
-properties of air, sediment, organisms, etc.
+Note that the names of functions relating to seawater material properties start
+with ``\verb@sw.@''; future versions of \verb@oce@ may add similarly named
+functions for the properties of air, sediment, organisms, etc.
 
-The \verb@sw.@ functions can also take a \verb@ctd@ object instead of the \verb@(S, t, p)@ arguments.
+The \verb@sw.@ functions can also take a \verb@ctd@ object instead of the
+\verb@(S, t, p)@ arguments.
 
 \looseness=1
 \index{dynamic height}
@@ -135,7 +139,9 @@ $100$dbar, with salinity $34$PSU and temperature $10^\circ$C?
 
 \index{data!ctd profile \verb@ctd@}
 
-To get you started with CTD data, \verb@oce@ provides a sample data set that has been trimmed to just the downcast portion of the sampling.  (See the next section to learn how to do this trimming.).  The commands
+To get you started with CTD data, \verb@oce@ provides a sample data set that has
+been trimmed to just the downcast portion of the sampling.  (See the next
+section to learn how to do this trimming.).  The commands
 <<label=ctdplot,include=FALSE>>=
 library(oce)
 data(ctd)
@@ -146,8 +152,9 @@ produce Figure~\ref{fig:ctd}. You may also get a summary of the data with
 summary(ctd)
 @
 
-The object used to hold CTD data stores not just the data, but also the raw header sequence,
-and whatever has been discovered about the dataset by parsing the header; use
+The object used to hold CTD data stores not just the data, but also the raw
+header sequence, and whatever has been discovered about the dataset by parsing
+the header; use
 <<ctdnames,eval=false>>=
 names(ctd)
 @
@@ -157,11 +164,13 @@ names(ctd$data)
 @
 to find out what sensors were attached to the instrument, thus providing data columns. 
 
-As noted above, the seawater-property functions (whose names begin with \verb@sw.@) can take a \verb@ctd@ object instead of the individual arguments \verb@S@, \verb@t@, and \verb@p@.
+As noted above, the seawater-property functions (whose names begin with
+\verb@sw.@) can take a \verb@ctd@ object instead of the individual arguments
+\verb@S@, \verb@t@, and \verb@p@.
 
-It is
-possible to plot the components of a \verb@ctd@ object individually, either by accessing the data directly (see the
-WOCE section, below, for an example) or by using more specialized functions such as
+It is possible to plot the components of a \verb@ctd@ object individually,
+either by accessing the data directly (see the WOCE section, below, for an
+example) or by using more specialized functions such as
 \verb@plot.TS@ and \verb@plot.profile@.
 \begin{figure}
 \begin{center}
@@ -170,7 +179,10 @@ WOCE section, below, for an example) or by using more specialized functions such
 <<ctdplot>>
 @
 \end{center}
-\caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired during the St Lawrence Estuary Internal Wave Experiment.  (This dataset has been trimmed to just the downcast; see the text and Figure~\ref{fig:ctdraw} for more on trimming.)}
+\caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired during
+the St Lawrence Estuary Internal Wave Experiment.  (This dataset has been
+trimmed to just the downcast; see the text and Figure~\ref{fig:ctdraw} for more
+on trimming.)}
 \label{fig:ctd}
 \end{figure}
 
@@ -178,9 +190,10 @@ WOCE section, below, for an example) or by using more specialized functions such
 
 \subsection{Example with raw data}
 
-Practicing Oceanographers may be wondering how the CTD cast used in the preceding section was
-trimmed of equilibration-phase and upcast-phase data. Data from these sections are spurious and
-must be trimmed as a first step in processing. For example, consider the following code.
+Practicing Oceanographers may be wondering how the CTD cast used in the
+preceding section was trimmed of equilibration-phase and upcast-phase data. Data
+from these sections are spurious and must be trimmed as a first step in
+processing. For example, consider the following code.
 <<label=ctdrawplot,include=FALSE>>=
 data(ctd.raw)
 plot.ctd.scan(ctd.raw)
@@ -192,53 +205,62 @@ plot.ctd.scan(ctd.raw)
 <<ctdrawplot>>
 @
 \end{center}
-\caption{Scanwise plot of the \texttt{ctd.raw} sample data set.  Note the wild spike at the start, the equilibration phase before the downcast, and the spurious freshening signal near the start of the upcast.  See the text for a discussion of how inspection of such graphs can help in trimming CTD data.}
+\caption{Scanwise plot of the \texttt{ctd.raw} sample data set.  Note the wild
+spike at the start, the equilibration phase before the downcast, and the
+spurious freshening signal near the start of the upcast.  See the text for a
+discussion of how inspection of such graphs can help in trimming CTD data.}
 \label{fig:ctdraw}
 \end{figure}
 
-\noindent This produces a two-panel plot (Figure~\ref{fig:ctdraw}) of the data as a
-time-series, revealing not just the (useful) downcast, but also the subsequent upcast sequence.
-The x-axis in this plot is the scan number, which is a convenient index for extraction of the
-downcast portion of the profile by an essentially manual method, e.g. proceeding with a
-sequence of commands such as
+\noindent This produces a two-panel plot (Figure~\ref{fig:ctdraw}) of the data
+as a time-series, revealing not just the (useful) downcast, but also the
+subsequent upcast sequence.  The x-axis in this plot is the scan number, which
+is a convenient index for extraction of the downcast portion of the profile by
+an essentially manual method, e.g. proceeding with a sequence of commands such
+as
 <<ctdscaneg,eval=false>>=
 plot.ctd.scan(ctd.trim(ctd.raw, "scan", c(140,250)))
 plot.ctd.scan(ctd.trim(ctd.raw, "scan", c(150,250)))
 @
-This is the ``gold standard'' method, which is recommended for detailed work. However, for
-quick work, you may find that the automatic downcast detection scheme works adequately, e.g.
+This is the ``gold standard'' method, which is recommended for detailed
+work. However, for quick work, you may find that the automatic downcast
+detection scheme works adequately, e.g.
 <<ctdtrimeg,eval=false>>=
 ctd.trimmed <- ctd.trim(ctd.raw)
 @
 
-It should be noted that \verb@ctd.trim@ inserts entries into the object's log file, so that you
-(or anyone else with whom you share the objec) will be able to track exactly how this trimming
-was done.
+It should be noted that \verb@ctd.trim@ inserts entries into the object's log
+file, so that you (or anyone else with whom you share the objec) will be able to
+track exactly how this trimming was done.
 
 \index{reading!ctd profile}
 
-Once the profile has been trimmed, you may wish to use \texttt{ctd.decimate()} to smooth the
-data and interpolate the smoothed results to uniformly-spaced pressure values. For example, a
-quick examination of a file might be done by the following:
+Once the profile has been trimmed, you may wish to use \texttt{ctd.decimate()}
+to smooth the data and interpolate the smoothed results to uniformly-spaced
+pressure values. For example, a quick examination of a file might be done by the
+following:
 <<ctddectrim,eval=false>>=
 plot(ctd.decimate(ctd.trim(read.ctd("stn123.cnv"))))
 @
 
 \subsection{Example with WOCE archive data}
 
-The package has a harder time scanning the headers of data files in the WOCE archive format than
-it does in the Seabird format illustrated in the previous examples. This is mainly because
-front-line researchers tend to work in the Seabird format, and partly because the WOCE format is
-odd. For example, the first line of a WOCE file is of the form \texttt{CTD,20060609WHPOSIODAM}.
-Only the first part of this is easy to scan. To the left of the comma is the string \texttt{CTD},
-which seems straightforward, except that in some cases it is written \texttt{CTDO}. After the
-comma is found the file date (yyyymmdd), and that is easy to parse. But then things get tricky.
-The next sequence is a string of characters that indicate the division of the institute (WHPO),
-the institute itself (SIO), and the name of the investigator (DAM). The problem is that no
-dividers separate these items, and that there are no standards for the item lengths. The approach
-to \verb@oce@ development is to tackle easy and important problemss before complicated special
-cases, and so no attempt has been made to parse this part of the header. Of course, R provides
-access to object constituents, so that a human working with this file could easily do e.g.
+The package has a harder time scanning the headers of data files in the WOCE
+archive format than it does in the Seabird format illustrated in the previous
+examples. This is mainly because front-line researchers tend to work in the
+Seabird format, and partly because the WOCE format is odd. For example, the
+first line of a WOCE file is of the form \texttt{CTD,20060609WHPOSIODAM}.  Only
+the first part of this is easy to scan. To the left of the comma is the string
+\texttt{CTD}, which seems straightforward, except that in some cases it is
+written \texttt{CTDO}. After the comma is found the file date (yyyymmdd), and
+that is easy to parse. But then things get tricky.  The next sequence is a
+string of characters that indicate the division of the institute (WHPO), the
+institute itself (SIO), and the name of the investigator (DAM). The problem is
+that no dividers separate these items, and that there are no standards for the
+item lengths. The approach to \verb@oce@ development is to tackle easy and
+important problemss before complicated special cases, and so no attempt has been
+made to parse this part of the header. Of course, R provides access to object
+constituents, so that a human working with this file could easily do e.g.
 <<ctdfix,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
 x$metadata$institute <- "SIO"
@@ -246,9 +268,9 @@ x$metadata$scientist <- "DAM"
 @
 
 For a real-world example (with warts!), visit
-\url{http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410} and download the zip file containing
-the Arctic section called ``CARINA'', measured in 1994. Expand the zip file, enter the directory,
-and run the code below. 
+\url{http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410} and download the zip
+file containing the Arctic section called ``CARINA'', measured in 1994. Expand
+the zip file, enter the directory, and run the code below.
 <<arcticeg,eval=false>>=
 library(oce)
 # Source: http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410
@@ -264,25 +286,27 @@ for (i in 1:length(files)) {
 }
 @
 
-What you'll see is an overall $T-S$ diagram for the entire dataset. It may take a while, since the
-dataset contains over 90,000 observations. You may note that, even though this is an official,
-quality-controlled dataset, it is not without problems. The graph that is produced by this code
-has several spurious lines oriented horizontally (indicating spurious salinity) and vertically
-(indicating spurious temperature). One way to find such values is to put the lines
+What you'll see is an overall $T-S$ diagram for the entire dataset. It may take
+a while, since the dataset contains over 90,000 observations. You may note that,
+even though this is an official, quality-controlled dataset, it is not without
+problems. The graph that is produced by this code has several spurious lines
+oriented horizontally (indicating spurious salinity) and vertically (indicating
+spurious temperature). One way to find such values is to put the lines
 <<rangeg,eval=false>>=
 print(range(x$data$temperature))
 print(range(x$data$salinity))
 @
-after the \texttt{read.ctd} command. One thing you'll find is that station 987 has a minimum
-salinity range of 0.0009 to 987. These values are clearly in error, as are the temperatures at
-this spot in the file. (It is perhaps revealing that the spurious salinity is equal to the
-station number.) Indeed, at this spot in the file it can be seen that the pressure jumps from
-1342 to 0, and then starts increasing again; the file contains two profiles, or the same profile
-twice. This is not the only flaw that is revealed by the graph, and by \texttt{range} commands;
-a generous user would spend a week tracking down such issues, and would then contact the data
-provider (or the chief scientist of the field work) with specific suggestions for correcting the
-files. The point here is to highlight how this package can be used with
-real-world data.
+after the \texttt{read.ctd} command. One thing you'll find is that station 987
+has a minimum salinity range of 0.0009 to 987. These values are clearly in
+error, as are the temperatures at this spot in the file. (It is perhaps
+revealing that the spurious salinity is equal to the station number.) Indeed, at
+this spot in the file it can be seen that the pressure jumps from 1342 to 0, and
+then starts increasing again; the file contains two profiles, or the same
+profile twice. This is not the only flaw that is revealed by the graph, and by
+\texttt{range} commands; a generous user would spend a week tracking down such
+issues, and would then contact the data provider (or the chief scientist of the
+field work) with specific suggestions for correcting the files. The point here
+is to highlight how this package can be used with real-world data.
 
 \subsection{Section plots}
 The commands
@@ -291,9 +315,10 @@ data(section)
 data(coastline.halifax)
 plot(section, coastline=coastline.halifax)
 @
-will plot a summary diagram (Figure~\ref{fig:section}) containing sections of $T$, $S$, and
-$\sigma_\theta$, along with a chart indicating station locations. In addition to such overview
-diagrams, \verb@plot@ can also create individual plots of individual properties.
+will plot a summary diagram (Figure~\ref{fig:section}) containing sections of
+$T$, $S$, and $\sigma_\theta$, along with a chart indicating station
+locations. In addition to such overview diagrams, \verb@plot@ can also create
+individual plots of individual properties.
 
 \workedexercise{3}{Draw a TS diagram for the section data, colour-coded by station}
 
@@ -305,15 +330,13 @@ diagrams, \verb@plot@ can also create individual plots of individual properties.
 @
 \end{center}
 \caption{\label{fig:section}
-CTD section of data acquired in Halifax Harbour in the autumn
-of 2003 by students in the \emph{Introduction to Physical
-Oceanography} class at Dalhousie University.  (Dan Kelley teaches this
-class, and the work at sea was supervised by his teaching assistant
-Natacha Bernier, who received her PhD from Dalhousie in 2005.)  The
-stations go from a site near the Sackville river inflow at the
-northwest portion of Bedford Basin to site at the entrance of the
-harbour. (The author's office at Dalhousie is located near
-the bottom axis at 63.58W.)}
+CTD section of data acquired in Halifax Harbour in the autumn of 2003 by
+students in the \emph{Introduction to Physical Oceanography} class at Dalhousie
+University.  (Dan Kelley teaches this class, and the work at sea was supervised
+by his teaching assistant Natacha Bernier, who received her PhD from Dalhousie
+in 2005.)  The stations go from a site near the Sackville river inflow at the
+northwest portion of Bedford Basin to site at the entrance of the harbour. (The
+author's office at Dalhousie is located near the bottom axis at 63.58W.)}
 \end{figure}
 
 \index{reading!ctd section}
@@ -321,9 +344,9 @@ the bottom axis at 63.58W.)}
 
 \index{Gulf Stream}
 
-The Halifax section is supplied in a pre-gridded format, but some
-datasets have different pressure levels at each station.  For such
-cases, the \verb@section.grid@ function may be used, e.g.
+The Halifax section is supplied in a pre-gridded format, but some datasets have
+different pressure levels at each station.  For such cases, the
+\verb@section.grid@ function may be used, e.g.
 <<label=sectionplota03,include=FALSE>>=
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
@@ -333,11 +356,12 @@ Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 10))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 @
-produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was travelling
-westward from the Mediterranean towards North America, taking 124 stations in total;
-the \verb@station.indices@ value selects the last few stations of the section, during
-which the ship heading was changed to run in a northwesterly direction, to cross
-isobaths (and perhaps, the Gulf Stream) at right angles.
+produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was
+travelling westward from the Mediterranean towards North America, taking 124
+stations in total; the \verb@station.indices@ value selects the last few
+stations of the section, during which the ship heading was changed to run in a
+northwesterly direction, to cross isobaths (and perhaps, the Gulf Stream) at
+right angles.
 
 \begin{figure}
 \begin{center}
@@ -365,12 +389,12 @@ data(coastline.maritimes)
 plot(coastline.maritimes, col="darkred")
 points(-(63+34/60), 44+39/60, cex=3, col = "blue")
 @
-produce a map of the coastline of Eastern Canada (Figure~\ref{fig:coastline}). Such coastline
-data are available from a variety of sources. The NOAA site
-\url{http://www.ngdc.noaa.gov/mgg_coastline/}
-is particularly popular, and it has the advantage
-of providing data in Splus format.  The function \verb@read.coastline@ can handle
-reading that format (plus some other formats).
+produce a map of the coastline of Eastern Canada
+(Figure~\ref{fig:coastline}). Such coastline data are available from a variety
+of sources. The NOAA site \url{http://www.ngdc.noaa.gov/mgg_coastline/} is
+particularly popular, and it has the advantage of providing data in Splus
+format.  The function \verb@read.coastline@ can handle reading that format (plus
+some other formats).
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.5\textwidth}
@@ -378,8 +402,9 @@ reading that format (plus some other formats).
 <<coastlineplot>>
 @
 \end{center}
-\caption{Coastline of eastern Canada, showing Prince Edward Island, New Brunswick, and Nova Scotia.  The blue circle indicates the location of 
-Halifax, the capital of Nova Scotia.}
+\caption{Coastline of eastern Canada, showing Prince Edward Island, New
+Brunswick, and Nova Scotia.  The blue circle indicates the location of Halifax,
+the capital of Nova Scotia.}
 \label{fig:coastline}
 \end{figure}
 
@@ -393,11 +418,12 @@ data(sealevel)
 plot(sealevel)
 @
 load and graph a build-in dataset of sea-level timeseries. The result, shown in
-Figure~\ref{fig:sealevel}, is a four-panel plot. The top panel is a timeseries view that
-provides an overview of the entire data set. The second panel is narrowed to the most recent
-month, which should reveal spring-neap cycles if the tide is mixed. The third panel is a
-spectrum, with a few tidal constituents indicated. At the bottom is a cumulative spectrum,
-which makes these narrow-banded constituents quite visible.
+Figure~\ref{fig:sealevel}, is a four-panel plot. The top panel is a timeseries
+view that provides an overview of the entire data set. The second panel is
+narrowed to the most recent month, which should reveal spring-neap cycles if the
+tide is mixed. The third panel is a spectrum, with a few tidal constituents
+indicated. At the bottom is a cumulative spectrum, which makes these
+narrow-banded constituents quite visible.
 
 \begin{figure}
 \begin{center}
@@ -406,24 +432,24 @@ which makes these narrow-banded constituents quite visible.
 <<sealevelplot>>
 @
 \end{center}
-\caption{Sea-level timeseries measured in 2003 in Halifax Harbour.
-(The spike in September is the storm
-surge associated with Hurricane Juan,
-regarded by the Canadian Hurricane Centre to be 
-one of the most powerful and damaging
-hurricanes to ever hit Canada.}
+\caption{Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike
+in September is the storm surge associated with Hurricane Juan, regarded by the
+Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes
+to ever hit Canada.}
 \label{fig:sealevel}
 \end{figure}
 
 \workedexercise{5}{Illustrate Halifax sealevel variations during Hurricane Juan}
 
-Note: An upcoming version of \verb@oce@ will also provide tidal constituent analysis. Some of
-this has been developed already. The regression works, so that the amplitudes and phases can be
-calculated. However, significance levels are not yet provided, and nor is any indication of the
-Rayleigh separation of the constituents. The interface also needs work, e.g. for shallow-water
-and deep-water cases. If you understand these things, and would like to test the code as it is
-being developed, please contact the author. Otherwise, you should wait until the code is
-working properly, and until the user interface has settled into a firmer state.
+Note: An upcoming version of \verb@oce@ will also provide tidal constituent
+analysis. Some of this has been developed already. The regression works, so that
+the amplitudes and phases can be calculated. However, significance levels are
+not yet provided, and nor is any indication of the Rayleigh separation of the
+constituents. The interface also needs work, e.g. for shallow-water and
+deep-water cases. If you understand these things, and would like to test the
+code as it is being developed, please contact the author. Otherwise, you should
+wait until the code is working properly, and until the user interface has
+settled into a firmer state.
 
 \workedexercise{6}{Draw a spectrum of sealevel variation, with the M2 tidal component indicated.}
 
@@ -437,15 +463,16 @@ library(oce)
 data(lobo)
 plot(lobo)
 @
-produce a plot (Figure~\ref{fig:lobo}) of lobo data from the Northwest Arm of Halifax Harbour.
-Note the relationship between decreasing nutrients and increasing fluorescence, as well as the
-diurnal signal in the latter.  
+produce a plot (Figure~\ref{fig:lobo}) of lobo data from the Northwest Arm of
+Halifax Harbour.  Note the relationship between decreasing nutrients and
+increasing fluorescence, as well as the diurnal signal in the latter.
 
-As an aside, it should be pointed out that the \verb@lobo@ part of \verb@oce@ is somewhat
-preliminary. In particular, the package requires that certain data columns be present, and in a
-certain order. Also, the function \verb@read.oce@ does not understand \verb@lobo@ files. Why
-these limitations, you ask? Well, the \verb@lobo@ code was really only written as an aside, for
-the author's contribution to a ``predict the spring bloom'' contest held at Dalhousie
+The reader should note that the \verb@lobo@ part of \verb@oce@ is somewhat
+preliminary. In particular, the package requires that certain data columns be
+present, and in a certain order. Also, the function \verb@read.oce@ does not
+understand \verb@lobo@ files. Why these limitations, you ask? Well, the
+\verb@lobo@ code was really only written as an aside, for the author's
+contribution to a ``predict the spring bloom'' contest held at Dalhousie
 University.
 
 \begin{figure}
@@ -466,26 +493,26 @@ and using plotting tricks to reduce the obscuring of this time signal.}
 
 \section{The future of oce}
 
-The present version of \verb@oce@ can only handle data types that the
-author has been using lately in his research. New data types will be
-added as the need arises in that work.  The author would be happy to
-add other data types, if a convincing argument is made that they will
-be useful to the Oceanographic community.  (The data types need not be
-restricted to Physical Oceanography, but the author will need some
-help in dealing with other types of data, given his research focus.)
+The present version of \verb@oce@ can only handle data types that the author has
+been using lately in his research. New data types will be added as the need
+arises in that work.  The author would be happy to add other data types, if a
+convincing argument is made that they will be useful to the Oceanographic
+community.  (The data types need not be restricted to Physical Oceanography, but
+the author will need some help in dealing with other types of data, given his
+research focus.)
 
-As for algorithms, there are plenty of gaps in \verb@oce@.  The
-package should have routines for tidal decomposition, for example, but
-that is just one example of many that could be listed.  
+As for algorithms, there are plenty of gaps in \verb@oce@.  The package should
+have routines for tidal decomposition, for example, but that is just one example
+of many that could be listed.
 
 Two principles will guide the addition of data types and functions:
 (a) the need, as perceived by the author or by other contributors and
 (b) the ease with which the additions can be made.  
 
-The site \url{http://code.google.com/p/r-oce/} provides a window on
-the development that goes on between the CRAN releases of the
-package. Please visit the site to report bugs, to suggest new
-features, or just to see how \verb@oce@ development is coming along.
+The site \url{http://code.google.com/p/r-oce/} provides a window on the
+development that goes on between the CRAN releases of the package. Please visit
+the site to report bugs, to suggest new features, or just to see how \verb@oce@
+development is coming along.
 
 %\begin{center}
 %\vspace{2cm}
@@ -588,11 +615,13 @@ mtext("M2",at=1/12.42,side=3)
 
 \workedanswer{7}{Lobo plot}
 \index{data!lobo timeseries}
-The resampling with \verb@i@ is to avoid obscuring colours by overplotting.  Note 
-the use of \verb@as.ctd@ to assemble the data into something that \verb@plot.TS@ can handle.
-This is an example of the practicality of \verb@oce@; eventually, \verb@plot.TS@ may be altered to take simple columns of data, but for now it seems reasonable to require the user to assemble
-these data into a CTD object, and to spend development time on something that will pay
-off better.
+The resampling with \verb@i@ is to avoid obscuring colours by overplotting.
+Note the use of \verb@as.ctd@ to assemble the data into something that
+\verb@plot.TS@ can handle.  This is an example of the practicality of
+\verb@oce@; eventually, \verb@plot.TS@ may be altered to take simple columns of
+data, but for now it seems reasonable to require the user to assemble these data
+into a CTD object, and to spend development time on something that will pay off
+better.
 <<>>=
 library(oce)
 data(lobo)
