@@ -14,16 +14,17 @@ read.lobo <- function(file, cols=7) {
 		time         <-            d[seq(from=col.date,         by=cols, length.out = n)]
 		u            <- as.numeric(d[seq(from=col.u,            by=cols, length.out = n)])
 		v            <- as.numeric(d[seq(from=col.v,            by=cols, length.out = n)])
-    	nitrate      <- as.numeric(d[seq(from=col.nitrate,      by=cols, length.out = n)])
-    	fluorescence <- as.numeric(d[seq(from=col.fluorescence, by=cols, length.out = n)])
-		S            <- as.numeric(d[seq(from=col.salinity,     by=cols, length.out = n)])
-		T            <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
-		p            <- rep(0, length(S))
+		nitrate      <- as.numeric(d[seq(from=col.nitrate,      by=cols, length.out = n)])
+		fluorescence <- as.numeric(d[seq(from=col.fluorescence, by=cols, length.out = n)])
+		salinity     <- as.numeric(d[seq(from=col.salinity,     by=cols, length.out = n)])
+		temperature  <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
+		p            <- rep(0, length(salinity))
 		time <- as.POSIXlt(time)
-		log <- list(time=c(Sys.time()), 
+		data <- list(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
+		metadata <- list(header=header)
+		log.item <- list(time=c(Sys.time()), 
 			action=c(paste("created by read.lobo(\"",file,"\", cols=",cols,")",sep="")))
-		res <- list(log=log,
-			time=time, u=u, v=v, nitrate=nitrate, fluorescence=fluorescence, S=S, T=T, p=p, header=header, data=d)
+		res <- list(data=data, metadata=metadata, processing.log=log.item)
 		class(res) = "lobo"
 		res
 	} else {

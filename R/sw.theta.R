@@ -1,9 +1,10 @@
 sw.theta <- function(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983", "Bryden1973"))
 {
 	if ("ctd" == class(S)) {
-		t <- S$data$temperature
-		p <- S$data$pressure
-		S <- S$data$salinity # note: this destroys the ctd object
+		tmp <- S
+		S <- tmp$data$salinity
+		t <- tmp$data$temperature
+		p <- tmp$data$pressure
 	}
 	dim <- dim(S)
   	nS <- length(S)
@@ -25,7 +26,7 @@ sw.theta <- function(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983", "Bryden19
 			PACKAGE = "oce")$value
 	} else {
 		if (method == "UNESCO1983") {
-			# somtimes have just a single value
+			# sometimes have just a single value
 			npref <- length(pref)
 			if (npref == 1)
 				pref <- rep(pref[1], nS)

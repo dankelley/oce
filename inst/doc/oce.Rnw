@@ -234,8 +234,8 @@ cases, and so no attempt has been made to parse this part of the header. Of cour
 access to object constituents, so that a human working with this file could easily do e.g.
 <<ctdfix,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x$institute <- "SIO"
-x$scientist <- "DAM"
+x$metadata$institute <- "SIO"
+x$metadata$scientist <- "DAM"
 @
 
 For a real-world example (with warts!), visit
@@ -589,10 +589,10 @@ off better.
 <<>>=
 library(oce)
 data(lobo)
-i <- sample(length(lobo$T))
-a <- as.numeric(lobo$time[i] - lobo$time[1])
+i <- sample(length(lobo$data$T))
+a <- as.numeric(lobo$data$time[i] - lobo$data$time[1])
 col <- hsv(0.5 * a / max(a), 1, 1)
-plot.TS(as.ctd(lobo$S[i], lobo$T[i], 0), col=col, pch=1)
+plot.TS(as.ctd(lobo$data$S[i], lobo$data$T[i], 0), col=col, pch=1)
 @
 
 \printindex

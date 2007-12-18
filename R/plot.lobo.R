@@ -1,15 +1,15 @@
 plot.lobo.timeseries.TS <- function(lobo,
 	S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
-	plot(lobo$time, lobo$S, type='l', ylab="", axes=FALSE, ...)
+	plot(lobo$data$time, lobo$data$salinity, type='l', ylab="", axes=FALSE, ...)
 	axis(2, col.lab=S.col)
-	axis.POSIXct(1, lobo$time)
+	axis.POSIXct(1, lobo$data$time)
 	mtext("Salinity [PSU]", side=2, line=3, col=S.col)
 	box()
-	lines(lobo$time, lobo$S, col=S.col, ...)
+	lines(lobo$data$time, lobo$data$salinity, col=S.col, ...)
 	par(new = TRUE)
-	plot(lobo$time, lobo$T, type='l', ylab="", axes=FALSE)
-	lines(lobo$time, lobo$T, col=T.col, ...)
+	plot(lobo$data$time, lobo$data$temperature, type='l', ylab="", axes=FALSE)
+	lines(lobo$data$time, lobo$data$temperature, col=T.col, ...)
 	axis(4, col=T.col)
 	mtext("Temperature [degC]", side=4, line=3, col=T.col)
 	if (draw.legend)
@@ -17,13 +17,13 @@ plot.lobo.timeseries.TS <- function(lobo,
 }
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
 {
-	peak <- max(range(c(lobo$u,lobo$v),na.rm=TRUE))
+	peak <- max(range(c(lobo$data$u,lobo$data$v),na.rm=TRUE))
 	ylim <- c(-peak,peak)
 	ylim <- c(-0.5,0.5)
-	plot(lobo$time, lobo$u, ylim=ylim, type='l', axes=FALSE, col=col.u, ylab="", ...)
+	plot(lobo$data$time, lobo$data$u, ylim=ylim, type='l', axes=FALSE, col=col.u, ylab="", ...)
 	box()
-	lines(lobo$time, lobo$v, col=col.v, ...)
-	axis.POSIXct(1, lobo$time)
+	lines(lobo$data$time, lobo$data$v, col=col.v, ...)
+	axis.POSIXct(1, lobo$data$time)
 	axis(2, col.lab=col.u)
 	mtext("U [m/s]", side=2, line=3, col=col.u)
 	axis(4, col.lab=col.v)
@@ -34,15 +34,15 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
 }
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
 {
-	plot(lobo$time, lobo$fluorescence, type='l', ylab="", axes=FALSE, ...)
+	plot(lobo$data$time, lobo$data$fluorescence, type='l', ylab="", axes=FALSE, ...)
 	axis(2, col.lab=col.fluorescence)
-	axis.POSIXct(1, lobo$time)
+	axis.POSIXct(1, lobo$data$time)
 	mtext("Fluorescence", side=2, line=3, col=col.fluorescence)
 	box()
-	lines(lobo$time, lobo$fluorescence, col=col.fluorescence, ...)
+	lines(lobo$data$time, lobo$data$fluorescence, col=col.fluorescence, ...)
 	par(new = TRUE)
-	plot(lobo$time, lobo$nitrate, type='l', ylab="", axes=FALSE, ...)
-	lines(lobo$time, lobo$nitrate, col=col.nitrate)
+	plot(lobo$data$time, lobo$data$nitrate, type='l', ylab="", axes=FALSE, ...)
+	lines(lobo$data$time, lobo$data$nitrate, col=col.nitrate)
 	axis(4, col=col.nitrate)
 	mtext("Nitrate", side=4, line=3, col=col.nitrate)
 	if (draw.legend)
@@ -51,7 +51,7 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
 
 plot.lobo.TS <- function(lobo, ...)
 {
-	plot.TS(as.ctd(lobo$S, lobo$T, lobo$p), col="red", cex=0.5, ...)
+	plot.TS(as.ctd(lobo$data$salinity, lobo$data$temperature, lobo$data$p), col="red", cex=0.75, ...)
 }
 plot.lobo <- function(x, ...)
 {
@@ -71,5 +71,3 @@ plot.lobo <- function(x, ...)
 	plot.lobo.TS(x, ...)
 	close.screen(all = TRUE)
 }
-
-
