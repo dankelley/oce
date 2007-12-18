@@ -1,8 +1,6 @@
 plot.coastline <- function (x, asp=NA, ...) 
 {
 	debug <- FALSE
-	print("HI\n")
-	print(x$data$latitude[1:3])
 	# NOTE: for projections, use maps package
     if (!inherits(x, "coastline")) 
         stop("method is only for coastline objects")
@@ -14,8 +12,6 @@ plot.coastline <- function (x, asp=NA, ...)
 	# BUG: the use of par("pin") seems to mess up resizing in aqua windows.
 	xr <- range(x$data$longitude, na.rm=TRUE)
 	yr <- range(x$data$latitude, na.rm=TRUE)
-	print(xr)
-	print(yr)
     plot(xr, yr, asp=asp, xlab="", ylab="", type="n", axes=FALSE, ...)
 	par(new=TRUE)
 	yaxp <- par("yaxp")

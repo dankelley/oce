@@ -60,11 +60,11 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 				axis(2)
 				box()
 			}
-			cat("num.stations=",num.stations,"variable=",variable,"\n")
+#			cat("num.stations=",num.stations,"variable=",variable,"\n")
 			water.depth <- NULL
-			cat("dim(zz):");print(dim(zz))
+#			cat("dim(zz):");print(dim(zz))
 			for (i in 1:num.stations) {
-				cat("ii=",station.indices[i],"len=",length(x$data$station[[station.indices[i]]]$data[[variable]]),"\n")
+#				cat("ii=",station.indices[i],"len=",length(x$data$station[[station.indices[i]]]$data[[variable]]),"\n")
 				zz[i,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
 				if (grid)
 					points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=0.5)
@@ -105,7 +105,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 		lon0 <- x$data$station[[station.indices[1]]]$metadata$longitude
 		for (ix in 1:num.stations) {
 			j <- station.indices[ix]
-			cat("j=",j,"latlon:", x$data$station[[j]]$metadata$latitude," ", x$data$station[[j]]$metadata$longitude,"\n")
+			#cat("j=",j,"latlon:", x$data$station[[j]]$metadata$latitude," ", x$data$station[[j]]$metadata$longitude,"\n")
 			xx[ix] <- geod.dist(lat0, lon0,
 				x$data$station[[j]]$metadata$latitude, x$data$station[[j]]$metadata$longitude)
 		}

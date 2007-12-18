@@ -50,7 +50,6 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		abline(v=at.t, col="darkgray", lty="dotted")
 		abline(h=0,col="darkgreen")
 		mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
-	#	print(x$metadata)
 		title <- paste("Station ",
 				x$metadata$station.number, " (",
 				x$metadata$station.name,   ") ",

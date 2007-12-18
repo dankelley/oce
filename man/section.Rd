@@ -34,7 +34,7 @@ stn15 <- ctd.trim(read.ctd("BED0315.CNV", station="15"))
 stn15$metadata$latitude <- stn15$metadata$latitude + 1
 stn15 <- processing.log.append(stn15, "DEK/typo - add 1 to lat")
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)
-section$section.id <- "Halifax-Harbour-2003-oct"
+section$metadata$section.id <- "Halifax-Harbour-2003-oct"
 section <- section.grid(section, p=p, method="boxcar")
 data(coastline.halifax)
 plot(section, coastline=coastline.halifax, grid=TRUE)
