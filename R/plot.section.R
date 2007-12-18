@@ -105,7 +105,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 		lon0 <- x$data$station[[station.indices[1]]]$metadata$longitude
 		for (ix in 1:num.stations) {
 			j <- station.indices[ix]
-			#cat("j=",j,"latlon:", x$data$station[[j]]$metadata$latitude," ", x$data$station[[j]]$metadata$longitude,"\n")
+			cat("j=",j,"latlon:", x$data$station[[j]]$metadata$latitude," ", x$data$station[[j]]$metadata$longitude,"\n")
 			xx[ix] <- geod.dist(lat0, lon0,
 				x$data$station[[j]]$metadata$latitude, x$data$station[[j]]$metadata$longitude)
 		}

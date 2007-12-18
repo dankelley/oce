@@ -3,18 +3,18 @@ summary.sealevel <- function(object, ...)
 	if (!inherits(object, "sealevel"))
 		stop("method is only for sealevel objects")
 	cat(paste("Station\n"))
-	cat(paste("  number:     ", object$station.number,            "\n"))
-	version <- if (is.null(object$version)) "?" else object$version
+	cat(paste("  number:     ", object$metadata$station.number,   "\n"))
+	version <- if (is.null(object$metadata$version)) "?" else object$metadata$version
 	cat(paste("  version:    ", version,                          "\n"))
-	cat(paste("  name:       ", object$station.name,              "\n"))
-	region <- if (is.null(object$region)) "?" else object$region
+	cat(paste("  name:       ", object$metadata$station.name,     "\n"))
+	region <- if (is.null(object$region)) "?" else object$metadata$region
 	cat(paste("  region:     ", region,                           "\n"))
-	cat(      "  location:  ", latlon.format(object$latitude, object$longitude), "\n")
+	cat(      "  location:  ", latlon.format(object$metadata$latitude, object$metadata$longitude), "\n")
 	cat("Data\n")
-	cat(paste("  number obs: ", object$n,                         "\n"))
+	cat(paste("  number obs: ", object$metadata$n,                "\n"))
 	cat(paste("  start time: ", object$data$t[1],                 "\n"))
 	cat(paste("  end time:   ", object$data$t[object$n],          "\n"))
-	gmt.offset <- if (is.na(object$GMT.offset)) "?" else object$GMT.offset
+	gmt.offset <- if (is.na(object$metadata$GMT.offset)) "?" else object$metadata$GMT.offset
 	cat(paste("  GMT offset: ", gmt.offset,                       "\n"))
 	fn <- fivenum(object$data$eta, na.rm=TRUE)
 	cat(paste("  min:        ", fn[1],                            "\n"))

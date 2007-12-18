@@ -113,11 +113,11 @@ read.sealevel <- function(file, debug=FALSE)
 	data <- list(t=t, eta=eta)
 	metadata <- list(
 		header=header,
+		year=year,
 		station.number=station.number,
 		station.version=station.version,
 		station.name=station.name,
 		region=region,
-		year=year,
 		latitude=latitude,
 		longitude=longitude,
 		GMT.offset=GMT.offset,
@@ -127,4 +127,5 @@ read.sealevel <- function(file, debug=FALSE)
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
 	rval <- list(data=data, metadata=metadata, processing.log=log.item)
 	class(rval) <- "sealevel"
+	rval
 }

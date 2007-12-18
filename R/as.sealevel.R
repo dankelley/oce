@@ -14,23 +14,23 @@ as.sealevel <- function(
 	reference.offset=NA,
 	reference.code=NA)
 {    
-	log.item <- list(time=c(Sys.time()), action=c("created by as.sealevel()"))
-	rval <- list(header=header,
+	data <- list(t=t, eta=eta)
+	metadata <- list(header=header,
+		year=year,
 		station.number=station.number,
 		station.version=station.version,
 		station.name=station.name,
 		region=region,
-		year=year,
 		latitude=latitude,
 		longitude=longitude,
 		GMT.offset=GMT.offset,
 		decimation.method=decimation.method,
-		reference.offet=reference.offset,
+		reference.offset=reference.offset,
 		reference.code=reference.code,
 		units=units,
-		processing.log=log.item,
-		n=length(eta),
-		data=list(t=t, eta=eta))
+		n=length(eta))
+	log.item <- list(time=c(Sys.time()), action=c("created by as.sealevel()"))
+	rval <- list(data=data, metadata=metadata, processing.log=log.item)
 	class(rval) <- "sealevel"
 	rval
 }

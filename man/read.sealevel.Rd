@@ -21,22 +21,31 @@ file is in neither of these known formats, the user might wish to scan the data 
 means, and then to use \code{\link{as.sealevel}} to create the \code{sealevel} object.}
 
 \value{
-  A \code{sealevel} object containing 
-  \item{header}{The header line (helpful if detail extraction failed)}
-  \item{station.number}{identifier for the station.}
-  \item{station.version}{see online docs at site mentioned in References.}
-  \item{station.name}{name of station}
-  \item{region}{a region code.}
-  \item{year}{year in which the observations were made.}
-  \item{latitude}{latitude, decimal degrees, positive north of equator.}
-  \item{longitude}{longitude, decimal degrees, positive east of Greenwich.}
-  \item{GMT.offset}{offset from GMT time.}
-  \item{decimation.method}{see online docs at site mentioned in References.}
-  \item{reference.offset}{a reference offset; see online docs at site mentioned in References.}
-  \item{reference.code}{a reference code; see online docs at site mentioned in References.}
-  \item{units}{unit of observations (normally "MM")}
-  \item{n}{number of observations}
-  \item{data}{a list containing \code{t}, times of observations and \code{eta}, the sealevel observations, in units \code{units} (normally, mm)}
+  A \code{sealevel} object containing
+  \item{data}{the data, a list containing
+    \itemize{
+      \item{t}{time}
+      \item{eta}{sea level}
+    }
+  }
+  \item{metadata}{a list containing
+    \itemize{
+      \item{header}{The header line (helpful if detail extraction failed)}
+      \item{year}{year in which the observations were made.}
+      \item{station.number}{identifier for the station.}
+      \item{station.version}{see online docs at site mentioned in References.}
+      \item{station.name}{name of station}
+      \item{region}{a region code.}
+      \item{latitude}{latitude, decimal degrees, positive north of equator.}
+      \item{longitude}{longitude, decimal degrees, positive east of Greenwich.}
+      \item{GMT.offset}{offset from GMT time.}
+      \item{decimation.method}{see online docs at site mentioned in References.}
+      \item{reference.offset}{a reference offset; see online docs at site mentioned in References.}
+      \item{reference.code}{a reference code; see online docs at site mentioned in References.}
+      \item{units}{unit of observations (normally "MM")}
+      \item{n}{number of observations}
+    }
+  }
   \item{processing.log}{a processing log.}
 }
 

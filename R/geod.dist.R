@@ -10,12 +10,12 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL) {
 	f <- 1/298.257223563     # WGS84 flattening parameter
 	if (inherits(lat1, "section")) {
 		copy <- lat1
-		n <- length(copy$station)
+		n <- length(copy$data$station)
 		lat1 <- vector("numeric", n)
 		lon1 <- vector("numeric", n)
 		for (i in 1:n) {
-			lat1[i] <- copy$station[[i]]$latitude
-			lon1[i] <- copy$station[[i]]$longitude
+			lat1[i] <- copy$data$station[[i]]$metadata$latitude
+			lon1[i] <- copy$data$station[[i]]$metadata$longitude
 		}
 		res <- vector("numeric", n)
   		for (i in 1:n) {   

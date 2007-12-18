@@ -1,4 +1,4 @@
-section.subset <- function(section, indices=1:length(section$station))
+section.subset <- function(section, indices=1:length(section$data$station))
 {
 	n <- length(indices)
     station <- vector("list", n)

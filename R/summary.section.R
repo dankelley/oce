@@ -15,7 +15,7 @@ summary.section <- function(object, quiet=FALSE, ...)
 	for (i in 1:num.stations) {
 		stn <- object$data$station[[i]]
 		depth[i] <- if (have.water.depth) stn$metadata$water.depth else max(stn$data$pressure, na.rm=TRUE)
-		distance[i] <- sprintf("%.1fkm", geod.dist(lat1, lon1, stn$latitude, stn$longitude))
+		distance[i] <- sprintf("%.1fkm", geod.dist(lat1, lon1, stn$metadata$latitude, stn$metadata$longitude))
 		levels[i] <- length(object$station[[i]]$data$pressure)
 	}
 	if (!quiet) {

@@ -24,7 +24,7 @@ library(oce)
 data(ctd)
 ctd.warmed <- ctd
 ctd.warmed$data$temperature <- ctd.warmed$data$temperature + 0.5
-ctd.warmed$latitude <- ctd.warmed$latitude + 0.1
+ctd.warmed$metadata$latitude <- ctd.warmed$metadata$latitude + 0.1
 section <- make.section(ctd, ctd.warmed)
 summary(section)
 plot(section, at=c(1,2), labels=c("Original","Warmed"))

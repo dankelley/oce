@@ -12,10 +12,12 @@ to \code{section$station[[7]]}, each of which is an object of type
 \source{
 This section is based on measurements made during October of 2003 in
 Halifax Harbour by students in the \emph{Introduction to Physical Oceanography}
-class at Dalhousie University, taught by Dan Kelley; supervision at sea was
+class at Dalhousie University.  The course was taught
+Dan Kelley (the author of this package) and supervision at sea was
 provided by teaching assistant Natacha Bernier, at the time a PhD student at
 Dalhousie. Note the alteration of two station locations, to correct errors in
-transcribing field notes (e.g. a hand-written ``8'' was evidently typed as ``3'').
+transcribing field notes (e.g. a hand-written \code{8} was evidently typed as
+\code{3}).
 \preformatted{
 library(oce)
 p <- seq(0, 30, 2.5)
@@ -25,11 +27,11 @@ stn10 <- ctd.trim(read.ctd("BED0310.CNV", station="10"))
 stn01 <- ctd.trim(read.ctd("BED0301.CNV", station="1"))
 stn11 <- ctd.trim(read.ctd("BED0311.CNV", station="11"))
 stn12 <- ctd.trim(read.ctd("BED0312.CNV", station="12"))
-stn12$latitude <- 44 + 39.894 / 60
+stn12$metadata$latitude <- 44 + 39.894 / 60
 stn12 <- processing.log.append(stn12, "DEK/typo - lat minutes from 39.394 to 39.894")
 stn13 <- ctd.trim(read.ctd("BED0313.CNV", station="13"))
 stn15 <- ctd.trim(read.ctd("BED0315.CNV", station="15"))
-stn15$latitude <- stn15$latitude + 1
+stn15$metadata$latitude <- stn15$metadata$latitude + 1
 stn15 <- processing.log.append(stn15, "DEK/typo - add 1 to lat")
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)
 section$section.id <- "Halifax-Harbour-2003-oct"

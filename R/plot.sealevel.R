@@ -20,7 +20,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		tmp <- (pretty(max(eta.m-MSL,na.rm=TRUE)-min(eta.m-MSL,na.rm=TRUE))/2)[2]
 		ylim <- c(-tmp,tmp)
 		# Whole timeseries
-		n <- x$n
+		n <- length(x$data$eta) # do not trust value in metadata
 		from <- as.POSIXlt(x$data$t[1])
 		from$mday <- 1
 		from$hour <- from$min <- from$sec <- 0
@@ -50,12 +50,13 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		abline(v=at.t, col="darkgray", lty="dotted")
 		abline(h=0,col="darkgreen")
 		mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
+	#	print(x$metadata)
 		title <- paste("Station ",
-				x$station.number, " (",
-				x$station.name,   ") ",
-				x$region,         "",
-				" ", latlon.format(x$latitude, x$longitude),
-				if (!is.na(x$year)) paste(" (", x$year, ")") else "",
+				x$metadata$station.number, " (",
+				x$metadata$station.name,   ") ",
+				x$metadata$region,         "",
+				" ", latlon.format(x$metadata$latitude, x$metadata$longitude),
+				if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
 				sep="")
 		mtext(side=3, title, line=0.5)
 		# First bit

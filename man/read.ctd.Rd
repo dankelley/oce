@@ -44,8 +44,8 @@ read.ctd(file, type=NULL, debug=FALSE,
   in the wide variety of ways that humans choose.  Still, such limitations
   are not really pressing in practice, since the \code{ctd} object is made available
   for manipulation.  If \code{read.ctd} cannot scan \code{33 and a third} as a latitude,
-  just examine the header (stored as a list in \code{object$header}), and do something
-  like \code{object$latitude <- 33 + 1/3}.
+  just examine the header (stored as a list in \code{object$metadata$header}),
+  and do something like \code{object$metadata$latitude <- 33 + 1/3}.
 
   It should be noted that different file types provide different meta-information.
   For example, the WOCE exchange format binds together the institute name and the
@@ -79,10 +79,10 @@ read.ctd(file, type=NULL, debug=FALSE,
   \item{filename.orig}{name of the original file saved by the instrument
     (normally a hex file).}
   \item{system.upload.time}{system upload time.}
-  \item{ship}{name of the ship from which the CTD was deployed.}
-  \item{scientist}{name of the scientist taking the data.}
-  \item{institute}{name of the institute.}
-  \item{address}{the address of the institute where the scientist.}
+  \item{ship}{name of vessel from which the CTD was deployed.}
+  \item{scientist}{name of the scientist leading the work at sea.}
+  \item{institute}{name of the institute behind the work.}
+  \item{address}{the address of the institute where the scientist works.}
   \item{cruise}{name of cruise.}
   \item{station}{station number or name.}
   \item{date}{date of lowering of CTD into the water.}
