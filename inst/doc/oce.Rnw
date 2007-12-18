@@ -1,5 +1,8 @@
+% -*- fill-column: 80; comment-column: 50; -*-
+%--------- adjust textmate window until this just fits --------------------------
+
 \documentclass{article}
-%--------- adjust textmate window until this just fits ----------------------------------------
+
 
 \usepackage{url}
 \usepackage{fullpage}
@@ -54,15 +57,19 @@ formats. The manufacturers often provide software for scanning the data files an
 some standard plots, but this is of limited use to researchers who work with several instrument
 types at the same time, and who need to carry the analysis beyond the first step.
 
-The need to scan diverse data files was just one motivation for the creation of \verb@oce@. The
-other aim was to provide a system in which oceanographic data could be analyzed easily in R.
-This second goal influenced the design of the objects in \verb@oce@, each of which blends three
-components: (a) the data itself, e.g. vectors of pressure, temperature, and salinity from a CTD
-instrument, (b) metadata inferred from the data file's header, e.g. the location at which a CTD
-cast was made, and (c) processing-stage metadata, e.g. a time-stamped log of changes made to
-the object by \verb@oce@ functions. This approach, along with a policy of adding features
-according to the priorities of practical research, should make \verb@oce@ a comfortable tool
-today, and should keep it relevant as it grows to incorporate new features.
+The need to scan diverse data files was just one motivation for the creation of
+\verb@oce@. The other aim was to provide a system in which oceanographic data
+could be analyzed easily in R.  This second goal influenced the design of the
+objects in \verb@oce@, which follow a uniform design, a list with three
+components: (a) \verb@data@, a list or data frame containing the actual data,
+for a CTD object, this will contain pressure, temperature, etc., (b)
+\verb@metadata@, a list containing data such things as file headers, the
+location of a CTD cast, etc., and (c) \verb@processing.log@, a list that
+documents how the file was created (often by a \verb@read@ or \verb@as@ method)
+and how it was changed thereafter (e.g. by decimating a CTD cast).  This
+approach to design, along with a policy of adding features according to the
+priorities of practical research, may make \verb@oce@ a comfortable tool today,
+and may keep keep it so as it grows.
 
 \section{Calculations of seawater properties}
 
@@ -589,10 +596,10 @@ off better.
 <<>>=
 library(oce)
 data(lobo)
-i <- sample(length(lobo$data$T))
+i <- sample(length(lobo$data$temperature))
 a <- as.numeric(lobo$data$time[i] - lobo$data$time[1])
 col <- hsv(0.5 * a / max(a), 1, 1)
-plot.TS(as.ctd(lobo$data$S[i], lobo$data$T[i], 0), col=col, pch=1)
+plot.TS(as.ctd(lobo$data$salinity[i], lobo$data$temperature[i], 0), col=col, pch=1)
 @
 
 \printindex
