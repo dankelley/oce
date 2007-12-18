@@ -14,7 +14,7 @@ as.sealevel <- function(
 	reference.offset=NA,
 	reference.code=NA)
 {    
-	data <- list(t=t, eta=eta)
+	data <- data.frame(t=t, eta=eta)
 	metadata <- list(header=header,
 		year=year,
 		station.number=station.number,

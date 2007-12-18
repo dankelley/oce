@@ -1,19 +1,18 @@
 read.sealevel <- function(file, debug=FALSE)
 {    
-	# Reads sea-level data, in a format described at
-	# ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
+	# Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
 	filename <- file
 	if (is.character(file)) {
-        file <- file(file, "r")
-        on.exit(close(file))
-    }
-    if (!inherits(file, "connection")) {
-        stop("argument `file' must be a character string or connection")
-    }
-    if (!isOpen(file)) {
-        open(file, "r")
-        on.exit(close(file))
-    }
+		file <- file(file, "r")
+		on.exit(close(file))
+	}
+	if (!inherits(file, "connection")) {
+		stop("argument `file' must be a character string or connection")
+	}
+	if (!isOpen(file)) {
+		open(file, "r")
+		on.exit(close(file))
+	}
 	first.line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
 	header <- first.line
 	pushBack(first.line, file)
@@ -66,13 +65,12 @@ read.sealevel <- function(file, debug=FALSE)
 		longitude <- as.numeric(substr(longitude.str, 1, 3)) + (as.numeric(substr(longitude.str, 4, 6)))/600
 		if (tolower(substr(longitude.str, 7, 7)) == "w")
 			longitude <- -longitude
-    	GMT.offset        <- substr(header, 65, 68) #hours,tenths (East is +ve)
-    	decimation.method <- substr(header, 70, 70) #1=filtered 2=average 3=spot readings 4=other
-    	reference.offset  <- substr(header, 72, 76) # add to values
+		GMT.offset        <- substr(header, 65, 68) #hours,tenths (East is +ve)
+		decimation.method <- substr(header, 70, 70) #1=filtered 2=average 3=spot readings 4=other
+		reference.offset  <- substr(header, 72, 76) # add to values
 		reference.code    <- substr(header, 77, 77) # add to values
 		units             <- substr(header, 79, 80)
-		if (tolower(units) != "mm")
-			stop("require units to be MM, not ", units)
+		if (tolower(units) != "mm") stop("require units to be MM, not ", units)
 		eta <- array(NA, 12*(n-1))
 		first.twelve.hours  <- 3600 * (0:11)
 		second.twelve.hours <- 3600 * (12:23)
@@ -110,7 +108,7 @@ read.sealevel <- function(file, debug=FALSE)
 		warning("there are ", num.missing, " missing points in this timeseries, at indices ", 
 			paste(which(is.na(eta)), ""))
 	}
-	data <- list(t=t, eta=eta)
+	data <- data.frame(t=t, eta=eta)
 	metadata <- list(
 		header=header,
 		year=year,

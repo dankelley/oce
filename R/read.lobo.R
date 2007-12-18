@@ -20,7 +20,7 @@ read.lobo <- function(file, cols=7) {
 		temperature  <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
 		p            <- rep(0, length(salinity))
 		time <- as.POSIXlt(time)
-		data <- list(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
+		data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
 		metadata <- list(header=header)
 		log.item <- list(time=c(Sys.time()), 
 			action=c(paste("created by read.lobo(\"",file,"\", cols=",cols,")",sep="")))

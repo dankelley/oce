@@ -18,9 +18,7 @@ make.section <- function(item, ...)
 			lon[i] <- extra.args[[i-1]]$metadata$longitude
 			station[[i]] <- extra.args[[i-1]]
 			summary(extra.args[i-1])
-			#cat("dood i=",i,"\n")
 		}
-		#cat("CASE 1\n")
 	} else if (class(item) == "list") {
 		args <- list(...)
 		if (length(args) < 2) {
@@ -37,11 +35,10 @@ make.section <- function(item, ...)
 			lon[i] <- args[[i]]$metadata$longitude
 			station[[i]] <- args[[i]]
 		}
-		#cat("CASE 2\n")
 	} else {
 		stop("first argument must be of class \"ctd\" or a \"list\"")
 	}
-	data <- list(station=station)
+	data <- data.frame(station=station)
 	metadata <- list(header="",section.id="",station.id=stn,latitude=lat,longitude=lon)
 	log.item <- list(time=c(Sys.time()), action="created by make.section")
 	res <- list(data=data, metadata=metadata, processing.log=log.item)

@@ -51,7 +51,7 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 			}       
 		}
 		lonlat <- matrix(lonlat, ncol=2,byrow=TRUE)
-	    data <- list(longitude=lonlat[,1], latitude=lonlat[,2])
+	    data <- data.frame(longitude=lonlat[,1], latitude=lonlat[,2])
 		res <- list(data=data, metadata=NULL, processing.log=log.item)
 	} else {
 		stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
