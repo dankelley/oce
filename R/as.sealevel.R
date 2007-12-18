@@ -12,11 +12,9 @@ as.sealevel <- function(
 	GMT.offset=NA,
 	decimation.method=NA,
 	reference.offset=NA,
-	reference.code=NA,
-	log=NULL)
+	reference.code=NA)
 {    
-	if (is.null(log))
-		log <- list(time=c(Sys.time()), action=c("created by as.sealevel()"))
+	log.item <- list(time=c(Sys.time()), action=c("created by as.sealevel()"))
 	rval <- list(header=header,
 		station.number=station.number,
 		station.version=station.version,
@@ -30,7 +28,7 @@ as.sealevel <- function(
 		reference.offet=reference.offset,
 		reference.code=reference.code,
 		units=units,
-		log=log,
+		processing.log=log.item,
 		n=length(eta),
 		data=list(t=t, eta=eta))
 	class(rval) <- "sealevel"

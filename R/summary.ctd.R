@@ -27,6 +27,6 @@ summary.ctd <- function(object, ...)
 		f <- fivenum(object$data[[name]])
 		cat(sprintf("    %15s %10.1f %10.1f %10.1f %10.1f %10.1f\n", name, f[1], f[2], f[3], f[4], f[5]))
 	}
-	log.summary(object)
+	processing.log.summary(object)
 }
  

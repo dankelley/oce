@@ -4,8 +4,8 @@ as.coastline <- function(latitude, longitude)
 	if (n != length(longitude))
 		stop("Lengths of longitude and latitude must be equal")
 	data <- list(longitude=longitude, latitude=latitude)
-	log <- list(time=c(Sys.time()), action=c("created by as.coastline()"))
-	res <- list(data=data, metadata=NULL, log=log)
+	log.item <- list(time=c(Sys.time()), action=c("created by as.coastline()"))
+	res <- list(data=data, metadata=NULL, processing.log=log.item)
 	class(res) <- "coastline"
 	res
 }

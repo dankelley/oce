@@ -29,7 +29,7 @@ BUG: the 'arc/info ungenerate' format is not yet understood.
   A \code{coastline} object, which is a list containing
   \item{data}{a list containing \code{longitude}, in decimal degrees positive east of Greenwich, and \code{latitude}, in decimal degrees positive north of the equator.}
   \item{metadata}{a NULL item that may be used in a future version.}
-  \item{log}{A processing log in the standard oce format.}
+  \item{processing.log}{A processing log in the standard oce format.}
 }
 
 \seealso{

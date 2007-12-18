@@ -105,15 +105,13 @@ read.sealevel <- function(file, debug=FALSE)
 			stop("require units to be MM")
 		}
 	}
-	log <- list(time=c(Sys.time()), 
-		action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
 	num.missing <- sum(is.na(eta))
 	if (num.missing > 0) {
 		warning("there are ", num.missing, " missing points in this timeseries, at indices ", 
 			paste(which(is.na(eta)), ""))
 	}
-	as.sealevel(t,
-		eta,
+	data <- list(t=t, eta=eta)
+	metadata <- list(
 		header=header,
 		station.number=station.number,
 		station.version=station.version,
@@ -125,6 +123,8 @@ read.sealevel <- function(file, debug=FALSE)
 		GMT.offset=GMT.offset,
 		decimation.method=decimation.method,
 		reference.offset=reference.offset,
-		reference.code=reference.code,
-		log=log)
+		reference.code=reference.code)
+	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
+	rval <- list(data=data, metadata=metadata, processing.log=log.item)
+	class(rval) <- "sealevel"
 }

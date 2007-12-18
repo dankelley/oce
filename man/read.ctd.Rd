@@ -94,7 +94,7 @@ read.ctd(file, type=NULL, debug=FALSE,
   \item{water.depth}{the water depth at the site.}
   \item{sample.interval}{time interval between samples, in seconds.}
 }}
-  \item{log}{a processing log.}
+  \item{processing.log}{a processing log.}
 }
 
 \seealso{

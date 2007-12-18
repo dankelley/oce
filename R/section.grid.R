@@ -1,12 +1,12 @@
 section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
 {
 	method <- match.arg(method)
-	n <- length(section$station)
+	n <- length(section$data$station)
 	dp.list <- NULL
 	if (missing(p)) {
 		p.max <- 0
 		for (i in 1:n) {
-			p <- section$station[[i]]$data$pressure
+			p <- section$data$station[[i]]$data$pressure
 			dp.list <- c(dp.list, mean(diff(p)))
 			p.max <- max(c(p.max, p))
 		}
@@ -45,7 +45,7 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
 				# find max in dataset
 				p.max <- 0
 				for (i in 1:n) {
-					p <- section$station[[i]]$data$pressure
+					p <- section$data$station[[i]]$data$pressure
 					p.max <- max(c(p.max, p))
 				}
 				p <- seq(0, p.max, p)
@@ -59,12 +59,12 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
 	res <- section
 	for (i in 1:n) {
 		#cat("Doing station number", i, "\n")
-		res$station[[i]] <- ctd.decimate(section$station[[i]], p=pt, method=method, ...)
+		res$data$station[[i]] <- ctd.decimate(section$data$station[[i]], p=pt, method=method, ...)
 	}
 	if (is.null(p))
 		log.item <- paste("modified by section.grid(x,method=\"", method, "\")")
 	else
 		log.item <- paste("modified by section.grid(x, p=c(",paste(p,collapse=","),"),method=\"",method,"\")",sep="")
-	res <- log.append(res, log.item)
+	res <- processing.log.append(res, log.item)
 	res
 }

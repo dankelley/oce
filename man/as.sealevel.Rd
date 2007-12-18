@@ -19,8 +19,7 @@ as.sealevel(t=NULL,
   GMT.offset=NA,
   decimation.method=NA,
   reference.offset=NA,
-  reference.code=NA,
-  log=NULL)
+  reference.code=NA)
 }
 \arguments{
   \item{t}{a list of times, in POSIXct format.}
@@ -37,16 +36,14 @@ as.sealevel(t=NULL,
   \item{decimation.method}{a coded value, with 1 meaning filtered, 2 meaning a simple average of all samples, 3 meaning spot readings, and 4 meaning some other method.}
   \item{reference.offset}{?}
   \item{reference.code}{?}
-  \item{log}{a processing log}
 }
 \details{
   The arguments are based on the standard data format, as described
-  at
- \url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.
+  at \url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.
 }
-\value{
-  A \code{sealevel} object.  
-}
+
+\value{A \code{sealevel} object (see \code{\link{read.sealevel}} for details).}
+
 \seealso{
   \code{\link{read.sealevel}} reads data,
   \code{\link{summary.sealevel}} summarizes the information, while

@@ -1,7 +1,7 @@
 read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 {      
 	type <- match.arg(type)
-	log <- list(time=c(Sys.time()), 
+	log.item <- list(time=c(Sys.time()), 
 		action=c(paste("created by read.coastline(\"",file,"\", type=",type,")",sep="")))
 	if (type == "R" || type == "S") {
 		#
@@ -18,7 +18,7 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 	        on.exit(close(file))
 	    }
 		data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
-		res <- list(log=log, data=data)
+		res <- list(data=data, metadata=NULL, processing.log=log.item)
 	} else if (type == "mapgen") {
 		header <- scan(file, what=character(0), nlines=1, quiet=TRUE);
 		if (debug) {
@@ -52,7 +52,7 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 		}
 		lonlat <- matrix(lonlat, ncol=2,byrow=TRUE)
 	    data <- list(longitude=lonlat[,1], latitude=lonlat[,2])
-		res <- list(data=data, metadata=NULL, log=log)
+		res <- list(data=data, metadata=NULL, processing.log=log.item)
 	} else {
 		stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
 	}

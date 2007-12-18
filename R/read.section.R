@@ -78,12 +78,11 @@ read.section <- function(file, section.id, debug=FALSE)
 		if (debug) cat("station at ", lat[i], "N and ", lon[i], "W\n")
         station[[i]] <- this.station
 	}
-   	action <- paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep="")
-    log <- list(time = c(Sys.time()), action = action)
-    res <- list(header=header, section.id=section.id, 
-		station.id=stn, latitude=lat, longitude=lon,
-		station=station,
-		log = log)
+	data <- list(station=station)
+    metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
+    log.item <- list(time = c(Sys.time()),
+ 		action = paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep=""))
+	res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- "section"
 	res
 }

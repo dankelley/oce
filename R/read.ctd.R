@@ -191,8 +191,8 @@ read.ctd.WOCE <- function(file,
               	recovery=recovery,
               	water.depth=water.depth,
               	sample.interval=sample.interval)
-	log <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
-	res <- list(data=data, metadata=metadata, log=log)
+	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
+	res <- list(data=data, metadata=metadata, processing.log=log.item)
   	class(res) <- "ctd"
 	res
 }
@@ -460,8 +460,8 @@ read.ctd.SBE19 <- function(file,
 		recovery=recovery,
 		water.depth=water.depth,
 		sample.interval=sample.interval)
-	log <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
-	res <- list(data=data, metadata=metadata, log=log)
+	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
+	res <- list(data=data, metadata=metadata, processing.log=log.item)
   	class(res) <- "ctd"
 	# Add standard things, if missing
   	if (!found.salinity) {

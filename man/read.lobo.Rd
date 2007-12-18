@@ -27,7 +27,7 @@ because the file format has no recognizable header.
 \value{
   A \code{lobo} object containing:
 \item{header}{The files' header.}
-\item{log}{The processing log.}
+\item{processing.log}{The processing log.}
 \item{time}{Times of observations in the time series.}
 \item{u}{Time series of u component of velocity.}
 \item{v}{Time series of v component of velocity.}

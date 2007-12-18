@@ -64,6 +64,6 @@ ctd.add.column <- function (x, column=NULL, column.name="",
 		"\", name=\"", name, 
 		"\", unit=\"", unit, 
 		"\", debug)",sep="")
-	result <- log.append(result, log.item)
+	result <- processing.log.append(result, log.item)
 	return(result)
 }
