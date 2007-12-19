@@ -59,19 +59,19 @@ software for scanning the data files and producing some standard plots, but this
 is of limited use to researchers who work with several instrument types at the
 same time, and who need to carry the analysis beyond the first step.
 
-The need to scan diverse data files was just one motivation for the creation of
-\verb@oce@. The other aim was to provide a system in which oceanographic data
-could be analyzed easily in R.  This second goal influenced the design of the
-objects in \verb@oce@, which follow a uniform design, a list with three
-components: (a) \verb@data@, a list or a data frame containing the actual data,
-for a CTD object, this will contain pressure, temperature, etc., (b)
-\verb@metadata@, a list containing data such things as file headers, the
-location of a CTD cast, etc., and (c) \verb@processing.log@, a list that
-documents how the file was created (often by a \verb@read@ or \verb@as@ method)
-and how it was changed thereafter (e.g. by decimating a CTD cast).  This
-approach to design, along with a policy of adding features according to the
-priorities of practical research, may make \verb@oce@ a comfortable tool today,
-and may keep keep it so as it grows.
+The need to scan diverse data files was one motivation for the creation of \verb@oce@,
+but an equal goal was to make it easy to work with the data once they are in the system.
+This was accomplished partly by the provision of functions to work with the data, and
+partly by developing a uniform object design that lets users reach inside without
+guesswork\footnote{Each \verb@oce@ object is a list containing three elements: (a)
+\verb@data@, a list or a data frame containing the actual data, for a CTD object, this
+will contain pressure, temperature, etc., (b) \verb@metadata@, a list containing data
+such things as file headers, the location of a CTD cast, etc., and (c)
+\verb@processing.log@, a list that documents how the file was created (often by a
+\verb@read@ or \verb@as@ method) and how it was changed thereafter (e.g. by decimating a
+CTD cast).}, and partly by adhering to a policy of adding features according to the
+priorities of practical research. The net result is that \verb@oce@ is a fairly
+comfortable tool today, and one that should to remain so as it grows.
 
 \section{Calculations of seawater properties}
 
