@@ -1,6 +1,6 @@
 sw.theta <- function(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983", "Bryden1973"))
 {
-	if ("ctd" == class(S)) {
+	if (inherits(S, "ctd")) {
 		tmp <- S
 		S <- tmp$data$salinity
 		t <- tmp$data$temperature

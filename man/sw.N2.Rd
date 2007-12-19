@@ -40,17 +40,11 @@ argument to \code{N2} to do some smoothing of the density profile.
 \examples{
 library(oce)
 data(ctd)
-p <- ctd$data$pressure
-sigthe <- sw.sigma.theta(ctd$data$temperature, ctd$data$salinity, ctd$data$pressure)
-par(mfcol=c(3,1))
-plot(sigthe, -p)
-lines(sigthe, -p)
-plot(sw.N2(p,sigthe), -p)
-lines(sw.N2(p,sigthe), -p)
-abline(v=0)
-# Demonstrate the effect of the df parameter in smooth.spline()
-lines(sw.N2(p,sigthe,df=length(p)/4), -p)
-abline(v=0)
+# Illustrate effect of changing df
+plot(sw.N2(ctd), ctd$data$pressure,
+	ylim=rev(range(ctd$data$pressure)), xlab="N2",ylab="p", type='l')
+lines(sw.N2(ctd, df=10), ctd$data$pressure, col="blue")
+grid()
 }
 \author{Dan Kelley}
 \keyword{misc}

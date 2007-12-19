@@ -1,6 +1,6 @@
 sw.sigma <- function(S, t=NULL, p=NULL)
 {
-	if ("ctad" == class(S)) {
+	if (inherits(S, "ctd")) {
 		t <- S$data$temperature
 		p <- S$data$pressure
 		S <- S$data$salinity # note: this destroys the ctd object

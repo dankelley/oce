@@ -1,6 +1,6 @@
 sw.T.freeze <- function(S, p=NULL)
 {
-	if ("ctd" == class(S)) {
+	if (inherits(S, "ctd")) {
 		p <- S$data$pressure
 		S <- S$data$salinity # note: this destroys the ctd object
 	}

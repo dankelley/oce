@@ -1,6 +1,6 @@
 sw.viscosity <- function (S, t=NULL)
 {
-	if ("ctd" == class(S)) {
+	if (inherits(S, "ctd")) {
 		t <- S$data$temperature
 		S <- S$data$salinity # note: this destroys the ctd object
 	}

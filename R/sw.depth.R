@@ -1,6 +1,6 @@
 sw.depth <- function(p, lat, degrees=TRUE)
 {
-	if ("ctd" == class(p)) {
+	if (inherits(p, "ctd")) {
 		lat <- abs(p$data$latitude)
 		p <- p$data$pressure # over-writes p
 	}

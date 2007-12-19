@@ -17,7 +17,7 @@ section.subset <- function(section, indices=1:length(section$data$station))
 	log.item <- list(time = c(Sys.time()),
 		paste("modified by section.subset(x, indices=c(",paste(indices,collapse=","),"))",sep=""))
 	res <- list(data=data, metadata=metadata, processing.log=section$processing.log)
-	class(res) <- "section"
+	class(res) <- c("section", "oce")
 	res <- processing.log.append(res, log.item)
 	res
 }

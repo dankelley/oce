@@ -1,6 +1,6 @@
 sw.N2 <- function(p, sigma.theta=NULL, ...) # BUG: think more about best density measure
 {
-	if ("ctd" == class(p)) {
+	if (inherits(p, "ctd")) {
 		sigma.theta <- sw.sigma.theta(p$data$salinity, p$data$temperature, p$data$pressure)
 		p <- p$data$pressure # over-writes p
 	}

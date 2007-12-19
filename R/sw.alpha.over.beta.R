@@ -1,6 +1,6 @@
 sw.alpha.over.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
 {
-	if ("ctd" == class(S)) {
+	if (inherits(S, "ctd")) {
 		t <- S$data$temperature
 		p <- S$data$pressure
 		S <- S$data$salinity # note: this destroys the ctd object

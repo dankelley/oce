@@ -4,7 +4,7 @@
 \description{Grid a section, by interpolating to fixed pressure levels.}
 \usage{section.grid(section, p, method=c("approx","boxcar","lm"), ...)}
 \arguments{
-  \item{section}{A section to be gridded.}
+  \item{section}{a \code{section} object containing the section to be gridded.}
   \item{p}{optional indication of the pressure levels to which interpolation should be done.  If this is not supplied, the pressure levels will be calculated based on the typical spacing in the ctd profiles stored within \code{section}.  If a single numerical value is provided, it is taken as a step for a seq() running from 0 to the maximum pressure (rounded to that step).  If \code{p="levitus"}, then the levels of the Levitus atlas are used.  If a list of numerical values is provided, then it is used as is.}
   \item{method}{the algorithm to use for interpolation to the pressure levels; see Details below for a sketch, and see \code{\link{ctd.decimate}} for a deeper discussion.}
   \item{...}{optional arguments to be supplied to \code{\link{ctd.decimate}}.}

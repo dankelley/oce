@@ -5,10 +5,9 @@
   Coerces a dataset into a ctd dataset.
 }
 \usage{
-thectd <- as.ctd(
-S, T, p, header=NULL, filename=NA, ship=NA, scientist=NA,
-institute=NA, address=NA, cruise=NA, station=NA,
-date=NA, start.time=NA, 
+thectd <- as.ctd(S, t, p,
+ship=NA, scientist=NA, institute=NA, address=NA,
+cruise=NA, station=NA, date=NA, start.time=NA, 
 latitude=NA, longitude=NA,
 recovery=NA,
 water.depth=NA,
@@ -16,30 +15,27 @@ sample.interval=NA)
 }
 \arguments{
   \item{S}{Salinity through the water column.}
-  \item{T}{Temperature through the water column.}
+  \item{t}{Temperature through the water column.}
   \item{p}{pressure through the water column.}
-  \item{header}{ignored, for now}
-  \item{filename}{ignored, for now}
-  \item{ship}{ignored, for now}
-  \item{scientist}{ignored, for now}
-  \item{institute}{ignored, for now}
-  \item{address}{ignored, for now}
-  \item{cruise}{ignored, for now}
-  \item{station}{ignored, for now}
-  \item{date}{ignored, for now}
-  \item{start.time}{ignored, for now}
-  \item{latitude}{ignored, for now}
-  \item{longitude}{ignored, for now}
-  \item{recovery}{ignored, for now}
-  \item{water.depth}{ignored, for now}
-  \item{sample.interval}{ignored, for now}
+  \item{ship}{optional string containing the ship from which the observations were made.}
+  \item{scientist}{optional string containing the chief scientist on the cruise.}
+  \item{institute}{optional string containing the institute behind the work.}
+  \item{cruise}{optional string containing a cruise identifier.}
+  \item{station}{optional string containing a station identifier.}
+  \item{date}{optional string containing the date at which the profile was started.}
+  \item{start.time}{optional string containing the start time.}
+  \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
+  \item{longitude}{optional numerical value containing longitude in decimal degrees, positive in the eastern hemisphere.}
+  \item{recovery}{optional string indicating the recovery time.}
+  \item{water.depth}{optional numerical value indicating the water depth in metres.}
+  \item{sample.interval}{optional numerical value indicating the time between samples in the profile.}
 }
 \details{
- This is helpful if data were created, not read in from a file.
+A common use is to assemble (S,t,p) vectors into a \code{ctd} object, e.g. so that 
+\code{\link{plot.ctd}} can be used to make a standard four-panel plot, or so that
+a section can be constructed with \code{\link{make.section}}.
 }
-\value{
-A \code{ctd} object (see \code{\link{read.ctd}}).
-}
+\value{A \code{ctd} object (see \code{\link{read.ctd}}).}
 \seealso{
 A file containing CTD profile data may be read with \code{\link{read.ctd}}.
 A \code{ctd} object may be summarized with \code{\link{summary.ctd}}.

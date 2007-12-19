@@ -10,7 +10,7 @@ sw.dynamic.height <- function(x, pref=2000)
 		integrand <- approxfun(ctd$data$pressure, dzdp, rule=2)
 		integrate(integrand, 0, pref)$value
 	}
-	if ("section" == class(x)) {
+	if (inherits(x, "section")) {
 		lon0 <- x$data$station[[1]]$metadata$longitude
 		lat0 <- x$data$station[[1]]$metadata$latitude
 		ns <- length(x$data$station)
@@ -21,7 +21,7 @@ sw.dynamic.height <- function(x, pref=2000)
 			h[i] <- height(x$data$station[[i]], pref)
 		}
 		return(list(distance=d, height=h))
-	} else if ("ctd" == class(x)) {
+	} else if (inherits(x, "ctd")) {
 		return(height(x, pref))
 	} else {
 		stop("method only works for 'section' or 'ctd' objects")

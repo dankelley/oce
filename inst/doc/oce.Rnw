@@ -232,8 +232,8 @@ ctd.trimmed <- ctd.trim(ctd.raw)
 @
 
 It should be noted that \verb@ctd.trim@ inserts entries into the object's log
-file, so that you (or anyone else with whom you share the objec) will be able to
-track exactly how this trimming was done.
+file, so that you (or anyone else with whom you share the object) will be able to
+see the details of how the trimming was done.
 
 \index{reading!ctd profile}
 

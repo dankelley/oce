@@ -1,6 +1,5 @@
-as.ctd <- function(S, T, p,
-	header=NULL,
-	filename=NA,ship=NA,scientist=NA,institute=NA,address=NA,
+as.ctd <- function(S, t, p,
+	ship=NA,scientist=NA,institute=NA,address=NA,
 	cruise=NA,station=NA,date=NA,start.time=NA,
 	latitude=NA, longitude=NA,
 	recovery=NA,
@@ -9,10 +8,10 @@ as.ctd <- function(S, T, p,
 {
 	if (length(p) == 1) # special case
 		p = rep(p, length(S))
-	data <- data.frame(salinity=S, temperature=T, pressure=p, sigma.theta=sw.sigma.theta(S, T, p))
+	data <- data.frame(salinity=S, temperature=t, pressure=p, sigma.theta=sw.sigma.theta(S, t, p))
 	metadata <- list(
-		header=header,
-	    filename=filename,
+		header=NULL,
+	    filename=NULL,
 		filename.orig=NULL,
 		system.upload.time=NULL,
         ship=ship,

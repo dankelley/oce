@@ -50,7 +50,7 @@ read.section <- function(file, section.id, debug=FALSE)
 		# FIXME: maybe should just scan this thing; it might work better anyway
 	}
 	p <- as.numeric(data[,which(var.names=="CTDPRS") - 2])
-	T <- as.numeric(data[,which(var.names=="CTDTMP") - 2])
+	t <- as.numeric(data[,which(var.names=="CTDTMP") - 2])
 	S <- as.numeric(data[,which(var.names=="CTDSAL") - 2])
 	water.depth  <- as.numeric(data[,which(var.names=="DEPTH") - 2])
 	latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - 2])
@@ -68,7 +68,7 @@ read.section <- function(file, section.id, debug=FALSE)
 		stn[i] <- sub("^ *", "", station.id[select[1]])
 		lat[i] <- latitude[select[1]]
 		lon[i] <- longitude[select[1]]
-		this.station <- as.ctd(S=S[select], T=T[select], p=p[select],
+		this.station <- as.ctd(S=S[select], t=T[select], p=p[select],
 			latitude=lat[i],
 			longitude=lon[i],
 			cruise=section.id[i],
