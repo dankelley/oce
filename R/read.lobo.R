@@ -25,7 +25,7 @@ read.lobo <- function(file, cols=7) {
 		log.item <- list(time=c(Sys.time()), 
 			action=c(paste("created by read.lobo(\"",file,"\", cols=",cols,")",sep="")))
 		res <- list(data=data, metadata=metadata, processing.log=log.item)
-		class(res) = "lobo"
+		class(res) = c("lobo", "oce")
 		res
 	} else {
 		stop("debug: only working on one format right now")

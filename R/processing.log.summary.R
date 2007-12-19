@@ -9,5 +9,6 @@ processing.log.summary <- function(object)
 				"UTC\n   ", object$processing.log$action[i], "\n"),sep=""))
 		}
 	}
+	invisible(object)
 }
  

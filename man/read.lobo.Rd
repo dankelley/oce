@@ -25,18 +25,23 @@ It is also worth noting that there is no \code{\link{read.oce}} equivalent to \c
 because the file format has no recognizable header.
 }
 \value{
-  A \code{lobo} object containing:
-\item{header}{The files' header.}
-\item{processing.log}{The processing log.}
-\item{time}{Times of observations in the time series.}
-\item{u}{Time series of u component of velocity.}
-\item{v}{Time series of v component of velocity.}
-\item{nitrate}{Time series of nitrate concentration.} 
-\item{fluorescence}{Time series of fluorescence.}
-\item{S}{Time series of salinity.}
-\item{T}{Time series of temperature.}
-\item{p}{Time series of pressure.}
-\item{data}{The files's data, as a simple list.}
+A \code{lobo} object, which is a \code{\link{list}} containing
+  \itemize{
+    \item{data}{a \code{\link{data.frame}} containing the following vectors:
+        \code{time}, the times of observation;
+        \code{u}, one horizontal component of velocity
+                 (necessarily eastward) [m/s];
+        \code{v}, an orthogonal component of horizontal 
+                 velocity [m/s];
+        \code{salinity} [PSU];
+        \code{temperature} [degC];
+        \code{p}, the pressure [dbar];
+        \code{nitrate} concentration [unit?]; and
+        \code{fluorescence} [unit?].
+    }
+    \item{metadata}{a list containing \code{header}, the header from the data file.}
+    \item{processing.log}{a processing log.}
+  }
 }
 
 \note{The \code{oce} author was unable to find a description of the data format, and so

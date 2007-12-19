@@ -21,11 +21,11 @@ file is in neither of these known formats, the user might wish to scan the data 
 means, and then to use \code{\link{as.sealevel}} to create the \code{sealevel} object.}
 
 \value{
-  A \code{sealevel} object containing
-  \item{data}{the data, a list containing
+  A \code{sealevel} object, which is a \code{\link{list}} containing
+  \item{data}{a \code{\link{data.frame}} containing
     \itemize{
       \item{t}{time}
-      \item{eta}{sea level}
+      \item{eta}{sea level [m]}
     }
   }
   \item{metadata}{a list containing
@@ -42,7 +42,7 @@ means, and then to use \code{\link{as.sealevel}} to create the \code{sealevel} o
       \item{decimation.method}{see online docs at site mentioned in References.}
       \item{reference.offset}{a reference offset; see online docs at site mentioned in References.}
       \item{reference.code}{a reference code; see online docs at site mentioned in References.}
-      \item{units}{unit of observations (normally "MM")}
+      \item{units}{unit of observations in the original file (normally "MM")}
       \item{n}{number of observations}
     }
   }
