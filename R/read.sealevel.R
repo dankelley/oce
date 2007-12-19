@@ -124,6 +124,6 @@ read.sealevel <- function(file, debug=FALSE)
 		reference.code=reference.code)
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
 	rval <- list(data=data, metadata=metadata, processing.log=log.item)
-	class(rval) <- "sealevel"
+	class(rval) <- c("sealevel", "oce")
 	rval
 }

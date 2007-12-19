@@ -83,6 +83,6 @@ read.section <- function(file, section.id, debug=FALSE)
 	log.item <- list(time = c(Sys.time()),
 		 action = paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep=""))
 	res <- list(data=data, metadata=metadata, processing.log=log.item)
-	class(res) <- "section"
+	class(res) <- c("section", "oce")
 	res
 }

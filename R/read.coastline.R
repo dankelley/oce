@@ -56,6 +56,6 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 	} else {
 		stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
 	}
-	class(res) <- "coastline"
+	class(res) <- c("coastline", "oce")
 	return(res)
 }              

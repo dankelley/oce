@@ -2,6 +2,8 @@
 	- let sw.rho() and similar sw. functions take a ctd object as a single argument
 	- add sw.dynamic.height()
 	- make section.grid() and ctd.decimate() extrapolate to surface in "approx" method
+	- add summary.oce()
+	- make all objects inherit from a new class "oce"
 0.1.69	- modify documentation slightly
     - start a migration to more uniform object structures
 	- rename as.CTD() to as.ctd(), to make it consistent with similar functions

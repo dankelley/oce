@@ -193,7 +193,7 @@ read.ctd.WOCE <- function(file,
               	sample.interval=sample.interval)
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
 	res <- list(data=data, metadata=metadata, processing.log=log.item)
-  	class(res) <- "ctd"
+  	class(res) <- c("ctd", "oce")
 	res
 }
 
@@ -439,8 +439,6 @@ read.ctd.SBE19 <- function(file,
 		#cat("About to read.table these names:", col.names.forced,"\n");
 		cat("About to read these names:", col.names.inferred,"\n");
 	}
-  	#DELETED# data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
-#  	data <- read.table(file,col.names=col.names.forced,colClasses="numeric");
   	data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
 	metadata <- list(
 		header=header, 
@@ -462,7 +460,7 @@ read.ctd.SBE19 <- function(file,
 		sample.interval=sample.interval)
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
 	res <- list(data=data, metadata=metadata, processing.log=log.item)
-  	class(res) <- "ctd"
+  	class(res) <- c("ctd", "oce")
 	# Add standard things, if missing
   	if (!found.salinity) {
 		if (found.conductivity.ratio) {

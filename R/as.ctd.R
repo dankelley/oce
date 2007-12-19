@@ -30,6 +30,6 @@ as.ctd <- function(S, T, p,
        	sample.interval=sample.interval)
 	log <- list(time=c(Sys.time()), action=c("created by as.ctd()"))
 	res <- list(data=data, metadata=metadata, log=log)
-  	class(res) <- "ctd"
+  	class(res) <- c("ctd", "oce")
 	res
 }

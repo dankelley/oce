@@ -31,6 +31,6 @@ as.sealevel <- function(
 		n=length(eta))
 	log.item <- list(time=c(Sys.time()), action=c("created by as.sealevel()"))
 	rval <- list(data=data, metadata=metadata, processing.log=log.item)
-	class(rval) <- "sealevel"
+	class(rval) <- c("sealevel", "oce")
 	rval
 }
