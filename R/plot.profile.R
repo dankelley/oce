@@ -2,7 +2,7 @@ plot.profile <- function (x,
 	type = "S", 
 	col.S = "darkgreen", 
 	col.t = "red", 
-    col.rho = "blue", 
+	col.rho = "blue", 
 	col.N2 = "brown", 
 	grid = FALSE, 
 	col.grid = "lightgray",
@@ -46,7 +46,7 @@ plot.profile <- function (x,
 			grid(col=col.grid)
         lines(x$data$sigma.theta, x$data$pressure, col = col.rho)
     }
-    else if (type == "sigmatheta+N2") {
+    else if (type == "density+N2") {
 		st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, x$data$pressure, ylim = rev(range(x$data$pressure)), 
             type = "n", xlab = "", ylab = pname, axes = FALSE)

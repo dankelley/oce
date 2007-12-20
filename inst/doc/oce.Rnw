@@ -549,7 +549,7 @@ Although one may argue as to the limits of the pycnocline, for illustration let 
 library(oce)
 data(ctd)
 pycnocline <- ctd.trim(ctd, "pressure", c(5,12))
-plot.profile(pycnocline, type="sigmatheta+N2")
+plot.profile(pycnocline, type="density+N2")
 @
 
 \index{section!extracting profile data from}

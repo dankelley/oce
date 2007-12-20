@@ -26,22 +26,18 @@ because the file format has no recognizable header.
 }
 \value{
 A \code{lobo} object, which is a \code{\link{list}} containing
-  \itemize{
-    \item{data}{a \code{\link{data.frame}} containing the following vectors:
-        \code{time}, the times of observation;
-        \code{u}, one horizontal component of velocity
-                 (necessarily eastward) [m/s];
-        \code{v}, an orthogonal component of horizontal 
-                 velocity [m/s];
-        \code{salinity} [PSU];
-        \code{temperature} [degC];
-        \code{p}, the pressure [dbar];
-        \code{nitrate} concentration [unit?]; and
-        \code{fluorescence} [unit?].
-    }
-    \item{metadata}{a list containing \code{header}, the header from the data file.}
-    \item{processing.log}{a processing log.}
+  \item{data}{a \code{\link{data.frame}} containing the following vectors:
+    \item{time}, the times of observation;
+    \item{u}, one horizontal component of velocity (necessarily eastward) [m/s];
+    \item{v}, an orthogonal component of horizontal velocity [m/s];
+    \item{salinity} [PSU];
+    \item{temperature} [degC];
+    \item{p}, the pressure [dbar];
+    \item{nitrate} concentration [unit?]; and
+    \item{fluorescence} [unit?].
   }
+  \item{metadata}{a list containing \code{header}, the header from the data file.}
+  \item{processing.log}{a processing log.}
 }
 
 \note{The \code{oce} author was unable to find a description of the data format, and so

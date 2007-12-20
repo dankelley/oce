@@ -48,20 +48,21 @@ plot.TS(x,
   \code{\link{read.ctd}} scans it from a file.
 }
 \examples{
-\dontrun{
 library(oce)
-profile <- read.ctd("/usr/local/lib/R/library/oce/demo/ctdprofile.cnv")
-attach(profile)
-plot.TS(profile)
-# North Atlantic thermocline water, mixing to Antarctic Intermediate Water
-# (after Defant's analysis)
-N <- 10
-Srange <- c(34.15, 35.94)
-Trange <- c(3.3,18)
-SS <- Srange[1] + (Srange[2] - Srange[1]) *(1:N)/(N-1) + 0.01*rnorm(N)
-TT <- Trange[1] + (Trange[2] - Trange[1]) *(1:N)/(N-1) + 0.01*rnorm(N)
-plot.TS(as.ctd(S=SS, T=TT, p=0))
+# Plot TS diagram for data along 36N Atlantic section,
+# colour-coded for longitude (which ranges -8 to -74)
+data(a03)
+for (i in 1:124) {
+  profile <- a03$data$station[[i]]
+  x <- (-8 - profile$metadata$longitude) / 66
+  col <- hsv(0.666*x)
+  if (i == 1) {
+       plot.TS(profile, xlim=c(34,37), ylim=c(2,25), col=col)
+  } else {
+       points(profile$data$salinity, profile$data$temperature,pch=20,col=col)
+  }
 }
+title("North Atlantic along 37N from America (blue) to Europe (red)")
 }
 \author{Dan Kelley}
 \keyword{misc}

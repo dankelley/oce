@@ -18,19 +18,17 @@ col.grid="lightgray",
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{type}{Type of profile to plot, from the list below.
-    \itemize{
       \item{\code{S}}{Profile of salinity.}
       \item{\code{T}}{Profile of \emph{in-situ} temperature.}
-      \item{\code{sigmatheta}}{Profile of density (expressed as \eqn{\sigma_\theta}{sigma_theta}).}
+      \item{\code{density}}{Profile of density (expressed as \eqn{\sigma_\theta}{sigma_theta}).}
       \item{\code{S+T}}{Profile of salinity and temperature within a single axis frame.}
       \item{\code{N2}}{Profile of square of buoyancy frequency
 	\eqn{N^2}{N^2}, calculated with \code{\link{sw.N2}} with an
 	optional argument setting of \code{df=length(x$p)/4} to do 
 	some smoothing.}
-      \item{\code{sigmatheta+N2}}{Profile of sigma-theta and the square of buoyancy
+      \item{\code{density+N2}}{Profile of sigma-theta and the square of buoyancy
 	frequency within a single axis frame.}
-    }
-  } 
+  }
   \item{col.S}{Color for salinity profile.}
   \item{col.t}{Color for temperature.}
   \item{col.rho}{Color for density.}

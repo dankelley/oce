@@ -30,7 +30,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
 	par(mar=c(5,4,3,2))
     plot.TS(x, grid=grid, col.grid=col.grid, ...)
 	par(mar=c(4,4,5,2))
-	plot.profile(x, type = "sigmatheta+N2", grid=grid, col.grid=col.grid, ...)
+	plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, ...)
    	# Text
 	text.item <- function(item, label, cex=1) {
 		if (!is.null(item) && !is.na(item)) {

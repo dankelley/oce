@@ -5,7 +5,7 @@ sw.N2 <- function(p, sigma.theta=NULL, ...) # BUG: think more about best density
 		p <- p$data$pressure # over-writes p
 	}
 	args <- list(...)
-	df <- if (is.null(args$df)) length(p)/4 else args$df;
+	df <- if (is.null(args$df)) length(p)/5 else args$df;
 	ok <- !is.na(p) & !is.na(sigma.theta)
 	#cat(paste("df=",df,"\n"))
   	sigma.theta.smooth <- smooth.spline(p[ok], sigma.theta[ok], df=df)

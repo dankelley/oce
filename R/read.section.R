@@ -73,8 +73,7 @@ read.section <- function(file, section.id, debug=FALSE)
 			longitude=lon[i],
 			cruise=section.id[i],
 			station=stn[i],
-			water.depth=water.depth[select[1]],
-			filename=filename)
+			water.depth=water.depth[select[1]])
 		if (debug) cat("station at ", lat[i], "N and ", lon[i], "W\n")
         station[[i]] <- this.station
 	}
