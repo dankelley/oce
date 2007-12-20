@@ -49,20 +49,12 @@ plot.TS(x,
 }
 \examples{
 library(oce)
-# Plot TS diagram for data along 36N Atlantic section,
-# colour-coded for longitude (which ranges -8 to -74)
+# Plot TS diagram for a mid-Atlantic station at 36N
+# See demo(TS) for a section-spanning TS diagram
 data(a03)
-for (i in 1:124) {
-  profile <- a03$data$station[[i]]
-  x <- (-8 - profile$metadata$longitude) / 66
-  col <- hsv(0.666*x)
-  if (i == 1) {
-       plot.TS(profile, xlim=c(34,37), ylim=c(2,25), col=col)
-  } else {
-       points(profile$data$salinity, profile$data$temperature,pch=20,col=col)
-  }
-}
-title("North Atlantic along 37N from America (blue) to Europe (red)")
+profile <- a03$data$station[[60]] # 124 stations in total
+plot.TS(profile)
+title("Mid-Atlantic at 36N")
 }
 \author{Dan Kelley}
 \keyword{misc}

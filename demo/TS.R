@@ -12,4 +12,4 @@ for (i in 1:124) {
 		points(profile$data$salinity, profile$data$temperature,pch=20,col=col)
   	}
 }
-title("North Atlantic along 37N from America (blue) to Europe (red)")
+title("North Atlantic along 36N from America (blue) to Europe (red)")
