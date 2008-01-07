@@ -3,19 +3,26 @@
 
 \documentclass{article}
 
+% \VignetteIndexEntry{Introduction to oce}
+% \VignetteDepends{oce}
+% \VignetteKeyword{oceanography}
 
 \usepackage{url}
 \usepackage{fullpage}
 \usepackage{boxedminipage}
 \usepackage{hyperref}
 \usepackage{makeidx} 
+\usepackage{titlesec}
 \makeindex
 
-\parskip=1.25ex plus 1ex minus 1.25ex
+\parskip=1.25ex plus 1.5ex minus 1.25ex
 
-% \VignetteIndexEntry{Introduction to oce}
-% \VignetteDepends{oce}
-% \VignetteKeyword{oceanography}
+
+
+\titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection}{1em}{}
+\titlespacing{\section}{0em}{1em plus 1em minus 0.5em}{0.15em plus 0.15em minus 0.125em}
+\titleformat{\subsection}[block]{\normalfont\large\itshape}{\thesubsection}{1em}{}
+\titlespacing{\subsection}{0em}{1em plus 1em minus 0.5em}{-0.15em plus 0.15em minus 0.125em}
 
 \newcommand{\workedexercise}[2]{
 	\vspace{2ex plus 2ex minus 1ex}
@@ -571,9 +578,8 @@ plot.TS(ctd, col=hsv(0.7*id/n), cex=2, pch=21)
 @
 
 \workedanswer{4}{Gulf Stream}
-
+(Try \verb@?sw.dynamic.height@ for hints on smoothing.)
 \index{Gulf Stream!geostrophic calculation}
-Try \verb@?sw.dynamic.height@ for hints on smoothing.
 <<>>=
 library(oce)
 data(a03)
