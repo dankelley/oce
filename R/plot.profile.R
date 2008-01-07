@@ -63,7 +63,7 @@ plot.profile <- function (x,
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
         lines(N2, x$data$pressure, col = col.N2)
         #abline(v = 0, col = col.N2)
-        mtext(expression(paste(N^2, " [ ", (rad/s)^2, " ]")), side = 1, 
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, 
             line = 3, col = col.N2)
         box()
 		if (grid)
@@ -73,7 +73,7 @@ plot.profile <- function (x,
 	    N2 <- N2(x$data$pressure, x$data$sigma.theta, df = length(x$data$pressure)/4)
         plot(N2, x$data$pressure, ylim = rev(range(x$data$pressure)), 
             type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(expression(paste(N^2, " [ ", (rad/s)^2, " ]")), side = 3, 
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, 
             line = 3, col = col.N2)
         axis(2)
         axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2)
