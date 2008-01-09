@@ -85,7 +85,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		# Draw spectra, if series has no NA, so that spectrum is easy to construct
 		if (!num.NA) {
 			freq <-1/ as.numeric(difftime(x$data$t[2], x$data$t[1], units="hours"))
-			cat("freq:",freq,"\n")
+			#cat("freq:",freq,"\n")
 			Eta <- ts(eta.m,start=1,frequency=freq)
 			#s<-spectrum(Eta-mean(Eta),spans=c(5,5),xlim=c(0,0.1),plot=FALSE,log="y") 
 			#s<-spectrum(Eta-mean(Eta),xlim=c(0,0.1),plot=FALSE,log="y",demean=TRUE) 
