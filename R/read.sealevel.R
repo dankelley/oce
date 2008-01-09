@@ -28,6 +28,7 @@ read.sealevel <- function(file, debug=FALSE)
 	reference.offset <- NA
 	reference.code <- NA
 	if (substr(first.line, 1, 12) == "Station_Name") {
+		if(debug) cat("File is of format 1 (e.g. as in MEDS archives)\n")
 		# Station_Name,HALIFAX
 		# Station_Number,490
 		# Latitude_Decimal_Degrees,44.666667
@@ -44,9 +45,10 @@ read.sealevel <- function(file, debug=FALSE)
 		latitude       <- as.numeric(strsplit(header[3], ",")[[1]][2])
 		longitude      <- as.numeric(strsplit(header[4], ",")[[1]][2])
 		x <- read.csv(file, skip=header.length, header=FALSE)
-		eta <- as.numeric(x$V)
+		eta <- as.numeric(x$V2)
 		t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
 	} else {
+		if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
 		d <- readLines(file)
 		n <- length(d)
 		header <- d[1]
@@ -59,12 +61,10 @@ read.sealevel <- function(file, debug=FALSE)
 		year              <- substr(header, 45, 48)
 		latitude.str      <- substr(header, 50, 55) #degrees,minutes,tenths,hemisphere
 		latitude <- as.numeric(substr(latitude.str,   1, 2)) + (as.numeric(substr(latitude.str,  3, 5)))/600
-		if (tolower(substr(latitude.str,  6, 6)) == "s")
-			latitude <- -latitude
+		if (tolower(substr(latitude.str,  6, 6)) == "s") latitude <- -latitude
 		longitude.str     <- substr(header, 57, 63) #degrees,minutes,tenths,hemisphere
 		longitude <- as.numeric(substr(longitude.str, 1, 3)) + (as.numeric(substr(longitude.str, 4, 6)))/600
-		if (tolower(substr(longitude.str, 7, 7)) == "w")
-			longitude <- -longitude
+		if (tolower(substr(longitude.str, 7, 7)) == "w") longitude <- -longitude
 		GMT.offset        <- substr(header, 65, 68) #hours,tenths (East is +ve)
 		decimation.method <- substr(header, 70, 70) #1=filtered 2=average 3=spot readings 4=other
 		reference.offset  <- substr(header, 72, 76) # add to values
@@ -104,10 +104,11 @@ read.sealevel <- function(file, debug=FALSE)
 		}
 	}
 	num.missing <- sum(is.na(eta))
-	if (num.missing > 0) {
-		warning("there are ", num.missing, " missing points in this timeseries, at indices ", 
-			paste(which(is.na(eta)), ""))
+	if (debug) {
+		cat("t summary:");print(summary(t))
+		cat("eta summary:");print(summary(eta))
 	}
+	if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(eta)), ""))
 	data <- data.frame(t=t, eta=eta)
 	metadata <- list(
 		header=header,

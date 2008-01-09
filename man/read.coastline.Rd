@@ -32,7 +32,7 @@ BUG: the 'arc/info ungenerate' format is not yet understood.
       \item{latitude}{the latitude in decimal degrees positive north of the equator.}
   }
   \item{metadata}{a NULL item that may be used in a future version.}
-  \item{processing.log}{A processing log in the standard oce format.}
+  \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
 
 \seealso{

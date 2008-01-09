@@ -28,7 +28,7 @@ A \code{section} object, which is a list containing the following items
 and
 \code{longitude}, a vector of station latitudes, decimal and positive in eastern hemisphere.
 }
-\item{processing.log}{a processing log.}
+\item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
 
 \seealso{\code{\link{make.section}} can be used to bind together \code{ctd} objects into a section.}

@@ -22,27 +22,27 @@ means, and then to use \code{\link{as.sealevel}} to create the \code{sealevel} o
 
 \value{
   A \code{sealevel} object, which is a \code{\link{list}} containing
-  \item{data}{a \code{\link{data.frame}} containing
-    \item{t}{time}
-    \item{eta}{sea level [m]}
+  \item{data}{A \code{\link{data.frame}} containing
+    \item{\code{t}}{time}
+    \item{\code{eta}}{sea level [m]}
   }
-  \item{metadata}{a list containing
-    \item{header}{The header line (helpful if detail extraction failed)}
-    \item{year}{year in which the observations were made.}
-    \item{station.number}{identifier for the station.}
-    \item{station.version}{see online docs at site mentioned in References.}
-    \item{station.name}{name of station}
-    \item{region}{a region code.}
-    \item{latitude}{latitude, decimal degrees, positive north of equator.}
-    \item{longitude}{longitude, decimal degrees, positive east of Greenwich.}
-    \item{GMT.offset}{offset from GMT time.}
-    \item{decimation.method}{see online docs at site mentioned in References.}
-    \item{reference.offset}{a reference offset; see online docs at site mentioned in References.}
-    \item{reference.code}{a reference code; see online docs at site mentioned in References.}
-    \item{units}{unit of observations in the original file (normally "MM")}
-    \item{n}{number of observations}
+  \item{metadata}{A list containing
+    \item{\code{header}}{the header line (helpful if detail extraction failed)}
+    \item{\code{year}}{year in which the observations were made.}
+    \item{\code{station.number}}{identifier for the station.}
+    \item{\code{station.version}}{see online docs at site mentioned in References.}
+    \item{\code{station.name}}{name of station}
+    \item{\code{region}}{a region code.}
+    \item{\code{latitude}}{latitude, decimal degrees, positive north of equator.}
+    \item{\code{longitude}}{longitude, decimal degrees, positive east of Greenwich.}
+    \item{\code{GMT.offset}}{offset from GMT time.}
+    \item{\code{decimation.method}}{see online docs at site mentioned in References.}
+    \item{\code{reference.offset}}{a reference offset; see online docs at site mentioned in References.}
+    \item{\code{reference.code}}{a reference code; see online docs at site mentioned in References.}
+    \item{\code{units}}{unit of observations in the original file (normally "MM")}
+    \item{\code{n}}{number of observations}
   }
-  \item{processing.log}{a processing log.}
+  \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
 
 \seealso{

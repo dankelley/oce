@@ -37,7 +37,7 @@ A \code{lobo} object, which is a \code{\link{list}} containing
     \item{\code{fluorescence}}{[unit?]}
   }
   \item{metadata}{a list containing \code{header}, the header from the data file.}
-  \item{processing.log}{a processing log.}
+  \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
 
 \note{The \code{oce} author was unable to find a description of the data format, and so

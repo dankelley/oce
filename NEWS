@@ -4,6 +4,8 @@
 	- make section.grid() and ctd.decimate() extrapolate to surface in "approx" method
 	- add summary.oce()
 	- make all objects inherit from a new class "oce"
+	- fix Issue 12: read.sealevel() had a hard-wired filename (remnant from debugging)
+	  [http://code.google.com/p/r-oce/issues/detail?id=12&can=1&q=label:Type-Defect]
 0.1.69	- modify documentation slightly
     - start a migration to more uniform object structures
 	- rename as.CTD() to as.ctd(), to make it consistent with similar functions
@@ -12,6 +14,7 @@
 	- add a03 dataset
 	- fix SF bug 1833719: warnings from read.ctd()
 	- fix Issue 8: read.coastline() not producing data
+	  [http://code.google.com/p/r-oce/issues/detail?id=8&can=1&q=label:Type-Defect]
 	- improve ability of trim.ctd() to ignore spurious initial data
 	- add "connect.points" option to plot.TS()
 	- add "station" item to "ctd" object

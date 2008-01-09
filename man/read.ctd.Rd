@@ -92,7 +92,7 @@ read.ctd(file, type=NULL, debug=FALSE,
     \item{\code{water.depth}}{the water depth at the site.}
     \item{\code{sample.interval}}{time interval between samples, in seconds.}
   }
-  \item{processing.log}{a processing log.}
+  \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
 
 \seealso{
