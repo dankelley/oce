@@ -55,7 +55,9 @@ A \code{sealevel} object can also be constructed with \code{\link{as.sealevel}}.
 \examples{
 \dontrun{
 library(oce)
-h <- read.sealevel("ftp://ilikai.soest.hawaii.edu/rqds/pacific/monthly/m652a.dat")
+# San Francisco data
+# ftp://ilikai.soest.hawaii.edu/rqds/pacific/hourly/h551a.zip
+h <- read.sealevel("h551a/h551a01.dat")
 summary(h)
 plot(h)
 }

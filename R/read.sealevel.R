@@ -66,11 +66,12 @@ read.sealevel <- function(file, debug=FALSE)
 		longitude <- as.numeric(substr(longitude.str, 1, 3)) + (as.numeric(substr(longitude.str, 4, 6)))/600
 		if (tolower(substr(longitude.str, 7, 7)) == "w") longitude <- -longitude
 		GMT.offset        <- substr(header, 65, 68) #hours,tenths (East is +ve)
+		if (debug) cat("GMT.offset:", GMT.offset, "\n")
 		decimation.method <- substr(header, 70, 70) #1=filtered 2=average 3=spot readings 4=other
 		reference.offset  <- substr(header, 72, 76) # add to values
 		reference.code    <- substr(header, 77, 77) # add to values
 		units             <- substr(header, 79, 80)
-		if (tolower(units) != "mm") stop("require units to be MM, not ", units)
+		if (tolower(units) != "mm") stop("require units to be 'mm' or 'MM', not '", units, "'")
 		eta <- array(NA, 12*(n-1))
 		first.twelve.hours  <- 3600 * (0:11)
 		second.twelve.hours <- 3600 * (12:23)
