@@ -38,7 +38,7 @@ read.sealevel <- function(file, debug=FALSE)
 		# Obs_date,SLEV
 		# 01/01/2001 12:00 AM,1.82,
 		header.length <- 8
-		header <- scan("../490-01-jan-2001_slev.csv", character(), n=header.length, quiet=TRUE)
+		header <- scan("../490-01-jan-2001_slev.csv", character(), n=header.length, quiet=TRUE) # BUG!!
 		station.name   <- strsplit(header[1], ",")[[1]][2]
 		station.number <- as.numeric(strsplit(header[2], ",")[[1]][2])
 		latitude       <- as.numeric(strsplit(header[3], ",")[[1]][2])
