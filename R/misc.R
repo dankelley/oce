@@ -27,7 +27,15 @@ lon.format <- function(lon) {
 			else sprintf("%8.4f%1s", abs(lon[i]), if (is.na(lon[i]) || lon[i] > 0) "E" else "W")
 	rval
 }
-offset.from.tz <- function(tz) { # FIXME: document this; provide interface to e.g. select Australian versions
+
+GMT.offset.from.tz <- function(tz) { 
+	# Data are from
+	#   http://www.timeanddate.com/library/abbreviations/timezones/
+	# and hand-edited, so there may be errors.  Also, note that some of these
+	# contradict ... I've commented out conflicting definitions that I think
+	# will come up most rarely in use, but perhaps something better should
+	# be devised.  (Maybe this is not a problem.  Maybe only MEDS uses these,
+	# as opposed to GMT offsets, and maybe they only work in 5 zones, anyway...)
 	if (tz == "A"   )  	return(1) 		# Alpha Time Zone	Military	UTC + 1 hour
 	if (tz == "ACDT") 	return(10.5)	# Australian Central Daylight Time	Australia	UTC + 10:30 hours
 	if (tz == "ACST")	return(9.5)		# Australian Central Standard Time	Australia	UTC + 9:30 hours

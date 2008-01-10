@@ -46,7 +46,7 @@ read.sealevel <- function(file, debug=FALSE)
 		longitude      <- as.numeric(strsplit(header[4], ",")[[1]][2])
     	# get GMT offset
 		tz             <- strsplit(header[6], ",")[[1]][2]
-		GMT.offset     <- offset.from.tz(tz)
+		GMT.offset     <- GMT.offset.from.tz(tz)
 		x <- read.csv(file, skip=header.length, header=FALSE)
 		eta <- as.numeric(x$V2)
 		t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
