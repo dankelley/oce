@@ -27,7 +27,7 @@ read.sealevel <- function(file, debug=FALSE)
 	decimation.method <- NA
 	reference.offset <- NA
 	reference.code <- NA
-	if (substr(first.line, 1, 12) == "Station_Name") {
+	if (substr(first.line, 1, 12) == "Station_Name") { # type 2
 		if(debug) cat("File is of format 1 (e.g. as in MEDS archives)\n")
 		# Station_Name,HALIFAX
 		# Station_Number,490
@@ -50,7 +50,7 @@ read.sealevel <- function(file, debug=FALSE)
 		x <- read.csv(file, skip=header.length, header=FALSE)
 		eta <- as.numeric(x$V2)
 		t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
-	} else {
+	} else { # type 1
 		if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
 		d <- readLines(file)
 		n <- length(d)
