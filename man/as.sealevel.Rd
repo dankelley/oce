@@ -33,7 +33,7 @@ as.sealevel(eta,
   \item{year}{the year of observation.}
   \item{latitude}{the latitude in decimal degrees, positive north of the equator.}
   \item{longitude}{the longitude in decimal degrees, positive east of Greenwich.}
-  \item{GMT.offset}{offset from GMT.  (BUG: this is ignored.)}
+  \item{GMT.offset}{offset from GMT, in hours.}
   \item{decimation.method}{a coded value, with 1 meaning filtered, 2 meaning a simple average of all samples, 3 meaning spot readings, and 4 meaning some other method.}
   \item{reference.offset}{?}
   \item{reference.code}{?}
