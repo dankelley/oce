@@ -58,8 +58,8 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 					" ", latlon.format(x$metadata$latitude, x$metadata$longitude),
 					if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
 					sep="")
+			mtext(side=3, title, line=0.5)
 		}
-		mtext(side=3, title, line=0.5)
 		# First bit
 		if (num.NA)
 			par(mar=c(3,5,0,1)+0.1)
