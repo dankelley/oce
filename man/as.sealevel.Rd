@@ -19,7 +19,8 @@ as.sealevel(eta,
   GMT.offset=NA,
   decimation.method=NA,
   reference.offset=NA,
-  reference.code=NA)
+  reference.code=NA,
+  sampling.interval=NA)
 }
 \arguments{
   \item{eta}{a list of sea-level heights in metres, in an hourly sequence.}
@@ -36,6 +37,7 @@ as.sealevel(eta,
   \item{decimation.method}{a coded value, with 1 meaning filtered, 2 meaning a simple average of all samples, 3 meaning spot readings, and 4 meaning some other method.}
   \item{reference.offset}{?}
   \item{reference.code}{?}
+  \item{sampling.interval}{optional interval between samples, in hours; if not provided, 1 hour is assumed.}
 }
 \details{
   The arguments are based on the standard data format, as described
