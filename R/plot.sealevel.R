@@ -50,13 +50,15 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		abline(v=at.t, col="darkgray", lty="dotted")
 		abline(h=0,col="darkgreen")
 		mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
-		title <- paste("Station ",
-				x$metadata$station.number, " (",
-				x$metadata$station.name,   ") ",
-				x$metadata$region,         "",
-				" ", latlon.format(x$metadata$latitude, x$metadata$longitude),
-				if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
-				sep="")
+		if (!is.na(x$metadata$station.number)) {
+			title <- paste("Station ",
+					x$metadata$station.number, " (",
+					x$metadata$station.name,   ") ",
+					x$metadata$region,         "",
+					" ", latlon.format(x$metadata$latitude, x$metadata$longitude),
+					if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
+					sep="")
+		}
 		mtext(side=3, title, line=0.5)
 		# First bit
 		if (num.NA)
@@ -84,17 +86,13 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		# 
 		# Draw spectra, if series has no NA, so that spectrum is easy to construct
 		if (!num.NA) {
-			freq <-1/ as.numeric(difftime(x$data$t[2], x$data$t[1], units="hours"))
-			#cat("freq:",freq,"\n")
-			Eta <- ts(eta.m,start=1,frequency=freq)
-			#s<-spectrum(Eta-mean(Eta),spans=c(5,5),xlim=c(0,0.1),plot=FALSE,log="y") 
-			#s<-spectrum(Eta-mean(Eta),xlim=c(0,0.1),plot=FALSE,log="y",demean=TRUE) 
+			Eta <- ts(eta.m,start=1,frequency=1/x$metadata$sampling.interval)
 			s <- spectrum(Eta-mean(Eta),spans=3,plot=FALSE,log="y",demean=TRUE,detrend=TRUE) 
 			par(mar=c(2,5,1,1)+0.1)
 			plot(s$freq,s$spec,xlim=c(0,0.1),
 				xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
 				type='l',log="y")
-			grid()#col="lightgray",lty="dashed")
+			grid()
 			draw.constituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
 			{
 				abline(v=frequency, col=col)
@@ -110,10 +108,10 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 				draw.constituent(0.0833333333, "S2", side=1)
 			}
 			draw.constituents()
-			n <- x$n
+			n <- length(x$data$eta)
 			n.cum.spec <- length(s$spec)
 			cum.spec <- sqrt(cumsum(s$spec) / n.cum.spec)
-			e<-eta.m-mean(eta.m)
+			e <- eta.m - mean(eta.m)
 			par(mar=c(4,5,1,1)+0.1)
 			plot(s$freq,cum.spec,
 				xlab="Frequency [ cph ]",

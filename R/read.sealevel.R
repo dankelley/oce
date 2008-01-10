@@ -44,6 +44,10 @@ read.sealevel <- function(file, debug=FALSE)
 		station.number <- as.numeric(strsplit(header[2], ",")[[1]][2])
 		latitude       <- as.numeric(strsplit(header[3], ",")[[1]][2])
 		longitude      <- as.numeric(strsplit(header[4], ",")[[1]][2])
+###     # get GMT offset
+###		tz             <- strsplit(header[6], ",")[[1]][2]
+###		print(tz)
+###		print(as.POSIXct("2008-01-01 00:00:00","GMT") - as.POSIXct("2008-01-01 00:00:00",tz))
 		x <- read.csv(file, skip=header.length, header=FALSE)
 		eta <- as.numeric(x$V2)
 		t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
@@ -123,7 +127,10 @@ read.sealevel <- function(file, debug=FALSE)
 		GMT.offset=GMT.offset,
 		decimation.method=decimation.method,
 		reference.offset=reference.offset,
-		reference.code=reference.code)
+		reference.code=reference.code,
+		units=NA,
+		n=length(t),
+		sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
 	rval <- list(data=data, metadata=metadata, processing.log=log.item)
 	class(rval) <- c("sealevel", "oce")

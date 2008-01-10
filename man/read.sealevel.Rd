@@ -43,6 +43,7 @@ means, and then to use \code{\link{as.sealevel}} to create the \code{sealevel} o
     \item{\code{reference.code}}{a reference code; see online docs at site mentioned in References.}
     \item{\code{units}}{unit of observations in the original file (normally "MM")}
     \item{\code{n}}{number of observations.}
+	\item{\code{sampling.interval}}{hours between samples in the timeseries.}
   }
   \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }

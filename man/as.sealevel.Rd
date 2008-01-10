@@ -2,12 +2,12 @@
 \alias{as.sealevel}
 \title{Coerce data into sea-level dataset}
 \description{
-  Coerces a dataset (minimally, a sequence of heights) into
+  Coerces a dataset (minimally, a sequence of times and heights) into
   a sealevel dataset.
 }
 \usage{
-as.sealevel(t=NULL,
-  eta=NULL,
+as.sealevel(eta,
+  t,
   header=NULL,
   station.number=NA,
   station.version=NA,
@@ -22,8 +22,8 @@ as.sealevel(t=NULL,
   reference.code=NA)
 }
 \arguments{
-  \item{t}{a list of times, in POSIXct format.}
   \item{eta}{a list of sea-level heights in metres, in an hourly sequence.}
+  \item{t}{optional list of times, in POSIXct format.  If missing, the list will be constructed assuming hourly samples, starting at 1AM on January first of the present calendar year.}
   \item{header}{a character string as read from first line of a standard data file.}
   \item{station.number}{three-character string giving station number.}
   \item{station.version}{single character for version of station.}
@@ -51,11 +51,11 @@ as.sealevel(t=NULL,
 }
 \examples{
 library(oce)
-h <- 0:(24*100) # 100 days after 911
+h <- 0:(24*100) # construct a 100-day series
 t <- as.POSIXct("2001-09-11") + h * 3600
 eta <- 1.0 * sin(2*pi*h/12.4172) + 0.8 * sin(2*pi*h/24.0)
 eta <- eta + 0.1 * rnorm(length(h)) # add some noise
-sl <- as.sealevel(t, eta)
+sl <- as.sealevel(eta, t)
 summary(sl)
 }
 \references{
