@@ -16,7 +16,9 @@ read.sealevel(file, debug=FALSE)
 
 \details{This function starts by scanning the first line of the file, from which it determines
 whether the file is in one of two known formats: the tabular format used at the Hawaii archive
-centre, or the comma-separated-value format used by the Marine Environmental Data Service. If the
+centre, or the comma-separated-value format used by the Marine Environmental Data Service
+(indicated by the existence of the string \code{Station_Name} on the first line
+of the file). If the
 file is in neither of these known formats, the user might wish to scan the data by some other
 means, and then to use \code{\link{as.sealevel}} to create the \code{sealevel} object.}
 
