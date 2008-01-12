@@ -15,8 +15,8 @@ in the tests portion of the package.
 # FIXME: should also be analysing the rest of this file!
 create.constituents <- function(file="tide3.dat", nrows=146)
 {
-	x <- read.table(file=file, nrows=nrows, fill=TRUE, as.is=TRUE, header=FALSE)
-	data.frame(name=x$V1, frequency=x$V2, compare=x$V3, standard=x$V3!="", stringsAsFactors=FALSE)
+  x <- read.table(file=file, nrows=nrows, fill=TRUE, as.is=TRUE, header=FALSE)
+  data.frame(name=x$V1, frequency=x$V2, compare=x$V3, standard=x$V3!="", stringsAsFactors=FALSE)
 }
 tidal.constituents <- create.constituents()
 save(tidal.constituents, file="oce/data/tidal.constituents.rda")
@@ -25,8 +25,8 @@ save(tidal.constituents, file="oce/data/tidal.constituents.rda")
 \examples{
 library(oce)
 data(tidal.constituents)
-cat("The so-called standard constituents are as follows:\n")
-print(tidal.constituents$name[tidal.constituents$standard])
+cat("The so-called standard constituents are as follows:",
+    tidal.constituents$name[tidal.constituents$standard])
 }
 \usage{data(tidal.constituents)}
 \source{See above.}
