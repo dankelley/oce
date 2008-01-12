@@ -6,6 +6,7 @@
 	- make all objects inherit from a new class "oce"
 	- fix Issue 12: read.sealevel() had a hard-wired filename (remnant from debugging)
 	  [http://code.google.com/p/r-oce/issues/detail?id=12&can=1&q=label:Type-Defect]
+	- add data(tidal.constituents), a first step in adding tidal analysis
 0.1.69	- modify documentation slightly
     - start a migration to more uniform object structures
 	- rename as.CTD() to as.ctd(), to make it consistent with similar functions
