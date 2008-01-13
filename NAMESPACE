@@ -56,7 +56,8 @@ export(
 	sw.T.freeze,
 	sw.theta,
 	sw.T.S.rho,
-	sw.viscosity
+	sw.viscosity,
+	tide.constituents
 )
 
 S3method(plot, ctd)
