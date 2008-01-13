@@ -7,9 +7,9 @@ plot.tide <- function(x, label.if=NULL, style=c("spikes", "staircase"), log="", 
 		frequency <- tide.constituents$frequency[i]
 		abline(v=frequency, col=col, lty="dotted")
 		if (is.null(adj))
-			mtext(label, side=side, at=frequency, col=col, cex=0.8)
+			mtext(name, side=side, at=frequency, col=col, cex=0.8)
 		else
-			mtext(label, side=side, at=frequency, col=col, cex=0.8, adj=adj)
+			mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
 	}
 	draw.constituents <- function(type="standard", label.if=NULL, col="blue")
 	{
