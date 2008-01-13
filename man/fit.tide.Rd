@@ -68,7 +68,7 @@ a significance level should be presented, as in the software developed by both F
 \item{p}{a vector containing a sort of p value for each constituent.  This is calculated as the average of the p values for the sine() and cosine() portions used in fitting; whether it makes any sense is an open question.}
 }
 
-\seealso{\code{\link{summary.tide}} summarizes a \dQuote{\code{tide}} object, and \code{\link{plot.tide}} plots one.}
+\seealso{\code{\link{tide.constituents}} provides the frequencies of the tidal constituents. \code{\link{summary.tide}} summarizes a \dQuote{\code{tide}} object, and \code{\link{plot.tide}} plots one.}
 
 \examples{
 library(oce)
