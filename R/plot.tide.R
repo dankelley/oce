@@ -1,4 +1,4 @@
-plot.tide <- function(x, label.if=NULL, style=c("spikes", "staircase"), log="", ...)
+plot.tide <- function(x, label.if=NULL, style=c("staircase", "spikes"), log="", ...)
 {
 	data(tide.constituents)
 	draw.constituent <- function(name="M2",col="blue",side=1, adj=NULL)
@@ -15,9 +15,8 @@ plot.tide <- function(x, label.if=NULL, style=c("spikes", "staircase"), log="", 
 	{
 		if (type == "standard") {
 			draw.constituent("SA", side=3)
-			draw.constituent("K1", side=3)
-			#draw.constituent("S1", side=3)
-			draw.constituent("O1", side=1)
+			draw.constituent("O1", side=3, adj=1)
+			draw.constituent("K1", side=1, adj=0)
 			draw.constituent("M2", side=3, adj=1)
 			draw.constituent("S2", side=1, adj=0)
 			draw.constituent("M4", side=3)
