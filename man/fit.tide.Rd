@@ -49,7 +49,9 @@ There are also some bugs:
 \enumerate{
 \item{1.}{The phase is not resolved to Greenwich.}
 
-\item{2.}{The Rayleigh criterion is not used.}
+\item{2.}{The Rayleigh criterion is not used. Instead, the fit is done to all specified
+constituents, even if the criterion would suggest that energy might be blurred between some
+of the constituents.}
 
 \item{3.}{The reported \code{p} value may make no sense at all.}
 
