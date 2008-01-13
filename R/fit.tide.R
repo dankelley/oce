@@ -2,11 +2,11 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 {
 	warning("rc is not being used")
 	if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
-	data("tide.constituents")
+	tc <- tide.constituents()
 	# The [-1] below trims Z0 (since R handles intercepts by itself)
 	if (length(constituents) == 1 && constituents == "standard") {
-		name      <- tide.constituents$name[tide.constituents$standard][-1]
-		frequency <- tide.constituents$frequency[tide.constituents$standard][-1]
+		name      <- tc$name[tc$standard][-1]
+		frequency <- tc$frequency[tc$standard][-1]
 	} else {
 		iZ0 <- which(constituents == "Z0")
 		name <- constituents
@@ -14,9 +14,9 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 		nc <- length(name)
 		frequency <- vector("numeric", nc)
 		for (i in 1:nc) {
-			ic <- which(tide.constituents$name == constituents[i])
+			ic <- which(tc$name == constituents[i])
 			if (!length(ic)) stop("there is no tidal constituent named \"", constituents[i], "\"")
-			frequency[i] <- tide.constituents$frequency[ic]
+			frequency[i] <- tcs$frequency[ic]
 		}
 	}
 	nc <- length(frequency)
