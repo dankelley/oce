@@ -2,7 +2,7 @@ plot.tide <- function(x, label.if=NULL, style=c("staircase", "spikes"), log="", 
 {
 	draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
 	{
-		abline(v=freq, col=col, lty="dotted")
+		abline(v=frequency, col=col, lty="dotted")
 		if (is.null(adj))
 			mtext(name, side=side, at=frequency, col=col, cex=0.8)
 		else
