@@ -20,9 +20,9 @@
 
 
 \titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection}{1em}{}
-\titlespacing{\section}{0em}{1em plus 1em minus 0.5em}{0.15em plus 0.15em minus 0.125em}
+\titlespacing{\section}{0em}{2em plus 3em minus 0.5em}{0.15em plus 0.15em minus 0.125em}
 \titleformat{\subsection}[block]{\normalfont\large\itshape}{\thesubsection}{1em}{}
-\titlespacing{\subsection}{0em}{1em plus 1em minus 0.5em}{-0.15em plus 0.15em minus 0.125em}
+\titlespacing{\subsection}{0em}{1em plus 2em minus 0.5em}{-0.15em plus 0.15em minus 0.125em}
 
 \newcommand{\workedexercise}[2]{
 	\vspace{2ex plus 2ex minus 1ex}
@@ -419,6 +419,8 @@ the capital of Nova Scotia.}
 
 \section{Sea-level data}
 
+\subsection{Time-domain analysis}
+
 The commands
 <<label=sealevelplot,include=FALSE>>=
 library(oce)
@@ -462,8 +464,52 @@ settled into a firmer state.
 
 \workedexercise{6}{Draw a spectrum of sealevel variation, with the M2 tidal component indicated.}
 
+\subsection{Tidal analysis}
+
+Tidal analysis is provided in a rudimentary way, as is illustrated in the example below,
+which shows the storm surge experienced in Halifax in 2003, with Hurricane Juan.
+
+\index{sea level!during Hurricane Juan}
+
+<<label=tideplot,include=FALSE>>=
+library(oce)
+data(sealevel)
+tide <- fit.tide(sealevel)
+days <- 15 # focus on these days at end of series
+n <- length(sealevel$data$eta)
+i <- seq(n-24*days, n)
+t   <- sealevel$data$t[i]
+eta <- sealevel$data$eta[i]
+eta.pred <- predict(tide$model)[i]
+plot(t, eta, type="l", ylim=c(-0.5,3))
+abline(h=0, col="pink")
+lines(t, eta - eta.pred, col="red")
+@
+produce Figure~\ref{fig:tide}, illustrating the use of tidal analysis to detect
+storm surges.  Note the use of the \verb@model@ that is returned by the tide
+analysis.
+
+
+(It should be noted that the tidal analysis portion of \verb@oce@ is still in
+active development, and the features are subject to change.  Use
+\verb@?fit.tide@ to learn more on this.)
+
+
+\begin{figure}
+\begin{center}
+\setkeys{Gin}{width=\textwidth}
+<<label=tidefig,fig=TRUE,width=10, height=4, echo=FALSE>>=
+<<tide>>
+@
+\end{center}
+\caption{Sealevel variation in Halifax Harbour in 2003 (black line) and the residual
+after removal of tides using fit.tide().  Note the spike, a storm
+surge caused by Hurricane Juan.}
+\label{fig:tide}
+\end{figure}
 
 \goodbreak
+
 
 \section{Lobo data}
 The commands
@@ -638,6 +684,7 @@ a <- as.numeric(lobo$data$time[i] - lobo$data$time[1])
 col <- hsv(0.5 * a / max(a), 1, 1)
 plot.TS(as.ctd(lobo$data$salinity[i], lobo$data$temperature[i], 0), col=col, pch=1)
 @
+
 
 \printindex
 \end{document}
