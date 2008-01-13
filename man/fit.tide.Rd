@@ -53,10 +53,10 @@ There are also some bugs:
 constituents, even if the criterion would suggest that energy might be blurred between some
 of the constituents.}
 
-\item{3.}{The reported \code{p} value may make no sense at all.}
-
-\item{4.}{A significance level should be presented, as in the software developed by both Foreman and Pawlowicz.}
-}}
+\item{3.}{The reported \code{p} value may make no sense at all, and it might be removed.  Perhaps 
+a significance level should be presented, as in the software developed by both Foreman and Pawlowicz.}
+} % enumerate
+} % note
 
 
 \value{An object of class \dQuote{\code{tide}}, consisting of
