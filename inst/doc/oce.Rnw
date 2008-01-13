@@ -303,14 +303,14 @@ spurious temperature). One way to find such values is to put the lines
 print(range(x$data$temperature))
 print(range(x$data$salinity))
 @
-after the \texttt{read.ctd} command. One thing you'll find is that station 987
+after the \verb@read.ctd()@ command. One thing you'll find is that station 987
 has a minimum salinity range of 0.0009 to 987. These values are clearly in
 error, as are the temperatures at this spot in the file. (It is perhaps
 revealing that the spurious salinity is equal to the station number.) Indeed, at
 this spot in the file it can be seen that the pressure jumps from 1342 to 0, and
 then starts increasing again; the file contains two profiles, or the same
 profile twice. This is not the only flaw that is revealed by the graph, and by
-\texttt{range} commands; a generous user would spend a week tracking down such
+\verb@range@ commands; a generous user would spend a week tracking down such
 issues, and would then contact the data provider (or the chief scientist of the
 field work) with specific suggestions for correcting the files. The point here
 is to highlight how this package can be used with real-world data.
@@ -378,8 +378,9 @@ right angles.
 @
 \end{center}
 \caption{\label{fig:sectiona03}
-Portion of CTD A03, showing the region of the Gulf Stream.
-(Cruise chief scientist: Tereschenkov, SOI.)
+Portion of the CTD section designated A03 (Cruise chief scientist: Tereschenkov, SOI.), showing the region of the Gulf Stream.  (The small number of S contours
+in the upper water column is the result of a near-bottom salinity anomaly
+in the station at about 200km.)
 }
 \end{figure}
 
@@ -419,6 +420,9 @@ the capital of Nova Scotia.}
 
 \subsection{Time-domain analysis}
 
+\index{sea level!during Hurricane Juan}
+\index{Hurricane Juan!surge seen in time-series of sea level}
+
 The commands
 <<label=sealevelplot,include=FALSE>>=
 library(oce)
@@ -436,8 +440,8 @@ narrow-banded constituents quite visible.
 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=.95\textwidth}
-<<label=sealevelfig,fig=TRUE,width=11,height=14,echo=FALSE>>=
+\setkeys{Gin}{width=.8\textwidth}
+<<label=sealevelfig,fig=TRUE,width=8,height=7,echo=FALSE>>=
 <<sealevelplot>>
 @
 \end{center}
@@ -450,7 +454,7 @@ to ever hit Canada.}
 
 \workedexercise{5}{Illustrate Halifax sealevel variations during Hurricane Juan}
 
-\workedexercise{6}{Draw a spectrum of sealevel variation, with the M2 tidal component indicated.}
+\workedexercise{6}{Draw a spectrum of sea-level variation, with the M2 tidal component indicated.}
 
 \subsection{Tidal analysis}
 
@@ -458,7 +462,8 @@ Tidal analysis is provided in a rudimentary way, as is illustrated in the
 example below, which shows the storm surge experienced in Halifax in 2003, with
 Hurricane Juan.
 
-\index{sea level!during Hurricane Juan}
+\index{sea level!storm surge during Hurricane Juan}
+\index{Hurricane Juan!surge detection by detiding}
 
 <<label=tideplot,include=FALSE>>=
 library(oce)
@@ -482,17 +487,17 @@ analysis.
 active development, and the features are subject to change.  Use
 \verb@?fit.tide@ to learn more about this.)
 
-
 \begin{figure}
-\begin{center}
-\setkeys{Gin}{width=\textwidth}
-<<label=tidefig,fig=TRUE,width=10, height=4, echo=FALSE>>=
+	\begin{center}
+\setkeys{Gin}{width=0.8\textwidth}
+<<label=tidefig,fig=TRUE,width=8,height=5,echo=FALSE>>=
 <<tide>>
 @
 \end{center}
-\caption{Sealevel variation in Halifax Harbour in 2003 (black line) and the residual
-after removal of tides using fit.tide().  Note the spike, a storm
-surge caused by Hurricane Juan.}
+\caption{Sea-level variation in Halifax Harbour in 2003 (black line) and the residual
+after removal of tides using \texttt{fit.tide()}.  The spike on September 28th
+is a storm surge caused by Hurricane Juan, which caused a great deal of damage
+to the region.}
 \label{fig:tide}
 \end{figure}
 
@@ -520,8 +525,8 @@ University.
 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=\textwidth}
-<<label=lobofig,fig=TRUE,width=10, height=12, echo=FALSE>>=
+\setkeys{Gin}{width=0.66\textwidth}
+<<label=lobofig,fig=TRUE,width=7, height=8, echo=FALSE>>=
 <<loboplot>>
 @
 \end{center}
@@ -631,7 +636,7 @@ grid()
 abline(h=0)
 @
 \workedanswer{5}{Halifax sealevel during Hurricane Juan}
-\index{Hurricane Juan}
+\index{Hurricane Juan!worked example of sea-level plot}
 \index{sea level!during Hurricane Juan}
 A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28.
 The author can verify that the strongest winds occurred a bit after midnight -- that was the time
