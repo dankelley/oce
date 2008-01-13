@@ -1,6 +1,7 @@
-fit.tide <- function(sl, constituents="standard")
+fit.tide <- function(sl, constituents="standard", rc=1)
 {
-    if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
+	warning("rc is not being used")
+	if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
 	data("tide.constituents")
 	# The [-1] below trims Z0 (since R handles intercepts by itself)
 	if (length(constituents) == 1 && constituents == "standard") {

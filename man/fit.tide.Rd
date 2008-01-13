@@ -2,10 +2,11 @@
 \alias{fit.tide}
 \title{Fit a tidal model to a timeseries}
 \description{Fit a tidal model to a timeseries.}
-\usage{fit.tide(sl, constituents="standard")}
+\usage{fit.tide(sl, constituents="standard", rc=1)}
 \arguments{
   \item{sl}{a \code{sealevel} object.}
-  \item{constituents}{either "\code{standard}" (see \sQuote{Details}) or a list of constituent names, e.g. \code{c("M2", "K1")}.}
+  \item{constituents}{either "\code{standard}" for 69 commonly-used constituents, or a list of constituent names (see \sQuote{Details}).}
+  \item{rc}{the value of the coefficient in the Rayleigh criterion.}
 }
 
 \details{The fit is done in terms of sine and cosine components at the indicated tidal
@@ -14,25 +15,47 @@ on the sine and cosine terms.
 
 If \code{constituents} is set to "\code{standard}", then the 69 constituents regarded by
 Foreman as standard are used. These include astronomical frequencies and some shallow-water
-frequencies, and are as follows: \code{c("Z0","SA", "SSA", "MSM", "MM", "MSF", "MF", "ALP1",
-"2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1", "PI1", "P1", "S1", "K1",
-"PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2", "EPS2", "2N2", "MU2", "N2",
+frequencies, and are as follows: \code{c("Z0", "SA", "SSA", "MSM", "MM", "MSF", "MF",
+"ALP1", "2Q1", "SIG1", "Q1", "RHO1", "O1", "TAU1", "BET1", "NO1", "CHI1", "PI1", "P1", "S1",
+"K1", "PSI1", "PHI1", "THE1", "J1", "SO1", "OO1", "UPS1", "OQ2", "EPS2", "2N2", "MU2", "N2",
 "NU2", "GAM2", "H1", "M2", "H2", "MKS2", "LDA2", "L2", "T2", "S2", "R2", "K2", "MSN2",
 "ETA2", "MO3", "M3", "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4",
 "2MK5", "2SK5", "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
 
-If \code{constituents} is given as a list, then just the named constituents are used (see
-\sQuote{Examples}.  For a list of constituent names, see \code{\link{tide.constituents}}.)
+If \code{constituents} is given as a list, then just the named constituents are used, e.g.
+to fit just M2 and K1, use \code{c("K1", "M2")}. The constituents should be provided in
+order of increasing frequency. For a list of constituent names and their frequencies, see
+\code{\link{tide.constituents}}.
 
-This function can be somewhat slow for large data sets.
-
-BUG: the phase is not resolved to Greenwich.
-
-BUG: the Rayleigh criterion is not considered.
-
-BUG: the reported \code{p} value may make no sense at all.
+The Rayleigh criterion -- which is \strong{ignored} in the present version of the package --
+determines whether the data set is long enough to distinguish between constituents with
+similar frequencies. The basic idea is simple: constituents of frequencies
+\eqn{\omega_1}{o1} and \eqn{\omega_2}{o2} cannot be resolved unless the time series spans a
+time interval of at least \eqn{rc/(\omega_1-\omega_2)}{rc/(o1-o2)}. The value \code{rc=1} is
+sufficient for nominal resolution, but a cautious analyst might use a larger value. This is
+simple enough, but it leaves open the practical question of what to do if the timeseries is
+too short to resolve the constituents that were initially of interest (perhaps even the full
+list of 146 constituents provided in this package). Foreman (1977) addresses this question
+in detail in his section 2.1.2, to which the reader is directed for general education, and
+to which the author will be paying attention as he further develops this package.
 
 }
+
+\note{
+This function is not fully developed yet, and both the form of the call and the results of the calculation may very well change.  
+
+There are also some bugs:
+
+\enumerate{
+\item{1.}{The phase is not resolved to Greenwich.}
+
+\item{2.}{The Rayleigh criterion is not used.}
+
+\item{3.}{The reported \code{p} value may make no sense at all.}
+
+\item{4.}{A significance level should be presented, as in the software developed by both Foreman and Pawlowicz.}
+}}
+
 
 \value{An object of class \dQuote{\code{tide}}, consisting of
 \item{model}{the regression model}
