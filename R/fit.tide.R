@@ -16,7 +16,7 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 		for (i in 1:nc) {
 			ic <- which(tc$name == constituents[i])
 			if (!length(ic)) stop("there is no tidal constituent named \"", constituents[i], "\"")
-			frequency[i] <- tcs$frequency[ic]
+			frequency[i] <- tc$frequency[ic]
 		}
 	}
 	nc <- length(frequency)
