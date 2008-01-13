@@ -1,9 +1,10 @@
 plot.tide <- function(x, label.if=NULL, style=c("spikes", "staircase"), log="", ...)
 {
 	data(tide.constituents)
-	draw.constituent <- function(frequency=0.0805114007,label="M2",col="blue",side=1, adj=NULL)
+	draw.constituent <- function(name="M2",col="blue",side=1, adj=NULL)
 	{
-		i <- which(
+		i <- which(tide.constituents$name == name)
+		frequency <- tide.constituents$frequency[i]
 		abline(v=frequency, col=col, lty="dotted")
 		if (is.null(adj))
 			mtext(label, side=side, at=frequency, col=col, cex=0.8)
@@ -13,13 +14,13 @@ plot.tide <- function(x, label.if=NULL, style=c("spikes", "staircase"), log="", 
 	draw.constituents <- function(type="standard", label.if=NULL, col="blue")
 	{
 		if (type == "standard") {
-			#draw.constituent(0.0416666721, "S1", side=3)
-			draw.constituent(0.1610228, "SA", side=3)
-			draw.constituent(0.0417807462, "K1", side=3)
-			draw.constituent(0.0387306544, "O1", side=1)
-			draw.constituent(0.0805114007, "M2", side=3, adj=1)
-			draw.constituent(0.0833333333, "S2", side=1, adj=0)
-			draw.constituent(0.1610228, "M4", side=3)
+			draw.constituent("SA", side=3)
+			draw.constituent("K1", side=3)
+			#draw.constituent("S1", side=3)
+			draw.constituent("O1", side=1)
+			draw.constituent("M2", side=3, adj=1)
+			draw.constituent("S2", side=1, adj=0)
+			draw.constituent("M4", side=3)
 		} else {
 			if (is.null(label.if)) label.if <- amplitude[order(amplitude, decreasing=TRUE)[3]]
 			for (i in 1:nc) {
