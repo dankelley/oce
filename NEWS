@@ -9,7 +9,7 @@
 	  [http://code.google.com/p/r-oce/issues/detail?id=12&can=1&q=label:Type-Defect]
 	- add data(tidal.constituents), a first step in adding tidal analysis
 0.1.69	- modify documentation slightly
-    - start a migration to more uniform object structures
+	- start a migration to more uniform object structures
 	- rename as.CTD() to as.ctd(), to make it consistent with similar functions
 	- add read.section()
 	- add section.grid(), which only grids in p at the moment
