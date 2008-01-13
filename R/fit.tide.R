@@ -7,7 +7,7 @@ fit.tide <- function(sl, constituents="standard")
 		name      <- tide.constituents$name[tide.constituents$standard][-1]
 		frequency <- tide.constituents$frequency[tide.constituents$standard][-1]
 	} else {
-		stop("bug: constituents other than 'standard' not handled yet")
+		stop("bug: constituents other than 'standard' not handled in this version")
 	}
 	nc <- length(frequency)
 	nt <- length(sl$data$eta)
