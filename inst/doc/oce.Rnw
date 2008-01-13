@@ -15,9 +15,7 @@
 \usepackage{titlesec}
 \makeindex
 
-\parskip=1.25ex plus 1.5ex minus 1.25ex
-
-
+\parskip=1.5ex plus 1.5ex minus 1.25ex
 
 \titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection}{1em}{}
 \titlespacing{\section}{0em}{2em plus 3em minus 0.5em}{0.15em plus 0.15em minus 0.125em}
@@ -452,22 +450,13 @@ to ever hit Canada.}
 
 \workedexercise{5}{Illustrate Halifax sealevel variations during Hurricane Juan}
 
-Note: An upcoming version of \verb@oce@ will also provide tidal constituent
-analysis. Some of this has been developed already. The regression works, so that
-the amplitudes and phases can be calculated. However, significance levels are
-not yet provided, and nor is any indication of the Rayleigh separation of the
-constituents. The interface also needs work, e.g. for shallow-water and
-deep-water cases. If you understand these things, and would like to test the
-code as it is being developed, please contact the author. Otherwise, you should
-wait until the code is working properly, and until the user interface has
-settled into a firmer state.
-
 \workedexercise{6}{Draw a spectrum of sealevel variation, with the M2 tidal component indicated.}
 
 \subsection{Tidal analysis}
 
-Tidal analysis is provided in a rudimentary way, as is illustrated in the example below,
-which shows the storm surge experienced in Halifax in 2003, with Hurricane Juan.
+Tidal analysis is provided in a rudimentary way, as is illustrated in the
+example below, which shows the storm surge experienced in Halifax in 2003, with
+Hurricane Juan.
 
 \index{sea level!during Hurricane Juan}
 
@@ -489,10 +478,9 @@ produce Figure~\ref{fig:tide}, illustrating the use of tidal analysis to detect
 storm surges.  Note the use of the \verb@model@ that is returned by the tide
 analysis.
 
-
 (It should be noted that the tidal analysis portion of \verb@oce@ is still in
 active development, and the features are subject to change.  Use
-\verb@?fit.tide@ to learn more on this.)
+\verb@?fit.tide@ to learn more about this.)
 
 
 \begin{figure}
@@ -550,15 +538,15 @@ and using plotting tricks to reduce the obscuring of this time signal.}
 
 The present version of \verb@oce@ can only handle data types that the author has
 been using lately in his research. New data types will be added as the need
-arises in that work.  The author would be happy to add other data types, if a
-convincing argument is made that they will be useful to the Oceanographic
-community.  (The data types need not be restricted to Physical Oceanography, but
-the author will need some help in dealing with other types of data, given his
-research focus.)
+arises in that work, but the author would also be happy to add other data types
+that are likely to prove useful to the Oceanographic community.  (The data types
+need not be restricted to Physical Oceanography, but the author will need some
+help in dealing with other types of data, given his research focus.)
 
-As for algorithms, there are plenty of gaps in \verb@oce@.  The package should
-have routines for tidal decomposition, for example, but that is just one example
-of many that could be listed.
+As for algorithms, there are plenty of gaps in \verb@oce@.  Dealing with
+measurements of turbulence is a high priority for the author, for example, and
+it is also clear that there are some methods of ADP processing that should be
+provided by the package.
 
 Two principles will guide the addition of data types and functions:
 (a) the need, as perceived by the author or by other contributors and
