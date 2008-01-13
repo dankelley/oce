@@ -21,8 +21,10 @@ frequencies, and are as follows: \code{c("Z0","SA", "SSA", "MSM", "MM", "MSF", "
 "ETA2", "MO3", "M3", "SO3", "MK3", "SK3", "MN4", "M4", "SN4", "MS4", "MK4", "S4", "SK4",
 "2MK5", "2SK5", "2MN6", "M6", "2MS6", "2MK6", "2SM6", "MSK6", "3MK7", "M8")}.
 
-It is worth noting that this function is time-consuming, since it
-involves inversion of a matrix with about a million elements.
+If \code{constituents} is given as a list, then just the named constituents are used (see
+\sQuote{Examples}.  For a list of constituent names, see \code{\link{tide.constituents}}.)
+
+This function can be somewhat slow for large data sets.
 
 BUG: the phase is not resolved to Greenwich.
 
@@ -45,9 +47,13 @@ BUG: the reported \code{p} value may make no sense at all.
 
 \examples{
 library(oce)
-data(sealevel)
-# tide <- fit.tide(sealevel)
-# summary(tide)
+# Fake an M2 tide, to check
+hour <- seq(1, 24 * 365)
+eta <- 1 + sin(0.08051140 * 2 * pi * hour)
+sealevel <- as.sealevel(eta)
+tide <- fit.tide(sealevel)
+summary(tide)
+plot(tide)
 }
 \references{
 Rich Pawlowicz, Bob Beardsley, and Steve Lentz, 2002. Classical tidal harmonic analysis including error estimates in MATLAB using T TIDE. Computers and Geosciences, 28, 929-937.
