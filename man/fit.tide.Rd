@@ -47,15 +47,15 @@ This function is not fully developed yet, and both the form of the call and the 
 There are also some bugs:
 
 \enumerate{
-\item{1.}{The phase is not resolved to Greenwich.}
+\item{1. The phase is not resolved to Greenwich.}
 
-\item{2.}{The Rayleigh criterion is not used. Instead, the fit is done to all specified
+\item{2. The Rayleigh criterion is not used. Instead, the fit is done to all specified
 constituents, even if the criterion would suggest that energy might be blurred between some
 of the constituents.}
 
-\item{3.}{Nodal correction is not done.}
+\item{3. Nodal correction is not done.}
 
-\item{4.}{The reported \code{p} value may make no sense at all, and it might be removed.  Perhaps 
+\item{4. The reported \code{p} value may make no sense at all, and it might be removed.  Perhaps 
 a significance level should be presented, as in the software developed by both Foreman and Pawlowicz.}
 } % enumerate
 } % note
@@ -83,11 +83,11 @@ summary(tide)
 plot(tide)
 }
 \references{
-Rich Pawlowicz, Bob Beardsley, and Steve Lentz, 2002. Classical tidal harmonic analysis including error estimates in MATLAB using T TIDE. Computers and Geosciences, 28, 929-937.
+Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal harmonic analysis including error estimates in MATLAB using T_TIDE. Computers and Geosciences, 28, 929-937.
 
-Foreman, M.G.G., 1978. Manual for tidal currents analysis and prediction. Pacific Marine Science Report 78-6, Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 57pp.
+Foreman, M. G. G., 1978. Manual for tidal currents analysis and prediction. Pacific Marine Science Report 78-6, Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 57pp.
 
-Foreman, M.G.G., Neufeld, E.T., 1991. Harmonic tidal analyses of long time series. International Hydrographic Review, 68 (1), 95-108.
+Foreman, M. G. G., Neufeld, E. T., 1991. Harmonic tidal analyses of long time series. International Hydrographic Review, 68 (1), 95-108.
 }
 \author{Dan Kelley}
 \keyword{misc}
