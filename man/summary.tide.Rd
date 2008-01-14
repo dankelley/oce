@@ -6,9 +6,9 @@
 \method{summary}{tide}(object, p=0, \dots)
 }
 \arguments{
-  \item{object}{A \code{tide} object, as created by \code{\link{fit.tide}}.}
+  \item{object}{a \code{tide} object, as created by \code{\link{fit.tide}}.}
   \item{p}{the minimum p value for the display of an individual coefficient.  The default causes all coefficients to be shown.}
-  \item{\dots}{Passed to children.}
+  \item{\dots}{passed to children.}
 }
 \details{
   Pertinent summary information is presented.
