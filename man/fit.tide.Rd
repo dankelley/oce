@@ -53,7 +53,9 @@ There are also some bugs:
 constituents, even if the criterion would suggest that energy might be blurred between some
 of the constituents.}
 
-\item{3.}{The reported \code{p} value may make no sense at all, and it might be removed.  Perhaps 
+\item{3.}{Nodal correction is not done.}
+
+\item{4.}{The reported \code{p} value may make no sense at all, and it might be removed.  Perhaps 
 a significance level should be presented, as in the software developed by both Foreman and Pawlowicz.}
 } % enumerate
 } % note
