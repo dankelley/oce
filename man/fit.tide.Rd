@@ -93,7 +93,7 @@ Harmonic tidal analyses of long time series.
 International Hydrographic Review, 68 (1), 95-108.
 
 Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
-Classical tidal harmonic analysis including error estimates in MATLAB using T_TIDE.
+Classical tidal harmonic analysis including error estimates in MATLAB using T\_TIDE.
 Computers and Geosciences, 28, 929-937.
 }
 \author{Dan Kelley}

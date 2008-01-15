@@ -26,7 +26,7 @@ cat("M2 period:", 1 / tc$frequency[which(tc$name=="M2")], "h.\n")
 cat("Standard tidal constituents:", tc$name[tc$standard])
 }
 \references{
-Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal harmonic analysis including error estimates in MATLAB using T_TIDE. Computers and Geosciences, 28, 929-937.
+Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal harmonic analysis including error estimates in MATLAB using T\_TIDE. Computers and Geosciences, 28, 929-937.
 
 Foreman, M. G. G., 1978. Manual for tidal currents analysis and prediction. Pacific Marine Science Report 78-6, Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 57pp.
 }

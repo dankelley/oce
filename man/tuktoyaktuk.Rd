@@ -11,7 +11,7 @@ sea-level height, eta.
 
 \strong{Test of fit.tide():} The Foreman package produces M2 amplitude 0.4904m and phase
 77.50 (Appendix 7.3), when P1 and K2 are added to the standard constituents. Under the same
-conditions, or at any rate for its demonstration, T_tide gives 0.4904m \eqn{\pm}{+/-}
+conditions, or at any rate for its demonstration, T\_TIDE gives 0.4904m \eqn{\pm}{+/-}
 0.037m and phase 77.70 \eqn{\pm}{+/-} 3.94. \strong{However}, fit.tide produces
 0.500723648m and phase.
 
@@ -32,7 +32,7 @@ legend("topright", legend="After removal of tide")
 
 } % description
 
-\source{The data were extracted from the T_TIDE set, put into a data file, and then built into a
+\source{The data were extracted from the T\_TIDE set, put into a data file, and then built into a
 \code{sealevel} object with the following code.
 \preformatted{
 tuk <- read.table("tuk_time_elev.dat",header=FALSE)
@@ -49,7 +49,7 @@ Manual for tidal currents analysis and prediction. Pacific Marine Science Report
 Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 57pp.
 
 Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
-Classical tidal harmonic analysis including error estimates in MATLAB using T_TIDE.
+Classical tidal harmonic analysis including error estimates in MATLAB using T\_TIDE.
 Computers and Geosciences, 28, 929-937.
 }
 \author{Dan Kelley}
