@@ -13,8 +13,10 @@ tuktoyaktuk <- as.sealevel(eta=tuk$V2, t=strptime(tuk$V1, "%d-%b-%Y %H:%M:%S"))
 save(tuktoyaktuk, file="~/src/R-kelley/oce/data/tuktoyaktuk.rda")
 }
 
-Note that the Foreman package produces 0.4904m as the M2 amplitude (Appendix 7.3), when
-P1 and K2 are added to the standard constituents.
+\strong{Test of fit.tide():} The Foreman package produces M2 amplitude 0.4904m and phase
+77.50 (Appendix 7.3), when P1 and K2 are added to the standard constituents. Under the same
+conditions, or at any rate for its demonstration, T_tide gives 0.4904m \eqn{\pm}{+/-}
+0.037m and phase 77.70 \eqn{\pm}{+/-} 3.94.
 
 }
 
