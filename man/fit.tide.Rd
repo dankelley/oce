@@ -27,37 +27,38 @@ to fit just M2 and K1, use \code{c("K1", "M2")}. The constituents should be prov
 order of increasing frequency. For a list of constituent names and their frequencies, see
 \code{\link{tide.constituents}}.
 
-The Rayleigh criterion -- which is \strong{ignored} in the present version of the package --
-determines whether the data set is long enough to distinguish between constituents with
-similar frequencies. The basic idea is simple: constituents of frequencies
-\eqn{\omega_1}{o1} and \eqn{\omega_2}{o2} cannot be resolved unless the time series spans a
-time interval of at least \eqn{rc/(\omega_1-\omega_2)}{rc/(o1-o2)}. The value \code{rc=1} is
+The Rayleigh criterion determines whether the data set is long enough to distinguish between
+constituents with similar frequencies. The basic idea is simple: constituents of frequencies
+\eqn{\omega_1}{o1} and \eqn{\omega_2}{o2} cannot be resolved unless the time series spans a time
+interval of at least \eqn{rc/(\omega_1-\omega_2)}{rc/(o1-o2)}. The value \code{rc=1} is
 sufficient for nominal resolution, but a cautious analyst might use a larger value. This is
-simple enough, but it leaves open the practical question of what to do if the timeseries is
-too short to resolve the constituents that were initially of interest (perhaps even the full
-list of 146 constituents provided in this package). Foreman (1977) addresses this question
-in detail in his section 2.1.2, to which the reader is directed for general education, and
-to which the author will be paying attention as he further develops this package.
+simple enough, but it leaves open the practical question of what to do if the timeseries is too
+short to resolve the constituents that were initially of interest (perhaps even the full list of
+146 constituents provided in this package). Foreman (1977) addresses this question in detail in
+his section 2.1.2, to which the reader is directed for general education, and to which the
+author will be paying attention as he further develops this package.
 
 }
 
 \note{
-This function is not fully developed yet, and both the form of the call and the results of the calculation may very well change.  
+
+This function is not fully developed yet, and both the form of the call and the results of the
+calculation may very well change.
 
 There are also some bugs:
 
 \enumerate{
+
 \item{1. The phase is not resolved to Greenwich.}
 
-\item{2. The Rayleigh criterion is not used. Instead, the fit is done to all specified
-constituents, even if the criterion would suggest that energy might be blurred between some
-of the constituents.}
+\item{2. Nodal correction is not done.}
 
-\item{3. Nodal correction is not done.}
+\item{3. The reported \code{p} value may make no sense at all, and it might be removed in a
+future version of this function. Perhaps a significance level should be presented, as in the
+software developed by both Foreman and Pawlowicz.}
 
-\item{4. The reported \code{p} value may make no sense at all, and it might be removed.  Perhaps 
-a significance level should be presented, as in the software developed by both Foreman and Pawlowicz.}
 } % enumerate
+
 } % note
 
 

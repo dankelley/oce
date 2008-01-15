@@ -1,23 +1,43 @@
 fit.tide <- function(sl, constituents="standard", rc=1)
 {
-	warning("rc is not being used")
 	if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
 	tc <- tide.constituents()
 	# The [-1] below trims Z0 (since R handles intercepts by itself)
 	if (length(constituents) == 1 && constituents == "standard") {
 		name      <- tc$name[tc$standard][-1]
 		frequency <- tc$frequency[tc$standard][-1]
+		compare   <- tc$compare[tc$standard][-1]
 	} else {
 		iZ0 <- which(constituents == "Z0")
 		name <- constituents
 		if (length(iZ0)) name <- name[-iZ0]
 		nc <- length(name)
 		frequency <- vector("numeric", nc)
+		compare   <- vector("numeric", nc)
 		for (i in 1:nc) {
 			ic <- which(tc$name == constituents[i])
 			if (!length(ic)) stop("there is no tidal constituent named \"", constituents[i], "\"")
 			frequency[i] <- tc$frequency[ic]
+			compare[i] <- tc$compare[ic]
 		}
+	}
+	nc <- length(frequency)
+	# Check Rayleigh criterion
+	interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
+	#cat("interval:",interval,"\n")
+	drop.term <- NULL
+	for (i in 1:nc) {
+		cc <- which(tc$name == compare[i])
+		cannot.fit <- (interval * abs(frequency[i]-tc$frequency[cc])) < rc
+		#cat("compare", name[i], "with", compare[i],":", cannot.fit,"\n")
+		if (cannot.fit)	drop.term <- c(drop.term, i)
+	}
+	#cat("DROP:",drop.term,"\n")
+	if (length(drop.term) > 0) {
+		cat("Record is too short to fit for constituents:", name[drop.term],"\n")
+		frequency <- frequency[-drop.term]
+		name      <- name[-drop.term]
+		compare   <- compare[-drop.term]
 	}
 	nc <- length(frequency)
 	nt <- length(sl$data$eta)
