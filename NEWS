@@ -1,4 +1,5 @@
-0.1.70	- add fit.tide(), summary.tide(), and plot.tide(), all preliminary versions
+0.1.70	- add tuktoyaktuk sea-level dataset
+	- add fit.tide(), summary.tide(), and plot.tide(), all preliminary versions
 	- establish a uniform form for objects created by "read" and "as"
 	- let sw.rho() and similar sw. functions take a ctd object as a single argument
 	- add sw.dynamic.height()

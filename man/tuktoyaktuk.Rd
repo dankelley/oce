@@ -12,6 +12,10 @@ tuk <- read.table("tuk_time_elev.dat",header=FALSE)
 tuktoyaktuk <- as.sealevel(eta=tuk$V2, t=strptime(tuk$V1, "%d-%b-%Y %H:%M:%S"))
 save(tuktoyaktuk, file="~/src/R-kelley/oce/data/tuktoyaktuk.rda")
 }
+
+Note that the Foreman package produces 0.4904m as the M2 amplitude (Appendix 7.3), when
+P1 and K2 are added to the standard constituents.
+
 }
 
 \references{
