@@ -2,29 +2,23 @@
 \docType{data}
 \alias{tuktoyaktuk}
 \title{Sample sea-level data set, from Tuktoyaktuk (1975)}
+
+
 \description{This sample sea-level dataset is the one provided with the Foreman (1977)
 and Pawlowicz, from Tuktoyaktuk.  It contains 1584 points, a fraction of which have NA for 
-sea-level height, eta.}
+sea-level height, eta.
 
-\source{The data were extracted from the T_TIDE set, put into a data file, and then built into a
-\code{sealevel} object with the following code.
-\preformatted{
-tuk <- read.table("tuk_time_elev.dat",header=FALSE)
-# MST is GMT minus 7 hours
-t   <- as.POSIXlt(strptime(tuk$V1, "%d-%b-%Y %H:%M:%S")) - 7 * 3600
-eta <- tuk$V2
-tuktoyaktuk <- as.sealevel(eta=eta, t=t)
-}
 
 \strong{Test of fit.tide():} The Foreman package produces M2 amplitude 0.4904m and phase
 77.50 (Appendix 7.3), when P1 and K2 are added to the standard constituents. Under the same
 conditions, or at any rate for its demonstration, T_tide gives 0.4904m \eqn{\pm}{+/-}
 0.037m and phase 77.70 \eqn{\pm}{+/-} 3.94. \strong{However}, fit.tide produces
-0.500723648m and phase
+0.500723648m and phase.
 
-}
 
-\example{
+An example of using this is as follows.
+
+\preformatted{
 data(tuktoyaktuk)
 par(mfrow=c(2,1))
 par(mar=c(3,4,3,2))
@@ -34,7 +28,20 @@ tide <- fit.tide(tuktoyaktuk)
 detided <- tuktoyaktuk$data$eta - predict(tide$model)
 plot(tuktoyaktuk$data$t, detided, type='l',ylab="Height [m]")
 legend("topright", legend="After removal of tide")
-}
+} % preformatted
+
+} % description
+
+\source{The data were extracted from the T_TIDE set, put into a data file, and then built into a
+\code{sealevel} object with the following code.
+\preformatted{
+tuk <- read.table("tuk_time_elev.dat",header=FALSE)
+# MST is GMT minus 7 hours
+t   <- as.POSIXlt(strptime(tuk$V1, "%d-%b-%Y %H:%M:%S")) - 7 * 3600
+eta <- tuk$V2
+tuktoyaktuk <- as.sealevel(eta=eta, t=t)
+} % preformatted
+} % source
 
 \references{
 Foreman, M. G. G., 1978.
