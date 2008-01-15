@@ -53,7 +53,7 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 	dim(name2) <- c(2 * length(name), 1) 
 	colnames(x) <- name2
 	eta <- sl$data$eta
-	model <- lm(eta ~ x)
+	model <- lm(eta ~ x, na.action=na.exclude)
 	coef  <- model$coefficients
 	p.all <- summary(model)$coefficients[,4]
 	amplitude <- phase <- p <-vector("numeric", length=1+nc)
@@ -66,9 +66,10 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 		s <- coef[is]
 		c <- coef[ic]
 		amplitude[i] <- sqrt(s^2 + c^2)
-		phase[i]     <- atan2(c, s)
+		phase[i]     <- atan2(s, c) # made into degrees later
 		p[i]         <- 0.5 * (p.all[is] + p.all[ic])
 	}
+	phase <- phase * 180 / pi
 	rval <- list(model=model, name=c("Z0", name), 
 		frequency=c(0,frequency), amplitude=amplitude,
 		phase=phase, p=p)
