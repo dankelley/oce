@@ -49,11 +49,11 @@ There are also some bugs:
 
 \enumerate{
 
-\item{1. The phase is not resolved to Greenwich.}
+\item{1.}{The phase is not resolved to Greenwich.}
 
-\item{2. Nodal correction is not done.}
+\item{2.}{Nodal correction is not done.}
 
-\item{3. The reported \code{p} value may make no sense at all, and it might be removed in a
+\item{3.}{The reported \code{p} value may make no sense at all, and it might be removed in a
 future version of this function. Perhaps a significance level should be presented, as in the
 software developed by both Foreman and Pawlowicz.}
 
@@ -84,11 +84,17 @@ summary(tide)
 plot(tide)
 }
 \references{
-Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002. Classical tidal harmonic analysis including error estimates in MATLAB using T_TIDE. Computers and Geosciences, 28, 929-937.
+Foreman, M. G. G., 1978.
+Manual for tidal currents analysis and prediction.
+Pacific Marine Science Report 78-6, Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 57pp.
 
-Foreman, M. G. G., 1978. Manual for tidal currents analysis and prediction. Pacific Marine Science Report 78-6, Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 57pp.
+Foreman, M. G. G., Neufeld, E. T., 1991.
+Harmonic tidal analyses of long time series.
+International Hydrographic Review, 68 (1), 95-108.
 
-Foreman, M. G. G., Neufeld, E. T., 1991. Harmonic tidal analyses of long time series. International Hydrographic Review, 68 (1), 95-108.
+Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
+Classical tidal harmonic analysis including error estimates in MATLAB using T_TIDE.
+Computers and Geosciences, 28, 929-937.
 }
 \author{Dan Kelley}
 \keyword{misc}
