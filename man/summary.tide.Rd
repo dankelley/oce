@@ -15,7 +15,7 @@
 }
 \value{A \code{summary.tide} object is returned, which is a data frame containing
 the following.
-\item{Name}{the name of the constituent in non-subscript form, e.g. \dQuote{\code{M2}}.}
+\item{Name}{the name of the constituent in non-subscript form, e.g. "\code{M2}".}
 \item{Frequency}{the frequency of the constituent, in inverse hours.}
 \item{Amplitude}{the amplitude of the constituent, in metres (see \code{\link{fit.tide}}).}
 \item{Phase}{the phase of the constituent (see \code{\link{fit.tide}}).}

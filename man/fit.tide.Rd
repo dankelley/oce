@@ -62,16 +62,16 @@ software developed by both Foreman and Pawlowicz.}
 } % note
 
 
-\value{An object of class \dQuote{\code{tide}}, consisting of
+\value{An object of class \code{\link{class}} "\code{tide}", consisting of
 \item{model}{the regression model}
-\item{name}{a vector of constituent names, in non-subscript format, e.g. \dQuote{\code{M2}}.}
+\item{name}{a vector of constituent names, in non-subscript format, e.g. "\code{M2}".}
 \item{frequency}{a vector of constituent frequencies, in inverse hours.}
 \item{amplitude}{a vector of fitted constituent amplitudes, in metres.}
 \item{phase}{a vector of fitted constituent phase.  (FIXME: this needs to be resolved to Greenwich, and it is not, yet.)}
 \item{p}{a vector containing a sort of p value for each constituent.  This is calculated as the average of the p values for the sine() and cosine() portions used in fitting; whether it makes any sense is an open question.}
 }
 
-\seealso{\code{\link{tide.constituents}} provides the frequencies of the tidal constituents. \code{\link{summary.tide}} summarizes a \dQuote{\code{tide}} object, and \code{\link{plot.tide}} plots one.}
+\seealso{\code{\link{tide.constituents}} provides the frequencies of the tidal constituents. \code{\link{summary.tide}} summarizes a "\code{tide}" object, and \code{\link{plot.tide}} plots one.}
 
 \examples{
 library(oce)
