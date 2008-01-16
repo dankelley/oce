@@ -35,7 +35,7 @@ A common use is to assemble (S,t,p) vectors into a \code{ctd} object, e.g. so th
 \code{\link{plot.ctd}} can be used to make a standard four-panel plot, or so that
 a section can be constructed with \code{\link{make.section}}.
 }
-\value{An object of \code{\link[base]{class}} "\code{ctd}" (for details, see \code{\link{read.ctd}}).}
+\value{An object of \code{\link[base]{class}} \code{"ctd"} (for details, see \code{\link{read.ctd}}).}
 \seealso{
 A file containing CTD profile data may be read with \code{\link{read.ctd}}.
 A \code{ctd} object may be summarized with \code{\link{summary.ctd}}.

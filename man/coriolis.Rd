@@ -15,9 +15,7 @@ Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.
 \details{
   
 }
-\value{
-  Coriolis parameter [radian/s].
-}
+\value{Coriolis parameter [radian/s].}
 
 \seealso{
   N/A.

@@ -4,9 +4,7 @@
 \description{
 Smooth and decimate a CTD profile.  
 }
-\usage{
-ctd.decimate(x, p, method=c("approx","boxcar","lm"), e=1)
-}
+\usage{ctd.decimate(x, p, method=c("approx","boxcar","lm"), e=1)}
 \arguments{
 \item{x}{a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
 \item{p}{an optional pressure increment, or list of pressures. If \code{p} is not supplied, a
@@ -38,15 +36,15 @@ the boxcar method.)
 
 \emph{NB.} A sort of numerical cabeling effect can result from this procedure, but it can be
 avoided as follows
+
 \preformatted{
 xd <- ctd.decimate(x)
 xd$data$sigma.theta <- sw.sigma.theta(xd$data$salinity, xd$data$temperature, xd$data$pressure)
-}
+} % preformatted
 
-}
-\value{
-A new \code{ctd} object with pressures that are as set by the \code{"p"} parameter. In other respects, the return value is identical with the input \code{ctd} object (apart from its having an additional log entry indicating that the data have been altered.)
-}
+} %details
+
+\value{An object of \code{\link[base]{class}} \code{"ctd"}, with pressures that are as set by the \code{"p"} parameter. In other respects, the return value is identical with the input \code{ctd} object (apart from its having an additional log entry indicating that the data have been altered.)}
 
 \seealso{
 A \code{ctd} object may be read with \code{\link{read.ctd}},

@@ -24,12 +24,11 @@ ctd.add.column(x, column=NULL, column.name="",
   sort of format to use, to avoid confusion if you share the resultant
   file.
 }
-\value{
-  A new \code{ctd} object.
-}
-\seealso{
-\code{read.ctd} reads a \code{ctd} object, and \code{write.ctd} writes one.
-}
+
+\value{An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.}
+
+\seealso{\code{read.ctd} reads a \code{ctd} object, and \code{write.ctd} writes one.}
+
 \examples{
 library(oce)
 data(ctd) 

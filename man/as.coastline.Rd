@@ -16,7 +16,7 @@ This may be used when \code{\link{read.coastline}} cannot read a file, or when
 the data have been manipulated.
 }
 
-\value{A \code{coastline} object as described at \code{\link{read.coastline}}.}
+\value{An object of \code{\link[base]{class}} \code{"coastline"} (for details, see \code{\link{read.coastline}}).}
 
 \seealso{
 You may also use \code{\link{read.coastline}} to read a coastline file.

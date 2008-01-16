@@ -44,7 +44,7 @@ as.sealevel(eta,
   at \url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.
 }
 
-\value{An object of \code{\link[base]{class}} "\code{sealevel}" (for details, see \code{\link{read.sealevel}}).}
+\value{An object of \code{\link[base]{class}} \code{"sealevel"} (for details, see \code{\link{read.sealevel}}).}
 
 \seealso{
   \code{\link{read.sealevel}} reads data,
