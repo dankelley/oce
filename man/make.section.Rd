@@ -11,7 +11,7 @@
 \details{The \code{ctd} stations must share identical pressure values; use
 \code{\link{section.grid}} to do that.}
 
-\value{A \code{section} object, as described at \code{\link{read.section}}.}
+\value{An object of \code{\link[base]{class}} "\code{section}" (for details, see \code{\link{read.section}}).}
 
 \seealso{\code{\link{read.ctd}} reads CTD data.}
 
