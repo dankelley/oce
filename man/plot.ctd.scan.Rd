@@ -1,6 +1,6 @@
 \name{plot.ctd.scan}
 \alias{plot.ctd.scan}
-\title{Plot seawater (CTD) data}
+\title{Plot seawater (CTD) data in a low-level fashion, with scan number as the independent variable}
 \description{
   Plot CTD data as time-series against scan number, to aide in trimming.
 }
@@ -19,9 +19,6 @@ plot.ctd.scan(x, name = "scan",
 \details{
   Plots \code{ctd} data as time-series against the scan number, as an 
   aide to trimming to downcasts, \emph{etc}.
-}
-\value{
-  None.
 }
 \seealso{
   \code{\link{summary.ctd}} summarizes a \code{ctd} object

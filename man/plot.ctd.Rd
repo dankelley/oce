@@ -20,9 +20,6 @@
 One panel contains profiles of temperature and salinity, another contains
 profiles of density and the square of buoyancy frequency, and a third contains a TS diagram.  The fourth panel provides information about the cast.
 }
-\value{
-  None.
-}
 \seealso{
   The profiles are plotted with \code{\link{plot.profile}}, and the TS diagram is plotted
 with \code{\link{plot.TS}}.  CTD data can be created with \code{\link{as.ctd}} or read with
