@@ -1,5 +1,6 @@
 fit.tide <- function(sl, constituents="standard", rc=1)
 {
+	debug <- !TRUE
 	if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
 	tc <- tide.constituents()
 	# The [-1] below trims Z0 (since R handles intercepts by itself)
@@ -43,9 +44,9 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 	nt <- length(sl$data$eta)
 	x <- array(dim=c(nt, 2 * nc))
 	x[,1] <- rep(1, nt)
-	hour <- (as.numeric((sl$data$t - sl$data$t[1]))) / 3600
+	hour2pi <- (as.numeric((sl$data$t - sl$data$t[1]))) / 3600 * (2 * pi)
 	for (i in 1:nc) {
-		omega.t <- 2 * pi *frequency[i] * hour
+		omega.t <- frequency[i] * hour2pi
 		x[,2*i-1] <- sin(omega.t)
 		x[,2*i  ] <- cos(omega.t)
 	}
@@ -57,6 +58,8 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 	coef  <- model$coefficients
 	p.all <- summary(model)$coefficients[,4]
 	amplitude <- phase <- p <-vector("numeric", length=1+nc)
+	# FIXME: decide whether to use Z0 or do mean/detrend as T_TIDE; it
+	# affects the loop indexing, something I've had mixed up before :-(
 	amplitude[1] <- coef[1]
 	phase[1] <- 0
 	p[1] <- p.all[1]
@@ -65,14 +68,19 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 		ic <- 2 * (i - 1) + 1
 		s <- coef[is]
 		c <- coef[ic]
+		if (debug) cat("i=",i, "gives s=",s,"and c=",c,"\n")
 		amplitude[i] <- sqrt(s^2 + c^2)
-		phase[i]     <- atan2(s, c) # made into degrees later
+		phase[i]     <- atan2(c, s) # atan2(y,x) ... made into degrees later
 		p[i]         <- 0.5 * (p.all[is] + p.all[ic])
 	}
+	if (debug) cat("coef:", coef, "\n")
 	phase <- phase * 180 / pi
-	rval <- list(model=model, name=c("Z0", name), 
-		frequency=c(0,frequency), amplitude=amplitude,
-		phase=phase, p=p)
+	rval <- list(model=model,
+		name=c("Z0", name), 
+		frequency=c(0,frequency),
+		amplitude=amplitude,
+		phase=phase,
+		p=p)
 	class(rval) <- "tide"
 	rval
 }

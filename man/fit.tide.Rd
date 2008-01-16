@@ -75,18 +75,19 @@ software developed by both Foreman and Pawlowicz.}
 
 \examples{
 library(oce)
-# Fake an M2 tide, to check
-hour <- seq(1, 24 * 365)
-eta <- 1 + sin(0.08051140 * 2 * pi * hour)
+# Artificial M2 tide with phase 45 degrees
+hour <- seq(0, 24 * 365)
+eta <- 1 + 2 * sin(0.08051140 * 2 * pi * hour + pi/4)
 sealevel <- as.sealevel(eta)
 tide <- fit.tide(sealevel)
 summary(tide)
 plot(tide)
 }
 \references{
-Foreman, M. G. G., 1978.
-Manual for tidal currents analysis and prediction.
-Pacific Marine Science Report 78-6, Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 57pp.
+Foreman, M. G. G., 1977.
+Manual for tidal heights analysis and prediction.
+Pacific Marine Science Report 77-10,
+Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 58pp.
 
 Foreman, M. G. G., Neufeld, E. T., 1991.
 Harmonic tidal analyses of long time series.
