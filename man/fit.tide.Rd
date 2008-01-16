@@ -62,7 +62,7 @@ software developed by both Foreman and Pawlowicz.}
 } % note
 
 
-\value{An object of class \code{\link{class}} "\code{tide}", consisting of
+\value{An object of class \code{\link[base]{class}} "\code{tide}", consisting of
 \item{model}{the regression model}
 \item{name}{a vector of constituent names, in non-subscript format, e.g. "\code{M2}".}
 \item{frequency}{a vector of constituent frequencies, in inverse hours.}
