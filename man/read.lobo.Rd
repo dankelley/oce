@@ -41,15 +41,20 @@ because the file format has no recognizable header.
 }
 
 \note{The \code{oce} author was unable to find a description of the data format, and so
-\code{read.lobo} makes some restrictive assumptions about the data format, expecting to find
-exactly 7 columns, whose names in the header contain the words "date", "current across", "current
-along", "nitrate", "fluorescence", "salinity", and "temperature". If these are not found,
-\code{read.lobo} is likely to fail in some way. Luckily, the code is written in a simple way, so
+\code{read.lobo} makes some restrictive assumptions about the data format, e.g.
+requiring that there be exactly 7 columns, whose names in the header are 
+\code{"date"}, 
+\code{"current across"}, 
+\code{"current along"},
+\code{"nitrate"},
+\code{"fluorescence"},
+\code{"salinity"},
+and \code{"temperature"}.  If these are not found,
+\code{read.lobo} is likely to fail in some way.  Luckily, the code is written in a simple way, so
 that users should be able to alter it easily if, for example, the names of the current components
 change to "current to the east", etc.
 }
-\seealso{
-A \code{lobo} object may be summarized with
+\seealso{A \code{"lobo"} object may be summarized with
 \code{\link{summary.lobo}} and plotted with
 \code{\link{plot.lobo}}.
 }
