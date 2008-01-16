@@ -3,7 +3,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
 {
 	dec_deg <- function(x, code = "lat")
 	{
-	if (code == "lat") {
+		if (code == "lat") {
             if (x < 0) {
                 x <- -x
                 sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
