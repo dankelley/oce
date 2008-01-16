@@ -9,7 +9,7 @@ v <- sw.viscosity(ctd)
 v <- sw.viscosity(S, t=NULL)
 }
 \arguments{
-  \item{ctd}{a \code{ctd} object}
+  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
 }

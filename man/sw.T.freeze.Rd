@@ -9,7 +9,7 @@ T.freeze <- sw.T.freeze(ctd)
 T.freeze <- sw.T.freeze(S, p=NULL)
 }
 \arguments{
-  \item{ctd}{a \code{ctd} object}
+  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{S}{salinity [PSU]}
   \item{p}{pressure [dbar]}
 }

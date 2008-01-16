@@ -10,7 +10,7 @@ h <- sw.dynamic.height(ctd, pref=2000)
 }
 \arguments{
   \item{section}{a \code{section} object}
-  \item{ctd}{a \code{ctd} object}
+  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{pref}{reference pressure [dbar]}
 }
 \details{

@@ -9,7 +9,7 @@ spice <- sw.spice(ctd)
 spice <- sw.spice(S, t=NULL, p=NULL)
 }
 \arguments{
-  \item{ctd}{a \code{ctd} object}
+  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{pressure [dbar]}

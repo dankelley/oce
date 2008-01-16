@@ -9,7 +9,7 @@ d <- sw.depth(ctd)
 d <- sw.depth(p, lat, degrees=TRUE)
 }
 \arguments{
-  \item{ctd}{a \code{ctd} object}
+  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{p}{Pressure [dbar]}
   \item{lat}{Latitude in \eqn{^\circ}{deg}N or radians north of the equator.}
   \item{degrees}{Flag indicating whether degrees are used for latitude;

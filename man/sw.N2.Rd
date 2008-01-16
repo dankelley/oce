@@ -10,7 +10,7 @@ N2 <- sw.N2(ctd, \dots)
 N2 <- sw.N2(p, sigma.theta=NULL, \dots)
 }
 \arguments{
-  \item{ctd}{a \code{ctd} object}
+  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{p}{pressure [dbar]}
   \item{sigma.theta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}
   \item{\dots}{Extra arguments that will be passed to 

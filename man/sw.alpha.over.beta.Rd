@@ -9,7 +9,7 @@ ab <- sw.alpha.over.beta(ctd, is.theta=FALSE);
 ab <- sw.alpha.over.beta(S, t=NULL, p=NULL, is.theta=FALSE);
 }
 \arguments{
-  \item{ctd}{a \code{ctd} object}
+  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{S}{salinity [PSU]}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{pressure [dbar]}
