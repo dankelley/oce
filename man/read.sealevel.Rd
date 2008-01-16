@@ -20,9 +20,9 @@ centre, and type 2, the comma-separated-value format used by the Marine Environm
 file is in neither of these formats, the user might wish to scan it directly, 
 and then to use \code{\link{as.sealevel}} to create a \code{sealevel} object.}
 
-\value{
-  A \code{sealevel} object, which is a \code{\link{list}} containing
-  \item{data}{A \code{\link{data.frame}} containing
+\value{An object of \code{\link[base]{class}} \code{"sealevel"}, which is a \code{\link[base]{list}}
+containing
+ \item{data}{A \code{\link{data.frame}} containing
     \item{\code{t}}{time}
     \item{\code{eta}}{sea level [m]}
   }

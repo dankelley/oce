@@ -13,8 +13,8 @@
 \details{
   Pertinent summary information is presented.
 }
-\value{A \code{summary.tide} object is returned, which is a data frame containing
-the following.
+\value{An object of \code{\link[base]{class}} \code{"summary.tide"},
+which is a data frame containing the following.
 \item{Name}{the name of the constituent in non-subscript form, e.g. "\code{M2}".}
 \item{Frequency}{the frequency of the constituent, in inverse hours.}
 \item{Amplitude}{the amplitude of the constituent, in metres (see \code{\link{fit.tide}}).}

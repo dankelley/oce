@@ -25,8 +25,8 @@ The MapGen format is of the form
 BUG: the 'arc/info ungenerate' format is not yet understood.
 
 }
-\value{
-  A \code{coastline} object, which is a list containing
+\value{An object of \code{\link[base]{class}} \code{"coastline"}, 
+which is a \code{\link[base]{list}} containing
   \item{data}{a list containing 
       \item{longitude}{the longitude in decimal degrees positive east of Greenwich.}
       \item{latitude}{the latitude in decimal degrees positive north of the equator.}

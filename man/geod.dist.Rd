@@ -36,14 +36,10 @@ and for "2" to contain a reference point; e.g.
 starting from zero.
 
 }
-\value{
-Distance, or vector of differences, measured along the surface of
-the earth.
-}
+\value{Distance, or vector of differences, measured along the surface of the earth.}
 
-\seealso{
-  N/A.
-}
+\seealso{N/A.}
+
 \examples{
  # There are roughly 111km per degree of latitude
  km <- geod.dist(45, 100, 46, 100)/1000 

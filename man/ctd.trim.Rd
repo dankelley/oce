@@ -73,9 +73,8 @@ any subsequent data.
   CTD data (but with some wonderful chemical or biological
   samples).
 }
-\value{
-  A new \code{ctd} object that has been trimmed in some way.
-}
+
+\value{An object of \code{\link[base]{class}} \code{"ctd"}, with data having been trimmed in some way.}
 
 \seealso{
   The \code{ctd} object may be read with \code{\link{read.ctd}}.  

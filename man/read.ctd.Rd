@@ -53,9 +53,8 @@ read.ctd(file, type=NULL, debug=FALSE,
   parse, so both \code{object$institute} and \code{object$scientist} are left 
   blank for WOCE files.
 }
-\value{
-  A \code{ctd} object, which is a list with elements detailed below.  The
-  most important elements are the station name and position, along
+\value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a list with elements detailed below.
+  The most important elements are the station name and position, along
   with the profile data that are contained in the data frame named \code{data}.
   (Other elements in the list may be deleted in future versions of the
   package, if they prove to be of little use in practice, or if they prove

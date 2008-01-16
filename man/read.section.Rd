@@ -16,8 +16,9 @@ inspection of the A03 data set (see Examples). This may cause problems
 if the format is not universal. For example, the header must name the
 salinity column "\code{CTDSAL}"; if not, salinity values will not be
 read from the file.}
-\value{
-A \code{section} object, which is a list containing the following items
+
+\value{An object of \code{\link[base]{class}} \code{"section"}, which is a \code{\link[base]{list}}
+containing
 \item{data}{a list containing just one item, 
 \code{station}, which is a list of \code{ctd} objects, one per station.}
 \item{metadata}{a list containing:

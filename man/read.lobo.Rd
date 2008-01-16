@@ -24,8 +24,8 @@ be fixed in time.
 It is also worth noting that there is no \code{\link{read.oce}} equivalent to \code{read.lobo},
 because the file format has no recognizable header.
 }
-\value{
-A \code{lobo} object, which is a \code{\link{list}} containing
+
+\value{An object of \code{\link[base]{class}} \code{"lobo"}, which is a \code{\link[base]{list}} containing
   \item{data}{a \code{\link{data.frame}} containing the following vectors:
     \item{\code{time}}{the times of observation}
     \item{\code{u}}{one horizontal component of velocity (necessarily eastward) [m/s]}

@@ -42,9 +42,7 @@ users may note from the example that the two typically yield values that
 agree to a few millidegrees.
 
 }
-\value{
-Potential temperature [\eqn{^\circ}{deg}C] of seawater.
-}
+\value{Potential temperature [\eqn{^\circ}{deg}C] of seawater.}
 \seealso{
 The corresponding potential density anomaly
 \eqn{\sigma_\theta}{sigma-theta} can be calculated with

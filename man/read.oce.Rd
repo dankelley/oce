@@ -20,10 +20,8 @@ is selected, based on the header.}
   file reading function is called, with the \code{file} and with any additional
   arguments being supplied.
 }
-\value{
-  On success, an \code{oce} object of type \code{ctd}, \code{sealevel},
-  \code{coastline}, or \code{lobo}.  On failure, an error occurs.
-}
+\value{An object of base \code{\link[base]{class}} \code{"oce"}, and also with a class
+that signifies the type of data, e.g. \code{"ctd"}, \code{"sealevel"}, etc.}
 
 \seealso{
 The file type is determined by 

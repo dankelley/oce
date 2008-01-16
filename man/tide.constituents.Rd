@@ -8,7 +8,7 @@
 \details{Values are from Foreman (1977), also provided by the file \code{tide3.dat} in 
 the t-tide package (Pawlowicz et al., 2002).}
 
-\value{A list containing
+\value{A \code{\link[base]{list}} containing
 \item{name}{a string name indicating the constituent name, in the notation of Foreman (1977).}
 \item{frequency}{the frequency of the constituent, in cycles per hour.}
 \item{compare}{a string indicating another constituent with which this should be compared in a Rayleigh-criterion calculation (see \code{\link{fit.tide}}).  The string is empty for 

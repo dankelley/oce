@@ -25,10 +25,7 @@ from the table is one unit in the last decimal place.
 No pressure dependence was reported by Dorsey (1940).
 
 }
-\value{
-  Viscosity of seawater in \eqn{Pa\cdot s}{Pa*s}.  Divide
-  by density to get kinematic viscosity in \eqn{m^2/s}{m^2/s}.
-}
+\value{Viscosity of seawater in \eqn{Pa\cdot s}{Pa*s}.  Divide by density to get kinematic viscosity in \eqn{m^2/s}{m^2/s}.}
 \examples{
  v <- sw.viscosity(30,10); # 0.001383779
 }
