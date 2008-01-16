@@ -47,9 +47,10 @@ as.sealevel(eta,
 \value{An object of \code{\link[base]{class}} \code{"sealevel"} (for details, see \code{\link{read.sealevel}}).}
 
 \seealso{
-  \code{\link{read.sealevel}} reads data,
-  \code{\link{summary.sealevel}} summarizes the information, while
-  \code{\link{plot.sealevel}} plots it.
+\code{\link{read.sealevel}} reads data,
+\code{\link{summary.sealevel}} summarizes the information.
+Use \code{\link{plot.sealevel}} to produce a summary plot, and use
+\code{\link{fit.tide}} to fit a tidal model to the data.
 }
 \examples{
 library(oce)
