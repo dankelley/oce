@@ -1,28 +1,27 @@
 plot.TS <- function (x,
-	rho.levels = 6, 
- 	grid = FALSE,
-	col.grid = "lightgray",
-	rho1000=FALSE,
-	col = par("col"),
-	col.rho = "darkgray",
-	cex.rho = 0.9 * par("cex"),
-	cex=par("cex"),
-	pch=20,
-	rotate.rho.labels=FALSE,
-	connect.points=FALSE,
-	...) 
+                     rho.levels = 6,
+                     grid = FALSE,
+                     col.grid = "lightgray",
+                     rho1000=FALSE,
+                     col = par("col"),
+                     col.rho = "darkgray",
+                     cex.rho = 0.9 * par("cex"),
+                     cex=par("cex"),
+                     pch=20,
+                     rotate.rho.labels=FALSE,
+                     connect.points=FALSE,
+                     ...)
 {
-    if (!inherits(x, "ctd")) 
-        stop("method is only for ctd objects")
+    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
 	mar <- par("mar")
 	if (!rotate.rho.labels) { # make space
 		if (mar[4] < 3)
 			par(mar=c(mar[1:3], 3))
 	}
     plot(x$data$salinity, x$data$temperature, xlab = "",
-		xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-        ylab = expression(paste("temperature [ ", degree, "C ]")), 
-		cex=cex, pch=pch, col=col, ...)
+         xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
+         ylab = expression(paste("temperature [ ", degree, "C ]")),
+         cex=cex, pch=pch, col=col, ...)
 	if (connect.points)
 		lines(x$data$salinity, x$data$temperature, col=col, ...)
 	S.axis.min <- par()$usr[1]
@@ -36,7 +35,7 @@ plot.TS <- function (x,
 	rho.max <- sw.sigma(S.axis.max, T.axis.min, 0)
     if (length(rho.levels) == 1) {
 		rho.list <- pretty(c(rho.min, rho.max), n=rho.levels)
-		# Trim first and last values, since not in box
+                                        # Trim first and last values, since not in box
 		rho.list <- rho.list[-1]
 		rho.list <- rho.list[-length(rho.list)]
     } else {
@@ -62,7 +61,7 @@ plot.TS <- function (x,
 				mtext(rho.label, side=3, at=s.line[t.n], line=0.25, cex=cex.rho, col=col.rho)
 		}
     }
-	# Freezing point
+                                        # Freezing point
 	Sr <- c(max(0, S.axis.min), S.axis.max)
 	lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
 	par(mar=mar)

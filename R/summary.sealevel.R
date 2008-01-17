@@ -1,7 +1,6 @@
 summary.sealevel <- function(object, ...)
 {
-	if (!inherits(object, "sealevel"))
-		stop("method is only for sealevel objects")
+	if (!inherits(object, "sealevel")) stop("method is only for sealevel objects")
 	cat(paste("Station\n"))
 	cat(paste("  number:            ", object$metadata$station.number,   "\n"))
 	version <- if (is.null(object$metadata$version)) "?" else object$metadata$version

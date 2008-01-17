@@ -1,6 +1,6 @@
 make.section <- function(item, ...)
 {
-	if (inherits(item, "ctd")) {
+    if (inherits(item, "ctd")) {
 		extra.args <- list(...)
 		if (length(extra.args) < 1) stop("cannot make a section from one station")
 		num.stations <- 1 + length(extra.args)

@@ -1,6 +1,6 @@
 read.sealevel <- function(file, debug=FALSE)
-{    
-	# Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
+{
+                                        # Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
 	filename <- file
 	if (is.character(file)) {
 		file <- file(file, "r")
@@ -29,22 +29,22 @@ read.sealevel <- function(file, debug=FALSE)
 	reference.code <- NA
 	if (substr(first.line, 1, 12) == "Station_Name") { # type 2
 		if(debug) cat("File is of format 1 (e.g. as in MEDS archives)\n")
-		# Station_Name,HALIFAX
-		# Station_Number,490
-		# Latitude_Decimal_Degrees,44.666667
-		# Longitude_Decimal_Degrees,63.583333
-		# Datum,CD
-		# Time_Zone,AST
-		# SLEV=Observed Water Level
-		# Obs_date,SLEV
-		# 01/01/2001 12:00 AM,1.82,
+                                        # Station_Name,HALIFAX
+                                        # Station_Number,490
+                                        # Latitude_Decimal_Degrees,44.666667
+                                        # Longitude_Decimal_Degrees,63.583333
+                                        # Datum,CD
+                                        # Time_Zone,AST
+                                        # SLEV=Observed Water Level
+                                        # Obs_date,SLEV
+                                        # 01/01/2001 12:00 AM,1.82,
 		header.length <- 8
 		header <- scan(file, character(), n=header.length, quiet=TRUE)
 		station.name   <- strsplit(header[1], ",")[[1]][2]
 		station.number <- as.numeric(strsplit(header[2], ",")[[1]][2])
 		latitude       <- as.numeric(strsplit(header[3], ",")[[1]][2])
 		longitude      <- as.numeric(strsplit(header[4], ",")[[1]][2])
-    	# get GMT offset
+                                        # get GMT offset
 		tz             <- strsplit(header[6], ",")[[1]][2]
 		GMT.offset     <- GMT.offset.from.tz(tz)
 		x <- read.csv(file, skip=header.length, header=FALSE)
@@ -98,11 +98,11 @@ read.sealevel <- function(file, debug=FALSE)
 				}
 			}
 			last.day.portion <- day.portion
-		}                  
+		}
 		t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)))
 		eta[eta==9999] <- NA
 		if (tolower(units) == "mm") {
-			eta <- eta / 1000 
+			eta <- eta / 1000
 		} else {
 			stop("require units to be MM")
 		}
@@ -115,21 +115,21 @@ read.sealevel <- function(file, debug=FALSE)
 	if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(eta)), ""))
 	data <- data.frame(t=t, eta=eta)
 	metadata <- list(
-		header=header,
-		year=year,
-		station.number=station.number,
-		station.version=station.version,
-		station.name=station.name,
-		region=region,
-		latitude=latitude,
-		longitude=longitude,
-		GMT.offset=GMT.offset,
-		decimation.method=decimation.method,
-		reference.offset=reference.offset,
-		reference.code=reference.code,
-		units=NA,
-		n=length(t),
-		sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
+                     header=header,
+                     year=year,
+                     station.number=station.number,
+                     station.version=station.version,
+                     station.name=station.name,
+                     region=region,
+                     latitude=latitude,
+                     longitude=longitude,
+                     GMT.offset=GMT.offset,
+                     decimation.method=decimation.method,
+                     reference.offset=reference.offset,
+                     reference.code=reference.code,
+                     units=NA,
+                     n=length(t),
+                     sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
 	rval <- list(data=data, metadata=metadata, processing.log=log.item)
 	class(rval) <- c("sealevel", "oce")

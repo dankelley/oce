@@ -1,7 +1,7 @@
 plot.sealevel <- function(x, focus.time=NULL, ...)
 {
-	# tidal constituents (in cpd):
-	# http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
+                                        # tidal constituents (in cpd):
+                                        # http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
 	if (!is.null(focus.time)) {
 		focus.time <- as.POSIXct(focus.time)
 		focus <- (focus.time[1] <= x$data$t) & (x$data$t <= focus.time[2])
@@ -19,7 +19,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		MSL <- mean(eta.m, na.rm=TRUE)
 		tmp <- (pretty(max(eta.m-MSL,na.rm=TRUE)-min(eta.m-MSL,na.rm=TRUE))/2)[2]
 		ylim <- c(-tmp,tmp)
-		# Whole timeseries
+                                        # Whole timeseries
 		n <- length(x$data$eta) # do not trust value in metadata
 		from <- as.POSIXlt(x$data$t[1])
 		from$mday <- 1
@@ -40,9 +40,8 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 			par(cex=1)
 		}
 		plot(as.POSIXlt(x$data$t)[1:n], eta.m-MSL,
-#			xlab="",ylab="Sealevel Anomaly [m]",type='l',ylim=ylim,
-			xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
-			lwd=0.5, axes=FALSE)	
+             xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
+             lwd=0.5, axes=FALSE)
 		axis(1, at.t, format(at.t, "%b %d"), cex=0.7)  # small font to get all 12 month names
 		yax <- axis(2)
 		box()
@@ -52,15 +51,14 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
 		if (!is.na(x$metadata$station.number)) {
 			title <- paste("Station ",
-					x$metadata$station.number, " (",
-					x$metadata$station.name,   ") ",
-					x$metadata$region,         "",
-					" ", latlon.format(x$metadata$latitude, x$metadata$longitude),
-					if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
-					sep="")
+                           x$metadata$station.number, " (",
+                           x$metadata$station.name,   ") ",
+                           x$metadata$region,         "",
+                           " ", latlon.format(x$metadata$latitude, x$metadata$longitude),
+                           if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
+                           sep="")
 			mtext(side=3, title, line=0.5)
 		}
-		# First bit
 		if (num.NA)
 			par(mar=c(3,5,0,1)+0.1)
 		else
@@ -73,8 +71,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		tmp <- (pretty(max(eta.m[1:stop]-MSL,na.rm=TRUE)-min(eta.m[1:stop]-MSL,na.rm=TRUE))/2)[2]
 		ylim <- c(-tmp,tmp)
 		plot(x$data$t[1:stop], eta.m[1:stop] - MSL,
-#			xlab="",ylab="Sealevel Anomaly [m]",type='l',ylim=ylim, axes=FALSE)
-			xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim, axes=FALSE)
+             xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim, axes=FALSE)
 		axis(1, at.week, labels=format(at.week, "%b %d"))
 		yax <- axis(2)
 		abline(h=yax, col="lightgray", lty="dotted")
@@ -83,15 +80,15 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 		abline(v=at.day, col="lightgray", lty="dotted")
 		abline(h=0,col="darkgreen")
 		mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
-		# 
-		# Draw spectra, if series has no NA, so that spectrum is easy to construct
+                                        #
+                                        # Draw spectra, if series has no NA, so that spectrum is easy to construct
 		if (!num.NA) {
 			Eta <- ts(eta.m,start=1,frequency=1/x$metadata$sampling.interval)
-			s <- spectrum(Eta-mean(Eta),spans=3,plot=FALSE,log="y",demean=TRUE,detrend=TRUE) 
+			s <- spectrum(Eta-mean(Eta),spans=3,plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
 			par(mar=c(2,5,1,1)+0.1)
 			plot(s$freq,s$spec,xlim=c(0,0.1),
-				xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
-				type='l',log="y")
+                 xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
+                 type='l',log="y")
 			grid()
 			draw.constituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
 			{
@@ -101,7 +98,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 			draw.constituents <- function()
 			{
 				draw.constituent(0.0387306544, "O1", side=1)
-				#draw.constituent(0.0416666721, "S1", side=3)
+                ##draw.constituent(0.0416666721, "S1", side=3)
 				draw.constituent(0.0417807462, "K1", side=3)
 	    		draw.constituent(0.0789992488, "N2", side=1)
 				draw.constituent(0.0805114007, "M2", side=3)
@@ -114,9 +111,9 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 			e <- eta.m - mean(eta.m)
 			par(mar=c(4,5,1,1)+0.1)
 			plot(s$freq,cum.spec,
-				xlab="Frequency [ cph ]",
-				ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
-				type='l',xlim=c(0,0.1))
+                 xlab="Frequency [ cph ]",
+                 ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
+                 type='l',xlim=c(0,0.1))
 			grid()
 			draw.constituents()
 		}

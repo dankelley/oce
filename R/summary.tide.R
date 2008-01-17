@@ -9,8 +9,8 @@ summary.tide <- function(object, p=0, ...)
 	sig[object$p<0.01]  <- "** "
 	sig[object$p<0.001] <- "***"
 	rval <- data.frame(Name=object$name[ok], Frequency=object$frequency[ok],
-		Amplitude=object$amplitude[ok],	Phase=object$phase[ok],
-		p=object$p[ok], sig=sig[ok]) # FIXME: do these p values make any sense?
+                       Amplitude=object$amplitude[ok],	Phase=object$phase[ok],
+                       p=object$p[ok], sig=sig[ok]) # FIXME: do these p values make any sense?
 	class(rval) <- c("data.frame", "summary.tide")
 	rval
 }

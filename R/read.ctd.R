@@ -1,12 +1,12 @@
-#* Sea-Bird SBE 25 Data File:
-#CTD,20060609WHPOSIODAM
+                                        #* Sea-Bird SBE 25 Data File:
+                                        #CTD,20060609WHPOSIODAM
 
 read.ctd <- function(file,
-	   	type=NULL,
-   		debug=FALSE,
-		columns=NULL,
-		station=NULL,
-	   	check.human.headers=FALSE)
+                     type=NULL,
+                     debug=FALSE,
+                     columns=NULL,
+                     station=NULL,
+                     check.human.headers=FALSE)
 {
 	filename <- NULL
 	if (is.null(type)) {
@@ -31,7 +31,6 @@ read.ctd <- function(file,
 		else
 			stop("Cannot discover type in line", line, "\n")
 	} else {
-		#cat("type:",type,"\n")
 		if (!is.na(pmatch(type, "SBE19"))) {
 			type <- "SBE19"
 		} else if (!is.na(pmatch(type, "WOCE"))) {
@@ -41,16 +40,16 @@ read.ctd <- function(file,
 		}
 	}
 	switch(type,
-		SBE19 = read.ctd.SBE19(file, filename, debug, columns, station=station, check.human.headers=check.human.headers),
-		WOCE  = read.ctd.WOCE(file, filename, debug, columns, station=station, missing.value=-999))
+           SBE19 = read.ctd.SBE19(file, filename, debug, columns, station=station, check.human.headers=check.human.headers),
+           WOCE  = read.ctd.WOCE(file, filename, debug, columns, station=station, missing.value=-999))
 }
 
 read.ctd.WOCE <- function(file,
-		filename,
-   		debug=FALSE,
-		columns=NULL,
-		station=NULL,
-	   	missing.value=-999)
+                          filename,
+                          debug=FALSE,
+                          columns=NULL,
+                          station=NULL,
+                          missing.value=-999)
 {
   	if (is.character(file)) {
 		filename <- file
@@ -64,7 +63,7 @@ read.ctd.WOCE <- function(file,
     	open(file, "r")
     	on.exit(close(file))
   	}
-	# Header
+                                        # Header
 	scientist <- ship <- institute <- address <- NULL
 	filename.orig <- NULL
 	sample.interval <- NaN
@@ -79,13 +78,13 @@ read.ctd.WOCE <- function(file,
   	found.sigma.theta <- found.sigma.t <- found.sigma <- FALSE
 	found.conductivity <- found.conductivity.ratio <- FALSE
 	conductivity.standard <- 4.2914
-	# http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
-	# First line
+                                        # http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
+                                        # First line
 	line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
 	if(debug)
   		cat(paste("examining header line '",line,"'\n"));
 	header <- line
-	#	CTD, 20000718WHPOSIOSCD
+                                        #	CTD, 20000718WHPOSIOSCD
 	if ("CTD" != substr(line, 1, 3))
 		stop("Can only read WOCE files of type CTD")
 	tmp <- sub("(.*), ", "", line);
@@ -99,20 +98,20 @@ read.ctd.WOCE <- function(file,
     	if(debug)
 	  		cat(paste("examining header line '",line,"'\n"));
     	header <- c(header, line);
-		# SAMPLE:
-		#      EXPOCODE = 31WTTUNES_3
-		#      SECTION_ID = P16C
-		#      STNNBR = 221
-		#      CAST = 1
-		#      DATE = 19910901
-		#      TIME = 0817
-		#      LATITUDE = -17.5053
-		#      LONGITUDE = -150.4812
-		#      BOTTOM = 3600
+                                        # SAMPLE:
+                                        #      EXPOCODE = 31WTTUNES_3
+                                        #      SECTION_ID = P16C
+                                        #      STNNBR = 221
+                                        #      CAST = 1
+                                        #      DATE = 19910901
+                                        #      TIME = 0817
+                                        #      LATITUDE = -17.5053
+                                        #      LONGITUDE = -150.4812
+                                        #      BOTTOM = 3600
 		if (!(0 < (r<-regexpr("^#", line)))) {
-			# NUMBER_HEADERS = 10
+                                        # NUMBER_HEADERS = 10
 			nh <- as.numeric(sub("(.*)NUMBER_HEADERS = ", "", ignore.case=TRUE, line))
-      		#cat("nh=",nh,"\n")
+                                        #cat("nh=",nh,"\n")
 			for (i in 2:nh) {
 			   	line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
 				header <- c(header, line)
@@ -122,9 +121,7 @@ read.ctd.WOCE <- function(file,
 					longitude <- as.numeric(sub("(.*) =","", line))
 				if ((0 < (r<-regexpr("DATE", line)))) {
 					d <- sub("[ ]*DATE[ ]*=[ ]*", "", line)
-					#cat(paste("d is", d, "\n"))
 					date <- oce.as.POSIXlt(d, "%Y%m%d")
-					#cat(paste("the date is", date, "\n"))
 				}
 				if ((0 < (r<-regexpr("DEPTH", line))))
 					water.depth <- as.numeric(sub("[a-zA-Z =]*","", line))
@@ -136,14 +133,14 @@ read.ctd.WOCE <- function(file,
 			break
 		}
 	}
-	# catch any remaining "#" lines.
+                                        # catch any remaining "#" lines.
 	while (TRUE) {
 	   	line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
 		if (!(0 < (r<-regexpr("^#", line))))
-			break
+        break
 		header <- c(header, line)
 	}
-	#CTDPRS,CTDPRS_FLAG_W,CTDTMP,CTDTMP_FLAG_W,CTDSAL,CTDSAL_FLAG_W,CTDOXY,CTDOXY_FLAG_W,
+                                        #CTDPRS,CTDPRS_FLAG_W,CTDTMP,CTDTMP_FLAG_W,CTDSAL,CTDSAL_FLAG_W,CTDOXY,CTDOXY_FLAG_W,
 	var.names <- strsplit(line, split=",")[[1]]
    	line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
 	var.units <- strsplit(line, split=",")[[1]]
@@ -175,22 +172,22 @@ read.ctd.WOCE <- function(file,
 	sigma.theta <- sw.sigma.theta(salinity, temperature, pressure)
 	data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
 	metadata <- list(
-	      		filename=filename, # provided to this routine
-			    filename.orig=filename.orig, # from instrument
-				system.upload.time=system.upload.time,
-              	ship=ship,
-              	scientist=scientist,
-              	institute=institute,
-              	address=address,
-              	cruise=NULL,
-				station=station,
-              	date=date,
-	      		start.time=start.time,
-              	latitude=latitude,
-              	longitude=longitude,
-              	recovery=recovery,
-              	water.depth=water.depth,
-              	sample.interval=sample.interval)
+                     filename=filename, # provided to this routine
+                     filename.orig=filename.orig, # from instrument
+                     system.upload.time=system.upload.time,
+                     ship=ship,
+                     scientist=scientist,
+                     institute=institute,
+                     address=address,
+                     cruise=NULL,
+                     station=station,
+                     date=date,
+                     start.time=start.time,
+                     latitude=latitude,
+                     longitude=longitude,
+                     recovery=recovery,
+                     water.depth=water.depth,
+                     sample.interval=sample.interval)
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
 	res <- list(data=data, metadata=metadata, processing.log=log.item)
   	class(res) <- c("ctd", "oce")
@@ -198,17 +195,17 @@ read.ctd.WOCE <- function(file,
 }
 
 read.ctd.SBE19 <- function(file,
-		filename,
-   		debug=FALSE,
-		columns=NULL,
-		station=NULL,
-	   	check.human.headers=TRUE)
+                           filename,
+                           debug=FALSE,
+                           columns=NULL,
+                           station=NULL,
+                           check.human.headers=TRUE)
 {
-	# I really should add ability to specify column numbers, to avoid wasting time
-	# on ad-hoc header tweaks.  DEK 2006-01-27
+                                        # I really should add ability to specify column numbers, to avoid wasting time
+                                        # on ad-hoc header tweaks.  DEK 2006-01-27
 
-	# Read Seabird data file.  Note on headers: '*' is machine-generated,
-	# '**' is a user header, and '#' is a post-processing header.
+                                        # Read Seabird data file.  Note on headers: '*' is machine-generated,
+                                        # '**' is a user header, and '#' is a post-processing header.
   	if (is.character(file)) {
 		filename <- file
     	file <- file(file, "r")
@@ -221,7 +218,7 @@ read.ctd.SBE19 <- function(file,
     	open(file, "r")
     	on.exit(close(file))
   	}
-	# Header
+                                        # Header
 	scientist <- ship <- institute <- address <- NULL
 	filename.orig <- NULL
 	sample.interval <- NaN
@@ -241,12 +238,12 @@ read.ctd.SBE19 <- function(file,
     	if(debug)
 	  		cat(paste("examining header line '",line,"'\n"));
     	header <- c(header, line);
-    	#if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
+                                        #if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
 		aline <- iconv(line, from="UTF-8", to="ASCII", sub="?");
 		if (length(grep("END", aline, perl=TRUE, useBytes=TRUE)))
       		break;
 		lline <- tolower(aline);
-    	# BUG: the discovery of CTD column names is brittle to file-format changes
+                                        # BUG: the discovery of CTD column names is brittle to file-format changes
     	if (0 < (r <- regexpr("# name ", lline))) {
 			if (debug) cat("lline: '",lline,"'\n",sep="")
       		tokens <- strsplit(line, split=" ")
@@ -298,16 +295,16 @@ read.ctd.SBE19 <- function(file,
 			date <- oce.as.POSIXlt(d)
 		}
 	   	if (0 < (r<-regexpr("filename", lline))) {
-			#cat("FileName... ",lline,"\n")
+                                        #cat("FileName... ",lline,"\n")
 	    	filename.orig <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline);
-			#cat(" ... '",filename.orig,"'\n")
+                                        #cat(" ... '",filename.orig,"'\n")
 		}
 		if (0 < (r<-regexpr("system upload time", lline))) {
-			#cat(lline, "\n")
+                                        #cat(lline, "\n")
 			d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline);
-			#cat(d,"\n")
+                                        #cat(d,"\n")
 			system.upload.time <- oce.as.POSIXlt(d)
-      		#cat(paste("system upload time:", system.upload.time, "\n"))
+                                        #cat(paste("system upload time:", system.upload.time, "\n"))
 		}
     	if (0 < (r<-regexpr("latitude:", lline))) {
       		north <- TRUE
@@ -354,9 +351,9 @@ read.ctd.SBE19 <- function(file,
 			start.time <- oce.as.POSIXlt(d)
     	}
     	if (0 < (r<-regexpr("ship:", lline))) {
-			#cat(line);cat("\n");
+                                        #cat(line);cat("\n");
       		ship <- sub("(.*)ship:([ ])*", "", ignore.case=TRUE, line); # note: using full string
-			#cat(ship);cat("\n");
+                                        #cat(ship);cat("\n");
 		}
     	if (0 < (r<-regexpr("scientist:", lline)))
       		scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line); # full string
@@ -389,13 +386,13 @@ read.ctd.SBE19 <- function(file,
       		}
     	}
     	if (0 < (r<-regexpr("^. sample rate =", lline))) {
-      		#* sample rate = 1 scan every 5.0 seconds
+                                        #* sample rate = 1 scan every 5.0 seconds
       		rtmp <- lline;
       		rtmp <- sub("(.*) sample rate = ", "", rtmp);
       		rtmp <- sub("scan every ", "", rtmp);
       		rtmp <- strsplit(rtmp, " ");
-			#      if (length(rtmp[[1]]) != 3)
-			#        warning("cannot parse sample-rate string in `",line,"'");
+                                        #      if (length(rtmp[[1]]) != 3)
+                                        #        warning("cannot parse sample-rate string in `",line,"'");
       		sample.interval <- as.double(rtmp[[1]][2]) / as.double(rtmp[[1]][1])
       		if (rtmp[[1]][3] == "seconds") {
         		;
@@ -424,44 +421,44 @@ read.ctd.SBE19 <- function(file,
   		if (is.null(date))
     		warning("'** Date:' not found in header");
   		if (is.null(recovery))
-    		warning("'** Recovery' not found in header"); 
+    		warning("'** Recovery' not found in header");
   	}
-  	# Require p,S,T data at least
+                                        # Require p,S,T data at least
   	if (!found.temperature)
     	stop("cannot find 'temperature' in this file")
   	if (!found.pressure)
     	stop("cannot find 'pressure' in this file")
-	# Data
-  	# BUG: should be inferring the column names from the header!
+                                        # Data
+                                        # BUG: should be inferring the column names from the header!
   	col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigma.theta.unused","depth","flag");
 	col.names.inferred <- tolower(col.names.inferred)
   	if (debug) {
-		#cat("About to read.table these names:", col.names.forced,"\n");
+                                        #cat("About to read.table these names:", col.names.forced,"\n");
 		cat("About to read these names:", col.names.inferred,"\n");
 	}
   	data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
 	metadata <- list(
-		header=header, 
-		filename=filename, # provided to this routine
-		filename.orig=filename.orig, # from instrument
-		system.upload.time=system.upload.time,
-		ship=ship,
-		scientist=scientist,
-		institute=institute,
-		address=address,
-		cruise=cruise,
-		station=station,
-		date=date,
-		start.time=start.time,
-		latitude=latitude,
-		longitude=longitude,
-		recovery=recovery,
-		water.depth=water.depth,
-		sample.interval=sample.interval)
+                     header=header,
+                     filename=filename, # provided to this routine
+                     filename.orig=filename.orig, # from instrument
+                     system.upload.time=system.upload.time,
+                     ship=ship,
+                     scientist=scientist,
+                     institute=institute,
+                     address=address,
+                     cruise=cruise,
+                     station=station,
+                     date=date,
+                     start.time=start.time,
+                     latitude=latitude,
+                     longitude=longitude,
+                     recovery=recovery,
+                     water.depth=water.depth,
+                     sample.interval=sample.interval)
 	log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
 	res <- list(data=data, metadata=metadata, processing.log=log.item)
   	class(res) <- c("ctd", "oce")
-	# Add standard things, if missing
+                                        # Add standard things, if missing
   	if (!found.salinity) {
 		if (found.conductivity.ratio) {
     		warning("cannot find 'salinity' in this file; calculating from T, C, and p");
@@ -475,6 +472,6 @@ read.ctd.SBE19 <- function(file,
 		res <- ctd.add.column(res, S, "salinity", "sal", "salinity", "PSU")
   	}
 	res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure),
-		"sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
+                          "sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
 	return(res)
 }

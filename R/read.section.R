@@ -13,7 +13,7 @@ read.section <- function(file, section.id, debug=FALSE)
 		open(file, "r")
 		on.exit(close(file))
 	}
-	# Skip header
+                                        # Skip header
 	lines <- readLines(file)
 	if ("BOTTLE" != substr(lines[1], 1, 6))
 		stop("only type \"BOTTLE\" understood, but got header line\n", lines[1],"\n")
@@ -47,7 +47,7 @@ read.section <- function(file, section.id, debug=FALSE)
 			section.id <- sub(" *","", contents[2])
 		stn.id[l - header.length] <- sub("^ *","", contents[3])
 		data[l - header.length,] <- contents[3:nv]
-		# FIXME: maybe should just scan this thing; it might work better anyway
+                                        # FIXME: maybe should just scan this thing; it might work better anyway
 	}
 	p <- as.numeric(data[,which(var.names=="CTDPRS") - 2])
 	t <- as.numeric(data[,which(var.names=="CTDTMP") - 2])
@@ -69,18 +69,18 @@ read.section <- function(file, section.id, debug=FALSE)
 		lat[i] <- latitude[select[1]]
 		lon[i] <- longitude[select[1]]
 		this.station <- as.ctd(S=S[select], t=T[select], p=p[select],
-			latitude=lat[i],
-			longitude=lon[i],
-			cruise=section.id[i],
-			station=stn[i],
-			water.depth=water.depth[select[1]])
+                               latitude=lat[i],
+                               longitude=lon[i],
+                               cruise=section.id[i],
+                               station=stn[i],
+                               water.depth=water.depth[select[1]])
 		if (debug) cat("station at ", lat[i], "N and ", lon[i], "W\n")
         station[[i]] <- this.station
 	}
 	data <- list(station=station)
 	metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
 	log.item <- list(time = c(Sys.time()),
-		 action = paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep=""))
+                     action = paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep=""))
 	res <- list(data=data, metadata=metadata, processing.log=log.item)
 	class(res) <- c("section", "oce")
 	res

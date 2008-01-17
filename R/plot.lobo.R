@@ -1,5 +1,5 @@
 plot.lobo.timeseries.TS <- function(lobo,
-	S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
+                                    S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
 	plot(lobo$data$time, lobo$data$salinity, type='l', ylab="", axes=FALSE, ...)
 	axis(2, col.lab=S.col)
@@ -30,7 +30,7 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
 	mtext("V [m/s]", side=4, line=3, col=col.v)
 	if (draw.legend)
  		legend("topright",c("U","V"),col=c(col.u,col.v),lwd=2)
-	
+
 }
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
 {

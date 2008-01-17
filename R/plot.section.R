@@ -1,9 +1,9 @@
 plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
-	grid = FALSE,
-	station.indices,
-	coastline=NULL,
-	map.xlim=NULL,
-	...)
+                          grid = FALSE,
+                          station.indices,
+                          coastline=NULL,
+                          map.xlim=NULL,
+                          ...)
 {
 	plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, ...)
 	{
@@ -15,7 +15,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 				lon[i] <- x$data$station[[station.indices[i]]]$metadata$longitude
 			}
 			asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
-			# expand the range by 20%
+                                        # expand the range by 20%
 			latm <- mean(lat, na.rm=TRUE)
 			lonm <- mean(lon, na.rm=TRUE)
 			lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE))
@@ -27,7 +27,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			if (!is.null(coastline)) {
 				if (mean(lon, na.rm=TRUE) > 0)
 					lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
-				else 
+				else
 					lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
 			}
 			lines(lon, lat, col="lightgray")
@@ -44,33 +44,30 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 				text(xlab, ylab, x$metadata$station.id[num.stations])
 			}
 		} else {
-			# FIXME: contours don't get to plot edges
+                                        # FIXME: contours don't get to plot edges
 			xxrange <- range(xx)
 			yyrange <- range(yy)
-			#yyrange[1] <- -1
+            ##yyrange[1] <- -1
 			if (is.null(at)) {
 				plot(xxrange, yyrange,
-		 			xaxs="i", yaxs="i", ylim=rev(yyrange), col="white", 
-					xlab="Distance [ km ]",	ylab="Pressure [ dbar ]")
+                     xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
+                     xlab="Distance [ km ]",	ylab="Pressure [ dbar ]")
 			} else {
 				plot(xxrange, yyrange,
-		 			xaxs="i", yaxs="i", ylim=rev(yyrange), col="white", 
-					xlab="", ylab="Pressure [ dbar ]", axes=FALSE)
+                     xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
+                     xlab="", ylab="Pressure [ dbar ]", axes=FALSE)
 				axis(1, at=at, labels=labels)
 				axis(2)
 				box()
 			}
-#			cat("num.stations=",num.stations,"variable=",variable,"\n")
 			water.depth <- NULL
-#			cat("dim(zz):");print(dim(zz))
 			for (i in 1:num.stations) {
-#				cat("ii=",station.indices[i],"len=",length(x$data$station[[station.indices[i]]]$data[[variable]]),"\n")
 				zz[i,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
 				if (grid)
 					points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=0.5)
 				water.depth <- c(water.depth, x$data$station[[station.indices[i]]]$metadata$water.depth)
 			}
-			# draw the ground below the water
+                                        # draw the ground below the water
 			graph.bottom <- par("usr")[3]
 			bottom.x <- c(xx[1], xx, xx[length(xx)])
 			bottom.y <- c(graph.bottom, water.depth, graph.bottom)
@@ -85,7 +82,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 			legend("topright", title, bg="white", x.intersp=0, y.intersp=0.5)
 		}
 	}
-	
+
 	if (!inherits(x, "section")) stop("method is only for section objects")
 	oldpar <- par(no.readonly = TRUE)
 
@@ -93,7 +90,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 		num.stations <- length(x$data$station)
 		station.indices <- 1:num.stations
 	} else {
-		num.stations <- length(station.indices)		
+		num.stations <- length(station.indices)
 	}
 	if (num.stations < 2) stop("cannot plot a section containing fewer than 2 stations")
 	num.depths <- length(x$data$station[[station.indices[1]]]$data$pressure)
@@ -105,15 +102,13 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 		lon0 <- x$data$station[[station.indices[1]]]$metadata$longitude
 		for (ix in 1:num.stations) {
 			j <- station.indices[ix]
-			#cat("j=",j,"latlon:", x$data$station[[j]]$metadata$latitude," ", x$data$station[[j]]$metadata$longitude,"\n")
 			xx[ix] <- geod.dist(lat0, lon0,
-				x$data$station[[j]]$metadata$latitude, x$data$station[[j]]$metadata$longitude)
+                                x$data$station[[j]]$metadata$latitude, x$data$station[[j]]$metadata$longitude)
 		}
 	} else {
 		xx <- at
 	}
 	yy <- x$data$station[[station.indices[1]]]$data$pressure
-	#yy[1] <- yy[1] + 0.1 * (yy[2]-yy[1])
 	if (is.null(field)) {
 		par(mfrow=c(2,2))
 		par(mar=c(4.5,4,1,1))

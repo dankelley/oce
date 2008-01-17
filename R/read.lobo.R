@@ -1,7 +1,7 @@
 read.lobo <- function(file, cols=7) {
 	header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
 	d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
-	# find columns. BUG: assumes names don't change
+                                        # find columns. BUG: assumes names don't change
 	col.date         <- grep("date", header)
 	col.u            <- grep("current across", header)
 	col.v            <- grep("current along", header)
@@ -22,8 +22,8 @@ read.lobo <- function(file, cols=7) {
 		time <- as.POSIXlt(time)
 		data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
 		metadata <- list(header=header)
-		log.item <- list(time=c(Sys.time()), 
-			action=c(paste("created by read.lobo(\"",file,"\", cols=",cols,")",sep="")))
+		log.item <- list(time=c(Sys.time()),
+                         action=c(paste("created by read.lobo(\"",file,"\", cols=",cols,")",sep="")))
 		res <- list(data=data, metadata=metadata, processing.log=log.item)
 		class(res) = c("lobo", "oce")
 		res

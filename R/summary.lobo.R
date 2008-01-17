@@ -1,7 +1,6 @@
 summary.lobo <- function(object, ...)
 {
-  	if (!inherits(object, "lobo"))
-    	stop("method is only for lobo objects")
+  	if (!inherits(object, "lobo")) stop("method is only for lobo objects")
 	tr <- range(object$data$time)
 	cat(paste("Lobo data acquired over time range", tr[1], "to", tr[2], "\n"))
   	cat(sprintf(" %15s %12s %12s %12s %12s %12s\n", "ITEM         ", "min", "Q1", "median", "Q3", "max"));

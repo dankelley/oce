@@ -1,7 +1,6 @@
 summary.ctd <- function(object, ...)
 {
-  	if (!inherits(object, "ctd"))
-    	stop("method is only for ctd objects")
+  	if (!inherits(object, "ctd")) stop("method is only for ctd objects")
   	cat("CTD Profile\n")
 	if (!is.null(object$metadata$filename.orig))      cat("  Raw file:           \"",     object$metadata$filename.orig, "\"\n",sep="")
 	if (!is.null(object$metadata$system.upload.time)) cat(paste("  System upload time: ", object$metadata$system.upload.time, "\n"))
@@ -17,7 +16,7 @@ summary.ctd <- function(object, ...)
   		cat("  Deployed:           ")
 		print(object$date)
 	}
-  	#cat(" Start sec:", object$start.time, "\n")
+                                        #cat(" Start sec:", object$start.time, "\n")
 	if (!is.null(object$metadata$recovered))          cat("  Recovered:          ", object$metadata$recovery, "\n")
 	if (!is.null(object$metadata$water.depth))        cat("  Water depth:        ", object$metadata$water.depth, "\n")
   	cat("  No. of levels:      ", length(object$data$temperature),  "\n")
@@ -29,4 +28,4 @@ summary.ctd <- function(object, ...)
 	}
 	processing.log.summary(object)
 }
- 
+
