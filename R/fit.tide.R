@@ -1,45 +1,92 @@
-fit.tide <- function(sl, constituents="standard", rc=1)
+fit.tide <- function(sl, constituents, rc=1)
 {
 	debug <- !TRUE
 	if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
 	tc <- tide.constituents()
-                                        # The [-1] below trims Z0 (since R handles intercepts by itself)
-	if (length(constituents) == 1 && constituents == "standard") {
+    ntc <- length(tc$name)
+    name <- frequency <- compare <- NULL
+    indices <- NULL
+    if (missing(constituents)) {
 		name      <- tc$name[tc$standard][-1]
 		frequency <- tc$frequency[tc$standard][-1]
 		compare   <- tc$compare[tc$standard][-1]
-	} else {
-		iZ0 <- which(constituents == "Z0")
-		name <- constituents
-		if (length(iZ0)) name <- name[-iZ0]
-		nc <- length(name)
-		frequency <- vector("numeric", nc)
-		compare   <- vector("numeric", nc)
-		for (i in 1:nc) {
-			ic <- which(tc$name == constituents[i])
-			if (!length(ic)) stop("there is no tidal constituent named \"", constituents[i], "\"")
-			frequency[i] <- tc$frequency[ic]
-			compare[i] <- tc$compare[ic]
-		}
-	}
-	nc <- length(frequency)
+        indices <- c(indices, seq(1:ntc)[tc$standard])
+    } else {
+        nconst <- length(constituents)
+        for (i in 1:nconst) {
+            if (debug) cat("[", constituents[i], "]\n",sep="")
+            if (constituents[i] == "standard") { # must be first!
+                if (i != 1) stop("\"standard\" must occur first in constituents list")
+                name      <- tc$name[tc$standard][-1]
+                frequency <- tc$frequency[tc$standard][-1]
+                compare   <- tc$compare[tc$standard][-1]
+                indices <- c(indices, seq(1:ntc)[tc$standard])
+                ##cat("INDICES:", indices, "\n")
+            } else {
+                if (substr(constituents[i], 1, 1) == "-") {
+                    cc <- substr(constituents[i], 2, nchar(constituents[i]))
+                    delete <- which(tc$name == cc)
+                    if (length(delete) == 1) {
+                        indices <- indices[indices != delete]
+                    } else {
+                        stop("cannot delete constituent '", cc, "' from the list because it is not there")
+                    }
+                } else {
+                    add <- which(tc$name == constituents[i])
+                    if (length(add) == 1) {
+                        if (0 == sum(indices == add)) indices <- c(indices, add) # avoid duplicates
+                    } else {
+                        stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tide.constituents")
+                    }
+                }
+            }
+            if (debug) cat("<<", tc$name[indices], ">>\n")
+        }
+    }
+    indices <- indices[order(indices)]
+    tc2 <- list(name=tc$name[indices], frequency=tc$frequency[indices], compare=tc$compare[indices])
+
+    ##print(data.frame(tc2))
+
+    iZ0 <- which(tc2$name == "Z0")      # Remove Z0
+    name <- tc2$name
+    if (length(iZ0)) name <- name[-iZ0]
+    nc <- length(name)
+    frequency <- vector("numeric", nc)
+    compare   <- vector("numeric", nc)
+    for (i in 1:nc) {                   # Build up based on constituent names
+        ic <- which(tc$name == name[i])
+        if (!length(ic)) stop("there is no tidal constituent named \"", name[i], "\"")
+        frequency[i] <- tc$frequency[ic]
+        compare[i] <- tc$compare[ic]
+    }
+    ##cat("A:\n")
+    ##print(data.frame(name,frequency,compare))
+
+    nc <- length(frequency)
                                         # Check Rayleigh criterion
 	interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
-                                        #cat("interval:",interval,"\n")
+    ##cat("interval:",interval,"\n")
 	drop.term <- NULL
 	for (i in 1:nc) {
-		cc <- which(tc$name == compare[i])
-		cannot.fit <- (interval * abs(frequency[i]-tc$frequency[cc])) < rc
-                                        #cat("compare", name[i], "with", compare[i],":", cannot.fit,"\n")
-		if (cannot.fit)	drop.term <- c(drop.term, i)
+		cc <- which(tc2$name == compare[i])
+        if (length(cc)) {
+            cannot.fit <- (interval * abs(frequency[i]-tc2$frequency[cc])) < rc
+            ##cat("compare", name[i], "with", compare[i],":", cannot.fit,"\n")
+            if (cannot.fit)	drop.term <- c(drop.term, i)
+        }
 	}
-                                        #cat("DROP:",drop.term,"\n")
+    ##cat("DROP:",drop.term,"\n")
 	if (length(drop.term) > 0) {
 		cat("Record is too short to fit for constituents:", name[drop.term],"\n")
 		frequency <- frequency[-drop.term]
 		name      <- name[-drop.term]
 		compare   <- compare[-drop.term]
 	}
+
+    ##cat("FITTING TO\n")
+    ##print(data.frame(name,frequency))
+
 	nc <- length(frequency)
 	nt <- length(sl$data$eta)
 	x <- array(dim=c(nt, 2 * nc))
