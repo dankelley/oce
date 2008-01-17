@@ -3,7 +3,7 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 	debug <- !TRUE
 	if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
 	tc <- tide.constituents()
-	# The [-1] below trims Z0 (since R handles intercepts by itself)
+                                        # The [-1] below trims Z0 (since R handles intercepts by itself)
 	if (length(constituents) == 1 && constituents == "standard") {
 		name      <- tc$name[tc$standard][-1]
 		frequency <- tc$frequency[tc$standard][-1]
@@ -23,17 +23,17 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 		}
 	}
 	nc <- length(frequency)
-	# Check Rayleigh criterion
+                                        # Check Rayleigh criterion
 	interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
-	#cat("interval:",interval,"\n")
+                                        #cat("interval:",interval,"\n")
 	drop.term <- NULL
 	for (i in 1:nc) {
 		cc <- which(tc$name == compare[i])
 		cannot.fit <- (interval * abs(frequency[i]-tc$frequency[cc])) < rc
-		#cat("compare", name[i], "with", compare[i],":", cannot.fit,"\n")
+                                        #cat("compare", name[i], "with", compare[i],":", cannot.fit,"\n")
 		if (cannot.fit)	drop.term <- c(drop.term, i)
 	}
-	#cat("DROP:",drop.term,"\n")
+                                        #cat("DROP:",drop.term,"\n")
 	if (length(drop.term) > 0) {
 		cat("Record is too short to fit for constituents:", name[drop.term],"\n")
 		frequency <- frequency[-drop.term]
@@ -51,15 +51,15 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 		x[,2*i  ] <- cos(omega.t)
 	}
 	name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
-	dim(name2) <- c(2 * length(name), 1) 
+	dim(name2) <- c(2 * length(name), 1)
 	colnames(x) <- name2
 	eta <- sl$data$eta
 	model <- lm(eta ~ x, na.action=na.exclude)
 	coef  <- model$coefficients
 	p.all <- summary(model)$coefficients[,4]
 	amplitude <- phase <- p <-vector("numeric", length=1+nc)
-	# FIXME: decide whether to use Z0 or do mean/detrend as T_TIDE; it
-	# affects the loop indexing, something I've had mixed up before :-(
+                                        # FIXME: decide whether to use Z0 or do mean/detrend as T_TIDE; it
+                                        # affects the loop indexing, something I've had mixed up before :-(
 	amplitude[1] <- coef[1]
 	phase[1] <- 0
 	p[1] <- p.all[1]
@@ -76,11 +76,11 @@ fit.tide <- function(sl, constituents="standard", rc=1)
 	if (debug) cat("coef:", coef, "\n")
 	phase <- phase * 180 / pi
 	rval <- list(model=model,
-		name=c("Z0", name), 
-		frequency=c(0,frequency),
-		amplitude=amplitude,
-		phase=phase,
-		p=p)
+                 name=c("Z0", name),
+                 frequency=c(0,frequency),
+                 amplitude=amplitude,
+                 phase=phase,
+                 p=p)
 	class(rval) <- "tide"
 	rval
 }

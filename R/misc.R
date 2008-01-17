@@ -6,8 +6,8 @@ latlon.format <- function(lat, lon) {
 			rval[i] <- ""
 		else
 			rval[i] <- sprintf("%8.4f%1s %8.4f%1s",
-				abs(lat[i]), if (lat[i] > 0) "N" else "S",
-				abs(lon[i]), if (lon[i] > 0) "E" else "W")
+                               abs(lat[i]), if (lat[i] > 0) "N" else "S",
+                               abs(lon[i]), if (lon[i] > 0) "E" else "W")
 	}
 	rval
 }
@@ -16,29 +16,28 @@ lat.format <- function(lat) {
 	rval <- vector("character", n)
 	for (i in 1:n)
 		rval[i] <- if (is.na(lat[i])) ""
-			else sprintf("%8.4f%1s", abs(lat[i]), if (is.na(lat[i]) || lat[i] > 0) "N" else "S")
+        else sprintf("%8.4f%1s", abs(lat[i]), if (is.na(lat[i]) || lat[i] > 0) "N" else "S")
 	rval
 }
 lon.format <- function(lon) {
 	n <- length(lon)
 	rval <- vector("character", n)
 	for (i in 1:n)
-		rval[i] <- if (is.na(lon[i])) ""
-			else sprintf("%8.4f%1s", abs(lon[i]), if (is.na(lon[i]) || lon[i] > 0) "E" else "W")
+		rval[i] <- if (is.na(lon[i])) "" else sprintf("%8.4f%1s", abs(lon[i]), if (is.na(lon[i]) || lon[i] > 0) "E" else "W")
 	rval
 }
 
-GMT.offset.from.tz <- function(tz) { 
-	# Data are from
-	#   http://www.timeanddate.com/library/abbreviations/timezones/
-	# and hand-edited, so there may be errors.  Also, note that some of these
-	# contradict ... I've commented out conflicting definitions that I think
-	# will come up most rarely in use, but perhaps something better should
-	# be devised.  (Maybe this is not a problem.  Maybe only MEDS uses these,
-	# as opposed to GMT offsets, and maybe they only work in 5 zones, anyway...)
+GMT.offset.from.tz <- function(tz) {
+                                        # Data are from
+                                        #   http://www.timeanddate.com/library/abbreviations/timezones/
+                                        # and hand-edited, so there may be errors.  Also, note that some of these
+                                        # contradict ... I've commented out conflicting definitions that I think
+                                        # will come up most rarely in use, but perhaps something better should
+                                        # be devised.  (Maybe this is not a problem.  Maybe only MEDS uses these,
+                                        # as opposed to GMT offsets, and maybe they only work in 5 zones, anyway...)
 	if (tz == "A"   )  	return(-1) 		# Alpha Time Zone	Military	UTC + 1 hour
 	if (tz == "ACDT") 	return(-10.5)	# Australian Central Daylight Time	Australia	UTC + 10:30 hours
-	if (tz == "ACST")	return(-9.5)		# Australian Central Standard Time	Australia	UTC + 9:30 hours
+	if (tz == "ACST")	return(-9.5)	# Australian Central Standard Time	Australia	UTC + 9:30 hours
 	if (tz == "ADT" )  	return(3)		# Atlantic Daylight Time	North America	UTC - 3 hours
 	if (tz == "AEDT")	return(-11)		# Australian Eastern Daylight Time or Australian Eastern Summer Time	Australia	UTC + 11 hours
 	if (tz == "AEST")	return(-10)		# Australian Eastern Standard Time	Australia	UTC + 10 hours
@@ -50,24 +49,24 @@ GMT.offset.from.tz <- function(tz) {
 	if (tz == "B"   )	return(-2)		# Bravo Time Zone	Military	UTC + 2 hours
 	if (tz == "BST" )	return(-1)		# British Summer Time	Europe	UTC + 1 hour
 	if (tz == "C"   )	return(-3)		# Charlie Time Zone	Military	UTC + 3 hours
-##	if (tz == "CDT")	return(-10.5) 	# Central Daylight Time	Australia	UTC + 10:30 hours
+    ##	if (tz == "CDT")	return(-10.5) 	# Central Daylight Time	Australia	UTC + 10:30 hours
 	if (tz == "CDT" )	return(5)		# Central Daylight Time	North America	UTC - 5 hours
 	if (tz == "CEDT")	return(-2)		# Central European Daylight Time	Europe	UTC + 2 hours
 	if (tz == "CEST")	return(-2)		# Central European Summer Time	Europe	UTC + 2 hours
 	if (tz == "CET" )	return(-1)		# Central European Time	Europe	UTC + 1 hour
-##	if (tz == "CST" )  	return(-10.5)	# Central Summer Time	Australia	UTC + 10:30 hours
-##	if (tz == "CST" ) 	return(-9.5)		# Central Standard Time	Australia	UTC + 9:30 hours
+    ##	if (tz == "CST" )  	return(-10.5)	# Central Summer Time	Australia	UTC + 10:30 hours
+    ##	if (tz == "CST" ) 	return(-9.5)		# Central Standard Time	Australia	UTC + 9:30 hours
 	if (tz == "CST" )	return(6)		# Central Standard Time	North America	UTC - 6 hours
 	if (tz == "CXT" )	return(-7)  	# Christmas Island Time	Australia	UTC + 7 hours
 	if (tz == "D"   )	return(-4)		# Delta Time Zone	Military	UTC + 4 hours
 	if (tz == "E"   )	return(-5) 		# Echo Time Zone	Military	UTC + 5 hours
-#	if (tz == "EDT" )	return(-11)		# Eastern Daylight Time	Australia	UTC + 11 hours
+    ##	if (tz == "EDT" )	return(-11)		# Eastern Daylight Time	Australia	UTC + 11 hours
 	if (tz == "EDT" )	return(4)		# Eastern Daylight Time	North America	UTC - 4 hours
 	if (tz == "EEDT") 	return(-3)		# Eastern European Daylight Time	Europe	UTC + 3 hours
 	if (tz == "EEST") 	return(-3)		# Eastern European Summer Time	Europe	UTC + 3 hours
 	if (tz == "EET")	return(-2)		# Eastern European Time	Europe	UTC + 2 hours
-##	if (tz == "EST")	return(-11)		# Eastern Summer Time	Australia	UTC + 11 hours
-##	if (tz == "EST")	return(-10)		# Eastern Standard Time	Australia	UTC + 10 hours
+    ##	if (tz == "EST")	return(-11)		# Eastern Summer Time	Australia	UTC + 11 hours
+    ##	if (tz == "EST")	return(-10)		# Eastern Standard Time	Australia	UTC + 10 hours
 	if (tz == "EST" )	return(5)		# Eastern Standard Time	North America	UTC - 5 hours
 	if (tz == "F"   )	return(-6)		# Foxtrot Time Zone	Military	UTC + 6 hours
 	if (tz == "G"   )	return(-7)		# Golf Time Zone	Military	UTC + 7 hours
@@ -118,7 +117,7 @@ GMT.offset.from.tz <- function(tz) {
 	if (tz == "WEDT") 	return(-1)    	# Western European Daylight Time	Europe	UTC + 1 hour
 	if (tz == "WEST") 	return(-1)    	# Western European Summer Time	Europe	UTC + 1 hour
 	if (tz == "WET")	return(0)    	# Western European Time	Europe	UTC
-#	if (tz == "WST")	return(-9)    	# Western Summer Time	Australia	UTC + 9 hours
+    ## if (tz == "WST")	return(-9)    	# Western Summer Time	Australia	UTC + 9 hours
 	if (tz == "WST")	return(-8)    	# Western Standard Time	Australia	UTC + 8 hours
 	if (tz == "X"  )	return(11)   	# X-ray Time Zone	Military	UTC - 11 hours
 	if (tz == "Y"  )	return(12)   	# Yankee Time Zone	Military	UTC - 12 hours

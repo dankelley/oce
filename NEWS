@@ -1,4 +1,4 @@
-0.1.70	- oh, what the heck, reformat all R code in ESS way (only done to "ctd.decimate" so far, though
+0.1.70	- oh, what the heck, reformat all R code in ESS way (resume work at plot.TS)
 	- add tuktoyaktuk sea-level dataset
 	- add fit.tide(), summary.tide(), and plot.tide(), all preliminary versions
 	- establish a uniform form for objects created by "read" and "as"

@@ -17,32 +17,32 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 			keep <- rep(FALSE, n)
 			keep[parameters] <- TRUE
 		} else if (method == "downcast") {		# BUG: this is crude
-			# 1. despike to remove (rare) instrumental problems
+                                        # 1. despike to remove (rare) instrumental problems
 			x$data$pressure <- smooth(x$data$pressure,kind="3R")
-			# 2. keep only in-water data
+                                        # 2. keep only in-water data
 			keep <- (x$data$pressure > 0)
-			# 3. keep only descending data
+                                        # 3. keep only descending data
 			delta.p <- diff(x$data$pressure)
 			delta.p <- c(delta.p[1], delta.p) # to get right length
 			keep <- keep & (delta.p > 0)
 			if (FALSE) {
-				# 3old. trim the upcast and anything thereafter (ignore beginning and end)
+                                        # 3old. trim the upcast and anything thereafter (ignore beginning and end)
 				trim.top <- as.integer(0.1*n)
 				trim.bottom <- as.integer(0.9*n)
 				max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
 				max.location <- trim.top + max.spot
 				keep[max.location:n] <- FALSE
 			}
-			# 4. trim a possible near-surface equilibration phase
+                                        # 4. trim a possible near-surface equilibration phase
 			delta.p.sorted <- sort(delta.p)
 			if (!is.null(parameters)) {
 				dp.cutoff <- t.test(delta.p[keep], conf.level=parameters[1])$conf.int[1]
 			} else {
 				dp.cutoff <- delta.p.sorted[0.1*n]
 			}
-			# 4a. remove equilibration data that have very little drop speed
+                                        # 4a. remove equilibration data that have very little drop speed
 			keep[delta.p < dp.cutoff] <- FALSE
-			# 4b. remove more equilibration data by regression
+                                        # 4b. remove more equilibration data by regression
 			pp <- x$data$pressure[keep]
 			ss <- x$data$scan[keep]
 			equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x$data$scan)) < 0)
