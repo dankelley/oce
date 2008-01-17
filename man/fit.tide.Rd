@@ -57,11 +57,10 @@
 
   Once the constituent list is determined, \code{fit.tide} prunes the
   elements of the list by using the Rayleigh criterion, according to
-  which two constituents of frequencies \eqn{\omega_1}{f1} and
-  \eqn{\omega_2}{f2} cannot be resolved unless the time series spans a
-  time interval of at least
-  \eqn{rc/(\omega_1-\omega_2)}{rc/(o1-o2)}. The value \code{rc=1} is
-  sufficient for nominal resolution.
+  which two constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2}
+  cannot be resolved unless the time series spans a time interval of at
+  least \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields
+  nominal resolution.
 
   \strong{The text should include discussion of the (not yet performed)
   nodal correction treatement.}
@@ -70,8 +69,8 @@
 
 \note{
   
-  This function is not fully developed yet, and both the form of the call and the results of the
-  calculation may very well change.
+  This function is not fully developed yet, and both the form of the
+  call and the results of the calculation may very well change.
   
   There are also some bugs:
   
