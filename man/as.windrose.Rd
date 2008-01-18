@@ -28,7 +28,9 @@ library(oce)
 xcomp <- rnorm(360) + 1
 ycomp <- rnorm(360)
 wr <- as.windrose(xcomp, ycomp)
+par(mfrow=c(2,1))
 plot(wr)
+plot(wr, "fivenum")
 }
 \references{
 }
