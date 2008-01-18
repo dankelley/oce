@@ -2,8 +2,8 @@ as.windrose <- function(x, y, dtheta = 5)
 {
     dt <- dtheta * pi / 180
     dt2 <- dt / 2
-    xx < x - mean(x, na.rm=TRUE)
-    yy < y - mean(x, na.rm=TRUE)
+    xx <- x - mean(x, na.rm=TRUE)
+    yy <- y - mean(y, na.rm=TRUE)
     R <- sqrt(xx^2 + yy^2)
     angle <- atan2(yy, xx) + pi
     L <- max(R, na.rm=TRUE)
