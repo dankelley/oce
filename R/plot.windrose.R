@@ -6,9 +6,6 @@ plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), ...)
     t <- x$data$theta * pi / 180            # in radians
     dt <- t[2] - t[1]
     dt2 <- dt / 2
-    count.max <- max(x$data$count, na.rm=TRUE)
-    mean.max <- max(x$mean, na.rm=TRUE)
-    median.max <- max(x$data$fivenum[,3], na.rm=TRUE)
     plot.new()
     pin <- par("pin")
     xlim <- ylim <- c(-1, 1)
@@ -27,7 +24,7 @@ plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), ...)
         }
         title(paste("Counts (max ", max, ")", sep=""))
     } else if (type == "mean") {
-        max <- max(x$mean, na.rm=TRUE)
+        max <- max(x$data$mean, na.rm=TRUE)
         for (i in 1:nt) {
             r <- x$mean[i] / max
             ##cat("t=", t[i], " r=", r, "\n")
