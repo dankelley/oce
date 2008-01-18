@@ -2,8 +2,10 @@ as.windrose <- function(x, y, dtheta = 5)
 {
     dt <- dtheta * pi / 180
     dt2 <- dt / 2
-    R <- sqrt(x^2 + y^2)
-    angle <- atan2(y, x) + pi
+    xx < x - mean(x, na.rm=TRUE)
+    yy < y - mean(x, na.rm=TRUE)
+    R <- sqrt(xx^2 + yy^2)
+    angle <- atan2(yy, xx) + pi
     L <- max(R, na.rm=TRUE)
     nt <- 2 * pi / dt
     theta <- count <- mean <- median <- vector("numeric", nt)
