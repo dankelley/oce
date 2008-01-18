@@ -1,5 +1,4 @@
 0.1.70	- add as.windrose() and plot.windrose()
-	- reformat all R code in the recommended way
 	- add tuktoyaktuk sea-level dataset
 	- add fit.tide(), summary.tide(), and plot.tide(), all preliminary versions
 	- establish a uniform form for objects created by "read" and "as"
