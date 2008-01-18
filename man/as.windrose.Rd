@@ -13,20 +13,20 @@ This is analagous to a histogram, but with breaks being angles.
 }
 
 \value{An object of \code{\link[base]{class}} \code{"windrose"},
-  containing
+  containing the following items
   \item{data}{a \code{\link[base]{list}} containing
-	\item{n}{the number of x values}
-	\item{x.mean}{the mean of the x values}
-	\item{y.mean}{the mean of the y values}
-	\item{theta}{the central angle (in degrees) for the class}
-	\item{count}{the number of observations in this class}
-	\item{mean}{the mean of the observations in this class}
-	\item{fivenum}{the \code{\link{fivenum}} vector for observations in
+	\item{\code{n}}{the number of x values}
+	\item{\code{x.mean}}{the mean of the x values}
+	\item{\code{y.mean}}{the mean of the y values}
+	\item{\code{theta}}{the central angle (in degrees) for the class}
+	\item{\code{count}}{the number of observations in this class}
+	\item{\code{mean}}{the mean of the observations in this class}
+	\item{\code{fivenum}}{the \code{\link{fivenum}} vector for observations in
 	  this class (the min, the lower hinge, the median, the upper hinge, and
 	  the max)}
   }
   \item{metadata}{a list containing
-	\item{dtheta}{the size of the angle category, in degrees}
+	\item{\code{dtheta}}{the size of the angle category, in degrees}
   }
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
