@@ -20,14 +20,16 @@ as.windrose(x, y, dtheta = 5)
   containing
   \item{theta}{the central angle (in degrees) for the class}
   \item{count}{the number of observations in this class}
-  \item{mean}{the mean of observations in this class}
-  \item{median}{the median of observations in this class}
+  \item{mean}{the mean of the observations in this class}
+  \item{fivenum}{the \code{\link{fivenum}} vector for observations in
+  this class (the min, the lower hinge, the median, the upper hinge, and
+  the max)}
 }
 
 \seealso{Use \code{\link{plot.windrose}} to produce a summary plot.}
 \examples{
 library(oce)
-xcomp <- rnorm(360)
+xcomp <- rnorm(360) + 1
 ycomp <- rnorm(360)
 wr <- as.windrose(xcomp, ycomp)
 plot(wr)

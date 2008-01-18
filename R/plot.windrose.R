@@ -1,4 +1,4 @@
-plot.windrose <- function(x, type=c("count","mean", "median"), ...)
+plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), ...)
 {
     if (!inherits(x, "windrose")) stop("method is only for wind-rose objects")
     type <- match.arg(type)
@@ -8,7 +8,7 @@ plot.windrose <- function(x, type=c("count","mean", "median"), ...)
     dt2 <- dt / 2
     count.max <- max(x$count, na.rm=TRUE)
     mean.max <- max(x$mean, na.rm=TRUE)
-    median.max <- max(x$median, na.rm=TRUE)
+    median.max <- max(x$fivenum[,3], na.rm=TRUE)
     plot.new()
     pin <- par("pin")
     xlim <- ylim <- c(-1, 1)
@@ -37,17 +37,37 @@ plot.windrose <- function(x, type=c("count","mean", "median"), ...)
         }
         title(paste("Means (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
     } else if (type == "median") {
-        max <- max(x$median, na.rm=TRUE)
+        max <- max(x$fivenum[,3], na.rm=TRUE)
         for (i in 1:nt) {
-            r <- x$median[i] / max
+            r <- x$fivenum[i,3] / max
             ##cat("t=", t[i], " r=", r, "\n")
             xlist <- c(0, r * cos(t[i] - dt2), r * cos(t[i] + dt2), 0)
             ylist <- c(0, r * sin(t[i] - dt2), r * sin(t[i] + dt2), 0)
             polygon(xlist, ylist,col="red")
         }
         title(paste("Medians (max ", sprintf(max,fmt="%.3g"), ")", sep=""))
+    } else if (type == "fivenum") {
+        max <- max(x$fivenum[,5], na.rm=TRUE)
+        for (i in 1:nt) {
+            r <- x$fivenum[i,5] / max   # outside end
+            ##cat("t=", t[i], " r=", r, "\n")
+            xlist <- c(0, r * cos(t[i] - dt2), r * cos(t[i] + dt2), 0)
+            ylist <- c(0, r * sin(t[i] - dt2), r * sin(t[i] + dt2), 0)
+            polygon(xlist, ylist,col="red")
+            for (j in 1:4) {
+                r <- x$fivenum[i, j] / max
+                xlist <- c(r * cos(t[i] - dt2), r * cos(t[i] + dt2))
+                ylist <- c(r * sin(t[i] - dt2), r * sin(t[i] + dt2))
+                if (j==3)
+                    lines(xlist, ylist, col="blue", lwd=2, lty=1)
+                else
+                    lines(xlist, ylist, col="blue", lwd=1, lty=3)
+            }
+        }
+        title(paste("Fiveum (max ", sprintf(max,fmt="%.3g"), ")", sep=""))
     }
-    px <- cos(c(0, t))
-    py <- sin(c(0, t))
+    tt <- seq(0, 2*pi, length.out=100)
+    px <- cos(tt)
+    py <- sin(tt)
     lines(px, py, col="pink")
 }

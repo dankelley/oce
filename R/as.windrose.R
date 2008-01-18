@@ -1,22 +1,25 @@
-as.windrose <- function(x, y, dtheta = 5)
+as.windrose <- function(x, y, dtheta = 15)
 {
     dt <- dtheta * pi / 180
     dt2 <- dt / 2
-    xx <- x - mean(x, na.rm=TRUE)
-    yy <- y - mean(y, na.rm=TRUE)
-    R <- sqrt(xx^2 + yy^2)
-    angle <- atan2(yy, xx) + pi
+    R <- sqrt(x^2 + y^2)
+    angle <- atan2(y, x)
     L <- max(R, na.rm=TRUE)
     nt <- 2 * pi / dt
-    theta <- count <- mean <- median <- vector("numeric", nt)
+    theta <- count <- mean <- vector("numeric", nt)
+    fivenum <- matrix(0, nt, 5)
     for (i in 1:nt) {
         theta[i] <- i * dt
-        inside <- (angle < (theta[i] + dt2)) & (angle > (theta[i] - dt2))
+        if (theta[i] < pi)
+            inside <- (angle < (theta[i] + dt2)) & (angle > (theta[i] - dt2))
+        else {
+            inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((2*pi+angle) > (theta[i] - dt2))
+        }
         count[i] <- sum(inside)
-        mean[i] <- mean(R[inside], na.rm=TRUE)
-        median[i] <- median(R[inside])
+        mean[i] <- mean(inside, na.rm=TRUE)
+        fivenum[i,] <- fivenum(R[inside], na.rm=TRUE)
     }
-    rval <- list(theta=theta*180/pi, count=count, mean=mean, median=median)
+    rval <- list(theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
     class(rval) <- "windrose"
     rval
 }
