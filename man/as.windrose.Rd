@@ -1,19 +1,15 @@
 \name{as.windrose}
 \alias{as.windrose}
 \title{Create a windrose object}
-\description{
-  Create a wind-rose object, typically for plotting with plot.windrose().
-}
-\usage{
-as.windrose(x, y, dtheta = 5)
-}
+\description{Create a wind-rose object, typically for plotting with plot.windrose().}
+\usage{as.windrose(x, y, dtheta = 15)}
 \arguments{
   \item{x}{the x component of wind speed (or stress).}
   \item{y}{the y component of wind speed (or stress).}
   \item{dtheta}{the angle increment (in degrees) within which to classify the data}
 }
 \details{
-  This is analagous to a histogram, but with breaks being angles.
+This is analagous to a histogram, but with breaks being angles.
 }
 
 \value{An object of \code{\link[base]{class}} \code{"windrose"},

@@ -8,7 +8,7 @@
   \item{x}{A \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}
   \item{type}{the thing to be plotted, either the number of counts in
 	the angle interval, the mean of the values in the interval, the
-	median of the values, or a \code{\link{fivenum} representation of
+	median of the values, or a \code{\link{fivenum}} representation of
 	the values.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
