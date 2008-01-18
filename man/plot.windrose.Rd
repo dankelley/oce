@@ -1,60 +1,30 @@
-\name{plot.TS}
-\alias{plot.TS}
-\title{Plot temperature-salinity diagram for seawater (CTD) data}
-\description{
-  Plot temperature-salinity diagram for seawater (CTD) data.
-}
-\usage{
-plot.TS(x,
-	rho.levels = 6,
-	grid = FALSE,
-	col.grid = "lightgray",
-	rho1000 = FALSE,
-	col = par("col"),
-	col.rho = "darkgray",
-	cex.rho = 0.9*par("cex"),
-	cex = par("cex"),
-	pch = 20,
-	rotate.rho.labels = FALSE,
-	connect.points = FALSE,
-	\dots)
+\name{plot.windrose}
+\alias{plot.windrose}
+\title{Plot a wind rose diagram}
+\description{Plot a wind-rose diagram}
+\usage{plot.windrose(x, type=c("count","mean","median"), \dots)}
 }
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{rho.levels}{Either a list of density levels for which to draw 
-                    isopycnal lines, or a suggestion for the number of levels.
- 					In the latter case, \code{pretty()} is used to select levels.}
-  \item{grid}{a flag that can be set to \code{TRUE} to get a grid.}
-  \item{col.grid}{color of grid.}
-  \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
-  \item{col}{colour for symbols.}
-  \item{col.rho}{colour for isopycnal lines.}
-  \item{cex.rho}{size of isopycnal labels.}
-  \item{cex}{size of symbols on graph.}
-  \item{pch}{code for symbols on graph.}
-  \item{rotate.rho.labels}{if TRUE, labels in right-hand margin are written vertically}
-  \item{connect.points}{if TRUE, the points are connected with line segments, in sequence}
+  \item{x}{A \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}
+  \item{type}{the thing to be plotted, either the number of counts in
+    the angle interval, the mean of the values in the interval, or the
+    median of the values.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
-\details{
-  Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
-}
-\value{
-  None.
-}
 
-\seealso{
-  \code{\link{summary.ctd}} summarizes the information, while
-  \code{\link{read.ctd}} scans it from a file.
-}
+\details{Creates a wind-rose diagram.}
+
+\value{None.}
+
+\seealso{\code{\link{as.windrose}} creates a wind-rose object.}
+
 \examples{
 library(oce)
-# Plot TS diagram for a mid-Atlantic station at 36N
-# See demo(TS) for a section-spanning TS diagram
-data(a03)
-profile <- a03$data$station[[60]] # 124 stations in total
-plot.TS(profile)
-title("Mid-Atlantic at 36N")
+xcomp <- rnorm(360)
+ycomp <- rnorm(360)
+wr <- as.windrose(xcomp, ycomp)
+plot(wr)
 }
+
 \author{Dan Kelley}
 \keyword{misc}
