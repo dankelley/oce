@@ -22,7 +22,9 @@ This is analagous to a histogram, but with breaks being angles.
   the max)}
 }
 
-\seealso{Use \code{\link{plot.windrose}} to produce a summary plot.}
+\seealso{Use \code{\link{plot.windrose}} to produce a summary plot, and
+  \code{\link{summary.windrose}} to produce a numerical summary.}
+
 \examples{
 library(oce)
 xcomp <- rnorm(360) + 1

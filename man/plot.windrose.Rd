@@ -17,7 +17,8 @@
 
 %\value{None.}
 
-\seealso{\code{\link{as.windrose}} creates a wind-rose object.}
+\seealso{\code{\link{as.windrose}} creates a wind-rose object, and
+  \code{\link{summary.windrose}} to produce a numerical summary.}
 
 \examples{
 library(oce)
