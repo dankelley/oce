@@ -16,7 +16,7 @@ as.windrose <- function(x, y, dtheta = 15)
             inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((2*pi+angle) > (theta[i] - dt2))
         }
         count[i] <- sum(inside)
-        mean[i] <- mean(inside, na.rm=TRUE)
+        mean[i] <- mean(R[inside], na.rm=TRUE)
         fivenum[i,] <- fivenum(R[inside], na.rm=TRUE)
     }
     rval <- list(theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
