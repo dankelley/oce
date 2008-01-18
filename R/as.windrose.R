@@ -19,9 +19,9 @@ as.windrose <- function(x, y, dtheta = 15)
         mean[i] <- mean(R[inside], na.rm=TRUE)
         fivenum[i,] <- fivenum(R[inside], na.rm=TRUE)
     }
-    data <- list(theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
-    metadata <- list(n=length(x), dtheta=dtheta)
-    log <- list(time=c(Sys.time()), action=c("created by as.windrose()"))
+    data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
+    metadata <- list(dtheta=dtheta)
+    log <- list(time=c(Sys.time()), action=c("created by as.windrose(x,y,",dtheta,")"))
     res <- list(data=data, metadata=metadata, log=log)
     class(res) <- c("windrose", "oce")
     res
