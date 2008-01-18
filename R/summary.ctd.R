@@ -28,4 +28,3 @@ summary.ctd <- function(object, ...)
 	}
 	processing.log.summary(object)
 }
-
