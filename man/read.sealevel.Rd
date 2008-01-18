@@ -5,9 +5,7 @@
   Read a data file holding sea level data.
   BUG: the time vector assumes GMT, regardless of the GMT.offset value.
 }
-\usage{
-read.sealevel(file, debug=FALSE)
-}
+\usage{read.sealevel(file, debug=FALSE)}
 \arguments{
   \item{file}{A connection or a character string giving the name of the
     file to load.  See Details for the types of files that are recognized.}
