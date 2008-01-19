@@ -15,14 +15,13 @@ height.
 \section{Example}{
 \preformatted{
 data(tuktoyaktuk)
-par(mfrow=c(2,1))
-par(mar=c(3,4,3,2))
-plot(tuktoyaktuk$data$t, tuktoyaktuk$data$eta, type='l', ylab="Height [m]")
-legend("topright", legend="Tuktoyaktuk sea level (1975)")
+plot(tuktoyaktuk$data$t, tuktoyaktuk$data$eta, type='l',
+    ylab="Height [m]",ylim=c(-2,6))
+legend("topright", legend=c("Tuktoyaktuk (1975)","Detided"),
+    col=c("black","red"),lwd=1)
 tide <- fit.tide(tuktoyaktuk)
 detided <- tuktoyaktuk$data$eta - predict(tide$model)
-plot(tuktoyaktuk$data$t, detided, type='l',ylab="Height [m]")
-legend("topright", legend="After removal of tide")
+lines(tuktoyaktuk$data$t, detided, col="red")
 } % preformatted
 } % example
 
