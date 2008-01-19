@@ -9,7 +9,9 @@
 measurements made in 1975 at Tuktoyaktuk, Northwest Territories, Canada.
 
 The data set is a test contains 1584 points, some of which have NA for sea-level
-height.
+height.  The first point is at time 1975-07-06 23:00:00 GMT (16:00 MST,
+as given by Foreman).  The first 15 points have missing values for sea
+level.
 } % description
 
 \section{Example}{
