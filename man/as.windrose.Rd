@@ -8,12 +8,10 @@
   \item{y}{the y component of wind speed (or stress).}
   \item{dtheta}{the angle increment (in degrees) within which to classify the data}
 }
-\details{
-This is analagous to a histogram, but with breaks being angles.
-}
+\details{This is analagous to a histogram, but with breaks being angles.}
 
 \value{An object of \code{\link[base]{class}} \code{"windrose"},
-  which is a \code{\link[base]{list]} containing the following items
+  which is a \code{\link[base]{list}} containing the following items
   \item{data}{a \code{\link[base]{list}} containing
 	\item{\code{n}}{the number of x values}
 	\item{\code{x.mean}}{the mean of the x values}
@@ -25,9 +23,8 @@ This is analagous to a histogram, but with breaks being angles.
 	  this class (the min, the lower hinge, the median, the upper hinge, and
 	  the max)}
   }
-  \item{metadata}{a list containing
-	\item{\code{dtheta}}{the size of the angle category, in degrees}
-  }
+  \item{metadata}{a list containing \code{dtheta}, the size of the 
+      angle category, in degrees}
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
 

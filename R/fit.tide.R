@@ -1,17 +1,18 @@
 fit.tide <- function(sl, constituents, rc=1)
 {
-	debug <- !TRUE
-	if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
-	tc <- tide.constituents()
+    debug <- TRUE
+    if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
+    tc <- tide.constituents()
     ntc <- length(tc$name)
     name <- frequency <- compare <- NULL
     indices <- NULL
     if (missing(constituents)) {
-		name      <- tc$name[tc$standard][-1]
-		frequency <- tc$frequency[tc$standard][-1]
-		compare   <- tc$compare[tc$standard][-1]
-        indices <- c(indices, seq(1:ntc)[tc$standard])
-    } else {
+        name      <- tc$name[tc$standard][-1]
+        frequency <- tc$frequency[tc$standard][-1]
+        compare   <- tc$compare[tc$standard][-1]
+        indices   <- c(indices, seq(1:ntc)[tc$standard])
+    }
+    else {
         nconst <- length(constituents)
         for (i in 1:nconst) {
             if (debug) cat("[", constituents[i], "]\n",sep="")
@@ -22,22 +23,21 @@ fit.tide <- function(sl, constituents, rc=1)
                 compare   <- tc$compare[tc$standard][-1]
                 indices <- c(indices, seq(1:ntc)[tc$standard])
                 ##cat("INDICES:", indices, "\n")
-            } else {
+            }
+            else {
                 if (substr(constituents[i], 1, 1) == "-") {
                     cc <- substr(constituents[i], 2, nchar(constituents[i]))
                     delete <- which(tc$name == cc)
-                    if (length(delete) == 1) {
-                        indices <- indices[indices != delete]
-                    } else {
-                        stop("cannot delete constituent '", cc, "' from the list because it is not there")
-                    }
-                } else {
+                    if (length(delete) == 1) indices <- indices[indices != delete]
+                    else stop("cannot delete constituent '", cc, "' from the list because it is not there")
+                }
+                else {
                     add <- which(tc$name == constituents[i])
                     if (length(add) == 1) {
                         if (0 == sum(indices == add)) indices <- c(indices, add) # avoid duplicates
-                    } else {
-                        stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tide.constituents")
                     }
+                    else
+                        stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tide.constituents")
                 }
             }
             if (debug) cat("<<", tc$name[indices], ">>\n")
@@ -65,69 +65,87 @@ fit.tide <- function(sl, constituents, rc=1)
 
     nc <- length(frequency)
                                         # Check Rayleigh criterion
-	interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
+    interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
     ##cat("interval:",interval,"\n")
-	drop.term <- NULL
-	for (i in 1:nc) {
-		cc <- which(tc2$name == compare[i])
+    drop.term <- NULL
+    for (i in 1:nc) {
+        cc <- which(tc2$name == compare[i])
         if (length(cc)) {
             cannot.fit <- (interval * abs(frequency[i]-tc2$frequency[cc])) < rc
             ##cat("compare", name[i], "with", compare[i],":", cannot.fit,"\n")
             if (cannot.fit)	drop.term <- c(drop.term, i)
         }
-	}
+    }
     ##cat("DROP:",drop.term,"\n")
-	if (length(drop.term) > 0) {
-		cat("Record is too short to fit for constituents:", name[drop.term],"\n")
-		frequency <- frequency[-drop.term]
-		name      <- name[-drop.term]
-		compare   <- compare[-drop.term]
-	}
+    if (length(drop.term) > 0) {
+        cat("Record is too short to fit for constituents:", name[drop.term],"\n")
+        frequency <- frequency[-drop.term]
+        name      <- name[-drop.term]
+        compare   <- compare[-drop.term]
+    }
 
     ##cat("FITTING TO\n")
     ##print(data.frame(name,frequency))
 
-	nc <- length(frequency)
-	nt <- length(sl$data$eta)
-	x <- array(dim=c(nt, 2 * nc))
-	x[,1] <- rep(1, nt)
-	hour2pi <- (as.numeric((sl$data$t - sl$data$t[1]))) / 3600 * (2 * pi)
-	for (i in 1:nc) {
-		omega.t <- frequency[i] * hour2pi
-		x[,2*i-1] <- sin(omega.t)
-		x[,2*i  ] <- cos(omega.t)
-	}
-	name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
-	dim(name2) <- c(2 * length(name), 1)
-	colnames(x) <- name2
-	eta <- sl$data$eta
-	model <- lm(eta ~ x, na.action=na.exclude)
-	coef  <- model$coefficients
-	p.all <- summary(model)$coefficients[,4]
-	amplitude <- phase <- p <-vector("numeric", length=1+nc)
+    nc <- length(frequency)
+    nt <- length(sl$data$eta)
+    x <- array(dim=c(nt, 2 * nc))
+    x[,1] <- rep(1, nt)
+                                        # Offset time to GMT noon on first day of timeseries
+    ##delete    t <- sl$data$t
+    ##delete    hour2pi <- 2 * pi * as.numeric(sl$data$t) / 3600
+    #####first.day.noon <- as.POSIXlt(paste(substr(sl$data$t[1], 1, 10), "00:00:00"),tz="GMT")
+    #####hour.since.noon <- as.numeric(as.POSIXlt(sl$data$t, tz="GMT") - as.POSIXlt(first.day.noon, tz="GMT"))/3600
+    #####if (debug) {
+    #####cat("First point at time");print(as.POSIXlt(sl$data$t[1],  tz="GMT"))
+    #####cat("Noon on that day   ");print(as.POSIXlt(first.day.noon,tz="GMT"))
+    #####cat("hour.since.noon[1:12]:\n");print(hour.since.noon[1:12])
+    #####}
+
+    hour <- unclass(sl$data$t) / 3600 # seconds since 0000-01-01 00:00:00
+
+    #####hour2pi <- 2 * pi * hour.since.noon
+    hour2pi <- 2 * pi * hour
+
+    for (i in 1:nc) {
+        omega.t <- frequency[i] * hour2pi
+        x[,2*i-1] <- sin(omega.t)
+        x[,2*i  ] <- cos(omega.t)
+    }
+    name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
+    dim(name2) <- c(2 * length(name), 1)
+    colnames(x) <- name2
+    eta <- sl$data$eta
+    model <- lm(eta ~ x, na.action=na.exclude)
+    coef  <- model$coefficients
+    p.all <- summary(model)$coefficients[,4]
+    amplitude <- phase <- p <-vector("numeric", length=1+nc)
                                         # FIXME: decide whether to use Z0 or do mean/detrend as T_TIDE; it
                                         # affects the loop indexing, something I've had mixed up before :-(
-	amplitude[1] <- coef[1]
-	phase[1] <- 0
-	p[1] <- p.all[1]
-	for (i in 2:(nc+1)) {
-		is <- 2 * (i - 1)
-		ic <- 2 * (i - 1) + 1
-		s <- coef[is]
-		c <- coef[ic]
-		if (debug) cat("i=",i, "gives s=",s,"and c=",c,"\n")
-		amplitude[i] <- sqrt(s^2 + c^2)
-		phase[i]     <- atan2(c, s) # atan2(y,x) ... made into degrees later
-		p[i]         <- 0.5 * (p.all[is] + p.all[ic])
-	}
-	if (debug) cat("coef:", coef, "\n")
-	phase <- phase * 180 / pi
-	rval <- list(model=model,
+    amplitude[1] <- coef[1]
+    phase[1] <- 0
+    p[1] <- p.all[1]
+    for (i in 2:(nc+1)) {
+        is <- 2 * (i - 1)
+        ic <- 2 * (i - 1) + 1
+        s <- coef[is]                   # cos(phase)
+        c <- coef[ic]                   # -sin(phase)
+        if (debug) cat(name[i-1], "gives s=",s,"and c=",c,"\n")
+        amplitude[i] <- sqrt(s^2 + c^2)
+                                        # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
+                                        #                == s * sin(t) + c * cos(t)
+        phase[i]     <- atan2(c, s) # atan2(y,x) ... made into degrees later
+        p[i]         <- 0.5 * (p.all[is] + p.all[ic])
+    }
+    if (debug) cat("coef:", coef, "\n")
+    phase <- phase * 180 / pi
+    rval <- list(model=model,
                  name=c("Z0", name),
                  frequency=c(0,frequency),
                  amplitude=amplitude,
                  phase=phase,
                  p=p)
-	class(rval) <- "tide"
-	rval
+    class(rval) <- "tide"
+    rval
 }
+

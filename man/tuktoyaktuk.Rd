@@ -26,39 +26,18 @@ legend("topright", legend="After removal of tide")
 } % preformatted
 } % example
 
-\section{Test of fit.tide()}{
-
-\strong{Note: this is only a preliminary test, since \code{\link{fit.tide}} does
-not yet do nodal corrections, and also since the test dos not add the P1 and K2
-constituents, as in the Foreman and T\_TIDE cases.
-FIXME: delete this note when the code is finished.}
-
-The Foreman package produces M2 amplitude 0.4904m and phase 77.50 (Appendix 7.3),
-when P1 and K2 are added to the standard constituents.
-
-\strong{FIXME: add uncertainties from Foreman.}
-
-Under what one may assume are the same conditions, 
-the demonstration withing T\_TIDE gives
-0.4904m \eqn{\pm}{+/-} 0.037m and phase 77.70 \eqn{\pm}{+/-} 3.94.
-
-Under the same conditions, \code{\link{fit.tide}}
-produces 0.5007m and phase 112.22.
-
-\strong{FIXME: fix the above when the code is completed.}
-
-} % section
-
-\source{The data were extracted from the T\_TIDE dataset (which 
-Pawlowicz et al. (2002) copied from
+\source{The data were extracted from the \code{T\_TIDE} dataset (which 
+Pawlowicz et al. (2002) seems to have based on
 Appendix 7.2 of Foreman (1977), to build a test case),
 edited a bit to get the dates in a format that \R could
 scan, and put into a data file.  This file was then used to create
-\code{sealevel} object follows.
+\code{sealevel} object follows.  (The \code{T\_TIDE} dataset started at
+\code{06-Jul-1975 01:00:00}, but the correct GMT start time
+is \code{06-Jul-1975 23:00:00}.)
 \preformatted{
-tuk <- read.table("tuk_time_elev.dat",header=FALSE)
-offset <- 7 * 60 * 60 # MST, in the file, is GMT minus 7 hours
-t   <- as.POSIXlt(strptime(tuk$V1, "%d-%b-%Y %H:%M:%S")) + offset
+# NB. the data file is not supplied with the package
+tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
+t <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+22*3600, tz="GMT")
 eta <- tuk$V2
 tuktoyaktuk <- as.sealevel(eta=eta, t=t)
 #save(tuktoyaktuk, file="oce/data/tuktoyaktuk.rda")

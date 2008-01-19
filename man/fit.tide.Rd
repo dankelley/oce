@@ -67,21 +67,21 @@
 } % enumerate
 } % details
 
-\note{
-  
-  This function is not fully developed yet, and both the form of the
-  call and the results of the calculation may very well change.
-  
-  There are also some bugs:
+\section{Bugs}{
   
   \enumerate{
-	
-	\item{1.}{Nodal correction is not done.}
-	
-	\item{2.}{The reported \code{p} value may make no sense at all, and it might be removed in a
-	  future version of this function. Perhaps a significance level should be presented, as in the
-	  software developed by both Foreman and Pawlowicz.}
-	
+    \item{1.}{This function is not fully developed yet, and both the
+      form of the call and the results of the calculation may change.}
+    
+    \item{2.}{Nodal correction is not done.}
+    
+    \item{3.}{The reported \code{p} value may make no sense at all, and it might be removed in a
+      future version of this function. Perhaps a significance level should be presented, as in the
+      software developed by both Foreman and Pawlowicz.}
+    
+    \item{4.}{The phase is wrong, at least judging by the Foreman
+      test data set. (For M2, this gives -98.838841 but Foreman gives 77.70.)}
+    
   } % enumerate
   
 } % note
@@ -96,17 +96,51 @@
   \item{p}{a vector containing a sort of p value for each constituent.  This is calculated as the average of the p values for the sine() and cosine() portions used in fitting; whether it makes any sense is an open question.}
 }
 
-\seealso{\code{\link{tide.constituents}} provides the frequencies of the tidal constituents. \code{\link{summary.tide}} summarizes a "\code{tide}" object, and \code{\link{plot.tide}} plots one.}
+\section{Test with data(tuktoyaktuk)}{
+
+\strong{Note: this is only a preliminary test, since
+\code{\link{fit.tide}} does not yet do nodal corrections, and also since
+the test dos not add the P1 and K2 constituents, as in the Foreman and
+T\_TIDE cases.  FIXME: delete this note when the code is finished.}
+
+The Foreman package produces M2 amplitude 0.4904m and phase 77.70
+(Appendix 7.3), when P1 and K2 are added to the standard constituents.
+Under what one may assume are the same conditions, the demonstration
+within \code{T\_TIDE} gives 0.4904m \eqn{\pm}{+/-} 0.037m and phase
+77.70 \eqn{\pm}{+/-} 3.94.
+
+Under the same conditions, the test given below results in 
+amplitude 0.5007m and phase -98.838841.  
+\preformatted{
+  data(tuktoyaktuk)
+  tuk.tide <- fit.tide(tuktoyaktuk)
+  summary(tuk.tide)
+}
+
+} % section
+
+\seealso{\code{\link{summary.tide}} summarizes a "\code{tide}" object,
+  and \code{\link{plot.tide}} plots one.  As for the input, sealevel
+  objects may be created with \code{\link{as.sealevel}} or
+  \code{\link{read.sealevel}}.  See notes at \code{\link{tuktoyaktuk}},
+  which is test data set.
+}
 
 \examples{
 library(oce)
-# Artificial M2 tide with phase 45 degrees
-hour <- seq(0, 24 * 365)
+# Fake a M2 tide with phase 45 degrees
+hour <- seq(0, 24 * 100)
 eta <- 1 + 2 * sin(0.08051140 * 2 * pi * hour + pi/4)
 sealevel <- as.sealevel(eta)
 tide <- fit.tide(sealevel)
 summary(tide)
 plot(tide)
+
+# The demonstration time series from Foreman (1977),
+# also used in T_TIDE (Pawlowicz, 2002).
+data(tuktoyaktuk)
+tuk.tide <- fit.tide(tuktoyaktuk)
+summary(tuk.tide)
 }
 \references{
   Foreman, M. G. G., 1977.

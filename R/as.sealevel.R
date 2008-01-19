@@ -14,17 +14,19 @@ as.sealevel <- function(
                         reference.offset=NA,
                         reference.code=NA,
                         sampling.interval=NA)
-{    
+{
     if (missing(eta)) stop("must supply sealevel height, eta, in metres")
     n <- length(eta)
     if (missing(t)) {
-                                        # construct hourly, faked to be the year 0.
-        start <- as.POSIXct(paste(substr(Sys.Date(), 1, 4), "-01-01", sep=""),"GMT")
-        t <- start + seq(0, n - 1, 1) * 3600
-        if (is.na(GMT.offset)) GMT.offset <- 0
+                                        # construct hourly from time "zero"
+        start <- as.POSIXct("0000-01-01 00:00:00", tz="GMT")
+        t <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="GMT")
+        if (is.na(GMT.offset)) GMT.offset <- 0 # FIXME: do I want to do this?
+    } else {
+        t <- as.POSIXct(t, tz="GMT") # FIXME: should this be GMT?
     }
     data <- data.frame(t=t, eta=eta)
-    if (is.na(sampling.interval)) sampling.interval <- 
+    if (is.na(sampling.interval)) sampling.interval <-
 	metadata <- list(header=header,
                          year=year,
                          station.number=station.number,
