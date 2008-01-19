@@ -3,11 +3,13 @@
 \title{Summarize a tide object}
 \description{Summarize a tide object.}
 \usage{
-\method{summary}{tide}(object, p=0, \dots)
+\method{summary}{tide}(object, p=0, constituent, \dots)
 }
 \arguments{
   \item{object}{a \code{tide} object, as created by \code{\link{fit.tide}}.}
-  \item{p}{the minimum p value for the display of an individual coefficient.  The default causes all coefficients to be shown.}
+  \item{p}{the minimum p value for the display of an individual
+    coefficient.  The default causes all coefficients to be shown.}
+  \item{constituent}{optional name of constituent on which to focus.}
   \item{\dots}{passed to children.}
 }
 \details{
