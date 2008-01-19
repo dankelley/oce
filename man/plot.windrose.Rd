@@ -3,7 +3,7 @@
 \title{Plot a wind rose diagram}
 \description{Plot a wind-rose diagram}
 \usage{plot.windrose(x, type=c("count","mean","median","fivenum"), col, \dots)}
-}
+
 \arguments{
   \item{x}{a \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}
   \item{type}{the thing to be plotted, either the number of counts in
