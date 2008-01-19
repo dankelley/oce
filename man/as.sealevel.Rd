@@ -57,13 +57,13 @@ as.sealevel(eta,
   details, see \code{\link{read.sealevel}}).}
 
 \seealso{
-\code{\link{read.sealevel}} reads data,
-\code{\link{summary.sealevel}} summarizes the information.
-Use \code{\link{plot.sealevel}} to produce a summary plot, and use
-\code{\link{fit.tide}} to fit a tidal model to the data.
-Sample sea-level data sets are provided with \code{data(\link{sealevel})}
-and \code{data(\link{tuktoyaktuk})}.}
+  \code{\link{read.sealevel}} reads data, \code{\link{summary.sealevel}}
+  summarizes the information.  Use \code{\link{plot.sealevel}} to
+  produce a summary plot, and use \code{\link{fit.tide}} to fit a tidal
+  model to the data.  Sample sea-level data sets are provided with
+  \code{data(\link{sealevel})} and \code{data(\link{tuktoyaktuk})}.
 }
+
 \examples{
 library(oce)
 
