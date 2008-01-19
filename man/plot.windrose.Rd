@@ -5,7 +5,7 @@
 \usage{plot.windrose(x, type=c("count","mean","median","fivenum"), col, \dots)}
 }
 \arguments{
-  \item{x}{A \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}
+  \item{x}{a \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}
   \item{type}{the thing to be plotted, either the number of counts in
 	the angle interval, the mean of the values in the interval, the
 	median of the values, or a \code{\link{fivenum}} representation of
@@ -27,7 +27,7 @@
 %\value{None.}
 
 \seealso{\code{\link{as.windrose}} creates a wind-rose object, and
-  \code{\link{summary.windrose}} to produce a numerical summary.}
+  \code{\link{summary.windrose}} produces a numerical summary.}
 
 \examples{
 library(oce)

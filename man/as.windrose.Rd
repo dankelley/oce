@@ -13,7 +13,7 @@ This is analagous to a histogram, but with breaks being angles.
 }
 
 \value{An object of \code{\link[base]{class}} \code{"windrose"},
-  containing the following items
+  which is a \code{\link[base]{list]} containing the following items
   \item{data}{a \code{\link[base]{list}} containing
 	\item{\code{n}}{the number of x values}
 	\item{\code{x.mean}}{the mean of the x values}
