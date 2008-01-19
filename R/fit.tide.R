@@ -104,6 +104,15 @@ fit.tide <- function(sl, constituents, rc=1)
 
     hour <- unclass(sl$data$t) / 3600 # seconds since 0000-01-01 00:00:00
 
+    if (TRUE) {                         # Correct for fact that R puts t=0 at 1970
+        zero <- unclass(as.POSIXct("0000-01-01 00:00:00", tz="GMT")) / 3600
+        cat("zero");print(zero)
+        cat("first few hour:");print(hour[1:3])
+        hour <- hour + zero
+        cat("first few hour:");print(hour[1:3])
+        ## stop()
+    }
+
     #####hour2pi <- 2 * pi * hour.since.noon
     hour2pi <- 2 * pi * hour
 
