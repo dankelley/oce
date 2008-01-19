@@ -6,6 +6,7 @@ plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  
     t <- x$data$theta * pi / 180            # in radians
     dt <- t[2] - t[1]
     dt2 <- dt / 2
+                                        # Plot setup
     plot.new()
     pin <- par("pin")
     xlim <- ylim <- c(-1, 1)
@@ -13,9 +14,12 @@ plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  
         xlim <- (pin[1]/pin[2]) * xlim
     else ylim <- (pin[2]/pin[1]) * ylim
     plot.window(xlim, ylim, "", asp = 1)
-                                        # Draw circle and radii
     if (missing(col))
         col <- c("red", "pink", "blue", "darkgray")
+    else {
+        if (length(col) != 4) stop("'col' should be a list of 4 colours")
+    }
+                                        # Draw circle and radii
     tt <- seq(0, 2*pi, length.out=100)
     px <- cos(tt)
     py <- sin(tt)
