@@ -2,11 +2,19 @@ fit.tide <- function(sl, constituents, rc=1)
 {
     debug <- TRUE
     if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
-#    tc <- get("tideconst", pos=globalenv())
-    data(tidesetup)
-    tc <- tideconst
+
+    ###
+    ##    load(paste(system.file(package="oce"),"data/tidesetup.rda",sep="/"), pos=globalenv())
+    ##    load(paste(system.file(package="oce"),"data/tidesetup.rda",sep="/"))
+    ###
+    data("tidesetup")
+    tc <- get("tideconst", pos=globalenv())
+    ###
+
     ntc <- length(tc$name)
-print(tc)
+
+    print(tc)
+
     name <- frequency <- compare <- NULL
     indices <- NULL
     if (missing(constituents)) {
