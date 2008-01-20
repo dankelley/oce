@@ -30,12 +30,13 @@ length(name) <- nconst
 length(frequency) <- nconst
 length(compare) <- nconst
 const <- data.frame(name=name, frequency=frequency, compare=compare, standard=compare!="")
-rownames(const) <- name
+##rownames(const) <- name
 
 stopifnot(const$name[1] == "Z0")
 stopifnot(const$name[2] == "SA")
 stopifnot(const$compare[2] == "SSA")
-stopifnot(const["M2",2] == 1/12.42060119816049912345)
+i <- which(const$name == "M2")
+stopifnot(const[i,2] == 1/12.42060119816049912345)
 
 if (debug > -1) {
     cat("\n")
