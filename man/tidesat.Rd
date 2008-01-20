@@ -1,4 +1,4 @@
-\name{tidesetup}
+\name{tidesat}
 
 \docType{data}
 
