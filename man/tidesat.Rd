@@ -2,7 +2,7 @@
 
 \docType{data}
 
-\alias{tidesetup}
+\alias{tidesat}
 
 \title{Tidal constituent information}
 
