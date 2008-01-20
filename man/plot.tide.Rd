@@ -1,12 +1,13 @@
 \name{plot.tide}
+
 \alias{plot.tide}
+
 \title{Plot a tidal fit}
-\description{
-Plot a summary diagram for a tidal fit.
-}
-\usage{
-\method{plot}{tide}(x, label.if=NULL, style=c("staircase", "spikes"), log="", ...)
-}
+
+\description{Plot a summary diagram for a tidal fit.}
+
+\usage{\method{plot}{tide}(x, label.if=NULL, style=c("staircase", "spikes"), log="", ...)}
+
 \arguments{
   \item{x}{a \code{tide} object, as created by \code{\link{fit.tide}}.}
   \item{label.if}{if NULL, the function will indicate some particular tidal constituents; if a value is provided, labels will be given for any constituent with amplitude exceeding the value provided.}
@@ -14,21 +15,21 @@ Plot a summary diagram for a tidal fit.
   \item{log}{if set to "\code{x}", the frequency axis will be logarithmic.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
-\details{
-Creates a plot for a "\code{tide}" object.
-}
-\value{
-  None.
-}
+
+\details{Creates a plot for a "\code{tide}" object.}
+
+%\value{ None.}
+
 \seealso{
 \code{\link{fit.tide}} fits a "\code{tide}" object, and
 \code{\link{summary.tide}} summarizes such an object.
 }
+
 \examples{
 library(oce)
-data(sealevel)
-# tide <- fit.tide(sealevel)
-# plot(tide)
+data(sealevel.hal)
+tide <- fit.tide(sealevel.hal)
+plot(tide)
 }
 %\references{}
 \author{Dan Kelley}

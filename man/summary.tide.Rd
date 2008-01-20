@@ -2,9 +2,7 @@
 \alias{summary.tide}
 \title{Summarize a tide object}
 \description{Summarize a tide object.}
-\usage{
-\method{summary}{tide}(object, p=0, constituent, \dots)
-}
+\usage{\method{summary}{tide}(object, p=0, constituent, \dots)}
 \arguments{
   \item{object}{a \code{tide} object, as created by \code{\link{fit.tide}}.}
   \item{p}{the minimum p value for the display of an individual
@@ -30,8 +28,9 @@ which is a data frame containing the following.
 }
 \examples{
 library(oce)
-data(sealevel)
-tide <- fit.tide(sealevel)
+# Halifax data
+data(sealevel.hal)
+tide <- fit.tide(sealevel.hal)
 summary(tide)
 }
 \author{Dan Kelley}
