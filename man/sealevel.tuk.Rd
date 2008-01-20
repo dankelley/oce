@@ -30,6 +30,8 @@ lines(tuktoyaktuk$data$t, detided, col="red")
 } % preformatted
 } % example
 
+\usage{data(sealevel.tuk)}
+
 \source{The data were extracted from the \code{T_TIDE} dataset (which
   Pawlowicz et al. (2002) seems to have based on Appendix 7.2 of Foreman
   (1977), to build a test case), edited a bit to get the dates in a
