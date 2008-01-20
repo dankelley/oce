@@ -29,7 +29,7 @@ nconst <- nconst - 1
 length(name) <- nconst
 length(frequency) <- nconst
 length(compare) <- nconst
-const <- data.frame(name=name, frequency=frequency, compare=compare, standard=compare!="")
+const <- data.frame(name=name, frequency=frequency, compare=compare, standard=compare!="", stringsAsFactors=FALSE)
 ##rownames(const) <- name
 
 stopifnot(const$name[1] == "Z0")

@@ -55,7 +55,6 @@ print(tc)
     iZ0 <- which(tc2$name == "Z0")      # Remove Z0
     name <- tc2$name
     print(name)
-    stop()
     if (length(iZ0)) name <- name[-iZ0]
     nc <- length(name)
     frequency <- vector("numeric", nc)
