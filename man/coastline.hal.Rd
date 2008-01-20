@@ -1,10 +1,10 @@
-\name{coastline.halifax}
+\name{coastline.hal}
 \docType{data}
-\alias{coastline.halifax}
+\alias{coastline.hal}
 \title{Sample coastline data set (Halifax Harbour)}
 \description{A sample coastline dataset, showing Halifax Harbour.
 The little island at about 44.64N is visible outside the author's window.}
-\usage{data(coastline.halifax)}
+\usage{data(coastline.hal)}
 \source{}
 \references{\url{http://www.ngdc.noaa.gov/mgg_coastline/}}
 \seealso{Coastlines may be read with
