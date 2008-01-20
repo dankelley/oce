@@ -1,6 +1,9 @@
-\name{tuktoyaktuk}
+\name{sealevel.tuk}
+
 \docType{data}
-\alias{tuktoyaktuk}
+
+\alias{sealevel.tuk}
+
 \title{Sample sea-level data set, from Tuktoyaktuk (1975)}
 
 \description{This sea-level dataset is provided with in Appendix 7.2 of
@@ -15,12 +18,12 @@
 } % description
 
 \section{Example}{
-\preformatted{
+  \preformatted{
 data(tuktoyaktuk)
 plot(tuktoyaktuk$data$t, tuktoyaktuk$data$eta, type='l',
-    ylab="Height [m]",ylim=c(-2,6))
+  ylab="Height [m]",ylim=c(-2,6))
 legend("topright", legend=c("Tuktoyaktuk (1975)","Detided"),
-    col=c("black","red"),lwd=1)
+  col=c("black","red"),lwd=1)
 tide <- fit.tide(tuktoyaktuk)
 detided <- tuktoyaktuk$data$eta - predict(tide$model)
 lines(tuktoyaktuk$data$t, detided, col="red")
@@ -34,6 +37,7 @@ lines(tuktoyaktuk$data$t, detided, col="red")
   then used to create \code{sealevel} object follows.  (The
   \code{T\_TIDE} dataset started at \code{06-Jul-1975 01:00:00}, but the
   correct GMT start time is \code{06-Jul-1975 23:00:00}.)
+
 \preformatted{
 # NB. the data file is not supplied with the package
 tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
@@ -45,14 +49,16 @@ sealevel.tuk <- as.sealevel(eta=eta, t=t)
 } % source
 
 \references{
-Foreman, M. G. G., 1977.
-Manual for tidal heights analysis and prediction.
-Pacific Marine Science Report 77-10,
-Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 58pp.
+  Foreman, M. G. G., 1977.
+  Manual for tidal heights analysis and prediction.
+  Pacific Marine Science Report 77-10,
+  Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 58pp.
 
-Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
-Classical tidal harmonic analysis including error estimates in MATLAB using T\_TIDE.
-Computers and Geosciences, 28, 929-937.
+  Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
+  Classical tidal harmonic analysis including error estimates in MATLAB using T\_TIDE.
+  Computers and Geosciences, 28, 929-937.
 }
+
 \author{Dan Kelley, after data provided in Foreman's (1977) Appendix 7.2.}
+
 \keyword{misc}
