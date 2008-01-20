@@ -52,9 +52,9 @@
 library(oce)
 data(sealevel.hal)
 # Overall plot
-plot(sealevel) 
+plot(sealevel.hal)
 # Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
-plot(sealevel, focus.time=c("2003-09-23","2003-10-05"))
+plot(sealevel.hal, focus.time=c("2003-09-23","2003-10-05"))
 abline(v=as.POSIXct("2003-09-28 23:30:00"), col="red", lty="dotted")
 mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-28 23:30:00"), col="red")
 }

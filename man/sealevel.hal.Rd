@@ -1,8 +1,8 @@
-\name{sealevel}
+\name{sealevel.hal}
 
 \docType{data}
 
-\alias{sealevel}
+\alias{sealevel.hal}
 
 \title{Sample sea-level data set}
 
