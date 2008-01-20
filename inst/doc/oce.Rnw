@@ -319,8 +319,8 @@ is to highlight how this package can be used with real-world data.
 The commands
 <<label=sectionplot,include=FALSE>>=
 data(section)
-data(coastline.halifax)
-plot(section, coastline=coastline.halifax)
+data(coastline.hal)
+plot(section, coastline=coastline.hal)
 @
 will plot a summary diagram (Figure~\ref{fig:section}) containing sections of
 $T$, $S$, and $\sigma_\theta$, along with a chart indicating station
@@ -427,8 +427,8 @@ The commands
 <<label=sealevelplot,include=FALSE>>=
 library(oce)
 #sealevel <- read.oce("../../tests/h275a96.dat")
-data(sealevel)
-plot(sealevel)
+data(sealevel.hal)
+plot(sealevel.hal)
 @
 load and graph a build-in dataset of sea-level timeseries. The result, shown in
 Figure~\ref{fig:sealevel}, is a four-panel plot. The top panel is a timeseries
@@ -467,13 +467,13 @@ Hurricane Juan.
 
 <<label=tideplot,include=FALSE>>=
 library(oce)
-data(sealevel)
-tide <- fit.tide(sealevel)
+data(sealevel.hal)
+tide <- fit.tide(sealevel.hal)
 days <- 15 # focus on these days at end of series
-n <- length(sealevel$data$eta)
+n <- length(sealevel.hal$data$eta)
 i <- seq(n-24*days, n)
-t   <- sealevel$data$t[i]
-eta <- sealevel$data$eta[i]
+t   <- sealevel.hal$data$t[i]
+eta <- sealevel.hal$data$eta[i]
 eta.pred <- predict(tide$model)[i]
 plot(t, eta, type="l", ylim=c(-0.5,3))
 abline(h=0, col="pink")
@@ -643,8 +643,8 @@ The author can verify that the strongest winds occurred a bit after midnight -- 
 he moved to a room without windows, in fear of flying glass.
 <<>>=
 library(oce)
-data(sealevel)
-plot(sealevel, focus.time=c("2003-09-23","2003-10-05"))
+data(sealevel.hal)
+plot(sealevel.hal, focus.time=c("2003-09-23","2003-10-05"))
 abline(v=as.POSIXct("2003-09-28 23:30:00"), col="red", lty="dotted")
 mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-28 23:30:00"), col="red")
 @
@@ -654,8 +654,8 @@ Notice the use of \verb@(object)$data$(item)@ here.  All \verb@oce@ objects are 
 and all of them contain a \verb@data@ element of a similar form to this.
 <<>>=
 library(oce)
-data(sealevel)
-spectrum(sealevel$data$eta, spans=c(3,7))
+data(sealevel.hal)
+spectrum(sealevel.hal$data$eta, spans=c(3,7))
 abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @
