@@ -2,7 +2,8 @@ fit.tide <- function(sl, constituents, rc=1)
 {
     debug <- TRUE
     if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
-    get("tidesetup", pos=globalenv())
+    x<-get("a03", pos=globalenv())
+    get("tideconst", pos=globalenv())
     tc <- tideconst
     ntc <- length(tc$name)
     name <- frequency <- compare <- NULL
