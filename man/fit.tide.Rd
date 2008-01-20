@@ -96,7 +96,7 @@
   \item{p}{a vector containing a sort of p value for each constituent.  This is calculated as the average of the p values for the sine() and cosine() portions used in fitting; whether it makes any sense is an open question.}
 }
 
-\section{Test with data(tuktoyaktuk)}{
+\section{Test with data(sealevel.tuk)}{
 
 \strong{Note: this is only a preliminary test, since
 \code{\link{fit.tide}} does not yet do nodal corrections, and also since
@@ -112,8 +112,8 @@ within \code{T\_TIDE} gives 0.4904m \eqn{\pm}{+/-} 0.037m and phase
 Under the same conditions, the test given below results in 
 amplitude 0.5007m and phase -98.838841.  
 \preformatted{
-  data(tuktoyaktuk)
-  tuk.tide <- fit.tide(tuktoyaktuk)
+  data(sealevel.tuk)
+  tuk.tide <- fit.tide(sealevel.tuk)
   summary(tuk.tide)
 }
 
@@ -122,7 +122,7 @@ amplitude 0.5007m and phase -98.838841.
 \seealso{\code{\link{summary.tide}} summarizes a "\code{tide}" object,
   and \code{\link{plot.tide}} plots one.  As for the input, sealevel
   objects may be created with \code{\link{as.sealevel}} or
-  \code{\link{read.sealevel}}.  See notes at \code{\link{tuktoyaktuk}},
+  \code{\link{read.sealevel}}.  See notes at \code{\link{sealevel.tuk}},
   which is test data set.
 }
 
@@ -138,8 +138,8 @@ plot(tide)
 
 # The demonstration time series from Foreman (1977),
 # also used in T_TIDE (Pawlowicz, 2002).
-data(tuktoyaktuk)
-tuk.tide <- fit.tide(tuktoyaktuk)
+data(sealevel.tuk)
+tuk.tide <- fit.tide(sealevel.tuk)
 summary(tuk.tide)
 }
 \references{

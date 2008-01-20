@@ -19,14 +19,14 @@
 
 \section{Example}{
   \preformatted{
-data(tuktoyaktuk)
-plot(tuktoyaktuk$data$t, tuktoyaktuk$data$eta, type='l',
+data(sealevel.tuk)
+plot(sealevel.tuk$data$t, sealevel.tuk$data$eta, type='l',
   ylab="Height [m]",ylim=c(-2,6))
 legend("topright", legend=c("Tuktoyaktuk (1975)","Detided"),
   col=c("black","red"),lwd=1)
-tide <- fit.tide(tuktoyaktuk)
-detided <- tuktoyaktuk$data$eta - predict(tide$model)
-lines(tuktoyaktuk$data$t, detided, col="red")
+tide <- fit.tide(sealevel.tuk)
+detided <- sealevel.tuk$data$eta - predict(tide$model)
+lines(sealevel.tuk$data$t, detided, col="red")
 } % preformatted
 } % example
 
@@ -46,7 +46,7 @@ tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
 t <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+22*3600, tz="GMT")
 eta <- tuk$V2
 sealevel.tuk <- as.sealevel(eta=eta, t=t)
-#save(sealevel.tukt, file="oce/data/sealevel.tuk.rda")
+#save(sealevel.tuk, file="oce/data/sealevel.tuk.rda")
 } % preformatted
 } % source
 
