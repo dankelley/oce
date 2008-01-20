@@ -2,10 +2,11 @@ fit.tide <- function(sl, constituents, rc=1)
 {
     debug <- TRUE
     if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
-    x<-get("a03", pos=globalenv())
-    get("tideconst", pos=globalenv())
+#    tc <- get("tideconst", pos=globalenv())
+    data(tidesetup)
     tc <- tideconst
     ntc <- length(tc$name)
+print(tc)
     name <- frequency <- compare <- NULL
     indices <- NULL
     if (missing(constituents)) {
@@ -13,6 +14,7 @@ fit.tide <- function(sl, constituents, rc=1)
         frequency <- tc$frequency[tc$standard][-1]
         compare   <- tc$compare[tc$standard][-1]
         indices   <- c(indices, seq(1:ntc)[tc$standard])
+        print(name);
     }
     else {
         nconst <- length(constituents)
@@ -52,6 +54,8 @@ fit.tide <- function(sl, constituents, rc=1)
 
     iZ0 <- which(tc2$name == "Z0")      # Remove Z0
     name <- tc2$name
+    print(name)
+    stop()
     if (length(iZ0)) name <- name[-iZ0]
     nc <- length(name)
     frequency <- vector("numeric", nc)
