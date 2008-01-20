@@ -1,4 +1,4 @@
 library(oce);
-data(sealevel)
-summary(sealevel)
-plot(sealevel)
+data(sealevel.hal)
+summary(sealevel.hal)
+plot(sealevel.hal)
