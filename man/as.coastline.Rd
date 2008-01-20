@@ -28,7 +28,7 @@ it is sufficient to just use \code{plot} for coastline objects.
 d<-read.table("bbasin.dat",header=FALSE) # dataset not provided with oce
 HH <-c(1645:2105) # main outline of Halifax Harbour
 GI <-c(4866:4885) # George's Island
-coastline.halifax<-as.coastline(latitude[c(HH,GI)],longitude[c(HH,GI)]-360)
+coastline.hal <- as.coastline(latitude[c(HH,GI)],longitude[c(HH,GI)]-360)
 }
 }
 \references{

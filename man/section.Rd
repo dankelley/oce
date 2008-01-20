@@ -36,8 +36,8 @@ stn15 <- processing.log.append(stn15, "DEK/typo - add 1 to lat")
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)
 section$metadata$section.id <- "Halifax-Harbour-2003-oct"
 section <- section.grid(section, p=p, method="boxcar")
-data(coastline.halifax)
-plot(section, coastline=coastline.halifax, grid=TRUE)
+data(coastline.hal)
+plot(section, coastline=coastline.hal, grid=TRUE)
 }
 The stations cover a 14 km region running from station 308, near the Sackville
 River, seaward to station 315, at the entrance to the general Harbour, offshore of

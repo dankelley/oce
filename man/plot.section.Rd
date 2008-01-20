@@ -55,8 +55,8 @@ be summarized with \code{\link{summary.section}}.
 library(oce)
 # Halifax Harbour
 data(section)
-data(coastline.halifax)
-plot(section, coastline=coastline.halifax)
+data(coastline.hal)
+plot(section, coastline=coastline.hal)
 # Gulf Stream
 data(a03)
 Gulf.Stream <- section.subset(a03, 124:102)
