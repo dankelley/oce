@@ -1,4 +1,4 @@
-plot.tide <- function(x, label.if=NULL, style=c("staircase", "spikes"), log="", ...)
+plot.tide <- function(x, label.if=NULL, plot.type=c("staircase", "spikes"), log="", ...)
 {
 	draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
 	{
@@ -32,15 +32,17 @@ plot.tide <- function(x, label.if=NULL, style=c("staircase", "spikes"), log="", 
 	amplitude <- x$amplitude[-1]
 	name      <- x$name[-1]
 	nc <- length(frequency)
-	style <- match.arg(style)
-	if (style == "spikes") {
+	plot.type <- match.arg(plot.type)
+	if (plot.type == "spikes") {
     	plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
 		segments(frequency, 0, frequency, amplitude)
 		draw.constituents()
-	} else if (style == "staircase") {
+	} else if (plot.type == "staircase") {
 		plot(frequency, cumsum(amplitude), type='l', xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
 		draw.constituents()
 	} else {
-		stop("unknown style ", style)
+		stop("unknown plot.type ", plot.type)
 	}
+    if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
 }
+

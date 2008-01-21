@@ -41,11 +41,14 @@ lines(sealevel.tuk$data$t, detided, col="red")
   correct GMT start time is \code{06-Jul-1975 23:00:00}.)
 
 \preformatted{
-# NB. the data file is not supplied with the package
+# Note: the data file is not supplied with the package,
+# and the 22h offset is an artifact, not a time-zone
+# conversion.
 tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
 t <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+22*3600, tz="GMT")
 eta <- tuk$V2
-sealevel.tuk <- as.sealevel(eta=eta, t=t)
+sealevel.tuk <- as.sealevel(eta=eta, t=t, station.name="Tuktayaktuk",
+  year=1975, longitude=133.0292, latitude=69.43889, GMT.offset=0)
 #save(sealevel.tuk, file="oce/data/sealevel.tuk.rda")
 } % preformatted
 } % source

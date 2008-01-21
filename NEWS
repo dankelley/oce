@@ -1,6 +1,6 @@
 0.1.70	- add as.windrose() and plot.windrose()
 	- add sealevel.tuk sea-level dataset
-	- add fit.tide(), summary.tide(), plot.tide(), and tide.constituents(), all preliminary versions
+	- add fit.tide(), summary.tide(), plot.tide(), and data(tidesetup), all preliminary versions
 	- establish a uniform form for objects created by "read" and "as"
 	- let sw.rho() and similar sw. functions take a ctd object as a single argument
 	- add sw.dynamic.height()
