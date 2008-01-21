@@ -7,7 +7,11 @@
 \title{Tidal constituent information}
 
 \description{Tidal constituent information, for use in fitting tidal
-  models to sealevel data.}
+  models to sealevel data.  To get a list of the constituent names, do
+  \preformatted{
+    cat("Standard tidal constituents:", tideconst$name[tideconst$standard])
+  }
+}
 
 \usage{data(tidesetup)}
 

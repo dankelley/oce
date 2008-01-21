@@ -49,7 +49,7 @@ fit.tide <- function(sl, constituents, rc=1)
                         if (0 == sum(indices == add)) indices <- c(indices, add) # avoid duplicates
                     }
                     else
-                        stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tide.constituents")
+                        stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tideconst")
                 }
             }
             if (debug) cat("<<", tc$name[indices], ">>\n")
