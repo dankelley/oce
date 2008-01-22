@@ -48,7 +48,7 @@ containing
 The generic function \code{\link{read.oce}} provides an alternative to this.
 A \code{sealevel} object may be summarized with \code{\link{summary.sealevel}}.
 Use \code{\link{plot.sealevel}} to produce a summary plot, and use
-\code{\link{fit.tide}} to fit a tidal model to the data.
+\code{\link{tidem}} to fit a tidal model to the data.
 
 A \code{"sealevel"} object can also be constructed with
   \code{\link{as.sealevel}} (and, in fact, \code{read.sealevel} uses

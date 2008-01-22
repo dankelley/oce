@@ -24,7 +24,7 @@ plot(sealevel.tuk$data$t, sealevel.tuk$data$eta, type='l',
   ylab="Height [m]",ylim=c(-2,6))
 legend("topright", legend=c("Tuktoyaktuk (1975)","Detided"),
   col=c("black","red"),lwd=1)
-tide <- fit.tide(sealevel.tuk)
+tide <- tidem(sealevel.tuk)
 detided <- sealevel.tuk$data$eta - predict(tide$model)
 lines(sealevel.tuk$data$t, detided, col="red")
 } % preformatted

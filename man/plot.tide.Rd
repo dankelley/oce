@@ -9,7 +9,7 @@
 \usage{\method{plot}{tide}(x, label.if=NULL, plot.type=c("staircase", "spikes"), log="", ...)}
 
 \arguments{
-  \item{x}{a \code{tide} object, as created by \code{\link{fit.tide}}.}
+  \item{x}{a \code{tide} object, as created by \code{\link{tidem}}.}
   \item{label.if}{if NULL, the function will indicate some particular
 	tidal constituents; if a value is provided, labels will be given for
 	any constituent with amplitude exceeding the value provided.}
@@ -29,14 +29,14 @@
 %\value{ None.}
 
 \seealso{
-\code{\link{fit.tide}} fits a "\code{tide}" object, and
+\code{\link{tidem}} fits a "\code{tide}" object, and
 \code{\link{summary.tide}} summarizes such an object.
 }
 
 \examples{
 library(oce)
 data(sealevel.hal)
-tide <- fit.tide(sealevel.hal)
+tide <- tidem(sealevel.hal)
 plot(tide)
 }
 %\references{}

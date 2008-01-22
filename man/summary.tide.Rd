@@ -4,7 +4,7 @@
 \description{Summarize a tide object.}
 \usage{\method{summary}{tide}(object, p=0, constituent, \dots)}
 \arguments{
-  \item{object}{a \code{tide} object, as created by \code{\link{fit.tide}}.}
+  \item{object}{a \code{tide} object, as created by \code{\link{tidem}}.}
   \item{p}{the minimum p value for the display of an individual
     coefficient.  The default causes all coefficients to be shown.}
   \item{constituent}{optional name of constituent on which to focus.}
@@ -17,20 +17,20 @@
 which is a data frame containing the following.
 \item{Name}{the name of the constituent in non-subscript form, e.g. "\code{M2}".}
 \item{Frequency}{the frequency of the constituent, in inverse hours.}
-\item{Amplitude}{the amplitude of the constituent, in metres (see \code{\link{fit.tide}}).}
-\item{Phase}{the phase of the constituent (see \code{\link{fit.tide}}).}
-\item{p}{a sort of p value for the constituent (see \code{\link{fit.tide}}).}
+\item{Amplitude}{the amplitude of the constituent, in metres (see \code{\link{tidem}}).}
+\item{Phase}{the phase of the constituent (see \code{\link{tidem}}).}
+\item{p}{a sort of p value for the constituent (see \code{\link{tidem}}).}
 \item{sig}{significance codes based on \code{p}, with symbols as in \code{\link{summary.lm}}.}
 }
 \seealso{
-\code{\link{fit.tide}} fits a tidal model to data (and describes the nature of
+\code{\link{tidem}} fits a tidal model to data (and describes the nature of
 \code{tide} objects), and \code{\link{plot.tide}} plots a \code{tide} object.
 }
 \examples{
 library(oce)
 # Halifax data
 data(sealevel.hal)
-tide <- fit.tide(sealevel.hal)
+tide <- tidem(sealevel.hal)
 summary(tide)
 }
 \author{Dan Kelley}

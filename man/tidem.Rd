@@ -1,8 +1,8 @@
-\name{fit.tide}
-\alias{fit.tide}
+\name{tidem}
+\alias{tidem}
 \title{Fit a tidal model to a timeseries}
 \description{Fit a tidal model to a timeseries.}
-\usage{fit.tide(sl, constituents, rc=1)}
+\usage{tidem(sl, constituents, rc=1)}
 \arguments{
   \item{sl}{a \code{sealevel} object.}
   \item{constituents}{an optional list of tidal constituents to which
@@ -55,7 +55,7 @@
   to the analysis, so that the results of \code{\link{summary.tide}}
   will be in a familiar form.
 
-  Once the constituent list is determined, \code{fit.tide} prunes the
+  Once the constituent list is determined, \code{tidem} prunes the
   elements of the list by using the Rayleigh criterion, according to
   which two constituents of frequencies \eqn{f_1}{f1} and \eqn{f_2}{f2}
   cannot be resolved unless the time series spans a time interval of at
@@ -99,7 +99,7 @@
 \section{Test with data(sealevel.tuk)}{
 
 \strong{Note: this is only a preliminary test, since
-\code{\link{fit.tide}} does not yet do nodal corrections, and also since
+\code{\link{tidem}} does not yet do nodal corrections, and also since
 the test dos not add the P1 and K2 constituents, as in the Foreman and
 T\_TIDE cases.  FIXME: delete this note when the code is finished.}
 
@@ -113,7 +113,7 @@ Under the same conditions, the test given below results in
 amplitude 0.5007m and phase -98.838841.  
 \preformatted{
   data(sealevel.tuk)
-  tuk.tide <- fit.tide(sealevel.tuk)
+  tuk.tide <- tidem(sealevel.tuk)
   summary(tuk.tide)
 }
 
@@ -132,14 +132,14 @@ library(oce)
 hour <- seq(0, 24 * 100)
 eta <- 1 + 2 * sin(0.08051140 * 2 * pi * hour + pi/4)
 sealevel <- as.sealevel(eta)
-tide <- fit.tide(sealevel)
+tide <- tidem(sealevel)
 summary(tide)
 plot(tide)
 
 # The demonstration time series from Foreman (1977),
 # also used in T_TIDE (Pawlowicz, 2002).
 data(sealevel.tuk)
-tuk.tide <- fit.tide(sealevel.tuk)
+tuk.tide <- tidem(sealevel.tuk)
 summary(tuk.tide)
 }
 \references{

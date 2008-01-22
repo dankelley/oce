@@ -1,4 +1,4 @@
-fit.tide <- function(sl, constituents, rc=1)
+tidem <- function(sl, constituents, rc=1)
 {
     debug <- TRUE
     if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")

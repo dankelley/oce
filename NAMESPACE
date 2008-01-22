@@ -10,7 +10,6 @@ export(
        ctd.trim,
        ctd.update.header,
        ctd.write,
-       fit.tide,
        geod.dist,
        gravity,
        lat.format,
@@ -28,6 +27,7 @@ export(
        plot.section,
        plot.tide,
        plot.windrose,
+       predict.tide,
        processing.log.append,
        processing.log.summary,
        read.coastline,
@@ -58,7 +58,8 @@ export(
        sw.T.freeze,
        sw.theta,
        sw.T.S.rho,
-       sw.viscosity
+       sw.viscosity,
+       tidem
        )
 
 S3method(plot, ctd)
@@ -67,6 +68,7 @@ S3method(plot, lobo)
 S3method(plot, sealevel)
 S3method(plot, section)
 S3method(plot, tide)
+S3method(predict, tide)
 S3method(plot, windrose)
 S3method(summary, ctd)
 S3method(summary, coastline)

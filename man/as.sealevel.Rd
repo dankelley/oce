@@ -59,7 +59,7 @@ as.sealevel(eta,
 \seealso{
   \code{\link{read.sealevel}} reads data, \code{\link{summary.sealevel}}
   summarizes the information.  Use \code{\link{plot.sealevel}} to
-  produce a summary plot, and use \code{\link{fit.tide}} to fit a tidal
+  produce a summary plot, and use \code{\link{tidem}} to fit a tidal
   model to the data.  Sample sea-level data sets are provided with
   \code{data(\link{sealevel.hal})} and \code{data(\link{sealevel.tuk})}.
 }
