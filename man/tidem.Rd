@@ -2,12 +2,13 @@
 \alias{tidem}
 \title{Fit a tidal model to a timeseries}
 \description{Fit a tidal model to a timeseries.}
-\usage{tidem(sl, constituents, rc=1)}
+\usage{tidem(sl, constituents, rc=1, quiet=TRUE)}
 \arguments{
   \item{sl}{a \code{sealevel} object.}
   \item{constituents}{an optional list of tidal constituents to which
 	the fit is done (see \dQuote{Details}.)}  
   \item{rc}{the value of the coefficient in the Rayleigh criterion.}
+  \item{quiet}{set to FALSE to get extra information on the processing.}
 }
 
 \details{The fit is done in terms of sine and cosine components at the
@@ -120,7 +121,8 @@ amplitude 0.5007m and phase -98.838841.
 } % section
 
 \seealso{\code{\link{summary.tide}} summarizes a "\code{tide}" object,
-  and \code{\link{plot.tide}} plots one.  As for the input, sealevel
+  \code{\link{plot.tide}} plots one, and \code{\link{predict.tide}}
+  makes predictions from one.  As for the input, sealevel
   objects may be created with \code{\link{as.sealevel}} or
   \code{\link{read.sealevel}}.  See notes at \code{\link{sealevel.tuk}},
   which is test data set.

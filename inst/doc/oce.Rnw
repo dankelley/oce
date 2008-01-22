@@ -468,13 +468,13 @@ Hurricane Juan.
 <<label=tideplot,include=FALSE>>=
 library(oce)
 data(sealevel.hal)
-tide <- fit.tide(sealevel.hal)
+tide <- tidem(sealevel.hal)
 days <- 15 # focus on these days at end of series
 n <- length(sealevel.hal$data$eta)
 i <- seq(n-24*days, n)
 t   <- sealevel.hal$data$t[i]
 eta <- sealevel.hal$data$eta[i]
-eta.pred <- predict(tide$model)[i]
+eta.pred <- predict(tide)[i]
 plot(t, eta, type="l", ylim=c(-0.5,3))
 abline(h=0, col="pink")
 lines(t, eta - eta.pred, col="red")
@@ -485,7 +485,7 @@ analysis.
 
 (It should be noted that the tidal analysis portion of \verb@oce@ is still in
 active development, and the features are subject to change.  Use
-\verb@?fit.tide@ to learn more about this.)
+\verb@?tidem@ to learn more about this.)
 
 \begin{figure}
 	\begin{center}
@@ -495,7 +495,7 @@ active development, and the features are subject to change.  Use
 @
 \end{center}
 \caption{Sea-level variation in Halifax Harbour in 2003 (black line) and the residual
-after removal of tides using \texttt{fit.tide()}.  The spike on September 28th
+after removal of tides using \texttt{tidem()}.  The spike on September 28th
 is a storm surge caused by Hurricane Juan, which caused a great deal of damage
 to the region.}
 \label{fig:tide}

@@ -1,6 +1,5 @@
-tidem <- function(sl, constituents, rc=1)
+tidem <- function(sl, constituents, rc=1, quiet = TRUE)
 {
-    debug <- TRUE
     if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
 
     ###
@@ -13,7 +12,7 @@ tidem <- function(sl, constituents, rc=1)
 
     ntc <- length(tc$name)
 
-    print(tc)
+    if (!quiet) print(tc)
 
     name <- frequency <- compare <- NULL
     indices <- NULL
@@ -22,12 +21,12 @@ tidem <- function(sl, constituents, rc=1)
         frequency <- tc$frequency[tc$standard][-1]
         compare   <- tc$compare[tc$standard][-1]
         indices   <- c(indices, seq(1:ntc)[tc$standard])
-        print(name);
+        if (!quiet) print(name);
     }
     else {
         nconst <- length(constituents)
         for (i in 1:nconst) {
-            if (debug) cat("[", constituents[i], "]\n",sep="")
+            if (!quiet) cat("[", constituents[i], "]\n",sep="")
             if (constituents[i] == "standard") { # must be first!
                 if (i != 1) stop("\"standard\" must occur first in constituents list")
                 name      <- tc$name[tc$standard][-1]
@@ -52,7 +51,7 @@ tidem <- function(sl, constituents, rc=1)
                         stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tideconst")
                 }
             }
-            if (debug) cat("<<", tc$name[indices], ">>\n")
+            if (!quiet) cat("<<", tc$name[indices], ">>\n")
         }
     }
     indices <- indices[order(indices)]
@@ -62,7 +61,7 @@ tidem <- function(sl, constituents, rc=1)
 
     iZ0 <- which(tc2$name == "Z0")      # Remove Z0
     name <- tc2$name
-    print(name)
+    if (!quiet) print(name)
     if (length(iZ0)) name <- name[-iZ0]
     nc <- length(name)
     frequency <- vector("numeric", nc)
@@ -91,7 +90,7 @@ tidem <- function(sl, constituents, rc=1)
     }
     ##cat("DROP:",drop.term,"\n")
     if (length(drop.term) > 0) {
-        cat("Record is too short to fit for constituents:", name[drop.term],"\n")
+        if (!quiet) cat("Record is too short to fit for constituents:", name[drop.term],"\n")
         frequency <- frequency[-drop.term]
         name      <- name[-drop.term]
         compare   <- compare[-drop.term]
@@ -109,7 +108,7 @@ tidem <- function(sl, constituents, rc=1)
     ##delete    hour2pi <- 2 * pi * as.numeric(sl$data$t) / 3600
     #####first.day.noon <- as.POSIXlt(paste(substr(sl$data$t[1], 1, 10), "00:00:00"),tz="GMT")
     #####hour.since.noon <- as.numeric(as.POSIXlt(sl$data$t, tz="GMT") - as.POSIXlt(first.day.noon, tz="GMT"))/3600
-    #####if (debug) {
+    #####if (!quiet) {
     #####cat("First point at time");print(as.POSIXlt(sl$data$t[1],  tz="GMT"))
     #####cat("Noon on that day   ");print(as.POSIXlt(first.day.noon,tz="GMT"))
     #####cat("hour.since.noon[1:12]:\n");print(hour.since.noon[1:12])
@@ -119,10 +118,17 @@ tidem <- function(sl, constituents, rc=1)
 
     if (TRUE) {                         # Correct for fact that R puts t=0 at 1970
         zero <- unclass(as.POSIXct("0000-01-01 00:00:00", tz="GMT")) / 3600
-        cat("zero");print(zero)
-        cat("first few hour:");print(hour[1:3])
+        if (!quiet) {
+            cat("zero")
+            print(zero)
+            cat("first few hour:")
+            print(hour[1:3])
+        }
         hour <- hour + zero
-        cat("first few hour:");print(hour[1:3])
+        if (!quiet) {
+            cat("first few hour:")
+            print(hour[1:3])
+        }
         ## stop()
     }
 
@@ -152,14 +158,14 @@ tidem <- function(sl, constituents, rc=1)
         ic <- 2 * (i - 1) + 1
         s <- coef[is]                   # cos(phase)
         c <- coef[ic]                   # -sin(phase)
-        if (debug) cat(name[i-1], "gives s=",s,"and c=",c,"\n")
+        if (!quiet) cat(name[i-1], "gives s=",s,"and c=",c,"\n")
         amplitude[i] <- sqrt(s^2 + c^2)
                                         # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
                                         #                == s * sin(t) + c * cos(t)
         phase[i]     <- atan2(c, s) # atan2(y,x) ... made into degrees later
         p[i]         <- 0.5 * (p.all[is] + p.all[ic])
     }
-    if (debug) cat("coef:", coef, "\n")
+    if (!quiet) cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
     rval <- list(model=model,
                  name=c("Z0", name),

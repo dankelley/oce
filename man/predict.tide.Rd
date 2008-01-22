@@ -17,14 +17,10 @@
 
 \examples{
 library(oce)
-# Fake a M2 tide with phase 45 degrees
-hour <- seq(0, 24 * 100)
-eta <- 1 + 2 * sin(0.08051140 * 2 * pi * hour + pi/4)
-sealevel <- as.sealevel(eta)
-tide <- tidem(sealevel)
-summary(tide)
-plot(tide)
-lines(hour, predict(tide))
+data(sealevel.tuk)
+tide <- tidem(sealevel.tuk)
+plot(sealevel.tuk$data$t, sealevel.tuk$data$eta, type='l', ylim=c(-2,5))
+lines(sealevel.tuk$data$t, sealevel.tuk$data$eta - predict(tide), col="red")
 }
 
 \author{Dan Kelley}
