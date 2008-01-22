@@ -2,14 +2,14 @@
 \alias{predict.tide}
 \title{Predict a time series from a tidal model}
 \description{Predict a time series from a tidal model.}
-\usage{predict.tide(x, ...)}
+\usage{predict.tide(object, ...)}
 \arguments{
-  \item{x}{a \code{tide} object.}
+  \item{object}{a \code{tide} object.}
   \item{\dots}{optional arguments passed on to children.}
 }
 
 \details{This is a wrapper around the predict method for
-  \code{x$model}.}
+  \code{object$model}.}
 
 \value{A vector of predictions.}
 

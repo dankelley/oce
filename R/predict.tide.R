@@ -1,4 +1,4 @@
-predict.tide <- function(x)
+predict.tide <- function(object, ...)
 {
-    predict(x$model)
+    predict(object$model)
 }
