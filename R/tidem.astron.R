@@ -12,12 +12,12 @@ tidem.astron <- function(t)
                  281.220844,  0.0000470684, 0.0000339, 0.000000070),
                nrow=5, ncol=4, byrow=TRUE)
     astro <- ((sc.hc.pc.np.pp %*% a) / 360) %% 1
-	rem <- as.numeric(difftime(n, trunc.POSIXt(n,units="days"), units="days"))
+        rem <- as.numeric(difftime(t, trunc.POSIXt(t, units="days"), units="days"))
     tau <- rem + astro[2,1] - astro[1,1]
     astro <- c(tau, astro)
-	da <- matrix(c(0, 1, 2e-4*D, 3e-4*D^2), 4, 1)
-	ader <- (sc.hc.pc.np.pp %*% da) / 360
-	dtau <- 1 + ader[2,1] - ader[1,1]
-	ader <- c(dtau, ader)
+        da <- matrix(c(0, 1, 2e-4*D, 3e-4*D^2), 4, 1)
+        ader <- (sc.hc.pc.np.pp %*% da) / 360
+        dtau <- 1 + ader[2,1] - ader[1,1]
+        ader <- c(dtau, ader)
     data.frame(astro=astro, ader=ader)
 }
