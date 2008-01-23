@@ -59,7 +59,8 @@ export(
        sw.theta,
        sw.T.S.rho,
        sw.viscosity,
-       tidem
+       tidem,
+       tidem.astron
        )
 
 S3method(plot, ctd)
