@@ -4,7 +4,7 @@
 \description{Do ephemeris calculations for tidem.}
 \usage{a <- tidem.astron(t)}
 \arguments{
-  \item{t}{time in POSIXct format}
+  \item{t}{time in \code{\link[base]{POSIXct}} format}
 }
 \details{Based directly on t\_astron, from the T\_TIDE package.}
 \value{A \code{\link[base]{data.frame}} containing
