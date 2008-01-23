@@ -2,7 +2,7 @@
 \alias{tidem.astron}
 \title{Do ephemeris calculations for tidem}
 \description{Do ephemeris calculations for tidem.}
-\usage{a <- tidem.astron(as.POSIXct("2008-01-22 18:50:24"))}
+\usage{a <- tidem.astron(t)}
 \arguments{
   \item{t}{time in POSIXct format}
 }
@@ -11,7 +11,9 @@
   \item{\code{astro}}{(fill in later)}
   \item{\code{ader}}{(fill in later)}
 }
-
+\examples{
+tidem.astron(as.POSIXct("2008-01-22 18:50:24"))
+}
 \seealso{
   \code{\link{tidem}}, which uses this.
 }
