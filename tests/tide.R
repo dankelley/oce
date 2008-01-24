@@ -29,21 +29,15 @@ nconst <- nconst - 1
 length(name) <- nconst
 length(frequency) <- nconst
 length(compare) <- nconst
-const <- data.frame(name=name, frequency=frequency, compare=compare, standard=compare!="", stringsAsFactors=FALSE)
-##rownames(const) <- name
+doodson <- matrix(NA, nconst, 6)
+semi <- vector("numeric", nconst)
 
-stopifnot(const$name[1] == "Z0")
-stopifnot(const$name[2] == "SA")
-stopifnot(const$compare[2] == "SSA")
-i <- which(const$name == "M2")
-stopifnot(const[i,2] == 1/12.42060119816049912345)
+stopifnot(name[1] == "Z0")
+stopifnot(name[2] == "SA")
+stopifnot(compare[2] == "SSA")
+i <- which(name == "M2")
+stopifnot(frequency[i] == 1/12.42060119816049912345)
 
-if (debug > -1) {
-    cat("\n")
-    cat("/-----------------------------------------------------------\\\n")
-    cat("| Constituent data in data.frame named 'const' of dim", dim(const), " |\n")
-    cat("\\-----------------------------------------------------------/\n")
-}
 
 ############################
 ## Satellites [sat]       ##
@@ -80,11 +74,17 @@ while (TRUE) {
     ll <- as.numeric(substr(x, 22, 24))
     mm <- as.numeric(substr(x, 25, 27))
     nn <- as.numeric(substr(x, 28, 30))
-    semi <- as.numeric(substr(x, 31, 35))
+
+    w <- which(name == kon)
+    doodson[w,] <- c(ii, jj, kk, ll, mm, nn)
+    if (debug > 0) cat("name=", kon, "w=", w,"\n")
+
+    this.semi <- as.numeric(substr(x, 31, 35))
+    semi[w] <- this.semi
     nj <- as.numeric(substr(x, 36, 39))
     if (debug > 1) {
         cat(">>>", x, "\n", sep="")
-        cat("kon=", kon, " ii=",ii," jj=",jj," kk=",kk," ll=",ll," mm=",mm," nn=",nn," semi=",semi," nj=",nj,"\n",sep="")
+        cat("kon=", kon, " ii=",ii," jj=",jj," kk=",kk," ll=",ll," mm=",mm," nn=",nn," this.semi=",this.semi," nj=",nj,"\n",sep="")
     }
     ldel <- vector("numeric", nj)
     mdel <- vector("numeric", nj)
@@ -120,16 +120,25 @@ while (TRUE) {
             }
         }
         if (debug > 1) print(data.frame(ldel=ldel,mdel=mdel,ndel=ndel,ph=ph,ee=ee,ir=ir))
-        sat[[nsat]] <- list(name=kon, ii=ii, jj=jj, kk=kk, mm=mm, nn=nn, semi=semi, nj=nj,
+        sat[[nsat]] <- list(name=kon, ii=ii, jj=jj, kk=kk, mm=mm, nn=nn, semi=this.semi, nj=nj,
                             ldel=ldel, mdel=mdel, ndel=ndel, ph=ph, ee=ee, ir=ir)
     } else {
-        sat[[nsat]] <- list(name=kon, ii=ii, jj=jj, kk=kk, mm=mm, nn=nn, semi=semi, nj=nj,
+        sat[[nsat]] <- list(name=kon, ii=ii, jj=jj, kk=kk, mm=mm, nn=nn, semi=this.semi, nj=nj,
                             ldel=NULL, mdel=NULL, ndel=NULL, ph=NULL, ee=NULL, ir=NULL)
     }
     if (debug>0) cat("\n")
     nsat <- nsat + 1
 }
 if (nsat < 1) stop("failed to read any satellite entries")
+
+const <- data.frame(name=name, frequency=frequency, compare=compare, semi=semi, standard=compare!="", stringsAsFactors=FALSE)
+
+if (debug > -1) {
+    cat("\n")
+    cat("/---------------------------------------------------------------\\\n")
+    cat("| Constituent data in data.frame named 'tideconst' of dim", dim(const), "|\n")
+    cat("\\---------------------------------------------------------------/\n")
+}
 
 length(sat) <- nsat - 1
 
@@ -156,10 +165,24 @@ stopifnot(is.na(sat[[44]]$ir))
 
 if (debug > -1) {
     cat("\n")
+    cat("/-----------------------------------------------------\\\n")
+    cat("| Satellite data in list named 'tidesat' of length", length(sat), "|\n")
+    cat("\\-----------------------------------------------------/\n")
+}
+
+#############
+## Doodson ##
+#############
+doodson[1,] <- rep(0, 6)
+stopifnot(doodson[48,] == c(2, 0, 0, 0, 0, 0))
+if (debug > -1) {
+    cat("\n")
     cat("/---------------------------------------------------------\\\n")
-    cat("| Satellite data in list named 'sat' of length", length(sat), "         |\n")
+    cat("| Doodson data in matrix named 'tidedoodson' of dim", dim(doodson), "|\n")
     cat("\\---------------------------------------------------------/\n")
 }
+
+
 
 ##
 ############################
@@ -205,19 +228,20 @@ stopifnot(shallow[[101]]$konco == c("M2", "N2", "K2", "S2"))
 
 if (debug > -1) {
     cat("\n")
-    cat("/---------------------------------------------------------\\\n")
-    cat("| Shallow data in list named 'shallow' of length", length(shallow), " |\n")
-    cat("\\---------------------------------------------------------/\n")
+    cat("/--------------------------------------------------------\\\n")
+    cat("| Shallow data in list named 'tideshallow' of length", length(shallow), "|\n")
+    cat("\\--------------------------------------------------------/\n")
 }
 
 close(file)
 tideconst   <- const
+tidedoodson <- doodson
 tidesat     <- sat
 tideshallow <- shallow
 
 cat("
 DO MANUALLY:
-    save(tideconst, tidesat, tideshallow, file=\"../data/tidesetup.rda\")
+    save(tideconst, tidedoodson, tidesat, tideshallow, file=\"../data/tidesetup.rda\")
 TO SET UP THE SYSTEM.
 ")
 
@@ -225,6 +249,24 @@ TO SET UP THE SYSTEM.
 ## Low-level tests ##
 #####################
                                         # Test against matlab t_astron
-a <- tidem.astron(as.POSIXct("2008-01-22 18:50:24"))
+t <- as.POSIXct("2008-01-22 18:50:24")
+a <- tidem.astron(t)
 stopifnot(all.equal(a$astro, c(1.2886, 0.3339, 0.8375, 0.1423, 0.0856, 0.7863), 0.001))
 stopifnot(all.equal(a$ader,  c(0.9661, 0.0366, 0.0027, 0.0003, 0.0001, 0.0000), 0.001))
+
+x <- tidedoodson %*% a$astro
+stopifnot(all.equal(x[1:6], c(0, 0.0512, 1.6750, -1.1988, 0.1916, -1.0072), 0.0001))
+
+vuf <- tidem.vuf(t, 48)
+stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))#, 1e-8))
+#stopifnot(all.equal(c(vuf$u), c(0)))
+#stopifnot(all.equal(c(vuf$f), c(1)))
+
+vuf <- tidem.vuf(t, 48, 45)
+#stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))
+#stopifnot(all.equal(c(vuf$u), c(0.00295677805220)))
+#stopifnot(all.equal(c(vuf$f), c(0.96893771510868)))
+
+# ISSUES
+# matlab has nsat=162 but R has 44.
+# sat.amprat seems to be sat$ee

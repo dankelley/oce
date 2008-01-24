@@ -1,16 +1,17 @@
-tide.vuf <- function(t, j, lat=NULL)
+tidem.vuf <- function(t, j, lat=NULL)
 {
-    a <- tide.astron(t)
-    if (null(lat)) {
+    a <- tidem.astron(t)
+    v <- doodson[j,] %*% a$astro + semi[j]
+    v <- v - trunc(v)
+    if (is.null(lat)) {
         cat("gave lat\n")
+        if (abs(lat) < 5) lat <- sign(lat) * 5
+        slat <- sin(pi * lat / 180)
     }
     else {
         cat("did not give lat\n")
     }
-    ## Need to figure this out
-    ##v=rem( const.doodson*astro+const.semi, 1);
-
-    list(v=1, u=1, f=1)
+    list(v=v, u=1, f=1)
 }
 
 #function [v,u,f]=t_vuf(ctime,ju,lat);
