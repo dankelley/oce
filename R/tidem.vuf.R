@@ -1,7 +1,7 @@
 tidem.vuf <- function(t, j, lat=NULL)
 {
     a <- tidem.astron(t)
-    v <- doodson[j,] %*% a$astro + semi[j]
+    v <- tidemdoodson[j,] %*% a$astro + tidemsemi[j]
     v <- v - trunc(v)
     if (is.null(lat)) {
         cat("gave lat\n")
