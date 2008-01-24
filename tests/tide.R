@@ -30,7 +30,7 @@ length(name) <- nconst
 length(frequency) <- nconst
 length(compare) <- nconst
 doodson <- matrix(NA, nconst, 6)
-semi <- vector("numeric", nconst)
+tidesemi <- vector("numeric", nconst)
 
 stopifnot(name[1] == "Z0")
 stopifnot(name[2] == "SA")
@@ -80,7 +80,7 @@ while (TRUE) {
     if (debug > 0) cat("name=", kon, "w=", w,"\n")
 
     this.semi <- as.numeric(substr(x, 31, 35))
-    semi[w] <- this.semi
+    tidesemi[w] <- this.semi
     nj <- as.numeric(substr(x, 36, 39))
     if (debug > 1) {
         cat(">>>", x, "\n", sep="")
@@ -139,6 +139,15 @@ if (debug > -1) {
     cat("| Constituent data in data.frame named 'tideconst' of dim", dim(const), "|\n")
     cat("\\---------------------------------------------------------------/\n")
 }
+if (debug > -1) {
+    cat("\n")
+    cat("/----------------------------------------------------\\\n")
+    cat("| Shallow data in list named 'tidesemi' of length", length(tidesemi), "|\n")
+    cat("\\----------------------------------------------------/\n")
+}
+
+
+
 
 length(sat) <- nsat - 1
 
@@ -241,7 +250,7 @@ tideshallow <- shallow
 
 cat("
 DO MANUALLY:
-    save(tideconst, tidedoodson, tidesat, tideshallow, file=\"../data/tidesetup.rda\")
+    save(tideconst, tidedoodson, tidesemi, tideshallow, file=\"../data/tidesetup.rda\")
 TO SET UP THE SYSTEM.
 ")
 
@@ -254,15 +263,12 @@ a <- tidem.astron(t)
 stopifnot(all.equal(a$astro, c(1.2886, 0.3339, 0.8375, 0.1423, 0.0856, 0.7863), 0.001))
 stopifnot(all.equal(a$ader,  c(0.9661, 0.0366, 0.0027, 0.0003, 0.0001, 0.0000), 0.001))
 
-x <- tidedoodson %*% a$astro
-stopifnot(all.equal(x[1:6], c(0, 0.0512, 1.6750, -1.1988, 0.1916, -1.0072), 0.0001))
-
 vuf <- tidem.vuf(t, 48)
-stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))#, 1e-8))
+stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))
 #stopifnot(all.equal(c(vuf$u), c(0)))
 #stopifnot(all.equal(c(vuf$f), c(1)))
 
-vuf <- tidem.vuf(t, 48, 45)
+#vuf <- tidem.vuf(t, 48, 45)
 #stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))
 #stopifnot(all.equal(c(vuf$u), c(0.00295677805220)))
 #stopifnot(all.equal(c(vuf$f), c(0.96893771510868)))

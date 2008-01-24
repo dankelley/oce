@@ -1,9 +1,12 @@
 tidem.vuf <- function(t, j, lat=NULL)
 {
+    data("tidesetup")
+    tidedoodson <- get("tidedoodson", pos=globalenv())
+    tidesemi    <- get("tidesemi",    pos=globalenv())
     a <- tidem.astron(t)
-    v <- tidemdoodson[j,] %*% a$astro + tidemsemi[j]
+    v <- tidedoodson[j,] %*% a$astro + tidesemi[j]
     v <- v - trunc(v)
-    if (is.null(lat)) {
+    if (!is.null(lat)) {
         cat("gave lat\n")
         if (abs(lat) < 5) lat <- sign(lat) * 5
         slat <- sin(pi * lat / 180)
