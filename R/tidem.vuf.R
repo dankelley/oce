@@ -1,6 +1,6 @@
-tide.vuf <- function(ctime, ju, lat=NULL)
+tide.vuf <- function(t, j, lat=NULL)
 {
-    a <- tide.astron(ctime)
+    a <- tide.astron(t)
     if (null(lat)) {
         cat("gave lat\n")
     }
