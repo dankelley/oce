@@ -131,7 +131,7 @@ while (TRUE) {
 }
 if (nsat < 1) stop("failed to read any satellite entries")
 
-const <- data.frame(name=name, frequency=frequency, compare=compare, semi=semi, standard=compare!="", stringsAsFactors=FALSE)
+const <- data.frame(name=name, frequency=frequency, compare=compare, semi=tidesemi, standard=compare!="", stringsAsFactors=FALSE)
 
 if (debug > -1) {
     cat("\n")
