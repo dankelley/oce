@@ -29,8 +29,9 @@ nconst <- nconst - 1
 length(name) <- nconst
 length(frequency) <- nconst
 length(compare) <- nconst
-doodson <- matrix(NA, nconst, 6)
+tidedoodson <- matrix(NA, nconst, 6)
 tidesemi <- vector("numeric", nconst)
+numsat <- vector("numeric", nconst)
 
 stopifnot(name[1] == "Z0")
 stopifnot(name[2] == "SA")
@@ -58,12 +59,19 @@ get.satellite <- function(x, o)
 
 scan(file, "character", nlines=3, quiet=TRUE) # skip 3 lines
 
-nsat <- 1
-sat <- vector("list", 1000)             # will trim later
+nsat <- 162
+deldood <- matrix(NA, nsat, 3)
+phcorr  <- matrix(NA, nsat, 1)
+amprat  <- matrix(NA, nsat, 1)
+ilatfac <- matrix(NA, nsat, 1)
+iconst  <- matrix(NA, nsat, 1)
+
+isat <- 1
 while (TRUE) {
+    if (debug > 1) cat("***** looking for satellite ", isat, "********\n")
     x <- readLines(file, n=1)
     nx <- nchar(x)
-    if (nx < 10) break
+    if (isat > nsat || nx < 10) break
                                         # Line format and content
                                         # 6X,A5,1X,6I3,F5.2,I4
                                         # kon, ii,jj,kk,ll,mm,nn semi nj
@@ -75,81 +83,96 @@ while (TRUE) {
     mm <- as.numeric(substr(x, 25, 27))
     nn <- as.numeric(substr(x, 28, 30))
 
-    w <- which(name == kon)
-    doodson[w,] <- c(ii, jj, kk, ll, mm, nn)
+    which.constituent <- which(name == kon)
+    tidedoodson[which.constituent, ] <- c(ii, jj, kk, ll, mm, nn)
     if (debug > 0) cat("name=", kon, "w=", w,"\n")
 
     this.semi <- as.numeric(substr(x, 31, 35))
-    tidesemi[w] <- this.semi
-    nj <- as.numeric(substr(x, 36, 39))
+    tidesemi[which.constituent] <- this.semi
+    nj <- as.numeric(substr(x, 36, 39)) # number of satellites
+
+    if (debug > 1) cat("------------ nj=", nj, "-------------\n")
+
+    numsat[which.constituent] <- nj
     if (debug > 1) {
         cat(">>>", x, "\n", sep="")
         cat("kon=", kon, " ii=",ii," jj=",jj," kk=",kk," ll=",ll," mm=",mm," nn=",nn," this.semi=",this.semi," nj=",nj,"\n",sep="")
     }
-    ldel <- vector("numeric", nj)
-    mdel <- vector("numeric", nj)
-    ndel <- vector("numeric", nj)
-    ph   <- vector("numeric", nj)
-    ee   <- vector("numeric", nj)
-    ir   <- vector("numeric", nj)
     if (nj > 0) {
-
         ## ALP1    1 -4  2  1  0  0 -.25   2
         ## ALP1  -1  0  0 .75 0.0360R1   0 -1  0 .00 0.1906
         is <- 1
         while (is <= nj) {
             xs <- readLines(file, n=1)
-            if (debug > 1) cat(">>>", xs, "'\n",sep="")
+            if (debug > 1) cat(">>>", xs, "<<<\n",sep="")
             nxs <- nchar(xs)
-            if (nxs != 31 && nxs != 33 && nxs != 54 && nxs != 56 && nxs != 77 && nxs != 79) {
+            if (nxs != 31 && nxs != 33 && nxs != 39 && nxs != 54 && nxs != 56 && nxs != 77 && nxs != 79) {
                 cat("GOT BAD LINE AS FOLLOWS:\n12345678901234567890123456789012345678901234567890\n",xs,"\n",sep="")
-                stop("need 31, 54, 77 or 79 chars, but got ", nxs)
+                stop("need 31, 33, 39, 54, 56, 77 or 79 chars, but got ", nxs)
             }
             s <- get.satellite(xs, 11)
-            ldel[is]<-s[1];mdel[is]<-s[2];ndel[is]<-s[3];ph[is]<-s[4];ee[is]<-s[5];ir[is]<-s[6]
+            deldood[isat,1:3] <- s[1:3]
+            print(deldood[isat, 1:3])
+            phcorr[isat]  <- s[4]
+            amprat[isat]  <- s[5]
+            ilatfac[isat] <- s[6]
+            iconst[isat]  <- which.constituent # constituent to which this satellite is attached
+            if (debug > 1) cat("Got satellite ", isat, "for constituent", kon, "(", which.constituent, ") which has amprat", amprat[isat], "\n")
+            isat <- isat + 1
             is <- is + 1
             if (nxs > 50) {
                 s <- get.satellite(xs, 34)
-                ldel[is]<-s[1];mdel[is]<-s[2];ndel[is]<-s[3];ph[is]<-s[4];ee[is]<-s[5];ir[is]<-s[6]
+                deldood[isat, 1:3] <- s[1:3]
+                phcorr[isat]  <- s[4]
+                amprat[isat]  <- s[5]
+                ilatfac[isat] <- s[6]
+                iconst[isat]  <- which.constituent # constituent to which this satellite is attached
+                if (debug > 1) cat("Got satellite ", isat, "for constituent", kon, "(", which.constituent, "), which has amprat", amprat[isat], "\n")
+                isat <- isat + 1
                 is <- is + 1
             }
             if (nxs > 70) {
                 s <- get.satellite(xs, 57)
-                ldel[is]<-s[1];mdel[is]<-s[2];ndel[is]<-s[3];ph[is]<-s[4];ee[is]<-s[5];ir[is]<-s[6]
+                deldood[isat, 1:3] <- s[1:3]
+                phcorr[isat]  <- s[4]
+                amprat[isat]  <- s[5]
+                ilatfac[isat] <- s[6]
+                iconst[isat]  <- which.constituent # constituent to which this satellite is attached
+                if (debug > 1) cat("Got satellite ", isat, "for constituent", kon, "(", which.constituent, "), which has amprat", amprat[isat], "\n")
+                isat <- isat + 1
                 is <- is + 1
             }
         }
-        if (debug > 1) print(data.frame(ldel=ldel,mdel=mdel,ndel=ndel,ph=ph,ee=ee,ir=ir))
-        sat[[nsat]] <- list(name=kon, ii=ii, jj=jj, kk=kk, mm=mm, nn=nn, semi=this.semi, nj=nj,
-                            ldel=ldel, mdel=mdel, ndel=ndel, ph=ph, ee=ee, ir=ir)
-    } else {
-        sat[[nsat]] <- list(name=kon, ii=ii, jj=jj, kk=kk, mm=mm, nn=nn, semi=this.semi, nj=nj,
-                            ldel=NULL, mdel=NULL, ndel=NULL, ph=NULL, ee=NULL, ir=NULL)
     }
     if (debug>0) cat("\n")
-    nsat <- nsat + 1
 }
-if (nsat < 1) stop("failed to read any satellite entries")
+if ((isat - 1) != nsat) stop("failed to read all ", nsat, " satellite entries.  Only got ", isat)
 
-const <- data.frame(name=name, frequency=frequency, compare=compare, semi=tidesemi, standard=compare!="", stringsAsFactors=FALSE)
+
+
+stopifnot(sum(numsat) == nsat)
+
+tidesat <- list(deldood=deldood, phcorr=phcorr, amprat=amprat, ilatfac=ilatfac, iconst=iconst)
+
+cat("ok?\n")
+print(tidesat$deldood[1,])
+print(tidesat$deldood[2,])
+print(tidesat$deldood[3,])
+cat("ok?\n")
+stopifnot(tidesat$deldood[1,] == c(-1,  0, 0))
+stopifnot(tidesat$deldood[2,] == c( 0, -1, 0))
+stopifnot(tidesat$deldood[3,] == c(-2, -2, 0))
+
+tideconst <- data.frame(name=name, frequency=frequency, compare=compare, semi=tidesemi, numsat=numsat, standard=compare!="", stringsAsFactors=FALSE)
+
+stopifnot(tideconst$numsat[48] == 9)        # M2
 
 if (debug > -1) {
     cat("\n")
     cat("/---------------------------------------------------------------\\\n")
-    cat("| Constituent data in data.frame named 'tideconst' of dim", dim(const), "|\n")
+    cat("| Constituent data in data.frame named 'tideconst' of dim", dim(tideconst), "|\n")
     cat("\\---------------------------------------------------------------/\n")
 }
-if (debug > -1) {
-    cat("\n")
-    cat("/----------------------------------------------------\\\n")
-    cat("| Shallow data in list named 'tidesemi' of length", length(tidesemi), "|\n")
-    cat("\\----------------------------------------------------/\n")
-}
-
-
-
-
-length(sat) <- nsat - 1
 
 ## This portion of the file ends as follows
 ##      M3      3  0  0  0  0  0 -.50   1
@@ -157,37 +180,22 @@ length(sat) <- nsat - 1
 ## and see Foreman (1977) page 2 for how to read this.  Here,
 ## we'll check every aspect of the last satellite.
 
-stopifnot(sat[[44]]$name == "M3")
-stopifnot(sat[[44]]$ii == 3)
-stopifnot(sat[[44]]$jj == 0)
-stopifnot(sat[[44]]$kk == 0)
-stopifnot(sat[[44]]$mm == 0)
-stopifnot(sat[[44]]$nn == 0)
-stopifnot(sat[[44]]$semi == -0.50)
-stopifnot(sat[[44]]$nj == 1)
-stopifnot(sat[[44]]$ldel == 0)
-stopifnot(sat[[44]]$mdel == -1)
-stopifnot(sat[[44]]$ndel == 0)
-stopifnot(sat[[44]]$ph == 0.50)
-stopifnot(sat[[44]]$ee == 0.0564)
-stopifnot(is.na(sat[[44]]$ir))
-
 if (debug > -1) {
     cat("\n")
-    cat("/-----------------------------------------------------\\\n")
-    cat("| Satellite data in list named 'tidesat' of length", length(sat), "|\n")
-    cat("\\-----------------------------------------------------/\n")
+    cat("/------------------------------------------------------------\\\n")
+    cat("| Satellite data in list named 'tidesat' with ", length(tidesat$amprat), " elements |\n")
+    cat("\\------------------------------------------------------------/\n")
 }
 
 #############
 ## Doodson ##
 #############
-doodson[1,] <- rep(0, 6)
-stopifnot(doodson[48,] == c(2, 0, 0, 0, 0, 0))
+tidedoodson[1,] <- rep(0, 6)
+stopifnot(tidedoodson[48,] == c(2, 0, 0, 0, 0, 0))
 if (debug > -1) {
     cat("\n")
     cat("/---------------------------------------------------------\\\n")
-    cat("| Doodson data in matrix named 'tidedoodson' of dim", dim(doodson), "|\n")
+    cat("| Doodson data in matrix named 'tidedoodson' of dim", dim(tidedoodson), "|\n")
     cat("\\---------------------------------------------------------/\n")
 }
 
@@ -203,7 +211,7 @@ if (debug > -1) {
 # NJ = number of main constituents from which it is derived;
 # COEF,KONCO = combination number and name of these main constituents.
 
-shallow <- vector("list", 1000)         # will trim later
+tideshallow <- vector("list", 1000)         # will trim later
 nshallow <- 1
 while(TRUE) {
     x <- readLines(file, n=1)
@@ -223,34 +231,30 @@ while(TRUE) {
             ##cat("  coef= ",coef," konco= '",konco,"'\n",sep="")
         }
     }
-    shallow[[nshallow]] <- list(name=kon, nj=nj, coef=coef, konco=konco)
+    tideshallow[[nshallow]] <- list(name=kon, nj=nj, coef=coef, konco=konco)
     nshallow <- nshallow + 1
 }
 nshallow <- nshallow - 1
-length(shallow) <- nshallow
+length(tideshallow) <- nshallow
 
-stopifnot(length(shallow) == 101)
-stopifnot(shallow[[101]]$name == "ST35")
-stopifnot(shallow[[101]]$nj   == 4)
-stopifnot(shallow[[101]]$coef == c(3, 1, 1, 1))
-stopifnot(shallow[[101]]$konco == c("M2", "N2", "K2", "S2"))
+stopifnot(length(tideshallow) == 101)
+stopifnot(tideshallow[[101]]$name == "ST35")
+stopifnot(tideshallow[[101]]$nj   == 4)
+stopifnot(tideshallow[[101]]$coef == c(3, 1, 1, 1))
+stopifnot(tideshallow[[101]]$konco == c("M2", "N2", "K2", "S2"))
 
 if (debug > -1) {
     cat("\n")
     cat("/--------------------------------------------------------\\\n")
-    cat("| Shallow data in list named 'tideshallow' of length", length(shallow), "|\n")
+    cat("| Shallow data in list named 'tideshallow' of length", length(tideshallow), "|\n")
     cat("\\--------------------------------------------------------/\n")
 }
 
 close(file)
-tideconst   <- const
-tidedoodson <- doodson
-tidesat     <- sat
-tideshallow <- shallow
 
 cat("
 DO MANUALLY:
-    save(tideconst, tidedoodson, tidesemi, tideshallow, file=\"../data/tidesetup.rda\")
+    save(tideconst, tidedoodson, tidesat, tideshallow, file=\"../data/tidesetup.rda\")
 TO SET UP THE SYSTEM.
 ")
 

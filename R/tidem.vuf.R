@@ -1,15 +1,88 @@
 tidem.vuf <- function(t, j, lat=NULL)
 {
     data("tidesetup")
+    tideconst   <- get("tideconst",   pos=globalenv())
+    tidedsat    <- get("tidesat",     pos=globalenv())
     tidedoodson <- get("tidedoodson", pos=globalenv())
-    tidesemi    <- get("tidesemi",    pos=globalenv())
+    ##    tidesemi    <- get("tidesemi",    pos=globalenv())
     a <- tidem.astron(t)
-    v <- tidedoodson[j,] %*% a$astro + tidesemi[j]
+print(a)
+    v <- tidedoodson[j,] %*% a$astro + tideconst$semi[j]
+print(tideconst$semi[j])
     v <- v - trunc(v)
     if (!is.null(lat)) {
-        cat("gave lat\n")
         if (abs(lat) < 5) lat <- sign(lat) * 5
         slat <- sin(pi * lat / 180)
+        j <- which(tidesat$ilatfac == 1)
+        rr    <- tidesat$amprat
+        rr[j] <- rr[j] * 0.36309 * (1.0 - 5.0 * slat * slat) / slat
+        j     <- which(tidesat$ilatfac == 2)
+        rr[j] <- rr[j] * 2.59808 * slat
+
+        uu <- tidesat$deldood %*% a$astro[4:6] + tidesat$phcorr
+        uu <- uu - trunc(uu)
+
+        cat("uu=");print(uu)
+
+        nsat <- length(tidesat$iconst)
+        nfreq <- length(tideconst$numsat)
+
+        ##  fsum=1+sum(sparse([1:nsat],sat.iconst,rr.*exp(i*2*pi*uu),nsat,nfreq)).';
+
+        ##>  fsum = 1 + sum(sparse([1:nsat], tidesat$iconst, rr*exp(i*2*pi*uu), nsat, nfreq)).'
+
+        ##>> help sparse
+        ##         SPARSE Create sparse matrix.
+        ##            S = SPARSE(X) converts a sparse or full matrix to sparse form by
+        ##            squeezing out any zero elements.
+        ##
+        ##            S = SPARSE(i,j,s,m,n,nzmax) uses the rows of [i,j,s] to generate an
+        ##            m-by-n sparse matrix with space allocated for nzmax nonzeros.  The
+        ##            two integer index vectors, i and j, and the real or complex entries
+        ##            vector, s, all have the same length, nnz, which is the number of
+        ##            nonzeros in the resulting sparse matrix S .  Any elements of s
+        ##            which have duplicate values of i and j are added together.
+        ##
+        ##            There are several simplifications of this six argument call.
+        ##
+        ##            S = SPARSE(i,j,s,m,n) uses nzmax = length(s).
+        ##
+        ##            S = SPARSE(i,j,s) uses m = max(i) and n = max(j).
+        ##
+        ##            S = SPARSE(m,n) abbreviates SPARSE([],[],[],m,n,0).  This
+        ##            generates the ultimate sparse matrix, an m-by-n all zero matrix.
+        ##
+        ##            The argument s and one of the arguments i or j may be scalars,
+        ##            in which case they are expanded so that the first three arguments
+        ##            all have the same length.
+        ##
+        ##            For example, this dissects and then reassembles a sparse matrix:
+        ##
+        ##                               [i,j,s] = find(S);
+        ##                       [m,n] = size(S);
+        ##                       S = sparse(i,j,s,m,n);
+        ##
+        ##            So does this, if the last row and column have nonzero entries:
+        ##
+        ##                               [i,j,s] = find(S);
+        ##                       S = sparse(i,j,s);
+        ##
+        ##            All of MATLAB's built-in arithmetic, logical and indexing operations
+        ##    can be applied to sparse matrices, or to mixtures of sparse and
+        ##    full matrices.  Operations on sparse matrices return sparse matrices
+
+        ##    and operations on full matrices return full matrices.  In most cases,
+        ##    operations on mixtures of sparse and full matrices return full
+        ##    matrices.  The exceptions include situations where the result of
+        ##    a mixed operation is structurally sparse, eg.  A .* S is at least
+        ##    as sparse as S .  Some operations, such as S >= 0, generate
+        ##    "Big Sparse", or "BS", matrices -- matrices with sparse storage
+        ##    organization but few zero elements.
+        ##
+        ##    See also ISSPARSE, SPALLOC, SPONES, SPEYE, SPCONVERT, FULL, FIND, SPARFUN.
+
+        ##        ## HERE HERE HERE
+
         warning("not doing anything for u and f yet!")
         u <- rep(NA, length(v))
         f <- rep(NA, length(v))
