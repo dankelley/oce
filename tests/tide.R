@@ -265,8 +265,8 @@ stopifnot(all.equal(a$ader,  c(0.9661, 0.0366, 0.0027, 0.0003, 0.0001, 0.0000), 
 
 vuf <- tidem.vuf(t, 48)
 stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))
-#stopifnot(all.equal(c(vuf$u), c(0)))
-#stopifnot(all.equal(c(vuf$f), c(1)))
+stopifnot(all.equal(c(vuf$u), c(0)))
+stopifnot(all.equal(c(vuf$f), c(1)))
 
 #vuf <- tidem.vuf(t, 48, 45)
 #stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))

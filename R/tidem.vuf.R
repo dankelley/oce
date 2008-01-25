@@ -10,11 +10,15 @@ tidem.vuf <- function(t, j, lat=NULL)
         cat("gave lat\n")
         if (abs(lat) < 5) lat <- sign(lat) * 5
         slat <- sin(pi * lat / 180)
+        warning("not doing anything for u and f yet!")
+        u <- rep(NA, length(v))
+        f <- rep(NA, length(v))
     }
     else {
-        cat("did not give lat\n")
+        u <- rep(0, length(v))
+        f <- rep(1, length(v))
     }
-    list(v=v, u=1, f=1)
+    list(v=v, u=u, f=f)
 }
 
 #function [v,u,f]=t_vuf(ctime,ju,lat);
