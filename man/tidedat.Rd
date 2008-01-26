@@ -1,23 +1,27 @@
-\name{tidesat}
+\name{tidedat}
 
 \docType{data}
 
-\alias{tidesat}
+\alias{tidedat}
 
 \title{Tidal constituent information}
 
-\description{Tidal constituent information, for use in fitting tidal
-  models to sealevel data.}
+\description{Tidal information, for use in fitting tidal
+  models to sealevel data.  To get a list of the constituent names, do
+  \preformatted{
+    print(tidedat$const$name)
+  }
+}
 
-\usage{data(tidesetup)}
+\usage{data(tidedat)}
 
 \format{See section 1.3 of Foreman (1977).}
 
 \source{The data come from the \code{tide3.dat} file of the
-  \code{T_TIDE} package, and derive from Appendix 7.1 of Foreman
-  (1977).  The data are scanned using \file{tests/tide.R} in this
-  package, which also tests the veracity of the data, to a limited
-  extent.
+  \code{T_TIDE} package (Pawlowicz et al., 2002), and derive from
+  Appendix 7.1 of Foreman (1977).  The data are scanned using
+  \file{tests/tide.R} in this package, which also tests the veracity of
+  the data, to a limited extent.
 }
 
 \references{
