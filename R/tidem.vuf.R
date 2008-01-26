@@ -2,7 +2,7 @@ tidem.vuf <- function(t, j, lat=NULL)
 {
     data("tidesetup")
     tideconst   <- get("tideconst",   pos=globalenv())
-    tidedsat    <- get("tidesat",     pos=globalenv())
+    tidesat     <- get("tidesat",     pos=globalenv())
     tidedoodson <- get("tidedoodson", pos=globalenv())
     ##    tidesemi    <- get("tidesemi",    pos=globalenv())
     a <- tidem.astron(t)
