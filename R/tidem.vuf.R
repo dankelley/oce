@@ -1,18 +1,27 @@
 tidem.vuf <- function(t, j, lat=NULL)
 {
-    debug <- 1
+    debug <- 0
     data("tidedata")
     tidedata   <- get("tidedata",   pos=globalenv())
     a <- tidem.astron(t)
-    doodson <- cbind(tidedata$const$d1[j],
-                     tidedata$const$d2[j],
-                     tidedata$const$d3[j],
-                     tidedata$const$d4[j],
-                     tidedata$const$d5[j],
-                     tidedata$const$d6[j])
-    v <- doodson %*% a$astro + tidedata$const$semi[j]
+    doodson <- cbind(tidedata$const$d1,
+                     tidedata$const$d2,
+                     tidedata$const$d3,
+                     tidedata$const$d4,
+                     tidedata$const$d5,
+                     tidedata$const$d6)
+
+    ##v=rem( const.doodson*astro+const.semi, 1);
+    if (debug > 0) {
+        cat("doodson[1,]=",doodson[1,],"\n")
+        cat("doodson[2,]=",doodson[2,],"\n")
+        cat("doodson[3,]=",doodson[3,],"\n")
+    }
+
+    v <- doodson %*% a$astro + tidedata$const$semi
     if (debug > 0) cat("tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
     v <- v - trunc(v)
+    if (debug > 0) cat("v[1:3]=",v[1:3],"\n")
     if (!is.null(lat)) {
         if (abs(lat) < 5) lat <- sign(lat) * 5
         slat <- sin(pi * lat / 180)
@@ -25,7 +34,7 @@ tidem.vuf <- function(t, j, lat=NULL)
         uu <- tidedata$sat$deldood %*% a$astro[4:6] + tidedata$sat$phcorr
         uu <- uu - trunc(uu)
 
-        if (debug > 1) {cat("uu=");print(uu)}
+        if (debug > 1) {cat("uu[1:3]=");print(uu[1:3])}
 
         nsat <- length(tidedata$sat$iconst)
         nfreq <- length(tidedata$const$numsat)
@@ -47,17 +56,31 @@ tidem.vuf <- function(t, j, lat=NULL)
                 cat("u.vec[   ",isat,"]=",u.vec[isat],"       (EXPECT -0.01076294959868)\n")
             }
         }
-        cat("uvec[",j,"]=", u.vec[j], "\n")
-        cat("fsum.vec[",j,"]=", fsum.vec[j],"\n")
+        if (debug > 0) {
+            cat("uvec[",j,"]=", u.vec[j], "\n")
+            cat("fsum.vec[",j,"]=", fsum.vec[j],"\n")
+        }
 
-        warning("not doing anything for u and f yet")
+        f <- abs(fsum.vec)
+        u <- Arg(fsum.vec)/2/pi
+        if (debug>3) cat("f=",f,"\n") # correct
+        if (debug>3) cat("u=",u,"\n") # correct
 
-        u <- rep(NA, length(v))
-        f <- rep(NA, length(v))
+        for (k in which(!is.na(tidedata$const$ishallow))) {
+            ik <- tidedata$const$ishallow[k] + 0:(tidedata$const$nshallow[k] - 1)
+            f[k] <- prod(f[tidedata$shallow$iname[ik]]^abs(tidedata$shallow$coef[ik]))
+            u[k] <- sum(u[tidedata$shallow$iname[ik]]*tidedata$shallow$coef[ik])
+            v[k] <- sum(v[tidedata$shallow$iname[ik]]*tidedata$shallow$coef[ik])
+            if (debug>0 && k < 28) cat("k=",k,"f[k]=",f[k]," u[k]=",u[k],"v[k]=",v[k],"\n")
+        }
+        u <- u[j]
+        v <- v[j]
+        f <- f[j]
     }
     else {
-        u <- rep(0, length(v))
-        f <- rep(1, length(v))
+        v <- v[j]
+        u <- rep(0, length(j))
+        f <- rep(1, length(j))
     }
     list(v=v, u=u, f=f)
 }
