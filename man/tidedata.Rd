@@ -8,8 +8,8 @@
 
 \description{Tidal information, for use in fitting tidal
   models to sealevel data, in the form of a 
-  \code{\link[base]{list}} named \code{tidedata}, which
-  in turn contains three lists:
+  \code{\link[base]{list}} named \code{tidedata} that
+  contains:
   \item{\code{const}}{a list containing vectors named
     \code{name} (a string with constituent name),
     \code{freq} (the frequency, in cycles per hour),
