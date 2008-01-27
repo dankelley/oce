@@ -65,6 +65,9 @@
   \code{T_TIDE} values as a reference.
 }
 
+\seealso{
+\code{\link{tidem}} is used to fit tidal models using \code{tidedata}.
+}
 \references{
   Foreman, M. G. G., 1977.
   Manual for tidal heights analysis and prediction.
