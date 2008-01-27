@@ -41,6 +41,7 @@
     \code{coef},
     and \code{iname}.
   }
+
   Apart from the use of \code{d1} through \code{d6}, the naming and
   content follows \code{T_TIDE}, and the test suite checks
   against some values against their \code{T_TIDE} counterparts.
