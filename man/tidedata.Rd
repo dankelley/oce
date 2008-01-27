@@ -12,9 +12,10 @@
   in turn contains three lists:
   \item{\code{const}}{a list containing vectors named
     \code{name} (a string with constituent name),
-    \code{freq} (frequency in cycles per hour),
-    \code{kmpr} (a string naming the comparison constituent),
-    \code{ikmpr} (index of comparison constituent),
+    \code{freq} (the frequency, in cycles per hour),
+    \code{kmpr} (a string naming the comparison constituent, if there is
+    one),
+    \code{ikmpr} (index of comparison constituent, if there is one),
     \code{df} (frequency difference betwee constituent and its comparison,
     used in the Rayleigh criterion),
     \code{d1} (first Doodson number),
