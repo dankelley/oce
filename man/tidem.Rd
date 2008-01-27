@@ -63,6 +63,12 @@
   least \eqn{rc/(f_1-f_2)}{rc/(f1-f2)}. The value \code{rc=1} yields
   nominal resolution.
 
+  A list of constituent names is created by the following:
+  \preformatted{
+    data(tidedata)
+    print(tidedata$const$name)
+  }
+
   \strong{The text should include discussion of the (not yet performed)
   nodal correction treatement.}
 } % enumerate
