@@ -8,55 +8,51 @@
 
 \description{Tidal information, for use in fitting tidal
   models to sealevel data, in the form of a 
-  \code{\link[base]{list}} named \code{"tidedata"}, which
+  \code{\link[base]{list}} named \code{tidedata}, which
   in turn contains three lists:
   \code{tidedata} is a \code{\link[base]{list}} containing 
-  \item{"const"}{which is a list containing vectors named
-    \code{"name"} (a string with constituent name),
-    \code{"freq"} (frequency in cycles per hour),
-    \code{"kmpr"} (a string naming the comparison constituent),
-    \code{"ikmpr"} (index of comparison constituent),
-    \code{"df"} (frequency difference betwee constituent and its comparison,
+  \item{\code{const}}{which is a list containing vectors named
+    \code{name} (a string with constituent name),
+    \code{freq} (frequency in cycles per hour),
+    \code{kmpr} (a string naming the comparison constituent),
+    \code{ikmpr} (index of comparison constituent),
+    \code{df} (frequency difference betwee constituent and its comparison,
     used in the Rayleigh criterion),
-    \code{"d1"} (first Doodson number),
-    \code{"d2"},
-    \code{"d3"}, 
-    \code{"d4"},
-    \code{"d5"},
-    \code{"d6"} (sixth Doodson number),
-    \code{"semi"},
-    \code{"nsat"},
-    \code{"ishallow"},
-    \code{"nshallow"},
-    \code{"doodsonamp"},
-    and \code{"doodsonspecies"}.}
-  \item{tidedata$sat}{which is a list containing vectors
-    \code{"deldood"},
-    \code{"phcorr"},
-    \code{"amprat"},
-    \code{"ilatfac"},
-    and \code{"iconst"}.}
-  and
-  \item{tidedata$shallow}{which is a list containing
-    \code{"iconst"},
-    \code{"coef"},
-    and \code{"iname"}.
+    \code{d1} (first Doodson number),
+    \code{d2},
+    \code{d3}, 
+    \code{d4},
+    \code{d5},
+    \code{d6} (sixth Doodson number),
+    \code{semi},
+    \code{nsat} (number of satellite constituents),
+    \code{ishallow},
+    \code{nshallow},
+    \code{doodsonamp},
+    and \code{doodsonspecies}.}
+  \item{\code{sat}}{which is a list containing vectors
+    \code{deldood},
+    \code{phcorr},
+    \code{amprat},
+    \code{ilatfac},
+    and \code{iconst}.}
+  \item{\code{shallow}}{which is a list containing vectors
+    \code{iconst},
+    \code{coef},
+    and \code{iname}.
   }
-  Apart from the use of \code{"d1"} through \code{"d6"}, the naming and
-  content follows \code{T_TIDE} precisely, and the test suite checks
-  against values in that package.
-
+  Apart from the use of \code{d1} through \code{d6}, the naming and
+  content follows \code{T_TIDE}, and the test suite checks
+  against some values against their \code{T_TIDE} counterparts.
 }
 
 \usage{data(tidedata)}
 
-\format{See section 1.3 of Foreman (1977).}
-
 \source{The data come from the \code{tide3.dat} file of the
   \code{T_TIDE} package (Pawlowicz et al., 2002), and derive from
-  Appendix 7.1 of Foreman (1977).  The data are scanned using
-  \file{tests/tide.R} in this package, which also tests the veracity of
-  the data, to a limited extent.
+  Appendices provided by Foreman (1977).  The data are scanned using
+  \file{tests/tide.R} in this package, which also performs some tests using
+  \code{T_TIDE} values as a reference.
 }
 
 \references{
