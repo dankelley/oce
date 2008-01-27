@@ -13,9 +13,9 @@
   \item{\code{const}}{a list containing vectors named
     \code{name} (a string with constituent name),
     \code{freq} (the frequency, in cycles per hour),
-    \code{kmpr} (a string naming the comparison constituent, if there is
-    one),
-    \code{ikmpr} (index of comparison constituent, if there is one),
+    \code{kmpr} (a string naming the comparison constituent, blank if there is
+    none),
+    \code{ikmpr} (index of comparison constituent, or 0 if there is none),
     \code{df} (frequency difference betwee constituent and its comparison,
     used in the Rayleigh criterion),
     \code{d1} (first Doodson number),
@@ -44,6 +44,15 @@
   Apart from the use of \code{d1} through \code{d6}, the naming and
   content follows \code{T_TIDE}, and the test suite checks
   against some values against their \code{T_TIDE} counterparts.
+
+  To get a list of all constituents, do
+  \preformatted{
+    cat("all constituents:",tidedata$const$name)
+  }
+  and to get a list of the so-called standard coefficients, do
+  \preformatted{
+    cat("standard:",tidedata$const$name[tidedata$const$ikmpr])
+  }
 }
 
 \usage{data(tidedata)}
