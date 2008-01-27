@@ -1,19 +1,19 @@
-\name{tidedat}
+\name{tidedata}
 
 \docType{data}
 
-\alias{tidedat}
+\alias{tidedata}
 
 \title{Tidal constituent information}
 
 \description{Tidal information, for use in fitting tidal
   models to sealevel data.  To get a list of the constituent names, do
   \preformatted{
-    print(tidedat$const$name)
+    print(tidedata$const$name)
   }
 }
 
-\usage{data(tidedat)}
+\usage{data(tidedata)}
 
 \format{See section 1.3 of Foreman (1977).}
 

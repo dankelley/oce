@@ -9,14 +9,14 @@ summary.tide <- function(object, p=0, constituent, ...)
     sig[object$p<0.01]  <- "** "
     sig[object$p<0.001] <- "***"
     if (missing(constituent)) {
-        rval <- data.frame(Name=object$name[ok], Frequency=object$frequency[ok],
+        rval <- data.frame(Name=object$name[ok], Freq=object$freq[ok],
                            Amplitude=object$amplitude[ok],	Phase=object$phase[ok],
                            p=object$p[ok], sig=sig[ok])
     }
     else {
         i <- which(object$name==constituent)
         if (length(i) == 0) stop("there is no such constituent '", constituent, "'")
-        rval <- data.frame(Name=object$name[i], Frequency=object$frequency[i],
+        rval <- data.frame(Name=object$name[i], Freq=object$freq[i],
                            Amplitude=object$amplitude[i],	Phase=object$phase[i],
                            p=object$p[i], sig=sig[i])
     }

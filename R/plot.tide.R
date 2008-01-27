@@ -28,7 +28,7 @@ plot.tide <- function(x, label.if=NULL, plot.type=c("staircase", "spikes"), log=
         }
     }
     if (!inherits(x, "tide")) stop("method is only for tidal analysis objects")
-    frequency <- x$frequency[-1] # trim z0
+    frequency <- x$freq[-1] # trim z0
     amplitude <- x$amplitude[-1]
     name      <- x$name[-1]
     nc <- length(frequency)

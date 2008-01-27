@@ -6,21 +6,23 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     ##    load(paste(system.file(package="oce"),"data/tidesetup.rda",sep="/"), pos=globalenv())
     ##    load(paste(system.file(package="oce"),"data/tidesetup.rda",sep="/"))
     ###
-    data("tidesetup")
-    tc <- get("tideconst", pos=globalenv())
+    data("tidedata")
+    td <- get("tidedata", pos=globalenv())
+    tc <- td$const
     ###
 
     ntc <- length(tc$name)
 
     if (!quiet) print(tc)
 
-    name <- frequency <- compare <- NULL
+    name <- freq <- kmpr <- NULL
     indices <- NULL
+    standard <- tc$ikmpr > 0
     if (missing(constituents)) {
-        name      <- tc$name[tc$standard][-1]
-        frequency <- tc$frequency[tc$standard][-1]
-        compare   <- tc$compare[tc$standard][-1]
-        indices   <- c(indices, seq(1:ntc)[tc$standard])
+        name <- tc$name[standard][-1]
+        freq <- tc$freq[standard][-1]
+        kmpr <- tc$kmpr[standard][-1]
+        indices <- c(indices, seq(1:ntc)[standard])
         if (!quiet) print(name);
     }
     else {
@@ -29,9 +31,9 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
             if (!quiet) cat("[", constituents[i], "]\n",sep="")
             if (constituents[i] == "standard") { # must be first!
                 if (i != 1) stop("\"standard\" must occur first in constituents list")
-                name      <- tc$name[tc$standard][-1]
-                frequency <- tc$frequency[tc$standard][-1]
-                compare   <- tc$compare[tc$standard][-1]
+                name <- tc$name[standard][-1]
+                freq <- tc$freq[standard][-1]
+                kmpr <- tc$kmpr[standard][-1]
                 indices <- c(indices, seq(1:ntc)[tc$standard])
                 ##cat("INDICES:", indices, "\n")
             }
@@ -55,7 +57,7 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
         }
     }
     indices <- indices[order(indices)]
-    tc2 <- list(name=tc$name[indices], frequency=tc$frequency[indices], compare=tc$compare[indices])
+    tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
 
     ##print(data.frame(tc2))
 
@@ -64,42 +66,42 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     if (!quiet) print(name)
     if (length(iZ0)) name <- name[-iZ0]
     nc <- length(name)
-    frequency <- vector("numeric", nc)
-    compare   <- vector("numeric", nc)
+    freq <- vector("numeric", nc)
+    kmpr <- vector("numeric", nc)
     for (i in 1:nc) {                   # Build up based on constituent names
         ic <- which(tc$name == name[i])
         if (!length(ic)) stop("there is no tidal constituent named \"", name[i], "\"")
-        frequency[i] <- tc$frequency[ic]
-        compare[i] <- tc$compare[ic]
+        freq[i] <- tc$freq[ic]
+        kmpr[i] <- tc$kmpr[ic]
     }
     ##cat("A:\n")
-    ##print(data.frame(name,frequency,compare))
+    ##print(data.frame(name,freq,kmpr))
 
-    nc <- length(frequency)
+    nc <- length(freq)
                                         # Check Rayleigh criterion
     interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
     ##cat("interval:",interval,"\n")
     drop.term <- NULL
     for (i in 1:nc) {
-        cc <- which(tc2$name == compare[i])
+        cc <- which(tc2$name == kmpr[i])
         if (length(cc)) {
-            cannot.fit <- (interval * abs(frequency[i]-tc2$frequency[cc])) < rc
-            ##cat("compare", name[i], "with", compare[i],":", cannot.fit,"\n")
+            cannot.fit <- (interval * abs(freq[i]-tc2$freq[cc])) < rc
+            ##cat("compare name=", name[i], "with", kmpr[i],":", cannot.fit,"\n")
             if (cannot.fit)	drop.term <- c(drop.term, i)
         }
     }
     ##cat("DROP:",drop.term,"\n")
     if (length(drop.term) > 0) {
         if (!quiet) cat("Record is too short to fit for constituents:", name[drop.term],"\n")
-        frequency <- frequency[-drop.term]
-        name      <- name[-drop.term]
-        compare   <- compare[-drop.term]
+        name <- name[-drop.term]
+        freq <- freq[-drop.term]
+        kmpr <- kmpr[-drop.term]
     }
 
     ##cat("FITTING TO\n")
-    ##print(data.frame(name,frequency))
+    ##print(data.frame(name,freq))
 
-    nc <- length(frequency)
+    nc <- length(freq)
     nt <- length(sl$data$eta)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
@@ -136,7 +138,7 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     hour2pi <- 2 * pi * hour
 
     for (i in 1:nc) {
-        omega.t <- frequency[i] * hour2pi
+        omega.t <- freq[i] * hour2pi
         x[,2*i-1] <- sin(omega.t)
         x[,2*i  ] <- cos(omega.t)
     }
@@ -169,7 +171,7 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     phase <- phase * 180 / pi
     rval <- list(model=model,
                  name=c("Z0", name),
-                 frequency=c(0,frequency),
+                 freq=c(0,freq),
                  amplitude=amplitude,
                  phase=phase,
                  p=p)

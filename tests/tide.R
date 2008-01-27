@@ -1,5 +1,4 @@
-SETUP <- FALSE # set TRUE during creation of the package, to set up the .rda file (see below)
-
+SETUP <- FALSE # set TRUE during coding, to set up the .rda file (see below)
 
 ## See page 2 of Foreman 1977 for the format of tide3.dat,
 ## which is provided in t-tide as (what seems to be) an exact
@@ -23,6 +22,9 @@ freq <- ikmpr <- df <-
     d1 <- d2 <- d3 <- d4 <- d5 <- d6 <-
     semi <- isat <- nsat <- ishallow <- nshallow <- doodsonamp <- doodsonspecies <-
     vector("numeric", nc)
+doodsonamp <- rep(NA, nc)
+doodsonspecies <- rep(NA, nc)
+
 ishallow <- NA
 ic <- 1
 while (TRUE) {
@@ -98,7 +100,7 @@ while (TRUE) {
     d5[which.constituent] <- mm <- as.numeric(substr(x, 25, 27))
     d6[which.constituent] <- nn <- as.numeric(substr(x, 28, 30))
 
-    if (debug > 0) cat("name=", kon, "w=", w,"\n")
+    if (debug > 0) cat("name=", kon, "which.constituent=", which.constituent,"\n")
 
     semi[which.constituent] <- as.numeric(substr(x, 31, 35))
     nj <- as.numeric(substr(x, 36, 39)) # number of satellites
@@ -108,7 +110,7 @@ while (TRUE) {
 
     if (debug > 1) {
         cat(">>>", x, "\n", sep="")
-        cat("kon=", kon, " ii=",ii," jj=",jj," kk=",kk," ll=",ll," mm=",mm," nn=",nn," this.semi=",this.semi," nj=",nj,"\n",sep="")
+        cat("kon=", kon, " ii=",ii," jj=",jj," kk=",kk," ll=",ll," mm=",mm," nn=",nn," semi=",semi[which.constituent]," nj=",nj,"\n",sep="")
     }
     if (nj > 0) {
         ## ALP1    1 -4  2  1  0  0 -.25   2
@@ -129,7 +131,7 @@ while (TRUE) {
             amprat[this.sat]  <- s[5]
             ilatfac[this.sat] <- s[6]
             iconst[this.sat]  <- which.constituent # constituent to which this satellite is attached
-            if (debug > 1) cat("Got satellite ", iisat, "for constituent", kon, "(", which.constituent, ") which has amprat", amprat[iisat], "\n")
+            if (debug > 1) cat("Got satellite ", this.sat, "for constituent", kon, "(", which.constituent, ") which has amprat", amprat[this.sat], "\n")
             this.sat <- this.sat + 1
             is <- is + 1
             if (nxs > 50) {
@@ -212,6 +214,7 @@ while(TRUE) {
         }
     }
 }
+close(file)
 
 shallow <- data.frame(iconst=iconst, coef=coef, iname=iname)
 
@@ -224,11 +227,40 @@ stopifnot(shallow$coef[1:5] == c(2, -1, 1, -1, 2))
 if (debug > 3) print(shallow$iname[1:5])
 stopifnot(shallow$iname[1:5] == c(19, 13, 57, 13, 48))
 
-close(file)
+stopifnot(nsat[48] == 9)        # M2
+stopifnot(all.equal(df[48], 0.08051140070000))
+stopifnot(ishallow[143:146] == c(242, 245, 246, 248))
+stopifnot(nshallow[143:146] == c(3, 1, 2, 4))
 
-## matlab parts of "const":
-## name, freq, kmpr, ikmpr, df, doodson, semi, isat, nsat, ishallow, nshallow, doodsonamp, doodsonspecies
-## NB: name an kmpr are strings, and doodson holds 6 values (use d1, d2, ..., d6 for that).
+#################
+## equilibrium ##
+##################
+
+efile <- file("t_equilib.dat", "r")
+edat <- readLines(efile)
+ne <- length(edat)
+for (i in 10:ne) {                      # 9 lines of header
+    if (debug > 2) cat("<<", edat[i], ">>\n")
+    # Name Species A B
+    kon <- gsub(" ", "", substr(edat[i], 1, 4))
+    which.constituent <- which(name == kon)
+    if (length(which.constituent) < 1) stop("cannot understand equilibirum constituent", kon)
+    species <- as.numeric(substr(edat[i], 8, 8))
+    A <- as.numeric(substr(edat[i],  9, 15))
+    B <- as.numeric(substr(edat[i], 16, 21))
+    if (A != 0) {
+        if (debug > 2) cat("case A, k=",which.constituent, "A=",A,"\n")
+        doodsonamp[which.constituent] <- A / 1e5
+        doodsonspecies[which.constituent] <- species
+    }
+    else {
+        if (debug > 2) cat("case B, k=",which.constituent, "B=",B,"\n")
+        doodsonamp[which.constituent] <- B / 1e5
+        doodsonspecies[which.constituent] <- -species
+    }
+}
+
+close(efile)
 
 const <- data.frame(name=name,
                     freq=freq,
@@ -240,31 +272,29 @@ const <- data.frame(name=name,
                     nsat=nsat,
                     ishallow=ishallow,
                     nshallow=nshallow,
-                    doodsonamp=rep(NA, length(name)), # FIXME
-                    doodsonspecies=rep(NA, length(name)), # FIXME
+                    doodsonamp=doodsonamp,
+                    doodsonspecies=doodsonspecies,
                     stringsAsFactors=FALSE)
+
+cat("First, and last of tidedata$const, for reference:\n")
 print(const[c(1:3,nc-1,nc),])
 
-stopifnot(const$numsat[48] == 9)        # M2
-stopifnot(all.equal(const$df[48], 0.08051140070000))
-stopifnot(const$ishallow[143:146] == c(242, 245, 246, 248))
-stopifnot(const$nshallow[143:146] == c(3, 1, 2, 4))
-
 tidedata <- list(const=const, sat=sat, shallow=shallow)
+
+stopifnot(all.equal(tidedata$const$doodsonspecies[c(2,3,10)], c(0,0,-1)))
+stopifnot(all.equal(tidedata$const$doodsonamp[c(2,3,10)], c(0.01160000000000,0.07299000000000,0.01153000000000)))
 
 cat("
 DO MANUALLY:
     save(tidedata, file=\"../data/tidedata.rda\")
 TO SET UP THE SYSTEM.
-
-NOTE: const$doodsonamp and const$doodsonspecies are not set yet
-
 ")
 
 
-#####################
-## Low-level tests ##
-#####################
+
+#############################
+## Tests of ancillary code ##
+############################
 
 if (!SETUP) {
 
@@ -286,7 +316,4 @@ stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))
 #stopifnot(all.equal(c(vuf$u), c(0.00295677805220)))
 #stopifnot(all.equal(c(vuf$f), c(0.96893771510868)))
 
-# ISSUES
-# matlab has nsat=162 but R has 44.
-# sat.amprat seems to be sat$ee
 }
