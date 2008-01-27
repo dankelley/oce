@@ -6,7 +6,7 @@
 \arguments{
   \item{t}{time in \code{\link[base]{POSIXct}} format}
 }
-\details{Based directly on t\_astron, from the T\_TIDE package.}
+\details{Based directly on \code{t_astron}, from the \code{T_TIDE} package.}
 \value{A \code{\link[base]{data.frame}} containing
   \item{\code{astro}}{(fill in later)}
   \item{\code{ader}}{(fill in later)}
@@ -17,5 +17,5 @@ tidem.astron(as.POSIXct("2008-01-22 18:50:24"))
 \seealso{
   \code{\link{tidem}}, which uses this.
 }
-\author{Dan Kelley, based directly on t\_astron from the T\_TIDE package.}
+\author{Dan Kelley, based directly on \code{t_astron} from the \code{T_TIDE} package.}
 \keyword{misc}

@@ -10,8 +10,7 @@
   models to sealevel data, in the form of a 
   \code{\link[base]{list}} named \code{tidedata}, which
   in turn contains three lists:
-  \code{tidedata} is a \code{\link[base]{list}} containing 
-  \item{\code{const}}{which is a list containing vectors named
+  \item{\code{const}}{a list containing vectors named
     \code{name} (a string with constituent name),
     \code{freq} (frequency in cycles per hour),
     \code{kmpr} (a string naming the comparison constituent),
@@ -30,13 +29,13 @@
     \code{nshallow},
     \code{doodsonamp},
     and \code{doodsonspecies}.}
-  \item{\code{sat}}{which is a list containing vectors
+  \item{\code{sat}}{a list containing vectors
     \code{deldood},
     \code{phcorr},
     \code{amprat},
     \code{ilatfac},
     and \code{iconst}.}
-  \item{\code{shallow}}{which is a list containing vectors
+  \item{\code{shallow}}{a list containing vectors
     \code{iconst},
     \code{coef},
     and \code{iname}.
@@ -62,7 +61,7 @@
   Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 58pp.
   
   Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
-  Classical tidal harmonic analysis including error estimates in MATLAB using \code{T\_TIDE}.
+  Classical tidal harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
   Computers and Geosciences, 28, 929-937.
 }
 

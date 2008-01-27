@@ -102,12 +102,12 @@
 \strong{Note: this is only a preliminary test, since
 \code{\link{tidem}} does not yet do nodal corrections, and also since
 the test dos not add the P1 and K2 constituents, as in the Foreman and
-T\_TIDE cases.  FIXME: delete this note when the code is finished.}
+\code{T_TIDE} cases.  FIXME: delete this note when the code is finished.}
 
 The Foreman package produces M2 amplitude 0.4904m and phase 77.70
 (Appendix 7.3), when P1 and K2 are added to the standard constituents.
 Under what one may assume are the same conditions, the demonstration
-within \code{T\_TIDE} gives 0.4904m \eqn{\pm}{+/-} 0.037m and phase
+within \code{T_TIDE} gives 0.4904m \eqn{\pm}{+/-} 0.037m and phase
 77.70 \eqn{\pm}{+/-} 3.94.
 
 Under the same conditions, the test given below results in 
@@ -139,7 +139,7 @@ summary(tide)
 plot(tide)
 
 # The demonstration time series from Foreman (1977),
-# also used in T_TIDE (Pawlowicz, 2002).
+# also used in \code{T_TIDE} (Pawlowicz, 2002).
 data(sealevel.tuk)
 tide.tuk <- tidem(sealevel.tuk)
 summary(tide.tuk)
@@ -155,7 +155,7 @@ summary(tide.tuk)
   International Hydrographic Review, 68 (1), 95-108.
   
   Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
-  Classical tidal harmonic analysis including error estimates in MATLAB using T\_TIDE.
+  Classical tidal harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
   Computers and Geosciences, 28, 929-937.
 }
 \author{Dan Kelley}

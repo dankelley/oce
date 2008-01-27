@@ -8,7 +8,7 @@
   \item{j}{indices of tidal constituents to use}
   \item{lat}{latitude (if missing, something is done for that)}
 }
-\details{Based directly on t\_vuf, from the T\_TIDE package.}
+\details{Based directly on \code{t_vuf}, from the \code{T_TIDE} package.}
 \value{A \code{\link[base]{data.frame}} containing
   \item{\code{astro}}{(fill in later)}
   \item{\code{ader}}{(fill in later)}
@@ -19,5 +19,5 @@ tidem.vuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
 \seealso{
   \code{\link{tidem}}, which uses this.
 }
-\author{Dan Kelley, based directly on t\_vuf from the T\_TIDE package.}
+\author{Dan Kelley, based directly on \code{t_vuf} from the \code{T_TIDE} package.}
 \keyword{misc}

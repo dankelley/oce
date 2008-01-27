@@ -7,7 +7,7 @@
 \title{Sample sea-level data set, from Tuktoyaktuk (1975)}
 
 \description{This sea-level dataset is provided with in Appendix 7.2 of
-  Foreman (1977) and also with the T\_TIDE package (Pawlowicz et al.,
+  Foreman (1977) and also with the \code{T_TIDE} package (Pawlowicz et al.,
   2002). It results from measurements made in 1975 at Tuktoyaktuk,
   Northwest Territories, Canada.
 
@@ -37,7 +37,7 @@ lines(sealevel.tuk$data$t, detided, col="red")
   (1977), to build a test case), edited a bit to get the dates in a
   format that \R could scan, and put into a data file.  This file was
   then used to create \code{sealevel} object follows.  (The
-  \code{T\_TIDE} dataset started at \code{06-Jul-1975 01:00:00}, but the
+  \code{T_TIDE} dataset started at \code{06-Jul-1975 01:00:00}, but the
   correct GMT start time is \code{06-Jul-1975 23:00:00}.)
 
 \preformatted{
@@ -60,7 +60,7 @@ sealevel.tuk <- as.sealevel(eta=eta, t=t, station.name="Tuktayaktuk",
   Institute of Ocean Sciences, Patricia Bay, Sidney, BC, 58pp.
 
   Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
-  Classical tidal harmonic analysis including error estimates in MATLAB using T\_TIDE.
+  Classical tidal harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
   Computers and Geosciences, 28, 929-937.
 }
 
