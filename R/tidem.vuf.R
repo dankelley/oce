@@ -4,6 +4,9 @@ tidem.vuf <- function(t, j, lat=NULL)
     data("tidedata")
     tidedata   <- get("tidedata",   pos=globalenv())
     a <- tidem.astron(t)
+
+    if (debug > 0) print(a)
+
     doodson <- cbind(tidedata$const$d1,
                      tidedata$const$d2,
                      tidedata$const$d3,
