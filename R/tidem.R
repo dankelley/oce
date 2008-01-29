@@ -1,6 +1,8 @@
-tidem <- function(sl, constituents, rc=1, quiet = TRUE)
+tidem <- function(sl, constituents, latitude=NULL, rc=1, quiet = TRUE)
 {
     if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
+
+    central.time.index <- floor(length(sl$data$t)/2)
 
     ###
     ##    load(paste(system.file(package="oce"),"data/tidesetup.rda",sep="/"), pos=globalenv())
@@ -59,6 +61,8 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     indices <- indices[order(indices)]
     tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
 
+    cat("L 62 length(indices)=",length(indices)," first few",indices[1], " ", indices[2], "\n")
+
     ##print(data.frame(tc2))
 
     iZ0 <- which(tc2$name == "Z0")      # Remove Z0
@@ -66,11 +70,16 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     if (!quiet) print(name)
     if (length(iZ0)) name <- name[-iZ0]
     nc <- length(name)
+    index <- vector("numeric", nc)
     freq <- vector("numeric", nc)
     kmpr <- vector("numeric", nc)
+
+    cat("L 75 nc=",nc,"\n")
+
     for (i in 1:nc) {                   # Build up based on constituent names
         ic <- which(tc$name == name[i])
         if (!length(ic)) stop("there is no tidal constituent named \"", name[i], "\"")
+        index[i] <- ic
         freq[i] <- tc$freq[ic]
         kmpr[i] <- tc$kmpr[ic]
     }
@@ -91,12 +100,15 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
         }
     }
     ##cat("DROP:",drop.term,"\n")
+    cat("L101 index before:",index,"\n")
     if (length(drop.term) > 0) {
         if (!quiet) cat("Record is too short to fit for constituents:", name[drop.term],"\n")
+        index <- index[-drop.term]
         name <- name[-drop.term]
         freq <- freq[-drop.term]
         kmpr <- kmpr[-drop.term]
     }
+    cat("L109 index after:",index,"\n")
 
     ##cat("FITTING TO\n")
     ##print(data.frame(name,freq))
@@ -115,6 +127,8 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     #####cat("Noon on that day   ");print(as.POSIXlt(first.day.noon,tz="GMT"))
     #####cat("hour.since.noon[1:12]:\n");print(hour.since.noon[1:12])
     #####}
+
+    cat("L129 index after:",index,"(length=",length(index),")\n")
 
     hour <- unclass(as.POSIXct(sl$data$t, tz="GMT")) / 3600 # seconds since 0000-01-01 00:00:00
 
@@ -135,7 +149,11 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     }
 
     #####hour2pi <- 2 * pi * hour.since.noon
-    hour2pi <- 2 * pi * hour
+    hour2pi <- 2 * pi * (hour - hour[central.time.index]) # FIXME: should this be central time?
+
+    danhour <<- hour2pi/2/pi
+
+    cat("L147 nc=",nc,"\n")
 
     for (i in 1:nc) {
         omega.t <- freq[i] * hour2pi
@@ -150,12 +168,11 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     coef  <- model$coefficients
     p.all <- summary(model)$coefficients[,4]
     amplitude <- phase <- p <-vector("numeric", length=1+nc)
-                                        # FIXME: decide whether to use Z0 or do mean/detrend as T_TIDE; it
-                                        # affects the loop indexing, something I've had mixed up before :-(
+                                        # FIXME: should do offset/trend removal explicitly
     amplitude[1] <- coef[1]
     phase[1] <- 0
     p[1] <- p.all[1]
-    for (i in 2:(nc+1)) {
+    for (i in seq(2,nc+1)) {
         is <- 2 * (i - 1)
         ic <- 2 * (i - 1) + 1
         s <- coef[is]                   # cos(phase)
@@ -169,11 +186,35 @@ tidem <- function(sl, constituents, rc=1, quiet = TRUE)
     }
     if (!quiet) cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
+
+    centraltime <- as.POSIXct("1975-08-08", tz="GMT")
+    danindex <<-c(0,index)
+
+    cat("L199 index:",index,"(length=",length(index),")\n")
+
+    if (is.null(latitude)) latitude <- sl$metadata$latitude
+
+    vuf <<- tidem.vuf(centraltime, c(0, index), latitude) # FIXME: should be centraltime?
+
+    vu <<- c(0, (vuf$v + vuf$u) * 360)
+    phase2 <- phase - vu                # FIXME: plus or minus??
+    negate <- phase2 < 0
+    phase2[negate] <- 360 + phase2[negate]
+
+    phase <- phase2
+
+    vuf48<<-tidem.vuf(centraltime, 48, latitude)
+
+    cat("vu at 48 with lat:", 360*(vuf48$u+vuf48$v)," (lat=",latitude,")\n")
+
+    cat("vu=",vu,"\n")
     rval <- list(model=model,
+                 const=c(1,   index),
                  name=c("Z0", name),
-                 freq=c(0,freq),
+                 freq=c(0,    freq),
                  amplitude=amplitude,
                  phase=phase,
+                 phase2=phase2,         # FIXME: remove later
                  p=p)
     class(rval) <- "tide"
     rval

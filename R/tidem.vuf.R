@@ -25,7 +25,7 @@ tidem.vuf <- function(t, j, lat=NULL)
     if (debug > 0) cat("tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
     v <- v - trunc(v)
     if (debug > 0) cat("v[1:3]=",v[1:3],"\n")
-    if (!is.null(lat)) {
+    if (!is.null(lat) && !is.na(lat)) {
         if (abs(lat) < 5) lat <- sign(lat) * 5
         slat <- sin(pi * lat / 180)
         k <- which(tidedata$sat$ilatfac == 1)

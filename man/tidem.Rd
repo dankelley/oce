@@ -2,11 +2,13 @@
 \alias{tidem}
 \title{Fit a tidal model to a timeseries}
 \description{Fit a tidal model to a timeseries.}
-\usage{tidem(sl, constituents, rc=1, quiet=TRUE)}
+\usage{tidem(sl, constituents, latitude=NULL, rc=1, quiet=TRUE)}
 \arguments{
   \item{sl}{a \code{sealevel} object.}
   \item{constituents}{an optional list of tidal constituents to which
 	the fit is done (see \dQuote{Details}.)}  
+  \item{latitude}{if provided, the latitude of the observations.  If not
+	provided, \code{tidem} will try to infer this from \code{sl}.}
   \item{rc}{the value of the coefficient in the Rayleigh criterion.}
   \item{quiet}{set to FALSE to get extra information on the processing.}
 }
@@ -95,6 +97,7 @@
 
 
 \value{An object of \code{\link[base]{class}} \code{"tide"}, consisting of
+  \item{const}{constituent number, e.g. 1 for \code{Z0}, 1 for \code{SA}, etc.}
   \item{model}{the regression model}
   \item{name}{a vector of constituent names, in non-subscript format, e.g. "\code{M2}".}
   \item{frequency}{a vector of constituent frequencies, in inverse hours.}
