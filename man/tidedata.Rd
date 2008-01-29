@@ -6,10 +6,10 @@
 
 \title{Tidal constituent information}
 
-\description{Tidal information, for use in fitting tidal
-  models to sealevel data, in the form of a 
-  \code{\link[base]{list}} named \code{tidedata} that
-  contains:
+\description{The \code{tidedata} dataset contains Tide-constituent
+  information that is use by \code{\link{tidem}} to fit tidal models.
+  \code{tidedata} is a list containing
+
   \item{\code{const}}{a list containing vectors named
     \code{name} (a string with constituent name),
     \code{freq} (the frequency, in cycles per hour),
@@ -30,12 +30,14 @@
     \code{nshallow},
     \code{doodsonamp},
     and \code{doodsonspecies}.}
+
   \item{\code{sat}}{a list containing vectors
     \code{deldood},
     \code{phcorr},
     \code{amprat},
     \code{ilatfac},
     and \code{iconst}.}
+
   \item{\code{shallow}}{a list containing vectors
     \code{iconst},
     \code{coef},
@@ -43,10 +45,10 @@
   }
 
   Apart from the use of \code{d1} through \code{d6}, the naming and
-  content follows \code{T_TIDE}, and the test suite checks
-  against some values against their \code{T_TIDE} counterparts.
+  content follows \code{T_TIDE}.  All of this is based on Foreman
+  (1977), to which the reader is referred for details.
 
-  To get a list of all constituents, do
+  To get a list of all the available tidal constituents, do
   \preformatted{
     cat("all constituents:",tidedata$const$name)
   }
