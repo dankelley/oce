@@ -166,3 +166,4 @@ summary(tide.tuk)
 }
 \author{Dan Kelley}
 \keyword{misc}
+\concept{tide}

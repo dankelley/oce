@@ -10,12 +10,12 @@
   information that is use by \code{\link{tidem}} to fit tidal models.
   \code{tidedata} is a list containing
 
-  \item{\code{const}}{a list containing vectors named
+  \item{\code{const}}{a list containing vectors 
     \code{name} (a string with constituent name),
     \code{freq} (the frequency, in cycles per hour),
     \code{kmpr} (a string naming the comparison constituent, blank if there is
     none),
-    \code{ikmpr} (index of comparison constituent, or 0 if there is none),
+    \code{ikmpr} (index of comparison constituent, or \code{0} if there is none),
     \code{df} (frequency difference betwee constituent and its comparison,
     used in the Rayleigh criterion),
     \code{d1} (first Doodson number),
@@ -50,11 +50,11 @@
 
   To get a list of all the available tidal constituents, do
   \preformatted{
-    cat("all constituents:",tidedata$const$name)
+cat("all constituents:",tidedata$const$name)
   }
   and to get a list of the so-called standard coefficients, do
   \preformatted{
-    cat("standard:",tidedata$const$name[tidedata$const$ikmpr])
+cat("standard constituents:",tidedata$const$name[tidedata$const$ikmpr])
   }
 }
 
@@ -82,5 +82,5 @@
 }
 
 \author{Dan Kelley}
-
 \keyword{misc}
+\concept{tide}

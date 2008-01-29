@@ -4,7 +4,9 @@
 \description{Do ephemeris calculations for tidem.}
 \usage{a <- tidem.vuf(t, j, lat=NULL)}
 \arguments{
-  \item{t}{time in \code{\link[base]{POSIXct}} format}
+  \item{t}{time in \code{\link[base]{POSIXct}} format.  (It is
+    \strong{very} important to use \code{tz="GMT"} in constructing
+    \code{t}.)}
   \item{j}{indices of tidal constituents to use}
   \item{lat}{latitude (if missing, something is done for that)}
 }
@@ -21,3 +23,4 @@ tidem.vuf(as.POSIXct("2008-01-22 18:50:24"), 43, 45.0)
 }
 \author{Dan Kelley, based directly on \code{t_vuf} from the \code{T_TIDE} package.}
 \keyword{misc}
+\concept{tide}
