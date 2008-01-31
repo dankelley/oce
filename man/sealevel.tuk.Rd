@@ -36,19 +36,16 @@ lines(sealevel.tuk$data$t, detided, col="red")
   Pawlowicz et al. (2002) seems to have based on Appendix 7.2 of Foreman
   (1977), to build a test case), edited a bit to get the dates in a
   format that \R could scan, and put into a data file.  This file was
-  then used to create \code{sealevel} object follows.  (The
-  \code{T_TIDE} dataset started at \code{06-Jul-1975 01:00:00}, but the
-  correct GMT start time is \code{06-Jul-1975 23:00:00}.)
+  then used to create \code{sealevel} object follows.)
 
 \preformatted{
 # Note: the data file is not supplied with the package,
-# and the 22h offset is an artifact, not a time-zone
-# conversion.
-tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
-t <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+22*3600, tz="GMT")
+# and the 7h offset is to convert from Mountain Standard Time.
+tuk <- read.table("tuk_time_elev.dat", header=FALSE, as.is=TRUE)
+t <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+7*3600, tz="GMT")
 eta <- tuk$V2
-sealevel.tuk <- as.sealevel(eta=eta, t=t, station.name="Tuktayaktuk",
-  year=1975, longitude=133.0292, latitude=69.43889, GMT.offset=0)
+sealevel.tuk <- as.sealevel(eta=eta, t=t, station.name="Tuktoyaktuk",
+                            year=1975, longitude=133.0292, latitude=69.43889, GMT.offset=0)
 #save(sealevel.tuk, file="oce/data/sealevel.tuk.rda")
 } % preformatted
 } % source
