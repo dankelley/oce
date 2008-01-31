@@ -2,13 +2,16 @@
 \alias{tidem}
 \title{Fit a tidal model to a timeseries}
 \description{Fit a tidal model to a timeseries.}
-\usage{tidem(sl, constituents, latitude=NULL, rc=1, quiet=TRUE)}
+\usage{tidem(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet=TRUE)}
 \arguments{
   \item{sl}{a \code{sealevel} object.}
   \item{constituents}{an optional list of tidal constituents to which
 	the fit is done (see \dQuote{Details}.)}  
   \item{latitude}{if provided, the latitude of the observations.  If not
 	provided, \code{tidem} will try to infer this from \code{sl}.}
+  \item{start.time}{the start time for the series.  If not provided,
+	this is taken as the first time in \code{sl$data$t}.  The time must
+	be a POSIXct object, with timezone GMT.}  
   \item{rc}{the value of the coefficient in the Rayleigh criterion.}
   \item{quiet}{set to FALSE to get extra information on the processing.}
 }
