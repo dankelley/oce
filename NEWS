@@ -1,4 +1,6 @@
-0.1.70	- add as.windrose() and plot.windrose()
+0.1.70
+	- make processing log timestamps be in GMT
+	- add as.windrose() and plot.windrose()
 	- add sealevel.tuk sea-level dataset
 	- add tidem(), predict.tide(), summary.tide(), plot.tide(), and data(tidedata)
 	- establish a uniform form for objects created by "read" and "as"

@@ -5,8 +5,8 @@ ctd.add.column <- function (x, column=NULL, column.name="",
     if (length(column) < 1) stop("must supply column data")
     if (column.name == "")  stop("must supply 'column.name'")
     if (code=="")           stop("must supply 'code'")
-    if (name=="") stop("must supply 'name'")
-    if (unit=="") stop("must supply 'unit'")
+    if (name=="")           stop("must supply 'name'")
+    if (unit=="")           stop("must supply 'unit'")
     result <- x
     insert.in.header <- function(h, flag, content, content.name)
     {
