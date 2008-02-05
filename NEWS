@@ -11,8 +11,8 @@
 	- make all objects inherit from a new class "oce"
 	- fix Issue 12: read.sealevel() had a hard-wired filename (remnant from debugging)
 	  [http://code.google.com/p/r-oce/issues/detail?id=12&can=1&q=label:Type-Defect]
-
-0.1.69	- modify documentation slightly
+0.1.69
+	- modify documentation slightly
 	- start a migration to more uniform object structures
 	- rename as.CTD() to as.ctd(), to make it consistent with similar functions
 	- add read.section()
@@ -25,13 +25,18 @@
 	- add "connect.points" option to plot.TS()
 	- add "station" item to "ctd" object
 	- change as.CTD() to produce sigma.theta instead of sigma
-0.1.68	- add coastline.world dataset, and increase resolution of coastline.maritimes
+0.1.68
+	- add coastline.world dataset, and increase resolution of coastline.maritimes
 	- plot.TS() no longer rotates the RH margin isopycnal labels (unless told to)
-0.1.67	- allow sw.rho() and similar routines take matrices as arguments for S, t, etc
-0.1.66	- fix bug in plot.TS() that prevented it from showing some isopycnals if min(S)=0
-0.1.65	- switch to using UNESCO formulation for sw potential temperature by default
+0.1.67
+	- allow sw.rho() and similar routines take matrices as arguments for S, t, etc
+0.1.66
+	- fix bug in plot.TS() that prevented it from showing some isopycnals if min(S)=0
+0.1.65
+	- switch to using UNESCO formulation for sw potential temperature by default
 	- prevent warnings with C90 compiler on some machines
-0.1.64	- add read.oce(), a generic function for reading several oceanographic files
+0.1.64
+	- add read.oce(), a generic function for reading several oceanographic files
 	- make read.ctd() understand WOCE-exchange files
 	- make read.sealevel() understand comma-separated data from MEDS
 	- make plot.sealevel() skip the spectral graphs, if the timeseries has NA values
