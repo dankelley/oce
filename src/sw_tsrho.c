@@ -19,8 +19,8 @@ sw_tsrho(double *pS, double *prho, double *pp, double *res)
 	*/
 #define TLOW  -3.0		/* left bracket on T search region */
 #define THIGH 40.0		/* right bracket on T search region */
-#define RHO_TOL 0.001		/* stop if get to within this rho value */
-#define T_RES   0.001		/* stop if bracket T to within this resolution */
+#define RHO_TOL 0.0001		/* stop if get to within this rho value */
+#define T_RES   0.0001		/* stop if bracket T to within this resolution */
 	bs_res = tsrho_bisection_search(&T, TLOW, THIGH, T_RES, RHO_TOL);/* BUG: ignoring result */
 	/* printf(" tsrho(S=%f  rho=%f  p=%f) returning %f\n",S,sig_0,p_ref,T); */
 	*res = T;
