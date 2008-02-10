@@ -39,7 +39,7 @@ plot.TS <- function (x,
     } else {
         rho.list <- rho.levels
     }
-    t.n <- 100
+    t.n <- 300
     t.line <- seq(T.axis.min, T.axis.max, length.out=t.n)
     for (rho in rho.list) {
         rho.label <- if (rho1000) 1000+rho else rho
