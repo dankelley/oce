@@ -18,16 +18,25 @@ plot.TS <- function (x,
         if (mar[4] < 3)
             par(mar=c(mar[1:3], 3))
     }
-    plot(x$data$salinity, x$data$temperature, xlab = "",
-         xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-         ylab = expression(paste("temperature [ ", degree, "C ]")),
-         cex=cex, pch=pch, col=col, ...)
+    args <- list(...)
+    if (is.null(args$xlab) && is.null(args$ylab)) {
+        plot(x$data$salinity, x$data$temperature, xlab = "",
+             xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
+             ylab = expression(paste("Temperature [ ", degree, "C ]")),
+             cex=cex, pch=pch, col=col, ...)
+    } else {
+        plot(x$data$salinity, x$data$temperature,
+# xlab = args$xlab,
+             xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
+#             ylab = args$ylab,
+             cex=cex, pch=pch, col=col, ...)
+    }
     if (connect.points) lines(x$data$salinity, x$data$temperature, col=col, ...)
     S.axis.min <- par()$usr[1]
     S.axis.max <- par()$usr[2]
     T.axis.min <- par()$usr[3]
     T.axis.max <- par()$usr[4]
-    mtext("Salinity [ PSU ]", side = 1, line = 3)
+    if (is.null(args$xlab)) mtext("Salinity [ PSU ]", side = 1, line = 3)
     if (grid) grid(col="lightgray")
     rho.min <- sw.sigma(max(0,S.axis.min), T.axis.max, 0)
     rho.max <- sw.sigma(S.axis.max, T.axis.min, 0)
