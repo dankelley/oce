@@ -17,6 +17,8 @@ plot.TS(x,
 	pch = 20,
 	rotate.rho.labels = FALSE,
 	connect.points = FALSE,
+	xlab,
+	ylab,
 	\dots)
 }
 \arguments{
@@ -34,10 +36,12 @@ plot.TS(x,
   \item{pch}{code for symbols on graph.}
   \item{rotate.rho.labels}{if TRUE, labels in right-hand margin are written vertically}
   \item{connect.points}{if TRUE, the points are connected with line segments, in sequence}
+  \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
+  \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 \details{
-  Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
+Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
 }
 \value{
   None.

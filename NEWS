@@ -1,4 +1,5 @@
 0.1.70
+	- permit setting xlab and ylab in plot.TS()
 	- make processing log timestamps be in GMT
 	- add as.windrose() and plot.windrose()
 	- add sealevel.tuk sea-level dataset

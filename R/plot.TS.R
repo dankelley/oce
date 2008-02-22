@@ -10,6 +10,7 @@ plot.TS <- function (x,
                      pch=20,
                      rotate.rho.labels=FALSE,
                      connect.points=FALSE,
+                     xlab, ylab,
                      ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -18,25 +19,17 @@ plot.TS <- function (x,
         if (mar[4] < 3)
             par(mar=c(mar[1:3], 3))
     }
-    args <- list(...)
-    if (is.null(args$xlab) && is.null(args$ylab)) {
-        plot(x$data$salinity, x$data$temperature, xlab = "",
-             xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-             ylab = expression(paste("Temperature [ ", degree, "C ]")),
-             cex=cex, pch=pch, col=col, ...)
-    } else {
-        plot(x$data$salinity, x$data$temperature,
-# xlab = args$xlab,
-             xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-#             ylab = args$ylab,
-             cex=cex, pch=pch, col=col, ...)
-    }
+    plot(x$data$salinity, x$data$temperature,
+         xlab = if (missing(xlab)) "Salinity [ PSU ]" else xlab,
+         ylab = if (missing(ylab)) expression(paste("Temperature [ ", degree, "C ]")) else ylab,
+         xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
+         cex=cex, pch=pch, col=col, ...)
     if (connect.points) lines(x$data$salinity, x$data$temperature, col=col, ...)
     S.axis.min <- par()$usr[1]
     S.axis.max <- par()$usr[2]
     T.axis.min <- par()$usr[3]
     T.axis.max <- par()$usr[4]
-    if (is.null(args$xlab)) mtext("Salinity [ PSU ]", side = 1, line = 3)
+    ##if (is.null(args$xlab)) mtext("Salinity [ PSU ]", side = 1, line = 3)
     if (grid) grid(col="lightgray")
     rho.min <- sw.sigma(max(0,S.axis.min), T.axis.max, 0)
     rho.max <- sw.sigma(S.axis.max, T.axis.min, 0)
