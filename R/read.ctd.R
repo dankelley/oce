@@ -414,7 +414,7 @@ read.ctd.SBE19 <- function(file,
         newnames <- c("scan", names(data))
         data <- cbind(seq(1,dim(data)[1]), data)
         names(data) <- newnames
-        warning("data file lacked a 'scan' column, so one was created"");
+        warning("data file lacked a 'scan' column, so one was created");
     }
     metadata <- list(
                      header=header,
