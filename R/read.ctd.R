@@ -405,8 +405,8 @@ read.ctd.SBE19 <- function(file,
     if (!found.pressure)    stop("cannot find 'pressure' in this file")
 
     ## Read the data as a table.
-    ## FIXME: should infer the column names from the header
-    col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigma.theta.unused","depth","flag");
+    ## FIXME: should we match to standardized names?
+    ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigma.theta.unused","depth","flag");
     col.names.inferred <- tolower(col.names.inferred)
     if (debug) cat("About to read these names:", col.names.inferred,"\n");
     data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
@@ -414,6 +414,7 @@ read.ctd.SBE19 <- function(file,
         newnames <- c("scan", names(data))
         data <- cbind(seq(1,dim(data)[1]), data)
         names(data) <- newnames
+        warning("data file lacked a 'scan' column, so one was created"");
     }
     metadata <- list(
                      header=header,
