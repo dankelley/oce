@@ -50,18 +50,19 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
             }
             if (TRUE) {                 # 4. remove equilibration by piecewise linear fit
                 ##bilinear <- function(s, p0, s0, dpds) {ifelse(s < s0, p0, p0+dpds*(s-s0))}
-                bilinear <- function(s, s0, dpds) {ifelse(s < s0, 0, 0+dpds*(s-s0))}
+                bilinear <- function(s, s0, dpds) {ifelse(s < s0, 0, dpds*(s-s0))}
+
                 pp <- x$data$pressure[keep]
                 ss <- x$data$scan[keep]
+
                 p0 <- 0
-                s0 <- x$data$scan[1]
-                dpds0 <-  diff(range(x$data$pressure)) / diff(range(x$data$scan))
-                ##m <- nls(pp ~ bilinear(ss, p0, s0, dpds), start=list(s0=s0, p0=0, dpds=dpds0))
+                s0 <- ss[0.5*length(ss)]
+                dpds0 <-  diff(range(pp)) / diff(range(ss))
+
                 m <- nls(pp ~ bilinear(ss, s0, dpds), start=list(s0=s0, dpds=dpds0))
                 if (m$convInfo$isConv) {
                     s0 <- coef(m)[[1]]
                     keep <- keep & (x$data$scan > (coef(m)[[1]]))
-                    ##if (verbose) cat("Inferred equilibration pressure=", coef(m)[[2]], "\n")
                 }
             }
         } else {
