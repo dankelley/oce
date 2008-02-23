@@ -63,6 +63,7 @@ read.ctd.WOCE <- function(file,
     date <- recovery <- NULL
     header <- c();
     col.names.inferred <- NULL
+    found.scan <- FALSE
     found.temperature <- found.salinity <- found.pressure <- FALSE
     found.sigma.theta <- found.sigma.t <- found.sigma <- FALSE
     found.conductivity <- found.conductivity.ratio <- FALSE
@@ -201,7 +202,7 @@ read.ctd.SBE19 <- function(file,
     	on.exit(close(file))
     }
                                         # Header
-    scientist <- ship <- institute <- address <- NULL
+    scientist <- ship <- institute <- address <- cruise <- NULL
     filename.orig <- NULL
     sample.interval <- NaN
     system.upload.time <- NULL
@@ -211,9 +212,7 @@ read.ctd.SBE19 <- function(file,
     date <- recovery <- NaN
     header <- c();
     col.names.inferred <- NULL
-    found.temperature <- found.salinity <- found.pressure <- found.time <- FALSE
-    found.sigma.theta <- found.sigma.t <- found.sigma <- FALSE
-    found.conductivity <- found.conductivity.ratio <- FALSE
+    found.temperature <- found.salinity <- found.pressure <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     while (TRUE) {
     	line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
@@ -229,6 +228,10 @@ read.ctd.SBE19 <- function(file,
             tokens <- strsplit(line, split=" ")
             name <- tokens[[1]][6]
             if (debug) cat("  name: '",name,"'\n",sep="")
+            if (0 < regexpr("scan", lline)) {
+                name <- "scan"
+                found.scan <- TRUE
+            }
             if (0 < regexpr("pressure", lline)) {
                 name <- "pressure"
                 found.pressure <- TRUE
@@ -400,12 +403,18 @@ read.ctd.SBE19 <- function(file,
                                         # Require p,S,T data at least
     if (!found.temperature) stop("cannot find 'temperature' in this file")
     if (!found.pressure)    stop("cannot find 'pressure' in this file")
-                                        # Data
-                                        # BUG: should be inferring the column names from the header!
+
+    ## Read the data as a table.
+    ## FIXME: should infer the column names from the header
     col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigma.theta.unused","depth","flag");
     col.names.inferred <- tolower(col.names.inferred)
     if (debug) cat("About to read these names:", col.names.inferred,"\n");
     data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
+    if (!found.scan) {
+        newnames <- c("scan", names(data))
+        data <- cbind(seq(1,dim(data)[1]), data)
+        names(data) <- newnames
+    }
     metadata <- list(
                      header=header,
                      filename=filename, # provided to this routine

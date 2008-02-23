@@ -8,6 +8,7 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
         warning("too few data to trim.ctd()")
     } else {
         which.method <- pmatch(method, c("index", "downcast"), nomatch=0)
+        if (verbose) cat("using method", which.method,"\n")
         keep <- rep(TRUE, n)
         if (which.method == 1) {        # "index"
             if (verbose)	cat("parameters:",parameters,"\n");
@@ -20,20 +21,17 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
         } else if (which.method == 2) { # "downcast"
                                         # 1. despike to remove (rare) instrumental problems
             x$data$pressure <- smooth(x$data$pressure,kind="3R")
-                                        # 2. keep only in-water data
             keep <- (x$data$pressure > 0)
-                                        # 3. keep only descending data
+                                        # 2. in-water, descending
             delta.p <- diff(x$data$pressure)
             delta.p <- c(delta.p[1], delta.p) # to get right length
             keep <- keep & (delta.p > 0)
-            if (FALSE) {
-                                        # 3old. trim the upcast and anything thereafter (ignore beginning and end)
-                trim.top <- as.integer(0.1*n)
-                trim.bottom <- as.integer(0.9*n)
-                max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
-                max.location <- trim.top + max.spot
-                keep[max.location:n] <- FALSE
-            }
+                                        # 3. trim the upcast and anything thereafter (ignore beginning and end)
+            trim.top <- as.integer(0.1*n)
+            trim.bottom <- as.integer(0.9*n)
+            max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
+            max.location <- trim.top + max.spot
+            keep[max.location:n] <- FALSE
                                         # 4. trim a possible near-surface equilibration phase
             delta.p.sorted <- sort(delta.p)
             if (!is.null(parameters)) {
@@ -43,11 +41,29 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
             }
                                         # 4a. remove equilibration data that have very little drop speed
             keep[delta.p < dp.cutoff] <- FALSE
+            if (FALSE) {
                                         # 4b. remove more equilibration data by regression
-            pp <- x$data$pressure[keep]
-            ss <- x$data$scan[keep]
-            equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x$data$scan)) < 0)
-            keep[equilibration] <- FALSE
+                pp <- x$data$pressure[keep]
+                ss <- x$data$scan[keep]
+                equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x$data$scan)) < 0)
+                keep[equilibration] <- FALSE
+            }
+            if (TRUE) {                 # 4. remove equilibration by piecewise linear fit
+                ##bilinear <- function(s, p0, s0, dpds) {ifelse(s < s0, p0, p0+dpds*(s-s0))}
+                bilinear <- function(s, s0, dpds) {ifelse(s < s0, 0, 0+dpds*(s-s0))}
+                pp <- x$data$pressure[keep]
+                ss <- x$data$scan[keep]
+                p0 <- 0
+                s0 <- x$data$scan[1]
+                dpds0 <-  diff(range(x$data$pressure)) / diff(range(x$data$scan))
+                ##m <- nls(pp ~ bilinear(ss, p0, s0, dpds), start=list(s0=s0, p0=0, dpds=dpds0))
+                m <- nls(pp ~ bilinear(ss, s0, dpds), start=list(s0=s0, dpds=dpds0))
+                if (m$convInfo$isConv) {
+                    s0 <- coef(m)[[1]]
+                    keep <- keep & (x$data$scan > (coef(m)[[1]]))
+                    ##if (verbose) cat("Inferred equilibration pressure=", coef(m)[[2]], "\n")
+                }
+            }
         } else {
             if (verbose)	cat(paste("column",method,"; parameters ", parameters[1], parameters[2]))
             l <- length(parameters)
