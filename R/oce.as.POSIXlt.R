@@ -26,7 +26,7 @@ oce.as.POSIXlt <- function (x, tz = "")
                 attr(res, "tzone") <- tz
             return(res)
         }
-        stop("character string is not in a standard unambiguous format")
+        stop("The string \"", x, "\" is not in a known date format")
     }
     if (inherits(x, "POSIXlt"))
         return(x)
