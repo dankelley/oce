@@ -1,5 +1,6 @@
 0.1.70
-	- make read.ctd() handle cases with no cruise information, and with no scan column
+	- trim.ctd(): improve equilibration-phase deletion using piecewise-linear regression
+	- read.ctd(): handle cases without cruise information or scan column
 	- permit setting xlab and ylab in plot.TS()
 	- make processing log timestamps be in GMT
 	- add as.windrose() and plot.windrose()
