@@ -12,39 +12,23 @@ ctd.trim(x, method="downcast",parameters=NULL, verbose=FALSE)
   \item{method}{Various methods exist, some of which use parameters:
     \item{"downcast"}{Select only data for which the CTD is descending.  This
       is done in stages.
-
-      1. The pressure data are despiked with a smooth() filter with
-      method "3R".  This removes wild spikes that arise from poor
-      instrument connections, etc.
-
-      2. Any data with negative pressures are deleted.  This removes
-      in-air data.
-
-      3. The maximum pressure is determined, and data acquired
-      subsequent to that point are deleted.  This removes the upcast and
-      any subsequent data.
-
-      4. At this stage, most datasets consist only of the actual
-      downcast, plus an initial period of equilibration during which
-      pressure is small.  For detailed work, it makes sense to use
-      \code{\link{plot.ctd.scan}} to Trimming this equilibration period is
-      surprisingly difficult, and is done in two stages.  First, the
-      first-difference of pressure is computed, along with its
-      confidence interval.  (By default, the 0.95 confidence level is
-      used but \code{parameters[1]} will be used if provided.)  Points
-      are removed if their first difference in pressure is less than
-      this lower limit.
-
-5. This often leaves a handful
-      of equilibration points that just happened to be falling through
-      the water column (e.g. by heaving of the vessel in surface waves).
-      To remove such points, a regression is done of
-      pressure against scan number, and the scan number at which
-      the regression passes through zero pressure is noted.  Points
-      measured before this scan number are deleted.  
-
-	}
-
+      \enumerate{
+	\item{Step 1.}{The pressure data are despiked with a smooth()
+	  filter with method "3R".  This removes wild spikes that arise
+	  from poor instrument connections, etc.}
+	\item{Step 2.}{Any data with negative pressures are deleted.
+	  This removes in-air data.}
+	\item{Step 3.}{The maximum pressure is determined, and data
+	  acquired subsequent to that point are deleted.  This removes
+	  the upcast and any subsequent data.}
+	\item{Step 4.}{An initial equilibrium phase is removed by a
+	  regression of pressure on scan number.  The model has zero
+	  pressure for some initial portion, and then a constant
+	  increase with scan number.  Then this initial zero-pressure
+	  portion is deleted.  (The regression may fail, and if so, a
+	  warning is printed, and this step is skipped.)}
+      }
+    }
     \item{"index"}{Select values only in indicated list of indices,
       \emph{e.g.} \code{selection <- ctd.trim(ctd, "index", seq(10,30))}
       selects data points 10, 11, ... 30.}

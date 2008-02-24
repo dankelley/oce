@@ -32,37 +32,40 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
             max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
             max.location <- trim.top + max.spot
             keep[max.location:n] <- FALSE
-                                        # 4. trim a possible near-surface equilibration phase
-            delta.p.sorted <- sort(delta.p)
-            if (!is.null(parameters)) {
-                dp.cutoff <- t.test(delta.p[keep], conf.level=parameters[1])$conf.int[1]
-            } else {
-                dp.cutoff <- delta.p.sorted[0.1*n]
-            }
-                                        # 4a. remove equilibration data that have very little drop speed
-            keep[delta.p < dp.cutoff] <- FALSE
             if (FALSE) {
-                                        # 4b. remove more equilibration data by regression
+                                        # deleted method: slowly-falling data
+                delta.p.sorted <- sort(delta.p)
+                if (!is.null(parameters)) {
+                    dp.cutoff <- t.test(delta.p[keep], conf.level=parameters[1])$conf.int[1]
+                } else {
+                    dp.cutoff <- delta.p.sorted[0.1*n]
+                }
+                keep[delta.p < dp.cutoff] <- FALSE
+            }
+                                        # 4. remove equilibration phase
+            if (FALSE) {                # old method, prior to Feb 2008
                 pp <- x$data$pressure[keep]
                 ss <- x$data$scan[keep]
                 equilibration <- (predict(m <- lm(pp ~ ss), newdata=list(ss=x$data$scan)) < 0)
                 keep[equilibration] <- FALSE
             }
-            if (TRUE) {                 # 4. remove equilibration by piecewise linear fit
-                ##bilinear <- function(s, p0, s0, dpds) {ifelse(s < s0, p0, p0+dpds*(s-s0))}
-                bilinear <- function(s, s0, dpds) {ifelse(s < s0, 0, dpds*(s-s0))}
-
+            if (TRUE) {                 # new method, after Feb 2008
+                bilinear <- function(s, s0, dpds) {
+                    ifelse(s < s0, 0, dpds*(s-s0)) # note: get errors if fit for initial pressure
+                }
                 pp <- x$data$pressure[keep]
                 ss <- x$data$scan[keep]
-
                 p0 <- 0
                 s0 <- ss[0.5*length(ss)]
                 dpds0 <-  diff(range(pp)) / diff(range(ss))
-
-                m <- nls(pp ~ bilinear(ss, s0, dpds), start=list(s0=s0, dpds=dpds0))
-                if (m$convInfo$isConv) {
-                    s0 <- coef(m)[[1]]
-                    keep <- keep & (x$data$scan > (coef(m)[[1]]))
+                t <- try(m <- nls(pp ~ bilinear(ss, s0, dpds), start=list(s0=s0, dpds=dpds0)), TRUE)
+                if (class(t) != "try-error") {
+                    if (m$convInfo$isConv) {
+                        s0 <- coef(m)[[1]]
+                        keep <- keep & (x$data$scan > (coef(m)[[1]]))
+                    }
+                } else {
+                    warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
                 }
             }
         } else {
