@@ -30,6 +30,7 @@ ctd.add.column <- function (x, column=NULL, column.name="",
                     break
                 }
             }
+            cat("grep(\"", pattern, "\", \"", h[i], "\",...) -> ", length(grep(pattern,h[i],perl=TRUE,useBytes=TRUE)), "\n",sep="")
             if (length(grep(pattern, h[i], perl=TRUE, useBytes=TRUE))) {
                 last.was.flag <- TRUE
                 flags <- flags + 1
