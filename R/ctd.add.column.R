@@ -30,16 +30,14 @@ ctd.add.column <- function (x, column=NULL, column.name="",
                     break
                 }
             }
-            cat("grep(\"", pattern, "\", \"", h[i], "\",...) -> ", length(grep(pattern,h[i],perl=TRUE,useBytes=TRUE)), "\n",sep="")
+            if (debug) cat("grep(\"", pattern, "\", \"", h[i], "\",...) -> ", length(grep(pattern,h[i],perl=TRUE,useBytes=TRUE)), "\n",sep="")
             if (length(grep(pattern, h[i], perl=TRUE, useBytes=TRUE))) {
                 last.was.flag <- TRUE
                 flags <- flags + 1
             }
         }
-        if (after < 1)
-            stop("Cannot locate any flagged lines in input header")
-        if (debug)
-            cat("after=", after, "\n", "\t", h[after-1], "\n\t", h[after])
+        if (after < 1) stop("Cannot locate any flagged lines in input header")
+        if (debug) cat("after=", after, "\n", "\t", h[after-1], "\n\t", h[after])
         return(c(h[1:(after-1)],
                  paste("# ", flag, " ", flags, " = ", content, sep=""),
                  h[after:n]))

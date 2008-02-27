@@ -108,6 +108,14 @@ and the data may be cast onto specified pressure levels with \code{\link{ctd.dec
 Low-level manipulation may be done with \code{\link{ctd.add.column}}
 and \code{\link{ctd.update.header}}, as well as by direct manipulation of the items
 within \code{ctd} objects.
+
+In many cases, CTD instruments are set up to report dates in English.
+This can cause a problem for users running in different locales, since
+.e.g month names differ.  Therefore, if you know your datafile is
+written in the English notation, you might want to do
+\code{\link[base]{Sys.setlocale}("LC_TIME", "en_US")}
+before you try to read the data.
+
 }
 \examples{
 \dontrun{
