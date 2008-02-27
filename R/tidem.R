@@ -3,7 +3,11 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
 
     if (is.null(start.time)) start.time <- sl$data$t[which(!is.na(sl$data$t))][1]
-cat("start.time=");    print(start.time);cat("\n")
+
+    if (!quiet) {
+        cat("start.time=")
+        print(start.time);cat("\n")
+    }
 
     data("tidedata")
     td <- get("tidedata", pos=globalenv())
@@ -137,8 +141,12 @@ cat("start.time=");    print(start.time);cat("\n")
     phase <- phase * 180 / pi
 
     centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="GMT")
-    cat("centraltime=");print(centraltime);cat("\n")
-    cat("L199 index:",index,"(length=",length(index),")\n")
+    if (!quiet) {
+        cat("centraltime=")
+        print(centraltime)
+        cat("\n")
+        cat("L199 index:",index,"(length=",length(index),")\n")
+    }
 
     if (is.null(latitude)) latitude <- sl$metadata$latitude
     vuf <- tidem.vuf(centraltime, c(0, index), latitude)
