@@ -157,7 +157,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     phase2[negate] <- 360 + phase2[negate]
     phase <- phase2
 
-    if (debug) cat("vu=",vu,"\n")
+    if (!quiet) cat("vu=",vu,"\n")
 
     rval <- list(model=model,
                  const=c(1,   index),
