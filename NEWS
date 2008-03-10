@@ -1,4 +1,5 @@
 0.1.70
+	- plot.TS(): make isopycnal list work better for nearly-fresh water
 	- trim.ctd(): improve equilibration-phase deletion using piecewise-linear regression
 	- read.ctd(): handle cases without cruise information or scan column
 	- permit setting xlab and ylab in plot.TS()

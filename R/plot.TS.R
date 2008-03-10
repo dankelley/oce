@@ -31,8 +31,17 @@ plot.TS <- function (x,
     T.axis.max <- par()$usr[4]
     ##if (is.null(args$xlab)) mtext("Salinity [ PSU ]", side = 1, line = 3)
     if (grid) grid(col="lightgray")
-    rho.min <- sw.sigma(max(0,S.axis.min), T.axis.max, 0)
-    rho.max <- sw.sigma(S.axis.max, T.axis.min, 0)
+    rho.corners <- sw.sigma(c(S.axis.min,
+                              S.axis.max,
+                              S.axis.min,
+                              S.axis.max),
+                            c(T.axis.min,
+                              T.axis.min,
+                              T.axis.max,
+                              T.axis.max),
+                            rep(0,4))
+    rho.min <- min(rho.corners, na.rm=TRUE)
+    rho.max <- max(rho.corners, na.rm=TRUE)
     if (length(rho.levels) == 1) {
         rho.list <- pretty(c(rho.min, rho.max), n=rho.levels)
                                         # Trim first and last values, since not in box

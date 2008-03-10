@@ -4,18 +4,18 @@ static double sig_0, p_ref, S, T;
 void
 sw_strho(double *pT, double *prho, double *pp, double *res)
 {
-	int strho_bisection_search (double *x, double x1, double x2, double eps, double eta);
+    int strho_bisection_search (double *x, double x1, double x2, double eps, double eta);
 	int bs_res;
 	T = *pT;
-	sig_0 = *prho;		/* target density */
-	p_ref = *pp;		/* target pressure */
+	sig_0 = *prho;				/* target density */
+	p_ref = *pp;				/* target pressure */
 	*res = NA_REAL;
 	if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
 		return;
-#define SLOW  0.001		/* left bracket on search region */
-#define SHIGH 200.0		/* right bracket on search region */
-#define RHO_TOL 0.0001		/* stop if get to within this rho value */
-#define S_RES   0.0001		/* stop if bracket to within this resolution */
+#define SLOW  0.0001   /* left bracket on search region */
+#define SHIGH 200.0	   /* right bracket on search region */
+#define RHO_TOL 0.00001 /* stop if get to within this rho value */
+#define S_RES   0.00001 /* stop if bracket to within this resolution */
 	bs_res = strho_bisection_search(&S, SLOW, SHIGH, S_RES, RHO_TOL);/* BUG: ignoring result */
 	/* printf(" trsho(S=%f  rho=%f  p=%f) returning %f\n",S,sig_0,p_ref,T); */
 	*res = S;
