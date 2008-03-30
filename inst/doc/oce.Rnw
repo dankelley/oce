@@ -491,7 +491,7 @@ active development, and the features are subject to change.  Use
 	\begin{center}
 \setkeys{Gin}{width=0.8\textwidth}
 <<label=tidefig,fig=TRUE,width=8,height=5,echo=FALSE>>=
-<<tide>>
+<<tideplot>>
 @
 \end{center}
 \caption{Sea-level variation in Halifax Harbour in 2003 (black line) and the residual
