@@ -11,7 +11,7 @@
 \usepackage{fullpage}
 \usepackage{boxedminipage}
 \usepackage{hyperref}
-\usepackage{makeidx} 
+\usepackage{makeidx}
 \usepackage{titlesec}
 \makeindex
 
@@ -116,11 +116,11 @@ A partial list of seawater functions is as follows:
 \verb@sw.alpha@ (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
 \verb@sw.beta@ (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
 \verb@sw.alpha.over.beta@ ($\alpha/\beta$),
-\verb@sw.conductivity@ (conductivity from $S$, $T$ and $p$), 
-\verb@sw.depth@ (depth from $p$ and latitude), 
-\verb@sw.lapse.rate@ (adiabatic lapse rate), 
-\verb@sw.rho@ (density $\rho$ from $S$, $T$ and $p$), 
-\verb@sw.sigma@ ($\rho-1000$\,kg/m$^3$), 
+\verb@sw.conductivity@ (conductivity from $S$, $T$ and $p$),
+\verb@sw.depth@ (depth from $p$ and latitude),
+\verb@sw.lapse.rate@ (adiabatic lapse rate),
+\verb@sw.rho@ (density $\rho$ from $S$, $T$ and $p$),
+\verb@sw.sigma@ ($\rho-1000$\,kg/m$^3$),
 \verb@sw.sigma.t@ ($\sigma$ with $p$ set to zero and temperature unaltered),
 \verb@sw.sigma.theta@ ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
 \verb@sw.sound.speed@ (speed of sound in m/s),
@@ -149,7 +149,7 @@ $100$dbar, with salinity $34$PSU and temperature $10^\circ$C?
 To get you started with CTD data, \verb@oce@ provides a sample data set that has
 been trimmed to just the downcast portion of the sampling.  (See the next
 section to learn how to do this trimming.).  The commands
-<<label=ctdplot,include=FALSE>>=
+<<label=ctdplot,eval=FALSE>>=
 library(oce)
 data(ctd)
 plot(ctd)
@@ -169,7 +169,7 @@ to learn about these metadata, and use
 <<ctdnames2,eval=false>>=
 names(ctd$data)
 @
-to find out what sensors were attached to the instrument, thus providing data columns. 
+to find out what sensors were attached to the instrument, thus providing data columns.
 
 As noted above, the seawater-property functions (whose names begin with
 \verb@sw.@) can take a \verb@ctd@ object instead of the individual arguments
@@ -201,7 +201,7 @@ Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data. Data
 from these sections are spurious and must be trimmed as a first step in
 processing. For example, consider the following code.
-<<label=ctdrawplot,include=FALSE>>=
+<<label=ctdrawplot,eval=FALSE>>=
 data(ctd.raw)
 plot.ctd.scan(ctd.raw)
 @
@@ -317,7 +317,7 @@ is to highlight how this package can be used with real-world data.
 
 \subsection{Section plots}
 The commands
-<<label=sectionplot,include=FALSE>>=
+<<label=sectionplot,eval=FALSE>>=
 data(section)
 data(coastline.hal)
 plot(section, coastline=coastline.hal)
@@ -354,7 +354,7 @@ author's office at Dalhousie is located near the bottom axis at 63.58W.)}
 The Halifax section is supplied in a pre-gridded format, but some datasets have
 different pressure levels at each station.  For such cases, the
 \verb@section.grid@ function may be used, e.g.
-<<label=sectionplota03,include=FALSE>>=
+<<label=sectionplota03,eval=FALSE>>=
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
@@ -391,7 +391,7 @@ in the station at about 200km.)
 \index{data!coastline}
 
 The commands
-<<label=coastlineplot,include=FALSE>>=
+<<label=coastlineplot,eval=FALSE>>=
 library(oce)
 data(coastline.maritimes)
 plot(coastline.maritimes, col="darkred")
@@ -424,7 +424,7 @@ the capital of Nova Scotia.}
 \index{Hurricane Juan!surge seen in time-series of sea level}
 
 The commands
-<<label=sealevelplot,include=FALSE>>=
+<<label=sealevelplot,eval=FALSE>>=
 library(oce)
 #sealevel <- read.oce("../../tests/h275a96.dat")
 data(sealevel.hal)
@@ -465,7 +465,7 @@ Hurricane Juan.
 \index{sea level!storm surge during Hurricane Juan}
 \index{Hurricane Juan!surge detection by detiding}
 
-<<label=tideplot,include=FALSE>>=
+<<label=tideplot,eval=FALSE>>=
 library(oce)
 data(sealevel.hal)
 tide <- tidem(sealevel.hal)
@@ -506,7 +506,7 @@ to the region.}
 
 \section{Lobo data}
 The commands
-<<label=loboplot,include=FALSE>>=
+<<label=loboplot,eval=FALSE>>=
 library(oce)
 data(lobo)
 plot(lobo)
@@ -526,7 +526,7 @@ University.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.66\textwidth}
-<<label=lobofig,fig=TRUE,width=7, height=8, echo=FALSE>>=
+<<label=lobofig ,fig=TRUE, width=7, height=8, echo=FALSE>>=
 <<loboplot>>
 @
 \end{center}
@@ -555,7 +555,7 @@ provided by the package.
 
 Two principles will guide the addition of data types and functions:
 (a) the need, as perceived by the author or by other contributors and
-(b) the ease with which the additions can be made.  
+(b) the ease with which the additions can be made.
 
 The site \url{http://code.google.com/p/r-oce/} provides a window on the
 development that goes on between the CRAN releases of the package. Please visit
@@ -573,7 +573,7 @@ development is coming along.
 %
 %\end{center}
 %
-%\newpage	
+%\newpage
 
 \goodbreak
 
@@ -650,7 +650,7 @@ mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-28 23:30:00"), col="red")
 @
 
 \workedanswer{6}{Sealevel spectrum}
-Notice the use of \verb@(object)$data$(item)@ here.  All \verb@oce@ objects are lists, 
+Notice the use of \verb@(object)$data$(item)@ here.  All \verb@oce@ objects are lists,
 and all of them contain a \verb@data@ element of a similar form to this.
 <<>>=
 library(oce)
