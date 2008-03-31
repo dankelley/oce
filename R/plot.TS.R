@@ -23,7 +23,7 @@ plot.TS <- function (x,
          xlab = if (missing(xlab)) "Salinity [ PSU ]" else xlab,
          ylab = if (missing(ylab)) expression(paste("Temperature [ ", degree, "C ]")) else ylab,
          xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-         cex=cex, pch=pch, col=col, ...)
+         cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"), ...)
     if (connect.points) lines(x$data$salinity, x$data$temperature, col=col, ...)
     S.axis.min <- par()$usr[1]
     S.axis.max <- par()$usr[2]
