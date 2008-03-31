@@ -19,7 +19,6 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
 {
     peak <- max(range(c(lobo$data$u,lobo$data$v),na.rm=TRUE))
     ylim <- c(-peak,peak)
-    ylim <- c(-0.5,0.5)
     plot(lobo$data$time, lobo$data$u, ylim=ylim, type='l', axes=FALSE, col=col.u, ylab="", ...)
     box()
     lines(lobo$data$time, lobo$data$v, col=col.v, ...)
