@@ -24,6 +24,8 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
     box()
     lines(lobo$data$time, lobo$data$v, col=col.v, ...)
     axis.POSIXct(1, lobo$data$time)
+    axis(2, col=col.u)
+    axis(4, col=col.v)
     mtext("U [m/s]", side=2, line=2.5, col=col.u, cex=par("cex"))
     mtext("V [m/s]", side=4, line=2.5, col=col.v, cex=par("cex"))
     if (draw.legend)
