@@ -17,7 +17,8 @@ Return colors as used on GEBCO charts of ocean depth.
 plot(1:10, 1:10, col=gebco.colors(10, "water", "line"), cex=5, pch=20)
 }
 \source{
-The \code{"water"} and \code{"line"} version comes from 
+The \code{"fill"} colours came from scanning a chart, and adding a few
+lighter land colours by linear extrapolation.  The \code{"water"} and \code{"line"} colours are from 
 the figure \code{IBCAO_GEBCO_comp_colortable_oc.jpg} in Jakobsson et al.
 }
 \references{
