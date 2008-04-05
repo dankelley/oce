@@ -14,7 +14,11 @@ Return colors as used on GEBCO charts of ocean depth.
 }
 \value{A list of colors, as for \code{terrain.colors} and similar routines.}
 \examples{
-	plot(1:10, 1:10, col=gebco.colors(10, "water", "line"), cex=5, pch=20)
+plot(1:10, 1:10, col=gebco.colors(10, "water", "line"), cex=5, pch=20)
+}
+\source{
+The \code{"water"} and \code{"line"} version comes from 
+the figure \code{IBCAO_GEBCO_comp_colortable_oc.jpg} in Jakobsson et al.
 }
 \references{
 \emph{Selective comparisons of gebco (1979) and ibcao (2000) maps,}
