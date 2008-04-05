@@ -1,4 +1,6 @@
 0.1.71
+	- add bof dataset
+	- add read.etopo2(), plot.etopo2(), and summary.etopo2()
 	- add gebco.colors()
 0.1.70
 	- plot.TS(): make isopycnal list work better for nearly-fresh water
