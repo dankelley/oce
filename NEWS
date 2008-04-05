@@ -1,3 +1,5 @@
+0.1.71
+	- add gebco.colors()
 0.1.70
 	- plot.TS(): make isopycnal list work better for nearly-fresh water
 	- trim.ctd(): improve equilibration-phase deletion using piecewise-linear regression

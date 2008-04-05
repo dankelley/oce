@@ -10,6 +10,7 @@ export(
        ctd.trim,
        ctd.update.header,
        ctd.write,
+       gebco.colors,
        geod.dist,
        gravity,
        lat.format,
