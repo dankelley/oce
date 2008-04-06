@@ -1,4 +1,4 @@
-read.etopo2 <- function(filename)
+read.topo <- function(filename)
 {
     nh <- 6
     header <- readLines(filename, n=nh)
@@ -12,9 +12,9 @@ read.etopo2 <- function(filename)
     lon <- lon.ll + cellsize * seq(0, ncols-1)
     lat <- lat.ll + cellsize * seq(0, nrows-1)
     data <- list(lon=lon, lat=lat, z=z)
-    metadata <- list(filename=filename)
-    log.item <- list(time=c(Sys.time()), action=c(paste("created by read.etopo2(\"",filename,"\")",sep="")))
+    metadata <- list(filename=filename, cellsize=cellsize, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
+    log.item <- list(time=c(Sys.time()), action=c(paste("created by read.topo(\"",filename,"\")",sep="")))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("etopo2", "oce")
+    class(res) <- c("topo", "oce")
     res
 }

@@ -1,6 +1,6 @@
-summary.etopo2 <- function(object, ...)
+summary.topo <- function(object, ...)
 {
-    if (!inherits(object, "etopo2")) stop("method is only for etopo2 objects")
+    if (!inherits(object, "topo")) stop("method is only for topo objects")
     cat("ETOPO2 dataset\n")
     lat.range <- range(object$data$lat)
     cat("  Latitude  from ", lat.format(lat.range[1]), " to ", lat.format(lat.range[2]),

@@ -1,6 +1,6 @@
-plot.etopo2 <- function(x, water.z, water.colors, land.z, land.colors, legend.loc="topright", ...)
+plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc="topright", ...)
 {
-    if (!inherits(x, "etopo2")) stop("method is only for etop2 objects")
+    if (!inherits(x, "topo")) stop("method is only for topo objects")
     zr <- range(x$data$z)
     lat.range <- range(x$data$lat)
     contour(x$data$lon, x$data$lat, x$data$z, levels=0, drawlabels=FALSE,
