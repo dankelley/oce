@@ -1,11 +1,15 @@
 plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc="topright", ...)
 {
     if (!inherits(x, "topo")) stop("method is only for topo objects")
-    zr <- range(x$data$z)
     lat.range <- range(x$data$lat)
-    contour(x$data$lon, x$data$lat, x$data$z, levels=0, drawlabels=FALSE,
-            col="black",
-            asp=1/cos(mean(lat.range)*pi/180), ...)
+    asp <- 1 / cos(mean(lat.range)*pi/180)
+    zr <- range(x$data$z)
+
+    plot(range(x$data$lon), range(x$data$lat), asp=asp, xaxs="i", yaxs="i",
+         type="n", xlab="", ylab="")
+
+    contour(x$data$lon, x$data$lat, x$data$z, levels=0, drawlabels=FALSE, add=TRUE,
+            col="black")
     w <- c()
     wc <- c()
     if (zr[1] < 0) {
