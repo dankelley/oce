@@ -1,9 +1,9 @@
-\name{read.etopo2}
-\alias{read.etopo2}
+\name{read.topo}
+\alias{read.topo}
 \title{Read an ETOPO2 topography file}
 \description{Read a file that contains topographic data in the ETOPO2 dataset, 
   as provided by the NOAA website.}
-\usage{read.etopo2(filename)}
+\usage{read.etopo(filename)}
 \arguments{
   \item{filename}{name of a file containing an ETOPO2 dataset.}
 }
@@ -20,7 +20,7 @@
 \dontrun{
 library(oce)
 topo.maritimes <- read.topo("~/maritimes.asc")
-plot(etopo2)
+plot(topo.maritimes)
 }
 }
 \references{
