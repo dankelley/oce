@@ -10,8 +10,6 @@
 }
 \usage{
 data(bof)
-summary(bof)
-plot(bof)
 }
 \source{The dataset was downloaded in early 2008 from the NOAA website
   \url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}, with 

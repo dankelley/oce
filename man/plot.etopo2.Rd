@@ -2,9 +2,10 @@
 \alias{plot.etopo2}
 \title{Plot topography (ETOPO2) data}
 \description{Plot a summary diagram for ETOPO2 data.}
-\usage{\method{plot}{etopo2}(x,\dots)}
+\usage{\method{plot}{etopo2}(x, legend.loc="topright", \dots)}
 \arguments{
   \item{x}{an \code{etopo2} object, e.g. as read by \code{\link{read.etopo2}}.}
+  \item{legend.loc}{location for a legend (or FALSE, for no legend).}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 \details{Be aware that the ETOPO2 data are on a 2-minute (roughly
