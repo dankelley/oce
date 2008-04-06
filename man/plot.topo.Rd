@@ -1,16 +1,16 @@
-\name{plot.etopo2}
+\name{plot.topo}
 
-\alias{plot.etopo2}
+\alias{plot.topo}
 
 \title{Plot topography (ETOPO2) data}
 
-\description{Plot a summary diagram for ETOPO2 data.}
+\description{Plot contours of topographic data.}
 
-\usage{\method{plot}{etopo2}(x, water.z, water.colors, land.z,
+\usage{\method{plot}{topo}(x, water.z, water.colors, land.z,
 land.colors, legend.loc="topright", \dots)}
 
 \arguments{
-  \item{x}{an \code{etopo2} object, e.g. as read by \code{\link{read.etopo2}}.}
+  \item{x}{an \code{topo} object, e.g. as read by \code{\link{read.topo}}.}
   \item{water.z}{depths at which to plot water contours.  If not
     provided, these are inferred from the data.}
   \item{water.colors}{colors corresponding to \code{water.z} values.  If
@@ -31,8 +31,8 @@ land.colors, legend.loc="topright", \dots)}
   inaccurate on scales of 100km or less.
 }
 
-\seealso{ETOPO2 data can be created with \code{\link{read.etopo2}} and
-  summarized with \code{\link{summary.etopo2}}.
+\seealso{TOPO data can be created with \code{\link{read.topo}} and
+  summarized with \code{\link{summary.topo}}.
 }
 
 \examples{

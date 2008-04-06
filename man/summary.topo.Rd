@@ -1,14 +1,14 @@
-\name{summary.etopo2}
-\alias{summary.etopo2}
+\name{summary.topo}
+\alias{summary.topo}
 \title{Summarize a topography (ETOPO2) data object}
 \description{
-  Summarizes some of the data in an \code{etopo2} object.
+  Summarizes some of the data in an \code{topo} object.
 }
 \usage{
-\method{summary}{etopo2}(object, \dots)
+\method{summary}{topo}(object, \dots)
 }
 \arguments{
-  \item{object}{A \code{etopo2} object, e.g. as read by \code{\link{read.etopo2}}.}
+  \item{object}{A \code{topo} object, e.g. as read by \code{\link{read.topo}}.}
   \item{\dots}{passed to children.}
 }
 \details{
@@ -17,7 +17,7 @@
 }
 \value{NULL}
 \seealso{
-  A \code{etopo2} object may be read with \code{\link{read.etopo2}}.
+  A \code{topo} object may be read with \code{\link{read.topo}}.
 }
 \examples{
 library(oce)

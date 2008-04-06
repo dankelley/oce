@@ -3,11 +3,11 @@
 \title{Read an ETOPO2 topography file}
 \description{Read a file that contains topographic data in the ETOPO2 dataset, 
   as provided by the NOAA website.}
-\usage{read.etopo(filename)}
+\usage{read.topo(filename)}
 \arguments{
   \item{filename}{name of a file containing an ETOPO2 dataset.}
 }
-\value{An object of type \code{\link[base]{class}} \code{"etopo2"},
+\value{An object of type \code{\link[base]{class}} \code{"topo"},
   which is a list containing the following items.
   \item{data}{a data frame containing \code{lat},
     \code{lon}, and \code{z}}
