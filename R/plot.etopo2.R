@@ -30,9 +30,6 @@ plot.etopo2 <- function(x, legend.loc="topright", ...)
     }
     if (!is.null(legend.loc)) {
         nl <- length(w) + length(l)
-        print(l)
-        print(c(rev(l),0))
-        print(w)
         legend(legend.loc, lwd=par("lwd"),
                legend=c(rev(l),0, w),
                col=c(rev(lc), "black", wc))
