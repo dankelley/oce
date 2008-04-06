@@ -37,8 +37,8 @@ land.colors, legend.loc="topright", \dots)}
 
 \examples{
 library(oce)
-data(bof)
-plot(bof)
+data(topo.maritimes)
+plot(topo.maritimes)
 }
 
 \author{Dan Kelley}

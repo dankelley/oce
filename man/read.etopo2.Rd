@@ -19,7 +19,7 @@
 \examples{
 \dontrun{
 library(oce)
-bof <- read.topo("dek02_3864.asc")
+topo.maritimes <- read.topo("~/maritimes.asc")
 plot(etopo2)
 }
 }
