@@ -21,8 +21,8 @@
 }
 \examples{
 library(oce)
-data(bof)
-summary(bof)
+data(topo.maritimes)
+summary(topo.maritimes)
 }
 \references{
 }
