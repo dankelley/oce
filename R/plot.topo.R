@@ -55,6 +55,6 @@ plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc=
         nl <- length(w) + length(l)
         legend(legend.loc, lwd=par("lwd"),
                legend=c(rev(l),0, w),
-               col=c(rev(lc), "black", wc), ...)
+               col=c(rev(lc), "black", wc))
     }
 }
