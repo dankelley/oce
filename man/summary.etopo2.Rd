@@ -2,7 +2,7 @@
 \alias{summary.etopo2}
 \title{Summarize a topography (ETOPO2) data object}
 \description{
-Summarizes some of the data in an \code{etopo2} object.
+  Summarizes some of the data in an \code{etopo2} object.
 }
 \usage{
 \method{summary}{etopo2}(object, \dots)
@@ -12,15 +12,12 @@ Summarizes some of the data in an \code{etopo2} object.
   \item{\dots}{passed to children.}
 }
 \details{
-Pertinent summary information is presented, including the latitude and longitude
-range, and the range of elevation.
+  Pertinent summary information is presented, including the latitude and longitude
+  range, and the range of elevation.
 }
-\value{
-NULL
-}
-
+\value{NULL}
 \seealso{
-A \code{etopo2} object may be read with \code{\link{read.etopo2}}.
+  A \code{etopo2} object may be read with \code{\link{read.etopo2}}.
 }
 \examples{
 library(oce)
