@@ -10,7 +10,7 @@ Return colors as used on GEBCO charts of ocean depth.
   \item{region}{Either \code{"water"} (blue colors), \code{"land"} (brown colors), or "both" (brown, then blue).}
   \item{type}{Either \code{"fill"} (colours that look good with images, or filled contours) or "line" (colors that are darker overall, and that thus look better for lines on a white background.}
 }
-\detail{It is possible to establish any desired mapping from color to depth.  The 
+\details{It is possible to establish any desired mapping from color to depth.  The 
 \code{"line"} data set is taken by GEBCO to correspond to depth maxima
 5000, 4000, 3000, 2000, 1500, 1000,  500,  250,  100, 75, 50, 25, 10,  0.
 }

@@ -13,11 +13,6 @@ a longitude box from 68W to 63W and a latitude box from 44N to 46N.
 \url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}, with 
 a longitude box from 68W to 63W and a latitude box from 44N to 46N.}
 \references{\url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}}
-\example{
-library(oce)
-data(bof)
-plot(bof)
-}
 \seealso{\code{\link{read.etopo2}}.}
 \author{Dan Kelley}
 \keyword{misc}
