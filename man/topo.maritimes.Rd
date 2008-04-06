@@ -1,19 +1,17 @@
-\name{bof}
+\name{topo.maritimes}
 \docType{data}
-\alias{bof}
+\alias{topo.maritimes}
 \title{Sample ETOPO2 dataset, showing the Bay of Fundy, near Nova Scotia,
   Canada.}
-\description{The result of reading an ETOPO2 with \code{\link{read.etopo2}}. 
-  The dataset was downloaded in early 2008 from the NOAA website
-  \url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}, with 
-  a longitude box from 68W to 63W and a latitude box from 44N to 46N.
+\description{Topography of the Gulf of St Lawrence region, including
+  portions of the Canadian provinces known as the Maritimes.
 }
 \usage{
-data(bof)
+data(topo.maritimes)
 }
 \source{The dataset was downloaded in early 2008 from the NOAA website
   \url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}, with 
-  a longitude box from 68W to 63W and a latitude box from 44N to 46N.}
+  a longitude box from 70W to 55W and a latitude box from 45.5N to 53N.}
 \references{\url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}}
 \seealso{Files may be read with \code{\link{read.etopo2}} and
   summarized with \code{\link{summary.etopo2}}}
