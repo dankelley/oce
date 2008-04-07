@@ -94,6 +94,15 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
     }
     if (num.stations < 2) stop("cannot plot a section containing fewer than 2 stations")
     num.depths <- length(x$data$station[[station.indices[1]]]$data$pressure)
+
+    ## Check that pressures coincide
+    p1 <- x$data$station[[station.indices[1]]]$data$pressure
+    for (ix in 2:num.stations) {
+        if (any(p1 != x$data$station[[station.indices[ix]]]$data$pressure)) {
+            stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsection.gridded <- section.grid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
+        }
+    }
+
     zz <- matrix(nrow=num.stations, ncol=num.depths)
     xx <- array(NA, num.stations)
     yy <- array(NA, num.depths)

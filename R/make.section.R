@@ -17,7 +17,7 @@ make.section <- function(item, ...)
             lat[i] <- extra.args[[i-1]]$metadata$latitude
             lon[i] <- extra.args[[i-1]]$metadata$longitude
             station[[i]] <- extra.args[[i-1]]
-            summary(extra.args[i-1])
+            ##summary(extra.args[i-1])
         }
     } else if (inherits(item, "list")) {
         args <- list(...)

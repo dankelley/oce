@@ -2,6 +2,7 @@
 	- add topo.maritimes dataset
 	- add read.topo(), plot.topo(), and summary.topo()
 	- add gebco.colors()
+	- make plot.section() check that pressures coincide
 0.1.70
 	- plot.TS(): make isopycnal list work better for nearly-fresh water
 	- trim.ctd(): improve equilibration-phase deletion using piecewise-linear regression
