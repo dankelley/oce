@@ -9,7 +9,7 @@ plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc=
          type="n", xlab="", ylab="")
 
     contour(x$data$lon, x$data$lat, x$data$z, levels=0, drawlabels=FALSE, add=TRUE,
-            col="black")
+            col="black", lwd=par("lwd"))
     w <- c()
     wc <- c()
     if (zr[1] < 0) {
