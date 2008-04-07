@@ -1,10 +1,10 @@
-                                        # Calculation of geodetic distance on surface of earth,
-                                        # based upon datum defined by
-                                        #       a = radius of major axis of earth
-                                        #       f = flattening factor.
-                                        # The answer is returned in the same units as a; here in meters.
-                                        #
-                                        # Patterned after R code donated by Darren Gillis
+## Calculation of geodetic distance on surface of earth,
+## based upon datum defined by
+##       a = radius of major axis of earth
+##       f = flattening factor.
+## The answer is returned in the same units as a; here in meters.
+##
+## Patterned after R code donated by Darren Gillis
 geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL) {
 	a <- 6378137.00          # WGS84 major axis
 	f <- 1/298.257223563     # WGS84 flattening parameter
