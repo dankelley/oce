@@ -12,8 +12,7 @@ Edit an element of a CTD profile
 \item{value}{the new value for the item}
 \item{reason}{the reason for the change}
 \item{person}{name of person making the change}
-}
-}
+} %arguments
 \details{
 As of now, only elements in the metadata can be altered.  Most commonly,
 this will be latitude or longitude -- two elements that are quite

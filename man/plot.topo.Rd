@@ -7,7 +7,7 @@
 \description{Plot contours of topographic data.}
 
 \usage{\method{plot}{topo}(x, water.z, water.colors, land.z,
-land.colors, legend.loc="topright", \dots)}
+land.colors, legend.loc="topright", lwd=par("lwd"), \dots)}
 
 \arguments{
   \item{x}{an \code{topo} object, e.g. as read by \code{\link{read.topo}}.}
@@ -22,6 +22,7 @@ land.colors, legend.loc="topright", \dots)}
     not provided, these will be \code{"fill"} colors from
     \code{\link{gebco.colors}}.}
   \item{legend.loc}{location for a legend (or FALSE, for no legend).}
+  \item{lwd}{line width for contours}
   \item{\dots}{additional arguments passed on to plotting functions}
 }
 

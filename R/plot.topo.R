@@ -1,4 +1,5 @@
-plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc="topright", ...)
+plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc="topright",
+                      lwd=par("lwd"), ...)
 {
     if (!inherits(x, "topo")) stop("method is only for topo objects")
     lat.range <- range(x$data$lat)
@@ -9,7 +10,7 @@ plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc=
          type="n", xlab="", ylab="")
 
     contour(x$data$lon, x$data$lat, x$data$z, levels=0, drawlabels=FALSE, add=TRUE,
-            col="black", lwd=par("lwd"))
+            col="black", lwd=lwd)
     w <- c()
     wc <- c()
     if (zr[1] < 0) {
@@ -51,13 +52,14 @@ plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc=
         else
             lc <- land.colors
         contour(x$data$lon, x$data$lat, x$data$z, levels=l,
+                lwd=lwd,
                 col=lc,
                 drawlabels=FALSE,
                 add=TRUE, ...)
     }
     if (!is.null(legend.loc)) {
         nl <- length(w) + length(l)
-        legend(legend.loc, lwd=par("lwd"), bg="white",
+        legend(legend.loc, lwd=lwd, bg="white",
                legend=c(rev(l),0, w),
                col=c(rev(lc), "black", wc))
     }
