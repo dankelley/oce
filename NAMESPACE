@@ -6,6 +6,7 @@ export(
        as.windrose,
        coriolis,
        ctd.add.column,
+       ctd.edit,
        ctd.decimate,
        ctd.trim,
        ctd.update.header,
