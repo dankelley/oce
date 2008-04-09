@@ -20,20 +20,19 @@ make.section <- function(item, ...)
             ##summary(extra.args[i-1])
         }
     } else if (inherits(item, "list")) {
-        args <- list(...)
-        if (length(args) < 2) {
+        num.stations <- length(item)
+        if (num.stations < 2) {
             stop("cannot make a section from one station")
         }
-        num.stations <- length(args)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
         for (i in 1:num.stations) {
-            stn[i] <- args[[i]]$metadata$station
-            lat[i] <- args[[i]]$metadata$latitude
-            lon[i] <- args[[i]]$metadata$longitude
-            station[[i]] <- args[[i]]
+            stn[i] <- item[[i]]$metadata$station
+            lat[i] <- item[[i]]$metadata$latitude
+            lon[i] <- item[[i]]$metadata$longitude
+            station[[i]] <- item[[i]]
         }
     } else {
         stop("first argument must be of class \"ctd\" or a \"list\"")
