@@ -4,16 +4,20 @@
 \description{Combine a series of CTD profiles together to create a section.}
 \usage{make.section(item, \dots)}
 \arguments{
-  \item{item}{either a \code{ctd} object, in which case the rest of the arguments are other \code{ctd} objects, or a list of \code{ctd} objects.}
-  \item{\dots}{a list of \code{ctd} objects, either given as separate arguments (the normal procedure) or as a list.}
-}
+  \item{item}{either a \code{ctd} object, in which case the rest of the
+    arguments are other \code{ctd} objects, or a list of \code{ctd}
+    objects.} 
+  \item{\dots}{a list of \code{ctd} objects, either given as separate
+    arguments (the normal procedure) or as a list.}}
 
-\details{The \code{ctd} stations must share identical pressure values; use
-\code{\link{section.grid}} to do that.}
+\details{The \code{ctd} stations must share identical pressure values;
+  use \code{\link{section.grid}} to do that.}
 
-\value{An object of \code{\link[base]{class}} "\code{section}" (for details, see \code{\link{read.section}}).}
+\value{An object of \code{\link[base]{class}} "\code{section}" (for
+  details, see \code{\link{read.section}}).}
 
-\seealso{\code{\link{read.ctd}} reads CTD data.}
+\seealso{\code{\link{read.ctd}} reads CTD data.  \code{\link{section}}
+  is a sample data set.}
 
 \examples{
 library(oce)

@@ -283,13 +283,13 @@ library(oce)
 # Source: http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410
 files <- system("ls *.csv", intern=TRUE)
 for (i in 1:length(files)) {
-	cat(files[i], "\n")
-	x <- read.ctd(files[i])
-	if (i == 1) {
-		plot.TS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
-	} else {
-		lines(x$data$salinity, x$data$temperature, col="red")
-	}
+    cat(files[i], "\n")
+    x <- read.ctd(files[i])
+    if (i == 1) {
+        plot.TS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
+    } else {
+        lines(x$data$salinity, x$data$temperature, col="red")
+    }
 }
 @
 

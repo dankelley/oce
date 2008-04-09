@@ -1,5 +1,5 @@
 0.1.71
-	- add ctd.edit()
+	- add oce.edit()
 	- add topo.maritimes dataset
 	- add read.topo(), plot.topo(), and summary.topo()
 	- add gebco.colors()
