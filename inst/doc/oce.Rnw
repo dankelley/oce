@@ -560,7 +560,14 @@ Two principles will guide the addition of data types and functions:
 The site \url{http://code.google.com/p/r-oce/} provides a window on the
 development that goes on between the CRAN releases of the package. Please visit
 the site to report bugs, to suggest new features, or just to see how \verb@oce@
-development is coming along.
+development is coming along.  If you are enough of an R expert to build local
+packages from source, you may also download intermediate, developer versions of
+the Oce code.  For example,
+\verb@svn checkout http://r-oce.googlecode.com/svn/trunk/ -r 441 r-oce-read-only@
+will get you version number 441, in a directory named \verb@r-oce-read-only@
+that you should rename to \verb@oce@ before doing your build.  (These version
+numbers are sometimes noted in the ``issue'' section of the website, when the
+author asks a bug reporter to check an intermediate version.)
 
 %\begin{center}
 %\vspace{2cm}
@@ -574,6 +581,7 @@ development is coming along.
 %\end{center}
 %
 %\newpage
+
 
 \goodbreak
 
