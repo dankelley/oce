@@ -557,17 +557,24 @@ Two principles will guide the addition of data types and functions:
 (a) the need, as perceived by the author or by other contributors and
 (b) the ease with which the additions can be made.
 
+\section{Development website}
+
 The site \url{http://code.google.com/p/r-oce/} provides a window on the
 development that goes on between the CRAN releases of the package. Please visit
 the site to report bugs, to suggest new features, or just to see how \verb@oce@
-development is coming along.  If you are enough of an R expert to build local
-packages from source, you may also download intermediate, developer versions of
-the Oce code.  For example,
+development is coming along.  
+
+Oce versions are only made official, i.e. released to the CRAN package system,
+when they are considered to be of a high quality.  However, you may also get the
+bleeding-edge version from the development website, perhaps to see whether the
+author has successfully addressed a deficiency that you reported.  You will need
+to have subversion installed on you machine, and then can do e.g.
+
 \verb@svn checkout http://r-oce.googlecode.com/svn/trunk/ -r 441 r-oce-read-only@
-will get you version number 441, in a directory named \verb@r-oce-read-only@
-that you should rename to \verb@oce@ before doing your build.  (These version
-numbers are sometimes noted in the ``issue'' section of the website, when the
-author asks a bug reporter to check an intermediate version.)
+
+\noindent to retrieve the intermediate version number 441. Naturally, you should
+rename the directory from \verb@r-oce-read-only@ to \verb@oce@ before attempting
+to check, build, or install the package.
 
 %\begin{center}
 %\vspace{2cm}
