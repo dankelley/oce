@@ -69,15 +69,18 @@ The need to scan diverse data files was one motivation for the creation of
 they are in the system.  This was accomplished partly by the provision of
 functions to work with the data, and partly by developing a uniform object
 design that lets users reach inside without guesswork\footnote{Each \texttt{oce}
-object is a list containing three elements: (a) \texttt{data}, a list or a data
-frame containing the actual data, for a CTD object, this will contain pressure,
-temperature, etc., (b) \texttt{metadata}, a list containing data such things as
-file headers, the location of a CTD cast, etc., and (c) \texttt{processing.log},
-a list that documents how the file was created (often by a \texttt{read} or
-\texttt{as} method) and how it was changed thereafter (e.g. by decimating a CTD
-cast).}, and partly by adhering to a policy of adding features according to the
-priorities of practical research. The net result is that \verb@oce@ is a fairly
-comfortable tool today, and one that should to remain so as it grows.
+  object is a list containing three elements: (a) \texttt{data}, a list or a
+  data frame containing the actual data, for a CTD object, this will contain
+  pressure, temperature, etc., (b) \texttt{metadata}, a list containing data
+  such things as file headers, the location of a CTD cast, etc., and (c)
+  \texttt{processing.log}, a list that documents how the file was created (often
+  by a \texttt{read} or \texttt{as} method) and how it was changed thereafter
+  (e.g. by decimating a CTD cast).  Elements in the \texttt{metadata} can be
+  edited with\index{object structure} \texttt{oce.edit()}, a function that adds
+  a line to the object's changelog file for every change that is made.}, and
+partly by adhering to a policy of adding features according to the priorities of
+practical research. The net result is that \verb@oce@ is a fairly comfortable
+tool today, and one that should to remain so as it grows.
 
 
 \section{Calculations of seawater properties}
@@ -277,6 +280,11 @@ x$metadata$scientist <- "DAM" # do NOT alter directly, in this way
 @
 but it is \emph{bad practice} to alter metadata in such a way, because
 the changes will not be documented in the object.  Instead, do
+\index{changelogs in oce objects}
+\index{oce object changelog}
+\index{logged changes to oce objects}
+\index{editing oce objects}
+\index{oce.edit}
 <<ctdfix2,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
 x <- oce.edit(x, "institute", "SIO") # a better way
