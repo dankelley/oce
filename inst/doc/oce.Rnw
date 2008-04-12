@@ -266,12 +266,28 @@ institute itself (SIO), and the name of the investigator (DAM). The problem is
 that no dividers separate these items, and that there are no standards for the
 item lengths. The approach to \verb@oce@ development is to tackle easy and
 important problemss before complicated special cases, and so no attempt has been
-made to parse this part of the header. Of course, R provides access to object
-constituents, so that a human working with this file could easily do e.g.
-<<ctdfix,eval=false>>=
+made to parse this part of the header.
+
+Of course, R provides access to object constituents, so that you are
+free to do such things as
+<<ctdfix1,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x$metadata$institute <- "SIO"
-x$metadata$scientist <- "DAM"
+x$metadata$institute <- "SIO" # do NOT alter directly, in this way
+x$metadata$scientist <- "DAM" # do NOT alter directly, in this way
+@
+but it is \emph{bad practice} to alter metadata in such a way, because
+the changes will not be documented in the object.  Instead, do
+<<ctdfix2,eval=false>>=
+x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
+x <- oce.edit(x, "institute", "SIO") # a better way
+x <- oce.edit(x, "scientist", "DAM") # a better way
+@
+so that the changes will be noted in the object's log.  Even better,
+provide a reason for the change, and sign the change with your name:
+<<ctdfix3,eval=false>>=
+x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
+x <- oce.edit(x, "institute", "SIO", "human-parsed","Dan Kelley") # best way
+x <- oce.edit(x, "scientist", "DAM", "human-parsed","Dan Kelley") # best way
 @
 
 For a real-world example (with warts!), visit
@@ -562,7 +578,7 @@ Two principles will guide the addition of data types and functions:
 The site \url{http://code.google.com/p/r-oce/} provides a window on the
 development that goes on between the CRAN releases of the package. Please visit
 the site to report bugs, to suggest new features, or just to see how \verb@oce@
-development is coming along.  
+development is coming along.
 
 Oce versions are only made official, i.e. released to the CRAN package system,
 when they are considered to be of a high quality.  However, you may also get the
