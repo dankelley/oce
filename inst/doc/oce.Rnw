@@ -64,23 +64,41 @@ software for scanning the data files and producing some standard plots, but this
 is of limited use to researchers who work with several instrument types at the
 same time, and who need to carry the analysis beyond the first step.
 
+\begin{figure}
+  \begin{center}
+    \includegraphics[width=0.6\hsize]{ctd-object}
+  \end{center}
+  \caption{\label{f:ctdobject}Sketch of the contents of a \texttt{ctd}
+    object. The elements \texttt{data}, \texttt{metadata}, and
+    \texttt{processing.log} are shared by all \texttt{oce} objects, although
+    their contents vary from object to object.}
+\end{figure}
+
 The need to scan diverse data files was one motivation for the creation of
 \verb@oce@, but an equal goal was to make it easy to work with the data once
 they are in the system.  This was accomplished partly by the provision of
 functions to work with the data, and partly by developing a uniform object
-design that lets users reach inside without guesswork\footnote{Each \texttt{oce}
-  object is a list containing three elements: (a) \texttt{data}, a list or a
-  data frame containing the actual data, for a CTD object, this will contain
-  pressure, temperature, etc., (b) \texttt{metadata}, a list containing data
-  such things as file headers, the location of a CTD cast, etc., and (c)
-  \texttt{processing.log}, a list that documents how the file was created (often
-  by a \texttt{read} or \texttt{as} method) and how it was changed thereafter
-  (e.g. by decimating a CTD cast).  Elements in the \texttt{metadata} can be
-  edited with\index{object structure} \texttt{oce.edit()}, a function that adds
-  a line to the object's changelog file for every change that is made.}, and
-partly by adhering to a policy of adding features according to the priorities of
-practical research. The net result is that \verb@oce@ is a fairly comfortable
-tool today, and one that should to remain so as it grows.
+design that lets users reach inside without guesswork. 
+
+At the core of the \verb@oce@ design process is a policy of adding features
+according to the priorities of practical research. As a result, \verb@oce@ is a
+fairly comfortable tool today, and it should remain so as it grows.
+
+
+\section{Object design}
+
+As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object is a list
+containing three elements: (a) \texttt{data}, a list or a data frame containing
+the actual data, for a CTD object, this will contain pressure, temperature,
+etc., (b) \texttt{metadata}, a list containing data such things as file headers,
+the location of a CTD cast, etc., and (c) \texttt{processing.log}, a list that
+documents how the file was created (often by a \texttt{read} or \texttt{as}
+method) and how it was changed thereafter (e.g. by decimating a CTD cast).
+Elements in the \texttt{metadata} can be edited with\index{object structure}
+\texttt{oce.edit()}, a function that adds a line to the object's changelog file
+for every change that is made.  The uniformity of the various \texttt{oce}
+objects makes it easy to build skill in examining and modifying objects.
+
 
 
 \section{Calculations of seawater properties}
