@@ -364,29 +364,12 @@ data(section)
 data(coastline.hal)
 plot(section, coastline=coastline.hal)
 @
-will plot a summary diagram (Figure~\ref{fig:section}) containing sections of
+will plot a summary diagram containing sections of
 $T$, $S$, and $\sigma_\theta$, along with a chart indicating station
 locations. In addition to such overview diagrams, \verb@plot@ can also create
 individual plots of individual properties.
 
 \workedexercise{3}{Draw a TS diagram for the section data, colour-coded by station}
-
-\begin{figure}
-\begin{center}
-\setkeys{Gin}{width=1\textwidth}
-<<label=sectionfig,fig=TRUE,width=9, height=9, echo=FALSE>>=
-<<sectionplot>>
-@
-\end{center}
-\caption{\label{fig:section}
-CTD section of data acquired in Halifax Harbour in the autumn of 2003 by
-students in the \emph{Introduction to Physical Oceanography} class at Dalhousie
-University.  (Dan Kelley teaches this class, and the work at sea was supervised
-by his teaching assistant Natacha Bernier, who received her PhD from Dalhousie
-in 2005.)  The stations go from a site near the Sackville river inflow at the
-northwest portion of Bedford Basin to site at the entrance of the harbour. (The
-author's office at Dalhousie is located near the bottom axis at 63.58W.)}
-\end{figure}
 
 \index{reading!ctd section}
 \index{data!section \verb@a03@, North Atlantic along 36$^\circ$N}
@@ -428,34 +411,38 @@ in the station at about 200km.)
 
 \workedexercise{4}{Plot dynamic height across the Gulf Stream, and show the corresponding geostrophic velocity.}
 
-\section{Coastline data}
+\section{Coastline and topographic data}
 
 \index{data!coastline}
+\index{data!topography}
 
-The commands
-<<label=coastlineplot,eval=FALSE>>=
+Coastline data are available from a variety of sources. The NOAA site
+\url{http://www.ngdc.noaa.gov/mgg_coastline/} is particularly popular, and it
+has the advantage of providing data in Splus format.  The function
+\verb@read.coastline@ can handle reading that format (plus some other formats),
+and \verb@plot@ on the resulting object will produce a simple coastline map.
+The only real advantage over plotting things yourself is that latitude and
+longitude are scaled to give natural shapes near the centre of the plot.
+
+Bathymetric charts, or more generally topographic maps, can be produced easily.
+A sample data set is provided, so that 
+<<label=topoplot,eval=FALSE>>=
 library(oce)
-data(coastline.maritimes)
-plot(coastline.maritimes, col="darkred")
-points(-(63+34/60), 44+39/60, cex=3, col = "blue")
+data(topo.maritimes)
+plot(topo.maritimes)
 @
-produce a map of the coastline of Eastern Canada
-(Figure~\ref{fig:coastline}). Such coastline data are available from a variety
-of sources. The NOAA site \url{http://www.ngdc.noaa.gov/mgg_coastline/} is
-particularly popular, and it has the advantage of providing data in Splus
-format.  The function \verb@read.coastline@ can handle reading that format (plus
-some other formats).
+will produce a chart of the land and sea topography of Eastern Canada
+(Figure~\ref{fig:topo}). 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.5\textwidth}
-<<label=coastlinefig,fig=TRUE,width=5, height=5, echo=FALSE>>=
-<<coastlineplot>>
+\setkeys{Gin}{width=\textwidth}
+<<label=topofig,fig=TRUE,width=8, height=7, echo=FALSE>>=
+<<topoplot>>
 @
 \end{center}
-\caption{Coastline of eastern Canada, showing Prince Edward Island, New
-Brunswick, and Nova Scotia.  The blue circle indicates the location of Halifax,
-the capital of Nova Scotia.}
-\label{fig:coastline}
+\caption{Topography of eastern Canada, centred on the shallow waters north of
+Prince Edward Island.  (Note the differing contour intervals over land and water.)}
+\label{fig:topo}
 \end{figure}
 
 \section{Sea-level data}
@@ -482,7 +469,7 @@ narrow-banded constituents quite visible.
 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=.8\textwidth}
+\setkeys{Gin}{width=\textwidth}
 <<label=sealevelfig,fig=TRUE,width=8,height=7,echo=FALSE>>=
 <<sealevelplot>>
 @
@@ -500,51 +487,52 @@ to ever hit Canada.}
 
 \subsection{Tidal analysis}
 
-Tidal analysis is provided in a rudimentary way, as is illustrated in the
-example below, which shows the storm surge experienced in Halifax in 2003, with
-Hurricane Juan.
+In a future version, tidal analysis will be provided, along the lines of the
+t-tide package in Matlab.  A preliminary version of tidal analysis is provided
+by the \verb@tidem@ function provided in this version of the package, but
+readers are cautioned that the results are certain to change in a future
+version.  (The problems involve phase, and the inference of satellite nodes.)
 
-\index{sea level!storm surge during Hurricane Juan}
-\index{Hurricane Juan!surge detection by detiding}
-
-<<label=tideplot,eval=FALSE>>=
-library(oce)
-data(sealevel.hal)
-tide <- tidem(sealevel.hal)
-days <- 15 # focus on these days at end of series
-n <- length(sealevel.hal$data$eta)
-i <- seq(n-24*days, n)
-t   <- sealevel.hal$data$t[i]
-eta <- sealevel.hal$data$eta[i]
-eta.pred <- predict(tide)[i]
-plot(t, eta, type="l", ylim=c(-0.5,3))
-abline(h=0, col="pink")
-lines(t, eta - eta.pred, col="red")
-@
-produce Figure~\ref{fig:tide}, illustrating the use of tidal analysis to detect
-storm surges.  Note the use of the \verb@model@ that is returned by the tide
-analysis.
-
-(It should be noted that the tidal analysis portion of \verb@oce@ is still in
-active development, and the features are subject to change.  Use
-\verb@?tidem@ to learn more about this.)
-
-\begin{figure}
-	\begin{center}
-\setkeys{Gin}{width=0.8\textwidth}
-<<label=tidefig,fig=TRUE,width=8,height=5,echo=FALSE>>=
-<<tideplot>>
-@
-\end{center}
-\caption{Sea-level variation in Halifax Harbour in 2003 (black line) and the residual
-after removal of tides using \texttt{tidem()}.  The spike on September 28th
-is a storm surge caused by Hurricane Juan, which caused a great deal of damage
-to the region.}
-\label{fig:tide}
-\end{figure}
-
-\goodbreak
-
+%%% \index{sea level!storm surge during Hurricane Juan}
+%%% \index{Hurricane Juan!surge detection by detiding}
+%%% 
+%%% <<label=tideplot,eval=FALSE>>=
+%%% library(oce)
+%%% data(sealevel.hal)
+%%% tide <- tidem(sealevel.hal)
+%%% days <- 15 # focus on these days at end of series
+%%% n <- length(sealevel.hal$data$eta)
+%%% i <- seq(n-24*days, n)
+%%% t   <- sealevel.hal$data$t[i]
+%%% eta <- sealevel.hal$data$eta[i]
+%%% eta.pred <- predict(tide)[i]
+%%% plot(t, eta, type="l", ylim=c(-0.5,3))
+%%% abline(h=0, col="pink")
+%%% lines(t, eta - eta.pred, col="red")
+%%% @
+%%% produce Figure~\ref{fig:tide}, illustrating the use of tidal analysis to detect
+%%% storm surges.  Note the use of the \verb@model@ that is returned by the tide
+%%% analysis.
+%%% 
+%%% (It should be noted that the tidal analysis portion of \verb@oce@ is still in
+%%% active development, and the features are subject to change.  Use
+%%% \verb@?tidem@ to learn more about this.)
+%%% 
+%%% \begin{figure}
+%%% 	\begin{center}
+%%% \setkeys{Gin}{width=0.8\textwidth}
+%%% <<label=tidefig,fig=TRUE,width=8,height=5,echo=FALSE>>=
+%%% <<tideplot>>
+%%% @
+%%% \end{center}
+%%% \caption{Sea-level variation in Halifax Harbour in 2003 (black line) and the residual
+%%% after removal of tides using \texttt{tidem()}.  The spike on September 28th
+%%% is a storm surge caused by Hurricane Juan, which caused a great deal of damage
+%%% to the region.}
+%%% \label{fig:tide}
+%%% \end{figure}
+%%% 
+%%% \goodbreak
 
 \section{Lobo data}
 The commands
@@ -567,7 +555,7 @@ University.
 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.66\textwidth}
+\setkeys{Gin}{width=\textwidth}
 <<label=lobofig ,fig=TRUE, width=7, height=8, echo=FALSE>>=
 <<loboplot>>
 @
