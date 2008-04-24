@@ -26,31 +26,31 @@ same pressure range as the first inside bin.  For other values of \code{e}, the 
 is expanded linearly in each direction.  If the \code{"lm"} method produces warnings about "prediction from a rank-deficient fit", a larger value of \code{"e"} should be used.
 }
 }
-\details{
 
-The \code{"approx"} method is best for bottle data, in which the usual task is to interpolate
-from a coarse sampling grid to a finer one. For CTD data, the \code{"boxcar"} method is probably
-the best choice, because the task is normally to sub-sample, and some degree of smoothing is
-usually desired. (The \code{"lm"} method is quite slow, and the results are similar to those of
-the boxcar method.)
+\details{The \code{"approx"} method is best for bottle data, in which
+  the usual task is to interpolate from a coarse sampling grid to a
+  finer one. For CTD data, the \code{"boxcar"} method is probably the
+  best choice, because the task is normally to sub-sample, and some
+  degree of smoothing is usually desired. (The \code{"lm"} method is
+  quite slow, and the results are similar to those of the boxcar
+  method.)
 
-\emph{NB.} A sort of numerical cabeling effect can result from this procedure, but it can be
-avoided as follows
+  \emph{NB.} A sort of numerical cabeling effect can result from this
+procedure, but it can be avoided as follows
 
 \preformatted{
 xd <- ctd.decimate(x)
 xd$data$sigma.theta <- sw.sigma.theta(xd$data$salinity, xd$data$temperature, xd$data$pressure)
 } % preformatted
-
 } %details
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with pressures that are as set by the \code{"p"} parameter. In other respects, the return value is identical with the input \code{ctd} object (apart from its having an additional log entry indicating that the data have been altered.)}
 
-\seealso{
-A \code{ctd} object may be read with \code{\link{read.ctd}},
-and \code{\link{ctd.trim}} is useful in trimming spurious data
-(e.g. those obtained during the upcast).
+\seealso{A \code{ctd} object may be read with \code{\link{read.ctd}},
+  and \code{\link{ctd.trim}} is useful in trimming spurious data
+  (e.g. those obtained during the upcast).
 }
+
 \examples{
 library(oce)
 data(ctd.raw) 

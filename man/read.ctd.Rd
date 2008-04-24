@@ -1,13 +1,16 @@
 \name{read.ctd}
+
 \alias{read.ctd}
+
 \title{Read a CTD data file}
-\description{
-Read a CTD data file, producing an object of type \code{ctd}.
-}
+
+\description{Read a CTD data file, producing an object of type \code{ctd}.}
+
 \usage{
 read.ctd(file, type=NULL, debug=FALSE,
  	columns=NULL, station=NULL, check.human.headers=FALSE)
 }
+
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
@@ -26,11 +29,11 @@ read.ctd(file, type=NULL, debug=FALSE,
     the name automatically, or if another name is preferred.)}
   \item{check.human.headers}{produces warnings for missing human-written header items.}
 }
-\details{
-  Oceanographers use CTD (conductivity-temperature-depth) instruments
-  to measure key properties of the ocean, such as water temperature,
-  salinity, etc.  This function reads CTD datasets that have been stored
-  in common formats, and could be extended to 
+
+\details{Oceanographers use CTD (conductivity-temperature-depth)
+  instruments to measure key properties of the ocean, such as water
+  temperature, salinity, etc.  This function reads CTD datasets that
+  have been stored in common formats, and could be extended to
   accommodate other formats if needed.
 
   \code{read.ctd} does a reasonable job of inferring meta-information
@@ -53,7 +56,9 @@ read.ctd(file, type=NULL, debug=FALSE,
   parse, so both \code{object$institute} and \code{object$scientist} are left 
   blank for WOCE files.
 }
-\value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a list with elements detailed below.
+
+\value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
+  list with elements detailed below. 
   The most important elements are the station name and position, along
   with the profile data that are contained in the data frame named \code{data}.
   (Other elements in the list may be deleted in future versions of the
@@ -94,8 +99,7 @@ read.ctd(file, type=NULL, debug=FALSE,
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
 
-\seealso{
-The generic function \code{\link{read.oce}} provides an alternative to this.
+\seealso{The generic function \code{\link{read.oce}} provides an alternative to this.
 
 Data from a CTD cast may be assembled into a \code{ctd} object using \code{\link{as.ctd}}.  
 A \code{ctd} object may be summarized with \code{\link{summary.ctd}}.
@@ -117,6 +121,7 @@ written in the English notation, you might want to do
 before you try to read the data.
 
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -125,17 +130,20 @@ plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
 }
 }
-\references{
-The Sea-Bird SBE 19plus profiler is described at
-\url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
-The company recommends the use of their own software, and perhaps for this reason
-it is difficult to find a specification for the data files.  Inspection of
-data files led to most of the code used in Oce.  If the company ever publishes
-standards for the data formats, of course Oce will be adjusted.  In the meantime,
-it does a reasonable job in many instances.
 
-The WOCE-exchange format is described at
+\references{The Sea-Bird SBE 19plus profiler is described at
+  \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  The
+  company recommends the use of their own software, and perhaps for this
+  reason it is difficult to find a specification for the data files.
+  Inspection of data files led to most of the code used in Oce.  If the
+  company ever publishes standards for the data formats, of course Oce
+  will be adjusted.  In the meantime, it does a reasonable job in many
+  instances.
+
+  The WOCE-exchange format is described at
 \url{http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm}
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

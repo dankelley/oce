@@ -1,9 +1,11 @@
 \name{plot.profile}
+
 \alias{plot.profile}
+
 \title{Plot a CTD profile of various quantities}
-\description{
-  Plot a CTD profile, in any of several common formats.
-}
+
+\description{Plot a CTD profile, in any of several common formats.}
+
 \usage{
 plot.profile(x,
 type="S", 
@@ -15,6 +17,7 @@ grid=FALSE,
 col.grid="lightgray",
 \dots)
 }
+
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{type}{Type of profile to plot, from the list below.
@@ -38,16 +41,13 @@ col.grid="lightgray",
   \item{\dots}{Optional arguments passed to other functions.  A common example is to set \code{df}, for 
 use in \link{sw.N2} calculations.} 
 }
-\details{
-}
-\value{
-  None.
-}
 
-\seealso{
-  \code{\link{read.ctd}} scans ctd information from a file, and
+\value{None.}
+
+\seealso{\code{\link{read.ctd}} scans ctd information from a file, and
   \code{\link{plot.TS}} plots a temperature-salinity diagram. 
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -58,5 +58,7 @@ plot(ctd)
 plot.profile(ctd, type="T")
 }
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

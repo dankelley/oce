@@ -1,8 +1,13 @@
 \name{section.grid}
+
 \alias{section.grid}
+
 \title{Grid a section}
+
 \description{Grid a section, by interpolating to fixed pressure levels.}
+
 \usage{section.grid(section, p, method=c("approx","boxcar","lm"), ...)}
+
 \arguments{
   \item{section}{a \code{section} object containing the section to be gridded.}
   \item{p}{optional indication of the pressure levels to which interpolation should be done.  If this is not supplied, the pressure levels will be calculated based on the typical spacing in the ctd profiles stored within \code{section}.  If a single numerical value is provided, it is taken as a step for a seq() running from 0 to the maximum pressure (rounded to that step).  If \code{p="levitus"}, then the levels of the Levitus atlas are used.  If a list of numerical values is provided, then it is used as is.}
@@ -17,6 +22,7 @@ The \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in th
 whose pressure values match identically.}
 
 \seealso{Sections are normally created with \code{\link{read.section}} or \code{\link{make.section}}.}
+
 \examples{
 # Gulf Stream
 library(oce)
@@ -28,5 +34,7 @@ Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 10))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

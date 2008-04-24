@@ -1,20 +1,21 @@
 \name{read.coastline}
+
 \alias{read.coastline}
+
 \title{Scan a coastline data file}
-\description{
-  Read a coastline file in mapgen, matlab, or Splus format
-}
-\usage{
-read.coastline(file,type=c("R","S","mapgen"),debug=FALSE)
-}
+
+\description{Read a coastline file in mapgen, matlab, or Splus format}
+
+\usage{read.coastline(file,type=c("R","S","mapgen"),debug=FALSE)}
+
 \arguments{
   \item{file}{Name of file containing coastline data.}
   \item{type}{Type of file, one of "R", "S", or "mapgen"}
   \item{debug}{Set to TRUE to print information about the header, etc.}
 }
-\details{
-The S and R formats are identical, and consist of two columns, lon and lat, with land-jump segments 
-separated by lines with two NAs.
+
+\details{The S and R formats are identical, and consist of two columns,
+  lon and lat, with land-jump segments separated by lines with two NAs.
 
 The MapGen format is of the form
 \preformatted{
@@ -23,8 +24,8 @@ The MapGen format is of the form
 -16.244793	28.563330
 }
 BUG: the 'arc/info ungenerate' format is not yet understood.
-
 }
+
 \value{An object of \code{\link[base]{class}} \code{"coastline"}, 
 which is a \code{\link[base]{list}} containing
   \item{data}{a list containing 
@@ -35,11 +36,12 @@ which is a \code{\link[base]{list}} containing
   \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
 
-\seealso{
-The generic function \code{\link{read.oce}} provides an alternative to this.
-Coastlines may be created from latitude/longitude pairs with \code{\link{as.coastline}}, summarized with \code{\link{summary.coastline}} and plotted with
-\code{\link{plot.coastline}}.
-}
+\seealso{The generic function \code{\link{read.oce}} provides an
+  alternative to this.  Coastlines may be created from
+  latitude/longitude pairs with \code{\link{as.coastline}}, summarized
+  with \code{\link{summary.coastline}} and plotted with
+  \code{\link{plot.coastline}}.  }
+
 \examples{
 \dontrun{
 library(oce)
@@ -55,9 +57,10 @@ lines(cl$datas$longitude, cl$data$latitude)
 lines(cl$data$longitude-360, cl$data$latitude)
 }
 }
-\references{
-The NOAA site \url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html}
-is a good source for coastline data files.
-}
+
+\references{The NOAA site
+\url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html} is a good
+source for coastline data files.}
+
 \author{Dan Kelley}
 \keyword{misc}

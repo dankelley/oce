@@ -4,20 +4,20 @@
 \title{Sample seawater (CTD) section}
 \description{A CTD section running the length of Halifax Harbour.}
 \usage{data(section)}
-\format{
-The individual stations are available as \code{section$station[[1]]} through
-to \code{section$station[[7]]}, each of which is an object of type
-\code{ctd}.
-}
-\source{
-This section is based on measurements made during October of 2003 in
-Halifax Harbour by students in the \emph{Introduction to Physical Oceanography}
-class at Dalhousie University.  The course was taught
-Dan Kelley (the author of this package) and supervision at sea was
-provided by teaching assistant Natacha Bernier, at the time a PhD student at
-Dalhousie. Note the alteration of two station locations, to correct errors in
-transcribing field notes (e.g. a hand-written \code{8} was evidently typed as
-\code{3}).
+
+\format{The individual stations are available as
+  \code{section$station[[1]]} through to \code{section$station[[7]]},
+  each of which is an object of type \code{ctd}.}
+
+\source{This section is based on measurements made during October of
+  2003 in Halifax Harbour by students in the \emph{Introduction to
+  Physical Oceanography} class at Dalhousie University.  The course was
+  taught Dan Kelley (the author of this package) and supervision at sea
+  was provided by teaching assistant Natacha Bernier, at the time a PhD
+  student at Dalhousie. Note the alteration of two station locations, to
+  correct errors in transcribing field notes (e.g. a hand-written
+  \code{8} was evidently typed as \code{3}).
+
 \preformatted{
 library(oce)
 stn08 <- ctd.trim(read.ctd("BED0308.CNV", station="8"))
@@ -42,11 +42,12 @@ plot(section, coastline=coastline.hal, grid=TRUE)
 }
 The stations cover a 14 km region running from station 308, near the Sackville
 River, seaward to station 315, at the entrance to the general Harbour, offshore of
-the lovely Point Pleasant Park.
+the aptly-named Point Pleasant Park.
 } 
-\references{
-A summary of the stations can be obtained from \code{\link{summary.section}},
-and a plot can be created with \code{\link{plot.section}}.
-}
+
+\references{A summary of the stations can be obtained from \code{\link{summary.section}},
+and a plot can be created with \code{\link{plot.section}}.}
+
 \author{Dan Kelley}
+
 \keyword{misc}

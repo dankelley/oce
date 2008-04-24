@@ -1,9 +1,11 @@
 \name{plot.ctd}
+
 \alias{plot.ctd}
+
 \title{Plot seawater (CTD) data}
-\description{
-  Plot a summary diagram for CTD data.
-}
+
+\description{Plot a summary diagram for CTD data.}
+
 \usage{
 \method{plot}{ctd}(x,ref.lat=NaN, ref.lon=NaN, grid=TRUE, col.grid="lightgray", \dots)
 }
@@ -15,17 +17,18 @@
   \item{col.grid}{The color of the grid.}
   \item{\dots}{optional arguments passed to plotting functions. A common example is to set \code{df}, for use in \link{sw.N2} calculations.}
 }
-\details{
-  Creates a four-panel summary plot of data measured in a CTD cast. 
-One panel contains profiles of temperature and salinity, another contains
-profiles of density and the square of buoyancy frequency, and a third contains a TS diagram.  The fourth panel provides information about the cast.
-}
-\seealso{
-  The profiles are plotted with \code{\link{plot.profile}}, and the TS diagram is plotted
-with \code{\link{plot.TS}}.  CTD data can be created with \code{\link{as.ctd}} or read with
-  \code{\link{read.ctd}}.  Summaries of CTD data are provided by
-  \code{\link{summary.ctd}}.
-}
+
+\details{Creates a four-panel summary plot of data measured in a CTD
+  cast. One panel contains profiles of temperature and salinity, another
+  contains profiles of density and the square of buoyancy frequency, and
+  a third contains a TS diagram.  The fourth panel provides information
+  about the cast.  }
+
+\seealso{The profiles are plotted with \code{\link{plot.profile}}, and
+  the TS diagram is plotted with \code{\link{plot.TS}}.  CTD data can be
+  created with \code{\link{as.ctd}} or read with \code{\link{read.ctd}}.
+  Summaries of CTD data are provided by \code{\link{summary.ctd}}.  }
+
 \examples{
 library(oce)
 data(ctd) 

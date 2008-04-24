@@ -1,9 +1,14 @@
 \name{read.topo}
+
 \alias{read.topo}
+
 \title{Read an ETOPO2 topography file}
+
 \description{Read a file that contains topographic data in the ETOPO2 dataset, 
   as provided by the NOAA website.}
+
 \usage{read.topo(filename)}
+
 \arguments{
   \item{filename}{name of a file containing an ETOPO2 dataset.}
 }
@@ -23,8 +28,9 @@ topo.maritimes <- read.topo("~/maritimes.asc")
 plot(topo.maritimes)
 }
 }
-\references{
-  \url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}
-}
+
+\references{\url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}}
+
 \author{Dan Kelley}
+
 \keyword{misc}

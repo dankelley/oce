@@ -1,12 +1,8 @@
 \name{ctd.trim}
 \alias{ctd.trim}
 \title{Trim start/end portions of a CTD cast}
-\description{
-  Trim start/end portions of a CTD cast.
-}
-\usage{
-ctd.trim(x, method="downcast",parameters=NULL, verbose=FALSE)
-}
+\description{Trim start/end portions of a CTD cast.}
+\usage{ctd.trim(x, method="downcast",parameters=NULL, verbose=FALSE)}
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{method}{Various methods exist, some of which use parameters:
@@ -45,14 +41,13 @@ ctd.trim(x, method="downcast",parameters=NULL, verbose=FALSE)
   \item{parameters}{Depends on method; see above.}
   \item{verbose}{If set to TRUE, some debugging information is provided.}
 }
-\details{
 
-  For normal CTD profiling, the goal is to isolate only the downcast,
-  discarding measurements made in the air, in an equilibration phase in
-  which the device is held below the water surface, and then the upcast
-  phase that follows the downcast.  This is handled reasonably well by
-  \code{ctd.trim} with \code{method="downcast"}.  (The datasets provided
-  with \code{oce} were produced this way.)
+\details{For normal CTD profiling, the goal is to isolate only the
+  downcast, discarding measurements made in the air, in an equilibration
+  phase in which the device is held below the water surface, and then
+  the upcast phase that follows the downcast.  This is handled
+  reasonably well by \code{ctd.trim} with \code{method="downcast"}.
+  (The datasets provided with \code{oce} were produced this way.)
 
   However, for detailed work it makes sense to do things semi-manually.
   The eye is simply better at handling exceptional cases.  The process
@@ -60,7 +55,6 @@ ctd.trim(x, method="downcast",parameters=NULL, verbose=FALSE)
   indices of the downacast, and then use \code{ctd.trim} with
   \code{method="index"}.  A few trials will normally identify the
   downcast very well.
-
 }
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with data having been trimmed in some way.}
@@ -77,9 +71,10 @@ plot(ctd.raw) # barely recognizable, due to pre- and post-cast junk
 plot(ctd.trim(ctd.raw)) # looks like a real profile ...
 plot(ctd.decimate(ctd.trim(ctd.raw),method="boxcar")) # ... smoothed
 }
-\references{
-  The Seabird CTD instrument is described at
+
+\references{The Seabird CTD instrument is described at
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 }
+
 \author{Dan Kelley}
 \keyword{misc}

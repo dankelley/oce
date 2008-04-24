@@ -41,12 +41,14 @@ Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 10))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 }
-\references{
-Several repository sites provide section data. An example that is perhaps likely
-to exist for years is \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE
-bottle data"} should turn up other sites, if this one ceases to exist. Only the
-so-called \emph{exchange BOT} data format can be processed by read.section() at
-this time.
-}
+
+\references{Several repository sites provide section data. An example
+  that is perhaps likely to exist for years is
+  \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"}
+  should turn up other sites, if this one ceases to exist. Only the
+  so-called \emph{exchange BOT} data format can be processed by
+  read.section() at this time.}
+
 \author{Dan Kelley}
+
 \keyword{misc}

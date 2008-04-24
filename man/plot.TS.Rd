@@ -1,9 +1,7 @@
 \name{plot.TS}
 \alias{plot.TS}
 \title{Plot temperature-salinity diagram for seawater (CTD) data}
-\description{
-  Plot temperature-salinity diagram for seawater (CTD) data.
-}
+\description{Plot temperature-salinity diagram for seawater (CTD) data.}
 \usage{
 plot.TS(x,
 	rho.levels = 6,
@@ -40,12 +38,10 @@ plot.TS(x,
   \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
-\details{
-Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.
-}
-\value{
-  None.
-}
+
+\details{Creates a temperature-salinity plot for a CTD cast, with labeled isopycnals.}
+
+\value{None.}
 
 \seealso{
   \code{\link{summary.ctd}} summarizes the information, while

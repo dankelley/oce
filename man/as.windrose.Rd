@@ -39,7 +39,5 @@ wr <- as.windrose(xcomp, ycomp)
 summary(wr)
 plot(wr)
 }
-\references{
-}
 \author{Dan Kelley}
 \keyword{misc}

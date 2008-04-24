@@ -27,8 +27,7 @@
 \details{Creates a plot for a "\code{tide}" object.  See
   \code{\link{tidem}} for examples.}
 
-\seealso{
-\code{\link{tidem}} fits a "\code{tide}" object, and
+\seealso{\code{\link{tidem}} fits a "\code{tide}" object, and
 \code{\link{summary.tide}} summarizes such an object.
 }
 

@@ -1,26 +1,25 @@
 \name{summary.lobo}
+
 \alias{summary.lobo}
+
 \title{Summarize a lobo data object}
-\description{
-  Summarizes some of the data in a lobo object.
-}
+
+\description{Summarizes some of the data in a lobo object.}
+
 \usage{
 \method{summary}{lobo}(object, \dots)
 }
+
 \arguments{
   \item{object}{A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.}
   \item{\dots}{Passed to children.}
 }
-\details{
-  Pertinent summary information is presented, including the sampling
-  interval, data ranges, etc.
-}
-\value{
-}
 
-\seealso{
-  The \code{lobo} object may be read with \code{\link{read.ctd}}.
-}
+\details{Pertinent summary information is presented, including the
+  sampling interval, data ranges, etc.}
+
+\seealso{The \code{lobo} object may be read with \code{\link{read.ctd}}.}
+
 \examples{
 \dontrun{
 library(oce)
@@ -33,9 +32,12 @@ l <- read.lobo(uri)
 summary(l)
 }
 }
+
 \references{
 \url{http://www.satlantic.com/default.asp?mn=1.15.27.139}
 \url{http://www.mbari.org/lobo/}
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

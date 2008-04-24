@@ -1,8 +1,13 @@
 \name{summary.tide}
+
 \alias{summary.tide}
+
 \title{Summarize a tide object}
+
 \description{Summarize a tide object.}
+
 \usage{\method{summary}{tide}(object, p=0, constituent, \dots)}
+
 \arguments{
   \item{object}{a \code{tide} object, as created by \code{\link{tidem}}.}
   \item{p}{the minimum p value for the display of an individual
@@ -10,9 +15,9 @@
   \item{constituent}{optional name of constituent on which to focus.}
   \item{\dots}{passed to children.}
 }
-\details{
-  Pertinent summary information is presented.
-}
+
+\details{Pertinent summary information is presented.}
+
 \value{An object of \code{\link[base]{class}} \code{"summary.tide"},
 which is a data frame containing the following.
 \item{Name}{the name of the constituent in non-subscript form, e.g. "\code{M2}".}
@@ -22,10 +27,11 @@ which is a data frame containing the following.
 \item{p}{a sort of p value for the constituent (see \code{\link{tidem}}).}
 \item{sig}{significance codes based on \code{p}, with symbols as in \code{\link{summary.lm}}.}
 }
-\seealso{
-\code{\link{tidem}} fits a tidal model to data (and describes the nature of
-\code{tide} objects), and \code{\link{plot.tide}} plots a \code{tide} object.
-}
+
+\seealso{\code{\link{tidem}} fits a tidal model to data (and describes
+  the nature of \code{tide} objects), and \code{\link{plot.tide}} plots
+  a \code{tide} object.}
+
 \examples{
 library(oce)
 # Halifax data
@@ -33,5 +39,7 @@ data(sealevel.hal)
 tide <- tidem(sealevel.hal)
 summary(tide)
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

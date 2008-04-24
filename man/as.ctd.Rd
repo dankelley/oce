@@ -1,9 +1,7 @@
 \name{as.ctd}
 \alias{as.ctd}
 \title{Coerce data into ctd dataset}
-\description{
-  Coerces a dataset into a ctd dataset.
-}
+\description{Coerces a dataset into a ctd dataset.}
 \usage{
 thectd <- as.ctd(S, t, p,
 ship=NA, scientist=NA, institute=NA, address=NA,

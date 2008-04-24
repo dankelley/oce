@@ -79,8 +79,6 @@ t <- as.POSIXct("2000-01-01") + h * 3600
 sl <- as.sealevel(eta, t)
 summary(sl)
 }
-\references{
-  \url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.
-}
+\references{\url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.}
 \author{Dan Kelley}
 \keyword{misc}

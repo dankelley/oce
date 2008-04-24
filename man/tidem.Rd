@@ -1,8 +1,13 @@
 \name{tidem}
+
 \alias{tidem}
+
 \title{Fit a tidal model to a timeseries}
+
 \description{Fit a tidal model to a timeseries.}
+
 \usage{tidem(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet=TRUE)}
+
 \arguments{
   \item{sl}{a \code{sealevel} object.}
   \item{constituents}{an optional list of tidal constituents to which
@@ -156,6 +161,7 @@ data(sealevel.tuk)
 tide.tuk <- tidem(sealevel.tuk)
 summary(tide.tuk)
 }
+
 \references{
   Foreman, M. G. G., 1977.
   Manual for tidal heights analysis and prediction.
@@ -170,6 +176,9 @@ summary(tide.tuk)
   Classical tidal harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
   Computers and Geosciences, 28, 929-937.
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}
+
 \concept{tide}

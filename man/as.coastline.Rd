@@ -4,9 +4,7 @@
 \description{
   Coerces a sequence of latitudes and longitudes into a coastline dataset.
 }
-\usage{
-as.coastline(latitude, longitude)
-}
+\usage{as.coastline(latitude, longitude)}
 \arguments{
   \item{latitude}{the latitude in decimal degrees, positive north of the equator.}
   \item{longitude}{the longitude in decimal degrees, positive north of Greenwich.}

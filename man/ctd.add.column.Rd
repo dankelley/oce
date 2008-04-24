@@ -1,9 +1,7 @@
 \name{ctd.add.column}
 \alias{ctd.add.column}
 \title{Add a column to a CTD file}
-\description{
-  Add a column to a \code{ctd} file, updating the header as appropriate.
-}
+\description{Add a column to a \code{ctd} file, updating the header as appropriate.}
 \usage{
 ctd.add.column(x, column=NULL, column.name="", 
 	code="", name="", unit="", debug=FALSE)
@@ -40,8 +38,7 @@ ctd.new <- ctd.add.column(ctd,
 	"sigma-theta", "density, sigma-theta",
 	"kg/m^3");
 }
-\references{
-  The Seabird CTD instrument is described at
+\references{The Seabird CTD instrument is described at
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.
 }
 \author{Dan Kelley}

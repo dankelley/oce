@@ -1,29 +1,31 @@
 \name{read.lobo}
+
 \alias{read.lobo}
+
 \title{Read a lobo data file}
-\description{
-  Read a data file created by a LOBO instrument.
-}
-\usage{
-read.lobo(file, cols=7)
-}
+
+\description{Read a data file created by a LOBO instrument.}
+
+\usage{read.lobo(file, cols=7)}
+
 \arguments{
   \item{file}{A connection or a character string giving the name of the
     file to load.}
   \item{cols}{Number of columns in dataset.}
 }
-\details{
 
-This version of read.lobo is really quite crude, having been developed mainly for a ``predict the
-Spring bloom'' contest at Dalhousie University. In particular, the function assumes that the data
-columns are exactly as specified in the Examples section; if you reorder the columns or add new
-ones, this function is unlikely to work correctly. Furthermore, it should be noted that the file
-format was inferred simply by downloading files; the supplier makes no claims that the format will
-be fixed in time.
+\details{This version of read.lobo is really quite crude, having been
+  developed mainly for a ``predict the Spring bloom'' contest at
+  Dalhousie University. In particular, the function assumes that the
+  data columns are exactly as specified in the Examples section; if you
+  reorder the columns or add new ones, this function is unlikely to work
+  correctly. Furthermore, it should be noted that the file format was
+  inferred simply by downloading files; the supplier makes no claims
+  that the format will be fixed in time.
 
-It is also worth noting that there is no \code{\link{read.oce}} equivalent to \code{read.lobo},
-because the file format has no recognizable header.
-}
+  It is also worth noting that there is no \code{\link{read.oce}}
+  equivalent to \code{read.lobo}, because the file format has no
+  recognizable header.  }
 
 \value{An object of \code{\link[base]{class}} \code{"lobo"}, which is a \code{\link[base]{list}} containing
   \item{data}{a \code{\link{data.frame}} containing the following vectors:
@@ -54,10 +56,12 @@ and \code{"temperature"}.  If these are not found,
 that users should be able to alter it easily if, for example, the names of the current components
 change to "current to the east", etc.
 }
+
 \seealso{A \code{"lobo"} object may be summarized with
 \code{\link{summary.lobo}} and plotted with
 \code{\link{plot.lobo}}.
 }
+
 \examples{
 \dontrun{
 library(oce)
@@ -70,10 +74,12 @@ lobo <- read.lobo(uri)
 summary(lobo)
 }
 }
+
 \source{The file was created with the lines given in the example.}
-\references{
-\url{http://www.satlantic.com/default.asp?mn=1.15.27.139}
-\url{http://www.mbari.org/lobo/}
-}
+
+\references{\url{http://www.satlantic.com/default.asp?mn=1.15.27.139} and
+\url{http://www.mbari.org/lobo/}}
+
 \author{Dan Kelley}
+
 \keyword{misc}

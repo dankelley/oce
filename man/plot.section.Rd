@@ -1,9 +1,11 @@
 \name{plot.section}
+
 \alias{plot.section}
+
 \title{Plot a CTD section}
-\description{
-  Plot a CTD section.
-}
+
+\description{Plot a CTD section.}
+
 \usage{
 \method{plot}{section}(x,
  	field=NULL,
@@ -15,6 +17,7 @@
 	map.xlim=NULL,
 	\dots)
 }
+
 \arguments{
   \item{x}{a \code{section} object, e.g. as created by \code{\link{make.section}}.}
   \item{field}{is the field to plot.  Common options are \code{"temperature"}, \code{"salinity"}, and \code{"density"}, although \code{plot.section} will accept any named field that is present in the constituent CTD profiles. If \code{NULL} (the default) is given, then temperature, salinity and density are graphed.}
@@ -29,28 +32,32 @@
 common use, though, is to specify contours for individually plotted fields, e.g.  \code{plot.section(section, field="temperature", levels=seq(0,30,1))} gives
 temperature contours from 0 to 30C in intervals of 1C.}
 }
-\details{
-Creates a summary plot for a CTD section. If a \code{field} is supplied, then just that single
-field is contoured. If no \code{field} is supplied, then temperature, salinity, and sigma are
-contoured. A location plot is also drawn if a \code{coastline} is provided; in this, the first
-station in the section is indicated with a different symbol than the rest.
 
-The y-axis for the contours is pressure, plotted in the conventional reversed form, so that the
-water surface appears at the top of the plot. The x-axis is more complicated. If \code{at} is
-not supplied, then the routine calculates x as the distance between the first station in the
-section and each of the other stations. (This will produce an error if the stations are not
-ordered geographically, because the \code{\link{contour}} routine cannot handle non-increasing
-axis coordinates.) If \code{at} is specified, then it is taken to be the location, in arbitrary
-units, along the x-axis of labels specified by \code{labels}; the way this works is designed to
-be the same as for \code{\link{axis}}.
-}
-\value{
-  None.
-}
-\seealso{
-Sections may be created with \code{\link{make.section}} or \code{\link{read.section}}, and may
-be summarized with \code{\link{summary.section}}.
-}
+\details{Creates a summary plot for a CTD section. If a \code{field} is
+  supplied, then just that single field is contoured. If no \code{field}
+  is supplied, then temperature, salinity, and sigma are contoured. A
+  location plot is also drawn if a \code{coastline} is provided; in
+  this, the first station in the section is indicated with a different
+  symbol than the rest.
+
+  The y-axis for the contours is pressure, plotted in the conventional
+  reversed form, so that the water surface appears at the top of the
+  plot. The x-axis is more complicated. If \code{at} is not supplied,
+  then the routine calculates x as the distance between the first
+  station in the section and each of the other stations. (This will
+  produce an error if the stations are not ordered geographically,
+  because the \code{\link{contour}} routine cannot handle non-increasing
+  axis coordinates.) If \code{at} is specified, then it is taken to be
+  the location, in arbitrary units, along the x-axis of labels specified
+  by \code{labels}; the way this works is designed to be the same as for
+  \code{\link{axis}}.}
+
+\value{None.}
+
+\seealso{Sections may be created with \code{\link{make.section}} or
+  \code{\link{read.section}}, and may be summarized with
+  \code{\link{summary.section}}.}
+
 \examples{
 library(oce)
 # Halifax Harbour
@@ -64,5 +71,7 @@ Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0,2000,10))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}

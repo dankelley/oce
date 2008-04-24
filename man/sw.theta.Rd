@@ -1,13 +1,16 @@
 \name{sw.theta}
+
 \alias{sw.theta}
+
 \title{Seawater potential temperature}
-\description{
-Compute \eqn{\theta}{theta}, the potential temperature of seawater. 
-}
+
+\description{Compute \eqn{\theta}{theta}, the potential temperature of seawater. }
+
 \usage{
 tpot <- sw.theta(ctd, pref=0, method=c("UNESCO1983","Bryden1973"))
 tpot <- sw.theta(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983","Bryden1973"))
 }
+
 \arguments{
   \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
   \item{S}{salinity [PSU]}
@@ -16,38 +19,38 @@ tpot <- sw.theta(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983","Bryden1973"))
   \item{pref}{reference pressure [dbar]}
   \item{method}{algorithm to be used (see details)}
 }
-\details{
-In the first form, the argument is a \code{ctd} object, from which the
-salinity, temperature and pressure values are extracted and used to
-for the calculation.
 
-The potential temperature is defined to be the temperature that a water
-parcel of salinity \code{S}, \emph{in-situ} temperature \code{t} and pressure
-\code{p} would have if were to be moved adiabatically to a location with
-pressure \code{pref}. This quantity is commonly denoted
-\eqn{\theta(S,t,p,p_{ref})}{theta(S,t,p,pref)} in the oceanographic
-literature.
+\details{In the first form, the argument is a \code{ctd} object, from
+  which the salinity, temperature and pressure values are extracted and
+  used to for the calculation.
 
-The \code{"Bryden1973"} method does not use the reference pressure, since
-it is set up to approximate potential temperature referenced to the
-surface. 
+  The potential temperature is defined to be the temperature that a
+  water parcel of salinity \code{S}, \emph{in-situ} temperature \code{t}
+  and pressure \code{p} would have if were to be moved adiabatically to
+  a location with pressure \code{pref}. This quantity is commonly
+  denoted \eqn{\theta(S,t,p,p_{ref})}{theta(S,t,p,pref)} in the
+  oceanographic literature.
 
-For general use, the \code{"UNESCO1983"} method is preferable, since it
-permits calculation for arbitrary reference pressure. The UNESCO formula
-is derived from Bryden's earlier method, as Fofonoff \emph{et al.}
-(1983) explain.
+  The \code{"Bryden1973"} method does not use the reference pressure,
+  since it is set up to approximate potential temperature referenced to
+  the surface.
 
-This is not the place to discuss the two methods in detail, but
-users may note from the example that the two typically yield values that
-agree to a few millidegrees.
+  For general use, the \code{"UNESCO1983"} method is preferable, since
+  it permits calculation for arbitrary reference pressure. The UNESCO
+  formula is derived from Bryden's earlier method, as Fofonoff \emph{et
+  al.}  (1983) explain.
 
-}
+  This is not the place to discuss the two methods in detail, but users
+  may note from the example that the two typically yield values that
+  agree to a few millidegrees.}
+
 \value{Potential temperature [\eqn{^\circ}{deg}C] of seawater.}
-\seealso{
-The corresponding potential density anomaly
+
+\seealso{The corresponding potential density anomaly
 \eqn{\sigma_\theta}{sigma-theta} can be calculated with
 \code{\link{sw.sigma.theta}}.
 }
+
 \examples{
 library(oce)
 print(sw.theta(35, 13, 1000)) # 12.858
@@ -61,14 +64,15 @@ T <- c(-2,-2,30,30)
 p <- rep(1000,4)                                   
 print(max(abs(sw.theta(S,T,p) - sw.theta(S,T,p,0,"UNESCO1983"))))
 }
-\references{
-Bryden, H. L., 1973. New polynomials for thermal expansion, adiabatic temperature
-gradient and potential temperature of seawater, \emph{Deep-Sea Res.}, \bold{20}, 401-408.
 
-Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
-fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
-Science}, \bold{44}, 53 pp.
+\references{Bryden, H. L., 1973. New polynomials for thermal expansion,
+  adiabatic temperature gradient and potential temperature of seawater,
+  \emph{Deep-Sea Res.}, \bold{20}, 401-408.
 
-}
+  Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
+  fundamental properties of seawater. \emph{Unesco Technical Papers in
+  Marine Science}, \bold{44}, 53 pp.}
+
 \author{Dan Kelley}
+
 \keyword{misc}

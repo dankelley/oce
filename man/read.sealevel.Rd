@@ -1,25 +1,32 @@
 \name{read.sealevel}
+
 \alias{read.sealevel}
+
 \title{Read a sea-level data file}
-\description{
-  Read a data file holding sea level data.
-  BUG: the time vector assumes GMT, regardless of the GMT.offset value.
-}
+
+\description{Read a data file holding sea level data.  BUG: the time
+  vector assumes GMT, regardless of the GMT.offset value.} 
+
 \usage{read.sealevel(file, debug=FALSE)}
+
 \arguments{
   \item{file}{A connection or a character string giving the name of the
     file to load.  See Details for the types of files that are recognized.}
   \item{debug}{Set to \code{TRUE} to get debugging information during processing.}
 }
 
-\details{This function starts by scanning the first line of the file, from which it determines
-whether the file is in one of two known formats: type 1, the format used at the Hawaii archive
-centre, and type 2, the comma-separated-value format used by the Marine Environmental Data Service.  (The file type is inferred by checking for the existence of the string \code{Station_Name} on the first line of the file, indicating type 2.) If the
-file is in neither of these formats, the user might wish to scan it directly, 
-and then to use \code{\link{as.sealevel}} to create a \code{sealevel} object.}
+\details{This function starts by scanning the first line of the file,
+  from which it determines whether the file is in one of two known
+  formats: type 1, the format used at the Hawaii archive centre, and
+  type 2, the comma-separated-value format used by the Marine
+  Environmental Data Service.  (The file type is inferred by checking
+  for the existence of the string \code{Station_Name} on the first line
+  of the file, indicating type 2.) If the file is in neither of these
+  formats, the user might wish to scan it directly, and then to use
+  \code{\link{as.sealevel}} to create a \code{sealevel} object.}
 
-\value{An object of \code{\link[base]{class}} \code{"sealevel"}, which is a \code{\link[base]{list}}
-containing
+\value{An object of \code{\link[base]{class}} \code{"sealevel"}, which
+  is a \code{\link[base]{list}} containing
  \item{data}{A \code{\link{data.frame}} containing
     \item{\code{t}}{time}
     \item{\code{eta}}{sea level [m]}
@@ -44,19 +51,17 @@ containing
   \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
 
-\seealso{
-The generic function \code{\link{read.oce}} provides an alternative to this.
-A \code{sealevel} object may be summarized with \code{\link{summary.sealevel}}.
-Use \code{\link{plot.sealevel}} to produce a summary plot, and use
-\code{\link{tidem}} to fit a tidal model to the data.
+\seealso{The generic function \code{\link{read.oce}} provides an
+  alternative to this. A \code{sealevel} object may be summarized with
+  \code{\link{summary.sealevel}}.  Use \code{\link{plot.sealevel}} to
+  produce a summary plot, and use \code{\link{tidem}} to fit a tidal
+  model to the data.
 
-A \code{"sealevel"} object can also be constructed with
+  A \code{"sealevel"} object can also be constructed with
   \code{\link{as.sealevel}} (and, in fact, \code{read.sealevel} uses
-this routine to actually create the \code{"sealevel"} object.)
-
-
-
+  this routine to actually create the \code{"sealevel"} object.)
 }
+
 \examples{
 \dontrun{
 library(oce)

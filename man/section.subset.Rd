@@ -1,19 +1,25 @@
 \name{section.subset}
+
 \alias{section.subset}
+
 \title{Subset a section}
+
 \description{Subset a section, by removing stations or rearranging their order.}
+
 \usage{subset <- section.subset(section, indices=1:length(section$station))}
+
 \arguments{
   \item{section}{a section to be subsetted.}
   \item{indices}{the index numbers of stations to keep, e.g. the first station in the section has index 1.}
 }
 
-\details{Stations with the provided \code{indices} are kept, and the rest are deleted.
-The \code{indices} may be in any order, and may contain gaps. Common uses of 
-\code{section.subset} include dropping stations that have erroneous data, dropping
-stations that are separated from a cruise track of interest, and reordering a 
-section so that \code{plot.section} will measure distance from a particular station
-of interest (see Examples).}
+\details{Stations with the provided \code{indices} are kept, and the
+  rest are deleted. The \code{indices} may be in any order, and may
+  contain gaps. Common uses of \code{section.subset} include dropping
+  stations that have erroneous data, dropping stations that are
+  separated from a cruise track of interest, and reordering a section so
+  that \code{plot.section} will measure distance from a particular
+  station of interest (see Examples).}
 
 \value{An object of \code{\link[base]{class}} \code{"section"}, 
 containing only the indicated stations, in the indicated order.}
