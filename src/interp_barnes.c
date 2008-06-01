@@ -15,8 +15,8 @@ yr <- 2.01158
 gamma <- 0.5
 niter <- 2
 dyn.load("interp_barnes.so")
-con <- .Call("interp_barnes", x, y, as.numeric(u), w, xg, yg, xr, yr, gamma, as.integer(niter))
-contour(xg,yg,con)
+g <- .Call("interp_barnes", x, y, as.numeric(u), w, xg, yg, xr, yr, gamma, as.integer(niter))
+contour(g$xg,g$yg,g$zg)
 points(x,y,col=hsv(0.666*(u-min(u))/diff(range(u)),1,1),pch=20)
 */
 
@@ -48,7 +48,7 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	double *rgamma;		   /* gamma */
 	int *niter;		   /* num iterations */
 	int nx, ny, nz, nxg, nyg, i, j, k, it;
-	double *z_last, *z_last2; /* previous values */
+	double *z_last, *z_last2, *zz; /* previous values */
 	double *rans;		  /* result */
 	double xr2, yr2;	  /* radii, adjusting */
 	SEXP ans;
@@ -72,8 +72,9 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	/* previous values */
 	z_last = (double*)malloc(nx * sizeof(double));
 	z_last2 = (double*)malloc(nx * sizeof(double));
+	zz = (double*)malloc(nx * ny * sizeof(double));
 
-	for (i = 0; i < nxg; i++) for (j = 0; j < nyg; j++) rans[i + nxg*j] = 0.0;
+	for (i = 0; i < nxg; i++) for (j = 0; j < nyg; j++) zz[i + nxg*j] = 0.0;
 
 	for (k = 0; k < nx; k++)
 		z_last[k] = z_last2[k] = 0.0;
@@ -84,18 +85,18 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 		/* update grid */
 		for (i = 0; i < nxg; i++) {
 			for (j = 0; j < nyg; j++) {
-				rans[i + nxg*j] = interpolate_barnes(rxg[i],
-								     ryg[j],
-								     rans[i + nxg*j],
-								     -1, // no skip
-								     nx,
-								     rx,
-								     ry,
-								     rz,
-								     rw,
-								     z_last,
-								     xr2,
-								     yr2);
+				zz[i + nxg*j] = interpolate_barnes(rxg[i],
+								   ryg[j],
+								   zz[i + nxg*j],
+								   -1, // no skip
+								   nx,
+								   rx,
+								   ry,
+								   rz,
+								   rw,
+								   z_last,
+								   xr2,
+								   yr2);
 			}
 		}
 		/* interpolate grid back to data locations */
@@ -121,8 +122,12 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 			yr2 *= sqrt(*rgamma);
 		}
 	}
+	for (i = 0; i < nxg; i++) 
+		for (j = 0; j < nyg; j++) 
+			rans[i + nxg * j] = zz[i + nxg * j];
 	free(z_last);
 	free(z_last2);
+	free(zz);
 	UNPROTECT(1);
 	return(ans);
 }

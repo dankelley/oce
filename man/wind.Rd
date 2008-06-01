@@ -3,12 +3,7 @@
 \alias{wind}
 \title{Sample (wind) data for contouring}
 \description{Wind data, for contouring.}
-\usage{
-data(wind)
-col = hsv(2/3*(wind$u - min(wind$u)) / diff(range(wind$u)), 1, 1)
-plot(wind$x, wind$y, col=col, pch=20)
-text(wind$x, wind$y, wind$u, pos=4, cex=0.7)
-}
+\usage{data(wind)}
 
 \format{Columns \code{wind$x} and \code{wind$y} are location, while
   \code{wind$u} is the wind speed, in m/s.}

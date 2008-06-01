@@ -6,7 +6,7 @@
 
 \description{Grid data using Barnes algorithm.}
 
-\usage{interp.barnes <- function(x, y, z, w, xg, yg, xr, yr, gamma=0.5, iterations=2)}
+\usage{gridded <- interp.barnes(x, y, z, w, xg, yg, xr, yr, gamma=0.5, iterations=2)}
 
 \arguments{
   \item{x}{a vector of x locations.}
@@ -39,8 +39,8 @@
 library(oce)
 data(wind)
 u <- interp.barnes(wind$x, wind$y, wind$u)
-contour(u$xg, u$yg, u$zg)
-points(wind$x, wind$y)
+contour(u$xg, u$yg, u$zg, col="red", labcex=1)
+text(wind$x, wind$y, wind$u, cex=0.7, col="blue")
 }
 
 \references{S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
