@@ -12,8 +12,13 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, g
         cat("interp.barnes using calculated value xg =", xg[1], ",", xg[2], ",...,", xg[length(xg)], "\n")
     }
     if (is.null(yg)) {
-        yg <- pretty(y, n=30)
-        cat("interp.barnes using calculated value yg =", yg[1], ",", yg[2], ",...,", yg[length(yg)],"\n")
+        if (0 == diff(range(y))) {
+            yg <- y[1]
+            cat("interp.barnes using calculated value yg =", yg[1], "\n")
+        } else {
+            yg <- pretty(y, n=30)
+            cat("interp.barnes using calculated value yg =", yg[1], ",", yg[2], ",...,", yg[length(yg)],"\n")
+        }
     }
     if (is.null(xr)) {
         xr <- diff(range(x)) / sqrt(n)
