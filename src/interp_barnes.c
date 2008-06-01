@@ -10,12 +10,12 @@ x <- wind$x; y <- wind$y; u <- wind$u
 w <- rep(1.0, length(x))
 xg <- seq(0, 12, 0.25)
 yg <- seq(0, 10, 0.25)
-rx <- 2.71563
-ry <- 2.01158
+xr <- 2.71563
+yr <- 2.01158
 gamma <- 0.5
 niter <- 2
 dyn.load("interp_barnes.so")
-con <- .Call("interp_barnes", x, y, as.numeric(u), w, xg, yg, rx, ry, gamma, as.integer(niter))
+con <- .Call("interp_barnes", x, y, as.numeric(u), w, xg, yg, xr, yr, gamma, as.integer(niter))
 contour(xg,yg,con)
 points(x,y,col=hsv(0.666*(u-min(u))/diff(range(u)),1,1),pch=20)
 */

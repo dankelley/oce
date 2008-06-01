@@ -5,8 +5,6 @@
 \description{This is sample lobo dataset obtained in the Northwest Arm
 of Halifax by Satlantic.}
 \usage{data(ctd)}
-\format{
-}
 \source{Satlantic.} 
 \references{
   \url{http://www.satlantic.com/default.asp?mn=1.15.27.139}.

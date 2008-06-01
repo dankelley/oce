@@ -7,9 +7,7 @@ It has been pruned by selecting only the portion of the data
 acquired when the instrument was being lowered through the water
 column.}
 \usage{data(ctd)}
-\format{
-  This file is from a \emph{Sea-Bird SBE 19} CTD instrument.
-}
+\format{This file is from a \emph{Sea-Bird SBE 19} CTD instrument.}
 \source{Peter Galbraith acquired these data during the 2002 SLEIWEX
   field program, part of a Dalhousie/IML cooperative study of
   internal-wave mixing in the St Lawrence estuary.} 
