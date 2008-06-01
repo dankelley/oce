@@ -4,9 +4,9 @@
 #define USE_APPROX_EXP 1
 
 /*
-# R CMD SHLIB barnes_interp.c
+# R CMD SHLIB interp_barnes.c
 data(wind)
-x <- wind$x; y <- wind$y; u <- wind$u
+x <- wind$x; y <- wind$y; u <- wind$u+0.0
 w <- rep(1.0, length(x))
 xg <- seq(0, 12, 0.25)
 yg <- seq(0, 10, 0.25)
@@ -14,9 +14,10 @@ xr <- 2.71563
 yr <- 2.01158
 gamma <- 0.5
 niter <- 2
-dyn.load("interp_barnes.so")
-g <- .Call("interp_barnes", x, y, as.numeric(u), w, xg, yg, xr, yr, gamma, as.integer(niter))
-contour(g$xg,g$yg,g$zg)
+load("~/t.rda")
+#dyn.load("interp_barnes.so")
+g <- .Call("interp_barnes", x, y, u, w, xg, yg, xr, yr, gamma, as.integer(niter))
+contour(xg, yg, g)
 points(x,y,col=hsv(0.666*(u-min(u))/diff(range(u)),1,1),pch=20)
 */
 
@@ -64,6 +65,8 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	ryg = REAL(yg);
 	rgamma = REAL(gamma);
 	niter = INTEGER(iterations);
+	if (*niter < 0) error("cannot have a negative number of iterations");
+	if (*niter > 20) error("cannot have more than 20 iterations.  Got %d", *niter);
 	rxr = REAL(xr);
 	ryr = REAL(yr);
 	xr2 = *rxr;
@@ -72,13 +75,13 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	/* previous values */
 	z_last = (double*)malloc(nx * sizeof(double));
 	z_last2 = (double*)malloc(nx * sizeof(double));
-	zz = (double*)malloc(nx * ny * sizeof(double));
+	zz = (double*)malloc(nxg * nyg * sizeof(double));
 
-	for (i = 0; i < nxg; i++) for (j = 0; j < nyg; j++) zz[i + nxg*j] = 0.0;
-
+	for (i = 0; i < nxg; i++)
+		for (j = 0; j < nyg; j++) 
+			zz[i + nxg*j] = 0.0;
 	for (k = 0; k < nx; k++)
 		z_last[k] = z_last2[k] = 0.0;
-
 	PROTECT(ans = allocMatrix(REALSXP, nxg, nyg));
 	rans = REAL(ans);
 	for (it = 0; it < *niter; it++) {
@@ -131,86 +134,22 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	UNPROTECT(1);
 	return(ans);
 }
-
-/* Do interpolation search, using bisection rule on possibly irregular
- * array g[].
- *
- * If 'x' is in the range of the grid, defined by g[0] to g[ng-1],
- * then set 'b' and 'f' such that
- *     x = g[b] + f * (g[b+1] - g[b])
- * and return 1.
- *
- * If 'x' is not in the range, set b to the nearest endpoint, 
- * set f to the distance to the nearest endpoint and return 0.
- */
-static int
-nearest(double x, double g[], unsigned int ng, int *b, double *f)
-{
-	int l = 0;		/* left index */
-	int r = ng - 1;		/* right index */
-	int m;			/* middle index */
-	if (g[0] < g[1]) {	/* ascending sequence */
-		if (x <= g[l])	{ *b = 0; *f = g[l] - x; return 0; }
-		if (g[r] <= x)	{ *b = r; *f = x - g[r]; return 0; }
-		m = (l + r) / 2;
-		while (r - l > 1) {
-			if (x < g[m])
-				r = m;
-			else if (g[m] < x)
-				l = m;
-			else { 
-				*b = m;
-				*f = (x - g[*b]) / (g[*b+1] - g[*b]);
-				return 1;
-			}
-			m = (r + l) / 2;
-		}
-		*b = l;
-		*f = (x - g[*b]) / (g[*b+1] - g[*b]);
-		return 1;
-	} else {			/* descending sequence */
-		if (x >= g[l])	{ *b = 0; *f = g[l] - x; return 0; }
-		if (g[r] >= x)	{ *b = r; *f = x - g[r]; return 0; }
-		m = (l + r) / 2;
-		while (r - l > 1) {
-			if (x > g[m])
-				r = m;
-			else if (g[m] > x)
-				l = m;
-			else {
-				*b = m;
-				*f = (x - g[*b]) / (g[*b+1] - g[*b]);
-				return 1;
-			}
-			m = (r + l) / 2;
-		}
-		*b =  l;
-		*f = (x - g[*b]) / (g[*b+1] - g[*b]);
-		return 1;
-	}
-}
-
-
 
 static double
-interpolate_barnes(double xx, /* interpolate to get value at (xx,yy) */
-		   double yy,	/* given previous value zz there */
-		   double zz,	
+interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
 		   int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
 		   unsigned int n, /* number of data (x,y,z) weighted by w */
-		   double *x,	     
-		   double *y,
-		   double *z,
-		   double *w,
+		   double *x,	   /* data x-location */
+		   double *y,	   /* data y-location */
+		   double *z,	   /* data z value */
+		   double *w,	   /* weight */
 		   double *z_last, /* last estimate of z at (x,y) */
 		   double xr,	   /* influence radius (xr, yr) */
 		   double yr)
 {
-	double sum = 0.0, sum_w = 0.0;
-	double dx, dy, d;
+	double sum = 0.0, sum_w = 0.0, dx, dy, d, weight;
 	int k;
 	for (k = 0; k < n; k++) {
-		double weight;
 		if (k != skip) {
 			dx = (xx - x[k]) / xr;
 			dy = (yy - y[k]) / yr;

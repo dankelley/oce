@@ -6,15 +6,17 @@
 
 \description{Grid data using Barnes algorithm.}
 
-\usage{gridded <- interp.barnes(x, y, z, w, xg, yg, xr, yr, gamma=0.5, iterations=2)}
+\usage{gridded <- interp.barnes(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, 
+gamma=0.5, iterations=2)}
 
 \arguments{
   \item{x}{a vector of x locations.}
   \item{y}{a vector of y locations.}
   \item{z}{a vector of z values, one at each (x,y) location.}
   \item{w}{a optional vector of weights at the (x,y) location.  If not
-    supplied, a weight of 1 is used for each point, which means equal
-    weighting.  Higher weights give data points more influence.}
+    supplied, i.e. if a NULL value, then a weight of 1 is used for each
+    point, which means equal weighting.  Higher weights give data points
+    more influence.}
   \item{xg}{an optional vector defining the x grid.  If not supplied,
     this will be determined from the x data, using \code{pretty(x,
       n=30)}.}
@@ -37,10 +39,22 @@
 
 \examples{
 library(oce)
+
+# Contouring example, with wind-speed data from Koch et al. (1983)
 data(wind)
 u <- interp.barnes(wind$x, wind$y, wind$u)
 contour(u$xg, u$yg, u$zg, col="red", labcex=1)
 text(wind$x, wind$y, wind$u, cex=0.7, col="blue")
+
+data(ctd)
+# One-dimensional example: smoothing a salinity profile
+p <- ctd$data$pressure
+y <- rep(1, length(p))
+S <- ctd$data$salinity
+pg <- pretty(p, n=50)
+g <- interp.barnes(p, y, S, xg=pg, yg=c(1), xr=2)
+plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
+lines(g$zg, g$xg, col="red")
 }
 
 \references{S. E.  Koch and M.  DesJardins and P. J. Kocin, 1983.  ``An
