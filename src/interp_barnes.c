@@ -155,12 +155,24 @@ interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz val
 			dy = (yy - y[k]) / yr;
 			d = dx*dx + dy*dy;
 #ifdef USE_APPROX_EXP
+			/* try to speed up exp(-x).  Max error is 2e-5 [Kelley, 20080605] */
+			weight = w[k] / (0.9999796555448 + 
+					 d * (1.0009908558128 +
+					      d * (0.4934396422464 + 
+						   d * (0.1831662464125 + 
+							d * (0.0213724779214 + 
+							     d * (0.0216692343878 +
+								  d * (-0.0032696147976 + 
+								       d * 0.0009523871277)))))));
+#if 0
 			weight = w[k] / (0.999448 +
-					 d * (1.023820 +
-					      d * (0.3613967 +
+ 					 d * (1.023820 +
+ 					      d * (0.3613967 +
 						   d * (0.4169646 +
 							d * (-0.1292509 +
 							     d * 0.0499565)))));
+#endif
+
 #else
 			weight = w[k] * exp(-d);
 #endif
