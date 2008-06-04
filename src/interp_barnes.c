@@ -1,8 +1,6 @@
 #include <R.h>
 #include <Rinternals.h>
 
-#define USE_APPROX_EXP 1
-
 /*
 # R CMD SHLIB interp_barnes.c
 data(wind)
@@ -22,26 +20,33 @@ points(x,y,col=hsv(0.666*(u-min(u))/diff(range(u)),1,1),pch=20)
 */
 
 static double
-interpolate_barnes(double xx, /* interpolate to get value at (xx,yy) */
-		   double yy,	/* given previous value zz there */
-		   double zz,	
+interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
 		   int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
-		   unsigned int n, /* number of data (x,y,z) weighted by w */
-		   double *x,	     
-		   double *y,
-		   double *z,
-		   double *w,
+		   unsigned int n, double *x, double *y, double *z, double *w, /* data num, locations, values, weights */
 		   double *z_last, /* last estimate of z at (x,y) */
-		   double xr,	   /* influence radius (xr, yr) */
-		   double yr);
+		   double xr, double yr) /* influence radii */
+{
+	double sum = 0.0, sum_w = 0.0, dx, dy, d, weight;
+	int k;
+	for (k = 0; k < n; k++) {
+		if (k != skip) {
+			dx = (xx - x[k]) / xr;
+			dy = (yy - y[k]) / yr;
+			d = dx*dx + dy*dy;
+			weight = w[k] * exp(-d);
+			sum += weight * (z[k] - z_last[k]);
+			sum_w += weight;
+		}
+	}
+	return ((sum_w > 0.0) ? (zz + sum / sum_w) : NA_REAL);
+}
 
 
 SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w */
-		  SEXP xg, SEXP yg, /* grid */
-		  SEXP xr, SEXP yr, /* influence radii */
-		  SEXP gamma,	    /* radius-reduction factor, squared */
-		  SEXP iterations   /* number of iterations */
-	)
+		   SEXP xg, SEXP yg,		   /* grid */
+		   SEXP xr, SEXP yr, /* influence radii */
+		   SEXP gamma,	     /* radius-reduction factor */
+		   SEXP iterations)  /* number of iterations */
 {
 	double *rx, *ry, *rz, *rw; /* data */
 	double *rxg, *ryg;	   /* grid */
@@ -88,34 +93,22 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 		/* update grid */
 		for (i = 0; i < nxg; i++) {
 			for (j = 0; j < nyg; j++) {
-				zz[i + nxg*j] = interpolate_barnes(rxg[i],
-								   ryg[j],
-								   zz[i + nxg*j],
-								   -1, // no skip
+				zz[i + nxg*j] = interpolate_barnes(rxg[i], ryg[j], zz[i + nxg*j],
+								   -1, /* no skip */
 								   nx,
-								   rx,
-								   ry,
-								   rz,
-								   rw,
+								   rx, ry, rz, rw,
 								   z_last,
-								   xr2,
-								   yr2);
+								   xr2, yr2);
 			}
 		}
 		/* interpolate grid back to data locations */
 		for (k = 0; k < nx; k++) {
-			z_last2[k] = interpolate_barnes(rx[k],
-							ry[k],
-							z_last[k],
+			z_last2[k] = interpolate_barnes(rx[k], ry[k], z_last[k],
 							-1, /* BUG: why not skip? */
 							nx,
-							rx,
-							ry,
-							rz,
-							rw,
+							rx, ry, rz, rw,
 							z_last,
-							xr2,
-							yr2);
+							xr2, yr2);
 		}
 		for (k = 0; k < nx; k++)
 			z_last[k] = z_last2[k];
@@ -133,55 +126,4 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	free(zz);
 	UNPROTECT(1);
 	return(ans);
-}
-
-static double
-interpolate_barnes(double xx, double yy, double zz, /* interpolate to get zz value at (xx,yy) */
-		   int skip, /* value in (x,y,z) to skip, or -1 if no skipping */
-		   unsigned int n, /* number of data (x,y,z) weighted by w */
-		   double *x,	   /* data x-location */
-		   double *y,	   /* data y-location */
-		   double *z,	   /* data z value */
-		   double *w,	   /* weight */
-		   double *z_last, /* last estimate of z at (x,y) */
-		   double xr,	   /* influence radius (xr, yr) */
-		   double yr)
-{
-	double sum = 0.0, sum_w = 0.0, dx, dy, d, weight;
-	int k;
-	for (k = 0; k < n; k++) {
-		if (k != skip) {
-			dx = (xx - x[k]) / xr;
-			dy = (yy - y[k]) / yr;
-			d = dx*dx + dy*dy;
-#ifdef USE_APPROX_EXP
-			/* try to speed up exp(-x).  Max error is 2e-5 [Kelley, 20080605] */
-			weight = w[k] / (0.9999796555448 + 
-					 d * (1.0009908558128 +
-					      d * (0.4934396422464 + 
-						   d * (0.1831662464125 + 
-							d * (0.0213724779214 + 
-							     d * (0.0216692343878 +
-								  d * (-0.0032696147976 + 
-								       d * 0.0009523871277)))))));
-#if 0
-			weight = w[k] / (0.999448 +
- 					 d * (1.023820 +
- 					      d * (0.3613967 +
-						   d * (0.4169646 +
-							d * (-0.1292509 +
-							     d * 0.0499565)))));
-#endif
-
-#else
-			weight = w[k] * exp(-d);
-#endif
-			sum += weight * (z[k] - z_last[k]);
-			sum_w += weight;
-		}
-	}
-	if (sum_w > 0.0)
-		return (zz + sum / sum_w);
-	else
-		return NA_REAL;
 }
