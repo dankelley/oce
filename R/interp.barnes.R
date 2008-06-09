@@ -8,7 +8,7 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, g
         cat("interp.barnes assuming equal weights on all data\n")
     }
     if (is.null(xg)) {
-        xg <- pretty(x, n=30)
+        xg <- pretty(x, n=50)
         cat("interp.barnes using calculated value xg =", xg[1], ",", xg[2], ",...,", xg[length(xg)], "\n")
     }
     if (is.null(yg)) {
@@ -16,7 +16,7 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, g
             yg <- y[1]
             cat("interp.barnes using calculated value yg =", yg[1], "\n")
         } else {
-            yg <- pretty(y, n=30)
+            yg <- pretty(y, n=50)
             cat("interp.barnes using calculated value yg =", yg[1], ",", yg[2], ",...,", yg[length(yg)],"\n")
         }
     }
