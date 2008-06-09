@@ -19,10 +19,10 @@ gamma=0.5, iterations=2)}
     more influence.}
   \item{xg}{an optional vector defining the x grid.  If not supplied,
     this will be determined from the x data, using \code{pretty(x,
-      n=30)}.}
+      n=50)}.}
   \item{yg}{a optional vector defining the y grid.  If not supplied,
     this will be determined from the x data, using \code{pretty(y,
-      n=30)}.  In the special case with all y values identical,
+      n=50)}.  In the special case with all y values identical,
     \code{yg} is set to that value.  This is useful for one-dimensional
   gridding, e.g. for profiles (see below).}
   \item{xr}{a optional value defining the width of the radius ellipse in
