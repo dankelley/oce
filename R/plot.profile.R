@@ -87,7 +87,7 @@ plot.profile <- function (x,
              type = "n", xlab = "", ylab = "", axes = FALSE)
         axis(1, col = col.S, col.axis = col.S, col.lab = col.S, ...)
         lines(x$data$salinity, x$data$pressure, col = col.S)
-        mtext("Salinity [ PSU ]", side = 1, line = 3, col = col.S, ...)
+        mtext("Salinity [ PSU ]", side = 1, line = 3, col = col.S)
         box()
         if (grid) grid(col=col.grid)
     } else {

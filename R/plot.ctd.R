@@ -1,5 +1,5 @@
-plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN, 
-                      grid = TRUE, col.grid="lightgray", ...) 
+plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
+                      grid = TRUE, col.grid="lightgray", ...)
 {
     dec_deg <- function(x, code = "lat")
     {
@@ -44,7 +44,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     xloc <- 1
     yloc <- 10
     d.yloc <- 0.8
-    cex <- 0.9
+    cex <- 0.75
     text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
     yloc <- yloc - d.yloc
     if (!is.null(x$metadata$filename))    	text.item(x$metadata$filename,    " File:     ", cex=cex)
@@ -61,7 +61,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     if (!is.na(ref.lat) && !is.na(ref.lon)) {
         dist <- geod.dist(x$metadata$latitude, x$metadata$longitude, ref.lat, ref.lon)
         kms <- sprintf("%.2f km", dist/1000)
-        rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon), 
+        rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon),
                                        ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
         yloc <- yloc - d.yloc
     }
