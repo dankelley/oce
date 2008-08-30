@@ -44,7 +44,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 text(xlab, ylab, x$metadata$station.id[num.stations])
             }
         } else {
-                                        # FIXME: contours don't get to plot edges
+            ## FIXME: contours don't get to plot edges
             xxrange <- range(xx)
             yyrange <- range(yy)
             ##yyrange[1] <- -1
@@ -65,7 +65,8 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 zz[i,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
                 if (grid)
                     points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=0.5)
-                water.depth <- c(water.depth, x$data$station[[station.indices[i]]]$metadata$water.depth)
+                water.depth <- c(water.depth,
+                                 max(x$data$station[[station.indices[i]]]$data$depth, na.rm=TRUE))
             }
                                         # draw the ground below the water
             graph.bottom <- par("usr")[3]
@@ -81,7 +82,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             }
             legend("topright", title, bg="white", x.intersp=0, y.intersp=0.5)
         }
-    }
+    }                                   # plot.subsection
 
     if (!inherits(x, "section")) stop("method is only for section objects")
     oldpar <- par(no.readonly = TRUE)

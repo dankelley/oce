@@ -1,4 +1,6 @@
 0.1.73
+- fix bug in section plot (bottom was missing)
+  http://code.google.com/p/r-oce/issues/detail?id=21
 - fix bug in size of salinity axis label for plot.ctd()
 - use pch=21 for TS plots (so data density is more visible)
 
