@@ -10,7 +10,7 @@ sw.rho <- function(S, t=NULL, p=NULL)
     nt <- length(t)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
-                                        # sometimes give just a single p value (e.g. for a TS diagram)
+    ## sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
         p <- rep(p[1], np) # FIXME: perhaps should repeat a sequence, if given one

@@ -120,7 +120,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     coef  <- model$coefficients
     p.all <- summary(model)$coefficients[,4]
     amplitude <- phase <- p <-vector("numeric", length=1+nc)
-                                        # FIXME: should do offset/trend removal explicitly
+    ## FIXME: should do offset/trend removal explicitly
     amplitude[1] <- coef[1]
     phase[1] <- 0
     p[1] <- p.all[1]
