@@ -35,7 +35,7 @@ stn15 <- oce.edit(stn15, "latitude", stn15$metadata$latitude + 1,
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)
 section <- oce.edit(section, "section.id",  "Halifax-Harbour-2003-oct",
                    "", "Dan Kelley")
-p <- seq(0, 30, 2.5)
+p <- seq(0, 60, 1)
 section <- section.grid(section, p=p, method="boxcar")
 data(coastline.hal)
 plot(section, coastline=coastline.hal, grid=TRUE)

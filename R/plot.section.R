@@ -15,9 +15,9 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 lon[i] <- x$data$station[[station.indices[i]]]$metadata$longitude
             }
             asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
-                                        # expand the range by 20%
             latm <- mean(lat, na.rm=TRUE)
             lonm <- mean(lon, na.rm=TRUE)
+            ## expand the range by 20%
             lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE))
             latr <- latm + 1.2 * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
             if (!is.null(map.xlim))
