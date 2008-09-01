@@ -3,6 +3,10 @@
   http://code.google.com/p/r-oce/issues/detail?id=21
 - fix bug in size of salinity axis label for plot.ctd()
 - use pch=21 for TS plots (so data density is more visible)
+- fix bug in plot.profile(type="S_T") positioning
+  http://code.google.com/p/r-oce/issues/detail?id=23
+- fix bug in plot.profile() font size
+  http://code.google.com/p/r-oce/issues/detail?id=24
 
 0.1.72
 - add interp.barnes()

@@ -7,7 +7,7 @@ plot.topo <- function(x, water.z, water.colors, land.z, land.colors, legend.loc=
     zr <- range(x$data$z)
 
     plot(range(x$data$lon), range(x$data$lat), asp=asp, xaxs="i", yaxs="i",
-         type="n", xlab="", ylab="")
+         type="n", xlab="", ylab="", ...)
 
     contour(x$data$lon, x$data$lat, x$data$z, levels=0, drawlabels=FALSE, add=TRUE,
             col="black", lwd=lwd)

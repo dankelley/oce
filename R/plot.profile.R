@@ -13,7 +13,7 @@ plot.profile <- function (x,
     if (type == "S") {
         plot(x$data$salinity, x$data$pressure, ylim = rev(range(x$data$pressure)),
              type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext("Salinity [ PSU ]", side = 3, line = 3, col = col.S)
+        mtext("Salinity [ PSU ]", side = 3, line = 3, col = col.S, cex=par("cex"), ...)
         axis(2, ...)
         axis(3, col = col.S, col.axis = col.S, col.lab = col.S, ...)
         box()
@@ -22,8 +22,7 @@ plot.profile <- function (x,
     } else if (type == "T") {
         plot(x$data$temperature, x$data$pressure, ylim = rev(range(x$data$pressure)),
              type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(expression(paste("Temperature [ ", degree, "C ]")),
-              side = 3, line = 3, col = col.t)
+        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = 3, col = col.t, cex=par("cex"), ...)
         axis(2, ...)
         axis(3, col = col.t, col.axis = col.t, col.lab = col.t, ...)
         box()
@@ -32,8 +31,7 @@ plot.profile <- function (x,
     } else if (type == "density") {
         plot(x$data$sigma.theta, x$data$pressure, ylim = rev(range(x$data$pressure)),
              type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3,
-              line = 3, col = col.rho)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = 3, col = col.rho, cex=par("cex"), ...)
         axis(2, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho, ...)
         box()
@@ -44,8 +42,7 @@ plot.profile <- function (x,
         plot(st, x$data$pressure, ylim = rev(range(x$data$pressure)),
              type = "n", xlab = "", ylab = pname, axes = FALSE)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho, ...)
-        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3,
-              line = 3, col = col.rho)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = 3, col = col.rho, cex=par("cex"), ...)
         axis(2, ...)
         box()
         lines(st, x$data$pressure, col = col.rho)
@@ -53,19 +50,17 @@ plot.profile <- function (x,
         N2 <- sw.N2(x$data$pressure, st, ...)
         plot(N2, x$data$pressure, ylim = rev(range(x$data$pressure)),
              type = "n", xlab = "", ylab = "", axes = FALSE)
-        axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
+        axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2, ...)
         lines(N2, x$data$pressure, col = col.N2)
                                         #abline(v = 0, col = col.N2)
-        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1,
-              line = 3, col = col.N2)
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = 3, col = col.N2, cex=par("cex"), ...)
         box()
         if (grid) grid(col=col.grid)
     } else if (type == "N2") {
         N2 <- N2(x$data$pressure, x$data$sigma.theta, df = length(x$data$pressure)/4)
         plot(N2, x$data$pressure, ylim = rev(range(x$data$pressure)),
              type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3,
-              line = 3, col = col.N2)
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = 3, col = col.N2, cex=par("cex"), ...)
         axis(2, ...)
         axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2, ...)
         box()
@@ -73,12 +68,10 @@ plot.profile <- function (x,
         lines(N2, x$data$pressure, col = col.N2)
         abline(v = 0, col = col.N2)
     } else if (type == "S+T") {
-        par(mfcol = c(2, 2))
         plot(x$data$temperature, x$data$pressure, ylim = rev(range(x$data$pressure)),
              type = "n", xlab = "", ylab = pname, axes = FALSE)
         axis(3, col = col.t, col.axis = col.t, col.lab = col.t, ...)
-        mtext(expression(paste("Temperature [ ", degree, "C ]")),
-              side = 3, line = 3, col = col.t)
+        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = 3, col = col.t, cex=par("cex"), ...)
         axis(2, ...)
         box()
         lines(x$data$temperature, x$data$pressure, col = col.t)
@@ -87,7 +80,7 @@ plot.profile <- function (x,
              type = "n", xlab = "", ylab = "", axes = FALSE)
         axis(1, col = col.S, col.axis = col.S, col.lab = col.S, ...)
         lines(x$data$salinity, x$data$pressure, col = col.S)
-        mtext("Salinity [ PSU ]", side = 1, line = 3, col = col.S)
+        mtext("Salinity [ PSU ]", side = 1, line = 3, col = col.S, cex=par("cex"), ...)
         box()
         if (grid) grid(col=col.grid)
     } else {
