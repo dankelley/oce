@@ -15,6 +15,7 @@ col.rho="blue",
 col.N2="brown",
 grid=FALSE, 
 col.grid="lightgray",
+Slim, Tlim, densitylim, N2lim, plim,
 \dots)
 }
 
@@ -38,6 +39,11 @@ col.grid="lightgray",
   \item{col.N2}{Color for square of buoyancy frequency.}
   \item{grid}{Set \code{TRUE} to get a grid.}
   \item{col.grid}{Grid colour.}
+  \item{Slim}{Optional limit for S axis}
+  \item{Tlim}{Optional limit for T axis}
+  \item{densitylim}{Optional limit for density axis}
+  \item{N2lim}{Optional limit for N2 axis}
+  \item{plim}{Optional limit for p axis}
   \item{\dots}{Optional arguments passed to other functions.  A common example is to set \code{df}, for 
 use in \link{sw.N2} calculations.} 
 }
