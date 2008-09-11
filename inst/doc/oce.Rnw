@@ -1,5 +1,4 @@
 % -*- fill-column: 80; comment-column: 50; -*-
-%--------- adjust textmate window until this just fits --------------------------
 
 \documentclass{article}
 
@@ -64,9 +63,9 @@ software for scanning the data files and producing some standard plots, but this
 is of limited use to researchers who work with several instrument types at the
 same time, and who need to carry the analysis beyond the first step.
 
-\begin{figure}
+\begin{figure}[ht]
   \begin{center}
-    \includegraphics[width=0.6\hsize]{ctd-object}
+    \includegraphics[width=0.7\hsize]{ctd-object}
   \end{center}
   \caption{\label{f:ctdobject}Sketch of the contents of a \texttt{ctd}
     object. The elements \texttt{data}, \texttt{metadata}, and
@@ -107,21 +106,16 @@ objects makes it easy to build skill in examining and modifying objects.
 \index{seawater properties, calculations of}
 
 The \verb@oce@ package provides many functions for dealing with seawater
-properties. Probably the most used is \verb@sw.rho(S,t,p)@, which computes
+properties. Probably the most used is \verb@sw.rho(S,T,p)@, which computes
 seawater density $\rho$ as a function of salinity $S$ (PSU), in-situ temperature
-$t$ ($^\circ$C \dots\/ note the use of lower-case in this and related functions,
-to avoid confusion with \verb@T@, an abbreviation used sometimes in R programs)
-and pressure $p$ (decibar). The result is a number in the order of
-$1000$kg/m$^3$.  For many purposes, Oceanographers prefer to use the density
-anomaly $\sigma=\rho-1000$kg/m$^3$, provided with \verb@sw.sigma(S,t,p)@, or its
-adiabatic cousin $\sigma_\theta$, provided with \verb@sw.sigma.theta(S,t,p)@.
-
-Note that the names of functions relating to seawater material properties start
-with ``\verb@sw.@''; future versions of \verb@oce@ may add similarly named
-functions for the properties of air, sediment, organisms, etc.
-
-The \verb@sw.@ functions can also take a \verb@ctd@ object instead of the
-\verb@(S, t, p)@ arguments.
+$T$ ($^\circ$C) and pressure $p$ (decibar). (Note that this and similar
+functions starts with the letters \verb@sw.@ to designate that they relate to
+seawater properties.  Future versions of \verb@oce@ may include the properties
+of air, so the prefix is an example of planning, rather than necessity.) The
+result is a number in the order of $1000$\,kg/m$^3$.  For many purposes,
+Oceanographers prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$,
+provided with \verb@sw.sigma(S,t,p)@, or its adiabatic cousin $\sigma_\theta$,
+provided with \verb@sw.sigma.theta(S,t,p)@.
 
 \looseness=1
 \index{dynamic height}
@@ -154,11 +148,12 @@ Details and examples are, of course, provided in the documentation of these func
 
 
 \workedexercise{1}{(a) What is the density of a seawater parcel at pressure
-$100$dbar, with salinity $34$PSU and temperature $10^\circ$C?
+$100$\,dbar, with salinity $34$\,PSU and temperature 10$^\circ$C?
 (b) What temperature would the parcel have if raised adiabatically to the surface?
 (c) What density would it have if raised adiabatically to the surface?
 (d) What density would it have if lowered about 100m, increasing the pressure to $200$dbar?
-(e) Draw a blank TS diagram with $S$ from $30$ to $40$PSU and $T$ from $-2$ to $20^\circ C$.  (Answers are provided at the end of this document.)
+(e) Draw a blank TS diagram with $S$ from $30$ to $40$\,PSU and $T$ from $-2$ to 20$^\circ$C.
+(Answers are provided at the end of this document.)
 }
 
 
@@ -192,24 +187,31 @@ names(ctd$data)
 @
 to find out what sensors were attached to the instrument, thus providing data columns.
 
-As noted above, the seawater-property functions (whose names begin with
-\verb@sw.@) can take a \verb@ctd@ object instead of the individual arguments
-\verb@S@, \verb@t@, and \verb@p@.
+Naturally, you may apply any \verb@R@ techniques to any of the data stored in an
+object, e.g. \verb@hist(ctd$data$temperature)@ would produce a histogram of
+temperature for the \verb@ctd@ object.  It is always worth checking, though, to
+see if \verb@oce@ has already defined a function that you may be applying,
+e.g. \verb@plot.TS@ will produce a lovely temperature-salinity diagram, with
+isopycnals and proper units on the axes.
 
-It is possible to plot the components of a \verb@ctd@ object individually,
-either by accessing the data directly (see the WOCE section, below, for an
-example) or by using more specialized functions such as
-\verb@plot.TS@ and \verb@plot.profile@.
+The package provides facilities for some common operations with oceanographic
+data, such as trimming CTD profiles with \verb@ctd.trim()@, but of course you
+may do that sort of work by acting on the data directly, if necessary.  Just
+make sure you realize that the metadata will not be altered if you do that.
+Also, it is a good idea to add log entries to any objects that you change, by
+using the \verb@processing.log.append()@ function.  (You can see an example of
+this in action with \verb@?section@.)
+
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=.8\textwidth}
-<<label=ctdfig, width=9, height=6, fig=TRUE, echo=FALSE>>=
+\setkeys{Gin}{width=\textwidth}
+<<label=ctdfig, width=10, height=6, fig=TRUE, echo=FALSE>>=
 <<ctdplot>>
 @
 \end{center}
-\caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired during
+\caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired in
 the St Lawrence Estuary Internal Wave Experiment.  (This dataset has been
-trimmed to just the downcast; see the text and Figure~\ref{fig:ctdraw} for more
+trimmed to the downcast; see the text and Figure~\ref{fig:ctdraw} for more
 on trimming.)}
 \label{fig:ctd}
 \end{figure}
@@ -229,7 +231,7 @@ plot.ctd.scan(ctd.raw)
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.55\textwidth}
-<<label=ctdrawfig,fig=TRUE,width=8, height=6, echo=FALSE>>=
+<<label=ctdrawfig,fig=TRUE,width=9, height=6, echo=FALSE>>=
 <<ctdrawplot>>
 @
 \end{center}
@@ -405,7 +407,7 @@ right angles.
 \caption{\label{fig:sectiona03}
 Portion of the CTD section designated A03 (Cruise chief scientist: Tereschenkov, SOI.), showing the region of the Gulf Stream.  (The small number of S contours
 in the upper water column is the result of a near-bottom salinity anomaly
-in the station at about 200km.)
+in the station at about 200\,km.)
 }
 \end{figure}
 
@@ -429,19 +431,19 @@ A sample data set is provided, so that
 <<label=topoplot,eval=FALSE>>=
 library(oce)
 data(topo.maritimes)
-plot(topo.maritimes)
+plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50), water.z=c(seq(-50, -200, -50), -300, -400, -500, -1000, -2000))
 @
-will produce a chart of the land and sea topography of Eastern Canada
+will produce a chart of the waters embraced by the Maritime Provinces of Canada
 (Figure~\ref{fig:topo}). 
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=topofig,fig=TRUE,width=8, height=7, echo=FALSE>>=
+<<label=topofig,fig=TRUE,width=8, height=8.5, echo=FALSE>>=
 <<topoplot>>
 @
 \end{center}
 \caption{Topography of eastern Canada, centred on the shallow waters north of
-Prince Edward Island.  (Note the differing contour intervals over land and water.)}
+Prince Edward Island.}
 \label{fig:topo}
 \end{figure}
 
