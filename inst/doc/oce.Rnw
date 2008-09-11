@@ -431,7 +431,9 @@ A sample data set is provided, so that
 <<label=topoplot,eval=FALSE>>=
 library(oce)
 data(topo.maritimes)
-plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50), water.z=c(seq(-50, -200, -50), -300, -400, -500, -1000, -2000))
+plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50),
+     water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
+     water.lwd=c(  1,    1,    1,   10,     1,   1,   1.5,   1.5,   1.5))
 @
 will produce a chart of the waters embraced by the Maritime Provinces of Canada
 (Figure~\ref{fig:topo}). 
@@ -442,8 +444,8 @@ will produce a chart of the waters embraced by the Maritime Provinces of Canada
 <<topoplot>>
 @
 \end{center}
-\caption{Topography of eastern Canada, centred on the shallow waters north of
-Prince Edward Island.}
+\caption{Topography of eastern Canada, centred on Les \^{i}les de la Madeleine, 
+north of Prince Edward Island.}
 \label{fig:topo}
 \end{figure}
 
