@@ -1,6 +1,6 @@
 plot.topo <- function(x,
                       water.z, water.col, water.lty, water.lwd,
-                      land.z,  land.col,   land.lty,  land.lwd,
+                      land.z,   land.col,  land.lty,  land.lwd,
                       legend.loc="topright",
                       ...)
 {
@@ -15,18 +15,7 @@ plot.topo <- function(x,
     contour(x$data$lon, x$data$lat, x$data$z,
             levels=0, drawlabels=FALSE, add=TRUE,
             col="black")                # coastline is always black
-    if (missing(water.lty)) {
-        water.lty <- par("lty")
-    }
-    if (missing(water.lwd)) {
-        water.lwd <- par("lwd")
-    }
-    if (missing(land.lty)) {
-        land.lty <- par("lty")
-    }
-    if (missing(land.lwd)) {
-        land.lwd <- par("lwd")
-    }
+    legend <- lwd <- lty <- col <- NULL
     if (zr[1] < 0) {
         if (missing(water.z)) {
             if (zr[2] > 0) {
@@ -37,12 +26,20 @@ plot.topo <- function(x,
             }
             water.z <- rev(sort(water.z))
         }
+        nz <- length(water.z)
         if (missing(water.col))
-            water.col <- gebco.colors(length(water.z), "water", "line")
+            water.col <- gebco.colors(nz, "water", "line")
+        if (missing(water.lty))
+            water.lty <- rep(par("lty"), nz)
+        if (missing(water.lwd))
+            water.lwd <- rep(par("lwd"), nz)
+        legend <- c(legend, water.z)
+        lwd    <- c(lwd,    water.lwd)
+        lty    <- c(lty,    water.lty)
+        col    <- c(col,    water.col)
         contour(x$data$lon, x$data$lat, x$data$z,
                 levels=water.z, lwd=water.lwd, lty=water.lty, col=water.col,
-                drawlabels=FALSE,
-                add=TRUE, ...)
+                drawlabels=FALSE, add=TRUE, ...)
     }
     if (zr[2] > 0) {
         if (missing(land.z)) {
@@ -53,20 +50,24 @@ plot.topo <- function(x,
                 land.z <- pretty(zr)
             }
         }
+        nz <- length(land.z)
         if (missing(land.col))
-            land.col <- gebco.colors(length(land.z), "land", "line")
+            land.col <- gebco.colors(nz, "land", "line")
+        if (missing(land.lty))
+            land.lty <- rep(par("lty"), nz)
+        if (missing(land.lwd))
+            land.lwd <- rep(par("lwd"), nz)
+        legend <- c(legend, land.z)
+        lwd    <- c(lwd,    land.lwd)
+        lty    <- c(lty,    land.lty)
+        col    <- c(col,    land.col)
         contour(x$data$lon, x$data$lat, x$data$z,
                 levels=land.z, lwd=land.lwd, lty=land.lty, col=land.col,
-                drawlabels=FALSE,
-                add=TRUE, ...)
+                drawlabels=FALSE, add=TRUE, ...)
     }
     if (!is.null(legend.loc)) {
-        nl <- length(land.z) + length(water.z)
-        legend(legend.loc,
-               lwd=c(land.lwd, water.lwd),
-               lty=c(land.lty, water.lty),
-               bg="white",
-               legend=c(rev(land.z),0, water.z),
-               col=c(land.col, "black", water.col))
+        o <- rev(order(legend))
+        legend(legend.loc, lwd=lwd[o], lty=lty[o],
+               bg="white", legend=legend[o], col=col[o])
     }
 }

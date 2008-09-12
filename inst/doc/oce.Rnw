@@ -77,7 +77,7 @@ The need to scan diverse data files was one motivation for the creation of
 \verb@oce@, but an equal goal was to make it easy to work with the data once
 they are in the system.  This was accomplished partly by the provision of
 functions to work with the data, and partly by developing a uniform object
-design that lets users reach inside without guesswork. 
+design that lets users reach inside without guesswork.
 
 At the core of the \verb@oce@ design process is a policy of adding features
 according to the priorities of practical research. As a result, \verb@oce@ is a
@@ -427,16 +427,16 @@ The only real advantage over plotting things yourself is that latitude and
 longitude are scaled to give natural shapes near the centre of the plot.
 
 Bathymetric charts, or more generally topographic maps, can be produced easily.
-A sample data set is provided, so that 
+A sample data set is provided, so that
 <<label=topoplot,eval=FALSE>>=
 library(oce)
 data(topo.maritimes)
 plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50),
      water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
-     water.lwd=c(  1,    1,    1,   10,     1,   1,   1.5,   1.5,   1.5))
+     water.lwd=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
 @
 will produce a chart of the waters embraced by the Maritime Provinces of Canada
-(Figure~\ref{fig:topo}). 
+(Figure~\ref{fig:topo}).
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
@@ -444,7 +444,7 @@ will produce a chart of the waters embraced by the Maritime Provinces of Canada
 <<topoplot>>
 @
 \end{center}
-\caption{Topography of eastern Canada, centred on Les \^{i}les de la Madeleine, 
+\caption{Topography of eastern Canada, centred on Les \^{i}les de la Madeleine,
 north of Prince Edward Island.}
 \label{fig:topo}
 \end{figure}
@@ -499,7 +499,7 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 
 %%% \index{sea level!storm surge during Hurricane Juan}
 %%% \index{Hurricane Juan!surge detection by detiding}
-%%% 
+%%%
 %%% <<label=tideplot,eval=FALSE>>=
 %%% library(oce)
 %%% data(sealevel.hal)
@@ -517,11 +517,11 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 %%% produce Figure~\ref{fig:tide}, illustrating the use of tidal analysis to detect
 %%% storm surges.  Note the use of the \verb@model@ that is returned by the tide
 %%% analysis.
-%%% 
+%%%
 %%% (It should be noted that the tidal analysis portion of \verb@oce@ is still in
 %%% active development, and the features are subject to change.  Use
 %%% \verb@?tidem@ to learn more about this.)
-%%% 
+%%%
 %%% \begin{figure}
 %%% 	\begin{center}
 %%% \setkeys{Gin}{width=0.8\textwidth}
@@ -535,7 +535,7 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 %%% to the region.}
 %%% \label{fig:tide}
 %%% \end{figure}
-%%% 
+%%%
 %%% \goodbreak
 
 \section{Lobo data}
