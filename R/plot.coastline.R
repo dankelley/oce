@@ -1,11 +1,10 @@
 plot.coastline <- function (x, asp=NA, ...)
 {
-    debug <- FALSE
+    debug <- TRUE
     if (!inherits(x, "coastline"))
         stop("method is only for coastline objects")
-    if (is.na(asp)) {
+    if (is.na(asp))
         asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE))*pi/180)
-    }
     ## The following is a somewhat provisional hack, necessiated by the tendency
     ## of plot() to produce latitudes past the poles.
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
@@ -26,5 +25,10 @@ plot.coastline <- function (x, asp=NA, ...)
     } else {
     	plot(x$data$longitude, x$data$latitude, asp=asp, xlab="", ylab="", type="l", ...)
     }
-    if (debug) cat("par(pin)",par("pin"),"\n")
+    if (debug) {
+        cat("par(pin)",par("pin"),"\n")
+        cat("lon lim:");print(range(x$data$longitude,na.rm=TRUE))
+        cat("lat lim:");print(range(x$data$latitude,na.rm=TRUE))
+        cat("par:");print(par())
+    }
 }
