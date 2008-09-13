@@ -1,6 +1,6 @@
 plot.coastline <- function (x, asp=NA, ...)
 {
-    debug <- TRUE
+    debug <- FALSE
     if (!inherits(x, "coastline"))
         stop("method is only for coastline objects")
     if (is.na(asp))
