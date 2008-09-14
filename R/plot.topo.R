@@ -9,6 +9,16 @@ plot.topo <- function(x,
     asp <- 1 / cos(mean(lat.range)*pi/180)
     zr <- range(x$data$z)
 
+    ## auto-scale based on data in window, if window provided
+    args <- list(...)
+    if (!is.null(args$xlim) && !is.null(args$ylim)) {
+        xf <- (args$xlim[1] <= x$data$lon) & (x$data$lon <= args$xlim[2])
+        yf <- (args$ylim[1] <= x$data$lat) & (x$data$lat <= args$ylim[2])
+        zr <- range(x$data$z[xf, yf], na.rm=TRUE)
+    } else {
+        zr <- range(x$data$z, na.rm=TRUE)
+    }
+
     plot(range(x$data$lon), range(x$data$lat), asp=asp, xaxs="i", yaxs="i",
          type="n", xlab="", ylab="", ...)
 
@@ -21,6 +31,13 @@ plot.topo <- function(x,
             if (zr[2] > 0) {
                 water.z <- pretty(c(zr[1], 0))
                 water.z <- water.z[water.z!=0]
+                #cat("water.z=");print(water.z)
+                ## Do some tricks to get shelf water as well as deep
+                if (max(water.z) == -1000)
+                    water.z <- c(water.z, -500, -250, -100, -50)
+                else if (max(water.z) == -500)
+                    water.z <- c(water.z, -400, -300, -200, -150, -100, -50)
+                #cat("after tricks, water.z=");print(water.z)
             } else {
                 water.z <- pretty(zr)
             }
@@ -31,8 +48,12 @@ plot.topo <- function(x,
             water.col <- gebco.colors(nz, "water", "line")
         if (missing(water.lty))
             water.lty <- rep(par("lty"), nz)
+        else if (length(water.lty) == 1)
+            water.lty <- rep(water.lty, nz)
         if (missing(water.lwd))
             water.lwd <- rep(par("lwd"), nz)
+        else if (length(water.lwd) == 1)
+            water.lwd <- rep(water.lwd, nz)
         legend <- c(legend, water.z)
         lwd    <- c(lwd,    water.lwd)
         lty    <- c(lty,    water.lty)
@@ -55,8 +76,12 @@ plot.topo <- function(x,
             land.col <- gebco.colors(nz, "land", "line")
         if (missing(land.lty))
             land.lty <- rep(par("lty"), nz)
+        else if (length(land.lty) == 1)
+            land.lty <- rep(land.lty, nz)
         if (missing(land.lwd))
             land.lwd <- rep(par("lwd"), nz)
+        else if (length(land.lwd) == 1)
+            land.lwd <- rep(land.lwd, nz)
         legend <- c(legend, land.z)
         lwd    <- c(lwd,    land.lwd)
         lty    <- c(lty,    land.lty)

@@ -1,4 +1,5 @@
 0.1.73
+- plot.topo() narrows autoscale to xlim-ylim region, if provided
 - add plot.ctd() 'textpanel' option, and put the profiles in the same row
 - fix bug in plot.profile() to let it take Slim,..., as args
   http://code.google.com/p/r-oce/issues/detail?id=25
