@@ -66,7 +66,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             for (i in 1:num.stations) {
                 zz[i,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
                 if (grid)
-                    points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=0.5)
+                    points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
                 water.depth <- c(water.depth,
                                  max(x$data$station[[station.indices[i]]]$data$depth, na.rm=TRUE))
             }
