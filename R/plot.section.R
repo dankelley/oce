@@ -1,11 +1,13 @@
 plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                           grid = FALSE,
+                          contour.levels=NULL,
+                          contour.labels=NULL,
                           station.indices,
                           coastline=NULL,
                           map.xlim=NULL,
                           ...)
 {
-    plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, ...)
+    plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL, ...)
     {
         if (variable == "map") {
             lat <- array(NA, num.stations)
@@ -75,10 +77,21 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             polygon(bottom.x, bottom.y, col="gray") # bottom trace
             par(new=TRUE)
             dots <- list(...) # adjust plot parameter labcex, unless user did
-            if (is.null(dots$labcex)) {
-                contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8, ...)
+            if (!is.null(contour.levels) && !is.null(contour.labels)) {
+                if (is.null(dots$labcex)) {
+                    contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
+                            levels=contour.levels,
+                            labels=contour.labels,
+                            ...)
+                } else {
+                    contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
+                }
             } else {
-                contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
+                if (is.null(dots$labcex)) {
+                    contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8, ...)
+                } else {
+                    contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
+                }
             }
             legend("topright", title, bg="white", x.intersp=0, y.intersp=0.5)
         }
@@ -129,7 +142,14 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
     } else {
         field.name <- field
         if (field == "sigma.theta") field.name <- expression(sigma[theta])
-        plot.subsection(field, field.name, ...)
+        if (!missing(contour.levels) && !missing(contour.labels)) {
+            plot.subsection(field, field.name,
+                            contour.levels=contour.levels,
+                            contour.labels=contour.labels,
+                            ...)
+        } else {
+            plot.subsection(field, field.name, ...)
+        }
     }
-    par(oldpar)
+#    par(oldpar)
 }

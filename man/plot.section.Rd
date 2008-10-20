@@ -12,6 +12,8 @@
 	at=NULL,
 	labels=TRUE,
 	grid=FALSE,
+        contour.levels=NULL,
+        contour.labels=NULL,
 	station.indices,
 	coastline=NULL,
 	map.xlim=NULL,
@@ -19,18 +21,37 @@
 }
 
 \arguments{
-  \item{x}{a \code{section} object, e.g. as created by \code{\link{make.section}}.}
-  \item{field}{is the field to plot.  Common options are \code{"temperature"}, \code{"salinity"}, and \code{"density"}, although \code{plot.section} will accept any named field that is present in the constituent CTD profiles. If \code{NULL} (the default) is given, then temperature, salinity and density are graphed.}
-  \item{at}{if \code{NULL} (the default), the x axis will indicate the distance of the stations from the first in the section.  (This may give errors in the contouring routine, if the stations are not present in a geographical order.)  If a list, then it indicates the values at which stations will be plotted.}
-  \item{labels}{either a logical, indicating whether to put labels on the x axis, or a vector that is a list of labels to be placed at the x positions indicated by \code{at}.}
+  \item{x}{a \code{section} object, e.g. as created by
+    \code{\link{make.section}}.}
+  \item{field}{is the field to plot.  Common options are
+    \code{"temperature"}, \code{"salinity"}, and \code{"density"},
+    although \code{plot.section} will accept any named field that is
+    present in the constituent CTD profiles. If \code{NULL} (the default)
+    is given, then temperature, salinity and density are graphed.  If a
+    field is specified, then it is also possible to specify the
+    \code{contour.levels} and \code{contour.labels} (see below).}
+  \item{at}{if \code{NULL} (the default), the x axis will indicate the
+    distance of the stations from the first in the section.  (This may
+    give errors in the contouring routine, if the stations are not present
+    in a geographical order.)  If a list, then it indicates the values at
+    which stations will be plotted.} 
+  \item{labels}{either a logical, indicating whether to put labels on
+    the x axis, or a vector that is a list of labels to be placed at the x
+    positions indicated by \code{at}.} 
   \item{grid}{if \code{TRUE}, points are drawn at data locations.}
-  \item{station.indices}{optional list of the indices of stations to use.  Note that these are indices, not the names of stations, e.g. to focus on the first four stations, use \code{station.numbers=c(1,4)}.}
-  \item{coastline}{optional \code{coastline} to be used in a station map}
-  \item{map.xlim}{optional xlim for station location, which can be helpful in ensuring that a recognizable coastline can be seen}
-  \item{\dots}{optional arguments passed to the contouring function, e.g. using
-     \code{labcex=1} will increase the size of contour labels.  Probably the most
-common use, though, is to specify contours for individually plotted fields, e.g.  \code{plot.section(section, field="temperature", levels=seq(0,30,1))} gives
-temperature contours from 0 to 30C in intervals of 1C.}
+  \item{contour.levels}{if not \code{NULL}, and if a \code{field} was
+    specified, this specifies contour levels (see details)}
+  \item{contour.labels}{if not \code{NULL}, and if a \code{field} was
+    specified, this specifies contour labels (see details)}
+  \item{station.indices}{optional list of the indices of stations to
+    use.  Note that these are indices, not the names of stations, e.g. to
+    focus on the first four stations, use \code{station.numbers=c(1,4)}.}
+  \item{coastline}{optional \code{coastline} to be used in a station
+    map}
+  \item{map.xlim}{optional xlim for station location, which can be
+    helpful in ensuring that a recognizable coastline can be seen}
+  \item{\dots}{optional arguments passed to the contouring function,
+    e.g. using \code{labcex=1} will increase the size of contour labels.}
 }
 
 \details{Creates a summary plot for a CTD section. If a \code{field} is
@@ -50,7 +71,8 @@ temperature contours from 0 to 30C in intervals of 1C.}
   axis coordinates.) If \code{at} is specified, then it is taken to be
   the location, in arbitrary units, along the x-axis of labels specified
   by \code{labels}; the way this works is designed to be the same as for
-  \code{\link{axis}}.}
+  \code{\link{axis}}.
+}
 
 \value{None.}
 
