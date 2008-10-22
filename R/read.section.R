@@ -56,6 +56,7 @@ read.section <- function(file, section.id, debug=FALSE)
     latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - 2])
     longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - 2])
     station.id <- data[,which(var.names=="STNNBR") - 2]
+    station.id <- sub(" *$","",sub("^ *","",station.id)) #remove blanks
     station.list <- unique(station.id)
     num.stations <- length(station.list)
     station <- vector("list", num.stations)
@@ -68,7 +69,8 @@ read.section <- function(file, section.id, debug=FALSE)
         stn[i] <- sub("^ *", "", station.id[select[1]])
         lat[i] <- latitude[select[1]]
         lon[i] <- longitude[select[1]]
-        this.station <- as.ctd(S=S[select], t=T[select], p=p[select],
+        select.depths <- select[(S[select] >= 0) & (t[select] >= -2) & (p[select] >= 0)]
+        this.station <- as.ctd(S=S[select.depths], t=t[select.depths], p=p[select.depths],
                                latitude=lat[i],
                                longitude=lon[i],
                                cruise=section.id[i],
