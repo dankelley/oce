@@ -46,6 +46,10 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 text(xlab, ylab, x$metadata$station.id[num.stations])
             }
         } else {
+            if (!length(which(names(x$data$station[[1]]$data) == variable))) {
+                stop("this section does not contain a variable named '", variable, "'")
+            }
+
             ## FIXME: contours don't get to plot edges
             xxrange <- range(xx)
             yyrange <- range(yy)
