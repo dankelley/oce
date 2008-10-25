@@ -72,7 +72,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 if (grid)
                     points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
                 else
-                    Axis(side=3, at=xx, labels=FALSE) # station locations
+                    Axis(side=3, at=xx, labels=FALSE, lwd=0.5) # station locations
                 water.depth <- c(water.depth,
                                  max(x$data$station[[station.indices[i]]]$data$depth, na.rm=TRUE))
             }

@@ -1,8 +1,10 @@
 0.1.74
-- add lwd argument to plot.profile() 
 - make plot.TS() isopycnal label size be same on top and right sides
   http://code.google.com/p/r-oce/issues/detail?id=26
-- give plot.section() the ability to control contour levels and labels
+- add lwd argument to plot.profile() 
+- give plot.section() ability to control contour levels and labels
+-   "        "        tics for station-location
+
 0.1.73
 - plot.topo() narrows autoscale to xlim-ylim region, if provided
 - add plot.ctd() 'textpanel' option, and put the profiles in the same row
