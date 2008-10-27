@@ -16,9 +16,10 @@ rbrtdr.trim <- function(x, method="median", parameters=NULL, verbose=FALSE)
             keep[(n-3):n] <- FALSE
             #print(keep)
         } else if (which.method == 2) { # "time"
-            if (verbose)	cat("parameters:",parameters,"\n");
-            keep[x$data$t < parameters[1]] <- FALSE
-            keep[x$data$t > parameters[2]] <- FALSE
+            if (verbose)	cat("trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n");
+            keep[x$data$t < as.POSIXlt(parameters[1])] <- FALSE
+            keep[x$data$t > as.POSIXlt(parameters[2])] <- FALSE
+            dan<<-keep
         } else if (which.method == 3) { # "index"
             if (verbose)	cat("parameters:",parameters,"\n");
             if (min(parameters) < 1)
@@ -34,7 +35,13 @@ rbrtdr.trim <- function(x, method="median", parameters=NULL, verbose=FALSE)
     if (is.null(parameters)) {
         result <- processing.log.append(result,	paste("modified by rbrtdr.trim(x, method=\"",method,"\")",sep=""))
     } else {
-        result <- processing.log.append(result,	paste("modified by rbrtdr.trim(x, method=\"",method,"\",parameters=",parameters,")",sep=""))
+        pp <- as.character(parameters)
+        p <- paste("c(\"", pp, sep="")
+        for (i in 2:length(pp)) {
+            p <- paste(p, pp[i], sep="\",\"")
+        }
+        p <- paste(p, "\")",sep="")     # BUG: broken; should do this above, anyway.  Surely there is a general solution
+        result <- processing.log.append(result,	paste("modified by rbrtdr.trim(x, method=\"",method,"\",parameters=",p,")",sep=""))
     }
     return(result)
 }

@@ -33,7 +33,7 @@ read.rbrtdr <- function(file, debug=FALSE)
     t <- as.POSIXlt(paste(d[seq(1,0+4*n,4)], d[seq(2,1+4*n,4)]))
     temperature <- as.numeric(d[seq(3,2+4*n,4)])
     pressure <- as.numeric(d[seq(4,3+4*n,4)])
-    data <- list(t=t, temperature=temperature, pressure=pressure)
+    data <- data.frame(t=t, temperature=temperature, pressure=pressure)
     metadata <- list(
                      header=header)
     log.item <- list(time=c(Sys.time()), action=c(paste("created by read.rbrtdr(\"",filename,"\")",sep="")))
