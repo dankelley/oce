@@ -22,7 +22,7 @@
 
 \seealso{
   The \code{rbrtdr} object may be read with \code{\link{read.rbrtdr}}.
-  \code{\link{plot.rbrtdr.scan}} is very useful in providing guidance
+  \code{\link{plot.rbrtdr}} is very useful in providing guidance
   for trimming with \code{rbrtdr.trim}.
 }
 \examples{
