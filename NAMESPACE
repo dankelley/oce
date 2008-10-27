@@ -35,6 +35,7 @@ export(
        predict.tide,
        processing.log.append,
        processing.log.summary,
+       rbrtdr.trim,
        read.coastline,
        read.ctd,
        read.topo,
