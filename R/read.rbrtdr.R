@@ -27,12 +27,12 @@ read.rbrtdr <- function(file, debug=FALSE)
     ## columns t, Temperature, p
     header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
     scan(file, what="char", sep="\n", n=1, quiet=TRUE) # column names
-    d <- scan(file, character())
+    d <- scan(file, character(), quiet=TRUE)
     n <- length(d) / 4
     ## check if integer
     t <- as.POSIXlt(paste(d[seq(1,0+4*n,4)], d[seq(2,1+4*n,4)]))
-    temperature <- d[seq(3,2+4*n,4)]
-    pressure <- d[seq(4,3+4*n,4)]
+    temperature <- as.numeric(d[seq(3,2+4*n,4)])
+    pressure <- as.numeric(d[seq(4,3+4*n,4)])
     data <- list(t=t, temperature=temperature, pressure=pressure)
     metadata <- list(
                      header=header)

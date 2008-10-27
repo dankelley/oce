@@ -1,4 +1,5 @@
 0.1.74
+- add read.rbrtdr(), summary.rbrtdr(), and plot.rbrtdr()
 - make plot.TS() isopycnal label size be same on top and right sides
   http://code.google.com/p/r-oce/issues/detail?id=26
 - add lwd argument to plot.profile() 

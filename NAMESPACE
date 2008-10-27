@@ -25,6 +25,7 @@ export(
        plot.coastline,
        plot.ctd,
        plot.ctd.scan,
+       plot.rbrtdr,
        plot.topo,
        plot.profile,
        plot.sealevel,
@@ -39,6 +40,7 @@ export(
        read.topo,
        read.lobo,
        read.oce,
+       read.rbrtdr,
        read.sealevel,
        read.section,
        section.grid,
@@ -73,6 +75,7 @@ S3method(plot, ctd)
 S3method(plot, coastline)
 S3method(plot, topo)
 S3method(plot, lobo)
+S3method(plot, rbrtdr)
 S3method(plot, sealevel)
 S3method(plot, section)
 S3method(plot, tide)
@@ -80,6 +83,7 @@ S3method(predict, tide)
 S3method(plot, windrose)
 S3method(summary, ctd)
 S3method(summary, coastline)
+S3method(summary, rbrtdr)
 S3method(summary, topo)
 S3method(summary, lobo)
 S3method(summary, sealevel)
