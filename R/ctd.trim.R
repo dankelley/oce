@@ -1,7 +1,6 @@
 ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
 {
-    if (!inherits(x, "ctd"))
-        stop("method is only for ctd objects")
+    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     result <- x
     n <- length(x$data$pressure)
     if (n < 2) {

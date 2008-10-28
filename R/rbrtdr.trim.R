@@ -1,20 +1,23 @@
-rbrtdr.trim <- function(x, method="median", parameters=NULL, verbose=FALSE)
+rbrtdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
 {
-    if (!inherits(x, "rbrtdr"))
-        stop("method is only for rbrtdr objects")
+    if (!inherits(x, "rbrtdr")) stop("method is only for rbrtdr objects")
     result <- x
     n <- length(x$data$temperature)
-    if (verbose) cat("n=",n,"\n")
+    if (verbose) cat("rbrtdr.trim() working on dataset with", n, "points\n")
     if (n < 2) {
         warning("too few data to rbrtdr.trim()")
     } else {
-        which.method <- pmatch(method, c("median", "time", "index"), nomatch=0)
+        which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
         if (verbose) cat("using method", which.method,"\n")
-        if (which.method == 1) {        # "median"
-            keep <- rep(TRUE, n)
-            keep[1:3] <- FALSE       #BUG: faking it!
-            keep[(n-3):n] <- FALSE
-            #print(keep)
+        if (which.method == 1) {        # "water"
+            keep <- rep(FALSE, n)
+            air <- x$data$pressure < 10.5 # NB. standard pressure is 10.1325
+            water.indices <- which(!air)
+            b <- 2                      # trim a few descending points
+            i.start <- water.indices[1] + b
+            i.stop <- water.indices[-b + length(water.indices)]
+            keep[i.start:i.stop] <- TRUE
+            cat("The mean (deleted) air pressure is", mean(x$data$pressure[air]),"dbar\n")
         } else if (which.method == 2) { # "time"
             if (verbose)	cat("trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n");
             keep <- rep(TRUE, n)

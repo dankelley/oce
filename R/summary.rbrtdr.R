@@ -12,4 +12,5 @@ summary.rbrtdr <- function(object, ...)
     f <- fivenum(object$data$pressure)
     cat(sprintf("    %15s %10.1f %10.1f %10.1f %10.1f %10.1f\n", "Pressure", f[1], f[2], f[3], f[4], f[5]))
     processing.log.summary(object)
+    invisible()                         # BUG: should copy summary.lmle()
 }
