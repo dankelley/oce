@@ -27,7 +27,7 @@
   \item{data}{a data table containing the (t, temperature, pressure) data.}
   \item{metadata}{a list containing the following items
     \item{\code{header}}{the header itself, normally containing several dozen lines of
-      information.}
+      information.}}
   }
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
