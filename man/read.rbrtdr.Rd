@@ -28,7 +28,6 @@
   \item{metadata}{a list containing the following items
     \item{\code{header}}{the header itself, normally containing several dozen lines of
       information.}}
-  }
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
 
@@ -46,7 +45,6 @@ plot(x) # timeseries
 }
 
 \references{(fill in later ... presumably RBR has a manual online.)}
-}
 
 \author{Dan Kelley}
 

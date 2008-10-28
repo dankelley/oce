@@ -20,7 +20,6 @@ rbrtdr.trim <- function(x, method="median", parameters=NULL, verbose=FALSE)
             keep <- rep(TRUE, n)
             keep[x$data$t < as.POSIXlt(parameters[1])] <- FALSE
             keep[x$data$t > as.POSIXlt(parameters[2])] <- FALSE
-            dan<<-keep
         } else if (which.method == 3) { # "index"
             if (verbose)	cat("parameters:",parameters,"\n");
             if (min(parameters) < 1)
