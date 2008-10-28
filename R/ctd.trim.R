@@ -5,7 +5,7 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
     result <- x
     n <- length(x$data$pressure)
     if (n < 2) {
-        warning("too few data to trim.ctd()")
+        warning("too few data to ctd.trim()")
     } else {
         which.method <- pmatch(method, c("index", "downcast"), nomatch=0)
         if (verbose) cat("using method", which.method,"\n")
