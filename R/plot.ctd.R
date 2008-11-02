@@ -2,8 +2,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       grid = TRUE, col.grid="lightgray",
                       textpanel = TRUE, ...)
 {
-    dec_deg <- function(x, code = "lat")
-    {
+    dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
             if (x < 0) {
                 x <- -x

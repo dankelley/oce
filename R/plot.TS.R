@@ -14,11 +14,12 @@ plot.TS <- function (x,
                      ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
-    mar <- par("mar")
-    if (!rotate.rho.labels) { # make space
-        if (mar[4] < 3)
-            par(mar=c(mar[1:3], 3))
-    }
+    old.mgp <- par("mgp")
+    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+    old.mar <- par("mar")
+    if (!rotate.rho.labels && old.mar[4] < 3)
+        par(mar=c(old.mar[1:3], 3))
+
     plot(x$data$salinity, x$data$temperature,
          xlab = if (missing(xlab)) "Salinity [ PSU ]" else xlab,
          ylab = if (missing(ylab)) expression(paste("Temperature [ ", degree, "C ]")) else ylab,
@@ -74,5 +75,6 @@ plot.TS <- function (x,
                                         # Freezing point
     Sr <- c(max(0, S.axis.min), S.axis.max)
     lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
-    par(mar=mar)
+    par(mar=old.mar)
+    par(mgp=old.mgp)
 }
