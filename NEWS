@@ -1,22 +1,24 @@
 0.1.74
+- speed up sw.spice()
+    http://code.google.com/p/r-oce/issues/detail?id=29
 - add read.rbrtdr(), summary.rbrtdr(), plot.rbrtdr(), and rbrtdr.trim()
 - make plot.TS() isopycnal label size be same on top and right sides
-  http://code.google.com/p/r-oce/issues/detail?id=26
+    http://code.google.com/p/r-oce/issues/detail?id=26
 - add lwd argument to plot.profile() 
 - give plot.section() ability to control contour levels and labels
--   "        "        tics for station-location
+- give plot.section() tics for station-location
 
 0.1.73
 - plot.topo() narrows autoscale to xlim-ylim region, if provided
 - add plot.ctd() 'textpanel' option, and put the profiles in the same row
 - fix bug in plot.profile() to let it take Slim,..., as args
-  http://code.google.com/p/r-oce/issues/detail?id=25
+    http://code.google.com/p/r-oce/issues/detail?id=25
 - fix bug in plot.profile() font size
-  http://code.google.com/p/r-oce/issues/detail?id=24
+    http://code.google.com/p/r-oce/issues/detail?id=24
 - fix bug in plot.profile(type="S_T") positioning
-  http://code.google.com/p/r-oce/issues/detail?id=23
+    http://code.google.com/p/r-oce/issues/detail?id=23
 - fix bug in section plot (bottom was missing)
-  http://code.google.com/p/r-oce/issues/detail?id=21
+    http://code.google.com/p/r-oce/issues/detail?id=21
 - fix bug in size of salinity axis label for plot.ctd()
 - use pch=21 for TS plots (so data density is more visible)
 
