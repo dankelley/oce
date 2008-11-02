@@ -23,13 +23,15 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     }
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     oldpar <- par(no.readonly = TRUE)
+    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     par(mfrow = c(2, 2))
-    par(mar=c(4,4,5,2))
+    par(mar=c(3,3,3.25,2))
     plot.profile(x, type = "S+T", grid=grid, col.grid=col.grid, ...)
     plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, ...)
-    par(mar=c(5,4,3,2))
+    par(mar=c(3.5,3,2,2))
     plot.TS(x, grid=grid, col.grid=col.grid, ...)
 
+##    par(mar=c(3.5,4,2,0))
     if (textpanel) {
         text.item <- function(item, label, cex=1) {
             if (!is.null(item) && !is.na(item)) {
@@ -43,8 +45,8 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
         xloc <- 1
         yloc <- 10
-        d.yloc <- 0.8
-        cex <- 0.75
+        d.yloc <- 0.7
+        cex <- 3/4
         text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
         yloc <- yloc - d.yloc
         if (!is.null(x$metadata$filename))    	text.item(x$metadata$filename,    " File:     ", cex=cex)

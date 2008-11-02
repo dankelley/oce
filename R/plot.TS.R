@@ -16,9 +16,9 @@ plot.TS <- function (x,
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     old.mgp <- par("mgp")
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+    axis.name.loc <- par("mgp")[1]
     old.mar <- par("mar")
-    if (!rotate.rho.labels && old.mar[4] < 3)
-        par(mar=c(old.mar[1:3], 3))
+    if (!rotate.rho.labels && old.mar[4] < 3) par(mar=c(old.mar[1:3], 2))
 
     plot(x$data$salinity, x$data$temperature,
          xlab = if (missing(xlab)) "Salinity [ PSU ]" else xlab,
