@@ -46,7 +46,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         xloc <- 1
         yloc <- 10
         d.yloc <- 0.7
-        cex <- 3/4
+        cex <- 1
         text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
         yloc <- yloc - d.yloc
         if (!is.null(x$metadata$filename))    	text.item(x$metadata$filename,    " File:     ", cex=cex)
