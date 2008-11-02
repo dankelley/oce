@@ -205,14 +205,13 @@ this in action with \verb@?section@.)
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=ctdfig, width=10, height=6, fig=TRUE, echo=FALSE>>=
+<<label=ctdfig, width=9, height=6, fig=TRUE, echo=FALSE>>=
 <<ctdplot>>
 @
 \end{center}
 \caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired in
 the St Lawrence Estuary Internal Wave Experiment.  (This dataset has been
-trimmed to the downcast; see the text and Figure~\ref{fig:ctdraw} for more
-on trimming.)}
+trimmed to the downcast; see the text and Figure~\ref{fig:ctdraw}.)}
 \label{fig:ctd}
 \end{figure}
 
@@ -231,7 +230,7 @@ plot.ctd.scan(ctd.raw)
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.55\textwidth}
-<<label=ctdrawfig,fig=TRUE,width=9, height=6, echo=FALSE>>=
+<<label=ctdrawfig,fig=TRUE,width=6, height=4, echo=FALSE>>=
 <<ctdrawplot>>
 @
 \end{center}
