@@ -1,4 +1,6 @@
 0.1.74
+- make read.oce() understand WOCE section type
+    http://code.google.com/p/r-oce/issues/detail?id=30
 - speed up sw.spice()
     http://code.google.com/p/r-oce/issues/detail?id=29
 - add read.rbrtdr(), summary.rbrtdr(), plot.rbrtdr(), and rbrtdr.trim()
