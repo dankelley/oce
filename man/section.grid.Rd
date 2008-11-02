@@ -21,7 +21,10 @@ The \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in th
 \value{An object of \code{\link[base]{class}} \code{"section"} that contains stations
 whose pressure values match identically.}
 
-\seealso{Sections are normally created with \code{\link{read.section}} or \code{\link{make.section}}.}
+\seealso{Sections are normally created with \code{\link{read.section}}
+  or \code{\link{make.section}}.  \code{\link{section.subset}} may be
+  used to create a new section consisting of just a subset of an
+  existing station, e.g. to focus on a particular region.}
 
 \examples{
 # Gulf Stream
