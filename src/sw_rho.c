@@ -10,12 +10,6 @@ sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
 		double T = *pT++;
 		double p = *pp++;
 		double rho_w, Kw, Aw, Bw, p1, S12, ro, xkst;
-
-/*
-		printf("%f %f %f\n",S,T,p);
-		printf("missing? %d %d %d\n",ISNA(S),ISNA(T),ISNA(p));
-*/
-
 		if (ISNA(S) || ISNA(T) || ISNA(p)) {
 			*value++ = NA_REAL;
 		} else {

@@ -1,12 +1,9 @@
 #include <R.h>
-/* See license information and history at end of file */
+#include <Rdefines.h>
+
 void
-sw_spice(double *ps, double *pt, double *pp, double *spice)
+sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
 {
-	double p = *pp, t = *pt, s = *ps;
-	double sp,T,S;
-	int i,j;
-	/* http://satftp.soest.hawaii.edu/spice/spice.txt */
 	static double b[6][5] = {
 		{ 0.,          7.7442e-1, -5.85e-3,   -9.84e-4,   -2.06e-4},
 		{ 5.1655e-2,   2.034e-3,  -2.742e-4,  -8.5e-6,     1.36e-5},
@@ -14,21 +11,31 @@ sw_spice(double *ps, double *pt, double *pp, double *spice)
 		{-5.4023e-5,   7.326e-6,   7.0036e-6, -3.0412e-6, -1.0853e-6},
 		{ 3.949e-7,   -3.029e-8,  -3.8209e-7,  1.0012e-7,  4.7133e-8},
 		{-6.36e-10,   -1.309e-9,   6.048e-9,  -1.1409e-9, -6.676e-10}};
-	*spice = NA_REAL;
-	if (ISNA(*ps) || ISNA(*pt) || ISNA(*pp))
-		return;
-	s=(s-35.);
-	sp=0.0;
-	T=1.0;
-	for (i=0;i<6;i++) {
-		S=1.0;
-		for(j=0;j<5;j++) {
-			sp+=b[i][j]*T*S;
-			S*=s;
+	int i;
+	for (i = 0; i < *n; i++) {
+		double S = *pS++;
+		double T = *pT++;
+		double p = *pp++;
+		int ii, jj;
+		double Sdev, S2, T2, spice;
+		if (ISNA(S) || ISNA(T) || ISNA(p)) {
+			*value++ - NA_REAL;
+		} else {
+			Sdev = (S - 35.0);
+			S2 = 0.0;
+			T2 = 1.0;
+			spice = 0.0;
+			for (ii = 0; ii < 6; ii++) {
+				S2 = 1.0;
+				for (jj = 0; jj < 5; jj++) {
+					spice += b[ii][jj] * T2 * S2;
+					S2 *= Sdev;
+				}
+				T2 *= T;
+			}
+			*value++ = spice;
 		}
-		T*=t;
 	}
-	*spice = sp;
 }
 
 /* Original code from Pierre Flament's website 

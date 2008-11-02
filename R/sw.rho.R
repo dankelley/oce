@@ -13,7 +13,7 @@ sw.rho <- function(S, t=NULL, p=NULL)
     ## sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
-        p <- rep(p[1], np) # FIXME: perhaps should repeat a sequence, if given one
+        p <- rep(p[1], np)
     }
     if (nS != np) stop("lengths of S and p must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_rho",

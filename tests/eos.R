@@ -20,7 +20,7 @@ stopifnot(all.equal.numeric(sw.sigma(ctd),          30.818, 1e-5))
 stopifnot(all.equal.numeric(sw.theta(35, 13, 1000), 12.858, 1e-3))
 stopifnot(all.equal.numeric(sw.theta(ctd),          12.858, 1e-3))
 
-# Test values from page 9 of 
+# Test values from page 9 of
 # Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for computation of
 # fundamental properties of seawater. \emph{Unesco Technical Papers in Marine
 # Science}, \bold{44}, 53 pp
@@ -61,3 +61,7 @@ v <- sw.sound.speed(40, 40, 10000)
 stopifnot(all.equal.numeric(v, 1731.995, 0.001))
 v <- sw.sound.speed(as.ctd(40,40,10000))
 stopifnot(all.equal.numeric(v, 1731.995, 0.001))
+
+## spice (not from any trusted source, merely from the code [2008-10-02]
+sp <- sw.spice(35,10,100)
+stopifnot(all.equal.numeric(sp, 1.131195, 0.0000015))

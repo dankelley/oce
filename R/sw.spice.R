@@ -10,19 +10,19 @@ sw.spice <- function(S, t=NULL, p=NULL)
     nt <- length(t)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (nS != np) stop("lengths of S and p must agree, but they are ", nS, " and ", np, ", respectively")
-    for (i in 1:nS) {
-    	this.spice <- .C("sw_spice",
-                         as.double(S[i]),
-                         as.double(t[i]),
-                         as.double(p[i]),
-                         spice = double(1),
-                         NAOK=TRUE, PACKAGE = "oce")$spice
-    	if (i == 1)
-            rval <- this.spice
-        else
-            rval <- c(rval, this.spice)
+    ## sometimes give just a single p value (e.g. for a TS diagram)
+    if (np == 1) {
+        np <- nS
+        p <- rep(p[1], np)
     }
+    if (nS != np) stop("lengths of S and p must agree, but they are ", nS, " and ", np, ", respectively")
+    rval <- .C("sw_spice",
+               as.integer(nS),
+               as.double(S),
+               as.double(t),
+               as.double(p),
+               value = double(nS),
+               NAOK=TRUE, PACKAGE = "oce")$value
     dim(rval) <- dim
     rval
 }
