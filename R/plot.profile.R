@@ -19,10 +19,10 @@ plot.profile <- function (x,
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         plot(x$data$salinity, x$data$pressure,
              xlim=Slim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, mgp=mgp)
-        mtext("Salinity [ PSU ]", side = 3, line = mgp[1], col = col.S, cex=par("cex"))
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext("Salinity [ PSU ]", side = 3, line = par("mgp")[1], col = col.S, cex=par("cex"))
         axis(2)
-        axis(3, col = col.S, col.axis = col.S, col.lab = col.S, mgp=mgp)
+        axis(3, col = col.S, col.axis = col.S, col.lab = col.S)
         box()
         if (grid) grid(col=col.grid)
         lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
@@ -30,10 +30,10 @@ plot.profile <- function (x,
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
         plot(x$data$temperature, x$data$pressure,
              xlim=Tlim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, mgp=mgp)
-        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = mgp[1], col = col.t, cex=par("cex"))
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = par("mgp")[1], col = col.t, cex=par("cex"))
         axis(2)
-        axis(3, col = col.t, col.axis = col.t, col.lab = col.t, mgp=mgp)
+        axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
         box()
         if (grid) grid(col=col.grid)
         lines(x$data$temperature, x$data$pressure, col = col.t, lwd=lwd)
@@ -42,10 +42,10 @@ plot.profile <- function (x,
         if (missing(densitylim)) densitylim <- range(st, na.rm=TRUE)
         plot(st, x$data$pressure,
              xlim=densitylim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, mgp=mgp)
-        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = mgp[1], col = col.rho, cex=par("cex"))
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = par("mgp")[1], col = col.rho, cex=par("cex"))
         axis(2)
-        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho, mgp=mgp)
+        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         box()
         if (grid) grid(col=col.grid)
         lines(x$data$sigma.theta, x$data$pressure, col = col.rho, lwd=lwd)
@@ -54,9 +54,9 @@ plot.profile <- function (x,
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, x$data$pressure,
              xlim=densitylim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, mgp=mgp)
-        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho, mgp=mgp)
-        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = mgp[1], col = col.rho, cex=par("cex"))
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = par("mgp")[1], col = col.rho, cex=par("cex"))
         axis(2)
         box()
         lines(st, x$data$pressure, col = col.rho, lwd=lwd)
@@ -65,10 +65,10 @@ plot.profile <- function (x,
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         plot(N2, x$data$pressure,
              xlim=N2lim, ylim=plim,
-             type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, mgp=mgp)
-        axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2, mgp=mgp)
+             type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd)
+        axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
         lines(N2, x$data$pressure, col = col.N2, lwd=lwd)
-        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = mgp[1], col = col.N2, cex=par("cex"))
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = par("mgp")[1], col = col.N2, cex=par("cex"))
         box()
         if (grid) grid(col=col.grid)
     } else if (type == "N2") {
@@ -76,10 +76,10 @@ plot.profile <- function (x,
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         plot(N2, x$data$pressure,
              xlim=N2lim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, mgp=mgp)
-        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = mgp[1], col = col.N2, cex=par("cex"))
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = par("mgp")[1], col = col.N2, cex=par("cex"))
         axis(2)
-        axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2, mgp=mgp)
+        axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2)
         box()
         if (grid) grid(col=col.grid)
         lines(N2, x$data$pressure, col = col.N2, lwd=lwd)
@@ -89,19 +89,19 @@ plot.profile <- function (x,
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
         plot(x$data$temperature, x$data$pressure,
              xlim=Tlim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, mgp=mgp)
-        axis(3, col = col.t, col.axis = col.t, col.lab = col.t, mgp=mgp)
-        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = mgp[1], col = col.t, cex=par("cex"))
-        axis(2, mgp=mgp)
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
+        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = par("mgp")[1], col = col.t, cex=par("cex"))
+        axis(2)
         box()
         lines(x$data$temperature, x$data$pressure, col = col.t, lwd=lwd)
         par(new = TRUE)
         plot(x$data$salinity, x$data$pressure,
              xlim=Slim, ylim=plim,
-             type = "n", xlab = "", ylab = "", axes = FALSE, mgp=mgp)
-        axis(1, col = col.S, col.axis = col.S, col.lab = col.S, mgp=mgp)
+             type = "n", xlab = "", ylab = "", axes = FALSE)
+        axis(1, col = col.S, col.axis = col.S, col.lab = col.S)
         lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
-        mtext("Salinity [ PSU ]", side = 1, line = mgp[1], col = col.S, cex=par("cex"))
+        mtext("Salinity [ PSU ]", side = 1, line = par("mgp")[1], col = col.S, cex=par("cex"))
         box()
         if (grid) grid(col=col.grid)
     } else {
