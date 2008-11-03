@@ -278,27 +278,30 @@ The package has a harder time scanning the headers of data files in the WOCE
 archive format than it does in the Seabird format illustrated in the previous
 examples. This is mainly because front-line researchers tend to work in the
 Seabird format, and partly because the WOCE format is odd. For example, the
-first line of a WOCE file is of the form \texttt{CTD,20060609WHPOSIODAM}.  Only
-the first part of this is easy to scan. To the left of the comma is the string
-\texttt{CTD}, which seems straightforward, except that in some cases it is
-written \texttt{CTDO}. After the comma is found the file date (yyyymmdd), and
-that is easy to parse. But then things get tricky.  The next sequence is a
-string of characters that indicate the division of the institute (WHPO), the
-institute itself (SIO), and the name of the investigator (DAM). The problem is
-that no dividers separate these items, and that there are no standards for the
-item lengths. The approach to \verb@oce@ development is to tackle easy and
-important problemss before complicated special cases, and so no attempt has been
-made to parse this part of the header.
+first line of a WOCE file is of the form \texttt{CTD,20060609WHPOSIODAM} (or
+\texttt{BOTTLE,...}).  Scanning the item to the left of the comma is not
+difficult (although there are variants to the two shown, e.g. \texttt{CTDO}
+sometimes occurs).  The part to the right of the comma is more difficult.  The
+first part is a date (yyyymmdd) so that's no problem.  But then things start to
+get tricky.  In the example provided, this text contains the division of the
+institute (WHPO), the institute itself (SIO), and initial of the investigator
+(DAM). The problem is that no dividers separate these items, and that there seem
+to be no standards for the item lengths. Rather than spend a great deal of time
+coding special cases (e.g. scanning to see if the string \texttt{WHOI} occurs in
+the header line), the approach taken with \verb@oce@ is to ignore such issues
+relating to quirky headers.  This frees up time to work on more important
+things, such as plotting the data.
 
 Of course, R provides access to object constituents, so that you are
 free to do such things as
 <<ctdfix1,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x$metadata$institute <- "SIO" # do NOT alter directly, in this way
-x$metadata$scientist <- "DAM" # do NOT alter directly, in this way
+x$metadata$institute <- "SIO" # bad way
+x$metadata$scientist <- "DAM" # bad way
 @
 but it is \emph{bad practice} to alter metadata in such a way, because
-the changes will not be documented in the object.  Instead, do
+doing so alters the object without altering its documentation.  The
+preferred scheme is to do as follows.
 \index{changelogs in oce objects}
 \index{oce object changelog}
 \index{logged changes to oce objects}
@@ -306,11 +309,12 @@ the changes will not be documented in the object.  Instead, do
 \index{oce.edit}
 <<ctdfix2,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oce.edit(x, "institute", "SIO") # a better way
-x <- oce.edit(x, "scientist", "DAM") # a better way
+x <- oce.edit(x, "institute", "SIO") # better way
+x <- oce.edit(x, "scientist", "DAM") # better way
 @
-so that the changes will be noted in the object's log.  Even better,
-provide a reason for the change, and sign the change with your name:
+which will store a note about the changes in the object's log.  Even
+better, provide a reason for the change, and sign the change with your
+name:
 <<ctdfix3,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
 x <- oce.edit(x, "institute", "SIO", "human-parsed","Dan Kelley") # best way
