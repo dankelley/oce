@@ -144,7 +144,7 @@ A partial list of seawater functions is as follows:
 \verb@sw.theta@ (potential temperature in $^\circ$C),
 and
 \verb@sw.viscosity@ (viscosity).
-Details and examples are, of course, provided in the documentation of these functions.
+Details and examples are provided in the documentation of these functions.
 
 
 \workedexercise{1}{(a) What is the density of a seawater parcel at pressure
@@ -187,8 +187,8 @@ names(ctd$data)
 @
 to find out what sensors were attached to the instrument, thus providing data columns.
 
-Naturally, you may apply any \verb@R@ techniques to any of the data stored in an
-object, e.g. \verb@hist(ctd$data$temperature)@ would produce a histogram of
+Of course, you may apply any \verb@R@ techniques to the data in \verb@oce@
+objects, e.g. \verb@hist(ctd$data$temperature)@ would produce a histogram of
 temperature for the \verb@ctd@ object.  It is always worth checking, though, to
 see if \verb@oce@ has already defined a function that you may be applying,
 e.g. \verb@plot.TS@ will produce a lovely temperature-salinity diagram, with
@@ -336,7 +336,7 @@ for (i in 1:length(files)) {
 }
 @
 
-What you'll see is an overall $T-S$ diagram for the entire dataset. It may take
+What you'll see is an overall $T$-$S$ diagram for the entire dataset. It may take
 a while, since the dataset contains over 90,000 observations. You may note that,
 even though this is an official, quality-controlled dataset, it is not without
 problems. The graph that is produced by this code has several spurious lines
@@ -385,7 +385,7 @@ different pressure levels at each station.  For such cases, the
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
 Gulf.Stream <- section.subset(a03, 124:102)
-Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 10))
+Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 1600, 25))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 @
@@ -404,9 +404,7 @@ right angles.
 @
 \end{center}
 \caption{\label{fig:sectiona03}
-Portion of the CTD section designated A03 (Cruise chief scientist: Tereschenkov, SOI.), showing the region of the Gulf Stream.  (The small number of S contours
-in the upper water column is the result of a near-bottom salinity anomaly
-in the station at about 200\,km.)
+Portion of the CTD section designated A03 (Cruise chief scientist: Tereschenkov, SOI.), showing the region of the Gulf Stream.
 }
 \end{figure}
 
@@ -568,7 +566,7 @@ the time of the 2007 Spring bloom.}
 \label{fig:lobo}
 \end{figure}
 
-\workedexercise{7}{Draw a $T-S$ plot for these data, using a colour coding to indicate time,
+\workedexercise{7}{Draw a $T$-$S$ plot for these data, using a colour coding to indicate time,
 and using plotting tricks to reduce the obscuring of this time signal.}
 
 
