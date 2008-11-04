@@ -54,16 +54,21 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             xxrange <- range(xx)
             yyrange <- range(yy)
             ##yyrange[1] <- -1
+
+            ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else "Pressure [ dbar ]"
+
             if (is.null(at)) {
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
-                     xlab="Distance [ km ]",	ylab="Pressure [ dbar ]")
+                     xlab="Distance [ km ]", ylab=ylab)
+                axis(4, labels=FALSE)
             } else {
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
-                     xlab="", ylab="Pressure [ dbar ]", axes=FALSE)
+                     xlab="", ylab=ylab, axes=FALSE)
                 axis(1, at=at, labels=labels)
                 axis(2)
+                axis(4, labels=FALSE)
                 box()
             }
             water.depth <- NULL
@@ -105,7 +110,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
 
     if (!inherits(x, "section")) stop("method is only for section objects")
     oldpar <- par(no.readonly = TRUE)
-
+    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     if (missing(station.indices)) {
         num.stations <- length(x$data$station)
         station.indices <- 1:num.stations
@@ -140,9 +145,10 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
     yy <- x$data$station[[station.indices[1]]]$data$pressure
     if (is.null(field)) {
         par(mfrow=c(2,2))
-        par(mar=c(4.5,4,1,1))
+        if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1))
+        else par(mar=c(4.5,4,1,1))
         plot.subsection("temperature", "T", ...)
-        plot.subsection("salinity",    "S", ...)
+        plot.subsection("salinity",    "S", ylab="",...)
         plot.subsection("sigma.theta",  expression(sigma[theta]), ...)
         plot.subsection("map", indicate.stations=FALSE)
     } else {
