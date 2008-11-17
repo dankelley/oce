@@ -85,20 +85,19 @@ read.ctd.WOCE <- function(file,
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
     	if(debug) cat(paste("examining header line '",line,"'\n"));
     	header <- c(header, line);
-                                        # SAMPLE:
-                                        #      EXPOCODE = 31WTTUNES_3
-                                        #      SECTION_ID = P16C
-                                        #      STNNBR = 221
-                                        #      CAST = 1
-                                        #      DATE = 19910901
-                                        #      TIME = 0817
-                                        #      LATITUDE = -17.5053
-                                        #      LONGITUDE = -150.4812
-                                        #      BOTTOM = 3600
+        ## SAMPLE:
+        ##      EXPOCODE = 31WTTUNES_3
+        ##      SECTION_ID = P16C
+        ##      STNNBR = 221
+        ##      CAST = 1
+        ##      DATE = 19910901
+        ##      TIME = 0817
+        ##      LATITUDE = -17.5053
+        ##      LONGITUDE = -150.4812
+        ##      BOTTOM = 3600
         if (!(0 < (r<-regexpr("^#", line)))) {
-                                        # NUMBER_HEADERS = 10
+            ## NUMBER_HEADERS = 10
             nh <- as.numeric(sub("(.*)NUMBER_HEADERS = ", "", ignore.case=TRUE, line))
-                                        #cat("nh=",nh,"\n")
             for (i in 2:nh) {
                 line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
                 header <- c(header, line)
@@ -120,13 +119,12 @@ read.ctd.WOCE <- function(file,
             break
         }
     }
-                                        # catch any remaining "#" lines.
-    while (TRUE) {
+    while (TRUE) {                    # catch any remaining "#" lines
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         if (!(0 < (r<-regexpr("^#", line)))) break
         header <- c(header, line)
     }
-                                        #CTDPRS,CTDPRS_FLAG_W,CTDTMP,CTDTMP_FLAG_W,CTDSAL,CTDSAL_FLAG_W,CTDOXY,CTDOXY_FLAG_W,
+    ##CTDPRS,CTDPRS_FLAG_W,CTDTMP,CTDTMP_FLAG_W,CTDSAL,CTDSAL_FLAG_W,CTDOXY,CTDOXY_FLAG_W,
     var.names <- strsplit(line, split=",")[[1]]
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     var.units <- strsplit(line, split=",")[[1]]
@@ -156,7 +154,7 @@ read.ctd.WOCE <- function(file,
     temperature[temperature == missing.value] <- NA
     sigma.theta <- sw.sigma.theta(salinity, temperature, pressure)
     data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
-    metadata <- list(
+    metadata <- list(header=header,
                      filename=filename, # provided to this routine
                      filename.orig=filename.orig, # from instrument
                      system.upload.time=system.upload.time,
@@ -172,7 +170,8 @@ read.ctd.WOCE <- function(file,
                      longitude=longitude,
                      recovery=recovery,
                      water.depth=water.depth,
-                     sample.interval=sample.interval)
+                     sample.interval=sample.interval,
+                     src=filename)
     log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
@@ -416,8 +415,7 @@ read.ctd.SBE19 <- function(file,
         names(data) <- newnames
         warning("data file lacked a 'scan' column, so one was created");
     }
-    metadata <- list(
-                     header=header,
+    metadata <- list(header=header,
                      filename=filename, # provided to this routine
                      filename.orig=filename.orig, # from instrument
                      system.upload.time=system.upload.time,
@@ -433,7 +431,8 @@ read.ctd.SBE19 <- function(file,
                      longitude=longitude,
                      recovery=recovery,
                      water.depth=water.depth,
-                     sample.interval=sample.interval)
+                     sample.interval=sample.interval,
+                     src=filename)
     log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")

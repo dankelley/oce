@@ -1,4 +1,6 @@
 0.1.74
+- add argument "src" to as.ctd()
+    http://code.google.com/p/r-oce/issues/detail?id=22
 - plot.section() RHS axis needs tics
     http://code.google.com/p/r-oce/issues/detail?id=32
 - trim axis whitespace in plot.profile() and plot.TS()

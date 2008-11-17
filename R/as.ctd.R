@@ -4,7 +4,8 @@ as.ctd <- function(S, t, p,
                    latitude=NA, longitude=NA,
                    recovery=NA,
                    water.depth=NA,
-                   sample.interval=NA)
+                   sample.interval=NA,
+                   src="unspecified")
 {
     if (length(p) == 1) # special case
         p = rep(p, length(S))
@@ -26,7 +27,8 @@ as.ctd <- function(S, t, p,
                      longitude=longitude,
                      recovery=recovery,
                      water.depth=water.depth,
-                     sample.interval=sample.interval)
+                     sample.interval=sample.interval,
+                     src=src)
     log <- list(time=c(Sys.time()), action=c("created by as.ctd()"))
     res <- list(data=data, metadata=metadata, log=log)
     class(res) <- c("ctd", "oce")
