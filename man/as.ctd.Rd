@@ -10,7 +10,7 @@ latitude=NA, longitude=NA,
 recovery=NA,
 water.depth=NA,
 sample.interval=NA,
-src="unspecified")
+src="")
 }
 \arguments{
   \item{S}{Salinity through the water column.}

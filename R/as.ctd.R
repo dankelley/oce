@@ -5,7 +5,7 @@ as.ctd <- function(S, t, p,
                    recovery=NA,
                    water.depth=NA,
                    sample.interval=NA,
-                   src="unspecified")
+                   src="")
 {
     if (length(p) == 1) # special case
         p = rep(p, length(S))
