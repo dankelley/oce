@@ -9,7 +9,8 @@ cruise=NA, station=NA, date=NA, start.time=NA,
 latitude=NA, longitude=NA,
 recovery=NA,
 water.depth=NA,
-sample.interval=NA)
+sample.interval=NA,
+src="unspecified")
 }
 \arguments{
   \item{S}{Salinity through the water column.}
