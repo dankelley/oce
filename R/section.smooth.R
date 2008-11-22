@@ -1,6 +1,6 @@
 ## bugs: should ensure that every station has identical pressures
 ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-smooth.section <- function(s, ...)
+section.smooth <- function(s, ...)
 {
     nstn <- length(s$data$station)
     nprs <- length(s$data$station[[1]]$data$pressure)
