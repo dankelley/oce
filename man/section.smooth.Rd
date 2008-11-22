@@ -46,7 +46,6 @@ has less lateral variation than the input section.}
 library(oce)
 data(coastline.world)
 data(a03)
-# Station 90 is south of Halifax, station 3 is near Med entrance
 s <- section.grid(section.subset(a03, 90:3), p=seq(00, 2500, 100))
 ss <- section.smooth(s, df=8)
 plot(ss,coastline=coastline.world,map.xlim=c(-75,0))
