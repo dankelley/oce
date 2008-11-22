@@ -6,10 +6,10 @@
 
 \description{Smooth a section in the lateral (alpha version that may change)}
 
-\usage{section.smooth(s, ...)}
+\usage{section.smooth(section, ...)}
 
 \arguments{
-  \item{s}{a \code{section} object containing the section to be gridded.}
+  \item{section}{a \code{section} object containing the section to be gridded.}
   \item{...}{optional arguments to be supplied to \code{\link{smooth.spline}}.}
 }
 \details{
