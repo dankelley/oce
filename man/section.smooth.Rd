@@ -45,11 +45,11 @@ has less lateral variation than the input section.}
 # Eastern North Atlantic, showing Mediterranean water. 
 
 data(coastline.world)
-data(a03)
+data(a03) # Zonal section at 36N
 # Station 90 is south of Halifax, station 3 is near Med entrance
-g <- section.grid(section.subset(a03, 90:3), p=seq(00, 2500, 100))
-gs <- section.smooth(g, df=8)
-plot(gs,coastline=coastline.world,map.xlim=c(-75,0))
+s <- section.grid(section.subset(a03, 90:3), p=seq(00, 2500, 100))
+ss <- section.smooth(s, df=8)
+plot(ss,coastline=coastline.world,map.xlim=c(-75,0))
 }
 
 \author{Dan Kelley}
