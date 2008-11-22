@@ -8,13 +8,13 @@ smooth.section <- function(s, ...)
     if (!supplied.df) df <- nstn / 5
     rval <- s
     x <- geod.dist(s)
-    temperature.mat <<- array(dim=c(nprs, nstn))
-    salinity.mat <<- array(dim=c(nprs, nstn))
-    sigma.theta.mat <<- array(dim=c(nprs, nstn))
+    temperature.mat <- array(dim=c(nprs, nstn))
+    salinity.mat <- array(dim=c(nprs, nstn))
+    sigma.theta.mat <- array(dim=c(nprs, nstn))
     for (s in 1:nstn) {
-        temperature.mat[,s] <<- g$data$station[[s]]$data$temperature
-        salinity.mat[,s] <<- g$data$station[[s]]$data$salinity
-        sigma.theta.mat[,s] <<- g$data$station[[s]]$data$sigma.theta
+        temperature.mat[,s] <- s$data$station[[s]]$data$temperature
+        salinity.mat[,s] <- s$data$station[[s]]$data$salinity
+        sigma.theta.mat[,s] <- s$data$station[[s]]$data$sigma.theta
     }
     for (p in 1:nprs) {
         ok <- !is.na(temperature.mat[p,])
