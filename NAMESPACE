@@ -46,6 +46,7 @@ export(
        read.section,
        section.grid,
        section.subset,
+       section.smooth,
        sw.alpha,
        sw.alpha.over.beta,
        sw.sound.speed,
