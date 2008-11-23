@@ -21,6 +21,7 @@ export(
        make.section,
        oce.as.POSIXlt,
        oce.edit,
+       plot.stick,
        plot.TS,
        plot.coastline,
        plot.ctd,
