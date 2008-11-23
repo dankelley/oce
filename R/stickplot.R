@@ -1,4 +1,4 @@
-plot.stick <- function(t, x, y, ...)
+stickplot <- function(t, x, y, ...)
 {
     ylim <- range(y, na.rm=TRUE)
     plot(range(t), ylim, type="n")
