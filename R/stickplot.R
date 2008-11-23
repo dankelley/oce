@@ -1,6 +1,6 @@
 stickplot <- function(t, x, y, ...)
 {
-    ylim <- range(y, na.rm=TRUE)
+    ylim <- max(y, na.rm=TRUE) * c(-1, 1)
     plot(range(t), ylim, type="n")
     tstart <- t[1]
     t.isPOSIXlt <- inherits(t, "POSIXlt")
@@ -23,4 +23,5 @@ stickplot <- function(t, x, y, ...)
     xx[threes] <- NA
     yy[threes] <- NA
     lines(xx, yy, type='l', ...)
+    ##points(xx[ones],yy[ones],col="red")
 }
