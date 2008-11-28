@@ -14,10 +14,9 @@ section.subset <- function(section, indices=1:length(section$data$station))
     }
     data <- list(station=station)
     metadata <- list(header=section$header,section.id=section$section.id,station.id=stn,latitude=lat,longitude=lon)
-    log.item <- list(time = c(Sys.time()),
-                     paste("modified by section.subset(x, indices=c(",paste(indices,collapse=","),"))",sep=""))
     res <- list(data=data, metadata=metadata, processing.log=section$processing.log)
     class(res) <- c("section", "oce")
-    res <- processing.log.append(res, log.item)
+    res <- processing.log.append(res,
+                                 paste("modified by section.subset(x, indices=c(",paste(indices,collapse=","),"))",sep=""))
     res
 }

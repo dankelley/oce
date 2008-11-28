@@ -34,5 +34,7 @@ section.smooth <- function(section, ...)
         rval$data$station[[s]]$data$salinity <- salinity.mat[,s]
         rval$data$station[[s]]$data$sigma.theta <- sigma.theta.mat[,s]
     }
+    class(rval) <- c("section", "oce")
+    rval <- processing.log.append(rval, "modified by section.smooth(x, ...)")
     rval
 }
