@@ -1,4 +1,4 @@
-read.section <- function(file, section.id, debug=FALSE)
+read.section <- function(file, section.id="", debug=FALSE)
 {
     if (is.character(file)) {
         filename <- file
@@ -17,7 +17,7 @@ read.section <- function(file, section.id, debug=FALSE)
     lines <- readLines(file)
     if ("BOTTLE" != substr(lines[1], 1, 6))
         stop("only type \"BOTTLE\" understood, but got header line\n", lines[1],"\n")
-    lines
+    if (nchar(section.id) < 1) section.id <- substr(lines[1], 8, nchar(lines[1]))
     n <- length(lines)
     header <- lines[1]
     for (l in (2:n)) {
@@ -39,15 +39,14 @@ read.section <- function(file, section.id, debug=FALSE)
     nd <- n - header.length - 1
     nv <- length(var.names)
     data <- array(dim=c(nd, nv - 2))
+    stn.section.id <- vector("character", nd)
     stn.id <- vector("character", nd)
-    section.id <- NA
     for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
         contents <- strsplit(lines[l], split=",")[[1]]
-        if (is.na(section.id) && l == (header.length + 1))
-            section.id <- sub(" *","", contents[2])
+        stn.section.id[l - header.length] <- sub(" *","", contents[2])
         stn.id[l - header.length] <- sub("^ *","", contents[3])
         data[l - header.length,] <- contents[3:nv]
-                                        # FIXME: maybe should just scan this thing; it might work better anyway
+        ## FIXME: maybe should just scan this thing; it might work better anyway
     }
     p <- as.numeric(data[,which(var.names=="CTDPRS") - 2])
     t <- as.numeric(data[,which(var.names=="CTDTMP") - 2])
@@ -73,7 +72,7 @@ read.section <- function(file, section.id, debug=FALSE)
         this.station <- as.ctd(S=S[select.depths], t=t[select.depths], p=p[select.depths],
                                latitude=lat[i],
                                longitude=lon[i],
-                               cruise=section.id[i],
+                               cruise=stn.section.id[select[1]],
                                station=stn[i],
                                water.depth=water.depth[select[1]])
         if (debug) cat("station at ", lat[i], "N and ", lon[i], "W\n")
