@@ -18,6 +18,7 @@
 	coastline=NULL,
 	map.xlim=NULL,
         xtype="distance",
+        legend.loc="topright",
 	\dots)
 }
 
@@ -56,6 +57,7 @@
     along the cruise track.  Note that if the x values are not in order,
     they will be put in order (which may make no sense) and a warning will 
     be printed.}
+  \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }

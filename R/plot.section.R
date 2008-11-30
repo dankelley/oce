@@ -6,6 +6,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                           coastline=NULL,
                           map.xlim=NULL,
                           xtype="distance",
+                          legend.loc="topright",
                           ...)
 {
     plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL, xtype=1, ...)
@@ -116,7 +117,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                     contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
                 }
             }
-            legend("topright", title, bg="white", x.intersp=0, y.intersp=0.5)
+            legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5)
         }
     }                                   # plot.subsection
 
@@ -176,9 +177,16 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
         par(mfrow=c(2,2))
         if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1))
         else par(mar=c(4.5,4,1,1))
-        plot.subsection("temperature", "T", ...)
-        plot.subsection("salinity",    "S", ylab="",...)
-        plot.subsection("sigma.theta",  expression(sigma[theta]), ...)
+
+        if (!missing(contour.levels)) {
+            plot.subsection("temperature", "T", nlevels=contour.levels, ...)
+            plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, ...)
+            plot.subsection("sigma.theta",  expression(sigma[theta]), nlevels=contour.levels, ...)
+        } else {
+            plot.subsection("temperature", "T", ...)
+            plot.subsection("salinity",    "S", ylab="",...)
+            plot.subsection("sigma.theta",  expression(sigma[theta]), ...)
+        }
         plot.subsection("map", indicate.stations=FALSE)
     } else {
         field.name <- field
