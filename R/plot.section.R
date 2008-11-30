@@ -63,17 +63,20 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 cat("NOTE: plot.section() reordered the stations to make x monotonic\n")
             }
 
+            par(xaxs="i",yaxs="i")
             ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else "Pressure [ dbar ]"
 
             if (is.null(at)) {
                 plot(xxrange, yyrange,
-                     xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
+                     ##xaxs="i", yaxs="i",
+                     ylim=rev(yyrange), col="white",
                      xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
                      ylab=ylab)
                 axis(4, labels=FALSE)
             } else {
                 plot(xxrange, yyrange,
-                     xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
+                     ##xaxs="i", yaxs="i",
+                     ylim=rev(yyrange), col="white",
                      xlab="", ylab=ylab, axes=FALSE)
                 axis(1, at=at, labels=labels)
                 axis(2)
@@ -89,17 +92,18 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                     Axis(side=3, at=xx, labels=FALSE, lwd=0.5) # station locations
                 in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature))
                 if (length(in.land)) {
-                    water.depth <- c(water.depth, x$data$station[[station.indices[i]]]$data$pressure[in.land[1]])
+                    water.depth <- c(water.depth, x$data$station[[station.indices[i]]]$data$pressure[in.land[1]-1])
                 } else {
                     water.depth <- c(water.depth, max(x$data$station[[station.indices[i]]]$data$pressure, na.rm=TRUE))
                 }
             }
             ## draw the ground below the water
-            graph.bottom <- par("usr")[3]
+            usr <- par("usr")
+            graph.bottom <- usr[3]
             bottom.x <- c(xx[1], xx, xx[length(xx)])
             bottom.y <- c(graph.bottom, water.depth, graph.bottom)
             polygon(bottom.x, bottom.y, col="gray") # bottom trace
-            par(new=TRUE)
+            par(new=TRUE,xaxs="i",yaxs="i")
             dots <- list(...) # adjust plot parameter labcex, unless user did
             if (!is.null(contour.levels) && !is.null(contour.labels)) {
                 if (is.null(dots$labcex)) {
@@ -117,7 +121,13 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                     contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
                 }
             }
-            legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5)
+            ##print(usr)
+            ##cat('zz');print(yy)
+            ##cat("bottom.y-");print(bottom.y)
+            ##cat("usr4-b");print(usr[4]-bottom.y)
+            ##cat("b-us4");print(bottom.y-usr[4])
+            polygon(bottom.x, usr[3]-bottom.y, col="lightgray")
+            legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1.25)
         }
     }                                   # plot.subsection
 
