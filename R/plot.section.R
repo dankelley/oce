@@ -5,9 +5,10 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                           station.indices,
                           coastline=NULL,
                           map.xlim=NULL,
+                          xtype="distance",
                           ...)
 {
-    plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL, ...)
+    plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL, xtype=1, ...)
     {
         if (variable == "map") {
             lat <- array(NA, num.stations)
@@ -45,22 +46,29 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 ylab <- x$metadata$latitude[num.stations]  - dy * sign(x$metadata$latitude[num.stations-1]  - x$metadata$latitude[num.stations])
                 text(xlab, ylab, x$metadata$station.id[num.stations])
             }
-        } else {
-            if (!length(which(names(x$data$station[[1]]$data) == variable))) {
-                stop("this section does not contain a variable named '", variable, "'")
-            }
+        } else {                        # not a map
+            if (!(variable %in% names(x$data$station[[1]]$data))) stop("this section does not contain a variable named '", variable, "'")
 
             ## FIXME: contours don't get to plot edges
             xxrange <- range(xx)
             yyrange <- range(yy)
             ##yyrange[1] <- -1
 
+            ## Put x in order, if it's not already
+            ox <- order(xx)
+            if (any(xx[ox] != xx)) {
+                xx <- xx[ox]
+                zz <- zz[ox,]
+                cat("NOTE: plot.section() reordered the stations to make x monotonic\n")
+            }
+
             ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else "Pressure [ dbar ]"
 
             if (is.null(at)) {
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
-                     xlab="Distance [ km ]", ylab=ylab)
+                     xlab=if (which.xtype==1) "Distance [ km ]" else "Alongtrack Distance [km]",
+                     ylab=ylab)
                 axis(4, labels=FALSE)
             } else {
                 plot(xxrange, yyrange,
@@ -108,6 +116,8 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
         }
     }                                   # plot.subsection
 
+    which.xtype = pmatch(xtype, c("distance", "track"), nomatch=0)
+
     if (!inherits(x, "section")) stop("method is only for section objects")
     oldpar <- par(no.readonly = TRUE)
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
@@ -136,8 +146,23 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
         lon0 <- x$data$station[[station.indices[1]]]$metadata$longitude
         for (ix in 1:num.stations) {
             j <- station.indices[ix]
-            xx[ix] <- geod.dist(lat0, lon0,
-                                x$data$station[[j]]$metadata$latitude, x$data$station[[j]]$metadata$longitude)
+            if (which.xtype == 1) {
+                xx[ix] <- geod.dist(lat0,
+                                    lon0,
+                                    x$data$station[[j]]$metadata$latitude,
+                                    x$data$station[[j]]$metadata$longitude)
+            } else if (which.xtype == 2) {
+                if (ix == 1)
+                    xx[ix] <- 0
+                else
+                    xx[ix] <- xx[ix-1] +
+                        geod.dist(x$data$station[[station.indices[ix-1]]]$metadata$latitude,
+                                  x$data$station[[station.indices[ix-1]]]$metadata$longitude,
+                                  x$data$station[[j]]$metadata$latitude,
+                                  x$data$station[[j]]$metadata$longitude)
+            } else {
+                stop("unknown xtype")
+            }
         }
     } else {
         xx <- at

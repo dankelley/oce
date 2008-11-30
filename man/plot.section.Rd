@@ -17,6 +17,7 @@
 	station.indices,
 	coastline=NULL,
 	map.xlim=NULL,
+        xtype="distance",
 	\dots)
 }
 
@@ -50,6 +51,11 @@
     map}
   \item{map.xlim}{optional xlim for station location, which can be
     helpful in ensuring that a recognizable coastline can be seen}
+  \item{xtype}{type of x axis, either \code{"distance"} for distance (in
+    km) to the first point in the section, or \code{"track"} for distance
+    along the cruise track.  Note that if the x values are not in order,
+    they will be put in order (which may make no sense) and a warning will 
+    be printed.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }
