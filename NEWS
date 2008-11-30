@@ -1,6 +1,8 @@
 0.1.75
 - add argument 'xtype' to plot.section()
 - add section.smooth()
+- fix bug making section.smooth() fail if fewer than 4 good data at any given level
+    http://code.google.com/p/r-oce/issues/detail?id=36
 - fix bug making summary.ctd() fail for stations within sections made by section.smooth()
     http://code.google.com/p/r-oce/issues/detail?id=34
 - fix bug making sw.dynamic.height() choke on empty stations
