@@ -86,10 +86,14 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                     points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
                 else
                     Axis(side=3, at=xx, labels=FALSE, lwd=0.5) # station locations
-                water.depth <- c(water.depth,
-                                 max(x$data$station[[station.indices[i]]]$data$depth, na.rm=TRUE))
+                in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature))
+                if (length(in.land)) {
+                    water.depth <- c(water.depth, x$data$station[[station.indices[i]]]$data$pressure[in.land[1]])
+                } else {
+                    water.depth <- c(water.depth, max(x$data$station[[station.indices[i]]]$data$pressure, na.rm=TRUE))
+                }
             }
-                                        # draw the ground below the water
+            ## draw the ground below the water
             graph.bottom <- par("usr")[3]
             bottom.x <- c(xx[1], xx, xx[length(xx)])
             bottom.y <- c(graph.bottom, water.depth, graph.bottom)
