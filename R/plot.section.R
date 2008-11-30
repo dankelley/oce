@@ -68,7 +68,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             if (is.null(at)) {
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i", ylim=rev(yyrange), col="white",
-                     xlab=if (which.xtype==1) "Distance [ km ]" else "Alongtrack Distance [km]",
+                     xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
                      ylab=ylab)
                 axis(4, labels=FALSE)
             } else {
