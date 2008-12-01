@@ -121,9 +121,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                     contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
                 }
             }
-            ## Redraw polygon, to clean up ... and as a check on the y-coordinate
-            ## system, which flips back and forth!
-            polygon(bottom.x, usr[4]+(bottom.y[1]-bottom.y), col="lightgray")
+            ##polygon(bottom.x, usr[4]+(bottom.y[1]-bottom.y), col="lightgray")
             legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1.25)
         }
     }                                   # plot.subsection
