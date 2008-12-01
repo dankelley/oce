@@ -1,5 +1,6 @@
 0.1.75
 - add argument 'xtype' to plot.section()
+- improve accuracy of bottom drawn by plot.section()
 - add section.smooth()
 - fix bug making section.smooth() fail if fewer than 4 good data at any given level
     http://code.google.com/p/r-oce/issues/detail?id=36

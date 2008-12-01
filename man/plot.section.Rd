@@ -18,7 +18,7 @@
 	coastline=NULL,
 	map.xlim=NULL,
         xtype="distance",
-        legend.loc="topright",
+        legend.loc="bottomright",
 	\dots)
 }
 

@@ -6,7 +6,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                           coastline=NULL,
                           map.xlim=NULL,
                           xtype="distance",
-                          legend.loc="topright",
+                          legend.loc="bottomright",
                           ...)
 {
     plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL, xtype=1, ...)
@@ -121,13 +121,9 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                     contour(x=xx, y=yy, z=zz, axes=FALSE, ...)
                 }
             }
-            ##print(usr)
-            ##cat('zz');print(yy)
-            ##cat("bottom.y-");print(bottom.y)
-            ##cat("usr4-b");print(usr[4]-bottom.y)
-            ##cat("b-us4");print(bottom.y-usr[4])
-##            polygon(bottom.x, usr[3]-bottom.y, col="lightgray")
-            polygon(bottom.x, -bottom.y, col="pink")
+            ## Redraw polygon, to clean up ... and as a check on the y-coordinate
+            ## system, which flips back and forth!
+            polygon(bottom.x, usr[4]+(bottom.y[1]-bottom.y), col="lightgray")
             legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1.25)
         }
     }                                   # plot.subsection
