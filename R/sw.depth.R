@@ -1,4 +1,4 @@
-sw.depth <- function(p, lat, degrees=TRUE)
+sw.depth <- function(p, lat=45, degrees=TRUE)
 {
     if (inherits(p, "ctd")) {
         lat <- abs(p$data$latitude)

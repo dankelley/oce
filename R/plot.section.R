@@ -6,10 +6,11 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                           coastline=NULL,
                           map.xlim=NULL,
                           xtype="distance",
+                          ytype="pressure",
                           legend.loc="bottomright",
                           ...)
 {
-    plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL, xtype=1, ...)
+    plot.subsection <- function(variable="temperature", title="Temperature", indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL, ...)
     {
         if (variable == "map") {
             lat <- array(NA, num.stations)
@@ -64,7 +65,11 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             }
 
             par(xaxs="i",yaxs="i")
-            ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else "Pressure [ dbar ]"
+            ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else {
+                if (which.ytype == 1) "Pressure [ dbar ]" else "Depth [ m ]"}
+
+            ##cat("ylab=(", ylab, ")\n",sep="")
+            ##cat("first few y:", yy[1], yy[2], yy[3], "\n")
 
             if (is.null(at)) {
                 plot(xxrange, yyrange,
@@ -126,7 +131,8 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
         }
     }                                   # plot.subsection
 
-    which.xtype = pmatch(xtype, c("distance", "track"), nomatch=0)
+    which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
+    which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
 
     if (!inherits(x, "section")) stop("method is only for section objects")
     oldpar <- par(no.readonly = TRUE)
@@ -177,7 +183,11 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
     } else {
         xx <- at
     }
-    yy <- x$data$station[[station.indices[1]]]$data$pressure
+
+    if (which.ytype == 1) yy <- x$data$station[[station.indices[1]]]$data$pressure
+    else if (which.ytype == 2) yy <- sw.depth(x$data$station[[station.indices[1]]]$data$pressure)
+    else stop("unknown ytype")
+
     if (is.null(field)) {
         par(mfrow=c(2,2))
         if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1))

@@ -8,7 +8,7 @@
 
 \usage{
 d <- sw.depth(ctd)
-d <- sw.depth(p, lat, degrees=TRUE)
+d <- sw.depth(p, lat=45, degrees=TRUE)
 }
 
 \arguments{

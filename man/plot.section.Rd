@@ -18,6 +18,7 @@
 	coastline=NULL,
 	map.xlim=NULL,
         xtype="distance",
+        ytype="pressure",
         legend.loc="bottomright",
 	\dots)
 }
@@ -52,11 +53,14 @@
     map}
   \item{map.xlim}{optional xlim for station location, which can be
     helpful in ensuring that a recognizable coastline can be seen}
-  \item{xtype}{type of x axis, either \code{"distance"} for distance (in
-    km) to the first point in the section, or \code{"track"} for distance
-    along the cruise track.  Note that if the x values are not in order,
-    they will be put in order (which may make no sense) and a warning will 
-    be printed.}
+  \item{xtype}{type of x axis, for contour plots, either
+    \code{"distance"} for distance (in km) to the first point in the
+    section, or \code{"track"} for distance along the cruise track.
+    Note that if the x values are not in order, they will be put in
+    order (which may make no sense) and a warning will be printed.}
+  \item{ytype}{type of y axis for contour plots, either
+    \code{"pressure"} for pressure (in dbar, with zero at the surface)
+    or \code{"depth"} for depth (in m below the surface).}
   \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
