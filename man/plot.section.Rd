@@ -60,7 +60,8 @@
     order (which may make no sense) and a warning will be printed.}
   \item{ytype}{type of y axis for contour plots, either
     \code{"pressure"} for pressure (in dbar, with zero at the surface)
-    or \code{"depth"} for depth (in m below the surface).}
+    or \code{"depth"} for depth (in m below the surface, calculated
+    from pressure with \code{\link{sw.depth}}).}
   \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
