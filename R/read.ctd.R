@@ -68,12 +68,12 @@ read.ctd.WOCE <- function(file,
     found.sigma.theta <- found.sigma.t <- found.sigma <- FALSE
     found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
-                                        # http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
-                                        # First line
+    ## http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
+    ## First line
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
     if(debug) cat(paste("examining header line '",line,"'\n"));
     header <- line
-                                        #	CTD, 20000718WHPOSIOSCD
+    ## CTD, 20000718WHPOSIOSCD
     if ("CTD" != substr(line, 1, 3)) stop("Can only read WOCE files of type CTD")
     tmp <- sub("(.*), ", "", line);
     date <- substr(tmp, 1, 8)

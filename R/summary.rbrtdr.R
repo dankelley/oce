@@ -4,6 +4,8 @@ summary.rbrtdr <- function(object, ...)
     cat("RBR TDR record\n")
     cat("  No. of samples:      ", length(object$data$temperature),  "\n")
     time.range <- range(object$data$t)
+    cat(sprintf("  Logging start: %s (as reported in header)\n", as.character(object$metadata$logging.start)))
+    cat(sprintf("  Sample period: %s (as reported in header)\n", as.character(object$metadata$sample.period)))
     cat(sprintf("  Start time: %s\n", as.character(time.range[1])))
     cat(sprintf("  End   time: %s\n", as.character(time.range[2])))
     cat(sprintf("   %15s  %10s %10s %10s %10s %10s\n", "ITEM", "min", "Q1", "median", "Q3", "max"));

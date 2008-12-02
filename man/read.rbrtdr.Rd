@@ -36,12 +36,10 @@ alternative to this.  The object may be summarized and plotted using
 generic functions (see examples).}
 
 \examples{
-\dontrun{
 library(oce)
-x <- read.rbrtdr("011855_1a.dat")
+x <- read.rbrtdr("../tests/RBR-01.dat")
 summary(x)
 plot(x) # timeseries
-}
 }
 
 \references{(fill in later ... presumably RBR has a manual online.)}
