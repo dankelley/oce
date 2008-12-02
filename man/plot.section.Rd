@@ -18,7 +18,7 @@
 	coastline=NULL,
 	map.xlim=NULL,
         xtype="distance",
-        ytype="pressure",
+        ytype="depth",
         legend.loc="bottomright",
 	\dots)
 }

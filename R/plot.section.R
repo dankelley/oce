@@ -6,7 +6,7 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                           coastline=NULL,
                           map.xlim=NULL,
                           xtype="distance",
-                          ytype="pressure",
+                          ytype="depth",
                           legend.loc="bottomright",
                           ...)
 {
