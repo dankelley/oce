@@ -13,6 +13,7 @@ export(
        gebco.colors,
        geod.dist,
        gravity,
+       header,
        interp.barnes,
        lat.format,
        latlon.format,

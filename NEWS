@@ -1,4 +1,5 @@
 0.1.75
+- add header()
 - make read.rbrdtr() understand headers better
 - add arguments 'xtype' and 'ytype' to plot.section()
 - improve accuracy of bottom drawn by plot.section()
