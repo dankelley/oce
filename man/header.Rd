@@ -2,21 +2,19 @@
 
 \alias{header}
 
-\title{Return the header for an \code{oce} data object}
+\title{Return the header for an Oce data object}
 
-\description{Return the header for an \code{oce} data  object.}
+\description{Return the header for an oce data  object.}
 
-\usage{
-header(x)
-}
+\usage{header(x)}
 
 \arguments{
   \item{x}{An \code{oce} object.}
 }
 
-\details{Returns \code{x$metadata$header}.}
+\details{Returns header, taken from the metadata of x.}}
 
-\value{None}
+\value{The header, often as a list of character strings.}
 
 \examples{
 library(oce)
