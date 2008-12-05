@@ -34,13 +34,11 @@ d <- sw.depth(p, lat=45, degrees=TRUE)
   Check value: depth = 9712.653 m for p=10000 decibars, latitude=30 deg
   above for standard ocean: t=0 deg. celsuis ; s=35 (ipss-78) }
 
-\value{Depth [m].}
+\value{Depth below the ocean surface, in metres.}
 
-\examples{
-d <- sw.depth(10, 45);
-}
+\examples{d <- sw.depth(10, 45);}
 
-\references{(authors), 1976, (title), Deep-Sea Res., 23, 109-111.}
+\references{(authors?), 1976, (title?), Deep-Sea Res., 23, 109-111.}
 
 \author{Dan Kelley}
 
