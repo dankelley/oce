@@ -1,4 +1,5 @@
 0.1.75
+- add subset.oce()
 - add header()
 - add argument 'which' to read.rbrdtr()
 - make read.rbrdtr() understand headers better

@@ -48,6 +48,7 @@ export(
        section.grid,
        section.subset,
        section.smooth,
+       subset.oce,
        stickplot,
        sw.alpha,
        sw.alpha.over.beta,
