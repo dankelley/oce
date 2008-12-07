@@ -6,17 +6,19 @@
 
 \description{Subset an oce object}
 
-\usage{\method{subset}{oce}(x, subset, \dots)}
+\usage{\method{subset}{oce}(x, subset, indices=NULL, \dots)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
-  \item{subset}{a condition to be applied to the \code{data} portion of \code{x}.}
+  \item{subset}{a condition to be applied to the \code{data} portion of
+    \code{x} (ignored for \code{station} objects).}
+  \item{indices}{list of station indices (used only for \code{section} objects).}
   \item{\dots}{ignored.}
 }
 
 \details{This is analogous to \code{\link{subset.data.frame}}.  Note
-that it only works for objects in which the \code{data} portion is a
-data frame, e.g. \code{ctd}, \code{rbrtdr}.}
+  that it only works for objects in which the \code{data} portion is a
+  data frame, e.g. \code{ctd}, \code{rbrtdr}.}
 
 \value{A new \code{oce} object.}
 
