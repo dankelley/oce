@@ -26,7 +26,7 @@ data frame, e.g. \code{ctd}, \code{rbrtdr}.}
 library(oce)
 data(ctd)
 plot(ctd)
-plot(subset.oce(ctd, pressure>10))
+plot(subset(ctd, pressure>10))
 }
 
 \author{Dan Kelley}
