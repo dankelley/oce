@@ -14,7 +14,7 @@
   \item{\dots}{ignored.}
 }
 
-\details{This is analogous to \code{\link{subset.data.frame}}.}  Note
+\details{This is analogous to \code{\link{subset.data.frame}}.  Note
 that it only works for objects in which the \code{data} portion is a
 data frame, e.g. \code{ctd}, \code{rbrtdr}.}
 
