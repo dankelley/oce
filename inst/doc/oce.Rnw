@@ -181,7 +181,7 @@ the header; use
 <<ctdnames,eval=false>>=
 names(ctd)
 @
-to learn about these metadata, and use
+to learn about the data use
 <<ctdnames2,eval=false>>=
 names(ctd$data)
 @
@@ -215,7 +215,7 @@ trimmed to the downcast; see the text and Figure~\ref{fig:ctdraw}.)}
 \label{fig:ctd}
 \end{figure}
 
-\workedexercise{2}{Plot a profile of $\sigma_\theta$ and $N^2$, for just the data in the pycnocline.}
+\workedexercise{2}{Plot a profile of $\sigma_\theta$ and $N^2$, for just the data in the pycnocline.  Do this with both \texttt{ctd.trim} and \texttt{subset}.}
 
 \subsection{Example with raw data}
 
@@ -640,11 +640,18 @@ plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 
 \workedanswer{2}{Profile plots}
-Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5bar to 12dbar range.
+Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5bar to 12dbar range.  One way to do this is
 <<>>=
 library(oce)
 data(ctd)
 pycnocline <- ctd.trim(ctd, "pressure", c(5,12))
+plot.profile(pycnocline, type="density+N2")
+@
+and another is
+<<>>=
+library(oce)
+data(ctd)
+pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
 plot.profile(pycnocline, type="density+N2")
 @
 
