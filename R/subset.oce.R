@@ -1,5 +1,6 @@
 subset.oce <- function (x, subset,...)
 {
+    if (inherits(x, "section")) stop("subset() does not work on section objects")
     r <- eval(substitute(subset), x$data, parent.frame())
     r <- r & !is.na(r)
     rval <- x
