@@ -15,7 +15,7 @@ subset.oce <- function (x, subset, indices=NULL, ...)
                 station[[i]] <- x$data$station[[ii]]
             }
             data <- list(station=station)
-            metadata <- list(header=section$header,section.id=section$section.id,station.id=stn,latitude=lat,longitude=lon)
+            metadata <- list(header=x$header,section.id=x$section.id,station.id=stn,latitude=lat,longitude=lon)
             rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
             class(rval) <- c("section", "oce")
         } else {                        # subset within the stations

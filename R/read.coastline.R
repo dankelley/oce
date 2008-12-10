@@ -2,7 +2,8 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 {
     type <- match.arg(type)
     log.item <- list(time=c(Sys.time()),
-                     action=c(paste("created by read.coastline(\"",file,"\", type=",type,")",sep="")))
+                     action=c(paste("created by read.coastline(file=",deparse(substitute(file)),
+                     ", type=", deparse(substitute(type)),")",sep="")))
     if (type == "R" || type == "S") {
                                         #
                                         # e.g. data from http://rimmer.ngdc.noaa.gov/coast/
