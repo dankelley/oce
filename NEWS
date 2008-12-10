@@ -1,4 +1,6 @@
 0.1.75
+- improve log items in read. and as. functions
+    http://code.google.com/p/r-oce/issues/detail?id=38
 - add subset.oce()
 - add header()
 - add argument 'which' to read.rbrdtr()

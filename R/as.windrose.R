@@ -21,7 +21,7 @@ as.windrose <- function(x, y, dtheta = 15)
     }
     data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
     metadata <- list(dtheta=dtheta)
-    log <- list(time=c(Sys.time()), action=c("created by as.windrose(x,y,",dtheta,")"))
+    log <- list(time=c(Sys.time()), action=deparse(match.call()))
     res <- list(data=data, metadata=metadata, log=log)
     class(res) <- c("windrose", "oce")
     res

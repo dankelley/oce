@@ -130,7 +130,7 @@ read.sealevel <- function(file, debug=FALSE)
                      units=NA,
                      n=length(t),
                      sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
-    log.item <- list(time=c(Sys.time()), action=c(paste("created by read.sealevel(\"",filename,"\")",sep="")))
+    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("sealevel", "oce")
     rval

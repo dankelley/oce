@@ -172,7 +172,7 @@ read.ctd.WOCE <- function(file,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
                      src=filename)
-    log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.WOCE(\"",filename,"\", type=\"WOCE\")",sep="")))
+    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
     res
@@ -433,7 +433,7 @@ read.ctd.SBE19 <- function(file,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
                      src=filename)
-    log.item <- list(time=c(Sys.time()), action=c(paste("created by read.ctd.SBE19(\"",filename,"\", type=\"SBE19\")",sep="")))
+    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
                                         # Add standard things, if missing

@@ -29,7 +29,7 @@ as.ctd <- function(S, t, p,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
                      src=src)
-    log <- list(time=c(Sys.time()), action=c("created by as.ctd()"))
+    log <- list(time=c(Sys.time()), action=deparse(match.call()))
     res <- list(data=data, metadata=metadata, log=log)
     class(res) <- c("ctd", "oce")
     res

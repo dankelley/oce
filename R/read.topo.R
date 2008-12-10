@@ -13,7 +13,7 @@ read.topo <- function(filename)
     lat <- lat.ll + cellsize * seq(0, nrows-1)
     data <- list(lon=lon, lat=lat, z=z)
     metadata <- list(filename=filename, cellsize=cellsize, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
-    log.item <- list(time=c(Sys.time()), action=c(paste("created by read.topo(\"",filename,"\")",sep="")))
+    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("topo", "oce")
     res

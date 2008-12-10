@@ -80,8 +80,7 @@ read.section <- function(file, section.id="", debug=FALSE)
     }
     data <- list(station=station)
     metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
-    log.item <- list(time = c(Sys.time()),
-                     action = paste("created by read.section(file=\"", filename, "\", debug=",debug, ")",sep=""))
+    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")
     res

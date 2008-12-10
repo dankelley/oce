@@ -1,13 +1,11 @@
 read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
 {
     type <- match.arg(type)
-    log.item <- list(time=c(Sys.time()),
-                     action=c(paste("created by read.coastline(file=",deparse(substitute(file)),
-                     ", type=", deparse(substitute(type)),")",sep="")))
+    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
     if (type == "R" || type == "S") {
-                                        #
-                                        # e.g. data from http://rimmer.ngdc.noaa.gov/coast/
-                                        # e.g. "~/data/Coastline/wcl_1_5000000.dat")
+        ##
+        ## e.g. data from http://rimmer.ngdc.noaa.gov/coast/
+        ## e.g. "~/data/Coastline/wcl_1_5000000.dat")
         if (is.character(file)) {
             file <- file(file, "r")
             on.exit(close(file))
