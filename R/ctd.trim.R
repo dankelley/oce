@@ -78,10 +78,6 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
         }
     }
     result$data <- subset(x$data, keep)
-    if (is.null(parameters)) {
-        result <- processing.log.append(result,	paste("modified by ctd.trim(x, method=\"",method,"\")",sep=""))
-    } else {
-        result <- processing.log.append(result,	paste("modified by ctd.trim(x, method=\"",method,"\",parameters=",parameters,")",sep=""))
-    }
-    return(result)
+    result <- processing.log.append(result, paste(deparse(match.call()), sep="", collapse=""))
+    result
 }

@@ -35,6 +35,7 @@ export(
        plot.windrose,
        predict.tide,
        processing.log.append,
+       processing.log.item,
        processing.log.summary,
        rbrtdr.trim,
        read.coastline,

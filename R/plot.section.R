@@ -61,9 +61,8 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             if (any(xx[ox] != xx)) {
                 xx <- xx[ox]
                 zz <- zz[ox,]
-                cat("NOTE: plot.section() reordered the stations to make x monotonic\n")
+                message("NOTE: plot.section() reordered the stations to make x monotonic\n")
             }
-
             par(xaxs="i",yaxs="i")
             ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else {
                 if (which.ytype == 1) "Pressure [ dbar ]" else "Depth [ m ]"}
@@ -96,6 +95,10 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 else
                     Axis(side=3, at=xx, labels=FALSE, lwd=0.5) # station locations
                 in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature))
+                ##cat("check==\n")
+                ##print(x$data$station[[station.indices[i]]]$data$temperature)
+                ##stop()
+                ##cat("in.land=");print(in.land)
                 if (length(in.land)) {
                     water.depth <- c(water.depth, x$data$station[[station.indices[i]]]$data$pressure[in.land[1]-1])
                 } else {
@@ -107,7 +110,10 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             graph.bottom <- usr[3]
             bottom.x <- c(xx[1], xx, xx[length(xx)])
             bottom.y <- c(graph.bottom, water.depth, graph.bottom)
-            polygon(bottom.x, bottom.y, col="gray") # bottom trace
+            ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
+            ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
+            if (length(bottom.x) == length(bottom.y)) polygon(bottom.x, bottom.y, col="gray") # y may be messed up if NA near surface
+            ##cat("AA\n")
             par(new=TRUE,xaxs="i",yaxs="i")
             dots <- list(...) # adjust plot parameter labcex, unless user did
             if (!is.null(contour.levels) && !is.null(contour.labels)) {

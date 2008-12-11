@@ -11,7 +11,7 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
             p.max <- max(c(p.max, p))
         }
         dp <- mean(dp.list) / 1.5 # make it a little smaller
-                                        # cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
+        ## cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
         if (dp < 0.01) {
             dp <- 0.01 # prevent scale less 1 cm.
         } else if (dp < 5) { # to nearest 1 db
@@ -30,9 +30,9 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
             dp <- 100 * floor(0.5 + dp / 100)
             p.max <- 100 * floor(1 + p.max / 100)
         }
-                                        # cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
+        ## cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
         pt <- seq(0, p.max, dp)
-                                        # cat("Using auto-selected pressures: ", p, "\n");
+        ## cat("Using auto-selected pressures: ", p, "\n");
     } else {
         if (length(p) == 1) {
             if (p=="levitus") {
@@ -40,16 +40,13 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
                         250,  300,  400,  500,  600,  700,  800,  900, 1000, 1100,
                         1200, 1300, 1400, 1500, 1750, 2000, 2500, 3000, 3500, 4000,
                         4500, 5000, 5500)
-                                        # cat("Using stanard atlas pressures: ", p, "\n")
             } else { # FIXME should insist numeric
-                                        # find max in dataset
                 p.max <- 0
                 for (i in 1:n) {
                     p <- section$data$station[[i]]$data$pressure
                     p.max <- max(c(p.max, p))
                 }
-                p <- seq(0, p.max, p)
-                                        # cat("Pressures: ", p, "\n")
+                pt <- seq(0, p.max, p)
             }
         } else {
             pt <- p
@@ -58,8 +55,10 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
     for (i in 1:n) {
-                                        #cat("Doing station number", i, "\n")
+        ##cat("BEFORE:");print(res$data$station[[i]]$data$temperature[1:6])
         res$data$station[[i]] <- ctd.decimate(section$data$station[[i]], p=pt, method=method, ...)
+        ##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
+        ##cat("\n")
     }
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     res <- processing.log.append(res, log.action)

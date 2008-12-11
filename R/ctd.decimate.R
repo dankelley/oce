@@ -1,8 +1,7 @@
-ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
-                                        # ADD: BIO method; spline; supsmu; ...
+ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
+    ## SHOULD ADD: BIO method; spline; supsmu; ...
 {
-    if (!inherits(x, "ctd"))
-    	stop("method is only for ctd objects")
+    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     res <- x
     n <- length(x$data$pressure)
     if (n < 2) {
@@ -39,19 +38,18 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
     } else {
         for (i in 1:npt) {
             if (i==1) {
-                focus <- (x$data$pressure >= (pt[i] - e * (pt[i + 1] - pt[  i  ]))) &
-                (x$data$pressure <= (pt[i] + e * (pt[i + 1] - pt[  i  ])))
+                focus <- (x$data$pressure >= (pt[i] - e*(pt[i+1] - pt[ i ]))) & (x$data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
             } else if (i == npt) {
-                focus <- (x$data$pressure >= (pt[i] - e * (pt[  i  ] - pt[i - 1]))) &
-                (x$data$pressure <= (pt[i] + e * (pt[  i  ] - pt[i - 1])))
+                focus <- (x$data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x$data$pressure <= (pt[i] + e*(pt[ i ] - pt[i-1])))
             } else {
-                focus <- (x$data$pressure >= (pt[i] - e * (pt[  i  ] - pt[i - 1]))) &
-                (x$data$pressure <= (pt[i] + e * (pt[i + 1] - pt[  i  ])))
+                focus <- (x$data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x$data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
             }
+            ##cat("i=",i,"pt[i]=",pt[i],"\n")
             if (sum(focus, na.rm=TRUE) > 0) {
                 if (method == "boxcar") {
                     for (datum.name in data.names) {
                         if (datum.name != "pressure") {
+                            ##cat("i=",i,"datum=",datum.name,"avg=",mean(x$data[[datum.name]][focus]),"\n")
                             data.new[[datum.name]][i] <- mean(x$data[[datum.name]][focus],na.rm=TRUE)
                         }
                     }
@@ -67,9 +65,9 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
                 } else {
                     stop("impossible to get here -- developer error")
                 }
-            } else {
-                                        # No data in the focus region
+            } else {                    # No data in the focus region
                 for (datum.name in data.names) {
+                    ##cat("i=",i,"NO DATA IN focus =\n")
                     if (datum.name != "pressure") {
                         data.new[[datum.name]][i] <- NA
                     }
@@ -77,10 +75,9 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
             }
         }
     }
-                                        # Now replace pressure
     data.new[["pressure"]] <- pt
     res$data <- data.new
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     res <- processing.log.append(res, log.action)
-    return(res)
+    res
 }
