@@ -12,7 +12,7 @@
   \item{x}{An \code{oce} object.}
 }
 
-\details{Returns header, taken from the metadata of x.}}
+\details{Returns header, taken from the metadata of x.}
 
 \value{The header, often as a list of character strings.}
 
