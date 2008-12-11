@@ -1,5 +1,5 @@
 0.1.75
-- improve log items in read. and as. functions
+- improve log items in functions that read and assemble oce objects
     http://code.google.com/p/r-oce/issues/detail?id=38
 - add subset.oce()
 - add header()
