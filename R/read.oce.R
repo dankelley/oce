@@ -28,13 +28,14 @@ magic <- function(file)
 read.oce <- function(file, ...)
 {
     type <- magic(file)
-    if (type == "ctd.woce")    return(read.ctd(substitute(file), ...))
-    if (type == "ctd.seabird") return(read.ctd(substitute(file), ...))
-    if (type == "coastline")   return(read.coastline(substitute(file), type="mapgen", ...))
-    if (type == "sealevel")    return(read.sealevel(substitute(file), ...))
-    if (type == "topo")        return(read.topo(substitute(file), ...))
-    if (type == "RBR-TDR")     return(read.rbrtdr(substitute(file), ...))
-    if (type == "section")     return(read.section(substitute(file), ...))
+    log.action <- deparse(match.call()) # passed down from this upper-level call
+    if (type == "ctd.woce")    return(read.ctd(file, ..., log.action=log.action))
+    if (type == "ctd.seabird") return(read.ctd(file, ..., log.action=log.action))
+    if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))
+    if (type == "sealevel")    return(read.sealevel(file, ..., log.action=log.action))
+    if (type == "topo")        return(read.topo(file, ..., log.action=log.action))
+    if (type == "RBR-TDR")     return(read.rbrtdr(file, ..., log.action=log.action))
+    if (type == "section")     return(read.section(file, ..., log.action=log.action))
     stop("unknown file type")
 }
 

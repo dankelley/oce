@@ -39,7 +39,7 @@ make.section <- function(item, ...)
     }
     data <- list(station=station)
     metadata <- list(header="",section.id="",station.id=stn,latitude=lat,longitude=lon)
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+    log.item <- processing.log.item(deparse(match.call()))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")
     res

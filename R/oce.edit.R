@@ -6,7 +6,7 @@ oce.edit <- function(x, item, value, reason="not specified", person="not specifi
     if (!any(item == names(x$metadata))) stop("There is no item named '", item, "' in the metadata for this oce object")
     res <- x
     res$metadata[item] <- value
-    log.item <- paste("modified by oce.edit(x, item=\"", item, "\", value=\"", value, "\", reason=\"", reason, "\", person=\"", person, "\")",sep="")
-    res <- processing.log.append(res, log.item)
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    res <- processing.log.append(res, log.action)
     return(res)
 }

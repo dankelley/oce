@@ -61,10 +61,7 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
                                         #cat("Doing station number", i, "\n")
         res$data$station[[i]] <- ctd.decimate(section$data$station[[i]], p=pt, method=method, ...)
     }
-    if (is.null(p))
-        log.item <- paste("modified by section.grid(x,method=\"", method, "\")")
-    else
-        log.item <- paste("modified by section.grid(x, p=c(",paste(p,collapse=","),"),method=\"",method,"\")",sep="")
-    res <- processing.log.append(res, log.item)
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    res <- processing.log.append(res, log.action)
     res
 }

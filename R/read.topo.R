@@ -1,4 +1,4 @@
-read.topo <- function(filename)
+read.topo <- function(filename, log.action)
 {
     nh <- 6
     header <- readLines(filename, n=nh)
@@ -13,7 +13,8 @@ read.topo <- function(filename)
     lat <- lat.ll + cellsize * seq(0, nrows-1)
     data <- list(lon=lon, lat=lat, z=z)
     metadata <- list(filename=filename, cellsize=cellsize, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+    if (missing(log.action)) log.action <- deparse(match.call())
+    log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("topo", "oce")
     res

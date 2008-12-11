@@ -1,4 +1,4 @@
-read.section <- function(file, section.id="", debug=FALSE)
+read.section <- function(file, section.id="", debug=FALSE, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -80,7 +80,8 @@ read.section <- function(file, section.id="", debug=FALSE)
     }
     data <- list(station=station)
     metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+    if (missing(log.action)) log.action <- deparse(match.call())
+    log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")
     res

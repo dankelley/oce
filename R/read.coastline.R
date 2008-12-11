@@ -1,7 +1,8 @@
-read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE)
+read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE,log.action)
 {
     type <- match.arg(type)
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+    if (missing(log.action)) log.action <- deparse(match.call())
+    log.item <- processing.log.item(log.action)
     if (type == "R" || type == "S") {
         ##
         ## e.g. data from http://rimmer.ngdc.noaa.gov/coast/

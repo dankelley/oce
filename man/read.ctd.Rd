@@ -8,7 +8,7 @@
 
 \usage{
 read.ctd(file, type=NULL, debug=FALSE,
- 	columns=NULL, station=NULL, check.human.headers=FALSE)
+ 	columns=NULL, station=NULL, check.human.headers=FALSE, log.action)
 }
 
 \arguments{
@@ -28,6 +28,9 @@ read.ctd(file, type=NULL, debug=FALSE,
     number) for the station. (This can be useful if the routine cannot determine
     the name automatically, or if another name is preferred.)}
   \item{check.human.headers}{produces warnings for missing human-written header items.}
+  \item{log.action}{if provided, the action item to be stored in the
+    log.  (Typically only provided for internal calls; the default that
+    it provides is better for normal calls by a user.)}
 }
 
 \details{Oceanographers use CTD (conductivity-temperature-depth)

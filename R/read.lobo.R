@@ -1,4 +1,4 @@
-read.lobo <- function(file, cols=7) {
+read.lobo <- function(file, cols=7, log.action) {
     header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
                                         # find columns. BUG: assumes names don't change
@@ -22,7 +22,8 @@ read.lobo <- function(file, cols=7) {
         time <- as.POSIXlt(time)
         data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
         metadata <- list(header=header)
-        log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+        if (missing(log.action)) log.action <- deparse(match.call())
+        log.item <- processing.log.item(log.action)
         res <- list(data=data, metadata=metadata, processing.log=log.item)
         class(res) = c("lobo", "oce")
         res

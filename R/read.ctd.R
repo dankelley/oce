@@ -1,9 +1,9 @@
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, check.human.headers=FALSE)
+read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, check.human.headers=FALSE, log.action)
 {
-    log.action <- deparse(match.call()) # passed down from this upper-level call
+    if (missing(log.action)) log.action <- deparse(match.call()) # passed down from this upper-level call
     filename <- NULL
     if (is.null(type)) {
         if (is.character(file)) {
@@ -422,7 +422,7 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
                      src=filename)
 
     if (missing(log.action)) log.action <- deparse(match.call())
-    log.item <- list(time=c(Sys.time()), action=log.action)
+    log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
                                         # Add standard things, if missing

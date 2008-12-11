@@ -6,12 +6,15 @@
 
 \description{Read an RBR temperature-depth recorder file, producing an object of type \code{rbrtdr}.}
 
-\usage{read.rbrtdr(file, debug=FALSE)}
+\usage{read.rbrtdr(file, debug=FALSE, log.action)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
+  \item{log.action}{if provided, the action item to be stored in the
+    log.  (Typically only provided for internal calls; the default that
+    it provides is better for normal calls by a user.)}
 }
 
 \details{Read an RBR TDR (temperature-depth recorder) file.}

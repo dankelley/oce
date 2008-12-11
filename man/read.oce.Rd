@@ -7,13 +7,16 @@
 \description{Read an oceanographic data file, auto-discovering the file type from the
 first line of the file.}
 
-\usage{read.oce(file, ...)}
+\usage{read.oce(file, ..., log.action)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
   \item{...}{arguments to be handed to whichever instrument-specific reading function 
 is selected, based on the header.}
+  \item{log.action}{if provided, the action item to be stored in the
+    log.  (Typically only provided for internal calls; the default that
+    it provides is better for normal calls by a user.)}
 }
 
 \details{

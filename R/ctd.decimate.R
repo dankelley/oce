@@ -15,14 +15,11 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
         dp.exact <- median(abs(diff(x$data$pressure)))
         dp <- pretty(3 * dp.exact)[2] # try for 3 data at least
         pt <- seq(0, dp * floor(max(x$data$pressure) / dp), dp)
-        log.item <- paste("modified by ctd.decimate(x, method=\"", method[1], "\")",sep="")
     } else {
         if (length(p) == 1) {
             pt <- seq(0, p * floor(max(x$data$pressure) / p), p)
-            log.item <- paste("modified by ctd.decimate(x, p=",p[1],", method=\"",method[1], "\")",sep="")
         } else {
             pt <- p
-            log.item <- paste("modified by ctd.decimate(x, p=c(",p[1],",",p[2],",...), method=\"",method[1], "\")",sep="")
         }
     }
     npt <- length(pt)
@@ -83,6 +80,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1)
                                         # Now replace pressure
     data.new[["pressure"]] <- pt
     res$data <- data.new
-    res <- processing.log.append(res, log.item)
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    res <- processing.log.append(res, log.action)
     return(res)
 }

@@ -6,12 +6,15 @@
 
 \description{Read a coastline file in mapgen, matlab, or Splus format}
 
-\usage{read.coastline(file,type=c("R","S","mapgen"),debug=FALSE)}
+\usage{read.coastline(file,type=c("R","S","mapgen"),debug=FALSE, log.action)}
 
 \arguments{
-  \item{file}{Name of file containing coastline data.}
-  \item{type}{Type of file, one of "R", "S", or "mapgen"}
-  \item{debug}{Set to TRUE to print information about the header, etc.}
+  \item{file}{name of file containing coastline data.}
+  \item{type}{type of file, one of "R", "S", or "mapgen"}
+  \item{debug}{set to TRUE to print information about the header, etc.}
+  \item{log.action}{if provided, the action item to be stored in the
+    log.  (Typically only provided for internal calls; the default that
+    it provides is better for normal calls by a user.)}
 }
 
 \details{The S and R formats are identical, and consist of two columns,

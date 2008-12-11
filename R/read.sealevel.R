@@ -1,6 +1,6 @@
-read.sealevel <- function(file, debug=FALSE)
+read.sealevel <- function(file, debug=FALSE, log.action)
 {
-                                        # Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
+    ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- file
     if (is.character(file)) {
         file <- file(file, "r")
@@ -130,7 +130,9 @@ read.sealevel <- function(file, debug=FALSE)
                      units=NA,
                      n=length(t),
                      sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+
+    if (missing(log.action)) log.action <- deparse(match.call())
+    log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("sealevel", "oce")
     rval

@@ -1,4 +1,4 @@
-read.rbrtdr <- function(file, debug=FALSE)
+read.rbrtdr <- function(file, debug=FALSE, log.action)
 {
     filename <- file
     if (is.character(file)) {
@@ -75,7 +75,8 @@ read.rbrtdr <- function(file, debug=FALSE)
 
     data <- data.frame(t=t, temperature=temperature, pressure=pressure)
     metadata <- list(header=header, logging.start=logging.start, sample.period=sample.period)
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+    if (missing(log.action)) log.action <- deparse(match.call())
+    log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("rbrtdr", "oce")
     rval
