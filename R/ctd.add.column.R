@@ -1,6 +1,4 @@
-ctd.add.column <- function (x, column=NULL, column.name="",
-                            code="", name="", unit="",
-                            debug = FALSE)
+ctd.add.column <- function (x, column=NULL, column.name="", code="", name="", unit="", debug = FALSE)
 {
     if (length(column) < 1) stop("must supply column data")
     if (column.name == "")  stop("must supply 'column.name'")
@@ -52,12 +50,7 @@ ctd.add.column <- function (x, column=NULL, column.name="",
     }
     result$metadata$header <- h
     result$data[,column.name] <- column
-    log.item <- paste("modified by ctd.add.column(x, column, column.name=\"",
-                      column.name,
-                      "\", code=\"", code,
-                      "\", name=\"", name,
-                      "\", unit=\"", unit,
-                      "\", debug)",sep="")
-    result <- processing.log.append(result, log.item)
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    result <- processing.log.append(result, log.action)
     return(result)
 }

@@ -1,13 +1,9 @@
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file,
-                     type=NULL,
-                     debug=FALSE,
-                     columns=NULL,
-                     station=NULL,
-                     check.human.headers=FALSE)
+read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, check.human.headers=FALSE)
 {
+    log.action <- deparse(match.call()) # passed down from this upper-level call
     filename <- NULL
     if (is.null(type)) {
         if (is.character(file)) {
@@ -31,26 +27,21 @@ read.ctd <- function(file,
         else stop("type must be SBE19 or WOCE, not ", type)
     }
     switch(type,
-           SBE19 = read.ctd.SBE19(file, filename, debug, columns, station=station, check.human.headers=check.human.headers),
-           WOCE  = read.ctd.WOCE(file, filename, debug, columns, station=station, missing.value=-999))
+           SBE19 = read.ctd.SBE19(file, filename, debug, columns, station=station, check.human.headers=check.human.headers, log.action),
+           WOCE  = read.ctd.WOCE(file, filename, debug, columns, station=station, missing.value=-999, log.action))
 }
 
-read.ctd.WOCE <- function(file,
-                          filename,
-                          debug=FALSE,
-                          columns=NULL,
-                          station=NULL,
-                          missing.value=-999)
+read.ctd.WOCE <- function(file, filename, debug=FALSE, columns=NULL, station=NULL, missing.value=-999, log.item)
 {
     if (is.character(file)) {
         filename <- file
         file <- file(file, "r")
-    	on.exit(close(file))
+        on.exit(close(file))
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-    	open(file, "r")
-    	on.exit(close(file))
+        open(file, "r")
+        on.exit(close(file))
     }
                                         # Header
     scientist <- ship <- institute <- address <- NULL
@@ -83,8 +74,8 @@ read.ctd.WOCE <- function(file,
     if (0 < regexpr("SIO", diw)) institute <- "SIO"
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
-    	if(debug) cat(paste("examining header line '",line,"'\n"));
-    	header <- c(header, line);
+        if(debug) cat(paste("examining header line '",line,"'\n"));
+        header <- c(header, line);
         ## SAMPLE:
         ##      EXPOCODE = 31WTTUNES_3
         ##      SECTION_ID = P16C
@@ -129,11 +120,11 @@ read.ctd.WOCE <- function(file,
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     var.units <- strsplit(line, split=",")[[1]]
     pcol <- pmatch("CTDPRS", var.names)
-    if (is.na(pcol))	stop("cannot find pressure column in list", paste(var.names,","))
+    if (is.na(pcol)) stop("cannot find pressure column in list", paste(var.names,","))
     Scol <- pmatch("CTDSAL", var.names)
-    if (is.na(Scol))	stop("cannot find salinity column in list", paste(var.names,","))
+    if (is.na(Scol)) stop("cannot find salinity column in list", paste(var.names,","))
     Tcol <- pmatch("CTDTMP", var.names)
-    if (is.na(Tcol))	stop("cannot find temperature column in list", paste(var.names,","))
+    if (is.na(Tcol)) stop("cannot find temperature column in list", paste(var.names,","))
 
     var.names <- strsplit(line, split=",")[[1]]
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
@@ -172,33 +163,29 @@ read.ctd.WOCE <- function(file,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
                      src=filename)
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+    if (missing(log.action)) log.action <- deparse(match.call())
+    log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
     res
 }
 
-read.ctd.SBE19 <- function(file,
-                           filename,
-                           debug=FALSE,
-                           columns=NULL,
-                           station=NULL,
-                           check.human.headers=TRUE)
+read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NULL, check.human.headers=TRUE, log.action)
 {
-                                        # I really should add ability to specify column numbers, to avoid wasting time
-                                        # on ad-hoc header tweaks.  DEK 2006-01-27
-
-                                        # Read Seabird data file.  Note on headers: '*' is machine-generated,
-                                        # '**' is a user header, and '#' is a post-processing header.
+    ## I really should add ability to specify column numbers, to avoid wasting time
+    ## on ad-hoc header tweaks.  DEK 2006-01-27
+    ##
+    ## Read Seabird data file.  Note on headers: '*' is machine-generated,
+    ## '**' is a user header, and '#' is a post-processing header.
     if (is.character(file)) {
         filename <- file
-    	file <- file(file, "r")
-    	on.exit(close(file))
+        file <- file(file, "r")
+        on.exit(close(file))
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-    	open(file, "r")
-    	on.exit(close(file))
+        open(file, "r")
+        on.exit(close(file))
     }
                                         # Header
     scientist <- ship <- institute <- address <- cruise <- NULL
@@ -214,15 +201,15 @@ read.ctd.SBE19 <- function(file,
     found.temperature <- found.salinity <- found.pressure <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     while (TRUE) {
-    	line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
-    	if(debug) cat(paste("examining header line '",line,"'\n"));
-    	header <- c(header, line);
+        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
+        if(debug) cat(paste("examining header line '",line,"'\n"));
+        header <- c(header, line);
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?");
         if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) break;
         lline <- tolower(aline);
                                         # BUG: discovery of column names is brittle to format changes
-    	if (0 < (r <- regexpr("# name ", lline))) {
+        if (0 < (r <- regexpr("# name ", lline))) {
             if (debug) cat("lline: '",lline,"'\n",sep="")
             tokens <- strsplit(line, split=" ")
             name <- tokens[[1]][6]
@@ -271,8 +258,8 @@ read.ctd.SBE19 <- function(file,
                 }
             }
             col.names.inferred <- c(col.names.inferred, name)
-    	}
-    	if (0 < (r<-regexpr("date:", lline))) {
+        }
+        if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline);
             date <- oce.as.POSIXlt(d)
         }
@@ -288,7 +275,7 @@ read.ctd.SBE19 <- function(file,
             system.upload.time <- oce.as.POSIXlt(d)
                                         #cat(paste("system upload time:", system.upload.time, "\n"))
         }
-    	if (0 < (r<-regexpr("latitude:", lline))) {
+        if (0 < (r<-regexpr("latitude:", lline))) {
             north <- TRUE
             trimmed <- sub("(.*)latitude:([ ])*", "", ignore.case=TRUE, line);
             if (0 < (r <- regexpr("[Nn]", trimmed))) {
@@ -307,8 +294,8 @@ read.ctd.SBE19 <- function(file,
             } else {
                 warning("cannot parse Latitude in header since need 2 items but got ", length(lat[[1]]), " items in '", line, "'\n")
             }
-    	}
-    	if (0 < (r<-regexpr("longitude:", lline))) {
+        }
+        if (0 < (r<-regexpr("longitude:", lline))) {
             east <- TRUE
             trimmed <- sub("(.*)longitude:([ ])*", "", ignore.case=TRUE, line);
             if (0 < (r <- regexpr("[Ee]", trimmed))) {
@@ -327,31 +314,31 @@ read.ctd.SBE19 <- function(file,
             } else {
                 warning("cannot parse Longitude in header since need 2 items but got ", length(lon[[1]]), " items in '", line, "'\n")
             }
-    	}
-    	if (0 < (r<-regexpr("start_time =", lline))) {
+        }
+        if (0 < (r<-regexpr("start_time =", lline))) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
             start.time <- oce.as.POSIXlt(d)
-    	}
-    	if (0 < (r<-regexpr("ship:", lline))) {
+        }
+        if (0 < (r<-regexpr("ship:", lline))) {
                                         #cat(line);cat("\n");
             ship <- sub("(.*)ship:([ ])*", "", ignore.case=TRUE, line); # note: using full string
                                         #cat(ship);cat("\n");
         }
-    	if (0 < (r<-regexpr("scientist:", lline)))
+        if (0 < (r<-regexpr("scientist:", lline)))
             scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line); # full string
-    	if (0 < (r<-regexpr("institute:", lline)))
+        if (0 < (r<-regexpr("institute:", lline)))
             institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line); # full string
-    	if (0 < (r<-regexpr("address:", lline)))
+        if (0 < (r<-regexpr("address:", lline)))
             address <- sub("(.*)address:([ ])*", "", ignore.case=TRUE, line); # full string
-    	if (0 < (r<-regexpr("cruise:", lline)))
+        if (0 < (r<-regexpr("cruise:", lline)))
             cruise <- sub("(.*)cruise:([ ])*", "", ignore.case=TRUE, line); # full string
         if (is.null(station)) {
             if (0 < (r<-regexpr("station:", lline)))
                 station <- sub("(.*)station:([ ])*", "", ignore.case=TRUE, line); # full string
         }
-    	if (0 < (r<-regexpr("recovery:", lline)))
+        if (0 < (r<-regexpr("recovery:", lline)))
             recovery <- sub("(.*)recovery:([ ])*", "", lline);
-    	if (0 < (r<-regexpr("water depth:", lline))) {
+        if (0 < (r<-regexpr("water depth:", lline))) {
             linesplit <- strsplit(line," ")
             if (length(linesplit[[1]]) != 7)
                 warning("cannot parse water depth in `",line,"' (expecting 7 tokens)");
@@ -366,8 +353,8 @@ read.ctd.SBE19 <- function(file,
                     }
                 }
             }
-    	}
-    	if (0 < (r<-regexpr("^. sample rate =", lline))) {
+        }
+        if (0 < (r<-regexpr("^. sample rate =", lline))) {
                                         #* sample rate = 1 scan every 5.0 seconds
             rtmp <- lline;
             rtmp <- sub("(.*) sample rate = ", "", rtmp);
@@ -389,7 +376,7 @@ read.ctd.SBE19 <- function(file,
                     }
                 }
             }
-    	}
+        }
     }
     if (debug) cat("Finished reading header\n")
     if (check.human.headers) {
@@ -433,7 +420,9 @@ read.ctd.SBE19 <- function(file,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
                      src=filename)
-    log.item <- list(time=c(Sys.time()), action=deparse(match.call()))
+
+    if (missing(log.action)) log.action <- deparse(match.call())
+    log.item <- list(time=c(Sys.time()), action=log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
                                         # Add standard things, if missing
@@ -449,7 +438,6 @@ read.ctd.SBE19 <- function(file,
         }
         res <- ctd.add.column(res, S, "salinity", "sal", "salinity", "PSU")
     }
-    res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure),
-                          "sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
+    res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
     return(res)
 }
