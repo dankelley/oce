@@ -87,32 +87,45 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
                 axis(4, labels=FALSE)
                 box()
             }
+            ## Bottom trace
+            usr <- par("usr")
+            graph.bottom <- usr[3]
             water.depth <- NULL
             for (i in 1:num.stations) {
                 zz[i,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
-                if (grid)
-                    points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
-                else
-                    Axis(side=3, at=xx, labels=FALSE, lwd=0.5) # station locations
-                in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature))
+                if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
+
+                temp <- x$data$station[[station.indices[i]]]$data$temperature
+                len <- length(temp)
+                wd <- NA
+                if (is.na(temp[len])) {
+                    ##cat("bottom temperature is missing\n")
+                    ##print(data.frame(p=x$data$station[[station.indices[[i]]]]$data$pressure, temp=temp))
+                    wdi <- len - which(!is.na(rev(temp)))[1] + 1
+                    ##cat("BOTTOM T:");print(temp[wdi])
+                    ##cat("BOTTOM p:");print(x$data$station[[station.indices[i]]]$data$pressure[wdi])
+                    wd <- x$data$station[[station.indices[i]]]$data$pressure[wdi]
+                }
+                in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature[-3])) # skip first 3 points
                 ##cat("check==\n")
                 ##print(x$data$station[[station.indices[i]]]$data$temperature)
                 ##stop()
                 ##cat("in.land=");print(in.land)
-                if (length(in.land)) {
-                    water.depth <- c(water.depth, x$data$station[[station.indices[i]]]$data$pressure[in.land[1]-1])
+                if (!is.na(wd)) {
+                    water.depth <- c(water.depth, wd)
                 } else {
                     water.depth <- c(water.depth, max(x$data$station[[station.indices[i]]]$data$pressure, na.rm=TRUE))
                 }
             }
-            ## draw the ground below the water
-            usr <- par("usr")
-            graph.bottom <- usr[3]
+            if (!grid) Axis(side=3, at=xx, labels=FALSE, lwd=0.5) # station locations
             bottom.x <- c(xx[1], xx, xx[length(xx)])
             bottom.y <- c(graph.bottom, water.depth, graph.bottom)
             ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
             ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
-            if (length(bottom.x) == length(bottom.y)) polygon(bottom.x, bottom.y, col="gray") # y may be messed up if NA near surface
+            if (length(bottom.x) == length(bottom.y)) {
+                ##polygon(bottom.x, bottom.y, col=rgb(1,0,0,alpha=0.2)) # y may be messed up if NA near surface
+                polygon(bottom.x, bottom.y, col="gray") # y may be messed up if NA near surface
+            }
             ##cat("AA\n")
             par(new=TRUE,xaxs="i",yaxs="i")
             dots <- list(...) # adjust plot parameter labcex, unless user did
