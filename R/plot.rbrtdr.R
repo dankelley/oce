@@ -13,16 +13,16 @@ plot.rbrtdr <- function (x, which=1:3, ...)
     }
     if (show[1]) {
         plot(x$data$t, x$data$temperature,
-             xlab="Time", ylab=expression(paste("Temperature [ ", degree, "C ]")), type='l')
+             xlab="Time", ylab=expression(paste("Temperature [ ", degree, "C ]")), type='l', ...)
     }
     if (show[2]) {
         plot(x$data$t, x$data$pressure,
-             xlab="Time", ylab="p [dbar]", type='l')
+             xlab="Time", ylab="p [dbar]", type='l', ...)
     }
     if (show[3]) {
         plot(x$data$temperature, x$data$pressure,
              xlab=expression(paste("Temperature [", degree, "C ]")),
-             ylab="p [dbar]", type='p')
+             ylab="p [dbar]", type='p', ...)
     }
     if (lw != 1) par(oldpar)
     invisible()

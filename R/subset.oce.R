@@ -26,17 +26,13 @@ subset.oce <- function (x, subset, indices=NULL, ...)
                 rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
             }
         }
-        rval <- processing.log.append(rval,
-                                      paste("modified by subset.oce(",
-                                            deparse(substitute(x)), ", ",
-                                            deparse(substitute(indices)), ")", sep=""))
+        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
     } else {
         r <- eval(substitute(subset), x$data, parent.frame())
         r <- r & !is.na(r)
         rval <- x
         rval$data <- x$data[r,]
-        rval <- processing.log.append(rval, paste("modified by subset.oce(x, ", deparse(substitute(subset)), ")", sep=""))
-        class(rval) <- class(x)
+        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
     }
     rval
 }
