@@ -36,16 +36,6 @@ rbrtdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
         }
     }
     result$data <- subset(x$data, keep)
-    if (is.null(parameters)) {
-        result <- processing.log.append(result,	paste("modified by rbrtdr.trim(x, method=\"",method,"\")",sep=""))
-    } else {
-        pp <- as.character(parameters)
-        p <- paste("c(\"", pp, sep="")
-        for (i in 2:length(pp)) {
-            p <- paste(p, pp[i], sep="\",\"")
-        }
-        p <- paste(p, "\")",sep="")     # BUG: broken; should do this above, anyway.  Surely there is a general solution
-        result <- processing.log.append(result,	paste("modified by rbrtdr.trim(x, method=\"",method,"\",parameters=",p,")",sep=""))
-    }
-    return(result)
+    result <- processing.log.append(result, paste(deparse(match.call()), sep="", collapse=""))
+    result
 }
