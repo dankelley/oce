@@ -388,7 +388,7 @@ different pressure levels at each station.  For such cases, the
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-Gulf.Stream <- section.subset(a03, 124:102)
+Gulf.Stream <- subset(a03, indices=124:102)
 Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 1600, 25))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
@@ -679,7 +679,7 @@ plot.TS(ctd, col=hsv(0.7*id/n), cex=2, pch=21)
 <<>>=
 library(oce)
 data(a03)
-Gulf.Stream <- section.subset(a03, 124:102)
+Gulf.Stream <- subset(a03, indices=124:102)
 dh <- sw.dynamic.height(Gulf.Stream)
 par(mfrow=c(2,1))
 plot(dh$distance, dh$height, type='b', xlab="", ylab="Dyn. Height [m]")
