@@ -80,7 +80,7 @@ read.section <- function(file, section.id="", debug=FALSE, log.action)
     }
     data <- list(station=station)
     metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
-    if (missing(log.action)) log.action <- deparse(match.call())
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")

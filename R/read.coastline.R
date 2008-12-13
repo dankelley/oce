@@ -1,7 +1,7 @@
 read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE,log.action)
 {
     type <- match.arg(type)
-    if (missing(log.action)) log.action <- deparse(match.call())
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     if (type == "R" || type == "S") {
         ##

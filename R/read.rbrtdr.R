@@ -75,7 +75,7 @@ read.rbrtdr <- function(file, debug=FALSE, log.action)
 
     data <- data.frame(t=t, temperature=temperature, pressure=pressure)
     metadata <- list(header=header, logging.start=logging.start, sample.period=sample.period)
-    if (missing(log.action)) log.action <- deparse(match.call())
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("rbrtdr", "oce")

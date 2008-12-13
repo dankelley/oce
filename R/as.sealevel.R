@@ -42,7 +42,7 @@ as.sealevel <- function(
                          units=units,
                          n=length(t),
                          sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
-    log.item <- processing.log.item(deparse(match.call()))
+    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("sealevel", "oce")
     rval

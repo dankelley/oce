@@ -131,7 +131,7 @@ read.sealevel <- function(file, debug=FALSE, log.action)
                      n=length(t),
                      sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
 
-    if (missing(log.action)) log.action <- deparse(match.call())
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("sealevel", "oce")
