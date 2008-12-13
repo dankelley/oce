@@ -21,7 +21,7 @@ as.windrose <- function(x, y, dtheta = 15)
     }
     data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
     metadata <- list(dtheta=dtheta)
-    log.item <- processing.log.item(paste(deparse(match.call(), sep="", collapse="")))
+    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=metadata, log=log.item)
     class(res) <- c("windrose", "oce")
     res
