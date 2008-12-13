@@ -420,7 +420,8 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
                      sample.interval=sample.interval,
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, processing.log=log.action)
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
                                         # Add standard things, if missing
     if (!found.salinity) {
