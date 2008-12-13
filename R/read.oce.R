@@ -17,6 +17,7 @@ magic <- function(file)
     if ("* Sea-Bird" == substr(line, 1, 10))         return("ctd.seabird")
     if ("# -b" == substr(line, 1, 4))                return("coastline")
     if ("# Station_Name," == substr(line, 1, 15))    return("sealevel")
+    if ("Station_Name," == substr(line, 1, 13))      return("sealevel")
     if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) return("sealevel")
     ##275A Halifax            Canada              1920 44400N 063350W 0000 3 00000R MM
     if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line))  return("topo")
