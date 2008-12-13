@@ -57,7 +57,7 @@ par(mar=c(4.5,4.5,2,1))
 
 # Left-hand column: whole section
 # (The smoothing lowers Gulf Stream speed greatly)
-a03.west.to.east <- section.subset(a03, 124:1)
+a03.west.to.east <- subset(a03, indices=124:1)
 dh <- sw.dynamic.height(a03.west.to.east)
 plot(dh$distance, dh$height, type='p', xlab="", ylab="Dyn. Height [m]")
 ok <- !is.na(dh$height)
@@ -70,7 +70,7 @@ plot(smu$x[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m
 abline(h=0)
 
 # Right-hand column: Gulf Stream region, unsmoothed
-Gulf.Stream <- section.subset(a03, 124:102)
+Gulf.Stream <- subset(a03, indices=124:102)
 dh.GS <- sw.dynamic.height(Gulf.Stream)
 plot(dh.GS$distance, dh.GS$height, type='b', xlab="", ylab="Dyn. Height [m]")
 grid()

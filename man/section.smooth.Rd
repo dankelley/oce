@@ -37,7 +37,7 @@ smoothing across 5 adjacent stations.
 has less lateral variation than the input section.}
 
 \seealso{Sections are normally created with \code{\link{read.section}}
-  or \code{\link{make.section}}.  \code{\link{section.subset}} may be
+  or \code{\link{make.section}}.  \code{\link{subset}} may be
   used to create a new section consisting of just a subset of an
   existing station, e.g. to focus on a particular region.}
 
@@ -46,7 +46,7 @@ has less lateral variation than the input section.}
 library(oce)
 data(coastline.world)
 data(a03)
-s <- section.grid(section.subset(a03, 90:3), p=seq(00, 2500, 100))
+s <- section.grid(subset(a03, indices=90:3), p=seq(00, 2500, 100))
 ss <- section.smooth(s, df=8)
 plot(ss,coastline=coastline.world,map.xlim=c(-75,0))
 }

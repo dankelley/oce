@@ -47,7 +47,6 @@ export(
        read.sealevel,
        read.section,
        section.grid,
-       section.subset,
        section.smooth,
        subset.oce,
        stickplot,

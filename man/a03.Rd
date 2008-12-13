@@ -14,8 +14,8 @@ to run across the nominal Gulf Stream axis.
 library(oce)
 # Gulf Stream (note that section runs east to west)
 data(a03)
-Gulf.Stream <- section.subset(a03, 124:102)
-Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 10))
+Gulf.Stream <- subset(a03, indices=124:102)
+Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 100))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 }
