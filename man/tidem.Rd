@@ -156,7 +156,7 @@ summary(tide)
 plot(tide)
 
 # The demonstration time series from Foreman (1977),
-# also used in \code{T_TIDE} (Pawlowicz, 2002).
+# also used in T_TIDE (Pawlowicz, 2002).
 data(sealevel.tuk)
 tide.tuk <- tidem(sealevel.tuk)
 summary(tide.tuk)
