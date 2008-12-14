@@ -35,15 +35,25 @@
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an
-alternative to this.  The object may be summarized and plotted using
-generic functions (see examples).}
+  alternative to this.  The object may be summarized and plotted using
+  generic functions (see examples).  In-air samples (common at the start
+  and end of an experiment) can be removed in a crude way with
+  \code{\link{rbrtdr.trim}}.}}
 
 \examples{
 \dontrun{
 library(oce)
-x <- read.rbrtdr("tests/RBR-01.dat")
-summary(x)
-plot(x) # timeseries
+d1 <- read.rbrtdr("~/sl08_011855-decim.dat")
+summary(d1)
+plot(d1)
+# Remove in-air data
+d2 <- rbrtdr.trim(d1)
+d2$data$pressure <- d2$data$pressure - 10.2
+d2 <- processing.log.append(d2, "subtract 10.2dbar from pressure")
+plot(d2)
+# Focus near the start of experiment
+d3 <- subset(d2, as.POSIXct("2008-06-26") <= t & t <= as.POSIXct("2008-06-28"))
+plot(d3)
 }
 }
 
