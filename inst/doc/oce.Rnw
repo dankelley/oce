@@ -403,7 +403,7 @@ right angles.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=1\textwidth}
-<<label=sectionfiga03,fig=TRUE,width=9, height=12, echo=FALSE>>=
+<<label=sectionfiga03,fig=TRUE,width=9, height=11, echo=FALSE>>=
 <<sectionplota03>>
 @
 \end{center}
