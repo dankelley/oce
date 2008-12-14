@@ -12,8 +12,8 @@
 \arguments{
   \item{x}{\code{cdt} object, typically result of \code{\link{read.rbrtdr}}.}
   \item{which}{if a subset of the plots is required, specify a subset of
-    the numbers 1:2.}
-  \item{\dots}{optional arguments passed to plotting functions. A common example is to set \code{df}, for use in \link{sw.N2} calculations.}
+    the numbers 1:3 (see Details).}
+  \item{\dots}{optional arguments passed to plotting functions.}
 }
 
 \details{Three plots (selectable by \code{which}) are available: a
