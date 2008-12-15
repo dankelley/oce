@@ -29,11 +29,11 @@ plot.rbrtdr <- function (x, which=1:3, ...)
         if ("cex" %in% names(list(...))) {
             plot(x$data$temperature, x$data$pressure,
                  xlab=expression(paste("Temperature [", degree, "C ]")),
-                 ylab="p [dbar]", type='p', ...)
+                 ylab="p [dbar]", type='p', pch="+", ...)
         } else {
             plot(x$data$temperature, x$data$pressure,
                  xlab=expression(paste("Temperature [", degree, "C ]")),
-                 ylab="p [dbar]", type='p', cex=0.3, ...)
+                 ylab="p [dbar]", type='p', pch="+", cex=0.3, ...)
         }
     }
     if (lw != 1) par(oldpar)
