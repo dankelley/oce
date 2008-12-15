@@ -51,9 +51,8 @@ plot.rbrtdr <- function (x, which=1:4, ...)
         yloc <- 10
         d.yloc <- 0.7
         cex <- 1
-        text.item("TEST", cex=cex)
-        yloc <- yloc - d.yloc
-        text.item("TEST", cex=cex)
+        text.item(paste("Instrument Serial Number: ", x$metadata$serial.number), cex=cex)
+        text.item(paste("Sample period:", x$metadata$sample.period, "s"), cex=cex)
     }
     if (lw != 1) par(oldpar)
     invisible()
