@@ -43,7 +43,7 @@ read.rbrtdr <- function(file, debug=FALSE, log.action)
             sample.period <- (sp[3] + 60*(sp[2] + 60*sp[1]))
         }
     }
-    serial.number <- strsplit(pt$metadata$header[1],"[\t ]+")[[1]][4]
+    serial.number <- strsplit(header[1],"[\t ]+")[[1]][4]
     if (debug) {
         cat("logging.start:");print(logging.start)
         cat("sample.period:");print(sample.period)
