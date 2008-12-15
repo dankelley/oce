@@ -43,7 +43,7 @@ read.rbrtdr <- function(file, debug=FALSE, log.action)
             sample.period <- (sp[3] + 60*(sp[2] + 60*sp[1]))
         }
     }
-
+    serial.number <- strsplit(pt$metadata$header[1],"[\t ]+")[[1]][4]
     if (debug) {
         cat("logging.start:");print(logging.start)
         cat("sample.period:");print(sample.period)
@@ -74,7 +74,10 @@ read.rbrtdr <- function(file, debug=FALSE, log.action)
     } else stop("wrong number of variables.  Expect 2 or 4")
 
     data <- data.frame(t=t, temperature=temperature, pressure=pressure)
-    metadata <- list(header=header, logging.start=logging.start, sample.period=sample.period)
+    metadata <- list(header=header,
+                     serial.number=serial.number,
+                     logging.start=logging.start,
+                     sample.period=sample.period)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)

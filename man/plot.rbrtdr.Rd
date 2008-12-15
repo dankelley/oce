@@ -7,19 +7,20 @@
 \description{Plot RBR temperature-depth recorder data}
 
 \usage{
-\method{plot}{rbrtdr}(x, which=1:3, \dots)
+\method{plot}{rbrtdr}(x, which=1:4, \dots)
 }
 \arguments{
   \item{x}{\code{cdt} object, typically result of \code{\link{read.rbrtdr}}.}
   \item{which}{if a subset of the plots is required, specify a subset of
-    the numbers 1:3 (see Details).}
+    the numbers 1:4 (see Details).}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Three plots (selectable by \code{which}) are available: a
-  timeseries plot of temperature, a timeseries plot of pressure, and
-  scatterplot of the temperature profile plot.  These are presented in
-  panels on one page.}
+\details{Three plots (selectable by \code{which}) are available:
+  which=1 for a timeseries plot of temperature, which=2 for a
+  timeseries plot of pressure, which=3 for a scatterplot of the
+  temperature profile, and which=4 for textual information about the
+  dataset.}ls on one
 
 \seealso{rbrtdr data can be
   created with \code{\link{read.rbrtdr}}.
