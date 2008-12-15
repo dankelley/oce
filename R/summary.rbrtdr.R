@@ -2,6 +2,7 @@ summary.rbrtdr <- function(object, ...)
 {
     if (!inherits(object, "rbrtdr")) stop("method is only for rbrtdr objects")
     cat("RBR TDR record\n")
+    cat("  Instrument Serial No. ", object$metadata$serial.number,  "\n")
     cat("  No. of samples:      ", length(object$data$temperature),  "\n")
     time.range <- range(object$data$t)
     cat(sprintf("  Logging start: %s (as reported in header)\n", as.character(object$metadata$logging.start)))
