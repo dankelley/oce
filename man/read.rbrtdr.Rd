@@ -36,9 +36,13 @@
 
 \seealso{The generic function \code{\link{read.oce}} provides an
   alternative to this.  The object may be summarized and plotted using
-  generic functions (see examples).  In-air samples (common at the start
-  and end of an experiment) can be removed in a crude way with
-  \code{\link{rbrtdr.trim}}.}
+  generic functions (see examples).  Plotting may be done with
+  \code{\link{plot.rbrtdr.Rd}}, and summaries are provided with
+  \code{\link{summary.rbrtdr.Rd}}, both of which are generic functions.
+  In-air samples, which commonly are taken at the start and end of an
+  experiment, can be removed in a crude way with
+  \code{\link{rbrtdr.trim}}, but the best scheme is to use
+  \code{\link{subset.oce}}, based on a temporal window (see examples).}
 
 \examples{
 \dontrun{
@@ -56,8 +60,6 @@ d3 <- subset(d2, as.POSIXct("2008-06-26") <= t & t <= as.POSIXct("2008-06-28"))
 plot(d3)
 }
 }
-
-\references{(fill in later ... presumably RBR has a manual online.)}
 
 \author{Dan Kelley}
 
