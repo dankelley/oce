@@ -14,7 +14,6 @@ plot.rbrtdr <- function (x, which=1:4, ...)
     } else if (lw==3 || lw==4) {
         par(mar=c(3,3,1,1))
         par(mfcol=c(2,2))
-        if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     }
     if (show[1]) {
         plot(x$data$t, x$data$temperature,
@@ -35,6 +34,7 @@ plot.rbrtdr <- function (x, which=1:4, ...)
         }
         xfake <- seq(0:10)
         yfake <- seq(0:10)
+        mar <- par(mar)
         par(mar=c(0,0,0,0))
         plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
         xloc <- 1
@@ -43,6 +43,7 @@ plot.rbrtdr <- function (x, which=1:4, ...)
         cex <- 1
         text.item(paste("Instrument Serial Number: ", x$metadata$serial.number), cex=cex)
         text.item(paste("Sample period:", x$metadata$sample.period, "s"), cex=cex)
+        par(mar=mar)
     }
     if (show[3]) {
         if ("cex" %in% names(list(...))) {
