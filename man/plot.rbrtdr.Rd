@@ -20,7 +20,7 @@
   which=1 for a timeseries plot of temperature, which=2 for a
   timeseries plot of pressure, which=3 for a scatterplot of the
   temperature profile, and which=4 for textual information about the
-  dataset.}ls on one
+  dataset.}
 
 \seealso{rbrtdr data can be
   created with \code{\link{read.rbrtdr}}.
