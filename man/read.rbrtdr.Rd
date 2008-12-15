@@ -38,7 +38,7 @@
   alternative to this.  The object may be summarized and plotted using
   generic functions (see examples).  In-air samples (common at the start
   and end of an experiment) can be removed in a crude way with
-  \code{\link{rbrtdr.trim}}.}}
+  \code{\link{rbrtdr.trim}}.}
 
 \examples{
 \dontrun{

@@ -6,9 +6,8 @@
 
 \description{Plot RBR temperature-depth recorder data}
 
-\usage{
-\method{plot}{rbrtdr}(x, which=1:4, \dots)
-}
+\usage{\method{plot}{rbrtdr}(x, which=1:4, \dots)}
+
 \arguments{
   \item{x}{\code{cdt} object, typically result of \code{\link{read.rbrtdr}}.}
   \item{which}{if a subset of the plots is required, specify a subset of
