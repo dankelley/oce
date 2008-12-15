@@ -19,14 +19,8 @@
 
 \value{None}
 
-\seealso{A \code{rbrtdr} object may be read with \code{\link{read.rbrtdr}}
-and plotted with \code{\link{read.rbrtdr}}.}
-
-\examples{
-\dontrun{
-library(oce)
-...
-}}
+\seealso{See \code{\link{read.rbrtdr}} for more information on dealing
+  with the \code{rbrtdr} data type, including examples..}
 
 \references{(fill in later)}
 

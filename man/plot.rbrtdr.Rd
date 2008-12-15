@@ -15,21 +15,14 @@
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Three plots (selectable by \code{which}) are available:
-  which=1 for a timeseries plot of temperature, which=2 for a
-  timeseries plot of pressure, which=3 for a scatterplot of the
-  temperature profile, and which=4 for textual information about the
-  dataset.}
+\details{Several plots are available: \code{which}=1 for a timeseries
+  plot of temperature, \code{which}=2 for a timeseries plot of pressure,
+  \code{which}=3 for a scatterplot of the temperature profile, and
+  \code{which}=4 for textual information about the dataset.  Supply a
+  list of \code{which} values, to get multi-panel plots.}
 
-\seealso{rbrtdr data can be
-  created with \code{\link{read.rbrtdr}}.
-  Summaries of RBRTDR data are provided by \code{\link{summary.rbrtdr}}.}
+\seealso{See \code{\link{read.rbrtdr}} for more information on dealing
+  with the \code{rbrtdr} data type, including examples..}
 
-\examples{
-\dontrun{
-library(oce)
-...
-}
-}
 \author{Dan Kelley}
 \keyword{misc}

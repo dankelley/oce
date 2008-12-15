@@ -20,25 +20,35 @@
 \details{Read an RBR TDR (temperature-depth recorder) file.}
 
 \value{An object of \code{\link[base]{class}} \code{"rbrtdr"}, which is a
-  list with elements detailed below. 
-  The most important elements are the station name and position, along
-  with the profile data that are contained in the data frame named \code{data}.
-  (Other elements in the list may be deleted in future versions of the
-  package, if they prove to be of little use in practice, or if they prove
-  to have been idiosyncratic features of the particular files used in
-  early development of \code{oce}.)
-  \item{data}{a data table containing the (t, temperature, pressure) data.}
+  list with elements detailed below. The most important elements are the
+  station name and position, along with the profile data that are
+  contained in the data frame named \code{data}. (Other elements in the
+  list may be deleted in future versions of the package, if they prove
+  to be of little use in practice, or if they prove to have been
+  idiosyncratic features of the particular files used in early
+  development of \code{oce}.)
+  \item{data}{a data table containing the (t, temperature, pressure)
+    data.}
   \item{metadata}{a list containing the following items
-    \item{\code{header}}{the header itself, normally containing several dozen lines of
-      information.}}
+    \item{\code{header}}{the header itself, normally containing several
+      dozen lines of information.}
+    \item{\code{serial.number}}{serial number of instrument, inferred
+      from first line of the header.}
+    \item{\code{logging.start}}{start time for logging, inferred from
+      the header.  Caution: this is often not the first time in the
+      data, because the data may have been subsetted.}
+    \item{\code{sample.period}}{seconds between samples, inferred from
+      the header.  Caution: this is often not the sampling period in the
+      data, because the data may have been decimated.}
+  }
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an
   alternative to this.  The object may be summarized and plotted using
   generic functions (see examples).  Plotting may be done with
-  \code{\link{plot.rbrtdr.Rd}}, and summaries are provided with
-  \code{\link{summary.rbrtdr.Rd}}, both of which are generic functions.
+  \code{\link{plot.rbrtdr}}, and summaries are provided with
+  \code{\link{summary.rbrtdr}}, both of which are generic functions.
   In-air samples, which commonly are taken at the start and end of an
   experiment, can be removed in a crude way with
   \code{\link{rbrtdr.trim}}, but the best scheme is to use
