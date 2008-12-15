@@ -34,7 +34,7 @@ plot.rbrtdr <- function (x, which=1:4, ...)
         }
         xfake <- seq(0:10)
         yfake <- seq(0:10)
-        mar <- par(mar)
+        mar <- par("mar")
         par(mar=c(0,0,0,0))
         plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
         xloc <- 1
