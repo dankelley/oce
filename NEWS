@@ -1,4 +1,5 @@
 0.1-75
+- make read.rbrtdr() gather serial no. info; show this on plot.rbrtdr()
 - switch to recommended verion-number format
 - remove section.subset(), replaced by subset()
 - improve log items in functions that read and assemble oce objects
