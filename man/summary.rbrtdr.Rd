@@ -20,7 +20,7 @@
 \value{None}
 
 \seealso{See \code{\link{read.rbrtdr}} for more information on dealing
-  with the \code{rbrtdr} data type, including examples..}
+  with the \code{rbrtdr} data type, including examples.}
 
 \author{Dan Kelley}
 

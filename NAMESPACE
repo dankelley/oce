@@ -37,6 +37,7 @@ export(
        processing.log.append,
        processing.log.item,
        processing.log.summary,
+       rbrtdr.patm,
        rbrtdr.trim,
        read.coastline,
        read.ctd,
