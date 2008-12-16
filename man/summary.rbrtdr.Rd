@@ -22,8 +22,6 @@
 \seealso{See \code{\link{read.rbrtdr}} for more information on dealing
   with the \code{rbrtdr} data type, including examples..}
 
-\references{(fill in later)}
-
 \author{Dan Kelley}
 
 \keyword{misc}

@@ -43,6 +43,5 @@ dt <- rbrtdr.trim(d, "time", c("2008-10-06 11:00:00","2008-10-09 10:00:00"))
 plot(dt)                                # junk removed
 }}
 
-\references{(fill in later)}
 \author{Dan Kelley}
 \keyword{misc}

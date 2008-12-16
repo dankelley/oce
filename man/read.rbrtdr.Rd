@@ -30,8 +30,7 @@
   \item{data}{a data table containing the (t, temperature, pressure)
     data.}
   \item{metadata}{a list containing the following items
-    \item{\code{header}}{the header itself, normally containing several
-      dozen lines of information.}
+    \item{\code{header}}{the header itself, as read from the input file.}
     \item{\code{serial.number}}{serial number of instrument, inferred
       from first line of the header.}
     \item{\code{logging.start}}{start time for logging, inferred from
@@ -45,14 +44,15 @@
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  The object may be summarized and plotted using
-  generic functions (see examples).  Plotting may be done with
-  \code{\link{plot.rbrtdr}}, and summaries are provided with
+  alternative to this.  Objects of type \code{rbrtdr} can be plotted
+  with \code{\link{plot.rbrtdr}}, and summarized with
   \code{\link{summary.rbrtdr}}, both of which are generic functions.
-  In-air samples, which commonly are taken at the start and end of an
-  experiment, can be removed in a crude way with
-  \code{\link{rbrtdr.trim}}, but the best scheme is to use
-  \code{\link{subset.oce}}, based on a temporal window (see examples).}
+  In-air samples (collected before and after deployment) may be removed
+  in a crude way with \code{\link{rbrtdr.trim}}, but the best scheme is
+  to use \code{\link{subset.oce}}, based on a temporal window (see
+  Examples).  Removal of the atmospheric component of pressure is left
+  up to the user; in many cases, it makes sense to treat this as a
+  constant (see Examples).}
 
 \examples{
 \dontrun{
