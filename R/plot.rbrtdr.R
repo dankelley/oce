@@ -26,7 +26,7 @@ plot.rbrtdr <- function (x, which=1:4, ...)
              ...)
     }
     if (show[4]) {
-        text.item <- function(item, cex=2) {
+        text.item <- function(item, cex=1.25) {
             if (!is.null(item) && !is.na(item)) {
                 text(xloc, yloc, item, adj = c(0, 0), cex=cex);
                 yloc <<- yloc - d.yloc;
@@ -40,9 +40,10 @@ plot.rbrtdr <- function (x, which=1:4, ...)
         xloc <- 1
         yloc <- 10
         d.yloc <- 0.7
-        cex <- 1
-        text.item(paste("Instrument Serial Number: ", x$metadata$serial.number), cex=cex)
-        text.item(paste("Sample period:", x$metadata$sample.period, "s"), cex=cex)
+        text.item(paste("RBR Serial Number: ", x$metadata$serial.number),cex=1.25)
+        text.item(paste("Start:", x$data$t[1]), cex=1)
+        text.item(paste("End:", x$data$t[length(x$data$t)]), cex=1)
+        text.item(paste("Interval:", difftime(x$data$t[2], x$data$t[1], units="s"), "s"),cex=1)
         par(mar=mar)
     }
     if (show[3]) {
