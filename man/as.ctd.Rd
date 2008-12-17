@@ -14,6 +14,7 @@ sample.interval=NA, src="")
   \item{ship}{optional string containing the ship from which the observations were made.}
   \item{scientist}{optional string containing the chief scientist on the cruise.}
   \item{institute}{optional string containing the institute behind the work.}
+  \item{address}{optional string containing the address of the institute.}
   \item{cruise}{optional string containing a cruise identifier.}
   \item{station}{optional string containing a station identifier.}
   \item{date}{optional string containing the date at which the profile was started.}

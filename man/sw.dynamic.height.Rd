@@ -6,10 +6,10 @@
 
 \description{Compute the dynamic height of a column of seawater.}
 
-\usage{sw.dynamic.height(section, pref=2000)}
+\usage{sw.dynamic.height(x, pref=2000)}
 
 \arguments{
-  \item{section}{a \code{section} object, \strong{or} a \code{ctd} object.}}
+  \item{x}{a \code{section} object, \strong{or} a \code{ctd} object.}
   \item{pref}{reference pressure [dbar]}
 }
 
