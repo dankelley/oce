@@ -6,9 +6,7 @@
 
 \description{Summarizes some of the data in an \code{topo} object.}
 
-\usage{
-\method{summary}{topo}(object, \dots)
-}
+\usage{\method{summary}{topo}(object, \dots)}
 
 \arguments{
   \item{object}{A \code{topo} object, e.g. as read by \code{\link{read.topo}}.}

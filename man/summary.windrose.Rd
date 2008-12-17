@@ -6,9 +6,7 @@
 
 \description{Summarizes some of the data in a \code{windrose} object.}
 
-\usage{
-\method{summary}{windrose}(object, \dots)
-}
+\usage{\method{summary}{windrose}(object, \dots)}
 
 \arguments{
   \item{object}{A \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}

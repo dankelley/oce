@@ -6,8 +6,7 @@
 
 \description{Plot a CTD section.}
 
-\usage{
-\method{plot}{section}(x,
+\usage{\method{plot}{section}(x,
  	field=NULL,
 	at=NULL,
 	labels=TRUE,

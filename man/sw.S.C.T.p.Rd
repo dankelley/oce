@@ -6,7 +6,7 @@
 
 \description{Compute salinity, given conductivity ratio, temperature, and pressure.}
 
-\usage{S <- sw.S.C.T.p(C, t, p)}
+\usage{sw.S.C.T.p(C, t, p)}
 
 \arguments{
   \item{C}{conductivity ratio [unitless]}

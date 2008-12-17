@@ -6,7 +6,7 @@
 
 \description{Correct for drift in instrument clock}
 
-\usage{d <- undrift.time(x, slow.end=0, tname="t")}
+\usage{undrift.time(x, slow.end=0, tname="t")}
 
 \arguments{
   \item{x}{an object of \code{\link[base]{class}} "\code{oce}".}

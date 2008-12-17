@@ -6,8 +6,7 @@
 
 \description{Plot a CTD profile, in any of several common formats.}
 
-\usage{
-plot.profile(x,
+\usage{plot.profile(x,
 type="S", 
 col.S="darkgreen",
 col.t="red",

@@ -6,21 +6,20 @@
 
 \description{Compute seawater "spice" (a variable orthogonal to density in TS space)}
 
-\usage{
-spice <- sw.spice(ctd)
-spice <- sw.spice(S, t=NULL, p=NULL)
-}
+\usage{sw.spice(S, t=NULL, p=NULL)}
 
 \arguments{
-  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
-  \item{S}{salinity [PSU]}
+  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
+    must be provided) \strong{or} a \code{ctd} object (in which case
+    \code{S}, \code{t} and \code{p} are determined from the object, and
+    must not be provided in the argument list).}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{pressure [dbar]}
 }
 
-\details{In the first form, the argument is a \code{ctd} object, from
-  which the salinity, temperature and pressure values are extracted and
-  used to for the calculation.
+\details{If the first argument is a \code{ctd} object, then salinity,
+  temperature and pressure values are extracted from it, and used for
+  the calculation.
 
   Roughly speaking, seawater with a high spiciness is relatively warm
   and salty compared with less spicy water. Another interpretation is

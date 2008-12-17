@@ -6,9 +6,7 @@
 
 \description{Summarizes some of the data in a lobo object.}
 
-\usage{
-\method{summary}{lobo}(object, \dots)
-}
+\usage{\method{summary}{lobo}(object, \dots)}
 
 \arguments{
   \item{object}{A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.}

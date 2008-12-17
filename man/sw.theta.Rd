@@ -6,23 +6,22 @@
 
 \description{Compute \eqn{\theta}{theta}, the potential temperature of seawater. }
 
-\usage{
-tpot <- sw.theta(ctd, pref=0, method=c("UNESCO1983","Bryden1973"))
-tpot <- sw.theta(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983","Bryden1973"))
-}
+\usage{sw.theta(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983","Bryden1973"))}
 
 \arguments{
-  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
-  \item{S}{salinity [PSU]}
+  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
+    must be provided) \strong{or} a \code{ctd} object (in which case
+    \code{S}, \code{t} and \code{p} are determined from the object, and
+    must not be provided in the argument list).}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{p}{pressure [dbar]}
   \item{pref}{reference pressure [dbar]}
   \item{method}{algorithm to be used (see details)}
 }
 
-\details{In the first form, the argument is a \code{ctd} object, from
-  which the salinity, temperature and pressure values are extracted and
-  used to for the calculation.
+\details{If the first argument is a \code{ctd} object, then salinity,
+  temperature and pressure values are extracted from it, and used for
+  the calculation.
 
   The potential temperature is defined to be the temperature that a
   water parcel of salinity \code{S}, \emph{in-situ} temperature \code{t}

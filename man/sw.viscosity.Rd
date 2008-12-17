@@ -6,25 +6,25 @@
 
 \description{Compute viscosity of seawater, in \eqn{Pa\cdot s}{Pa*s}}
 
-\usage{
-v <- sw.viscosity(ctd)
-v <- sw.viscosity(S, t=NULL)
-}
+\usage{sw.viscosity(S, t=NULL)}
 
 \arguments{
-  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
-  \item{S}{salinity [PSU]}
+  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
+    must be provided) \strong{or} a \code{ctd} object (in which case
+    \code{S}, \code{t} and \code{p} are determined from the object, and
+    must not be provided in the argument list).}
   \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
 }
 
-\details{In the first form, the argument is a \code{ctd} object, from
-  which the salinity, temperature and pressure values are extracted and
-  used to for the calculation.
+\details{If the first argument is a \code{ctd} object, then salinity,
+  temperature and pressure values are extracted from it, and used for
+  the calculation.
 
-  Derived from a curve fit to table 87 of Dorsey (1940). The fit matches
-  the table to within 0.2 percent at worst, and with average absolute
-  error of 0.07 percent. The maximum deviation from the table is one
-  unit in the last decimal place.
+  The result is determined from a regression of the data provided in
+  Table 87 of Dorsey (1940). The fit matches the table to within 0.2
+  percent at worst, and with average absolute error of 0.07 percent. The
+  maximum deviation from the table is one unit in the last decimal
+  place.
 
   No pressure dependence was reported by Dorsey (1940).
 }

@@ -2,8 +2,7 @@
 \alias{plot.TS}
 \title{Plot temperature-salinity diagram for seawater (CTD) data}
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
-\usage{
-plot.TS(x,
+\usage{plot.TS(x,
 	rho.levels = 6,
 	grid = FALSE,
 	col.grid = "lightgray",

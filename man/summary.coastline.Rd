@@ -6,9 +6,7 @@
 
 \description{Summarizes coastline length, bounding box, etc.}
 
-\usage{
-\method{summary}{coastline}(object, \dots)
-}
+\usage{\method{summary}{coastline}(object, \dots)}
 
 \arguments{
   \item{object}{A \code{coastline} object, e.g. as read by \code{\link{read.coastline}}.}

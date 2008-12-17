@@ -6,23 +6,19 @@
 
 \description{Compute the dynamic height of a column of seawater.}
 
-\usage{
-dh <- sw.dynamic.height(section, pref=2000)
-h <- sw.dynamic.height(ctd, pref=2000)
-}
+\usage{sw.dynamic.height(section, pref=2000)}
 
 \arguments{
-  \item{section}{a \code{section} object}
-  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
+  \item{section}{a \code{section} object, \strong{or} a \code{ctd} object.}}
   \item{pref}{reference pressure [dbar]}
 }
 
-\details{The first form calculates dynamic height for each station
-  within a section, and returns a list containing distance along the
-  section along with dynamic height.
+\details{If the first argument is a \code{section}, then dynamic height
+  is calculated for each station within a section, and returns a list
+  containing distance along the section along with dynamic height.
 
-  The second form calculates dynamic height for a single station, and
-  returns just a single value, the dynamic height.
+  If the first argument is a \code{ctd}, then this returns just a single
+  value, the dynamic height.
 
   Stations are analysed in steps. First, a piecewise-linear model of the
   density variation with pressure is developed using

@@ -6,7 +6,7 @@
 
 \description{Format a longitude, using "W" for west longitude.}
 
-\usage{lon.label <- lon.format(lon)}
+\usage{lon.format(lon)}
 
 \arguments{
   \item{lon}{longitude in \eqn{^\circ}{deg}N east of Greenwich.}

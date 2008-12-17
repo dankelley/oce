@@ -2,13 +2,11 @@
 \alias{geod.dist}
 \title{Geodesic distance on earth}
 \description{ Compute geodesic distance on surface of earth.}
-\usage{
-km <- geod.dist(section)
-km <- geod.dist(lat1, lon1, lat2, lon2);
-}
+
+\usage{geod.dist(lat1, lon1, lat2, lon2)}
+
 \arguments{
-  \item{section}{a \code{section} object}
-  \item{lat1}{latitude or a list of latitudes}
+  \item{lat1}{latitude or a list of latitudes, \strong{or} a section}
   \item{lon1}{longitude or list of longitudes}
   \item{lat2}{latitude or list of latitudes}
   \item{lon2}{longitude or list of longitudes}
@@ -19,15 +17,15 @@ km <- geod.dist(lat1, lon1, lat2, lon2);
   inverse problem, using T. Vincenty's modification of Rainsford's
   method with Helmert's elliptical terms.
 
-  In the first form, with a single argument being an object of class
-  \code{section}, the result is vector containing the distances of the
-  individual stations from the first one in the section.
+  If the first argument is an object of class \code{section}, the result
+  is vector containing the distances of the individual stations from the
+  first one in the section.
 
-  In the second form, if the "1" and "2" lists are of equal length, then
-  the result is the pairwise distances. However, if the length of "2" is
-  shorter than the length of "1", then \emph{only} the first value in
-  the "2" list is used, repeated over and over to match the length of
-  "1".
+  If the first argument is a list, then the "1" and "2" lists are of
+  equal length, then the result is the pairwise distances. However, if
+  the length of "2" is shorter than the length of "1", then \emph{only}
+  the first value in the "2" list is used, repeated over and over to
+  match the length of "1".
 
   A common use is for "1" to contain a vector of positions along a
   cruise track, and for "2" to contain a reference point;

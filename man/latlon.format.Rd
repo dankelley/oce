@@ -6,7 +6,7 @@
 
 \description{Format a latitude-longitude pair, using "S" for negative latitudes, etc.}
 
-\usage{latlon <- latlon.format(lat, lon)}
+\usage{latlon.format(lat, lon)}
 
 \arguments{
   \item{lat}{latitude in \eqn{^\circ}{deg}N north of the equator.}

@@ -6,9 +6,7 @@
 
 \description{Summarize a CTD section.}
 
-\usage{
-\method{summary}{section}(object, quiet, \dots)
-}
+\usage{\method{summary}{section}(object, quiet, \dots)}
 
 \arguments{
   \item{object}{a \code{section} object, e.g. as read by \code{\link{make.section}}.}

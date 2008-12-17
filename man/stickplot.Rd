@@ -7,9 +7,8 @@
 \description{Draw a stick-plot diagram, with line segments indicating
   (x,y) values, arranged along a horizontal axis representing t.}
 
-\usage{
-stickplot(t, x, y, \dots)
-}
+\usage{stickplot(t, x, y, \dots)}
+
 \arguments{
   \item{t}{Time}
   \item{x}{horizontal component of line segment}

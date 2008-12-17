@@ -8,14 +8,12 @@
 \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater profile.
 }
 
-\usage{
-N2 <- sw.N2(ctd, \dots)
-N2 <- sw.N2(p, sigma.theta=NULL, \dots)
-}
+\usage{N2 <- sw.N2(p, sigma.theta=NULL, \dots)}
 
 \arguments{
-  \item{ctd}{an object of \code{\link[base]{class}} "\code{ctd}".}
-  \item{p}{pressure [dbar]}
+  \item{p}{either pressure [dbar] (in which case \code{sigma.theta} must
+  be provided) \strong{or} an object of class \code{ctd} object (in which case
+    \code{sigma.theta} is inferred from the object.}
   \item{sigma.theta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}
   \item{\dots}{Extra arguments that will be passed to 
     \code{smooth.spline} if supplied.  A common example is to set \code{df}, 
@@ -23,18 +21,16 @@ N2 <- sw.N2(p, sigma.theta=NULL, \dots)
     to the value \code{length(p)/5}.}
 }
 
-\details{In the first form, the argument is a \code{ctd} object, from
-  which the salinity, temperature and pressure values are extracted,
-  used to calculate sigma.theta, and then used for the calculation of
-  the square of the buoyancy frequency.
+\details{If the first argument is a \code{ctd} object, then
+  \code{sigma.theta} is inferred from it.
 
   The result is calculated from the derivative of a smoothing cubic
-spline fitted to the density profile using \code{smooth.spline}.
-Optional arguments in \dots are passed to this routine, and this gives
-the user a great deal of control over the smoothing technique; see the
-documentation on \code{smooth.spline} for details.  For example,
-\code{\link{plot.profile}} uses \code{df=length(x$p)/5} as an optional
-argument to \code{N2} to do some smoothing of the density profile.}
+  spline fitted to the density profile using \code{smooth.spline}.
+  Optional arguments in \dots are passed to this routine, and this gives
+  the user a great deal of control over the smoothing technique; see the
+  documentation on \code{smooth.spline} for details.  For example,
+  \code{\link{plot.profile}} uses \code{df=length(x$p)/5} as an optional
+  argument to \code{N2} to do some smoothing of the density profile.}
 
 \value{Square of buoyancy frequency [radian/s].}
 

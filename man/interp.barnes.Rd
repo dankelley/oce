@@ -6,7 +6,7 @@
 
 \description{Grid data using Barnes algorithm.}
 
-\usage{gridded <- interp.barnes(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, 
+\usage{interp.barnes(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, 
 gamma=0.5, iterations=2)}
 
 \arguments{

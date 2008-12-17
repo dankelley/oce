@@ -6,8 +6,7 @@
 
 \description{Plot a summary diagram for CTD data.}
 
-\usage{
-\method{plot}{ctd}(x,ref.lat=NaN, ref.lon=NaN, grid=TRUE, col.grid="lightgray", 
+\usage{\method{plot}{ctd}(x,ref.lat=NaN, ref.lon=NaN, grid=TRUE, col.grid="lightgray", 
   textpanel=TRUE, \dots)
 }
 \arguments{

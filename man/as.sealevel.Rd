@@ -5,22 +5,10 @@
   Coerces a dataset (minimally, a sequence of times and heights) into
   a sealevel dataset.
 }
-\usage{
-as.sealevel(eta,
-  t,
-  header=NULL,
-  station.number=NA,
-  station.version=NA,
-  station.name=NULL,
-  region=NA,
-  year=NA,
-  latitude=NA,
-  longitude=NA,
-  GMT.offset=NA,
-  decimation.method=NA,
-  reference.offset=NA,
-  reference.code=NA,
-  sampling.interval=NA)
+\usage{as.sealevel(eta,  t,  header=NULL,
+  station.number=NA, station.version=NA, station.name=NULL, region=NA,
+  year=NA, latitude=NA, longitude=NA, GMT.offset=NA, decimation.method=NA,
+  reference.offset=NA, reference.code=NA, sampling.interval=NA)
 }
 \arguments{
   \item{eta}{a list of sea-level heights in metres, in an hourly sequence.}

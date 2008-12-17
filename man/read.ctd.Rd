@@ -6,8 +6,7 @@
 
 \description{Read a CTD data file, producing an object of type \code{ctd}.}
 
-\usage{
-read.ctd(file, type=NULL, debug=FALSE,
+\usage{read.ctd(file, type=NULL, debug=FALSE,
  	columns=NULL, station=NULL, check.human.headers=FALSE, log.action)
 }
 

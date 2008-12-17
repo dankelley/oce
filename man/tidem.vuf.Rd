@@ -6,7 +6,7 @@
 
 \description{Do ephemeris calculations for tidem.}
 
-\usage{a <- tidem.vuf(t, j, lat=NULL)}
+\usage{tidem.vuf(t, j, lat=NULL)}
 
 \arguments{
   \item{t}{time in \code{\link[base]{POSIXct}} format.  (It is

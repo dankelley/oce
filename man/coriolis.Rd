@@ -1,10 +1,8 @@
 \name{coriolis}
 \alias{coriolis}
 \title{Coriolis parameter on rotating earth}
-\description{
-Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.
-}
-\usage{f <- coriolis(lat, degrees=TRUE)}
+\description{Compute \eqn{f}{f}, the Coriolis parameter as a function of latitude.}
+\usage{coriolis(lat, degrees=TRUE)}
 \arguments{
   \item{lat}{Latitude in \eqn{^\circ}{deg}N or radians north of the equator.}
   \item{degrees}{Flag indicating whether degrees are used for latitude;
