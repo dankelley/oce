@@ -1,4 +1,5 @@
 0.1-75
+- add add.column()
 - add undrift.time()
 - add rbrtdr.patm()
 - make read.rbrtdr() gather serial no. info; show this on plot.rbrtdr()
