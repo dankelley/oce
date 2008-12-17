@@ -1,4 +1,4 @@
-undrift.time <- function(x, dt.end = 0, tname="t")
+undrift.time <- function(x, slow.end = 0, tname="t")
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     names <- names(x$data)
@@ -10,7 +10,7 @@ undrift.time <- function(x, dt.end = 0, tname="t")
     else {
         sample.interval <- as.numeric(difftime(t[2], t[1], units="s"))
         nt <- length(t)
-        nt.out <- floor(0.5 + nt - dt.end / sample.interval)
+        nt.out <- floor(0.5 + nt + slow.end / sample.interval)
         t.out <- seq.POSIXt(from=t[1], by=sample.interval, length.out=nt.out)
         i <- seq(from=1, by=1, length.out=nt)
         i.out <- seq(from=1, to=nt, length.out = nt.out)
