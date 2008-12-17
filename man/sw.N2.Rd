@@ -8,7 +8,7 @@
 \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater profile.
 }
 
-\usage{N2 <- sw.N2(p, sigma.theta=NULL, \dots)}
+\usage{sw.N2(p, sigma.theta=NULL, \dots)}
 
 \arguments{
   \item{p}{either pressure [dbar] (in which case \code{sigma.theta} must

@@ -6,7 +6,7 @@
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{rho <- sw.rho(S, t=NULL, p=NULL)}
+\usage{sw.rho(S, t=NULL, p=NULL)}
 
 \arguments{
   \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
