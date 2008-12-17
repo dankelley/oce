@@ -1,5 +1,6 @@
 subset.oce <- function (x, subset, indices=NULL, ...)
 {
+    if (!inherits(x, "oce")) stop("method is only for oce objects")
     if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
             n <- length(indices)
