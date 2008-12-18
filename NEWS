@@ -1,8 +1,8 @@
 0.1-75
 - add add.column()
 - add undrift.time()
-- add rbrtdr.patm()
-- make read.rbrtdr() gather serial no. info; show this on plot.rbrtdr()
+- add tdr.patm()
+- make read.tdr() gather serial no. info; show this on plot.tdr()
 - switch to recommended verion-number format
 - remove section.subset(), replaced by subset()
 - improve log items in functions that read and assemble oce objects
@@ -22,6 +22,7 @@
     http://code.google.com/p/r-oce/issues/detail?id=33
 - fix bug making plot.section() die if x is unordered
     http://code.google.com/p/r-oce/issues/detail?id=36
+- rename rbrtdr functions to tdr functions, improving generality
 
 0.1.74
 - add argument "src" to as.ctd()
@@ -34,7 +35,7 @@
     http://code.google.com/p/r-oce/issues/detail?id=30
 - speed up sw.spice()
     http://code.google.com/p/r-oce/issues/detail?id=29
-- add read.rbrtdr(), summary.rbrtdr(), plot.rbrtdr(), and rbrtdr.trim()
+- add read.tdr(), summary.tdr(), plot.tdr(), and tdr.trim()
 - make plot.TS() isopycnal label size be same on top and right sides
     http://code.google.com/p/r-oce/issues/detail?id=26
 - add lwd argument to plot.profile() 
