@@ -1,12 +1,12 @@
-\name{read.rbrtdr}
+\name{read.tdr}
 
-\alias{read.rbrtdr}
+\alias{read.tdr}
 
 \title{Read an RBR temperature-depth recorder data file}
 
-\description{Read an RBR temperature-depth recorder file, producing an object of type \code{rbrtdr}.}
+\description{Read an RBR temperature-depth recorder file, producing an object of type \code{tdr}.}
 
-\usage{read.rbrtdr(file, debug=FALSE, log.action)}
+\usage{read.tdr(file, debug=FALSE, log.action)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -19,7 +19,7 @@
 
 \details{Read an RBR TDR (temperature-depth recorder) file.}
 
-\value{An object of \code{\link[base]{class}} \code{"rbrtdr"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
   list with elements detailed below. The most important elements are the
   station name and position, along with the profile data that are
   contained in the data frame named \code{data}. (Other elements in the
@@ -44,11 +44,11 @@
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  Objects of type \code{rbrtdr} can be plotted
-  with \code{\link{plot.rbrtdr}}, and summarized with
-  \code{\link{summary.rbrtdr}}, both of which are generic functions.
+  alternative to this.  Objects of type \code{tdr} can be plotted
+  with \code{\link{plot.tdr}}, and summarized with
+  \code{\link{summary.tdr}}, both of which are generic functions.
   In-air samples (collected before and after deployment) may be removed
-  in a crude way with \code{\link{rbrtdr.trim}}, but the best scheme is
+  in a crude way with \code{\link{tdr.trim}}, but the best scheme is
   to use \code{\link{subset.oce}}, based on a temporal window (see
   Examples).  Removal of the atmospheric component of pressure is left
   up to the user; in many cases, it makes sense to treat this as a
@@ -57,11 +57,11 @@
 \examples{
 \dontrun{
 library(oce)
-d1 <- read.rbrtdr("~/sl08_011855-decim.dat")
+d1 <- read.tdr("~/sl08_011855-decim.dat")
 summary(d1)
 plot(d1)
 # Remove in-air data
-d2 <- rbrtdr.trim(d1)
+d2 <- tdr.trim(d1)
 d2$data$pressure <- d2$data$pressure - 10.2
 d2 <- processing.log.append(d2, "subtract 10.2dbar from pressure")
 plot(d2)

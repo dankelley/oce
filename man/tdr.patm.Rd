@@ -1,11 +1,11 @@
-\name{rbrtdr.patm}
-\alias{rbrtdr.patm}
+\name{tdr.patm}
+\alias{tdr.patm}
 \title{Estimate atmospheric pressure in RBR record}
 \description{Estimate atmospheric pressure in RBR record}
-\usage{rbrtdr.patm(x, dp=0.5)}
+\usage{tdr.patm(x, dp=0.5)}
 \arguments{
-  \item{x}{A \code{rbrtdr} object, e.g. as read by
-    \code{\link{read.rbrtdr}}, or a list of pressure (in decibars).}
+  \item{x}{A \code{tdr} object, e.g. as read by
+    \code{\link{read.tdr}}, or a list of pressure (in decibars).}
   \item{dp}{Half-width of pressure window to be examined (in decibars).}
 }
 
@@ -20,8 +20,8 @@
 \value{A list of four estimates: \code{sap}, the median, the mean, and
   the weighted mean.}
 
-\seealso{See \code{\link{read.rbrtdr}} for more information on dealing
-  with the \code{rbrtdr} data type, including examples.}
+\seealso{See \code{\link{read.tdr}} for more information on dealing
+  with the \code{tdr} data type, including examples.}
 
 \author{Dan Kelley}
 \keyword{misc}

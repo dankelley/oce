@@ -1,15 +1,15 @@
-\name{plot.rbrtdr}
+\name{plot.tdr}
 
-\alias{plot.rbrtdr}
+\alias{plot.tdr}
 
 \title{Plot RBR temperature-depth recorder data}
 
 \description{Plot RBR temperature-depth recorder data}
 
-\usage{\method{plot}{rbrtdr}(x, which=1:4, \dots)}
+\usage{\method{plot}{tdr}(x, which=1:4, \dots)}
 
 \arguments{
-  \item{x}{\code{cdt} object, typically result of \code{\link{read.rbrtdr}}.}
+  \item{x}{\code{cdt} object, typically result of \code{\link{read.tdr}}.}
   \item{which}{if a subset of the plots is required, specify a subset of
     the numbers 1:4 (see Details).}
   \item{\dots}{optional arguments passed to plotting functions.}
@@ -21,8 +21,8 @@
   \code{which}=4 for textual information about the dataset.  Supply a
   list of \code{which} values, to get multi-panel plots.}
 
-\seealso{See \code{\link{read.rbrtdr}} for more information on dealing
-  with the \code{rbrtdr} data type, including examples..}
+\seealso{See \code{\link{read.tdr}} for more information on dealing
+  with the \code{tdr} data type, including examples..}
 
 \author{Dan Kelley}
 \keyword{misc}

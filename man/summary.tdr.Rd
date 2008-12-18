@@ -1,15 +1,15 @@
-\name{summary.rbrtdr}
+\name{summary.tdr}
 
-\alias{summary.rbrtdr}
+\alias{summary.tdr}
 
 \title{Summarize an RBR temperature-depth data object}
 
 \description{Summarize an RBR temperature-depth data object}
 
-\usage{\method{summary}{rbrtdr}(object, \dots)}
+\usage{\method{summary}{tdr}(object, \dots)}
 
 \arguments{
-  \item{object}{A \code{rbrtdr} object, e.g. as read by \code{\link{read.rbrtdr}}.}
+  \item{object}{A \code{tdr} object, e.g. as read by \code{\link{read.tdr}}.}
   \item{\dots}{passed to children.}
 }
 
@@ -19,8 +19,8 @@
 
 \value{None}
 
-\seealso{See \code{\link{read.rbrtdr}} for more information on dealing
-  with the \code{rbrtdr} data type, including examples.}
+\seealso{See \code{\link{read.tdr}} for more information on dealing
+  with the \code{tdr} data type, including examples.}
 
 \author{Dan Kelley}
 
