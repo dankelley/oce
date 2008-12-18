@@ -1,11 +1,11 @@
-rbrtdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
+tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
 {
-    if (!inherits(x, "rbrtdr")) stop("method is only for rbrtdr objects")
+    if (!inherits(x, "tdr")) stop("method is only for tdr objects")
     result <- x
     n <- length(x$data$temperature)
-    if (verbose) cat("rbrtdr.trim() working on dataset with", n, "points\n")
+    if (verbose) cat("tdr.trim() working on dataset with", n, "points\n")
     if (n < 2) {
-        warning("too few data to rbrtdr.trim()")
+        warning("too few data to tdr.trim()")
     } else {
         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
         if (verbose) cat("using method", which.method,"\n")

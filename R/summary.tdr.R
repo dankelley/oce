@@ -1,7 +1,7 @@
-summary.rbrtdr <- function(object, ...)
+summary.tdr <- function(object, ...)
 {
-    if (!inherits(object, "rbrtdr")) stop("method is only for rbrtdr objects")
-    cat("RBR TDR record\n")
+    if (!inherits(object, "tdr")) stop("method is only for tdr objects")
+    cat("TDR record\n")
     cat("  Instrument Serial No. ", object$metadata$serial.number,  "\n")
     cat("  No. of samples:      ", length(object$data$temperature),  "\n")
     time.range <- range(object$data$t)

@@ -1,4 +1,4 @@
-read.rbrtdr <- function(file, debug=FALSE, log.action)
+read.tdr <- function(file, debug=FALSE, log.action)
 {
     filename <- file
     if (is.character(file)) {
@@ -81,6 +81,6 @@ read.rbrtdr <- function(file, debug=FALSE, log.action)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(rval) <- c("rbrtdr", "oce")
+    class(rval) <- c("tdr", "oce")
     rval
 }

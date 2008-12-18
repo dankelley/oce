@@ -1,6 +1,6 @@
-plot.rbrtdr <- function (x, which=1:4, ...)
+plot.tdr <- function (x, which=1:4, ...)
 {
-    if (!inherits(x, "rbrtdr")) stop("method is only for rbrtdr objects")
+    if (!inherits(x, "tdr")) stop("method is only for tdr objects")
     show <- rep(FALSE, 3)
     show[which] <- TRUE
     oldpar <- par(no.readonly = TRUE)

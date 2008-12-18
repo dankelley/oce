@@ -1,6 +1,6 @@
-rbrtdr.patm <- function(x, dp=0.5)
+tdr.patm <- function(x, dp=0.5)
 {
-    if (inherits(x, "rbrtdr")) p <- x$data$pressure else p <- x
+    if (inherits(x, "tdr")) p <- x$data$pressure else p <- x
     sap <- 10.1325                      # standard atm pressure
     if (length(p) < 1) return(rep(sap, 4))
     p <- p[(sap - dp) <= p & p <= (sap + dp)] # window near sap

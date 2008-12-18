@@ -35,7 +35,7 @@ read.oce <- function(file, ...)
     if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))
     if (type == "sealevel")    return(read.sealevel(file, ..., log.action=log.action))
     if (type == "topo")        return(read.topo(file, ..., log.action=log.action))
-    if (type == "RBR-TDR")     return(read.rbrtdr(file, ..., log.action=log.action))
+    if (type == "RBR-TDR")     return(read.tdr(file, ..., log.action=log.action))
     if (type == "section")     return(read.section(file, ..., log.action=log.action))
     stop("unknown file type")
 }
