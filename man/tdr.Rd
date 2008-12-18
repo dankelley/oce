@@ -14,12 +14,19 @@ plot(tdr)
 \source{The SLEIWEX experiment.}
 \references{\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}}
 \seealso{
-See \code{\link{read.tdr.R}} for reading such files, 
-\code{\link{plot.tdr.R}} for plotting them, 
-\code{\link{summary.tdr.R}} for summarizing them,
-\code{\link{tdr.patm.R}} for determining the atmospheric pressure,
+See \code{\link{read.tdr}} for reading such files, 
+\code{\link{plot.tdr}} for plotting them, 
+\code{\link{summary.tdr}} for summarizing them,
+\code{\link{tdr.patm}} for determining the atmospheric pressure,
 and
-\code{\link{tdr.trim.R}} for a crude method of removing in-air samples.}
+\code{\link{tdr.trim}} for a crude method of removing in-air samples.}
 
+\examples{
+library(oce)
+data(tdr)
+plot(tdr)
+tdr.trimmed <- tdr.trim(tdr)
+plot(tdr.trimmed)
+}
 \author{Dan Kelley}
 \keyword{misc}
