@@ -6,10 +6,6 @@
 \description{A sample RBR TDR file, created by 
 \code{tdr <- read.oce("tests/tdr.dat")}
 and then  \code{save(tdr, file="../data/tdr.rda")}.}
-\examples{
-data(tdr)
-plot(tdr)
-}
 \usage{data(tdr)}
 \source{The SLEIWEX experiment.}
 \references{\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}}
