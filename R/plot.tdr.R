@@ -1,7 +1,7 @@
 plot.tdr <- function (x, which=1:4, ...)
 {
     if (!inherits(x, "tdr")) stop("method is only for tdr objects")
-    show <- rep(FALSE, 3)
+    show <- rep(FALSE, 4)
     show[which] <- TRUE
     oldpar <- par(no.readonly = TRUE)
     lw <- length(which)

@@ -54,21 +54,25 @@
   up to the user; in many cases, it makes sense to treat this as a
   constant (see Examples).}
 
+
 \examples{
-\dontrun{
 library(oce)
-d1 <- read.tdr("~/sl08_011855-decim.dat")
-summary(d1)
-plot(d1)
-# Remove in-air data
-d2 <- tdr.trim(d1)
-d2$data$pressure <- d2$data$pressure - 10.2
-d2 <- processing.log.append(d2, "subtract 10.2dbar from pressure")
-plot(d2)
-# Focus near the start of experiment
-d3 <- subset(d2, as.POSIXct("2008-06-26") <= t & t <= as.POSIXct("2008-06-28"))
-plot(d3)
-}
+data(tdr)
+# trim automatically
+tdr.trim.auto <- tdr.trim(tdr)
+# trim manually
+plot(tdr, which=2)
+# try a few times near start of record (15:00:00 seems good)
+abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
+abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
+abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
+# try a few times near end of record (15:00:00 seems ok)
+abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
+abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
+abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
+tdr.trim.manual <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= t &
+t <= as.POSIXct("2008-07-04 12:00:00"))
+plot(tdr.trim.manual)
 }
 
 \author{Dan Kelley}

@@ -23,5 +23,11 @@
 \seealso{See \code{\link{read.tdr}} for more information on dealing
   with the \code{tdr} data type, including examples.}
 
+\examples{
+library(oce)
+data(tdr)
+print(tdr.patm(tdr))
+}
+
 \author{Dan Kelley}
 \keyword{misc}

@@ -35,13 +35,12 @@ water.}
   for trimming with \code{tdr.trim}.
 }
 \examples{
-\dontrun{
 library(oce)
-d <- read.tdr("011855_1a.dat")
-plot(d)                                 # contains initial/final junk
-dt <- tdr.trim(d, "time", c("2008-10-06 11:00:00","2008-10-09 10:00:00"))
-plot(dt)                                # junk removed
-}}
+data(tdr)
+plot(tdr)
+tdr.trimmed <- tdr.trim(tdr)
+plot(tdr.trimmed)
+}
 
 \author{Dan Kelley}
 \keyword{misc}

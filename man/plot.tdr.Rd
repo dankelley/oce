@@ -22,7 +22,7 @@
   list of \code{which} values, to get multi-panel plots.}
 
 \seealso{See \code{\link{read.tdr}} for more information on dealing
-  with the \code{tdr} data type, including examples..}
+  with the \code{tdr} data type, including examples.}
 
 \author{Dan Kelley}
 \keyword{misc}

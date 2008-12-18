@@ -22,6 +22,14 @@
 \seealso{See \code{\link{read.tdr}} for more information on dealing
   with the \code{tdr} data type, including examples.}
 
+\examples{
+library(oce)
+data(tdr)
+plot(tdr)
+tdr.trimmed <- tdr.trim(tdr)
+plot(tdr.trimmed)
+}
+
 \author{Dan Kelley}
 
 \keyword{misc}
