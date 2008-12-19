@@ -539,39 +539,44 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 %%%
 %%% \goodbreak
 
-\section{Lobo data}
+\section{Temperature-Depth Recorder data}
 The commands
-<<label=loboplot,eval=FALSE>>=
+<<label=tdrplot,eval=FALSE>>=
 library(oce)
-data(lobo)
-plot(lobo)
+data(tdr)
+plot(tdr) # NOTE: atmospheric pressure not removed
 @
-produce a plot (Figure~\ref{fig:lobo}) of lobo data from the Northwest Arm of
-Halifax Harbour.  Note the relationship between decreasing nutrients and
-increasing fluorescence, as well as the diurnal signal in the latter.
+produce a plot (Figure~\ref{fig:tdr}) of temperature-depth recorder
+(TDR) measurements made during St Lawrence Estuary Internal Wave
+Experiment, a CFCAS-funded research program of which the \texttt{oce}
+author was principal investigator.  Experienced oceanographers will
+see at a glance that this dataset still retains measurements made
+before the instrument was lowered into the water and after it was
+recovered.  (Non-experts can realize this by examining the ends of the
+dataset, when the pressure was roughly 10\,dbar, and the temperature
+variation is of a distinct character.  Evidently, the instrument was
+not turned off until after the truck ride back to Halifax!)
 
-The reader should note that the \verb@lobo@ part of \verb@oce@ is somewhat
-preliminary. In particular, the package requires that certain data columns be
-present, and in a certain order. Also, the function \verb@read.oce@ does not
-understand \verb@lobo@ files. Why these limitations, you ask? Well, the
-\verb@lobo@ code was really only written as an aside, for the author's
-contribution to a ``predict the spring bloom'' contest held at Dalhousie
-University.
+The worked exercise illustrates methods for trimming the in-air
+samples, and for subtracting atmospheric pressure.
 
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=lobofig ,fig=TRUE, width=7, height=8, echo=FALSE>>=
-<<loboplot>>
+<<label=tdrfig ,fig=TRUE, width=7, height=8, echo=FALSE>>=
+<<tdrplot>>
 @
 \end{center}
-\caption{Lobo measurements in Northwest Arm of Halifax Harbour, at
-the time of the 2007 Spring bloom.}
-\label{fig:lobo}
+\caption{Measurements made with a temperature-depth recorder in the St
+Lawrence Estuary.  Note that the record contains measurements made during
+a short time prior to deployment (when the instrument was turned on, before
+being lowered over the side) and after recovery on about July 5.
+(See the worked exercise in the text, for a method of isolating just
+the in-water data.)}
+\label{fig:tdr}
 \end{figure}
 
-\workedexercise{7}{Draw a $T$-$S$ plot for these data, using a colour coding to indicate time,
-and using plotting tricks to reduce the obscuring of this time signal.}
+\workedexercise{7}{Remove the atmospheric component of ths record.}
 
 
 \section{The future of oce}
@@ -717,24 +722,46 @@ abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @
 
-\workedanswer{7}{Lobo plot}
-\index{data!lobo timeseries}
-The resampling with \verb@i@ is to avoid obscuring colours by overplotting.
-Note the use of \verb@as.ctd@ to assemble the data into something that
-\verb@plot.TS@ can handle.  This is an example of the practicality of
-\verb@oce@; eventually, \verb@plot.TS@ may be altered to take simple columns of
-data, but for now it seems reasonable to require the user to assemble these data
-into a CTD object, and to spend development time on something that will pay off
-better.
+\workedanswer{7}{Temperature-depth Recorder plot}
+\index{subset!using with TDR data}
+\index{data!TDR}
+
+The accuracy of automatic removal of the atmospheric component done
+with \verb@tdr.trim()@ is often quite good, but data are valuable, and
+so it makes sense to investigate the data by eye, in order to select a
+time window.  This is also useful for dealing with a set of
+instruments, in which the goal is to find a time window that works for
+all of the data, thus yielding samples that can be compared one by
+one, or assembled into a matrix for contouring, etc.
+
+Comments in the code explain the thought process.
 <<>>=
 library(oce)
-data(lobo)
-i <- sample(length(lobo$data$temperature))
-a <- as.numeric(lobo$data$time[i] - lobo$data$time[1])
-col <- hsv(0.5 * a / max(a), 1, 1)
-plot.TS(as.ctd(lobo$data$salinity[i], lobo$data$temperature[i], 0), col=col, pch=1)
-@
+data(tdr)
+# First, get an idea for the data
+plot(tdr, which=2)
 
+# Now, trim automatically,
+tdr.trim.auto <- tdr.trim(tdr)
+plot(tdr.trim.auto)
+print(range(tdr.trim.auto$data$t)) # gives a starting point
+print(tdr.patm(tdr)) # take 10.2dbar from this
+
+# Finally, trim manually
+# try a few times near start of record (15:00:00 seems good)
+abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
+abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
+abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
+# try a few times near end of record (15:00:00 seems ok)
+abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
+abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
+abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
+tdr.trim <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= t &
+                   t <= as.POSIXct("2008-07-04 12:00:00"))
+tdr.trim$data$pressure <- tdr.trim$data$pressure - 10.2
+tdr.trim <- processing.log.append(tdr.trim, "remove atmospheric pressure of 10.2dbar")
+plot(tdr.trim)
+@
 
 \printindex
 \end{document}

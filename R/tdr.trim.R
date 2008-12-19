@@ -17,7 +17,7 @@ tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
             i.start <- water.indices[1] + b
             i.stop <- water.indices[-b + length(water.indices)]
             keep[i.start:i.stop] <- TRUE
-            cat("The mean (deleted) air pressure is", mean(x$data$pressure[air]),"dbar\n")
+            #message("The mean (deleted) air pressure is", mean(x$data$pressure[air]),"dbar\n")
         } else if (which.method == 2) { # "time"
             if (verbose)	cat("trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n");
             keep <- rep(TRUE, n)

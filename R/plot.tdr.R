@@ -1,7 +1,6 @@
 plot.tdr <- function (x, which=1:4, ...)
 {
     if (!inherits(x, "tdr")) stop("method is only for tdr objects")
-    dots <- list(...)
     show <- rep(FALSE, 4)
     show[which] <- TRUE
     oldpar <- par(no.readonly = TRUE)
@@ -22,7 +21,7 @@ plot.tdr <- function (x, which=1:4, ...)
     }
     if (show[2]) {
         plot(x$data$t, x$data$pressure,
-             xlab="", ylab="p [dbar]", type='l',
+             xlab="", ylab="Pressure [dbar]", type='l',
              ylim=rev(range(x$data$pressure)),
              ...)
     }
@@ -48,27 +47,14 @@ plot.tdr <- function (x, which=1:4, ...)
         par(mar=mar)
     }
     if (show[3]) {
-        if ("cex" %in% names(list(...))) {
-            plot(x$data$temperature, x$data$pressure,
-                 ylim=rev(range(x$data$pressure)),
-                 xlab=expression(paste("Temperature [", degree, "C ]")),
-                 ylab="p [dbar]", type='p', ...)
-        } else {
-            if ("type" %in% names(list(...))) {
-                plot(x$data$temperature, x$data$pressure,
+        args <- list(x=x$data$temperature, y=x$data$pressure,
                      ylim=rev(range(x$data$pressure)),
                      xlab=expression(paste("Temperature [", degree, "C ]")),
-                     ylab="p [dbar]", cex=0.3,
-                     ...)
-            } else {
-                plot(x$data$temperature, x$data$pressure,
-                     ylim=rev(range(x$data$pressure)),
-                     xlab=expression(paste("Temperature [", degree, "C ]")),
-                     ylab="p [dbar]", type='p', cex=0.3,
-                     ...)
-            }
-        }
+                     ylab="Pressure [dbar]", ...)
+        if (!("type" %in% names(list(...)))) args <- c(args, type="p")
+        if (!("cex"  %in% names(list(...)))) args <- c(args, cex=0.5)
+        do.call(plot, args)
     }
-    if (lw != 1) par(oldpar)
+    par(oldpar)
     invisible()
 }
