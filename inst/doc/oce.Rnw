@@ -567,16 +567,16 @@ samples, and for subtracting atmospheric pressure.
 <<tdrplot>>
 @
 \end{center}
-\caption{Measurements made with a temperature-depth recorder in the St
-Lawrence Estuary.  Note that the record contains measurements made during
-a short time prior to deployment (when the instrument was turned on, before
-being lowered over the side) and after recovery on about July 5.
-(See the worked exercise in the text, for a method of isolating just
-the in-water data.)}
+\caption{Measurements made with a temperature-depth recorder in the St Lawrence
+Estuary.  Note that the record contains in-air measurements made during about an
+hour prior to lowering into the water, and also during several days of travel
+back from the field site back to Dalhousie University.  The worked exercise in
+the text suggests a procedure for isolating in-water data, and removing the
+atmospheric component of pressure.}
 \label{fig:tdr}
 \end{figure}
 
-\workedexercise{7}{Remove the atmospheric component of ths record.}
+\workedexercise{7}{Remove the atmospheric component of this record.}
 
 
 \section{The future of oce}
@@ -653,6 +653,7 @@ pycnocline <- ctd.trim(ctd, "pressure", c(5,12))
 plot.profile(pycnocline, type="density+N2")
 @
 and another is
+\index{subset!extracting a portion of a profile}
 <<>>=
 library(oce)
 data(ctd)
@@ -681,6 +682,7 @@ plot.TS(ctd, col=hsv(0.7*id/n), cex=2, pch=21)
 \workedanswer{4}{Gulf Stream}
 (Try \verb@?sw.dynamic.height@ for hints on smoothing.)
 \index{Gulf Stream!geostrophic calculation}
+\index{subset!extracting stations from a section}
 <<>>=
 library(oce)
 data(a03)
@@ -726,15 +728,17 @@ mtext("M2",at=1/12.42,side=3)
 \index{subset!using with TDR data}
 \index{data!TDR}
 
-The accuracy of automatic removal of the atmospheric component done
-with \verb@tdr.trim()@ is often quite good, but data are valuable, and
-so it makes sense to investigate the data by eye, in order to select a
-time window.  This is also useful for dealing with a set of
-instruments, in which the goal is to find a time window that works for
-all of the data, thus yielding samples that can be compared one by
-one, or assembled into a matrix for contouring, etc.
+The accuracy of automatic removal of the atmospheric component done with
+\verb@tdr.trim()@ is often quite good, but data are so valuable that it always
+makes sense to investigate the data by eye, in order to select a time window.
+Manual selection of a time window is also important when a researcher is dealing
+with a set of instruments whose measuremnts are to be combined and so need a
+uniform time base (e.g. to make a matrix to be contoured).
 
-Comments in the code explain the thought process.
+In the code, the automatic method is used first, and then a series of time
+indicators is drawn on the plot, to determine proper cutoff times.
+
+Hint: be careful on timezones!
 <<>>=
 library(oce)
 data(tdr)
