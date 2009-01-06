@@ -14,7 +14,7 @@ column.}
 \references{
   The Seabird CTD instrument is described at
   \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  
-  See link{read.ctd} for the data format.
+  See \link{read.ctd} for the data format.
 }
 \author{Dan Kelley}
 \keyword{misc}
