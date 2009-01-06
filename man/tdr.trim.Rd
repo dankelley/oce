@@ -6,11 +6,15 @@
 \arguments{
   \item{x}{A \code{tdr} object, e.g. as read by \code{\link{read.tdr}}.}
   \item{method}{Various methods exist, some of which use parameters:
-    \item{"water"}{Trim data at start and end that seem to be in air (i.e. that have pressure very near 10db, i.e 100kPa.} 
-    \item{"time"}{Select values only in indicated range of times,
-      \emph{e.g.} \code{selection <- tdr.trim(tdr, "time", ...}
-      selects ....}
-    \item{"index"}{Select data only if the range of indices given in the two-element parameters list}
+    \describe{
+      \item{"water"}{Trim data at start and end that seem to be in air
+	(i.e. that have pressure very near 10db, i.e 100kPa.}
+      \item{"time"}{Select values only in indicated range of times,
+	\emph{e.g.} \code{selection <- tdr.trim(tdr, "time", ...}
+	selects ....}
+      \item{"index"}{Select data only if the range of indices given in
+	the two-element parameters list}
+    }
   }
   \item{parameters}{Depends on method; see above.}
   \item{verbose}{If set to TRUE, some debugging information is provided.}

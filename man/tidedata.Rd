@@ -9,41 +9,45 @@
 \description{The \code{tidedata} dataset contains Tide-constituent
   information that is use by \code{\link{tidem}} to fit tidal models.
   \code{tidedata} is a list containing
-
-  \item{\code{const}}{a list containing vectors 
-    \code{name} (a string with constituent name),
-    \code{freq} (the frequency, in cycles per hour),
-    \code{kmpr} (a string naming the comparison constituent, blank if there is
-    none),
-    \code{ikmpr} (index of comparison constituent, or \code{0} if there is none),
-    \code{df} (frequency difference betwee constituent and its comparison,
-    used in the Rayleigh criterion),
-    \code{d1} (first Doodson number),
-    \code{d2},
-    \code{d3}, 
-    \code{d4},
-    \code{d5},
-    \code{d6} (sixth Doodson number),
-    \code{semi},
-    \code{nsat} (number of satellite constituents),
-    \code{ishallow},
-    \code{nshallow},
-    \code{doodsonamp},
-    and \code{doodsonspecies}.}
-
-  \item{\code{sat}}{a list containing vectors
-    \code{deldood},
-    \code{phcorr},
-    \code{amprat},
-    \code{ilatfac},
-    and \code{iconst}.}
-
-  \item{\code{shallow}}{a list containing vectors
-    \code{iconst},
-    \code{coef},
-    and \code{iname}.
+  \describe{
+    \item{\code{const}}{a list containing vectors
+      \describe{
+	\item{\code{name}}{a string with constituent name}
+	\item{\code{freq}}{the frequency, in cycles per hour}
+	\item{\code{kmpr}}{a string naming the comparison constituent, blank if there is none}
+	\item{\code{ikmpr}}{index of comparison constituent, or \code{0} if there is none}
+	\item{\code{df}}{frequency difference betwee constituent and its comparison, used in the Rayleigh criterion}
+	\item{\code{d1}}{first Doodson number}
+	\item{\code{d2}}{second Doodson number}
+	\item{\code{d3}}{third Doodson number}
+	\item{\code{d4}}{fourth Doodson number}
+	\item{\code{d5}}{fifth Doodson number}
+	\item{\code{d6}}{sixth Doodson number}
+	\item{\code{semi}}{(fill in some info later)}
+	\item{\code{nsat}}{number of satellite constituents}
+	\item{\code{ishallow}}{(fill in some info later)}
+	\item{\code{nshallow}}{(fill in some info later)}
+	\item{\code{doodsonamp}}{(fill in some info later)}
+	\item{\code{doodsonspecies}}{(fill in some info later)}
+      }
+      \item{\code{sat}}{a list containing vectors
+	\describe{
+	  \item{\code{deldood}}{(fill in some info later)}
+	  \item{\code{phcorr}}{(fill in some info later)}
+	  \item{\code{amprat}}{(fill in some info later)}
+	  \item{\code{ilatfac}}{(fill in some info later)}
+	  \item{\code{iconst}}{(fill in some info later)}
+	}
+      }
+      \item{\code{shallow}}{a list containing vectors
+	\describe{
+	  \item{\code{iconst}}{(fill in some info later)}
+	  \item{\code{coef}}{(fill in some info later)}
+	  \item{\code{iname}}{(fill in some info later)}
+	}
+      }
+    }
   }
-
   Apart from the use of \code{d1} through \code{d6}, the naming and
   content follows \code{T_TIDE}.  All of this is based on Foreman
   (1977), to which the reader is referred for details.

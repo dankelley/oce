@@ -32,8 +32,12 @@ BUG: the 'arc/info ungenerate' format is not yet understood.
 \value{An object of \code{\link[base]{class}} \code{"coastline"}, 
 which is a \code{\link[base]{list}} containing
   \item{data}{a list containing 
-      \item{longitude}{the longitude in decimal degrees positive east of Greenwich.}
-      \item{latitude}{the latitude in decimal degrees positive north of the equator.}
+    \describe{
+      \item{longitude}{the longitude in decimal degrees positive east of
+	Greenwich.}
+      \item{latitude}{the latitude in decimal degrees positive north of
+	the equator.}
+    }
   }
   \item{metadata}{a NULL item that may be used in a future version.}
   \item{processing.log}{A processing log, in the standard \code{oce} format.}

@@ -6,37 +6,39 @@
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{method}{Various methods exist, some of which use parameters:
-    \item{"downcast"}{Select only data for which the CTD is descending.  This
-      is done in stages.
-      \enumerate{
-	\item{Step 1.}{The pressure data are despiked with a smooth()
-	  filter with method "3R".  This removes wild spikes that arise
-	  from poor instrument connections, etc.}
-	\item{Step 2.}{Any data with negative pressures are deleted.
-	  This removes in-air data.}
-	\item{Step 3.}{The maximum pressure is determined, and data
-	  acquired subsequent to that point are deleted.  This removes
-	  the upcast and any subsequent data.}
-	\item{Step 4.}{An initial equilibrium phase is removed by a
-	  regression of pressure on scan number.  The model has zero
-	  pressure for some initial portion, and then a constant
-	  increase with scan number.  Then this initial zero-pressure
-	  portion is deleted.  (The regression may fail, and if so, a
-	  warning is printed, and this step is skipped.)}
+    \describe{
+      \item{"downcast"}{Select only data for which the CTD is descending.  This
+	is done in stages.
+	\enumerate{
+	  \item{Step 1.}{The pressure data are despiked with a smooth()
+	    filter with method "3R".  This removes wild spikes that arise
+	    from poor instrument connections, etc.}
+	  \item{Step 2.}{Any data with negative pressures are deleted.
+	    This removes in-air data.}
+	  \item{Step 3.}{The maximum pressure is determined, and data
+	    acquired subsequent to that point are deleted.  This removes
+	    the upcast and any subsequent data.}
+	  \item{Step 4.}{An initial equilibrium phase is removed by a
+	    regression of pressure on scan number.  The model has zero
+	    pressure for some initial portion, and then a constant
+	    increase with scan number.  Then this initial zero-pressure
+	    portion is deleted.  (The regression may fail, and if so, a
+	    warning is printed, and this step is skipped.)}
+	}
       }
+      \item{"index"}{Select values only in indicated list of indices,
+	\emph{e.g.} \code{selection <- ctd.trim(ctd, "index", seq(10,30))}
+	selects data points 10, 11, ... 30.}
+      \item{"(ANYTHING ELSE)"}{Select data only if the named item
+	(\emph{e.g.} \code{scan}, \code{time}, \emph{etc}.) falls
+	in the range of values indicated by \code{parameters}.  If one 
+	parameter is given, it is a lower limit.  If two parameters
+	are given, they are a range.
+	For example, \code{ctd2 <- ctd.trim(ctd, "scan", 5)} 
+	starts at scan number 5 and continues to the end,
+	while \code{ctd3 <- ctd.trim(ctd, "scan", c(5,100))}
+	also starts at scan 5, but extends only to scan 100.}
     }
-    \item{"index"}{Select values only in indicated list of indices,
-      \emph{e.g.} \code{selection <- ctd.trim(ctd, "index", seq(10,30))}
-      selects data points 10, 11, ... 30.}
-    \item{"(ANYTHING ELSE)"}{Select data only if the named item
-      (\emph{e.g.} \code{scan}, \code{time}, \emph{etc}.) falls
-	  in the range of values indicated by \code{parameters}.  If one 
-	  parameter is given, it is a lower limit.  If two parameters
-	  are given, they are a range.
-      For example, \code{ctd2 <- ctd.trim(ctd, "scan", 5)} 
-      starts at scan number 5 and continues to the end,
-      while \code{ctd3 <- ctd.trim(ctd, "scan", c(5,100))}
-      also starts at scan 5, but extends only to scan 100.}
   }
   \item{parameters}{Depends on method; see above.}
   \item{verbose}{If set to TRUE, some debugging information is provided.}

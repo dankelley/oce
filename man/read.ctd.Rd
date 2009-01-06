@@ -77,26 +77,31 @@
     \code{data$sigma.theta}. (\eqn{\sigma_\theta}{sigma-theta} is calculated
     using \code{\link{sw.sigma.theta}}.)}
   \item{metadata}{a list containing the following items
-    \item{\code{header}}{the header itself, normally containing several dozen lines of
-      information.}
-    \item{\code{filename}}{name of the file passed to \code{read.ctd}.}
-    \item{\code{filename.orig}}{name of the original file saved by the instrument
-      (normally a hex file).}
-    \item{\code{system.upload.time}}{system upload time.}
-    \item{\code{ship}}{name of vessel from which the CTD was deployed.}
-    \item{\code{scientist}}{name of the scientist leading the work at sea.}
-    \item{\code{institute}}{name of the institute behind the work.}
-    \item{\code{address}}{the address of the institute where the scientist works.}
-    \item{\code{cruise}}{name of cruise.}
-    \item{\code{station}}{station number or name.}
-    \item{\code{date}}{date of lowering of CTD into the water.}
-    \item{\code{start.time}}{time when instrument started recording data.}
-    \item{\code{latitude}}{latitude, in decimal degrees, positive north of equator.}
-    \item{\code{longitude}}{longitude, in decimal degrees, positive if east
-      of Greenwich and west of dateline.}
-    \item{\code{recovery}}{date of recovery of CTD.}
-    \item{\code{water.depth}}{the water depth at the site.}
-    \item{\code{sample.interval}}{time interval between samples, in seconds.}
+    \describe{
+      \item{\code{header}}{the header itself, normally containing
+	several dozen lines of information.}
+      \item{\code{filename}}{name of the file passed to \code{read.ctd}.}
+      \item{\code{filename.orig}}{name of the original file saved by the
+	instrument (normally a hex file).}
+      \item{\code{system.upload.time}}{system upload time.}
+      \item{\code{ship}}{name of vessel from which the CTD was deployed.}
+      \item{\code{scientist}}{name of the scientist leading the work at sea.}
+      \item{\code{institute}}{name of the institute behind the work.}
+      \item{\code{address}}{the address of the institute where the
+	scientist works.}
+      \item{\code{cruise}}{name of cruise.}
+      \item{\code{station}}{station number or name.}
+      \item{\code{date}}{date of lowering of CTD into the water.}
+      \item{\code{start.time}}{time when instrument started recording data.}
+      \item{\code{latitude}}{latitude, in decimal degrees, positive
+	north of equator.}
+      \item{\code{longitude}}{longitude, in decimal degrees, positive if
+	east of Greenwich and west of dateline.}
+      \item{\code{recovery}}{date of recovery of CTD.}
+      \item{\code{water.depth}}{the water depth at the site.}
+      \item{\code{sample.interval}}{time interval between samples, in
+	seconds.}
+    }
   }
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }

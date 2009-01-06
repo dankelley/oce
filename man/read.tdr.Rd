@@ -30,15 +30,17 @@
   \item{data}{a data table containing the (t, temperature, pressure)
     data.}
   \item{metadata}{a list containing the following items
-    \item{\code{header}}{the header itself, as read from the input file.}
-    \item{\code{serial.number}}{serial number of instrument, inferred
-      from first line of the header.}
-    \item{\code{logging.start}}{start time for logging, inferred from
-      the header.  Caution: this is often not the first time in the
-      data, because the data may have been subsetted.}
-    \item{\code{sample.period}}{seconds between samples, inferred from
-      the header.  Caution: this is often not the sampling period in the
-      data, because the data may have been decimated.}
+    \describe{
+      \item{\code{header}}{the header itself, as read from the input file.}
+      \item{\code{serial.number}}{serial number of instrument, inferred
+	from first line of the header.}
+      \item{\code{logging.start}}{start time for logging, inferred from
+	the header.  Caution: this is often not the first time in the
+	data, because the data may have been subsetted.}
+      \item{\code{sample.period}}{seconds between samples, inferred from
+	the header.  Caution: this is often not the sampling period in the
+	data, because the data may have been decimated.}
+    }
   }
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
@@ -53,7 +55,6 @@
   Examples).  Removal of the atmospheric component of pressure is left
   up to the user; in many cases, it makes sense to treat this as a
   constant (see Examples).}
-
 
 \examples{
 library(oce)

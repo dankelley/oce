@@ -31,25 +31,40 @@
 \value{An object of \code{\link[base]{class}} \code{"sealevel"}, which
   is a \code{\link[base]{list}} containing
  \item{data}{A \code{\link{data.frame}} containing
-    \item{\code{t}}{time}
-    \item{\code{eta}}{sea level [m]}
+   \describe{
+     \item{\code{t}}{time}
+     \item{\code{eta}}{sea level [m]}
+   }
   }
   \item{metadata}{A list containing
-    \item{\code{header}}{the header line or lines.  (This may prove helpful if detail extraction fails.)}
-    \item{\code{year}}{year in which the observations were made.}
-    \item{\code{station.number}}{identifier for the station.}
-    \item{\code{station.version}}{see online docs at site mentioned in References.}
-    \item{\code{station.name}}{name of station}
-    \item{\code{region}}{a region code.}
-    \item{\code{latitude}}{latitude, decimal degrees, positive north of equator.}
-    \item{\code{longitude}}{longitude, decimal degrees, positive east of Greenwich.}
-    \item{\code{GMT.offset}}{offset from GMT time.  This is read directly from files of type 1.  For files of type 2, the offset is inferred from the timezone, but this is a somewhat risky business, since timezone names are not standard.}
-    \item{\code{decimation.method}}{see online docs at sites mentioned in References.}
-    \item{\code{reference.offset}}{a reference offset; see online docs at sites mentioned in References.}
-    \item{\code{reference.code}}{a reference code; see online docs at site mentioned in References.}
-    \item{\code{units}}{unit of observations in the original file (normally "MM")}
-    \item{\code{n}}{number of observations.}
-	\item{\code{sampling.interval}}{hours between samples in the timeseries.}
+    \describe{
+      \item{\code{header}}{the header line or lines.  (This may prove
+	helpful if detail extraction fails.)}
+      \item{\code{year}}{year in which the observations were made.}
+      \item{\code{station.number}}{identifier for the station.}
+      \item{\code{station.version}}{see online docs at site mentioned in
+	References.}
+      \item{\code{station.name}}{name of station}
+      \item{\code{region}}{a region code.}
+      \item{\code{latitude}}{latitude, decimal degrees, positive north
+	of equator.}
+      \item{\code{longitude}}{longitude, decimal degrees, positive east
+	of Greenwich.}
+      \item{\code{GMT.offset}}{offset from GMT time.  This is read
+	directly from files of type 1.  For files of type 2, the offset is
+	inferred from the timezone, but this is a somewhat risky business,
+	since timezone names are not standard.}
+      \item{\code{decimation.method}}{see online docs at sites mentioned
+	in References.}
+      \item{\code{reference.offset}}{a reference offset; see online docs
+	at sites mentioned in References.}
+      \item{\code{reference.code}}{a reference code; see online docs at
+	site mentioned in References.}
+      \item{\code{units}}{unit of observations in the original file
+	(normally "MM")}
+      \item{\code{n}}{number of observations.}
+      \item{\code{sampling.interval}}{hours between samples in the timeseries.}
+    }
   }
   \item{processing.log}{A processing log, in the standard \code{oce} format.}
 }
