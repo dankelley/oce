@@ -20,13 +20,7 @@
 \details{Read an RBR TDR (temperature-depth recorder) file.}
 
 \value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
-  list with elements detailed below. The most important elements are the
-  station name and position, along with the profile data that are
-  contained in the data frame named \code{data}. (Other elements in the
-  list may be deleted in future versions of the package, if they prove
-  to be of little use in practice, or if they prove to have been
-  idiosyncratic features of the particular files used in early
-  development of \code{oce}.)
+  list with elements detailed below.
   \item{data}{a data table containing the (t, temperature, pressure)
     data.}
   \item{metadata}{a list containing the following items
