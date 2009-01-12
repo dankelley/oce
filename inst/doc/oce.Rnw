@@ -50,7 +50,9 @@ data formats that are common in this field. It also provides functions for
 working with basic seawater properties such as the equation of state, and with
 derived quantities such as the buoyancy frequency.  Although simple enough to be
 used in a teaching context, \verb@oce@ is powerful enough for a research
-setting.  These things are illustrated here with practical examples.
+setting.  These things are illustrated here, in the context of some practical
+examples.  Worked examples are provided, in order to help readers take early
+steps towards using the \verb@oce@ package in their research.
 
 \end{abstract}
 
@@ -60,8 +62,10 @@ Oceanographers must deal with measurements made by a wide variety of
 instruments, a task that is complicated by the delight instrument manufacturers
 seem to take in inventing new data formats. The manufacturers often provide
 software for scanning the data files and producing some standard plots, but this
-is of limited use to researchers who work with several instrument types at the
-same time, and who need to carry the analysis beyond the first step.
+software is of limited use to researchers who work with several instrument types
+at the same time, and who need to carry the analysis beyond the first steps,
+e.g. moving beyond engineering plots to scientific plots and to statistical
+analysis.
 
 \begin{figure}[ht]
   \begin{center}
@@ -88,16 +92,17 @@ fairly comfortable tool today, and it should remain so as it grows.
 
 As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object is a list
 containing three elements: (a) \texttt{data}, a list or a data frame containing
-the actual data, for a CTD object, this will contain pressure, temperature,
-etc., (b) \texttt{metadata}, a list containing data such things as file headers,
-the location of a CTD cast, etc., and (c) \texttt{processing.log}, a list that
-documents how the file was created (often by a \texttt{read} or \texttt{as}
-method) and how it was changed thereafter (e.g. by decimating a CTD cast).
-Elements in the \texttt{metadata} can be edited with\index{object structure}
-\texttt{oce.edit()}, a function that adds a line to the object's changelog file
-for every change that is made.  The uniformity of the various \texttt{oce}
-objects makes it easy to build skill in examining and modifying objects.
+the actual data (e.g., for a CTD object, this will contain pressure,
+temperature, etc.), (b) \texttt{metadata}, a list containing data such things as
+file headers, the location of a CTD cast, etc., and (c) \texttt{processing.log},
+a list that documents how the file was created (often by a \texttt{read} or
+\texttt{as} method) and how it was changed thereafter (e.g. by decimating a CTD
+cast).
 
+The uniformity of the various \texttt{oce} objects makes it easy to build skill
+in examining and modifying objects.  A simple S3-based object inheritance scheme
+permits somewhat generic processing of \texttt{oce} objects, e.g. \verb@plot(x)@
+produces different sorts of plots for different sorts of \verb@x@ objects. 
 
 
 \section{Calculations of seawater properties}
