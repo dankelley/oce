@@ -2,7 +2,7 @@
 
 \alias{plot.topo}
 
-\title{Plot topography (ETOPO2) data}
+\title{Plot topography data}
 
 \description{Plot contours of topographic data.}
 

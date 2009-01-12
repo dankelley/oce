@@ -2,7 +2,7 @@
 
 \alias{plot.ctd.scan}
 
-\title{Plot seawater (CTD) data in a low-level fashion, with scan number as the independent variable}
+\title{Plot seawater data in a low-level fashion}
 
 \description{Plot CTD data as time-series against scan number, to aide in trimming.}
 

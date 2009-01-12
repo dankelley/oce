@@ -1,7 +1,7 @@
 \name{ctd}
 \docType{data}
 \alias{ctd}
-\title{Sample seawater (CTD) profile}
+\title{Sample seawater CTD profile}
 \description{This is sample CTD profile provided for testing.
 It has been pruned by selecting only the portion of the data
 acquired when the instrument was being lowered through the water

@@ -1,7 +1,7 @@
 \name{ctd.raw}
 \docType{data}
 \alias{ctd.raw}
-\title{Sample seawater (CTD) profile, without trimming of extraneous data}
+\title{Sample seawater CTD profile, without trimming of extraneous data}
 
 \description{This is sample CTD profile provided for testing.  It
   includes not just the (useful) portion of the dataset during which the

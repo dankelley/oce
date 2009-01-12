@@ -1,7 +1,7 @@
 \name{coastline.hal}
 \docType{data}
 \alias{coastline.hal}
-\title{Sample coastline data set (Halifax Harbour)}
+\title{Sample coastline data set, showing Halifax Harbour}
 \description{A sample coastline dataset, showing Halifax Harbour.
 The little island at about 44.64N is visible outside the author's window.}
 \usage{data(coastline.hal)}

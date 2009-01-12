@@ -2,7 +2,7 @@
 
 \alias{read.topo}
 
-\title{Read an ETOPO2 topography file}
+\title{Read an topography file}
 
 \description{Read a file that contains topographic data in the ETOPO2 dataset, 
   as provided by the NOAA website.}

@@ -2,7 +2,7 @@
 
 \alias{plot.ctd}
 
-\title{Plot seawater (CTD) data}
+\title{Plot seawater CTD data}
 
 \description{Plot a summary diagram for CTD data.}
 

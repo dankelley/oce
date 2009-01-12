@@ -2,7 +2,7 @@
 
 \alias{summary.topo}
 
-\title{Summarize a topography (ETOPO2) data object}
+\title{Summarize a topography data object}
 
 \description{Summarizes some of the data in an \code{topo} object.}
 
