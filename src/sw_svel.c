@@ -9,7 +9,6 @@ sw_svel(int *n, double *pS, double *pT, double *pp, double *value)
 		double S = *pS++;
 		double T = *pT++;
 		double p = *pp++;
-		double rho_w, Kw, Aw, Bw, p1, S12, ro, xkst;
 		p = p / 10.0; /* use bar to match UNESCO routines */
 		/*
  		 * eqn 34 p.46

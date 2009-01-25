@@ -19,7 +19,7 @@ sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
 		int ii, jj;
 		double Sdev, S2, T2, spice;
 		if (ISNA(S) || ISNA(T) || ISNA(p)) {
-			*value++ - NA_REAL;
+			*value++ = NA_REAL;
 		} else {
 			Sdev = (S - 35.0);
 			S2 = 0.0;
