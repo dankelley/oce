@@ -43,7 +43,7 @@ plot.tdr <- function (x, which=1:4, ...)
         text.item(paste("Serial Number: ", x$metadata$serial.number),cex=1.25)
         text.item(paste("Start:", x$data$t[1]), cex=1)
         text.item(paste("End:", x$data$t[length(x$data$t)]), cex=1)
-        text.item(paste("Interval:", difftime(x$data$t[2], x$data$t[1], units="s"), "s"),cex=1)
+        text.item(paste("Sampling interval:", difftime(x$data$t[2], x$data$t[1], units="s"), "s"),cex=1)
         par(mar=mar)
     }
     if (show[3]) {
