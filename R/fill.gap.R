@@ -1,9 +1,9 @@
-fill.gap <- function(x, start, end, column=NULL)
+fill.gap <- function(x, start, end, column)
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     if (missing(start)) stop("must supply start")
     if (missing(end)) stop("must supply end")
-    if (!is.null(column)) {
+    if (!missing(column)) {
         start <- which(x$data[[column]] == start)[1]
         end <- which(x$data[[column]] == end)[1]
     }

@@ -6,7 +6,7 @@
 
 \description{Fill a gap in an oce object}
 
-\usage{fill.gap(x, start, end, column=NULL)}
+\usage{fill.gap(x, start, end, column)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
