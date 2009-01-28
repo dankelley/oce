@@ -27,7 +27,6 @@
 \examples{
 library(oce)
 data(tdr)
-plot(tdr)
 d <- subset(tdr, as.POSIXct("2008-06-26") <= t & t <= as.POSIXct("2008-06-27"))
 plot(d$data$t, d$data$temperature, type="l", lwd=2, xlab="t", ylab="Temperature [degC]")
 dd <- fill.gap(d, as.POSIXct("2008-06-26 09:00:00"), as.POSIXct("2008-06-26 20:00:00"), "t")
