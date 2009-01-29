@@ -10,9 +10,10 @@
 
 \arguments{
   \item{x}{an \code{oce} object that contains a \code{data} table.}
-  \item{file}{file name, as passed to \code{write.table}; use \code{""}
-    for the terminal.}
-  \item{...}{optional arguments passed to \code{write.table}.}
+  \item{file}{file name, as passed to \code{\link[utils]{write.table}}.
+    Use \code{""} to get a listing in the terminal window.}
+  \item{...}{optional arguments passed to
+    \code{\link[utils]{write.table}}.}
 }
 
 \details{The output has a line containing the names of the columns in
@@ -20,16 +21,16 @@
   lines for the data themselves.  The default is to separate data items
   by a single space character, but this can be altered by using a
   \code{sep} argument in the \code{...} list (see
-  \code{\link{read.table}}.
+  \code{\link[utils]{write.table}}).
 
-  This is really no more than a thin wrapper around
-  \code{\link{write.table}}, the only difference being that row names
-  are ommitted here, making for a file format that is more conventional
-  in Oceanography.}
+  This function is really no more than a thin wrapper around
+  \code{\link[utils]{write.table}}, the only difference being that row
+  names are ommitted here, making for a file format that is more
+  conventional in Oceanography.}
 
-\value{The value of \code{write.table} is returned.}
+\value{The value of \code{\link[utils]{write.table}} is returned.}
 
-\seealso{\code{write.table}, which does the actual work.}
+\seealso{\code{\link[utils]{write.table}}, which does the actual work.}
 
 \author{Dan Kelley}
 
