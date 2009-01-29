@@ -24,6 +24,7 @@ export(
        make.section,
        oce.as.POSIXlt,
        oce.edit,
+       oce.write.table,
        plot.TS,
        plot.coastline,
        plot.ctd,

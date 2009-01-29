@@ -1,4 +1,5 @@
 0.1-76
+- add oce.write.table()
 - add fill.gap()
 0.1-75
 - add add.column()
