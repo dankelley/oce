@@ -102,7 +102,7 @@ cast).
 The uniformity of the various \texttt{oce} objects makes it easy to build skill
 in examining and modifying objects.  A simple S3-based object inheritance scheme
 permits somewhat generic processing of \texttt{oce} objects, e.g. \verb@plot(x)@
-produces different sorts of plots for different sorts of \verb@x@ objects. 
+produces different sorts of plots for different sorts of \verb@x@ objects.
 
 
 \section{Calculations of seawater properties}
@@ -764,8 +764,7 @@ abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
 tdr.trim <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= t &
                    t <= as.POSIXct("2008-07-04 12:00:00"))
 print(tdr.patm(tdr)) # take 10.2dbar from this
-tdr.trim$data$pressure <- tdr.trim$data$pressure - 10.2
-tdr.trim <- processing.log.append(tdr.trim, "remove atmospheric pressure of 10.2dbar")
+tdr.trim <- oce.modify(tdr.trim, "x.trim$data$pressure <- x.trim$data$pressure - 10.2", "remove atm pressure")
 plot(tdr.trim)
 @
 

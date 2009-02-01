@@ -8,6 +8,8 @@
 \item{action}{a character string specifying the modification to be
   done. Normally, this is an R statement that makes an assignment to a
   member of \code{x}; see Details.}
+\item{reason}{the reason for doing this.}
+\item{person}{the person who is processing the data.}
 }
 
 \details{This function provides the ability to modify any element of an
