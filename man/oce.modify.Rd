@@ -14,7 +14,7 @@
 
 \details{This function provides the ability to modify any element of an
   \code{oce} object, in a self-documenting way.  The modification is
-  done simply by \code{\link{eval}}uating the \code{\link{parse}}ed
+  done simply by \code{\link{eval}}uating the \code{\link{parse}}d
   character string stored in \code{action}.  Importantly, the string
   must refer to the object as \code{x}, and not to the object as it is
   named in the calling context (see Examples).
