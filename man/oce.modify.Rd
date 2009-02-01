@@ -27,7 +27,7 @@
 \examples{
 library(oce)
 data(ctd)
-ctd2 <- oce.modify(ctd, "x$data$pressure <- x$data$pressure + 1"))
+ctd2 <- oce.modify(ctd, "x$data$pressure <- x$data$pressure - 1", "set surface pressure")
 summary(ctd2)
 }
 \author{Dan Kelley}
