@@ -7,7 +7,6 @@ oce.edit <- function(x, item, value, action, reason="not specified", person="not
         x$metadata[item] <- value
     } else if (!missing(action)) {
         eval(parse(text=action))        # FIXME: should check if it worked
-        rval <- x
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
