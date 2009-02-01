@@ -764,7 +764,7 @@ abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
 tdr.trim <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= t &
                    t <= as.POSIXct("2008-07-04 12:00:00"))
 print(tdr.patm(tdr)) # take 10.2dbar from this
-tdr.trim <- oce.modify(tdr.trim, "x$data$pressure <- x$data$pressure - 10.2", "remove atm pressure", "DK")
+tdr.trim <- oce.edit(tdr.trim, action="x$data$pressure <- x$data$pressure - 10.2", reason="remove atm pressure", person="DK")
 plot(tdr.trim)
 @
 

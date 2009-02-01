@@ -1,11 +1,15 @@
-oce.edit <- function(x, item, value, reason="not specified", person="not specified")
+oce.edit <- function(x, item, value, action, reason="not specified", person="not specified")
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (missing(item))       stop("must supply an 'item' to modify")
-    if (missing(value))      stop("must supply a new 'value' to for item '", item, "'")
-    if (!(item %in% names(x$metadata))) stop("There is no item named '", item, "' in the metadata for this oce object")
-    res <- x
-    res$metadata[item] <- value
-    res <- processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
-    res
+    if (!missing(item)) {
+        if (missing(value)) stop("must supply a 'value' for this 'item'")
+        if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
+        x$metadata[item] <- value
+    } else if (!missing(action)) {
+        eval(parse(text=action))        # FIXME: should check if it worked
+    } else {
+        stop("must supply either an 'item' plus a 'value', or an 'action'")
+    }
+    processing.log.append(x, paste(deparse(match.call()), sep="", collapse=""))
+    x
 }

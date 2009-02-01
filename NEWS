@@ -1,5 +1,5 @@
 0.1-76
-- add oce.modify()
+- add argument 'action' to oce.edit()
 - add oce.write.table()
 - add fill.gap()
 0.1-75
