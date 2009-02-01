@@ -27,14 +27,14 @@ stn01 <- ctd.trim(read.ctd("BED0301.CNV", station="1"))
 stn11 <- ctd.trim(read.ctd("BED0311.CNV", station="11"))
 stn12 <- ctd.trim(read.ctd("BED0312.CNV", station="12"))
 stn12 <- oce.edit(stn12, "latitude", 44 + 39.894 / 60,
-                  "typo in lat minutes", "Dan Kelley")
+                 reason="typo in lat minutes", person="Dan Kelley")
 stn13 <- ctd.trim(read.ctd("BED0313.CNV", station="13"))
 stn15 <- ctd.trim(read.ctd("BED0315.CNV", station="15"))
 stn15 <- oce.edit(stn15, "latitude", stn15$metadata$latitude + 1,
-                  "typo in lat degrees", "Dan Kelley")
+                 reason="typo in lat degrees", person="Dan Kelley")
 section <- make.section(stn08, stn09, stn10, stn01, stn11, stn12, stn13, stn15)
 section <- oce.edit(section, "section.id",  "Halifax-Harbour-2003-oct",
-                   "", "Dan Kelley")
+                   person="Dan Kelley")
 section <- section.grid(section, p=seq(0,60,2))
 data(coastline.hal)
 plot(section, coastline=coastline.hal, grid=TRUE)
