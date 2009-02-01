@@ -23,6 +23,7 @@ export(
        magic,
        make.section,
        oce.as.POSIXlt,
+       oce.modify,
        oce.edit,
        oce.write.table,
        plot.TS,
