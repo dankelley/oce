@@ -16,24 +16,25 @@
 }
 
 \details{There are two ways to use this function.
+  \enumerate{
+    \item{1}{If both an \code{item} and \code{value} are supplied, then the
+      object's metadata entry named \code{item} is updated to the supplied
+      \code{value}.}
+    \item{2}{If \code{item} and \code{value} are not supplied, then \code{action}
+      must be supplied.  This is a character string specifying some action
+      to be performed on the object, e.g. a manipulation of a column.  The
+      action must refer to the object as \code{x}; see Examples.}
+  }
 
-  If both an \code{item} and \code{value} are supplied, then the
-  object's metadata entry named \code{item} is updated to the supplied
-  \code{value}.
+  In each case, a log entry is added to document the change; indeed,
+  this is the main benefit to using this function, instead of altering
+  the object directly.  It is good practice to supply both a
+  \code{reason} for the change, and the name of the \code{person} who is
+  doing the work.}
 
-  If \code{item} and \code{value} are not supplied, then \code{action}
-  must be supplied.  This is a character string specifying some action
-  to be performed on the object, e.g. a manipulation of a column.  The
-  action must refer to the object as \code{x}; see Examples.
-
-  In each instance, a log entry is added to document the change; indeed,
-  this is the main benefit to using this function, instead of altering the
-  object directly.  It is good practice to supply both a \code{reason}
-  for the change, and the name of the \code{person} who is doing the work.
-}
-
-\value{An object of \code{\link[base]{class}} \code{"oce"}, with a new
-  value for the item.}
+\value{An object of \code{\link[base]{class}} \code{"oce"}, altered
+  appropriately, and with a log item indicating the nature of the
+  alteration.}
 
 \examples{
 library(oce)
