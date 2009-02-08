@@ -31,9 +31,9 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     par(mar=c(3.5,3,2,2))
     plot.TS(x, grid=grid, col.grid=col.grid, ...)
 
-##    par(mar=c(3.5,4,2,0))
+    ## par(mar=c(3.5,4,2,0))
     if (textpanel) {
-        text.item <- function(item, label, cex=1) {
+        text.item <- function(item, label, cex=0.8) {
             if (!is.null(item) && !is.na(item)) {
                 text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex);
                 yloc <<- yloc - d.yloc;
@@ -46,22 +46,23 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         xloc <- 1
         yloc <- 10
         d.yloc <- 0.7
-        cex <- 1
+        cex <- 0.8
         text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
         yloc <- yloc - d.yloc
-        if (!is.null(x$metadata$filename))    	text.item(x$metadata$filename,    " File:     ", cex=cex)
-        if (!is.null(x$metadata$scientist))	text.item(x$metadata$scientist,   " Scientist:", cex=cex)
-        if (!is.null(x$metadata$institute))	text.item(x$metadata$institute,   " Institute:", cex=cex)
-        if (!is.null(x$metadata$date))    	text.item(x$metadata$date,        " Date:     ", cex=cex)
-        if (!is.null(x$metadata$ship))		text.item(x$metadata$ship,        " Ship:     ", cex=cex)
-        if (!is.null(x$metadata$cruise))    	text.item(x$metadata$cruise,      " Cruise:   ", cex=cex)
-        if (!is.null(x$metadata$station))    	text.item(x$metadata$station,     " Station:  ", cex=cex)
-        if (!is.null(x$metadata$water.depth))  	text.item(x$metadata$water.depth, " Depth:    ", cex=cex)
-        if (!is.na(x$metadata$longitude) && !is.na(x$metadata$latitude)) { # See similar in summary.ctd
-            text.item(latlon.format(x$metadata$latitude, x$metadata$longitude),   " Location: ", cex=cex)
+        xm <- x$metadata
+        if (!is.null(xm$filename))    	text.item(xm$filename,    " File:     ", cex=cex)
+        if (!is.null(xm$scientist))	text.item(xm$scientist,   " Scientist:", cex=cex)
+        if (!is.null(xm$institute))	text.item(xm$institute,   " Institute:", cex=cex)
+        if (!is.null(xm$date))    	text.item(xm$date,        " Date:     ", cex=cex)
+        if (!is.null(xm$ship))		text.item(xm$ship,        " Ship:     ", cex=cex)
+        if (!is.null(xm$cruise))    	text.item(xm$cruise,      " Cruise:   ", cex=cex)
+        if (!is.null(xm$station))    	text.item(xm$station,     " Station:  ", cex=cex)
+        if (!is.null(xm$water.depth))  	text.item(xm$water.depth, " Depth:    ", cex=cex)
+        if (!is.na(xm$longitude) && !is.na(xm$latitude)) {
+            text.item(latlon.format(xm$latitude, xm$longitude),   " Location: ", cex=cex)
         }
         if (!is.na(ref.lat) && !is.na(ref.lon)) {
-            dist <- geod.dist(x$metadata$latitude, x$metadata$longitude, ref.lat, ref.lon)
+            dist <- geod.dist(xm$latitude, xm$longitude, ref.lat, ref.lon)
             kms <- sprintf("%.2f km", dist/1000)
             rlat <- text(xloc, yloc, paste(" Distance to (", dec_deg(ref.lon),
                                            ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)

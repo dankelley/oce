@@ -2,9 +2,9 @@
 
 \alias{read.tdr}
 
-\title{Read an RBR temperature-depth recorder data file}
+\title{Read an TDR temperature-depth recorder data file}
 
-\description{Read an RBR temperature-depth recorder file, producing an object of type \code{tdr}.}
+\description{Read an TDR temperature-depth recorder file, producing an object of type \code{tdr}.}
 
 \usage{read.tdr(file, debug=FALSE, log.action)}
 
@@ -17,7 +17,7 @@
     it provides is better for normal calls by a user.)}
 }
 
-\details{Read an RBR TDR (temperature-depth recorder) file.}
+\details{Read an TDR (temperature-depth recorder) file.}
 
 \value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
   list with elements detailed below.

@@ -2,9 +2,9 @@
 
 \alias{plot.tdr}
 
-\title{Plot RBR temperature-depth recorder data}
+\title{Plot TDR temperature-depth recorder data}
 
-\description{Plot RBR temperature-depth recorder data}
+\description{Plot TDR temperature-depth recorder data}
 
 \usage{\method{plot}{tdr}(x, which=1:4, \dots)}
 

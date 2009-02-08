@@ -2,9 +2,9 @@
 
 \alias{summary.tdr}
 
-\title{Summarize an RBR temperature-depth data object}
+\title{Summarize an TDR temperature-depth data object}
 
-\description{Summarize an RBR temperature-depth data object}
+\description{Summarize an TDR temperature-depth data object}
 
 \usage{\method{summary}{tdr}(object, \dots)}
 

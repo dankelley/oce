@@ -1,7 +1,7 @@
 \name{tdr.patm}
 \alias{tdr.patm}
-\title{Estimate atmospheric pressure in RBR record}
-\description{Estimate atmospheric pressure in RBR record}
+\title{Estimate atmospheric pressure in TDR record}
+\description{Estimate atmospheric pressure in TDR record}
 \usage{tdr.patm(x, dp=0.5)}
 \arguments{
   \item{x}{A \code{tdr} object, e.g. as read by

@@ -3,9 +3,11 @@
 \alias{tdr}
 \title{Sample temperature-depth recorder file}
 
-\description{A sample RBR TDR file, created by 
-\code{tdr <- read.oce("tests/tdr.dat")}
-and then  \code{save(tdr, file="../data/tdr.rda")}.}
+\description{A sample TDR file,
+created by 
+\code{tdr <- read.oce("../tests/tdr.dat")}
+and then  
+\code{save(tdr, file="../data/tdr.rda")}.}
 \usage{data(tdr)}
 \source{The SLEIWEX experiment.}
 \references{\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}}

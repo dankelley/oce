@@ -2,7 +2,8 @@
 \alias{ctd.add.column}
 \title{Add a column to a CTD file}
 \description{Add a column to a \code{ctd} file, updating the header as appropriate.}
-\usage{ctd.add.column(x, column=NULL, column.name="", code="", name="", unit="", debug=FALSE)
+\usage{ctd.add.column(x, column=NULL, column.name="", code="", name="", unit="", 
+               debug=FALSE)
 }
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -23,7 +24,7 @@
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.}
 
-\seealso{\code{read.ctd} reads a \code{ctd} object, and \code{write.ctd} writes one.}
+\seealso{See \code{\link{read.ctd}} for the data format.}
 
 \examples{
 library(oce)

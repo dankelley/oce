@@ -123,7 +123,7 @@ within \code{ctd} objects.
 In many cases, CTD instruments are set up to report dates in English.
 This can cause a problem for users running in different locales, since
 e.g month names differ.  Therefore, if you know your datafile is
-written in the English notation, you might want to do
+written in American-English notation, you might want to do
 \code{\link[base]{Sys.setlocale}("LC_TIME", "en_US")}
 before you try to read the data.
 
