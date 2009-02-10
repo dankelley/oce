@@ -6,7 +6,7 @@
 
 \description{Parse a latitude or longitude string, e.g. as in the header of a CTD file}
 
-\usage{parse.latlon(line, north=TRUE, debug=FALSE)}
+\usage{parse.latlon(line, debug=FALSE)}
 
 \arguments{
   \item{line}{a character string containing an indication of latitude or longitude.}

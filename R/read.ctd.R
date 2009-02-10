@@ -443,7 +443,7 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
         res <- ctd.add.column(res, S, "salinity", "sal", "salinity", "PSU")
     }
     if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
-        g <- if (found.latitude) grav(latitude) else 9.8
+        g <- if (found.header.latitude) gravity(latitude) else 9.8
         rho0 <- sw.sigma.theta(median(res$data$salinity), median(res$data$temperature), rep(0, length(res$data$salinity)))
         res <- ctd.add.column(res, res$data$depth * g * rho0 / 1e4, "pressure", "pressure", "pressure", "dbar")
     }
