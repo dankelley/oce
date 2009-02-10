@@ -55,7 +55,7 @@ read.ctd.WOCE <- function(file, filename, debug=FALSE, columns=NULL, station=NUL
     header <- c();
     col.names.inferred <- NULL
     found.scan <- FALSE
-    found.temperature <- found.salinity <- found.pressure <- FALSE
+    found.temperature <- found.salinity <- found.pressure <- found.depth <- FALSE
     found.sigma.theta <- found.sigma.t <- found.sigma <- FALSE
     found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
@@ -169,11 +169,44 @@ read.ctd.WOCE <- function(file, filename, debug=FALSE, columns=NULL, station=NUL
     res
 }
 
+parse.latlon <- function(line, north=TRUE, debug=FALSE)
+{
+    ## The following formats are understood (for, e.g. latitude)
+    ## * NMEA Latitude = 47 54.760 N
+    ## ** Latitude:      47 53.27 N
+    x <- line
+    positive <- TRUE
+    if (debug) cat("parse.latlon() processing stages\n0. [", x, "]\n", sep="")
+    x <- sub("(.*)latitude", "", ignore.case=TRUE, x);
+    x <- sub("(.*)longitude", "", ignore.case=TRUE, x);
+    x <- sub("[:=]", "", ignore.case=TRUE, x);
+    if (debug) cat("1. [", x, "]\n", sep="")
+    if (0 < (r <- regexpr("[NnEe]", x)))
+        x <- sub("[NnEe]", "", ignore.case=TRUE, x)
+    if (debug) cat("2. [", x, "]\n", sep="")
+    if (0 < (r <- regexpr("[SsWw]", x))) {
+        positive <- FALSE
+        x <- sub("[SsWw]", "", ignore.case=TRUE, x)
+    }
+    if (debug) cat("3. [", x, "]\n", sep="")
+    x <- sub("^[ \t]*", "", ignore.case=TRUE, x)
+    if (debug) cat("4. [", x, "]\n", sep="")
+    x <- sub("[ \t]*$", "", ignore.case=TRUE, x)
+    if (debug) cat("5. [", x, "]\n", sep="")
+    x <- strsplit(x, " ")
+    if (length(x[[1]]) == 2) {
+        x <- as.double(x[[1]][1]) + as.double(x[[1]][2]) / 60
+        if (!positive)
+            x <- (-x)
+    } else {
+        warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
+    }
+    if (debug) cat(sprintf("6. x = %f\n", x))
+    x
+}
+
 read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NULL, check.human.headers=TRUE, log.action)
 {
-    ## I really should add ability to specify column numbers, to avoid wasting time
-    ## on ad-hoc header tweaks.  DEK 2006-01-27
-    ##
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
     if (is.character(file)) {
@@ -187,18 +220,18 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
         on.exit(close(file))
     }
                                         # Header
-    scientist <- ship <- institute <- address <- cruise <- NULL
-    filename.orig <- NULL
-    sample.interval <- NaN
+    scientist <- ship <- institute <- address <- cruise <- filename.orig <- ""
+    sample.interval <- NA
     system.upload.time <- NULL
-    latitude <- longitude <- NaN
+    latitude <- longitude <- NA
     start.time <- NULL
-    water.depth <- NaN
-    date <- recovery <- NaN
+    water.depth <- NA
+    date <- recovery <- NA
     header <- c();
     col.names.inferred <- NULL
-    found.temperature <- found.salinity <- found.pressure <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
+    found.temperature <- found.salinity <- found.pressure <- found.pressure <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
+    found.header.latitude <- found.header.longitude <- FALSE
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
         if(debug) cat(paste("examining header line '",line,"'\n"));
@@ -207,7 +240,7 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?");
         if (length(grep("END", aline, perl=TRUE, useBytes=TRUE))) break;
         lline <- tolower(aline);
-                                        # BUG: discovery of column names is brittle to format changes
+        ## BUG: discovery of column names is brittle to format changes
         if (0 < (r <- regexpr("# name ", lline))) {
             if (debug) cat("lline: '",lline,"'\n",sep="")
             tokens <- strsplit(line, split=" ")
@@ -242,7 +275,10 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
                     name <- "conductivity";
                 }
             }
-            if (0 < regexpr("depth", lline)) name <- "depth"
+            if (0 < regexpr("depth", lline) || 0 < regexpr("depSM", lline)) {
+                name <- "depth"
+                found.depth <- TRUE
+            }
             if (0 < regexpr("fluorometer", lline)) name <- "fluorometer"
             if (0 < regexpr("oxygen, current", lline)) name <- "oxygen.current"
             if (0 < regexpr("oxygen, temperature", lline)) name <- "oxygen.temperature"
@@ -274,54 +310,24 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
             system.upload.time <- oce.as.POSIXlt(d)
                                         #cat(paste("system upload time:", system.upload.time, "\n"))
         }
-        if (0 < (r<-regexpr("latitude:", lline))) {
-            north <- TRUE
-            trimmed <- sub("(.*)latitude:([ ])*", "", ignore.case=TRUE, line);
-            if (0 < (r <- regexpr("[Nn]", trimmed))) {
-                trimmed <- sub("n", "", ignore.case=TRUE, trimmed)
-            }
-            if (0 < (r <- regexpr("[Ss]", trimmed))) {
-                north <- FALSE
-                trimmed <- sub("s", "", ignore.case=TRUE, trimmed)
-            }
-            lat <- strsplit(trimmed, " ")
-            if (length(lat[[1]]) == 2) {
-                latitude <- as.double(lat[[1]][1]) + as.double(lat[[1]][2]) / 60
-                if (!north) {
-                    latitude <- -(latitude)
-                }
-            } else {
-                warning("cannot parse Latitude in header since need 2 items but got ", length(lat[[1]]), " items in '", line, "'\n")
-            }
+        ## Styles:
+        ## * NMEA Latitude = 47 54.760 N
+        ## ** Latitude:      47 53.27 N
+        if (!found.header.latitude && (0 < (r<-regexpr("latitude*[0-8]*", lline, ignore.case=TRUE)))) {
+            latitude <- parse.latlon(lline)
+            found.header.latitude <- TRUE
         }
-        if (0 < (r<-regexpr("longitude:", lline))) {
-            east <- TRUE
-            trimmed <- sub("(.*)longitude:([ ])*", "", ignore.case=TRUE, line);
-            if (0 < (r <- regexpr("[Ee]", trimmed))) {
-                trimmed <- sub("e", "", ignore.case=TRUE, trimmed)
-            }
-            if (0 < (r <- regexpr("[Ww]", trimmed))) {
-                east <- FALSE
-                trimmed <- sub("w", "", ignore.case=TRUE, trimmed)
-            }
-            lon <- strsplit(trimmed, " ")
-            if (length(lon[[1]]) == 2) {
-                longitude <- as.double(lon[[1]][1]) + as.double(lon[[1]][2]) / 60
-                if (!east) {
-                    longitude <- -(longitude)
-                }
-            } else {
-                warning("cannot parse Longitude in header since need 2 items but got ", length(lon[[1]]), " items in '", line, "'\n")
-            }
+        if (!found.header.longitude && (0 < (r<-regexpr("longitude*[0-8]*", lline, ignore.case=TRUE)))) {
+            longitude <- parse.latlon(lline)
+            found.header.longitude <- TRUE
         }
         if (0 < (r<-regexpr("start_time =", lline))) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
             start.time <- oce.as.POSIXlt(d)
         }
         if (0 < (r<-regexpr("ship:", lline))) {
-                                        #cat(line);cat("\n");
-            ship <- sub("(.*)ship:([ ])*", "", ignore.case=TRUE, line); # note: using full string
-                                        #cat(ship);cat("\n");
+            ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line); # note: using full string
+            ship <- sub("[ \t]*$", "", ship)
         }
         if (0 < (r<-regexpr("scientist:", lline)))
             scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line); # full string
@@ -387,7 +393,7 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
     }
                                         # Require p,S,T data at least
     if (!found.temperature) stop("cannot find 'temperature' in this file")
-    if (!found.pressure)    stop("cannot find 'pressure' in this file")
+    if (!found.pressure && !found.depth)    stop("no column named 'pressure', 'depth' or 'depSM'")
 
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
@@ -436,6 +442,12 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
         }
         res <- ctd.add.column(res, S, "salinity", "sal", "salinity", "PSU")
     }
+    if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
+        g <- if (found.latitude) grav(latitude) else 9.8
+        rho0 <- sw.sigma.theta(median(res$data$salinity), median(res$data$temperature), rep(0, length(res$data$salinity)))
+        res <- ctd.add.column(res, res$data$depth * g * rho0 / 1e4, "pressure", "pressure", "pressure", "dbar")
+    }
     res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
+#    if (any(is.na(res$metadata))) warning("WTF")
     return(res)
 }
