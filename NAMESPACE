@@ -25,6 +25,7 @@ export(
        oce.as.POSIXlt,
        oce.edit,
        oce.write.table,
+       parse.latlon,
        plot.TS,
        plot.coastline,
        plot.ctd,

@@ -169,7 +169,7 @@ read.ctd.WOCE <- function(file, filename, debug=FALSE, columns=NULL, station=NUL
     res
 }
 
-parse.latlon <- function(line, north=TRUE, debug=FALSE)
+parse.latlon <- function(line, debug=FALSE)
 {
     ## The following formats are understood (for, e.g. latitude)
     ## * NMEA Latitude = 47 54.760 N

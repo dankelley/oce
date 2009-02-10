@@ -1,5 +1,6 @@
 0.1-76
 - make read.ctd() understand another SBE format
+- add parse.latlon()
 - add argument 'action' to oce.edit()
 - add oce.write.table()
 - add fill.gap()
