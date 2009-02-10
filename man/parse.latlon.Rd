@@ -21,8 +21,9 @@
 * NMEA Latitude = 47 54.760 N
 ** Latitude:      47 53.27 N
 }
+}
 
-\seealso{Used by \code{\link{read.ctdt}}.}
+\seealso{Used by \code{\link{read.ctd}}.}
 
 \author{Dan Kelley}
 
