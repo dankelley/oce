@@ -1,6 +1,8 @@
 plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       grid = TRUE, col.grid="lightgray",
-                      textpanel = TRUE, ...)
+                      textpanel = TRUE,
+                      Slim, Tlim, plim,
+                      ...)
 {
     dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
@@ -26,10 +28,10 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     par(mfrow = c(2, 2))
     par(mar=c(3,3,3.25,2))
-    plot.profile(x, type = "S+T", grid=grid, col.grid=col.grid, ...)
-    plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, ...)
+    plot.profile(x, type = "S+T", grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, plim=plim, ...)
+    plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, plim=plim, ...)
     par(mar=c(3.5,3,2,2))
-    plot.TS(x, grid=grid, col.grid=col.grid, ...)
+    plot.TS(x, grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, ...)
 
     ## par(mar=c(3.5,4,2,0))
     if (textpanel) {

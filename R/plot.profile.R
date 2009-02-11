@@ -12,7 +12,8 @@ plot.profile <- function (x,
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     pname <- "Pressure [ dbar ]"
-    if (missing(plim)) plim <- rev(range(x$data$pressure)) else plim <- rev(sort(plim))
+    if (missing(plim)) plim <- rev(range(x$data$pressure))
+    plim <- sort(plim, decreasing=TRUE)
     axis.name.loc <- par("mgp")[1]
     if (type == "S") {
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)

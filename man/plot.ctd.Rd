@@ -7,7 +7,7 @@
 \description{Plot a summary diagram for CTD data.}
 
 \usage{\method{plot}{ctd}(x,ref.lat=NaN, ref.lon=NaN, grid=TRUE, col.grid="lightgray", 
-  textpanel=TRUE, \dots)
+  textpanel=TRUE, Slim, Tlim, plim, \dots)
 }
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -16,6 +16,9 @@
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
   \item{col.grid}{The color of the grid.}
   \item{textpanel}{Set TRUE for bottom-right panel to give a textual overview; set FALSE if you'd like to plot this panel yourself (as the 4th member of a 2-by-2 grid).}
+  \item{Slim}{optional limits of salinity axes}
+  \item{Tlim}{optional limits of temperature axes}
+  \item{plim}{optional limits of pressue axes}
   \item{\dots}{optional arguments passed to plotting functions. A common example is to set \code{df}, for use in \link{sw.N2} calculations.}
 }
 

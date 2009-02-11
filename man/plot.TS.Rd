@@ -14,8 +14,8 @@
 	pch = 21,
 	rotate.rho.labels = FALSE,
 	connect.points = FALSE,
-	xlab,
-	ylab,
+	xlab, ylab,
+	Slim, Tlim,
 	\dots)
 }
 \arguments{
@@ -35,6 +35,8 @@
   \item{connect.points}{if TRUE, the points are connected with line segments, in sequence}
   \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
   \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
+  \item{Slim}{optional limits for salinity axis, otherwise inferred from data.}
+  \item{Tlim}{optional limits for temperature axis, otherwise inferred from data.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

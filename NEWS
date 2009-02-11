@@ -1,5 +1,6 @@
 0.1-76
-- improve plot.TS() isopycnal labels in presence of fresh water
+- plot.ctd: add Slim, Tlim, and plim arguments
+- plot.TS: fix isopycnal labels for fresh water; add Slim and Tlim arguments
 - make read.ctd() understand another SBE format
 - add parse.latlon()
 - add argument 'action' to oce.edit()

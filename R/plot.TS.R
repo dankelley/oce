@@ -11,9 +11,12 @@ plot.TS <- function (x,
                      rotate.rho.labels=FALSE,
                      connect.points=FALSE,
                      xlab, ylab,
+                     Slim, Tlim,
                      ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
+    if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
     old.mgp <- par("mgp")
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     axis.name.loc <- par("mgp")[1]
@@ -24,10 +27,12 @@ plot.TS <- function (x,
          xlab = if (missing(xlab)) "Salinity [ PSU ]" else xlab,
          ylab = if (missing(ylab)) expression(paste("Temperature [ ", degree, "C ]")) else ylab,
          xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-         cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"), ...)
+         cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
+         xlim=Slim, ylim=Tlim,
+         ...)
     if (connect.points) lines(x$data$salinity, x$data$temperature, col=col, ...)
     S.axis.min <- par()$usr[1]
-    S.axis.min <- if (S.axis.min < 0.1) S.axis.min <- 0.1 # catch case where there is some fresh water
+    if (S.axis.min < 0.1) S.axis.min <- 0.1 # avoid NaN, which UNESCO density gives for freshwater
     S.axis.max <- par()$usr[2]
     T.axis.min <- par()$usr[3]
     T.axis.max <- par()$usr[4]
