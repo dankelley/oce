@@ -27,6 +27,7 @@ plot.TS <- function (x,
          cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"), ...)
     if (connect.points) lines(x$data$salinity, x$data$temperature, col=col, ...)
     S.axis.min <- par()$usr[1]
+    S.axis.min <- if (S.axis.min < 0.1) S.axis.min <- 0.1 # catch case where there is some fresh water
     S.axis.max <- par()$usr[2]
     T.axis.min <- par()$usr[3]
     T.axis.max <- par()$usr[4]

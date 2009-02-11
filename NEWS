@@ -1,4 +1,5 @@
 0.1-76
+- improve plot.TS() isopycnal labels in presence of fresh water
 - make read.ctd() understand another SBE format
 - add parse.latlon()
 - add argument 'action' to oce.edit()
