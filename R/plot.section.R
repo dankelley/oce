@@ -22,18 +22,18 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
             latm <- mean(lat, na.rm=TRUE)
             lonm <- mean(lon, na.rm=TRUE)
-            ## expand the range by 20%
-            lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE))
+            lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
             latr <- latm + 1.2 * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
             if (!is.null(map.xlim))
                 plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
             else
                 plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
             if (!is.null(coastline)) {
-                if (mean(lon, na.rm=TRUE) > 0)
+                if (mean(lon, na.rm=TRUE) > 0) {
                     lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
-                else
+                } else {
                     lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
+                }
             }
             lines(lon, lat, col="lightgray")
             points(lon, lat, pch=20)
