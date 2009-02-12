@@ -59,8 +59,11 @@
 library(oce)
 data(ctd) 
 plot(ctd)
+
 data(coastline.sle)
-plot(ctd, which=c(1,2,3,5),coastline=coastline.sle,lonlim=c(-71,-68),latlim=c(47,48))
+lonlim <- -(69 + c(52, 41) / 60)
+latlim <- 47 + c(48, 58) / 60
+plot(ctd, which=c(1,2,3,5),coastline=coastline.sle,lonlim=lonlim,latlim=latlim)
 }
 \author{Dan Kelley}
 \keyword{misc}

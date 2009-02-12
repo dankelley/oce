@@ -90,6 +90,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         else
             plot(coastline)
         points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+        title(paste("Station", x$metadata$station),font.main=par("font"))
     }
     par(oldpar)
     invisible()
