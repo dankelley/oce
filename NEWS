@@ -1,5 +1,6 @@
 0.1-76
-- plot.ctd: add Slim, Tlim, and plim arguments
+- plot.ctd: add Slim, Tlim, plim, lonlim, latlim arguments; add ability to draw maps
+- add coastline.sle dataset
 - plot.TS: fix isopycnal labels for fresh water; add Slim and Tlim arguments
 - make read.ctd() understand another SBE format
 - add parse.latlon()

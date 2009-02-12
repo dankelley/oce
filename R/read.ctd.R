@@ -448,6 +448,5 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
         res <- ctd.add.column(res, res$data$depth * g * rho0 / 1e4, "pressure", "pressure", "pressure", "dbar")
     }
     res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
-#    if (any(is.na(res$metadata))) warning("WTF")
     return(res)
 }

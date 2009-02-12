@@ -1,7 +1,9 @@
 plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       grid = TRUE, col.grid="lightgray",
-                      textpanel = TRUE,
-                      Slim, Tlim, plim,
+                      which = 1:4,
+                      coastline,
+                      Slim, Tlim, plim, lonlim, latlim,
+                      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                       ...)
 {
     dec_deg <- function(x, code = "lat") {
@@ -26,15 +28,25 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     oldpar <- par(no.readonly = TRUE)
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+
+    show <- rep(FALSE, 5)
+    show[which] <- TRUE
+    ## 1=S+T
+    ## 2=density+N2
+    ## 3=TS
+    ## 4=text
+    ## 5=map
+
     par(mfrow = c(2, 2))
     par(mar=c(3,3,3.25,2))
-    plot.profile(x, type = "S+T", grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, plim=plim, ...)
-    plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, plim=plim, ...)
-    par(mar=c(3.5,3,2,2))
-    plot.TS(x, grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, ...)
-
+    if (show[1]) plot.profile(x, type = "S+T", grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, plim=plim, ...)
+    if (show[2]) plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, plim=plim, ...)
+    if (show[3]) {
+        par(mar=c(3.5,3,2,2))
+        plot.TS(x, grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, ...)
+    }
     ## par(mar=c(3.5,4,2,0))
-    if (textpanel) {
+    if (show[4]) {
         text.item <- function(item, label, cex=0.8) {
             if (!is.null(item) && !is.na(item)) {
                 text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex);
@@ -70,6 +82,14 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                                            ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
             yloc <- yloc - d.yloc
         }
+    }
+    if (show[5]) {
+        if (missing(coastline)) stop("need a coastline file to draw a map")
+        if (!missing(lonlim) && !missing(latlim))
+            plot(coastline, xlim=lonlim, ylim=latlim)
+        else
+            plot(coastline)
+        points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
     }
     par(oldpar)
     invisible()
