@@ -41,7 +41,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     for (w in 1:length(which)) {
         if (which[w] == 1) plot.profile(x, type = "S+T", grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, plim=plim, ...)
         if (which[w] == 2) plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, plim=plim, ...)
-        if (which[w] == 6) plot.profile(x, "density+dpdt")
+        if (which[w] == 6) plot.profile(x, "density+dpdt", plim=plim, ...)
         if (which[w] == 3) {
             par(mar=c(3.5,3,2,2))
             plot.TS(x, grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, ...)
