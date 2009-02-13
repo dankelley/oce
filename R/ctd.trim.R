@@ -1,4 +1,4 @@
-ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
+ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     result <- x
@@ -20,9 +20,12 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
         } else if (which.method == 2) { # "downcast"
                                         # 1. despike to remove (rare) instrumental problems
             x$data$pressure <- smooth(x$data$pressure,kind="3R")
-            keep <- (x$data$pressure > 0)
-                                        # 2. in-water, descending
-            delta.p <- diff(x$data$pressure)
+            pmin <- 0
+            if (!missing(parameters)) {
+                if ("pmin" %in% names(parameters)) pmin <- parameters$pmin else stop("parameter not understood for this method")
+            }
+            keep <- (x$data$pressure > pmin) # 2. in water (or below start depth)
+            delta.p <- diff(x$data$pressure)  # descending
             delta.p <- c(delta.p[1], delta.p) # to get right length
             keep <- keep & (delta.p > 0)
                                         # 3. trim the upcast and anything thereafter (ignore beginning and end)
@@ -61,6 +64,7 @@ ctd.trim <- function(x, method="downcast", parameters=NULL, verbose=FALSE)
                 if (class(t) != "try-error") {
                     if (m$convInfo$isConv) {
                         s0 <- coef(m)[[1]]
+                        ##print(summary(m))
                         keep <- keep & (x$data$scan > (coef(m)[[1]]))
                     }
                 } else {

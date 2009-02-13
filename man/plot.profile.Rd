@@ -12,6 +12,7 @@ col.S="darkgreen",
 col.t="red",
 col.rho="blue",
 col.N2="brown",
+col.dpdt="darkgreen",
 grid=FALSE, 
 col.grid="lightgray",
 Slim, Tlim, densitylim, N2lim, plim,
@@ -35,12 +36,22 @@ lwd,
 	smoothing.}
       \item{\code{density+N2}}{Profile of sigma-theta and the square of buoyancy
 	frequency within a single axis frame.}
+      \item{\code{density+dpdt}}{Profile of sigma-theta and dP/dt for
+	the sensor.  The latter is useful in indicating problems with
+	the deployment.  It is calculated by first differencing pressure
+	and then using a smoothing spline on the result (to avoid
+	grid-point wiggles that result because the SBE software only
+	writes 3 decimal places in pressure).  Note that dP/dt may be
+	off by a scale factor; this should not be a problem if there is
+	a \code{x$data$time} column, or a \code{x$metadata$sample.rate}
+	value in the header.}
     }
   }
   \item{col.S}{Color for salinity profile.}
   \item{col.t}{Color for temperature.}
   \item{col.rho}{Color for density.}
   \item{col.N2}{Color for square of buoyancy frequency.}
+  \item{col.dpdt}{Color for dP/dt.}
   \item{grid}{Set \code{TRUE} to get a grid.}
   \item{col.grid}{Grid colour.}
   \item{Slim}{Optional limit for S axis}

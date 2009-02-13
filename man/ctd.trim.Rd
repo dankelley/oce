@@ -2,7 +2,7 @@
 \alias{ctd.trim}
 \title{Trim start/end portions of a CTD cast}
 \description{Trim start/end portions of a CTD cast.}
-\usage{ctd.trim(x, method="downcast",parameters=NULL, verbose=FALSE)}
+\usage{ctd.trim(x, method="downcast",parameters, verbose=FALSE)}
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{method}{Various methods exist, some of which use parameters:
@@ -13,8 +13,13 @@
 	  \item{Step 1.}{The pressure data are despiked with a smooth()
 	    filter with method "3R".  This removes wild spikes that arise
 	    from poor instrument connections, etc.}
-	  \item{Step 2.}{Any data with negative pressures are deleted.
-	    This removes in-air data.}
+	  \item{Step 2.}{If no \code{parameters} are given, then any
+	    data with negative pressures are deleted.  If there is a
+	    parameter named \code{pmin}, then that pressure (in
+	    decibars) is used instead as the lower limit.  This is a
+	    commonly-used setup, e.g. \code{ctd2 <- ctd.trim(ctd,
+	    parameters=list(pmin=1))} removes the top decibar
+	    (roughly 1m) from the data.}
 	  \item{Step 3.}{The maximum pressure is determined, and data
 	    acquired subsequent to that point are deleted.  This removes
 	    the upcast and any subsequent data.}
@@ -31,16 +36,16 @@
 	selects data points 10, 11, ... 30.}
       \item{"(ANYTHING ELSE)"}{Select data only if the named item
 	(\emph{e.g.} \code{scan}, \code{time}, \emph{etc}.) falls
-	in the range of values indicated by \code{parameters}.  If one 
-	parameter is given, it is a lower limit.  If two parameters
-	are given, they are a range.
-	For example, \code{ctd2 <- ctd.trim(ctd, "scan", 5)} 
+	in the range of values indicated by the list stored in \code{parameters}.  
+	This list has elements \code{from} (the lower limit) and \code{to}
+	(the upper limit)  Sensible things happen if only one limit is
+	given.  For example, \code{ctd2 <- ctd.trim(ctd, "scan", list(from=5))} 
 	starts at scan number 5 and continues to the end,
-	while \code{ctd3 <- ctd.trim(ctd, "scan", c(5,100))}
+	while \code{ctd3 <- ctd.trim(ctd, "scan", list(from=5,to=100))}
 	also starts at scan 5, but extends only to scan 100.}
     }
   }
-  \item{parameters}{Depends on method; see above.}
+  \item{parameters}{A list whose elemetns depend on the method; see above.}
   \item{verbose}{If set to TRUE, some debugging information is provided.}
 }
 

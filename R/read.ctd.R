@@ -229,7 +229,7 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
     date <- recovery <- NA
     header <- c();
     col.names.inferred <- NULL
-    found.temperature <- found.salinity <- found.pressure <- found.pressure <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
+    found.temperature <- found.salinity <- found.pressure <- found.depth <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
     while (TRUE) {
