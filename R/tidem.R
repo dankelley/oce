@@ -77,7 +77,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
         kmpr[i] <- tc$kmpr[ic]
     }
     nc <- length(freq)
-                                        # Check Rayleigh criterion
+    ## Check Rayleigh criterion
     interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
     drop.term <- NULL
     for (i in 1:nc) {
@@ -170,4 +170,3 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     class(rval) <- "tide"
     rval
 }
-
