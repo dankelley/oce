@@ -147,13 +147,20 @@ amplitude 0.50072m and phase 143.1.
 
 \examples{
 library(oce)
-# Fake a M2 tide with phase 45 degrees
+# Fake hourly data, with M2 tide with phase 45 degrees
 hour <- seq(0, 24 * 100)
 eta <- 1 + 2 * sin(0.08051140 * 2 * pi * hour + pi/4)
 sealevel <- as.sealevel(eta)
 tide <- tidem(sealevel)
 summary(tide)
 plot(tide)
+
+# Fake secondly data, with M2 tide
+t <- 1:(2*86400)
+eta <- sin(t * 2 * pi / 12.42 / 3600)
+sl <- as.sealevel(eta,t+as.POSIXct("2009-02-13 00:00:00"))
+m <- tidem(sl)
+summary(m)
 
 # The demonstration time series from Foreman (1977),
 # also used in T_TIDE (Pawlowicz, 2002).
