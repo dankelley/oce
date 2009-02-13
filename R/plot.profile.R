@@ -7,7 +7,7 @@ plot.profile <- function (x,
                           col.dpdt = "darkgreen",
                           grid = FALSE,
                           col.grid = "lightgray",
-                          Slim, Tlim, densitylim, N2lim, plim,
+                          Slim, Tlim, densitylim, N2lim, plim, dpdtlim,
                           lwd=par("lwd"),
                           ...)
 {
@@ -43,12 +43,12 @@ plot.profile <- function (x,
         dpdt <- c(dpdt[1], dpdt)        # fake first point
         df <- min(max(x$data$pressure, na.rm=TRUE) / 5, length(x$data$pressure) / 10) # FIXME: adjust params
         dpdt.sm <- smooth.spline(x$data$pressure, dpdt, df=df)
-        plot(dpdt.sm$y, dpdt.sm$x, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt)
+        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (know.time.unit)
             mtext(expression(paste(dp/dt, " [ dbar/s ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
-        else 
+        else
             mtext(expression(paste(dp/dt, " [ dbar/(time-unit) ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
         box()
         if (grid) grid(col=col.grid)

@@ -15,7 +15,7 @@ col.N2="brown",
 col.dpdt="darkgreen",
 grid=FALSE, 
 col.grid="lightgray",
-Slim, Tlim, densitylim, N2lim, plim,
+Slim, Tlim, densitylim, N2lim, plim, dpdtlim,
 lwd,
 \dots)
 }
@@ -59,6 +59,7 @@ lwd,
   \item{densitylim}{Optional limit for density axis}
   \item{N2lim}{Optional limit for N2 axis}
   \item{plim}{Optional limit for p axis}
+  \item{dpdtlim}{Optional limit for dp/dt axis}
   \item{lwd}{lwd value for data line}
   \item{\dots}{Optional arguments passed to other functions.  A common example is to set \code{df}, for 
 use in \link{sw.N2} calculations.} 

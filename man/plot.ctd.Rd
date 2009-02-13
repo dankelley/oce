@@ -9,7 +9,8 @@
 \usage{\method{plot}{ctd}(x,ref.lat=NaN, ref.lon=NaN, 
   grid=TRUE, col.grid="lightgray",
   which=1:4, coastline,
-  Slim, Tlim, plim, lonlim, latlim,
+  Slim, Tlim, plim, densitylim, dpdtlim,
+  lonlim, latlim,
   latlon.pch=20, latlon.cex=1.5, latlon.col="red",
   \dots)
 }
@@ -33,6 +34,8 @@
   \item{Slim}{optional limits of salinity axes}
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}
+  \item{densitylim}{optional limits of density axis}
+  \item{dpdtlim}{optional limits of dP/dt axis}
   \item{lonlim}{optional limits of longitude axis of map (ignored if no
     map plotted)} 
   \item{latlim}{optional limits of latitude axis of map (ignored if no
