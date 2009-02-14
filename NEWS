@@ -1,5 +1,5 @@
 0.1-76
-- plot.profile(): add type sigma+dpdt
+- plot.profile(): add types sigma+dpdt and sigma+time
 - ctd.trim(): add pmin parameter
 - plot.ctd(): add Slim, Tlim, plim, lonlim, latlim arguments; add ability to draw maps
 - add coastline.sle dataset

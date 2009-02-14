@@ -2,7 +2,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       grid = TRUE, col.grid="lightgray",
                       which = 1:4,
                       coastline,
-                      Slim, Tlim, plim, densitylim, dpdtlim,
+                      Slim, Tlim, plim, densitylim, dpdtlim, timelim,
                       lonlim, latlim,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                       ...)
@@ -27,8 +27,6 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         }
     }
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
-    oldpar <- par(no.readonly = TRUE)
-    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
 
     ## 1=S+T
     ## 2=density+N2
@@ -36,13 +34,25 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     ## 4=text
     ## 5=map
     ## 6=density+dpdt
-    par(mfrow = c(2, 2))
-    par(mar=c(3,3,3.25,2))
+    ## 7=density+time
+    ## 8=index
+    lw <- length(which)
+    if (lw > 1) {
+        oldpar <- par(no.readonly = TRUE)
+        if (lw > 2)
+            par(mfrow = c(2, 2))
+        else
+            par(mfrow = c(1, 2))
+        par(mar=c(3,3,3.25,2))
+        if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+    }
 
     for (w in 1:length(which)) {
-        if (which[w] == 1) plot.profile(x, type = "S+T", grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, plim=plim, ...)
-        if (which[w] == 2) plot.profile(x, type = "density+N2", grid=grid, col.grid=col.grid, plim=plim, ...)
+        if (which[w] == 1) plot.profile(x, type = "S+T", Slim=Slim, Tlim=Tlim, plim=plim, ...)
+        if (which[w] == 2) plot.profile(x, type = "density+N2", plim=plim, ...)
         if (which[w] == 6) plot.profile(x, "density+dpdt", plim=plim, densitylim=densitylim, dpdtlim=dpdtlim, ...)
+        if (which[w] == 7) plot.profile(x, "density+time", plim=plim, densitylim=densitylim, timelim=timelim, ...)
+        if (which[w] == 8) plot.profile(x, "index", grid=grid, col.grid=col.grid, plim=plim, ...)
         if (which[w] == 3) {
             par(mar=c(3.5,3,2,2))
             plot.TS(x, grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, ...)
@@ -94,6 +104,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             title(paste("Station", x$metadata$station),font.main=par("font"))
         }
     }
-    par(oldpar)
+    if (lw > 1)
+        par(oldpar)
     invisible()
 }
