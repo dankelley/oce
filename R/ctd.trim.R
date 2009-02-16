@@ -7,10 +7,10 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
         warning("too few data to ctd.trim()")
     } else {
         which.method <- pmatch(method, c("index", "downcast"), nomatch=0)
-        if (verbose) cat("using method", which.method,"\n")
+        if (verbose) cat("ctd.trim()\n  using method", which.method,"\n")
         keep <- rep(TRUE, n)
         if (which.method == 1) {        # "index"
-            if (verbose)	cat("parameters:",parameters,"\n");
+            if (verbose)	cat("  parameters:",parameters,"\n");
             if (min(parameters) < 1)
                 stop("Cannot select indices < 1");
             if (max(parameters) > n)
@@ -31,9 +31,13 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
                                         # 3. trim the upcast and anything thereafter (ignore beginning and end)
             trim.top <- as.integer(0.1*n)
             trim.bottom <- as.integer(0.9*n)
-            max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
-            max.location <- trim.top + max.spot
+#            max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
+
+            max.spot <- which.max(smooth(x$data$pressure[1:n],kind="3R")) # trim.top:trim.bottom])
+
+            max.location <- 0* trim.top + max.spot
             keep[max.location:n] <- FALSE
+            if (verbose) cat("  pressure maximum at index=",max.spot,"\n")
             if (FALSE) {
                                         # deleted method: slowly-falling data
                 delta.p.sorted <- sort(delta.p)
@@ -52,20 +56,33 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
                 keep[equilibration] <- FALSE
             }
             if (TRUE) {                 # new method, after Feb 2008
-                bilinear <- function(s, s0, dpds) {
-                    ifelse(s < s0, 0, dpds*(s-s0)) # note: get errors if fit for initial pressure
-                }
+                bilinear1 <- function(s, s0, p0, dpds) { ifelse(s < s0, p0, dpds*(s-s0)) }
+                bilinear2 <- function(s, s1, p1, dpds) { cat("s1=",s1,"p1=",p1,"dpds=",dpds,"\n");ifelse(s > s1, p1, dpds*(s-min(s))) }
                 pp <- x$data$pressure[keep]
                 ss <- x$data$scan[keep]
                 p0 <- 0
-                s0 <- ss[0.5*length(ss)]
+                s0 <- ss[0.25*length(ss)]
+                s1 <- ss[0.95*length(ss)]
+                p0 <- pp[1]
+                p1 <- max(pp) #pp[0.9*length(pp)]
+                plot(ss, pp);abline(v=c(s0,s1))
                 dpds0 <-  diff(range(pp)) / diff(range(ss))
-                t <- try(m <- nls(pp ~ bilinear(ss, s0, dpds), start=list(s0=s0, dpds=dpds0)), TRUE)
+                t <- try(m <- nls(pp ~ bilinear1(ss, s0, p0, dpds),
+                                  start=list(s0=s0, p0=p0, dpds=dpds0)),
+                         silent=TRUE)
                 if (class(t) != "try-error") {
                     if (m$convInfo$isConv) {
-                        s0 <- coef(m)[[1]]
-                        ##print(summary(m))
+                        s0 <- floor(coef(m)[[1]])
+                        if (verbose) cat("  trimming scan numbers below", s0, "\n")
+                        if (verbose) print(summary(m))
                         keep <- keep & (x$data$scan > (coef(m)[[1]]))
+##                        nn <- length(ss)
+##                        cat("s1=",ss[nn/2],"\n")
+##                        cat('length(ss)=',length(ss),'\n')
+##                        t <- try(m2 <- nls(pp ~ bilinear2(ss, s1, p1, dpds),
+##                                           start=list(s1=ss[nn], p1=pp[nn], dpds=coef(m)[[3]]),
+##                                           algorithm="port", lower=c(ss[3], 0, 0), upper=c(ss[nn], pp[nn], 1)),
+##                                 silent=FALSE)
                     }
                 } else {
                     warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
