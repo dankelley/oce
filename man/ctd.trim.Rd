@@ -46,7 +46,9 @@
     }
   }
   \item{parameters}{A list whose elemetns depend on the method; see above.}
-  \item{verbose}{If set to TRUE, some debugging information is provided.}
+  \item{verbose}{If set to TRUE, some debugging information is provided,
+    including a suggested call based on the scan number, which can serve
+    as a good starting point for manual trimming.}
 }
 
 \details{For normal CTD profiling, the goal is to isolate only the
