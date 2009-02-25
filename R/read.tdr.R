@@ -5,9 +5,8 @@ read.tdr <- function(file, debug=FALSE, log.action)
         file <- file(file, "r")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
-        stop("argument `file' must be a character string or connection")
-    }
+    if (!inherits(file, "connection"))
+        stop("'file' must be a character string or connection")
     if (!isOpen(file)) {
         open(file, "r")
         on.exit(close(file))
@@ -71,7 +70,14 @@ read.tdr <- function(file, debug=FALSE, log.action)
         t <- logging.start + seq(1:n) * sample.period
         temperature <- as.numeric(d[seq(1,2*n,2)])
         pressure <- as.numeric(d[seq(2,2*n,2)])
-    } else stop("wrong number of variables.  Expect 2 or 4")
+    } else if (nvar == 5) {
+        ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
+        if (debug) cat("5 elements per data line\n")
+        t <- as.POSIXct(paste(d[seq(1,5*n,5)], d[seq(2,5*n,5)]))
+        temperature <- as.numeric(d[seq(3,5*n,5)])
+        pressure <- as.numeric(d[seq(4,5*n,5)])
+        ## ignore column 5
+    } else stop("wrong number of variables.  Expect 2, 4, or 5, but got ", nvar)
 
     data <- data.frame(t=t, temperature=temperature, pressure=pressure)
     metadata <- list(header=header,

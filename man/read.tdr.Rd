@@ -17,7 +17,13 @@
     it provides is better for normal calls by a user.)}
 }
 
-\details{Read an TDR (temperature-depth recorder) file.}
+\details{Read an TDR (temperature-depth recorder) file.  At the moment,
+  three styles are understood: (1) a two-column style, containing
+  temperature and pressure (in which case time is inferred from
+  information in the header); (2) a four-column style, in which the date
+  the time of day are given in the first two columns, followed by the
+  temperature, and pressure; and (3) a five-column style, in which depth
+  in the water column is given after the pressure.}
 
 \value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
   list with elements detailed below.
