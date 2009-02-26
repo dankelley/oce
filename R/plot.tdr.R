@@ -22,7 +22,7 @@ plot.tdr <- function (x, which=1:4, ...)
     if (show[2]) {
         plot(x$data$t, x$data$pressure,
              xlab="", ylab="Pressure [dbar]", type='l',
-             ylim=rev(range(x$data$pressure)),
+             ylim=rev(range(x$data$pressure, na.rm=TRUE)),
              ...)
     }
     if (show[4]) {
@@ -48,7 +48,7 @@ plot.tdr <- function (x, which=1:4, ...)
     }
     if (show[3]) {
         args <- list(x=x$data$temperature, y=x$data$pressure,
-                     ylim=rev(range(x$data$pressure)),
+                     ylim=rev(range(x$data$pressure, na.rm=TRUE)),
                      xlab=expression(paste("Temperature [", degree, "C ]")),
                      ylab="Pressure [dbar]", ...)
         if (!("type" %in% names(list(...)))) args <- c(args, type="p")

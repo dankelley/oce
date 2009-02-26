@@ -1,7 +1,7 @@
 summary.lobo <- function(object, ...)
 {
     if (!inherits(object, "lobo")) stop("method is only for lobo objects")
-    tr <- range(object$data$time)
+    tr <- range(object$data$time, na.rm=TRUE)
     cat(paste("Lobo data acquired over time range", tr[1], "to", tr[2], "\n"))
     cat(sprintf(" %15s %12s %12s %12s %12s %12s\n", "ITEM         ", "min", "Q1", "median", "Q3", "max"));
     f<-fivenum(object$data$fluorescence,na.rm=TRUE);    cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  fluorescence ", f[1], f[2], f[3], f[4], f[5]))

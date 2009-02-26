@@ -14,7 +14,7 @@ plot.profile <- function (x,
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     pname <- "Pressure [ dbar ]"
-    if (missing(plim)) plim <- rev(range(x$data$pressure))
+    if (missing(plim)) plim <- rev(range(x$data$pressure, na.rm=TRUE))
     plim <- sort(plim, decreasing=TRUE)
     axis.name.loc <- par("mgp")[1]
     know.time.unit <- FALSE
@@ -43,7 +43,7 @@ plot.profile <- function (x,
         box()
         lines(st, x$data$pressure, col = col.rho, lwd=lwd)
         par(new = TRUE)
-        if (missing(timelim)) timelim <- range(time)
+        if (missing(timelim)) timelim <- range(time, na.rm=TRUE)
         plot(time, x$data$pressure, xlim=timelim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.time)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.time)
         lines(time, x$data$pressure, lwd=lwd, col=col.time)

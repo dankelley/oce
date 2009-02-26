@@ -52,8 +52,8 @@ plot.section <- function (x, field=NULL, at=NULL, labels=TRUE,
             if (!(variable %in% names(x$data$station[[1]]$data))) stop("this section does not contain a variable named '", variable, "'")
 
             ## FIXME: contours don't get to plot edges
-            xxrange <- range(xx)
-            yyrange <- range(yy)
+            xxrange <- range(xx, na.rm=TRUE)
+            yyrange <- range(yy, na.rm=TRUE)
             ##yyrange[1] <- -1
 
             ## Put x in order, if it's not already
