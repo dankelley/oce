@@ -18,8 +18,13 @@
 \details{Several plots are available: \code{which}=1 for a timeseries
   plot of temperature, \code{which}=2 for a timeseries plot of pressure,
   \code{which}=3 for a scatterplot of the temperature profile, and
-  \code{which}=4 for textual information about the dataset.  Supply a
-  list of \code{which} values, to get multi-panel plots.}
+  \code{which}=4 for textual information about the dataset.  You may
+  supply a list of \code{which} values, to get multi-panel plots.  
+
+  Note that if a single-panel plot is made, then \code{link{par}} is not
+  adjusted.  This means that you may add to the plot easily, which
+  proves to be useful in determining in-water time intervals, for
+  example (try \code{which}=2 for that).}
 
 \seealso{See \code{\link{read.tdr}} for more information on dealing
   with the \code{tdr} data type, including examples.}

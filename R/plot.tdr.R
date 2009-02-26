@@ -55,6 +55,6 @@ plot.tdr <- function (x, which=1:4, ...)
         if (!("cex"  %in% names(list(...)))) args <- c(args, cex=0.5)
         do.call(plot, args)
     }
-    par(oldpar)
+    if (lw != 1) par(oldpar)
     invisible()
 }
