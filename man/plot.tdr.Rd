@@ -21,10 +21,10 @@
   \code{which}=4 for textual information about the dataset.  You may
   supply a list of \code{which} values, to get multi-panel plots.  
 
-  Note that if a single-panel plot is made, then \code{\link{par}} is not
-  adjusted.  This means that you may add to the plot easily, which
-  proves to be useful in determining in-water time intervals, for
-  example (try \code{which}=2 for that).}
+  Note that if a single-panel plot is made, then \code{\link{par}} is
+  not adjusted.  This means that you may add to the plot easily, which
+  proves to be useful in determining in-water time intervals (see
+  \code{\link{read.tdr}} for an example).}
 
 \seealso{See \code{\link{read.tdr}} for more information on dealing
   with the \code{tdr} data type, including examples.}
