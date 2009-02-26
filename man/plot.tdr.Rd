@@ -21,7 +21,7 @@
   \code{which}=4 for textual information about the dataset.  You may
   supply a list of \code{which} values, to get multi-panel plots.  
 
-  Note that if a single-panel plot is made, then \code{link{par}} is not
+  Note that if a single-panel plot is made, then \code{\link{par}} is not
   adjusted.  This means that you may add to the plot easily, which
   proves to be useful in determining in-water time intervals, for
   example (try \code{which}=2 for that).}
