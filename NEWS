@@ -1,4 +1,5 @@
 0.1-76
+- add decimate(), which will eventually replace ctd.decimate()
 - read.tdr(): handle 5-column data files
 - plot.profile(): add types sigma+dpdt and sigma+time
 - ctd.trim(): add pmin parameter
