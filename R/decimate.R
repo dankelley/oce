@@ -1,4 +1,4 @@
-decimate <- function(x, by=10, method=c("direct"))
+decimate <- function(x, by=2, method=c("direct"))
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     method <- match.arg(method)
