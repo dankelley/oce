@@ -2,7 +2,7 @@
 \alias{decimate}
 \title{Decimate an oce object}
 \description{Decimate, or subsample, an oce object.}
-\usage{decimate(x, by=2, method=c("direct"))}
+\usage{decimate(x, by=10, method=c("direct"))}
 \arguments{
   \item{x}{an \code{oce} object containing a \code{data} element.}
   \item{by}{an indication of the subsampling.  The first element is
@@ -24,7 +24,7 @@
 \examples{
 library(oce)
 data(ctd)
-d <- decimate(ctd, by=10)
+d <- decimate(ctd, by=5)
 plot(d)
 }
 \author{Dan Kelley}
