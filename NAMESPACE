@@ -11,6 +11,7 @@ export(
        ctd.trim,
        ctd.update.header,
        ctd.write,
+       decimate,
        fill.gap,
        gebco.colors,
        geod.dist,
