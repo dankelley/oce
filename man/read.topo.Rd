@@ -7,10 +7,10 @@
 \description{Read a file that contains topographic data in the ETOPO2 dataset, 
   as provided by the NOAA website.}
 
-\usage{read.topo(filename, log.action)}
+\usage{read.topo(file, log.action)}
 
 \arguments{
-  \item{filename}{name of a file containing an ETOPO2 dataset.}
+  \item{file}{name of a file containing an ETOPO2 dataset.}
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
