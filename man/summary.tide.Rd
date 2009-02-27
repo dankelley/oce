@@ -6,12 +6,12 @@
 
 \description{Summarize a tide object.}
 
-\usage{\method{summary}{tide}(object, p=0, constituent, \dots)}
+\usage{\method{summary}{tide}(object, p, constituent, \dots)}
 
 \arguments{
   \item{object}{a \code{tide} object, as created by \code{\link{tidem}}.}
-  \item{p}{the minimum p value for the display of an individual
-    coefficient.  The default causes all coefficients to be shown.}
+  \item{p}{optional value of the maximum p value for the display of an
+    individual coefficient.  If not given, all coefficients are shown.}
   \item{constituent}{optional name of constituent on which to focus.}
   \item{\dots}{passed to children.}
 }

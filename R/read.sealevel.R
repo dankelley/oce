@@ -1,4 +1,4 @@
-read.sealevel <- function(file, debug=FALSE, log.action)
+read.sealevel <- function(file, tz, log.action, debug=FALSE)
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- file
@@ -49,7 +49,10 @@ read.sealevel <- function(file, debug=FALSE, log.action)
         GMT.offset     <- GMT.offset.from.tz(tz)
         x <- read.csv(file, skip=header.length, header=FALSE)
         eta <- as.numeric(x$V2)
-        t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
+        if (missing(tz))
+            t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
+        else
+            t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz=tz)
     } else { # type 1
         if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
         d <- readLines(file)
@@ -85,7 +88,10 @@ read.sealevel <- function(file, debug=FALSE, log.action)
             eta[target.index] <- as.numeric(sp[4:15])
             day.portion <- as.numeric(substr(sp[3], 9, 9))
             if (i == 2) {
-                start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"))
+                if (missing(tz))
+                    start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"))
+                else
+                    start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"), tz=tz)
             } else {
                 if (day.portion == 1) {
                     if (last.day.portion != 2)
@@ -99,7 +105,10 @@ read.sealevel <- function(file, debug=FALSE, log.action)
             }
             last.day.portion <- day.portion
         }
-        t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)))
+        if (missing(tz))
+            t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)))
+        else
+            t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)), tz=tz)
         eta[eta==9999] <- NA
         if (tolower(units) == "mm") {
             eta <- eta / 1000

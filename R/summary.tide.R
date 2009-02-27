@@ -1,4 +1,4 @@
-summary.tide <- function(object, p=0, constituent, ...)
+summary.tide <- function(object, p, constituent, ...)
 {
     n <- length(object$p)
     if (!missing(p)) ok <- (object$p <= p) else ok = seq(1, n)
@@ -13,9 +13,9 @@ summary.tide <- function(object, p=0, constituent, ...)
         rval <- data.frame(Const=object$const[ok],
                            Name=object$name[ok],
                            Freq=object$freq[ok],
-                           Amplitude=format(object$amplitude[ok], digits=3),
-                           Phase=format(object$phase[ok], digits=2),
-                           p=format(object$p[ok], digits=3),
+                           Amplitude=sprintf("%10.5f", object$amplitude[ok]),
+                           Phase=sprintf("%9.1f", object$phase[ok]),
+                           p=sprintf("%9.4f", object$p[ok]),
                            sig=sig[ok])
     }
     else {
@@ -24,9 +24,9 @@ summary.tide <- function(object, p=0, constituent, ...)
         rval <- data.frame(Const=object$const[i],
                            Name=object$name[i],
                            Freq=object$freq[i],
-                           Amplitude=format(object$amplitude[i], digits=3),
-                           Phase=format(object$phase[i], digits=2),
-                           p=format(object$p[i], digits=3),
+                           Amplitude=sprintf("%10.5f", object$amplitude[i]),
+                           Phase=sprintf("%9.1f", object$phase[i]),
+                           p=sprintf("%9.4f", object$p[i]),
                            sig=sig[i])
     }
     class(rval) <- c("data.frame", "summary.tide")

@@ -1,6 +1,6 @@
 0.1-76
 - add decimate(), which will eventually replace ctd.decimate()
-- read.tdr(): handle 5-column data files
+- read.tdr(): handle 5-column data files; add tz argument
 - plot.profile(): add types sigma+dpdt and sigma+time
 - ctd.trim(): add pmin parameter
 - plot.ctd(): add Slim, Tlim, plim, lonlim, latlim arguments; add ability to draw maps

@@ -6,17 +6,19 @@
 
 \description{Fit a tidal model to a timeseries.}
 
-\usage{tidem(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet=TRUE)}
+\usage{tidem(sl, constituents, latitude=NULL, start.time, rc=1, quiet=TRUE)}
 
 \arguments{
-  \item{sl}{a \code{sealevel} object.}
+  \item{sl}{a \code{sealevel} object, or a list of numbers indicating sealevel.}
   \item{constituents}{an optional list of tidal constituents to which
 	the fit is done (see \dQuote{Details}.)}  
   \item{latitude}{if provided, the latitude of the observations.  If not
 	provided, \code{tidem} will try to infer this from \code{sl}.}
-  \item{start.time}{the start time for the series.  If not provided,
-	this is taken as the first time in \code{sl$data$t}.  The time must
-	be a POSIXct object, with timezone GMT.}  
+  \item{start.time}{optional the start time for the series.  If not provided,
+	this is taken as the first time of the first sample, which is
+	inferred as 0 for the case where \code{sl} is a simple list, and
+	inferred as the time of the first sample, if \code{sl} is a
+	\code{sealevel} object.  See examples.}
   \item{rc}{the value of the coefficient in the Rayleigh criterion.}
   \item{quiet}{set to FALSE to get extra information on the processing.}
 }
@@ -110,8 +112,13 @@
   \item{name}{a vector of constituent names, in non-subscript format, e.g. "\code{M2}".}
   \item{frequency}{a vector of constituent frequencies, in inverse hours.}
   \item{amplitude}{a vector of fitted constituent amplitudes, in metres.}
-  \item{phase}{a vector of fitted constituent phase.  (FIXME: this needs to be resolved to Greenwich, and it is not, yet.)}
-  \item{p}{a vector containing a sort of p value for each constituent.  This is calculated as the average of the p values for the sine() and cosine() portions used in fitting; whether it makes any sense is an open question.}
+  \item{phase}{a vector of fitted constituent phase.  NOTE: The
+    definition of phase is likely to change as this function evolves.
+    For now, it is phase with respect to the first data sample.} 
+  \item{p}{a vector containing a sort of p value for each constituent.
+    This is calculated as the average of the p values for the sine() and
+    cosine() portions used in fitting; whether it makes any sense is an
+    open question.} 
 }
 
 \section{Test with data(sealevel.tuk)}{
@@ -147,19 +154,21 @@ amplitude 0.50072m and phase 143.1.
 
 \examples{
 library(oce)
-# Fake hourly data, with M2 tide with phase 45 degrees
-hour <- seq(0, 24 * 100)
-eta <- 1 + 2 * sin(0.08051140 * 2 * pi * hour + pi/4)
-sealevel <- as.sealevel(eta)
-tide <- tidem(sealevel)
+# Fake a week simple hourly data series (not sealevel object)
+hour <- seq(0, 24 * 7)
+# M2 tide with phase 45 degrees
+eta <- 1 + 2 * sin(2 * pi * hour / 12.4206 + pi/4)
+tide <- tidem(eta)
 summary(tide)
+# Check: only Z0 and M2 are significant
 plot(tide)
 
-# Fake secondly data, with M2 tide
-t <- 1:(2*86400)
-eta <- sin(t * 2 * pi / 12.42 / 3600)
-sl <- as.sealevel(eta,t+as.POSIXct("2009-02-13 00:00:00"))
-m <- tidem(sl)
+# Supply a start time, using a sealevel object
+t <- seq(0, 10*86400, 3600)		# 10 days
+eta <- sin(0.080511401 * t * 2 * pi / 3600)
+sl <- as.sealevel(eta,t+as.POSIXct("2009-02-13 00:00:00", tz="GMT"))
+m <- tidem(sl, start.time=as.POSIXct("2009-02-13 00:00:00", tz="GMT"))
+# Check: only M2 has non-negligible amplitude
 summary(m)
 
 # The demonstration time series from Foreman (1977),

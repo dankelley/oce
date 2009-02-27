@@ -7,15 +7,17 @@
 \description{Read a data file holding sea level data.  BUG: the time
   vector assumes GMT, regardless of the GMT.offset value.} 
 
-\usage{read.sealevel(file, debug=FALSE, log.action)}
+\usage{read.sealevel(file, tz, log.action, debug=FALSE)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.  See Details for the types of files that are recognized.}
-  \item{debug}{set to \code{TRUE} to get debugging information during processing.}
+  \item{tz}{optional timezone (supercedes any timezone read from the
+    file header)}
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
+  \item{debug}{set to \code{TRUE} to get debugging information during processing.}
 }
 
 \details{This function starts by scanning the first line of the file,

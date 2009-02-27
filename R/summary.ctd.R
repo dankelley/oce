@@ -20,7 +20,7 @@ summary.ctd <- function(object, ...)
     if (!is.null(object$metadata$recovered))          cat("  Recovered:          ", object$metadata$recovery, "\n")
     if (!is.null(object$metadata$water.depth))        cat("  Water depth:        ", object$metadata$water.depth, "\n")
     cat("  No. of levels:      ", length(object$data$temperature),  "\n")
-    cat(sprintf("   %15s  %10s %10s %10s %10s %10s\n", "ITEM", "min", "Q1", "median", "Q3", "max"));
+    cat(sprintf("   %15s  %10s %10s %10s %10s %10s\n", "", "min", "Q1", "median", "Q3", "max"));
     names <- names(object$data)
     for (name in names) {
         f <- fivenum(object$data[[name]])

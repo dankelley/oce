@@ -1,8 +1,11 @@
 tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet = TRUE)
 {
-    if (!inherits(sl, "sealevel")) stop("method is only for sealevel objects")
-
-    if (is.null(start.time)) start.time <- sl$data$t[which(!is.na(sl$data$t))][1]
+    if (!inherits(sl, "sealevel")) {
+        if (inherits(sl, "numeric"))
+            sl <- as.sealevel(sl)
+        else stop("cannot deal with 'sl' of class ", class(sl)[1])
+    }
+    if (missing(start.time)) start.time <- sl$data$t[which(!is.na(sl$data$t))][1]
 
     if (!quiet) {
         cat("start.time=")
@@ -101,11 +104,18 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
 
-    hour <- unclass(as.POSIXct(sl$data$t, tz="GMT")) / 3600 # seconds since 0000-01-01 00:00:00
+    hour <- unclass(as.POSIXct(sl$data$t, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
 
     centralindex <- floor(length(sl$data$t) / 2)
-    hour.wrt.centre <- unclass(hour - hour[centralindex])
-    hour2pi <- 2 * pi * hour.wrt.centre
+
+##    hour.wrt.centre <- unclass(hour - hour[centralindex])
+##    hour2pi <- 2 * pi * hour.wrt.centre
+
+    hour.offset <- unclass(hour - unclass(as.POSIXct(start.time, tz="GMT"))/3600)
+    hour2pi <- 2 * pi * hour.offset
+
+##    cat(sprintf("hour[1] %.3f\n",hour[1]))
+##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
 
     for (i in 1:nc) {
         omega.t <- freq[i] * hour2pi
@@ -134,7 +144,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
                                         # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
                                         #                == s * sin(t) + c * cos(t)
                                         # thus tan(phase) is -c/s
-        phase[i]     <- atan2(-c, s)    # atan2(y,x)
+        phase[i]     <- -atan2(-c, s)   # atan2(y,x)
                                         # FIXME: is the sign right?
         p[i]         <- 0.5 * (p.all[is] + p.all[ic])
     }
@@ -155,7 +165,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     phase2 <- phase - vu                # FIXME: plus or minus??
     negate <- phase2 < 0
     phase2[negate] <- 360 + phase2[negate]
-    phase <- phase2
+#    phase <- phase2
 
     if (!quiet) cat("vu=",vu,"\n")
 
