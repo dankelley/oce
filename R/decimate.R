@@ -8,10 +8,12 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
         res$data <- x$data[i,]
     } else if (method == "filter") {
         if (missing(filter)) stop("must supply a filter")
-        cat("doing filter method\n")
         nvar <- dim(x$data)[2]
         for (var in 1:nvar) {
             res$data[,var] <- filter(x$data[,var], filter)
+            fill <- is.na(res$data[,var])
+            res$data[fill,var] <- x$data[fill,var]
+            ##if (var==2)print(data.frame(fill=fill,orig=x$data[,var],new=res$data[,var]))
         }
         i <- seq(1, dim(x$data)[1], by=by)
         res$data <- res$data[i,]

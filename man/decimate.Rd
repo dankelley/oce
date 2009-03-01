@@ -16,7 +16,13 @@
 
 \details{Later on, other methods will be added, and
   \code{\link{ctd.decimate}} will be retired in favour of this, a more
-  general, function.}
+  general, function.
+
+  The filtering is done with the \code{\link{filter}} function of the
+  stats package.  This produces NA values near the start and end of the
+  series, and since this is bothersome in some applications,
+  \code{decimate} substitutes the original values in those spots.
+}
 
 \value{An object of \code{\link[base]{class}} \code{"oce"} that has been
   subsampled appropriately.}

@@ -1,10 +1,10 @@
 make.filter <- function(type=c("blackman-harris"), m)
 {
     type <- match.arg(type)
-    if (type == "blackman-harris") {
+    if (type == "blackman-harris") {    # See Harris (1978)
         if (missing(m)) stop("must supply 'm'")
-        ## See Harris (1978)
-        if (m == (2 * floor(m/2))) m <- m + 1 # make odd
+        m <- floor(m)
+        if (!(m %% 2)) m <- m + 1 # now, m is an odd integer
         n <- seq(0, m - 1)
         a <- c(0.35875, 0.488829, 0.14128, 0.01168)
         ff <- pi * n / (m - 1)
