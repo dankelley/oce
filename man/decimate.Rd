@@ -2,13 +2,16 @@
 \alias{decimate}
 \title{Decimate an oce object}
 \description{Decimate, or subsample, an oce object.}
-\usage{decimate(x, by=10, method=c("direct"))}
+\usage{decimate(x, by=10, method=c("direct", "filter"), filter)}
 \arguments{
   \item{x}{an \code{oce} object containing a \code{data} element.}
   \item{by}{an indication of the subsampling.  The first element is
     selected, then the \code{1+by} element, etc.}
   \item{method}{only one is provided at the moment: \code{direct}, which
     indicates straight decimate, or subsampling.}
+  \item{filter}{a list of numbers representing a digital filter to be
+    applied to each variable in \code{x$data} before decimation is
+    done. This must be supplied if \code{method="filter"}.}
 }
 
 \details{Later on, other methods will be added, and

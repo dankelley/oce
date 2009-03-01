@@ -9,6 +9,11 @@ sw.N2 <- function(p, sigma.theta=NULL, ...) # BUG: think more about best density
     ok <- !is.na(p) & !is.na(sigma.theta)
                                         #cat(paste("df=",df,"\n"))
     sigma.theta.smooth <- smooth.spline(p[ok], sigma.theta[ok], df=df)
-    sigma.theta.deriv <- predict(sigma.theta.smooth, p, deriv = 1)
-    ifelse(ok, 9.8 * 9.8 * 1e-4 * sigma.theta.deriv$y, NA)
+cat("a\n")
+print(data.frame(p=p[ok],sigma.theta=sigma.theta[ok]))
+    sigma.theta.deriv <- rep(NA, length(p))
+    sigma.theta.deriv[ok] <- predict(sigma.theta.smooth, p[ok], deriv = 1)$y
+print(data.frame(std=sigma.theta.deriv))
+cat("b\n")
+    ifelse(ok, 9.8 * 9.8 * 1e-4 * sigma.theta.deriv, NA)
 }
