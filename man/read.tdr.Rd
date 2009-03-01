@@ -6,13 +6,13 @@
 
 \description{Read an TDR temperature-depth recorder file, producing an object of type \code{tdr}.}
 
-\usage{read.tdr(file, tz, log.action, debug=FALSE)}
+\usage{read.tdr(file, tz=getOption("oce.tz"), log.action, debug=FALSE)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{tz}{optional time zone.  If not supplied, the timezone will be
-    whatever is being used by the operating system.}
+  \item{tz}{time zone.  The default value, \code{oce.tz}, is set to \code{UTC} 
+    at setup.}
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}

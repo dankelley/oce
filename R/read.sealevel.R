@@ -1,4 +1,4 @@
-read.sealevel <- function(file, tz, log.action, debug=FALSE)
+read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- file
@@ -49,10 +49,7 @@ read.sealevel <- function(file, tz, log.action, debug=FALSE)
         GMT.offset     <- GMT.offset.from.tz(tz)
         x <- read.csv(file, skip=header.length, header=FALSE)
         eta <- as.numeric(x$V2)
-        if (missing(tz))
-            t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"))
-        else
-            t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz=tz)
+        t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz=tz)
     } else { # type 1
         if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
         d <- readLines(file)

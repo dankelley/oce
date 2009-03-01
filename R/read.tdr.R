@@ -1,4 +1,4 @@
-read.tdr <- function(file, tz, log.action, debug=FALSE)
+read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
 {
     filename <- file
     if (is.character(file)) {
