@@ -22,6 +22,7 @@ export(
        latlon.format,
        lon.format,
        magic,
+       make.filter,
        make.section,
        oce.as.POSIXlt,
        oce.edit,

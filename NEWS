@@ -1,4 +1,5 @@
 0.1-76
+- add make.filter()
 - add decimate(), which may eventually replace ctd.decimate()
 - read.tdr(): handle 5-column data files; add tz argument
 - plot.profile(): add types sigma+dpdt and sigma+time
