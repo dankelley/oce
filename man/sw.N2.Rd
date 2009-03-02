@@ -15,10 +15,10 @@
   be provided) \strong{or} an object of class \code{ctd} object (in which case
     \code{sigma.theta} is inferred from the object.}
   \item{sigma.theta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}
-  \item{\dots}{Extra arguments that will be passed to 
-    \code{smooth.spline} if supplied.  A common example is to set \code{df}, 
-    the degrees of freedom for the spline fit; if not set, this will be set
-    to the value \code{length(p)/5}.}
+  \item{\dots}{optional extra arguments to be passed to
+    \code{smooth.spline}.  A common example is to set \code{df}, the
+    degrees of freedom for the spline fit; if not set, this will be set
+    to \code{min(length(p)/5, 10)}.}
 }
 
 \details{If the first argument is a \code{ctd} object, then

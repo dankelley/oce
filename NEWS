@@ -1,5 +1,5 @@
 0.1-76
-- sw.N2(): make it tolerate NAs
+- sw.N2(): make it tolerate NAs; adjust df to make result smoother
 - add make.filter()
 - add decimate(), which may eventually replace ctd.decimate()
 - read.tdr(): handle 5-column data files; add tz argument
