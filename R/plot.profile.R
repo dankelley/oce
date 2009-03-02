@@ -135,7 +135,7 @@ plot.profile <- function (x,
         box()
         if (grid) grid(col=col.grid)
     } else if (type == "N2") {
-        N2 <- N2(x$data$pressure, x$data$sigma.theta, df = length(x$data$pressure)/4)
+        N2 <- sw.N2(x$data$pressure, x$data$sigma.theta, ...)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         plot(N2, x$data$pressure,
              xlim=N2lim, ylim=plim,
