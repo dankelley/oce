@@ -17,8 +17,9 @@
   \item{sigma.theta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}
   \item{\dots}{optional extra arguments to be passed to
     \code{smooth.spline}.  A common example is to set \code{df}, the
-    degrees of freedom for the spline fit; if not set, this will be set
-    to \code{min(length(p)/5, 10)}.}
+    degrees of freedom for the spline fit; if not provided as an
+    argument, the value of \code{df} will set to \code{min(length(p)/5,
+    10)}.}
 }
 
 \details{If the first argument is a \code{ctd} object, then
