@@ -2,7 +2,7 @@
 
 \alias{sw.N2}
 
-\title{Seawater square of buoyancy frequency}
+\title{Squared buoyancy frequency for seawater}
 
 \description{Compute 
 \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater profile.
@@ -33,7 +33,7 @@
   \code{\link{plot.profile}} uses \code{df=length(x$p)/5} as an optional
   argument to \code{N2} to do some smoothing of the density profile.}
 
-\value{Square of buoyancy frequency [radian/s].}
+\value{Square of buoyancy frequency [\eqn{radian^2/s^2}{radian^2/s^2}].}
 
 \examples{
 library(oce)
