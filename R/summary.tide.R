@@ -15,7 +15,7 @@ summary.tide <- function(object, p, constituent, ...)
                            Freq=object$freq[ok],
                            Amplitude=sprintf("%10.5f", object$amplitude[ok]),
                            Phase=sprintf("%9.1f", object$phase[ok]),
-                           p=sprintf("%9.4f", object$p[ok]),
+                           p=sprintf("%9.4g", object$p[ok]),
                            sig=sig[ok])
     }
     else {
@@ -26,7 +26,7 @@ summary.tide <- function(object, p, constituent, ...)
                            Freq=object$freq[i],
                            Amplitude=sprintf("%10.5f", object$amplitude[i]),
                            Phase=sprintf("%9.1f", object$phase[i]),
-                           p=sprintf("%9.4f", object$p[i]),
+                           p=sprintf("%9.4g", object$p[i]),
                            sig=sig[i])
     }
     class(rval) <- c("data.frame", "summary.tide")
