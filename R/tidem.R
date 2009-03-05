@@ -476,21 +476,13 @@ summary.tidem <- function(object, p, constituent, ...)
 {
     n <- length(object$p)
     if (!missing(p)) ok <- (object$p <= p) else ok = seq(1, n)
-    sig <- vector(length=n)
-    sig <- rep("", n)
-    sig[object$p<0.1]   <- ".  "
-    sig[object$p<0.05]  <- "*  "
-    sig[object$p<0.01]  <- "** "
-    sig[object$p<0.001] <- "***"
-
     if (missing(constituent)) {
         fit <- data.frame(Const=object$const[ok],
                           Name=object$name[ok],
                           Freq=object$freq[ok],
-                          Amplitude=sprintf("%10.4f", object$amplitude[ok]),
-                          Phase=sprintf("%9.1f", object$phase[ok]),
-                          p=format.pval(object$p[ok]), #sprintf("%9.4f", object$p[ok]),
-                          sig=sig[ok])
+                          Amplitude=object$amplitude[ok],
+                          Phase=object$phase[ok],
+                          p=object$p[ok])
     }
     else {
         i <- which(object$name==constituent)
@@ -498,24 +490,30 @@ summary.tidem <- function(object, p, constituent, ...)
         fit <- data.frame(Const=object$const[i],
                           Name=object$name[i],
                           Freq=object$freq[i],
-                          Amplitude=sprintf("%10.4f", object$amplitude[i]),
-                          Phase=sprintf("%9.1f", object$phase[i]),
-                          p=format.pval(object$p[i]), #sprintf("%9.4f", object$p[i]),
-                          sig=sig[i])
+                          Amplitude=object$amplitude[i],
+                          Phase=object$phase[i],
+                          p=p)
     }
-    rval <- list(fit=fit, start.time=as.POSIXct(object$start.time), call=object$call)
+    misfit <- sqrt(var(object$model$residuals))
+    rval <- list(fit=fit, start.time=as.POSIXct(object$start.time), call=object$call,
+                 misfit=misfit)
     class(rval) <- c("summary.tidem")
     rval
 }
 
-print.summary.tidem <- function(x, ...)
+print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
+                                ...)
 {
     cat("\nCall:\n")
-    cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n\n", sep="")
+    cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n", sep="")
     cat("\nFitted model:\n")
-    print(x$fit)
+    f <- x$fit[3:6]
+    rownames(f) <- as.character(x$fit[,2])
+    printCoefmat(f,digits=digits,signif.stars=TRUE,signif.legend=TRUE,
+                 P.values=TRUE,has.Pvalue=TRUE)
     cat("\nStart time: ",
         paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
+    cat("RMS misfit to data: ", x$misfit, "\n\n")
 }
 
 predict.tidem <- function(object, ...)
