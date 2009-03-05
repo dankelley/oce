@@ -1,15 +1,15 @@
-\name{plot.tide}
+\name{plot.tidem}
 
-\alias{plot.tide}
+\alias{plot.tidem}
 
 \title{Plot a tidal fit}
 
 \description{Plot a summary diagram for a tidal fit.}
 
-\usage{\method{plot}{tide}(x, label.if=NULL, plot.type=c("staircase", "spikes"), log="", ...)}
+\usage{\method{plot}{tidem}(x, label.if=NULL, plot.type=c("staircase", "spikes"), log="", ...)}
 
 \arguments{
-  \item{x}{a \code{tide} object, as created by \code{\link{tidem}}.}
+  \item{x}{a \code{tidem} object, as created by \code{\link{tidem}}.}
   \item{label.if}{if NULL, the function will indicate some particular
 	tidal constituents; if a value is provided, labels will be given for
 	any constituent with amplitude exceeding the value provided.}
@@ -24,11 +24,11 @@
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates a plot for a "\code{tide}" object.  See
+\details{Creates a plot for a "\code{tidem}" object.  See
   \code{\link{tidem}} for examples.}
 
-\seealso{\code{\link{tidem}} fits a "\code{tide}" object, and
-\code{\link{summary.tide}} summarizes such an object.
+\seealso{\code{\link{tidem}} fits a "\code{tidem}" object, and
+\code{\link{summary.tidem}} summarizes such an object.
 }
 
 \examples{

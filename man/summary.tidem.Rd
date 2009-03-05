@@ -1,15 +1,15 @@
-\name{summary.tide}
+\name{summary.tidem}
 
-\alias{summary.tide}
+\alias{summary.tidem}
 
-\title{Summarize a tide object}
+\title{Summarize a tide-model object}
 
-\description{Summarize a tide object.}
+\description{Summarize a tide-model object.}
 
-\usage{\method{summary}{tide}(object, p, constituent, \dots)}
+\usage{\method{summary}{tidem}(object, p, constituent, \dots)}
 
 \arguments{
-  \item{object}{a \code{tide} object, as created by \code{\link{tidem}}.}
+  \item{object}{a \code{tidem} object, as created by \code{\link{tidem}}.}
   \item{p}{optional value of the maximum p value for the display of an
     individual coefficient.  If not given, all coefficients are shown.}
   \item{constituent}{optional name of constituent on which to focus.}
@@ -18,7 +18,7 @@
 
 \details{Pertinent summary information is presented.}
 
-\value{An object of \code{\link[base]{class}} \code{"summary.tide"},
+\value{An object of \code{\link[base]{class}} \code{"summary.tidem"},
 which is a data frame containing the following.
 \item{Name}{the name of the constituent in non-subscript form, e.g. "\code{M2}".}
 \item{Frequency}{the frequency of the constituent, in inverse hours.}
@@ -29,7 +29,7 @@ which is a data frame containing the following.
 }
 
 \seealso{\code{\link{tidem}} fits a tidal model to data (and describes
-  the nature of \code{tide} objects), and \code{\link{plot.tide}} plots
+  the nature of \code{tide} objects), and \code{\link{plot.tidem}} plots
   a \code{tide} object.}
 
 \examples{

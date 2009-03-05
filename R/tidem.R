@@ -27,7 +27,7 @@ plot.tidem <- function(x, label.if=NULL, plot.type=c("staircase", "spikes"), log
             }
         }
     }
-    if (!inherits(x, "tide")) stop("method is only for tidal analysis objects")
+    if (!inherits(x, "tidem")) stop("method is only for tidal analysis objects")
     frequency <- x$freq[-1] # trim z0
     amplitude <- x$amplitude[-1]
     name      <- x$name[-1]
@@ -300,6 +300,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
         print(start.time)
         cat("\n")
     }
+    cl <- match.call()
 
     data("tidedata")
     td <- get("tidedata", pos=globalenv())
@@ -458,7 +459,8 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     if (!quiet) cat("vu=",vu,"\n")
 
     rval <- list(model=model,
-                 start.time=start.time,
+                 call=cl,
+                 start.time=as.POSIXct(start.time),
                  const=c(1,   index),
                  name=c("Z0", name),
                  freq=c(0,    freq),
@@ -485,9 +487,9 @@ summary.tidem <- function(object, p, constituent, ...)
         fit <- data.frame(Const=object$const[ok],
                           Name=object$name[ok],
                           Freq=object$freq[ok],
-                          Amplitude=sprintf("%10.5f", object$amplitude[ok]),
+                          Amplitude=sprintf("%10.4f", object$amplitude[ok]),
                           Phase=sprintf("%9.1f", object$phase[ok]),
-                          p=sprintf("%9.4f", object$p[ok]),
+                          p=format.pval(object$p[ok]), #sprintf("%9.4f", object$p[ok]),
                           sig=sig[ok])
     }
     else {
@@ -496,27 +498,28 @@ summary.tidem <- function(object, p, constituent, ...)
         fit <- data.frame(Const=object$const[i],
                           Name=object$name[i],
                           Freq=object$freq[i],
-                          Amplitude=sprintf("%10.5f", object$amplitude[i]),
+                          Amplitude=sprintf("%10.4f", object$amplitude[i]),
                           Phase=sprintf("%9.1f", object$phase[i]),
-                          p=sprintf("%9.4f", object$p[i]),
+                          p=format.pval(object$p[i]), #sprintf("%9.4f", object$p[i]),
                           sig=sig[i])
     }
-    rval <- list(fit=fit, start.time=object$start.time, call="call")
+    rval <- list(fit=fit, start.time=as.POSIXct(object$start.time), call=object$call)
     class(rval) <- c("summary.tidem")
     rval
 }
 
-print.summary.tidem <- function(x, digits = max(3, getOption("digits") - 3),
-                                signif.start = getOption("show.signif.stars"),
-                                ...)
+print.summary.tidem <- function(x, ...)
 {
     cat("\nCall:\n")
     cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n\n", sep="")
+    cat("\nFitted model:\n")
     print(x$fit)
-    cat("Start time:", x$start.time, "\n")
+    cat("\nStart time: ",
+        paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
 }
 
 predict.tidem <- function(object, ...)
 {
+    ## FIXME: should construct a matrix of sine and cosine, then pass to predict
     predict(object$model, ...)
 }

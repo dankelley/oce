@@ -37,9 +37,8 @@ export(
        plot.profile,
        plot.sealevel,
        plot.section,
-       plot.tide,
+       plot.tidem,
        plot.windrose,
-       predict.tide,
        processing.log.append,
        processing.log.item,
        processing.log.summary,
@@ -90,11 +89,11 @@ S3method(plot, lobo)
 S3method(plot, sealevel)
 S3method(plot, section)
 S3method(plot, tdr)
-S3method(plot, tide)
+S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
-
-S3method(predict, tide)
+S3method(print, summary.tidem)
+S3method(predict, tidem)
 
 S3method(summary, coastline)
 S3method(summary, ctd)
@@ -103,6 +102,6 @@ S3method(summary, oce)
 S3method(summary, sealevel)
 S3method(summary, section)
 S3method(summary, tdr)
-S3method(summary, tide)
+S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)

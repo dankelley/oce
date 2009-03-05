@@ -1,10 +1,10 @@
-\name{predict.tide}
-\alias{predict.tide}
+\name{predict.tidem}
+\alias{predict.tidem}
 \title{Predict a time series from a tidal model}
 \description{Predict a time series from a tidal model.}
-\usage{predict.tide(object, ...)}
+\usage{\method{predict}{tidem}(object, ...)}
 \arguments{
-  \item{object}{a \code{tide} object.}
+  \item{object}{a \code{tidem} object.}
   \item{\dots}{optional arguments passed on to children.}
 }
 
