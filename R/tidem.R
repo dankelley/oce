@@ -170,6 +170,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     if (!quiet) cat("vu=",vu,"\n")
 
     rval <- list(model=model,
+                 start.time=start.time,
                  const=c(1,   index),
                  name=c("Z0", name),
                  freq=c(0,    freq),
