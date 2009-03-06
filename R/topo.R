@@ -96,3 +96,38 @@ plot.topo <- function(x,
                bg="white", legend=legend[o], col=col[o])
     }
 }
+read.topo <- function(file, log.action)
+{
+    nh <- 6
+    header <- readLines(file, n=nh)
+    ncols <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
+    nrows <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
+    lon.ll <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])
+    lat.ll <- as.numeric(strsplit(header[4],"[ ]+",perl=TRUE)[[1]][2])
+    cellsize <- as.numeric(strsplit(header[5],"[ ]+",perl=TRUE)[[1]][2])
+    zz <- as.matrix(read.table(file, header=FALSE, skip=nh),byrow=TRUE)
+    z <- t(zz[dim(zz)[1]:1,])
+    lon <- lon.ll + cellsize * seq(0, ncols-1)
+    lat <- lat.ll + cellsize * seq(0, nrows-1)
+    data <- list(lon=lon, lat=lat, z=z)
+    metadata <- list(filename=file, cellsize=cellsize, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("topo", "oce")
+    res
+}
+summary.topo <- function(object, ...)
+{
+    if (!inherits(object, "topo")) stop("method is only for topo objects")
+    cat("ETOPO2 dataset\n")
+    lat.range <- range(object$data$lat, na.rm=TRUE)
+    cat("  Latitude  from ", lat.format(lat.range[1]), " to ", lat.format(lat.range[2]),
+        " in ", length(object$data$lat), " points\n",sep="")
+    lon.range <- range(object$data$lon, na.rm=TRUE)
+    cat("  Longitude from ", lon.format(lon.range[1]), " to ", lon.format(lon.range[2]),
+        " in ", length(object$data$lon), " points\n", sep="")
+    z.range <- range(object$data$z, na.rm=TRUE)
+    cat("  Altitude  from ", z.range[1], "m to ", z.range[2], "m\n",sep="")
+    processing.log.summary(object)
+}
