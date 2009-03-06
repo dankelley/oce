@@ -46,3 +46,23 @@ oce.as.POSIXlt <- function (x, tz = "")
         tz <- tzone[1]
     .Internal(as.POSIXlt(x, tz))
 }
+oce.edit <- function(x, item, value, action, reason="not specified", person="not specified")
+{
+    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    if (!missing(item)) {
+        if (missing(value)) stop("must supply a 'value' for this 'item'")
+        if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
+        x$metadata[item] <- value
+    } else if (!missing(action)) {
+        eval(parse(text=action))        # FIXME: should check if it worked
+    } else {
+        stop("must supply either an 'item' plus a 'value', or an 'action'")
+    }
+    processing.log.append(x, paste(deparse(match.call()), sep="", collapse=""))
+}
+oce.write.table <- function (x, file="", ...)
+{
+    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    if (!("row.names" %in% names(list(...)))) write.table(x$data, file, row.names=FALSE, ...)
+    else write.table(x$data, file, ...)
+}
