@@ -262,3 +262,8 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, g
     list(xg=xg, yg=yg, zg=zg)
 }
 
+coriolis <- function(lat, degrees=TRUE)
+{
+    if (degrees) lat <- lat * 0.0174532925199433
+    1.4544410433286078e-4 * sin(lat)
+}
