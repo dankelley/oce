@@ -49,7 +49,9 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
         GMT.offset     <- GMT.offset.from.tz(tz)
         x <- read.csv(file, skip=header.length, header=FALSE)
         eta <- as.numeric(x$V2)
-        t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz=tz)
+        ## t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz=tz) # fails, for some reason
+        t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz="UTC")
+        t <- t + 3600 * GMT.offset
     } else { # type 1
         if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
         d <- readLines(file)
@@ -135,7 +137,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
                      reference.code=reference.code,
                      units=NA,
                      n=length(t),
-                     sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
+                     deltat=as.numeric(difftime(t[2], t[1], units="hours")))
 
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)

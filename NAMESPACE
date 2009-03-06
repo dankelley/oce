@@ -15,6 +15,7 @@ export(
        fill.gap,
        gebco.colors,
        geod.dist,
+       GMT.offset.from.tz,
        gravity,
        header,
        interp.barnes,

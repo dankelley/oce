@@ -83,8 +83,8 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
                                         #
                                         # Draw spectra, if series has no NA, so that spectrum is easy to construct
         if (!num.NA) {
-            Eta <- ts(eta.m,start=1,frequency=1/x$metadata$sampling.interval)
-            s <- spectrum(Eta-mean(Eta),spans=3,plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
+            Eta <- ts(eta.m,start=1,deltat=x$metadata$deltat)
+            s <- spectrum(Eta-mean(Eta),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
             par(mar=c(2,5,1,1)+0.1)
             plot(s$freq,s$spec,xlim=c(0,0.1),
                  xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),

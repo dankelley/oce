@@ -13,7 +13,7 @@ as.sealevel <- function(
                         decimation.method=NA,
                         reference.offset=NA,
                         reference.code=NA,
-                        sampling.interval=NA)
+                        deltat)
 {
     if (missing(eta)) stop("must supply sealevel height, eta, in metres")
     n <- length(eta)
@@ -26,22 +26,25 @@ as.sealevel <- function(
         t <- as.POSIXct(t, tz="GMT") # FIXME: should this be GMT?
     }
     data <- data.frame(t=t, eta=eta)
-    if (is.na(sampling.interval)) sampling.interval <-
-	metadata <- list(header=header,
-                         year=year,
-                         station.number=station.number,
-                         station.version=station.version,
-                         station.name=station.name,
-                         region=region,
-                         latitude=latitude,
-                         longitude=longitude,
-                         GMT.offset=GMT.offset,
-                         decimation.method=decimation.method,
-                         reference.offset=reference.offset,
-                         reference.code=reference.code,
-                         units=units,
-                         n=length(t),
-                         sampling.interval=as.numeric(difftime(t[2], t[1], units="hours")))
+    if (missing(deltat))
+        deltat <- difftime(t[2], t[1], units="hours")
+    if (is.na(deltat) | deltat <= 0)
+        deltat <- 1
+    metadata <- list(header=header,
+                     year=year,
+                     station.number=station.number,
+                     station.version=station.version,
+                     station.name=station.name,
+                     region=region,
+                     latitude=latitude,
+                     longitude=longitude,
+                     GMT.offset=GMT.offset,
+                     decimation.method=decimation.method,
+                     reference.offset=reference.offset,
+                     reference.code=reference.code,
+                     units=units,
+                     n=length(t),
+                     deltat=deltat)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("sealevel", "oce")

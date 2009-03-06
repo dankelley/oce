@@ -8,7 +8,7 @@
 \usage{as.sealevel(eta,  t,  header=NULL,
   station.number=NA, station.version=NA, station.name=NULL, region=NA,
   year=NA, latitude=NA, longitude=NA, GMT.offset=NA, decimation.method=NA,
-  reference.offset=NA, reference.code=NA, sampling.interval=NA)
+  reference.offset=NA, reference.code=NA, deltat)
 }
 \arguments{
   \item{eta}{a list of sea-level heights in metres, in an hourly sequence.}
@@ -33,8 +33,11 @@
     and 4 meaning some other method.}
   \item{reference.offset}{?}
   \item{reference.code}{?}
-  \item{sampling.interval}{optional interval between samples, in hours;
-    if not provided, 1 hour is assumed.}
+  \item{deltat}{optional interval between samples, in hours (as for the
+    \code{\link{ts}} timeseries function). If this is not provided, and
+    \code{t} can be understood as a time, then the difference between
+    the first two times is used.  If this is not provided, and \code{t}
+    cannot be understood as a time, then 1 hour is assumed.}
 }
 \details{
   The arguments are based on the standard data format, as described

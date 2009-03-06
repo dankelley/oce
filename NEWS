@@ -1,5 +1,6 @@
 0.1-77
 - improve summary.tidem(), add print.summary.tidem(), and name the base 'tidem'
+- as.sealevel(): rename sampling.interval as deltat, and infer it from data if possible
 
 0.1-76
 - sw.N2(): make it tolerate NAs; adjust df to make result smoother
