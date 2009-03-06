@@ -1,3 +1,31 @@
+as.windrose <- function(x, y, dtheta = 15)
+{
+    dt <- dtheta * pi / 180
+    dt2 <- dt / 2
+    R <- sqrt(x^2 + y^2)
+    angle <- atan2(y, x)
+    L <- max(R, na.rm=TRUE)
+    nt <- 2 * pi / dt
+    theta <- count <- mean <- vector("numeric", nt)
+    fivenum <- matrix(0, nt, 5)
+    for (i in 1:nt) {
+        theta[i] <- i * dt
+        if (theta[i] < pi)
+            inside <- (angle < (theta[i] + dt2)) & (angle > (theta[i] - dt2))
+        else {
+            inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((2*pi+angle) > (theta[i] - dt2))
+        }
+        count[i] <- sum(inside)
+        mean[i] <- mean(R[inside], na.rm=TRUE)
+        fivenum[i,] <- fivenum(R[inside], na.rm=TRUE)
+    }
+    data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
+    metadata <- list(dtheta=dtheta)
+    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, log=log.item)
+    class(res) <- c("windrose", "oce")
+    res
+}
 plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  ...)
 {
     if (!inherits(x, "windrose")) stop("method is only for wind-rose objects")
@@ -82,3 +110,18 @@ plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  
     }
     invisible()
 }
+summary.windrose <- function(object, ...)
+{
+    if (!inherits(object, "windrose")) stop("method is only for windrose objects")
+    cat("n=", object$metadata$n, "dtheta=", object$metadata$dtheta,"\n")
+    n <- length(object$data$theta)
+    cat(sprintf("%10s %10s %12s %12s %12s %12s %12s\n",
+                "Angle", "Count", "Mean", "Min", "Lower Hinge", "Median", "Upper Hinge", "Max"))
+    for (i in 1:n) {
+        f <- object$data$fivenum[i,]
+        cat(sprintf("%10g %10g %12.4f %12.4f %12.4f %12.4f %12.4f\n",
+                    object$data$theta[i], object$data$count[i], object$data$mean[i], f[1], f[2], f[3], f[4], f[5]))
+    }
+    processing.log.summary(object)
+}
+
