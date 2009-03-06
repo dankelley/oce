@@ -1,0 +1,135 @@
+as.coastline <- function(latitude, longitude)
+{
+    n <- length(latitude)
+    if (n != length(longitude)) stop("Lengths of longitude and latitude must be equal")
+    data <- data.frame(longitude=longitude, latitude=latitude)
+    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=NULL, processing.log=log.item)
+    class(res) <- c("coastline", "oce")
+    res
+}
+
+plot.coastline <- function (x, asp=NA, ...)
+{
+    debug <- FALSE
+    if (!inherits(x, "coastline"))
+        stop("method is only for coastline objects")
+    asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+    if (debug) cat("asp.middle=", asp.middle, "\n")
+    if (is.na(asp))
+        asp <- asp.middle
+    ## The following is a somewhat provisional hack, necessiated by the tendency
+    ## of plot() to produce latitudes past the poles.
+    ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
+    xr <- range(x$data$longitude, na.rm=TRUE)
+    yr <- range(x$data$latitude, na.rm=TRUE)
+    asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
+    if (debug) cat("asp.page=", asp.page, "\n")
+    gamma <- asp.middle / asp.page
+    if (debug) cat("asp.middle/asp.page=", asp.middle / asp.page, "\n")
+    if ((asp.middle / asp.page) < 1) {
+        if (debug) cat("type 1\n")
+        xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp.middle / asp.page)
+    } else {
+        if (debug) cat("type 2\n")
+        yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp.middle / asp.page)
+    }
+    plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i", ...)
+#    par(new=TRUE)
+    if (debug) points(xr, yr, col="blue", pch=20, cex=3)
+    if (debug)     abline(v=xr, col="red")
+    yaxp <- par("yaxp")
+    if (debug) cat("par(pin)",par("pin"),"\n")
+    if (yaxp[1] < -90 | yaxp[2] > 90) {
+        opin <- par("pin")
+        if (debug) cat("inside pin=", par("pin"), " yaxp=",yaxp,"\n")
+        yscale <- 180 / (yaxp[2] - yaxp[1])
+        if (debug) cat("yscale",yscale," new opin[2]", yscale*opin[2],"\n")
+        par(pin=c(opin[1], yscale*opin[2]))
+    	lines(x$data$longitude, x$data$latitude, asp=asp, yaxp=c(-90,90,6), yaxs="i", xlab="", ylab="", type="l", ...)
+        par("pin"=opin)
+    } else {
+    	lines(x$data$longitude, x$data$latitude, asp=asp, xlab="", ylab="", ...)
+    }
+    if (debug) {
+        cat("par(pin)",par("pin"),"\n")
+        cat("lon lim:");print(range(x$data$longitude,na.rm=TRUE))
+        cat("lat lim:");print(range(x$data$latitude,na.rm=TRUE))
+        cat("par:");print(par())
+    }
+}
+
+read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE,log.action)
+{
+    type <- match.arg(type)
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    if (type == "R" || type == "S") {
+        ##
+        ## e.g. data from http://rimmer.ngdc.noaa.gov/coast/
+        ## e.g. "~/data/Coastline/wcl_1_5000000.dat")
+        if (is.character(file)) {
+            file <- file(file, "r")
+            on.exit(close(file))
+        }
+        if (!inherits(file, "connection")) stop("'file' must be a character string or connection")
+        if (!isOpen(file)) {
+            open(file, "r")
+            on.exit(close(file))
+        }
+        data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
+        res <- list(data=data, metadata=NULL, processing.log=log.item)
+    } else if (type == "mapgen") {
+        header <- scan(file, what=character(0), nlines=1, quiet=TRUE);
+        if (debug) {
+            cat("method is mapgen\n")
+            cat("header ")
+            cat(header)
+        }
+        separator <- NULL
+                                        # mapgen    # -b
+                                        # matlab	nan nan
+                                        # Splus     NA NA
+                                        # mapgen...
+                                        #	1
+                                        #	...
+                                        #	END
+                                        #	2
+                                        #   ...
+                                        #   END
+        if (all.equal(header, c("#","-b"))) {
+            lonlat <- scan(file,what=double(0),na.strings=c("#","-b"), quiet=TRUE)
+        } else {
+            if (all.equal(header, c("nan","nan"))) {
+                lonlat <- scan(file,what=double(0),na.strings=c("nan","nan"), quiet=TRUE)
+            } else {
+                if (all.equal(header, c("NA","NA"))) {
+                    lonlat <- scan(file,what=double(0), quiet=TRUE)
+                } else {
+                    stop(cat("Unknown file type; the unrecognized header line is '",header,"'\n",sep=" "))
+                }
+            }
+        }
+        lonlat <- matrix(lonlat, ncol=2,byrow=TRUE)
+        data <- data.frame(longitude=lonlat[,1], latitude=lonlat[,2])
+        res <- list(data=data, metadata=NULL, processing.log=log.item)
+    } else {
+        stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
+    }
+    class(res) <- c("coastline", "oce")
+    res
+}
+
+summary.coastline <- function(object, ...)
+{
+    if (!inherits(object, "coastline")) stop("method is only for coastline objects")
+    cat(sprintf("Coastline object contains %d points, bounded within box\n",
+                length(object$data$longitude)))
+    cat(sprintf("%8.3f < longitude < %8.3f\n",
+                min(object$data$longitude, na.rm=TRUE),
+                max(object$data$longitude, na.rm=TRUE)))
+    cat(sprintf("%8.3f < latitude  < %8.3f\n",
+                min(object$data$latitude,  na.rm=TRUE),
+                max(object$data$latitude,  na.rm=TRUE)))
+    processing.log.summary(object)
+}
