@@ -123,3 +123,22 @@ GMT.offset.from.tz <- function(tz) {
 	if (tz == "Y"  )	return(12)   	# Yankee Time Zone	Military	UTC - 12 hours
 	if (tz == "Z"  )	return(0)	    # Zulu Time Zone	Military	UTC
 }
+gravity <- function(lat, degrees=TRUE)
+{
+    if (degrees) lat <- lat * 0.0174532925199433
+    9.780318*(1.0+5.3024e-3*sin(lat)^2-5.9e-6*sin(2*lat)^2)
+}
+make.filter <- function(type=c("blackman-harris"), m)
+{
+    type <- match.arg(type)
+    if (type == "blackman-harris") {    # See Harris (1978)
+        if (missing(m)) stop("must supply 'm'")
+        m <- floor(m)
+        if (!(m %% 2)) m <- m + 1 # now, m is an odd integer
+        n <- seq(0, m - 1)
+        a <- c(0.35875, 0.488829, 0.14128, 0.01168)
+        ff <- pi * n / (m - 1)
+        coef <- a[1] - a[2]*cos(2*ff) + a[3]*cos(4*ff) - a[4]*cos(6*ff)
+        coef / sum(coef)                # make unit sum
+    }
+}
