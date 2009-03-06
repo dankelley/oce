@@ -502,6 +502,7 @@ summary.tidem <- function(object, p, constituent, ...)
 }
 
 print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
+                                signif.stars= getOption("show.signif.stars"),
                                 ...)
 {
     cat("\nCall:\n")
@@ -509,8 +510,9 @@ print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
     cat("\nFitted model:\n")
     f <- x$fit[3:6]
     rownames(f) <- as.character(x$fit[,2])
-    printCoefmat(f,digits=digits,signif.stars=TRUE,signif.legend=TRUE,
-                 P.values=TRUE,has.Pvalue=TRUE)
+    printCoefmat(f, digits=digits,
+                 signif.stars=signif.stars, signif.legend=TRUE,
+                 P.values=TRUE, has.Pvalue=TRUE, ...)
     cat("\nStart time: ",
         paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
     cat("RMS misfit to data: ", x$misfit, "\n\n")
