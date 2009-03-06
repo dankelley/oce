@@ -355,3 +355,8 @@ gebco.colors <- function(n=9, region=c("water", "land", "both"), type=c("fill","
     }
     rgb(r, g, b)
 }
+header <- function(x)
+{
+    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    return(x$metadata$header)
+}
