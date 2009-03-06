@@ -1034,3 +1034,176 @@ plot.TS <- function (x,
     par(mar=old.mar)
     par(mgp=old.mgp)
 }
+plot.profile <- function (x,
+                          type = "S",
+                          col.S = "darkgreen",
+                          col.t = "red",
+                          col.rho = "blue",
+                          col.N2 = "brown",
+                          col.dpdt = "darkgreen",
+                          col.time = "darkgreen",
+                          grid = FALSE,
+                          col.grid = "lightgray",
+                          Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
+                          lwd=par("lwd"),
+                          ...)
+{
+    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    pname <- "Pressure [ dbar ]"
+    if (missing(plim)) plim <- rev(range(x$data$pressure, na.rm=TRUE))
+    plim <- sort(plim, decreasing=TRUE)
+    axis.name.loc <- par("mgp")[1]
+    know.time.unit <- FALSE
+    if ("time" %in% names(x$data)) {
+        know.time.unit <- TRUE
+        time <- x$data$time
+    } else {
+        time <- 0:(length(x$data$pressure) - 1)
+        if (!is.na(x$metadata$sample.interval)) {
+            know.time.unit <- TRUE
+            time <- time * x$metadata$sample.interval
+        }
+    }
+    if (type == "index") {
+        index <- 1:length(x$data$pressure)
+        plot(index, x$data$pressure, ylim=plim, xlab = "index", ylab = pname, type='l')
+    } else if (type == "density+time") {
+        if (missing(densitylim)) densitylim <- range(x$data$sigma.theta, na.rm=TRUE)
+	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        plot(st, x$data$pressure,
+             xlim=densitylim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+        axis(2)
+        box()
+        lines(st, x$data$pressure, col = col.rho, lwd=lwd)
+        par(new = TRUE)
+        if (missing(timelim)) timelim <- range(time, na.rm=TRUE)
+        plot(time, x$data$pressure, xlim=timelim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.time)
+        axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.time)
+        lines(time, x$data$pressure, lwd=lwd, col=col.time)
+        if (know.time.unit)
+            mtext(expression(paste(Delta*t, " [ s ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.time)
+        else
+            mtext(expression(paste(Delta*t, " [ unknown unit ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.time)
+        box()
+        if (grid) grid(col=col.grid)
+    } else if (type == "density+dpdt") {
+        if (missing(densitylim)) densitylim <- range(x$data$sigma.theta, na.rm=TRUE)
+	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        plot(st, x$data$pressure,
+             xlim=densitylim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+        axis(2)
+        box()
+        lines(st, x$data$pressure, col = col.rho, lwd=lwd)
+        par(new = TRUE)
+        dpdt <- diff(x$data$pressure) / diff(time)
+        dpdt <- c(dpdt[1], dpdt)        # fake first point
+        df <- min(max(x$data$pressure, na.rm=TRUE) / 5, length(x$data$pressure) / 10) # FIXME: adjust params
+        dpdt.sm <- smooth.spline(x$data$pressure, dpdt, df=df)
+        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt)
+        axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
+        lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
+        if (know.time.unit)
+            mtext(expression(paste(dp/dt, " [ dbar/s ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
+        else
+            mtext(expression(paste(dp/dt, " [ dbar/(time-unit) ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
+        box()
+        if (grid) grid(col=col.grid)
+    } else if (type == "S") {
+        if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
+        plot(x$data$salinity, x$data$pressure,
+             xlim=Slim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext("Salinity [ PSU ]", side = 3, line = axis.name.loc, col = col.S, cex=par("cex"))
+        axis(2)
+        axis(3, col = col.S, col.axis = col.S, col.lab = col.S)
+        box()
+        if (grid) grid(col=col.grid)
+        lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
+    } else if (type == "T") {
+        if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
+        plot(x$data$temperature, x$data$pressure,
+             xlim=Tlim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
+        axis(2)
+        axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
+        box()
+        if (grid) grid(col=col.grid)
+        lines(x$data$temperature, x$data$pressure, col = col.t, lwd=lwd)
+    } else if (type == "density") {
+	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        if (missing(densitylim)) densitylim <- range(st, na.rm=TRUE)
+        plot(st, x$data$pressure,
+             xlim=densitylim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+        axis(2)
+        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+        box()
+        if (grid) grid(col=col.grid)
+        lines(x$data$sigma.theta, x$data$pressure, col = col.rho, lwd=lwd)
+    } else if (type == "density+N2") {
+        if (missing(densitylim)) densitylim <- range(x$data$sigma.theta, na.rm=TRUE)
+	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        plot(st, x$data$pressure,
+             xlim=densitylim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
+        mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
+        axis(2)
+        box()
+        lines(st, x$data$pressure, col = col.rho, lwd=lwd)
+        par(new = TRUE)
+        N2 <- sw.N2(x$data$pressure, st, ...)
+        if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
+        plot(N2, x$data$pressure,
+             xlim=N2lim, ylim=plim,
+             type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd)
+        axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
+        lines(N2, x$data$pressure, col = col.N2, lwd=lwd)
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
+        box()
+        if (grid) grid(col=col.grid)
+    } else if (type == "N2") {
+        N2 <- sw.N2(x$data$pressure, x$data$sigma.theta, ...)
+        if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
+        plot(N2, x$data$pressure,
+             xlim=N2lim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col.N2, cex=par("cex"))
+        axis(2)
+        axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2)
+        box()
+        if (grid) grid(col=col.grid)
+        lines(N2, x$data$pressure, col = col.N2, lwd=lwd)
+        abline(v = 0, col = col.N2)
+    } else if (type == "S+T") {
+        if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
+        if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
+        plot(x$data$temperature, x$data$pressure,
+             xlim=Tlim, ylim=plim,
+             type = "n", xlab = "", ylab = pname, axes = FALSE)
+        axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
+        mtext(expression(paste("Temperature [ ", degree, "C ]")), side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
+        axis(2)
+        box()
+        lines(x$data$temperature, x$data$pressure, col = col.t, lwd=lwd)
+        par(new = TRUE)
+        plot(x$data$salinity, x$data$pressure,
+             xlim=Slim, ylim=plim,
+             type = "n", xlab = "", ylab = "", axes = FALSE)
+        axis(1, col = col.S, col.axis = col.S, col.lab = col.S)
+        lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
+        mtext("Salinity [ PSU ]", side = 1, line = axis.name.loc, col = col.S, cex=par("cex"))
+        box()
+        if (grid) grid(col=col.grid)
+    } else {
+        stop("unknown type, ", type, ", given")
+    }
+}
