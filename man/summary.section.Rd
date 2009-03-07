@@ -6,11 +6,10 @@
 
 \description{Summarize a CTD section.}
 
-\usage{\method{summary}{section}(object, quiet, \dots)}
+\usage{\method{summary}{section}(object, \dots)}
 
 \arguments{
   \item{object}{a \code{section} object, e.g. as read by \code{\link{make.section}}.}
-  \item{quiet}{set \code{TRUE} to prevent this from printing anything, e.g. if the goal is just to get the return value.}
   \item{\dots}{passed to children.}
 }
 

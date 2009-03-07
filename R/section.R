@@ -478,34 +478,49 @@ section.smooth <- function(section, ...)
     rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
-summary.section <- function(object, quiet=FALSE, ...)
+
+summary.section <- function(object, ...)
 {
     if (!inherits(object, "section")) stop("method is only for section objects")
     num.stations <- length(object$data$station)
-    if (!quiet) cat("Section", object$metadata$section.id, "has stations:\n")
-    have.water.depth <- !is.na(object$data$station[[1]]$metadata$water.depth)
-    lat1 <- object$metadata$latitude[1]
-    lon1 <- object$metadata$longitude[1]
-    depth <- vector("numeric", num.stations)
-    distance <- vector("numeric", num.stations)
-    levels <- vector("numeric", num.stations)
-    station.id <- object$metadata$station.id
-    lat.fmt  <- lat.format(object$metadata$latitude)
-    lon.fmt  <- lon.format(object$metadata$longitude)
+    stn.sum <- matrix(nrow=num.stations, ncol=5)
+    res <- list(section.id=object$metadata$section.id,
+                num.stations=num.stations,
+                stn.sum=stn.sum)
+    lon1 <- object$data$station[[1]]$metadata$longitude
+    lat1 <- object$data$station[[1]]$metadata$latitude
     for (i in 1:num.stations) {
         stn <- object$data$station[[i]]
-        depth[i] <- if (have.water.depth) stn$metadata$water.depth else max(stn$data$pressure, na.rm=TRUE)
-        distance[i] <- sprintf("%.1fkm", geod.dist(lat1, lon1, stn$metadata$latitude, stn$metadata$longitude))
-        levels[i] <- length(stn$data$pressure)
-    }
-    if (!quiet) {
-        if (have.water.depth) {
-            print(data.frame(Station=station.id, Latitude=lat.fmt, Longitude=lon.fmt, Depth=depth, Distance=distance, Levels=levels))
+        stn.sum[i, 1] <- stn$metadata$longitude
+        stn.sum[i, 2] <- stn$metadata$longitude
+        stn.sum[i, 3] <- length(stn$data$pressure)
+        if (is.finite(stn$metadata$water.depth)) {
+            stn.sum[i, 3] <- stn$metadata$water.depth
+        } else {
+            temp <- stn$data$temperature
+            wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
+            stn.sum[i, 4] <- stn$data$pressure[wdi]
         }
-        else {
-            print(data.frame(Station=station.id, Latitude=lat.fmt, Longitude=lon.fmt, Distance=distance, Levels=levels))
-        }
-        processing.log.summary(object)
+        stn.sum[i, 5] <- geod.dist(lat1, lon1, stn$metadata$latitude, stn$metadata$longitude)
     }
-    invisible(data.frame(station=station.id, latitude=object$metadata$latitude, longitude=object$metadata$longitude))
+    colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
+    rownames(stn.sum) <- object$metadata$station.id
+    res$stn.sum <- stn.sum
+    ## processing.log.summary(object)
+    class(res) <- "summary.section"
+    res
 }
+
+print.summary.section <- function(x, digits=max(6, getOption("digits") - 1), ...)
+{
+    num.stations <- x$num.stations
+    cat("\nSection \"", x$section.id, "\" ",sep="")
+    if (num.stations > 0) {
+        cat("contains ", num.stations, "stations (first column is station ID):\n")
+        print(x$stn.sum, digits=digits)
+    } else {
+        cat("contains no stations.\n")
+    }
+    cat("\n")
+}
+

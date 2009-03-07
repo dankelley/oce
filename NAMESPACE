@@ -94,6 +94,7 @@ S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
 S3method(print, summary.ctd)
+S3method(print, summary.station)
 S3method(print, summary.tidem)
 S3method(predict, tidem)
 
