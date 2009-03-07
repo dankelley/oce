@@ -28,12 +28,7 @@ processing.log.summary <- function(object)
     n <- length(object$processing.log$action)
     if (n > 0) {
         res <- NULL
-        cat("n=",n,"\n")
         for (i in 1:n) {
-            cat("i=",i,"\n")
-            print(object$processing.log$action[i])
-            print(object$processing.log$time[i])
-            print(as.character(as.POSIXlt(object$processing.log$time[i], "UTC")))
             res <- c(res, paste("  ",
                                 paste(as.character(as.POSIXlt(object$processing.log$time[i], "UTC"),sep=""),
                                       "UTC\n   ", object$processing.log$action[i], "\n"),sep=""))
