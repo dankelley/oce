@@ -1,5 +1,5 @@
 0.1-77
-- rework summary() for tidem, ctd, section, tdr, sealevel coastline [LATER topo, lobo]
+- rework summary() for tidem, ctd, section, tdr, sealevel, coastline, topo [LATER lobo]
 - as.sealevel(): rename sampling.interval as deltat, and infer it from data if possible
 
 0.1-76

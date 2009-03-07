@@ -99,6 +99,7 @@ S3method(print, summary.sealevel)
 S3method(print, summary.section)
 S3method(print, summary.tdr)
 S3method(print, summary.tidem)
+S3method(print, summary.topo)
 S3method(predict, tidem)
 
 S3method(summary, coastline)

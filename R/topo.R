@@ -117,17 +117,26 @@ read.topo <- function(file, log.action)
     class(res) <- c("topo", "oce")
     res
 }
+
 summary.topo <- function(object, ...)
 {
     if (!inherits(object, "topo")) stop("method is only for topo objects")
-    cat("ETOPO2 dataset\n")
-    lat.range <- range(object$data$lat, na.rm=TRUE)
-    cat("  Latitude  from ", lat.format(lat.range[1]), " to ", lat.format(lat.range[2]),
-        " in ", length(object$data$lat), " points\n",sep="")
-    lon.range <- range(object$data$lon, na.rm=TRUE)
-    cat("  Longitude from ", lon.format(lon.range[1]), " to ", lon.format(lon.range[2]),
-        " in ", length(object$data$lon), " points\n", sep="")
-    z.range <- range(object$data$z, na.rm=TRUE)
-    cat("  Altitude  from ", z.range[1], "m to ", z.range[2], "m\n",sep="")
-    processing.log.summary(object)
+    res <- list(lat.range=range(object$data$lat, na.rm=TRUE),
+                lon.range=range(object$data$lon, na.rm=TRUE),
+                z.range=range(object$data$z, na.rm=TRUE),
+                processing.log=processing.log.summary(object))
+    class(res) <- "summary.topo"
+    res
+}
+
+print.summary.topo <- function(x, digits=max(6, getOption("digits") - 1), ...)
+{
+    cat("\nETOPO dataset\n")
+    cat("latitude range:", format(x$lat.range[1], digits),
+        " to ", format(x$lat.range[2], digits), "\n")
+    cat("longitude range:", format(x$lon.range[1], digits),
+        " to ", format(x$lon.range[2], digits), "\n")
+    cat("elevation range:", format(x$z.range[1], digits=digits),
+        " to ", format(x$z.range[2], digits), "\n")
+    print(x$processing.log)
 }
