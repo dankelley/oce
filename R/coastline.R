@@ -123,23 +123,25 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE,log.action)
 summary.coastline <- function(object, ...)
 {
     if (!inherits(object, "coastline")) stop("method is only for coastline objects")
+    fives <- matrix(nrow=2, ncol=5)
     res <- list(length=length(object$data$longitude),
-                latrange=range(object$data$latitude, na.rm=TRUE),
-                lonrange=range(object$data$longitude, na.rm=TRUE),
+                missing=sum(is.na(object$data$longitude)),
+                fives=fives,
                 processing.log=processing.log.summary(object))
+    fives[1,] <- fivenum(object$data$latitude, na.rm=TRUE)
+    fives[2,] <- fivenum(object$data$longitude, na.rm=TRUE)
+    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(fives) <- c("Latitude", "Longitude")
+    res$fives <- fives
     class(res) <- "summary.coastline"
     res
 }
 
 print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),...)
 {
-    cat("\nCoastline object contains", x$length, "bounded within box\n")
-    cat(format(x$lonrange[1], digits=digits),
-        "<= longitude <=",
-        format(x$lonrange[2], digits=digits), "\n")
-    cat(format(x$latrange[1], digits=digits),
-        "<= latitude <=",
-        format(x$latrange[2], digits=digits), "\n")
+    cat("\nCoastline has", x$length, "points, of which", x$missing, "are NA (e.g. separating islands).\n")
+    cat("Statistics:\n")
+    print(x$fives, digits=digits)
     print(x$processing.log)
     cat("\n")
 }
