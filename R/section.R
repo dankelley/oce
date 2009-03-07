@@ -486,7 +486,7 @@ summary.section <- function(object, ...)
     stn.sum <- matrix(nrow=num.stations, ncol=5)
     res <- list(section.id=object$metadata$section.id,
                 num.stations=num.stations,
-                stn.sum=stn.sum)
+                stn.sum=stn.sum, processing.log="?")
     lon1 <- object$data$station[[1]]$metadata$longitude
     lat1 <- object$data$station[[1]]$metadata$latitude
     for (i in 1:num.stations) {
@@ -506,7 +506,7 @@ summary.section <- function(object, ...)
     colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
     rownames(stn.sum) <- object$metadata$station.id
     res$stn.sum <- stn.sum
-    ## processing.log.summary(object)
+    res$processing.log <- processing.log.summary(object)
     class(res) <- "summary.section"
     res
 }
@@ -521,6 +521,7 @@ print.summary.section <- function(x, digits=max(6, getOption("digits") - 1), ...
     } else {
         cat("contains no stations.\n")
     }
+    print(x$processing.log)
     cat("\n")
 }
 

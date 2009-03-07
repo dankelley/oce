@@ -161,21 +161,38 @@ read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
 summary.tdr <- function(object, ...)
 {
     if (!inherits(object, "tdr")) stop("method is only for tdr objects")
-    cat("TDR record\n")
-    cat("  Instrument Serial No. ", object$metadata$serial.number,  "\n")
-    cat("  No. of samples:      ", length(object$data$temperature),  "\n")
     time.range <- range(object$data$t, na.rm=TRUE)
-    cat(sprintf("  Logging start: %s (as reported in header)\n", as.character(object$metadata$logging.start)))
-    cat(sprintf("  Sample period: %s (as reported in header)\n", as.character(object$metadata$sample.period)))
-    cat(sprintf("  Start time: %s (in data$t column)\n", as.character(time.range[1])))
-    cat(sprintf("  End   time: %s (in data$t column)\n", as.character(time.range[2])))
-    cat(sprintf("   %15s  %10s %10s %10s %10s %10s\n", "", "min", "Q1", "median", "Q3", "max"));
-    f <- fivenum(object$data$temperature)
-    cat(sprintf("    %15s %10.1f %10.1f %10.1f %10.1f %10.1f\n", "Temperature", f[1], f[2], f[3], f[4], f[5]))
-    f <- fivenum(object$data$pressure)
-    cat(sprintf("    %15s %10.1f %10.1f %10.1f %10.1f %10.1f\n", "Pressure", f[1], f[2], f[3], f[4], f[5]))
-    processing.log.summary(object)
-    invisible()                         # BUG: should copy summary.lmle()
+    fives <- matrix(nrow=2, ncol=5)
+    res <- list(serial.number=object$metadata$serial.number,
+                samples=length(object$data$temperature),
+                logging.start=object$metadata$logging.start,
+                sample.period=object$metadata$sample.period,
+                start.time=time.range[1],
+                end.time=time.range[2],
+                fives=fives,
+                processing.log="?")
+    fives[1,] <- fivenum(object$data$temperature, na.rm=TRUE)
+    fives[2,] <- fivenum(object$data$pressure, na.rm=TRUE)
+    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(fives) <- c("Temperature", "Pressure")
+    res$fives <- fives
+    res$processing.log <- processing.log.summary(object)
+    class(res) <- "summary.tdr"
+    res
+}
+
+print.summary.tdr <- function(x, digits=max(6, getOption("digits") - 1), ...)
+{
+    cat("\nTDR record\n")
+    cat("Instrument Serial No. ", x$serial.number,  "\n")
+    cat("No. of samples:      ", x$samples,  "\n")
+    cat(sprintf("Logging start: %s (as reported in header)\n", as.character(x$logging.start)))
+    cat(sprintf("Sample period: %s (as reported in header)\n", as.character(x$sample.period)))
+    cat(sprintf("Time range: %s to %s\n", as.character(x$start.time), as.character(x$end.time)))
+    cat("Statistics of data:\n")
+    print(x$fives, digits=digits)
+    print(x$processing.log)
+    cat("\n")
 }
 
 tdr.patm <- function(x, dp=0.5)
