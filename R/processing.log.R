@@ -10,19 +10,7 @@ processing.log.item <- function(log.action="")
     class(rval) <- "processing.log"
     rval
 }
-#old.processing.log.summary <- function(object)
-#{
-#    if (!is.null(object$processing.log$action)) {
-#        cat("Processing log:\n")
-#        n <- length(object$processing.log$action)
-#        for (i in 1:n) {
-#            cat(paste("  ",
-#                      paste(as.character(as.POSIXlt(object$processing.log$time[i], "UTC"),sep=""),
-#                            "UTC\n   ", object$processing.log$action[i], "\n"),sep=""))
-#        }
-#    }
-#    invisible(object)
-#}
+
 processing.log.summary <- function(object)
 {
     n <- length(object$processing.log$action)
@@ -39,6 +27,7 @@ processing.log.summary <- function(object)
     class(res) <- "processing.log.summary"
     res
 }
+
 print.processing.log.summary <- function(x)
 {
     n <- length(x)
