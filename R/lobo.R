@@ -97,6 +97,7 @@ read.lobo <- function(file, cols=7, log.action) {
         stop("debug: only working on one format right now")
     }
 }
+
 summary.lobo <- function(object, ...)
 {
     if (!inherits(object, "lobo")) stop("method is only for lobo objects")
@@ -116,7 +117,6 @@ summary.lobo <- function(object, ...)
 
 print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    tr <- range(x$data$time, na.rm=TRUE)
     cat("\nLobo object:\n")
     cat("Time range:", as.character(x$time.range[1]), " to ",
         as.character(x$time.range[2]), "\n")
