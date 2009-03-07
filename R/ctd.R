@@ -917,37 +917,63 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
     res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
     return(res)
 }
+
 summary.ctd <- function(object, ...)
 {
     if (!inherits(object, "ctd")) stop("method is only for ctd objects")
-    cat("CTD Profile\n")
-    if (!is.null(object$metadata$filename.orig))      cat("  Raw file:           \"",     object$metadata$filename.orig, "\"\n",sep="")
-    if (!is.null(object$metadata$system.upload.time)) cat(paste("  System upload time: ", object$metadata$system.upload.time, "\n"))
-    if (!is.null(object$metadata$date))               cat(paste("  Date:               ", object$metadata$date, "\n"))
-    if (!is.null(object$metadata$institute))          cat("  Institute:          ",       object$metadata$institute, "\n")
-    if (!is.null(object$metadata$scientist))          cat("  Scientist:          ",       object$metadata$scientist, "\n")
-    if (!is.null(object$metadata$ship))               cat("  Ship:               ",       object$metadata$ship, "\n")
-    if (!is.null(object$metadata$cruise))             cat("  Cruise:             ",       object$metadata$cruise, "\n")
-    if (!is.na(  object$metadata$latitude))           cat("  Location:           ",       latlon.format(object$metadata$latitude, object$metadata$longitude), "\n")
-    if (!is.null(object$metadata$station))            cat("  Station:            ",       object$metadata$station, "\n")
-    if (!is.null(object$metadata$start.time))         cat(paste("  Start time:         ", as.POSIXct(object$metadata$start.time), "\n"))
-    if (!is.null(object$metadata$deployed)) {
-        cat("  Deployed:           ")
-        print(object$date)
-    }
-                                        #cat(" Start sec:", object$start.time, "\n")
-    if (!is.null(object$metadata$recovered))          cat("  Recovered:          ", object$metadata$recovery, "\n")
-    if (!is.null(object$metadata$water.depth))        cat("  Water depth:        ", object$metadata$water.depth, "\n")
-    cat("  No. of levels:      ", length(object$data$temperature),  "\n")
-    cat(sprintf("   %15s  %10s %10s %10s %10s %10s\n", "", "min", "Q1", "median", "Q3", "max"));
-    names <- names(object$data)
-    for (name in names) {
-        f <- fivenum(object$data[[name]])
-        cat(sprintf("    %15s %10.1f %10.1f %10.1f %10.1f %10.1f\n", name, f[1], f[2], f[3], f[4], f[5]))
-    }
-    processing.log.summary(object)
-    invisible()                         # BUG: should copy summary.lm
+    dim <- dim(object$data)
+    fives <- matrix(nrow=dim[2], ncol=5)
+    res <- list(filename="?", system.upload.time="?", date="?", institute="?",
+		scientist="?", ship="?", cruise="?", latitude="?", longitude="?",
+		station="?", start.time="?", deployed="?", recovery="?", water.depth="?",
+		levels="?", processing.log="?", fives=fives)
+    if (!is.null(object$metadata$filename.orig))      res$filename <- object$metadata$filename.orig
+    if (!is.null(object$metadata$system.upload.time)) res$upload.time <- object$metadata$system.upload.time
+    if (!is.null(object$metadata$date))               res$date <- object$metadata$date
+    if (!is.null(object$metadata$institute))          res$institute <- object$metadata$institute
+    if (!is.null(object$metadata$scientist))          res$scientist <- object$metadata$scientist
+    if (!is.null(object$metadata$ship))               res$ship <- object$metadata$ship
+    if (!is.null(object$metadata$cruise))             res$cruise <- object$metadata$cruise
+    if (!is.na(object$metadata$latitude))             res$latitude <- object$metadata$latitude
+    if (!is.na(object$metadata$longitude))            res$longitude <- object$metadata$longitude
+    if (!is.null(object$metadata$station))            res$station <- object$metadata$station
+    if (!is.null(object$metadata$start.time))         res$start.time <- object$metadata$start.time
+    if (!is.null(object$metadata$deployed))           res$deployed<- object$metadata$date
+    if (!is.null(object$metadata$recovery))           res$recovery <- object$metadata$recovery
+    if (!is.null(object$metadata$water.depth))        res$water.depth <- object$metadata$water.depth
+    res$levels <- dim[1]
+    for (v in 1:dim[2])
+        fives[v,] <- fivenum(object$data[,v], na.rm=TRUE)
+    rownames(fives) <- names(object$data)
+    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    res$fives <- fives
+    res$processing.log <- processing.log.summary(object)
+    class(res) <- "summary.ctd"
+    res
 }
+
+print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
+{
+    cat("CTD Profile\n")
+    cat("  Raw file:           \"",     x$filename, "\"\n",sep="")
+    cat(paste("  System upload time: ", x$system.upload.time, "\n"))
+    cat(paste("  Date:               ", x$date, "\n"))
+    cat("  Institute:          ",       x$institute, "\n")
+    cat("  Scientist:          ",       x$scientist, "\n")
+    cat("  Ship:               ",       x$ship, "\n")
+    cat("  Cruise:             ",       x$cruise, "\n")
+    cat("  Location:           ",       latlon.format(x$latitude, x$longitude), "\n")
+    cat("  Station:            ",       x$station, "\n")
+    cat(paste("  Start time:         ", as.POSIXct(x$start.time), "\n"))
+    cat(paste("  Deployed:           ", x$date, "\n"))
+    cat(paste("  Recovered:          ", x$recovery, "\n"))
+    cat("  Water depth:        ",       x$water.depth, "\n")
+    cat("  No. of levels:      ",       x$levels,  "\n")
+    print(x$fives, digits=digits)
+    print(x$processing.log)
+}
+
+
 plot.TS <- function (x,
                      rho.levels = 6,
                      grid = FALSE,
