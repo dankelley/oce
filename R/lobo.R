@@ -100,14 +100,28 @@ read.lobo <- function(file, cols=7, log.action) {
 summary.lobo <- function(object, ...)
 {
     if (!inherits(object, "lobo")) stop("method is only for lobo objects")
-    tr <- range(object$data$time, na.rm=TRUE)
-    cat(paste("Lobo data acquired over time range", tr[1], "to", tr[2], "\n"))
-    cat(sprintf(" %15s %12s %12s %12s %12s %12s\n", "             ", "min", "Q1", "median", "Q3", "max"));
-    f<-fivenum(object$data$fluorescence,na.rm=TRUE);    cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  fluorescence ", f[1], f[2], f[3], f[4], f[5]))
-    f<-fivenum(object$data$nitrate,na.rm=TRUE);         cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  nitrate      ", f[1], f[2], f[3], f[4], f[5]))
-    f<-fivenum(object$data$salinity,na.rm=TRUE);               cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  salinity     ", f[1], f[2], f[3], f[4], f[5]))
-    f<-fivenum(object$data$temperature,na.rm=TRUE);               cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  temperature  ", f[1], f[2], f[3], f[4], f[5]))
-    f<-fivenum(object$data$u,na.rm=TRUE);               cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  u            ", f[1], f[2], f[3], f[4], f[5]))
-    f<-fivenum(object$data$v,na.rm=TRUE);               cat(sprintf(" %15s %12.3f %12.3f %12.3f %12.3f %12.3f\n", "  v            ", f[1], f[2], f[3], f[4], f[5]))
-    processing.log.summary(object)
+    dim <- dim(object$data)
+    fives <- matrix(nrow=dim[2]-1, ncol=5) # skipping time
+    res <- list(time.range=range(object$data$time, na.rm=TRUE),
+                fives=fives,
+                processing.log=processing.log.summary(object))
+    for (i in 2:dim[2])
+        fives[i-1,] <- fivenum(object$data[,i], na.rm=TRUE)
+    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(fives) <- names(object$data[-1]) #skip time, the first column
+    res$fives <- fives
+    class(res) <- "summary.lobo"
+    res
+}
+
+print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
+{
+    tr <- range(x$data$time, na.rm=TRUE)
+    cat("\nLobo object:\n")
+    cat("Time range:", as.character(x$time.range[1]), " to ",
+        as.character(x$time.range[2]), "\n")
+    cat("Statistics:\n")
+    print(x$fives, digits)
+    print(x$processing.log)
+    cat("\n")
 }
