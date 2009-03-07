@@ -123,13 +123,23 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE,log.action)
 summary.coastline <- function(object, ...)
 {
     if (!inherits(object, "coastline")) stop("method is only for coastline objects")
-    cat(sprintf("Coastline object contains %d points, bounded within box\n",
-                length(object$data$longitude)))
-    cat(sprintf("%8.3f < longitude < %8.3f\n",
-                min(object$data$longitude, na.rm=TRUE),
-                max(object$data$longitude, na.rm=TRUE)))
-    cat(sprintf("%8.3f < latitude  < %8.3f\n",
-                min(object$data$latitude,  na.rm=TRUE),
-                max(object$data$latitude,  na.rm=TRUE)))
-    processing.log.summary(object)
+    res <- list(length=length(object$data$longitude),
+                latrange=range(object$data$latitude, na.rm=TRUE),
+                lonrange=range(object$data$longitude, na.rm=TRUE),
+                processing.log=processing.log.summary(object))
+    class(res) <- "summary.coastline"
+    res
+}
+
+print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),...)
+{
+    cat("\nCoastline object contains", x$length, "bounded within box\n")
+    cat(format(x$lonrange[1], digits=digits),
+        "<= longitude <=",
+        format(x$lonrange[2], digits=digits), "\n")
+    cat(format(x$latrange[1], digits=digits),
+        "<= latitude <=",
+        format(x$latrange[2], digits=digits), "\n")
+    print(x$processing.log)
+    cat("\n")
 }
