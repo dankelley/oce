@@ -507,15 +507,15 @@ print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
 {
     cat("\nCall:\n")
     cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n", sep="")
+    cat("\nStart time: ",
+        paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
+    cat("RMS misfit to data: ", x$misfit, "\n\n")
     cat("\nFitted model:\n")
     f <- x$fit[3:6]
     rownames(f) <- as.character(x$fit[,2])
     printCoefmat(f, digits=digits,
                  signif.stars=signif.stars, signif.legend=TRUE,
                  P.values=TRUE, has.Pvalue=TRUE, ...)
-    cat("\nStart time: ",
-        paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
-    cat("RMS misfit to data: ", x$misfit, "\n\n")
 }
 
 predict.tidem <- function(object, ...)

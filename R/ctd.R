@@ -932,7 +932,9 @@ summary.ctd <- function(object, ...)
     res <- list(filename="?", system.upload.time="?", date="?", institute="?",
 		scientist="?", ship="?", cruise="?", latitude=NA, longitude=NA,
 		station="?", start.time="?", deployed="?", recovery="?", water.depth="?",
-		levels="?", processing.log="?", fives=fives)
+		levels="?",
+                fives=fives,
+                processing.log=processing.log.summary(object))
     if (!is.null(object$metadata$filename.orig))      res$filename <- object$metadata$filename.orig
     if (!is.null(object$metadata$system.upload.time)) res$upload.time <- object$metadata$system.upload.time
     if (!is.null(object$metadata$date))               res$date <- object$metadata$date
