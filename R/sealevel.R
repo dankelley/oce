@@ -319,29 +319,50 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
     class(rval) <- c("sealevel", "oce")
     rval
 }
+
 summary.sealevel <- function(object, digits=4, ...)
 {
     if (!inherits(object, "sealevel")) stop("method is only for sealevel objects")
-    cat(paste("Station\n"))
-    cat(paste("  number:              ", object$metadata$station.number,   "\n"))
-    version <- if (is.null(object$metadata$version)) "?" else object$metadata$version
-    cat(paste("  version:             ", object$metadata$station.version,   "\n"))
-    cat(paste("  name:                ", object$metadata$station.name,     "\n"))
-    region <- if (is.null(object$metadata$region)) "?" else object$metadata$region
-    cat(paste("  region:              ", region,                           "\n"))
-    cat(      "  location:            ", latlon.format(object$metadata$latitude, object$metadata$longitude), "\n")
+    fives <- matrix(nrow=1, ncol=5)
+    res <- list(number=object$metadata$station.number,
+                version=if (is.null(object$metadata$version)) "?" else object$metadata$version,
+                name=object$metadata$station.name,
+                region=if (is.null(object$metadata$region)) "?" else object$metadata$region,
+                latitude=object$metadata$latitude,
+                longitude=object$metadata$longitude,
+                number=object$metadata$n,
+                nonmissing=sum(!is.na(object$data$eta)),
+                deltat=object$metadata$deltat,
+                start.time=min(object$data$t, na.rm=TRUE),
+                end.time=max(object$data$t, na.rm=TRUE),
+                gmt.offset=if (is.na(object$metadata$GMT.offset)) "?" else object$metadata$GMT.offset,
+                fives=fives,
+                processing.log=processing.log.summary(object))
+    fives[1,] <- fivenum(object$data$eta, na.rm=TRUE)
+    rownames(fives) <- "Sea level"
+    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    res$fives <- fives
+    class(res) <- "summary.sealevel"
+    res
+}
+
+print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ...)
+{
+    cat("\nStation\n")
+    cat("  number:              ", x$number,   "\n")
+    cat("  version:             ", x$version,   "\n")
+    cat("  name:                ", x$name,     "\n")
+    cat("  region:              ", x$region,                           "\n")
+    cat("  location:            ", latlon.format(x$latitude, x$longitude), "\n")
     cat("Data\n")
-    cat(paste("  number observations: ", object$metadata$n,                "\n"))
-    cat(paste("     \"   non-missing:  ", sum(!is.na(object$data$eta)),     "\n"))
-    cat(paste("  sampling interval:   ", object$metadata$sampling.interval, "hour\n"))
-    cat(paste("  series start time:   ", object$data$t[1],                 "\n"))
-    cat(paste("     \"     end time:   ", object$data$t[length(object$data$t)], "\n"))
-    gmt.offset <- if (is.na(object$metadata$GMT.offset)) "?" else object$metadata$GMT.offset
-    cat(paste("  GMT offset:          ", gmt.offset,                       "\n"))
-    fn <- fivenum(object$data$eta, na.rm=TRUE)
-    cat(paste("  min. level:          ", fn[1],                            "\n"))
-    cat(paste("  max. level:          ", fn[5],                            "\n"))
-    cat(paste("  median level         ", format(fn[3], digits=digits),     "\n"))
-    cat(paste("  mean level           ", format(mean(object$data$eta,na.rm=TRUE), digits=digits), "\n"))
-    processing.log.summary(object)
+    cat(paste("  number observations: ", x$number,                "\n"))
+    cat(paste("     \"   non-missing:  ",x$nonmissing,     "\n"))
+    cat(paste("  sampling delta-t:    ", x$deltat, "hour\n"))
+    cat(paste("  series start time:   ", x$start.time,                 "\n"))
+    cat(paste("     \"     end time:   ", x$end.time, "\n"))
+    cat(paste("  GMT offset:          ", x$gmt.offset,                       "\n"))
+    cat("Statistics:\n")
+    print(x$fives, digits=digits)
+    print(x$processing.log)
+    cat("\n")
 }
