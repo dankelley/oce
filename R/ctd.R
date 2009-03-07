@@ -34,6 +34,7 @@ as.ctd <- function(S, t, p,
     class(res) <- c("ctd", "oce")
     res
 }
+
 ctd.add.column <- function (x, column=NULL, column.name="", code="", name="", unit="", debug = FALSE)
 {
     if (length(column) < 1) stop("must supply column data")
@@ -90,6 +91,7 @@ ctd.add.column <- function (x, column=NULL, column.name="", code="", name="", un
     result <- processing.log.append(result, log.action)
     return(result)
 }
+
 ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
     ## SHOULD ADD: BIO method; spline; supsmu; ...
 {
@@ -173,6 +175,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
     res <- processing.log.append(res, log.action)
     res
 }
+
 ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -269,6 +272,7 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
     result <- processing.log.append(result, paste(deparse(match.call()), sep="", collapse=""))
     result
 }
+
 ctd.update.header <- function (x, debug = FALSE)
 {
     if (length(x$metadata$header) < 1) stop("there is no header in this CTD object")
@@ -298,6 +302,7 @@ ctd.update.header <- function (x, debug = FALSE)
     xret$header <- h
     return(xret)
 }
+
 ctd.write <- function(object, file=stop("'file' must be specified"))
 {
   	if (!inherits(object, "ctd")) stop("method is only for ctd objects")
@@ -422,6 +427,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         par(oldpar)
     invisible()
 }
+
 plot.ctd.scan <- function(x,
                           name = "scan",
                           S.col = "darkgreen",
@@ -924,7 +930,7 @@ summary.ctd <- function(object, ...)
     dim <- dim(object$data)
     fives <- matrix(nrow=dim[2], ncol=5)
     res <- list(filename="?", system.upload.time="?", date="?", institute="?",
-		scientist="?", ship="?", cruise="?", latitude="?", longitude="?",
+		scientist="?", ship="?", cruise="?", latitude=NA, longitude=NA,
 		station="?", start.time="?", deployed="?", recovery="?", water.depth="?",
 		levels="?", processing.log="?", fives=fives)
     if (!is.null(object$metadata$filename.orig))      res$filename <- object$metadata$filename.orig
@@ -934,8 +940,8 @@ summary.ctd <- function(object, ...)
     if (!is.null(object$metadata$scientist))          res$scientist <- object$metadata$scientist
     if (!is.null(object$metadata$ship))               res$ship <- object$metadata$ship
     if (!is.null(object$metadata$cruise))             res$cruise <- object$metadata$cruise
-    if (!is.na(object$metadata$latitude))             res$latitude <- object$metadata$latitude
-    if (!is.na(object$metadata$longitude))            res$longitude <- object$metadata$longitude
+    if (is.finite(object$metadata$latitude))          res$latitude <- object$metadata$latitude
+    if (is.finite(object$metadata$longitude))         res$longitude <- object$metadata$longitude
     if (!is.null(object$metadata$station))            res$station <- object$metadata$station
     if (!is.null(object$metadata$start.time))         res$start.time <- object$metadata$start.time
     if (!is.null(object$metadata$deployed))           res$deployed<- object$metadata$date
@@ -1060,6 +1066,7 @@ plot.TS <- function (x,
     par(mar=old.mar)
     par(mgp=old.mgp)
 }
+
 plot.profile <- function (x,
                           type = "S",
                           col.S = "darkgreen",
