@@ -14,9 +14,10 @@
 }
 
 \arguments{
-  \item{object}{A \code{tdr} object, e.g. as read by \code{\link{read.tdr}}.}
-  \item{x}{an object of class \code{"tidem"}, usually, a result of a
+  \item{object}{an object of class \code{"tdr"}, usually, a result of a
     call to \code{read.tdr}.}
+  \item{x}{an object of class \code{"summary.tdr"}, usually, a result
+    of a call to \code{summary.tdr}.}
   \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }

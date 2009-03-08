@@ -13,7 +13,8 @@
 }
 
 \arguments{
-  \item{object}{a \code{tidem} object, as created by \code{\link{tidem}}.}
+  \item{object}{an object of class \code{"tidem"}, usually, a result of a
+    call to \code{tidem}.}
   \item{x}{an object of class \code{"tidem"}, usually, a result of a
     call to \code{summary.tidem}.}
   \item{digits}{the number of significant digits to use when printing.}

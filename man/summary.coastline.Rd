@@ -15,9 +15,10 @@
 }
 
 \arguments{
-  \item{object}{A \code{coastline} object, e.g. as read by \code{\link{read.coastline}}.}
-  \item{x}{an object of class \code{"coastline"}, usually, a result of a
+  \item{object}{an object of class \code{"coastline"}, usually, a result of a
     call to \code{\link{read.coastline}} or \code{\link{read.oce}}.}
+  \item{x}{an object of class \code{"summary.coastline"}, usually, a
+    result of a call to \code{summary.coastline}.}
   \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }

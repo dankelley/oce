@@ -14,9 +14,11 @@
 }
 
 \arguments{
-  \item{object}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{x}{an object of class \code{"ctd"}, usually, a result of a
-    call to \code{\link{read.ctd}}, \code{\link{read.oce}}, or \code{\link{as.ctd}}.}
+  \item{object}{an object of class \code{"ctd"}, usually, a result of a
+    call to \code{\link{read.ctd}}, \code{\link{read.oce}}, or
+    \code{\link{as.ctd}}.}
+  \item{x}{an object of class \code{"summary.ctd"}, usually, a result of a
+    call to \code{summary.ctd}.}
   \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }

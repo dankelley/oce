@@ -14,10 +14,11 @@
 }
 
 \arguments{
-  \item{object}{a \code{section} object, e.g. as read by \code{\link{make.section}}.}
-  \item{x}{an object of class \code{"section"}, usually, a result of a
+  \item{object}{an object of class \code{"section"}, usually, a result of a
     call to \code{\link{read.section}}, \code{\link{read.oce}}, or
     \code{\link{make.section}}.}
+  \item{x}{an object of class \code{"summary.section"}, usually, a
+    result of a call to \code{summary.section}.}
   \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }

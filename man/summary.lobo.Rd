@@ -15,9 +15,10 @@
 }
 
 \arguments{
-  \item{object}{A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.}
-  \item{x}{an object of class \code{"lobo"}, usually, a result of a
+  \item{object}{an object of class \code{"lobo"}, usually, a result of a
     call to \code{\link{read.lobo}} or \code{\link{read.oce}}.}
+  \item{x}{an object of class \code{"summary.lobo"}, usually, a result of a
+    call to \code{summary.lobo}.}
   \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }

@@ -14,9 +14,10 @@
 }
 
 \arguments{
-  \item{object}{A \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}
-  \item{x}{an object of class \code{"windrose"}, usually, a result of a
+  \item{object}{an object of class \code{"windrose"}, usually, a result of a
     call to \code{\link{as.windrose}}.}
+  \item{x}{an object of class \code{"summary.windrose"}, usually, a
+    result of a call to \code{summary.windrose}.}
   \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
