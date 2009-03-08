@@ -172,6 +172,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
         par(oldpar)
     }
 }
+
 read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
@@ -353,7 +354,7 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("  version:             ", x$version,   "\n")
     cat("  name:                ", x$name,     "\n")
     cat("  region:              ", x$region,                           "\n")
-    cat("  location:            ", latlon.format(x$latitude, x$longitude), "\n")
+    cat("  location:            ", latlon.format(x$latitude, x$longitude, digits=digits), "\n")
     cat("Data\n")
     cat(paste("  number observations: ", x$number,                "\n"))
     cat(paste("     \"   non-missing:  ",x$nonmissing,     "\n"))
