@@ -1,5 +1,4 @@
-as.sealevel <- function(
-                        eta,
+as.sealevel <- function(eta,
                         t,
                         header=NULL,
                         station.number=NA,
@@ -50,10 +49,11 @@ as.sealevel <- function(
     class(rval) <- c("sealevel", "oce")
     rval
 }
+
 plot.sealevel <- function(x, focus.time=NULL, ...)
 {
-                                        # tidal constituents (in cpd):
-                                        # http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
+    ## tidal constituents (in cpd):
+    ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
     if (!is.null(focus.time)) {
         focus.time <- as.POSIXct(focus.time)
         focus <- (focus.time[1] <= x$data$t) & (x$data$t <= focus.time[2])
@@ -132,8 +132,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
         abline(v=at.day, col="lightgray", lty="dotted")
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
-                                        #
-                                        # Draw spectra, if series has no NA, so that spectrum is easy to construct
+        ## Draw spectra, if series has no NA, so that spectrum is easy to construct
         if (!num.NA) {
             Eta <- ts(eta.m,start=1,deltat=x$metadata$deltat)
             s <- spectrum(Eta-mean(Eta),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
@@ -350,18 +349,18 @@ summary.sealevel <- function(object, ...)
 print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("\nStation\n")
-    cat("  number:              ", x$number,   "\n")
-    cat("  version:             ", x$version,   "\n")
-    cat("  name:                ", x$name,     "\n")
-    cat("  region:              ", x$region,                           "\n")
+    cat("  number:              ", x$number, "\n")
+    cat("  version:             ", x$version, "\n")
+    cat("  name:                ", x$name, "\n")
+    cat("  region:              ", x$region, "\n")
     cat("  location:            ", latlon.format(x$latitude, x$longitude, digits=digits), "\n")
     cat("Data\n")
-    cat(paste("  number observations: ", x$number,                "\n"))
-    cat(paste("     \"   non-missing:  ",x$nonmissing,     "\n"))
+    cat(paste("  number observations: ", x$number, "\n"))
+    cat(paste("     \"   non-missing:  ",x$nonmissing, "\n"))
     cat(paste("  sampling delta-t:    ", x$deltat, "hour\n"))
-    cat(paste("  series start time:   ", x$start.time,                 "\n"))
-    cat(paste("     \"     end time:   ", x$end.time, "\n"))
-    cat(paste("  GMT offset:          ", x$gmt.offset,                       "\n"))
+    cat(paste("  series start time:   ", x$start.time, "\n"))
+    cat(paste("     \"     end time:   ",x$end.time, "\n"))
+    cat(paste("  GMT offset:          ", x$gmt.offset, "\n"))
     cat("Statistics:\n")
     print(x$fives, digits=digits)
     print(x$processing.log)

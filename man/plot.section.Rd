@@ -7,7 +7,7 @@
 \description{Plot a CTD section.}
 
 \usage{\method{plot}{section}(x,
- 	field=NULL,
+        which=1:4,
 	at=NULL,
 	labels=TRUE,
 	grid=FALSE,
@@ -25,13 +25,13 @@
 \arguments{
   \item{x}{a \code{section} object, e.g. as created by
     \code{\link{make.section}}.}
-  \item{field}{is the field to plot.  Common options are
-    \code{"temperature"}, \code{"salinity"}, and \code{"density"},
-    although \code{plot.section} will accept any named field that is
-    present in the constituent CTD profiles. If \code{NULL} (the default)
-    is given, then temperature, salinity and density are graphed.  If a
-    field is specified, then it is also possible to specify the
-    \code{contour.levels} and \code{contour.labels} (see below).}
+  \item{which}{list of desired plot types.  There may be up to four panels in
+    total, and the desired plots are placed in these panels, in
+    reading order. Set \code{which} to 1 to contour temperature, to 2
+    to contour salinity, to 3 to contour sigma.theta, or to 4 to plot
+    a map of station locations.  If only one panel is plotted,
+    \code{par} is not adjusted, which makes it easy to add to the plot
+    with subsequent plotting commands.}
   \item{at}{if \code{NULL} (the default), the x axis will indicate the
     distance of the stations from the first in the section.  (This may
     give errors in the contouring routine, if the stations are not present
