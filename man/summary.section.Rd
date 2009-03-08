@@ -1,26 +1,29 @@
 \name{summary.section}
 
 \alias{summary.section}
+\alias{print.summary.section}
 
 \title{Summarize a CTD section}
 
 \description{Summarize a CTD section.}
 
-\usage{\method{summary}{section}(object, \dots)}
+\usage{
+\method{summary}{section}(object, \dots)
+
+\method{print}{summary.section}(x, digits=max(6, getOption("digits")-1), \dots)
+}
 
 \arguments{
   \item{object}{a \code{section} object, e.g. as read by \code{\link{make.section}}.}
-  \item{\dots}{passed to children.}
+  \item{x}{an object of class \code{"section"}, usually, a result of a
+    call to \code{\link{read.section}}, \code{\link{read.oce}}, or
+    \code{\link{make.section}}.}
+  \item{digits}{the number of significant digits to use when printing.}
+  \item{\dots}{further arguments passed to or from other methods.}
 }
 
-\details{Pertinent summary information is presented about the stations
-  in the section.}
-
-\value{Returns (invisibly) a data frame with elements \code{filename},
-  the original name of CTD file for a given station, and the station
-  coordinates stored in \code{latitude} (decimal degrees, positive north
-  of the equator), and \code{longitude} (in decimal degrees, positive
-  east of Greenwich).}
+\details{Pertinent summary information is presented, including station
+  locations, distance along track, etc.}
 
 \seealso{A \code{section} object may be created by using
   \code{\link{make.section}} to assemble individual \code{ctd} objects,

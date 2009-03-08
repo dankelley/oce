@@ -320,7 +320,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
     rval
 }
 
-summary.sealevel <- function(object, digits=4, ...)
+summary.sealevel <- function(object, ...)
 {
     if (!inherits(object, "sealevel")) stop("method is only for sealevel objects")
     fives <- matrix(nrow=1, ncol=5)
@@ -365,4 +365,5 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     print(x$fives, digits=digits)
     print(x$processing.log)
     cat("\n")
+    invisible(x)
 }

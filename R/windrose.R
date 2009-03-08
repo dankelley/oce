@@ -21,11 +21,12 @@ as.windrose <- function(x, y, dtheta = 15)
     }
     data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
     metadata <- list(dtheta=dtheta)
-    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, log=log.item)
+    log <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, processing.log=log)
     class(res) <- c("windrose", "oce")
     res
 }
+
 plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  ...)
 {
     if (!inherits(x, "windrose")) stop("method is only for wind-rose objects")
@@ -110,18 +111,31 @@ plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  
     }
     invisible()
 }
+
 summary.windrose <- function(object, ...)
 {
     if (!inherits(object, "windrose")) stop("method is only for windrose objects")
-    cat("n=", object$metadata$n, "dtheta=", object$metadata$dtheta,"\n")
     n <- length(object$data$theta)
-    cat(sprintf("%10s %10s %12s %12s %12s %12s %12s\n",
-                "Angle", "Count", "Mean", "Min", "Lower Hinge", "Median", "Upper Hinge", "Max"))
+    fives <- matrix(nrow=n, ncol=5)
+    res <- list(n=n,
+                dtheta=object$metadata$dtheta,
+                fives=fives,
+                processing.log=processing.log.summary(object))
     for (i in 1:n) {
-        f <- object$data$fivenum[i,]
-        cat(sprintf("%10g %10g %12.4f %12.4f %12.4f %12.4f %12.4f\n",
-                    object$data$theta[i], object$data$count[i], object$data$mean[i], f[1], f[2], f[3], f[4], f[5]))
+        fives[i,] <- object$data$fivenum[i,]
     }
-    processing.log.summary(object)
+    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(fives) <- object$data$theta
+    res$fives <- fives
+    class(res) <- "summary.windrose"
+    res
 }
 
+print.summary.windrose <- function(x, digits=max(6, getOption("digits") - 1), ...)
+{
+    cat("\nWindrose data\n")
+    cat("Have n=", x$n, "angles, separated by dtheta=", x$dtheta,"\n")
+    print(x$fives, digits=digits)
+    print(x$processing.log)
+    invisible(x)
+}

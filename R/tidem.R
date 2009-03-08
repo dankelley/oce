@@ -516,6 +516,7 @@ print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
     printCoefmat(f, digits=digits,
                  signif.stars=signif.stars, signif.legend=TRUE,
                  P.values=TRUE, has.Pvalue=TRUE, ...)
+    invisible(x)
 }
 
 predict.tidem <- function(object, ...)

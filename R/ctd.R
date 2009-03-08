@@ -955,7 +955,6 @@ summary.ctd <- function(object, ...)
     rownames(fives) <- names(object$data)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res$fives <- fives
-    res$processing.log <- processing.log.summary(object)
     class(res) <- "summary.ctd"
     res
 }
@@ -979,6 +978,7 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  No. of levels:      ",       x$levels,  "\n")
     print(x$fives, digits=digits)
     print(x$processing.log)
+    invisible(x)
 }
 
 

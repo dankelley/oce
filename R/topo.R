@@ -139,4 +139,5 @@ print.summary.topo <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("elevation range:", format(x$z.range[1], digits=digits),
         " to ", format(x$z.range[2], digits), "\n")
     print(x$processing.log)
+    invisible(x)
 }

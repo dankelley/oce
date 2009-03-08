@@ -1,10 +1,9 @@
 \name{summary.tidem}
 
 \alias{summary.tidem}
+\alias{print.summary.tidem}
 
 \title{Summarize a tide-model object}
-
-\description{Summarize a tide-model object.}
 
 \usage{
 \method{summary}{tidem}(object, p, constituent, \dots)

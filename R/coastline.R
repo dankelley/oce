@@ -144,4 +144,5 @@ print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),..
     print(x$fives, digits=digits)
     print(x$processing.log)
     cat("\n")
+    invisible(x)
 }

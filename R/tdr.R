@@ -193,6 +193,7 @@ print.summary.tdr <- function(x, digits=max(6, getOption("digits") - 1), ...)
     print(x$fives, digits=digits)
     print(x$processing.log)
     cat("\n")
+    invisible(x)
 }
 
 tdr.patm <- function(x, dp=0.5)
@@ -211,7 +212,7 @@ tdr.patm <- function(x, dp=0.5)
 tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
 {
     if (!inherits(x, "tdr")) stop("method is only for tdr objects")
-    result <- x
+    res <- x
     n <- length(x$data$temperature)
     if (verbose) cat("tdr.trim() working on dataset with", n, "points\n")
     if (n < 2) {
@@ -229,7 +230,7 @@ tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
             keep[i.start:i.stop] <- TRUE
             #message("The mean (deleted) air pressure is", mean(x$data$pressure[air]),"dbar\n")
         } else if (which.method == 2) { # "time"
-            if (verbose)	cat("trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n");
+            if (verbose) cat("trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n");
             keep <- rep(TRUE, n)
             keep[x$data$t < as.POSIXlt(parameters[1])] <- FALSE
             keep[x$data$t > as.POSIXlt(parameters[2])] <- FALSE
@@ -245,7 +246,7 @@ tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
             stop("Unknown method")
         }
     }
-    result$data <- subset(x$data, keep)
-    result <- processing.log.append(result, paste(deparse(match.call()), sep="", collapse=""))
-    result
+    res$data <- subset(x$data, keep)
+    res <- processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
+    res
 }

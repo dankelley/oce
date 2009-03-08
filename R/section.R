@@ -523,5 +523,6 @@ print.summary.section <- function(x, digits=max(6, getOption("digits") - 1), ...
     }
     print(x$processing.log)
     cat("\n")
+    invisible(x)
 }
 
