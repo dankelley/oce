@@ -120,15 +120,10 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
 
             ylab <- if ("ylab" %in% names(list(...)))
                 list(...)$ylab
-            else { if (which.ytype == 1) "Pressure [ dbar ]" else "Depth [ m ]" }
-
-            ##cat("ylab=(", ylab, ")\n",sep="")
-            ##cat("first few y:", yy[1], yy[2], yy[3], "\n")
-
+            else { if (which.ytype==1) "Pressure [ dbar ]" else "Depth [ m ]" }
             if (is.null(at)) {
                 plot(xxrange, yyrange,
-                     ##xaxs="i", yaxs="i",
-                     ## ylim=rev(yyrange),
+                     xaxs="i", yaxs="i",
                      ylim=yyrange,
                      col="white",
                      xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
@@ -137,11 +132,9 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                 axis(4, labels=FALSE)
                 ytics <- axis(2, labels=FALSE)
                 axis(2, at=ytics, labels=-ytics)
-
-                ##abline(h=30, col="red") # this is ok
             } else {
                 plot(xxrange, yyrange,
-                     ##xaxs="i", yaxs="i",
+                     xaxs="i", yaxs="i",
 ##                     ylim=rev(yyrange),
                      ylim=yyrange,
                      col="white",
@@ -156,7 +149,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             graph.bottom <- usr[3]
             water.depth <- NULL
             for (i in 1:num.stations) {
-                zz[num.stations-i+1,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
+                zz[i,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
                 if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
 
                 temp <- x$data$station[[station.indices[i]]]$data$temperature
@@ -187,38 +180,37 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
             ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
 
-###            if (length(bottom.x) == length(bottom.y)) {
-###                polygon(bottom.x, bottom.y, col="gray") # y may be messed up if NA near surface
-###            }
-
-###            par(new=TRUE, xaxs="i",yaxs="i")
-
             dots <- list(...) # adjust plot parameter labcex, unless user did
 
-            par(xaxs="i", yaxs="i")
+            ##par(xaxs="i", yaxs="i")
 
             if (!is.null(contour.levels) && !is.null(contour.labels)) {
-                if (is.null(dots$labcex)) {
+                if (!("labcex" %in% dots$labcex)) {
                     contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
                             levels=contour.levels,
                             labels=contour.labels,
                             add=TRUE,
-                            ##xaxs="i", yaxs="i",
+                            xaxs="i", yaxs="i",
                             ...)
                 } else {
                     contour(x=xx, y=yy, z=zz, axes=FALSE,
                             add=TRUE,
-                            ##xaxs="i", yaxs="i",
+                            xaxs="i", yaxs="i",
                             ...)
                 }
             } else {
+                ##cat("yy=");print(yy)
+                ##cat("xx=");print(xx)
+                ##cat("zz=");print(zz)
                 if (is.null(dots$labcex)) {
                     contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
                             add=TRUE,
+                            xaxs="i", yaxs="i",
                             ...)
                 } else {
                     contour(x=xx, y=yy, z=zz, axes=FALSE,
                             add=TRUE,
+                            xaxs="i", yaxs="i",
                             ...)
                 }
             }
@@ -229,7 +221,6 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             }
             box()
             axis(1)
-#            axis(2)
             legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1.25)
         }
     }                                   # plot.subsection
@@ -297,9 +288,10 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             par(mfrow=c(2,2))
         else
             par(mfrow=c(1,2))
-        if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
-        if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1)) else par(mar=c(4.5,4,1,1))
     }
+
+    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+    if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1)) else par(mar=c(4.5,4,1,1))
 
     for (w in 1:length(which)) {
         if (!missing(contour.levels)) {
