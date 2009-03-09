@@ -158,6 +158,7 @@ read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
     rval
 }
 
+
 summary.tdr <- function(object, ...)
 {
     if (!inherits(object, "tdr")) stop("method is only for tdr objects")
