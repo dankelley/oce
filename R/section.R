@@ -2,7 +2,7 @@ make.section <- function(item, ...)
 {
     if (inherits(item, "ctd")) {
         extra.args <- list(...)
-        if (length(extra.args) < 1) stop("cannot make a section from one station")
+        ##if (length(extra.args) < 1) stop("cannot make a section from one station")
         num.stations <- 1 + length(extra.args)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
@@ -12,28 +12,28 @@ make.section <- function(item, ...)
         lat[1] <- item$metadata$latitude
         lon[1] <- item$metadata$longitude
         station[[1]] <- item
-        for (i in 2:num.stations) {
-            stn[i] <- extra.args[[i-1]]$metadata$station
-            lat[i] <- extra.args[[i-1]]$metadata$latitude
-            lon[i] <- extra.args[[i-1]]$metadata$longitude
-            station[[i]] <- extra.args[[i-1]]
-            ##summary(extra.args[i-1])
-        }
+        if (num.stations > 1)
+            for (i in 2:num.stations) {
+                stn[i] <- extra.args[[i-1]]$metadata$station
+                lat[i] <- extra.args[[i-1]]$metadata$latitude
+                lon[i] <- extra.args[[i-1]]$metadata$longitude
+                station[[i]] <- extra.args[[i-1]]
+                ##summary(extra.args[i-1])
+            }
     } else if (inherits(item, "list")) {
         num.stations <- length(item)
-        if (num.stations < 2) {
-            stop("cannot make a section from one station")
-        }
+        ##if (num.stations < 2) stop("cannot make a section from one station")
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
-        for (i in 1:num.stations) {
-            stn[i] <- item[[i]]$metadata$station
-            lat[i] <- item[[i]]$metadata$latitude
-            lon[i] <- item[[i]]$metadata$longitude
-            station[[i]] <- item[[i]]
-        }
+        if (num.stations > 1)
+            for (i in 1:num.stations) {
+                stn[i] <- item[[i]]$metadata$station
+                lat[i] <- item[[i]]$metadata$latitude
+                lon[i] <- item[[i]]$metadata$longitude
+                station[[i]] <- item[[i]]
+            }
     } else {
         stop("first argument must be of class \"ctd\" or a \"list\"")
     }
@@ -42,6 +42,25 @@ make.section <- function(item, ...)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")
+    res
+}
+
+"+.section" <- function(section, station)
+{
+    if (missing(station)) return(section) # not sure this can happen
+    if (!inherits(section, "section")) stop("'section' is not a section")
+    if (!inherits(station, "ctd")) stop("'station' is not a station")
+    res <- section
+    n.orig <- length(section$data$station)
+    s <- vector("list", n.orig + 1)
+    for (i in 1:n.orig)
+        s[[i]] <- section$data$station[[i]]
+    s[[n.orig + 1]] <- station
+    res$data$station <- s
+    res$metadata$latitude <- c(res$metadata$latitude, station$metadata$latitude)
+    res$metadata$longitude <- c(res$metadata$longitude, station$metadata$longitude)
+    res$metadata$station.id <- c(res$metadata$station.id, station$metadata$station)
+    res <- processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -307,6 +326,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
     }
  ##   if (lw > 1) par(oldpar)
 }
+
 read.section <- function(file, section.id="", debug=FALSE, log.action)
 {
     if (is.character(file)) {
