@@ -4,7 +4,7 @@
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 \usage{plot.TS(x,
 	rho.levels = 6,
-	grid = FALSE,
+	grid = TRUE,
 	col.grid = "lightgray",
         lty.grid = "dotted",
 	rho1000 = FALSE,
