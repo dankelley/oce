@@ -16,6 +16,7 @@ col.dpdt="darkgreen",
 col.time="darkgreen",
 grid=FALSE, 
 col.grid="lightgray",
+lty.grid="dotted",
 Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
 lwd,
 \dots)
@@ -56,8 +57,9 @@ lwd,
   \item{col.N2}{Color for square of buoyancy frequency.}
   \item{col.dpdt}{Color for dP/dt.}
   \item{col.time}{Color for delta-time.}
-  \item{grid}{Set \code{TRUE} to get a grid.}
-  \item{col.grid}{Grid colour.}
+  \item{grid}{logical, set to \code{TRUE} to get a grid.}
+  \item{col.grid}{colour for grid.}
+  \item{lty.grid}{line type for grid.}
   \item{Slim}{Optional limit for S axis}
   \item{Tlim}{Optional limit for T axis}
   \item{densitylim}{Optional limit for density axis}

@@ -318,7 +318,7 @@ ctd.write <- function(object, file=stop("'file' must be specified"))
 }
 
 plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
-                      grid = TRUE, col.grid="lightgray",
+                      grid = TRUE, col.grid="lightgray", lty.grid="dotted",
                       which = 1:4,
                       coastline,
                       Slim, Tlim, plim, densitylim, dpdtlim, timelim,
@@ -355,6 +355,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     ## 6=density+dpdt
     ## 7=density+time
     ## 8=index
+    ## 9=density
     lw <- length(which)
     if (lw > 1) {
         oldpar <- par(no.readonly = TRUE)
@@ -367,14 +368,24 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     }
 
     for (w in 1:length(which)) {
-        if (which[w] == 1) plot.profile(x, type = "S+T", Slim=Slim, Tlim=Tlim, plim=plim, ...)
-        if (which[w] == 2) plot.profile(x, type = "density+N2", plim=plim, ...)
-        if (which[w] == 6) plot.profile(x, "density+dpdt", plim=plim, densitylim=densitylim, dpdtlim=dpdtlim, ...)
-        if (which[w] == 7) plot.profile(x, "density+time", plim=plim, densitylim=densitylim, timelim=timelim, ...)
-        if (which[w] == 8) plot.profile(x, "index", grid=grid, col.grid=col.grid, plim=plim, ...)
+        if (which[w] < 1) stop("cannot plot.ctd() with which < 1")
+        if (which[w] > 9) stop("cannot plot.ctd() with which > 9")
+        if (which[w] == 1) plot.profile(x, type = "S+T", Slim=Slim, Tlim=Tlim, plim=plim,
+                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        if (which[w] == 2) plot.profile(x, type = "density+N2", plim=plim,
+                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        if (which[w] == 6) plot.profile(x, "density+dpdt", plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        if (which[w] == 7) plot.profile(x, "density+time", plim=plim, densitylim=densitylim, timelim=timelim,
+                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        if (which[w] == 8) plot.profile(x, "index", plim=plim,
+                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        if (which[w] == 9) plot.profile(x, "density", plim=plim,
+                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         if (which[w] == 3) {
             par(mar=c(3.5,3,2,2))
-            plot.TS(x, grid=grid, col.grid=col.grid, Slim=Slim, Tlim=Tlim, ...)
+            plot.TS(x, Slim=Slim, Tlim=Tlim,
+                    grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         }
         if (which[w] == 4) {
             text.item <- function(item, label, cex=0.8) {
@@ -986,6 +997,7 @@ plot.TS <- function (x,
                      rho.levels = 6,
                      grid = FALSE,
                      col.grid = "lightgray",
+                     lty.grid = "dotted",
                      rho1000=FALSE,
                      col = par("col"),
                      col.rho = "darkgray",
@@ -1021,7 +1033,7 @@ plot.TS <- function (x,
     T.axis.min <- par()$usr[3]
     T.axis.max <- par()$usr[4]
     ##if (is.null(args$xlab)) mtext("Salinity [ PSU ]", side = 1, line = 3)
-    if (grid) grid(col="lightgray")
+    if (grid) grid(col=col.grid, lty=lty.grid)
     rho.corners <- sw.sigma(c(S.axis.min,
                               S.axis.max,
                               S.axis.min,
@@ -1079,6 +1091,7 @@ plot.profile <- function (x,
                           col.time = "darkgreen",
                           grid = FALSE,
                           col.grid = "lightgray",
+                          lty.grid = "dotted",
                           Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
                           lwd=par("lwd"),
                           ...)
@@ -1123,7 +1136,10 @@ plot.profile <- function (x,
         else
             mtext(expression(paste(Delta*t, " [ unknown unit ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.time)
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
     } else if (type == "density+dpdt") {
         if (missing(densitylim)) densitylim <- range(x$data$sigma.theta, na.rm=TRUE)
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
@@ -1140,6 +1156,7 @@ plot.profile <- function (x,
         dpdt <- c(dpdt[1], dpdt)        # fake first point
         df <- min(max(x$data$pressure, na.rm=TRUE) / 5, length(x$data$pressure) / 10) # FIXME: adjust params
         dpdt.sm <- smooth.spline(x$data$pressure, dpdt, df=df)
+        if (missing(dpdtlim)) dpdtlim <- range(dpdt.sm$y)
         plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
@@ -1148,7 +1165,12 @@ plot.profile <- function (x,
         else
             mtext(expression(paste(dp/dt, " [ dbar/(time-unit) ]")), side = 1, line = axis.name.loc, cex=par("cex"), col=col.dpdt)
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
     } else if (type == "S") {
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         plot(x$data$salinity, x$data$pressure,
@@ -1158,7 +1180,12 @@ plot.profile <- function (x,
         axis(2)
         axis(3, col = col.S, col.axis = col.S, col.lab = col.S)
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
         lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
     } else if (type == "T") {
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
@@ -1169,7 +1196,12 @@ plot.profile <- function (x,
         axis(2)
         axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
         lines(x$data$temperature, x$data$pressure, col = col.t, lwd=lwd)
     } else if (type == "density") {
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
@@ -1181,7 +1213,12 @@ plot.profile <- function (x,
         axis(2)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
         lines(x$data$sigma.theta, x$data$pressure, col = col.rho, lwd=lwd)
     } else if (type == "density+N2") {
         if (missing(densitylim)) densitylim <- range(x$data$sigma.theta, na.rm=TRUE)
@@ -1204,7 +1241,10 @@ plot.profile <- function (x,
         lines(N2, x$data$pressure, col = col.N2, lwd=lwd)
         mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
     } else if (type == "N2") {
         N2 <- sw.N2(x$data$pressure, x$data$sigma.theta, ...)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
@@ -1215,7 +1255,12 @@ plot.profile <- function (x,
         axis(2)
         axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2)
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
         lines(N2, x$data$pressure, col = col.N2, lwd=lwd)
         abline(v = 0, col = col.N2)
     } else if (type == "S+T") {
@@ -1234,10 +1279,13 @@ plot.profile <- function (x,
              xlim=Slim, ylim=plim,
              type = "n", xlab = "", ylab = "", axes = FALSE)
         axis(1, col = col.S, col.axis = col.S, col.lab = col.S)
-        lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
         mtext("Salinity [ PSU ]", side = 1, line = axis.name.loc, col = col.S, cex=par("cex"))
         box()
-        if (grid) grid(col=col.grid)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
+        lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
     } else {
         stop("unknown type, ", type, ", given")
     }

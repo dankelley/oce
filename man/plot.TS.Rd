@@ -6,6 +6,7 @@
 	rho.levels = 6,
 	grid = FALSE,
 	col.grid = "lightgray",
+        lty.grid = "dotted",
 	rho1000 = FALSE,
 	col = par("col"),
 	col.rho = "darkgray",
@@ -24,7 +25,8 @@
                     isopycnal lines, or a suggestion for the number of levels.
  					In the latter case, \code{pretty()} is used to select levels.}
   \item{grid}{a flag that can be set to \code{TRUE} to get a grid.}
-  \item{col.grid}{color of grid.}
+  \item{col.grid}{colour for grid.}
+  \item{lty.grid}{line type for grid.}
   \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
   \item{col}{colour for symbols.}
   \item{col.rho}{colour for isopycnal lines.}
