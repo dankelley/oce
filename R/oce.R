@@ -10,16 +10,16 @@ oce.as.POSIXlt <- function (x, tz = "")
         }
         if (is.na(xx) ||
                                         # additions ...
-			((nchar(xx) == 8) && !is.na(strptime(xx, f <- "%Y%m%d"))) || # 20020823
- 			!is.na(strptime(xx, f <- "%B %d %Y %H:%M:%OS")) || # Aug 23 2002 or August 23 2002
- 			!is.na(strptime(xx, f <- "%Y %B %d %H:%M:%OS")) || # 2002 Aug 23
- 			!is.na(strptime(xx, f <- "%d %B %Y %H:%M:%OS")) || # 23 Aug 2002
+            ((nchar(xx) == 8) && !is.na(strptime(xx, f <- "%Y%m%d"))) || # 20020823
+            !is.na(strptime(xx, f <- "%B %d %Y %H:%M:%OS")) || # Aug 23 2002 or August 23 2002
+            !is.na(strptime(xx, f <- "%Y %B %d %H:%M:%OS")) || # 2002 Aug 23
+            !is.na(strptime(xx, f <- "%d %B %Y %H:%M:%OS")) || # 23 Aug 2002
                                         # ... and now back to the standard
- 			!is.na(strptime(xx, f <- "%Y-%m-%d %H:%M:%OS")) ||
+            !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M:%OS")) ||
             !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M:%OS")) ||
             !is.na(strptime(xx, f <- "%Y-%m-%d %H:%M")) ||
- 			!is.na(strptime(xx, f <- "%Y/%m/%d %H:%M")) ||
-			!is.na(strptime(xx, f <- "%Y-%m-%d")) ||
+            !is.na(strptime(xx, f <- "%Y/%m/%d %H:%M")) ||
+            !is.na(strptime(xx, f <- "%Y-%m-%d")) ||
             !is.na(strptime(xx, f <- "%Y/%m/%d"))) {
             res <- strptime(x, f)
             if (nchar(tz))
@@ -46,6 +46,7 @@ oce.as.POSIXlt <- function (x, tz = "")
         tz <- tzone[1]
     .Internal(as.POSIXlt(x, tz))
 }
+
 oce.edit <- function(x, item, value, action, reason="not specified", person="not specified")
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
@@ -60,12 +61,14 @@ oce.edit <- function(x, item, value, action, reason="not specified", person="not
     }
     processing.log.append(x, paste(deparse(match.call()), sep="", collapse=""))
 }
+
 oce.write.table <- function (x, file="", ...)
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     if (!("row.names" %in% names(list(...)))) write.table(x$data, file, row.names=FALSE, ...)
     else write.table(x$data, file, ...)
 }
+
 subset.oce <- function (x, subset, indices=NULL, ...)
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
@@ -105,6 +108,7 @@ subset.oce <- function (x, subset, indices=NULL, ...)
     }
     rval
 }
+
 summary.oce <- function(object, ...)
 {
     if (!inherits(object, "oce")) stop("method is only for oce objects")
@@ -115,6 +119,7 @@ summary.oce <- function(object, ...)
     processing.log.summary(object)
     return(invisible(object))
 }
+
 magic <- function(file)
 {
     if (is.character(file)) {
@@ -128,6 +133,7 @@ magic <- function(file)
     }
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     pushBack(line, file)
+    if (substr(line, 1, 2) == "\177\177")            return("adcp")
     if (substr(line, 1, 3) == "CTD")                 return("ctd.woce")
     if ("* Sea-Bird" == substr(line, 1, 10))         return("ctd.seabird")
     if ("# -b" == substr(line, 1, 4))                return("coastline")

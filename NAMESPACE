@@ -30,6 +30,7 @@ export(
        oce.edit,
        oce.write.table,
        parse.latlon,
+       ##plot.adcp,
        plot.TS,
        plot.coastline,
        plot.ctd,
@@ -46,6 +47,7 @@ export(
        processing.log.summary,
        tdr.patm,
        tdr.trim,
+       read.adcp,
        read.coastline,
        read.ctd,
        read.topo,
@@ -85,6 +87,7 @@ export(
        undrift.time
        )
 
+#S3method(plot, adcp)
 S3method(plot, coastline)
 S3method(plot, ctd)
 S3method(plot, lobo)
@@ -94,6 +97,7 @@ S3method(plot, tdr)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
+S3method(print, summary.adcp)
 S3method(print, summary.coastline)
 S3method(print, summary.ctd)
 S3method(print, summary.lobo)
@@ -104,6 +108,7 @@ S3method(print, summary.tidem)
 S3method(print, summary.topo)
 S3method(predict, tidem)
 
+S3method(summary, adcp)
 S3method(summary, coastline)
 S3method(summary, ctd)
 S3method(summary, lobo)
