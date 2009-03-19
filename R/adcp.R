@@ -30,34 +30,30 @@ read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
     offset.to.cksum <- readBin(file, "raw", n=2, size=1) # not used
     spare <- readBin(file, "raw", n=1, size=1)
     if (spare != 0x00) stop("byte 5 of file must be 0x00, but it was", spare)
-    num.data.types <- as.integer(readBin(file, "raw", n=1, size=1))
+    num.data.types <- readBin(file, "integer", n=1, size=1)
     if (debug) cat("number of data types=", num.data.types, "\n")
     if (num.data.types < 1) stop("cannot have 0 or fewer data types")
     data.offset <- vector("integer", length=num.data.types)
-    for (i in 1:num.data.types) {
-        b <- readBin(file, "raw", n=2, size=1)
-        data.offset[i] <- 256 * as.integer(b[2]) + as.integer(b[1])
-    }
+    for (i in 1:num.data.types)
+        data.offset[i] <- readBin(file, "integer", n=1, size=2, endian="little")
     # end of header; start of fixed leader data
     b <- readBin(file, "raw", n=1, size=1)
     if (b != 0x00) stop("first byte of fixed leader header must be 0x00 but it was ", b)
     b <- readBin(file, "raw", n=1, size=1)
     if (b != 0x00) stop("second byte of fixed leader header must be 0x00 but it was ", b)
-    fv <- as.integer(readBin(file, "raw", n=1, size=1))
-    fr <- as.integer(readBin(file, "raw", n=1, size=1))
+    fv <- readBin(file, "integer", n=1, size=1)
+    fr <- readBin(file, "integer", n=1, size=1)
     program.version <- paste(fv, fr, sep=".") # don't want to rely on number of digits
-    b <- readBin(file, "raw", n=2, size=1) # system configuration
-    system.configuration <- 256 * as.integer(b[2]) + as.integer(b[1])
+    system.configuration <- readBin(file, "integer", n=1, size=2, endian="little")
     b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
     b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
-    num.bm <- as.integer(readBin(file, "raw", n=1, size=1))
-    num.cells <- as.integer(readBin(file, "raw", n=1, size=1)) # WN
+    num.beams <- readBin(file, "integer", n=1, size=1)
+    num.cells <- readBin(file, "integer", n=1, size=1) # WN
     b <- readBin(file, "raw", n=1, size=1); if (b != 0x01) warning("expecting byte 0x01 but got ", b)
     b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
-    WS <- as.integer(readBin(file, "raw", n=2, size=1)) # depth cell length
-    depth.cell.length <- 256 * as.integer(WS[2]) + as.integer(WS[1])
-    WF <- as.integer(readBin(file, "raw", n=2, size=1))
-    profiling.mode <- as.integer(readBin(file, "raw", n=1, size=1)) # WM
+    depth.cell.length <- readBin(file, "integer", n=1, size=2, endian="little") # WS
+    WF <- readBin(file, "integer", n=2, size=1, endian="little")
+    profiling.mode <- readBin(file, "integer", n=1, size=1, endian="little") # WM
     b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
     num.cr <- readBin(file, "raw", n=1, size=1)
     b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
@@ -65,15 +61,15 @@ read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
                           num.cells=num.cells, # ok
                           num.data.types=num.data.types,
                           profiling.mode=profiling.mode,
+                          num.beams=num.beams,
                           # ok (checks with matlab) above this comment
                           depth.cell.length=depth.cell.length,
                           data.offset=data.offset,
                           fv=fv,
                           fr=fr,
                           system.configuration=system.configuration,
-                          num.bm=num.bm,
                           #WN=WN,
-                          WS=WS,
+                          #WS=WS,
                           WF=WF,
                           #WM=WM,
                           num.cr=num.cr))
@@ -110,21 +106,8 @@ summary.adcp <- function(object, ...)
 print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADCP record\n")
-#    cat("  Raw file:           \"",     x$filename, "\"\n",sep="")
-#    cat(paste("  System upload time: ", x$system.upload.time, "\n"))
-#    cat(paste("  Date:               ", x$date, "\n"))
-#    cat("  Institute:          ",       x$institute, "\n")
-#    cat("  Scientist:          ",       x$scientist, "\n")
-#    cat("  Ship:               ",       x$ship, "\n")
-#    cat("  Cruise:             ",       x$cruise, "\n")
-#    cat("  Location:           ",       latlon.format(x$latitude, x$longitude, digits=digits), "\n")
-#    cat("  Station:            ",       x$station, "\n")
-#    cat(paste("  Start time:         ", as.POSIXct(x$start.time), "\n"))
-#    cat(paste("  Deployed:           ", x$date, "\n"))
-#    cat(paste("  Recovered:          ", x$recovery, "\n"))
-#    cat("  Water depth:        ",       x$water.depth, "\n")
-#    cat("  No. of levels:      ",       x$levels,  "\n")
-#    print(x$fives, digits=digits)
+    cat("\n\nMetadata:\n")
+    print(x$metadata)
     print(x$processing.log)
     invisible(x)
 }
