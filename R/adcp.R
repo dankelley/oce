@@ -1,36 +1,91 @@
 read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
 {
-   if (is.character(file)) {
-       filename <- file
-       file <- file(file, "rb")
-       on.exit(close(file))
-   }
-   if (!inherits(file, "connection")) {
-       stop("argument `file' must be a character string or connection")
-   }
-   if (!isOpen(file)) {
-       filename <- "(connection)"
-       open(file, "r")
-       on.exit(close(file))
-   }
-   if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-   cat("reading an adcp file\n")
-   data <- list(da=1)
+    show.bytes <- function(file, n) {
+        cat("next", n, "bytes of file:\n")
+        for (i in 1:n) {
+            b <- readBin(file, "raw", n=1, size=1)
+            cat("[", b, "] ")
+            if (!(i %% 10)) cat("\n")
+        }
+    }
+    if (is.character(file)) {
+        filename <- file
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection")) {
+        stop("argument `file' must be a character string or connection")
+    }
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "r")
+        on.exit(close(file))
+    }
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    data <- list(da=1)
+    headerID <- readBin(file, "raw", n=1, size=1)
+    if (headerID != 0x7f) stop("first byte in file (headID) must be 0x7f, but it was", headerID)
+    dataID <- readBin(file, "raw", n=1, size=1)
+    if (dataID != 0x7f) stop("second byte in file (dataID) must be 0x7f but it was", dataID)
+    offset.to.cksum <- readBin(file, "raw", n=2, size=1) # not used
+    spare <- readBin(file, "raw", n=1, size=1)
+    if (spare != 0x00) stop("byte 5 of file must be 0x00, but it was", spare)
+    num.data.types <- as.integer(readBin(file, "raw", n=1, size=1))
+    if (debug) cat("number of data types=", num.data.types, "\n")
+    if (num.data.types < 1) stop("cannot have 0 or fewer data types")
+    data.offset <- vector("integer", length=num.data.types)
+    for (i in 1:num.data.types) {
+        b <- readBin(file, "raw", n=2, size=1)
+        data.offset[i] <- 256 * as.integer(b[2]) + as.integer(b[1])
+    }
+    # end of header; start of fixed leader data
+    b <- readBin(file, "raw", n=1, size=1)
+    if (b != 0x00) stop("first byte of fixed leader header must be 0x00 but it was ", b)
+    b <- readBin(file, "raw", n=1, size=1)
+    if (b != 0x00) stop("second byte of fixed leader header must be 0x00 but it was ", b)
+    fv <- as.integer(readBin(file, "raw", n=1, size=1))
+    fr <- as.integer(readBin(file, "raw", n=1, size=1))
+    program.version <- paste(fv, fr, sep=".") # don't want to rely on number of digits
+    b <- readBin(file, "raw", n=2, size=1) # system configuration
+    system.configuration <- 256 * as.integer(b[2]) + as.integer(b[1])
+    b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
+    b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
+    num.bm <- as.integer(readBin(file, "raw", n=1, size=1))
+    num.cells <- as.integer(readBin(file, "raw", n=1, size=1)) # WN
+    b <- readBin(file, "raw", n=1, size=1); if (b != 0x01) warning("expecting byte 0x01 but got ", b)
+    b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
+    WS <- as.integer(readBin(file, "raw", n=2, size=1)) # depth cell length
+    depth.cell.length <- 256 * as.integer(WS[2]) + as.integer(WS[1])
+    WF <- as.integer(readBin(file, "raw", n=2, size=1))
+    profiling.mode <- as.integer(readBin(file, "raw", n=1, size=1)) # WM
+    b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
+    num.cr <- readBin(file, "raw", n=1, size=1)
+    b <- readBin(file, "raw", n=1, size=1); if (b != 0x00) warning("expecting byte 0x00 but got ", b)
+    if (debug) print(list(program.version=program.version, # ok
+                          num.cells=num.cells, # ok
+                          num.data.types=num.data.types,
+                          profiling.mode=profiling.mode,
+                          # ok (checks with matlab) above this comment
+                          depth.cell.length=depth.cell.length,
+                          data.offset=data.offset,
+                          fv=fv,
+                          fr=fr,
+                          system.configuration=system.configuration,
+                          num.bm=num.bm,
+                          #WN=WN,
+                          WS=WS,
+                          WF=WF,
+                          #WM=WM,
+                          num.cr=num.cr))
 
-   cat("DEBUG: first 3 bytes are:\n")
-   b <- readBin(file, "raw", n=1, size=1)
-   if (b != 0x7f) stop("first byte in file must be 0x7f")
-   b <- readBin(file, "raw", n=1, size=1)
-   if (b != 0x7f) stop("second byte in file must be 0x7f")
-   nb <<- readBin(file, "raw", n=2, size=1)
-   n <- as.integer(nb[2]) * 256 + as.integer(nb[1])
-   cat("n=", n, " (not sure this is right -- check vs MATLAB)\n", sep="")
-   metadata <- list(filename=filename, n=n)
-   if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-   log.item <- processing.log.item(log.action)
-   res <- list(data=data, metadata=metadata, processing.log=log.item)
-   class(res) <- c("adcp", "oce")
-   res
+
+    #show.bytes(file, 50)
+    metadata <- list(filename=filename, num.data.types=num.data.types)
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("adcp", "oce")
+    res
 }
 
 summary.adcp <- function(object, ...)
