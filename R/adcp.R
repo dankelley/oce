@@ -113,6 +113,17 @@ read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
     if (speed.of.sound < 1400 || speed.of.sound > 1500) stop("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1500 m/s")
+    depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
+    heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little") * 0.01
+    pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
+    roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
+    salinity <- readBin(VLD[25:26], "integer", n=1, size=2, endian="little")
+    if (salinity < 0 || salinity > 40) stop("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
+    temperature <- readBin(VLD[27:28], "integer", n=1, size=2, endian="little") * 0.01
+    if (temperature < -5 || temperature > 40) stop("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
+    ## Skipping a lot ...
+    pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little")
+
 
     ##
     ## FIXME: more code needed here ... but first fix VLD header
@@ -159,10 +170,16 @@ read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
                      RTC.time=RTC.time,
                      ensemble.number.MSB=ensemble.number.MSB,
                      bit.result=bit.result,
-                     speed.of.sound=speed.of.sound
+                     speed.of.sound=speed.of.sound,
+                     depth.of.transducer=depth.of.transducer,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll,
+                     salinity=salinity,
+                     temperature=temperature,
+                     pressure=pressure  # FIXME: -244 in SLEIWEX data SL08F001.000
                      )
     print(metadata)
-    #show.bytes(file, 50)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -173,18 +190,12 @@ read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
 summary.adcp <- function(object, ...)
 {
     if (!inherits(object, "adcp")) stop("method is only for adcp objects")
-##    dim <- dim(object$data)
-##    fives <- matrix(nrow=dim[2], ncol=5)
+    ## dim <- dim(object$data)
+    ## fives <- matrix(nrow=dim[2], ncol=5)
     res <- list(filename="?",
-##                fives=fives,
+                metadata=object$metadata,
+                ## fives=fives,
                 processing.log=processing.log.summary(object))
-##    if (!is.null(object$metadata$filename.orig))      res$filename <- object$metadata$filename.orig
-##    res$levels <- dim[1]
-##    for (v in 1:dim[2])
-##        fives[v,] <- fivenum(object$data[,v], na.rm=TRUE)
-##    rownames(fives) <- names(object$data)
-##    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-##    res$fives <- fives
     class(res) <- "summary.adcp"
     res
 }
