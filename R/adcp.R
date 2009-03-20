@@ -24,26 +24,26 @@ read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     data <- list(da=1)
     ##
-    ## binary header data, length 6 + 2 * num.data.types bytes
-    headerID <- readBin(file, "raw", n=1, size=1)
-    if (headerID != 0x7f) stop("first byte in file (headID) must be 0x7f, but it was", headerID)
-    dataID <- readBin(file, "raw", n=1, size=1)
-    if (dataID != 0x7f) stop("second byte in file (dataID) must be 0x7f but it was", dataID)
-    num.bytes.in.ensemble <- readBin(file, "integer", n=1, size=2, endian="little")
+    ## header, 6 + 2 * number.of.data.types
+    ##
+    header.part1 <- readBin(file, "raw", n=6, size=1)
+    if (header.part1[1] != 0x7f) stop("first byte in file must be 0x7f, but it was", header.part1[1])
+    if (header.part1[2] != 0x7f) stop("second byte in file must be 0x7f but it was", header.part1[2])
+    num.bytes.in.ensemble <- readBin(header.part1[3:4], "integer", n=1, size=2, endian="little")
     if (debug) cat("num.bytes.in.ensemble=", num.bytes.in.ensemble,"\n")
-    offset.to.cksum <- readBin(file, "raw", n=2, size=1) # not used
-    ## BHD[5] spare (or is that a number that means something??)
-    num.data.types <- readBin(file, "integer", n=1, size=1)
-    if (num.data.types < 1) stop("cannot have ", num.data.types, " data types, as header indicates")
-    data.offset <- readBin(file, "integer", n=num.data.types, size=2, endian="little")
-cat("data offset=");print(data.offset);stop()
-    where <- seek(file)
-    if (where != 1 + 6 + 2 * num.data.types) stop("BHD (binary header data) length should be ", 1 + 6 + 2 * num.data.types, " bytes, but it is ", where)
+    ## header.part1[5] spare
+    number.of.data.types <- readBin(header.part1[6], "integer", n=1, size=1)
+    if (number.of.data.types < 1) stop("cannot have ", number.of.data.types, " data types, as header indicates")
+    if (debug) cat("number.of.data.types=", number.of.data.types, "\n")
+    ## part 2 of header is these data offsets
+    data.offset <- readBin(file, "integer", n=number.of.data.types, size=2, endian="little")
+    if (debug) cat("data.offset=", paste(data.offset, sep=" "), "\n")
     ##
     ## FLD (fixed leader data) 59 bytes
+    ##
     FLD <- readBin(file, "raw", n=59, size=1) # binary fixed leader data (Figure D-5)
     if (debug) {
-        cat("fixed leader data (50 bytes):\n")
+        cat("fixed leader data (59 bytes):\n")
         print(FLD)
     }
     if (FLD[1] != 0x00) stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
@@ -51,86 +51,116 @@ cat("data offset=");print(data.offset);stop()
     fv <- readBin(FLD[3], "integer", n=1, size=1)
     fr <- readBin(FLD[4], "integer", n=1, size=1)
     program.version <- paste(fv, fr, sep=".") # don't want to rely on number of digits
+    if (debug) cat("program version=", program.version, "\n")
     system.configuration <- readBin(FLD[5:6], "integer", n=1, size=2, endian="little")
-    ## FLD[7:8] reserved
-    num.beams <- readBin(FLD[9], "integer", n=1, size=1)
-    num.cells <- readBin(FLD[10], "integer", n=1, size=1) # WN
-    ## FLD[11:12] reserved
+    real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
+    lag.length <- readBin(FLD[8], "integer", n=1, size=1)
+    number.of.beams <- readBin(FLD[9], "integer", n=1, size=1)
+    number.of.cells <- readBin(FLD[10], "integer", n=1, size=1) # WN
+    pings.per.ensemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     depth.cell.length <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profiling.mode <- readBin(FLD[17], "integer", n=1, size=1) # WM
-    ## FLD[18] reserved
-    num.code.reps <- readBin(FLD[19], "integer", n=1, size=1)
-    ## FLD[21:26] reserved
+    low.corr.thresh <- readBin(FLD[18], "integer", n=1, size=1)
+    number.of.code.reps <- readBin(FLD[19], "integer", n=1, size=1)
+    percent.gd.minimum <- readBin(FLD[20], "integer", n=1, size=1)
+    error.velocity.maximum <- readBin(FLD[21:22], "integer", n=1, size=2, endian="little")
+    tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
+    tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
+    tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
+    coordinate.transform <- readBin(FLD[26], "integer", n=1, size=1)
     heading.alignment <- readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
-    sensor.source <- readBin(FLD[31], "integer", n=1, size=1) # EZ
-    sensors.avail <- readBin(FLD[32], "integer", n=1, size=1)
+    heading.bias <- readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
+    sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
+    sensors.available <- readBin(FLD[32], "integer", n=1, size=1)
     bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little")
     xmit.pulse.length <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little")
-    ref.layer.average <- readBin(FLD[37:38], "integer", n=1, size=2, endian="little") #??
-    false.target.thresh <- readBin(FLD[39], "integer", n=1, size=1) # WA
-    ## FLD[40] reserved
-    transmit.lag.distance <- readBin(FLD[41:42], "integer", n=1, size=1) / 100 # to m
-    ## FLD[43:50] reserved
-    where <- seek(file)
-print(data.offset);stop()
-print(num.beams)
-print(where);stop()
-    if (where != 1 + (59 + 6 + 2 * num.data.types)) stop("problem reading header; should be at byte ", 1 + (59 + 6 + 2 * num.data.types), " but am at byte ", where)
+    wp.ref.layer.average <- readBin(FLD[37:38], "integer", n=1, size=2, endian="little")
+    false.target.thresh <- readBin(FLD[39], "integer", n=1, size=1)
+    ## FLD[40] spare
+    transmit.lag.distance <- readBin(FLD[41:42], "integer", n=1, size=2, endian="little")
+    cpu.board.serial.number <- readBin(FLD[43:50], "integer", n=1, size=8, endian="little")
+    system.bandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
+    system.power <- readBin(FLD[53], "integer", n=1, size=1)
+    ## FLD[54] spare
+    instrument.serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
     ##
     ## VLD (variable leader data) 65 bytes
-    VLD <- readBin(file, "raw", n=65, size=1) # binary fixed leader data (Figure D-5)
+    ##
+    VLD <- readBin(file, "raw", n=65, size=1)
+    cat("position in file=", seek(file, NA), "after reading VLD\n")
     if (debug) {
-        cat("variable leader data (58 bytes):\n")
+        cat("variable leader data (65 bytes):\n")
         print(VLD)
     }
-    system.date.year <- readBin(VLD[5], "integer", n=1, size=1, endian="little")
-    system.date.month <- readBin(VLD[6], "integer", n=1, size=1, endian="little")
-    system.date.day <- readBin(VLD[7], "integer", n=1, size=1, endian="little")
-    system.date.hour <- readBin(VLD[8], "integer", n=1, size=1, endian="little")
-    system.date.minute <- readBin(VLD[9], "integer", n=1, size=1, endian="little")
-    system.date.second <- readBin(VLD[10], "integer", n=1, size=1, endian="little")
-    system.date.hundreds <- readBin(VLD[11], "integer", n=1, size=1, endian="little")
-    ## ensemble #MSB
-    ## reserved 2
-    speed.of.sound <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
-    print(list(
-               system.date.year=system.date.year,
-               system.date.month=system.date.month,
-               system.date.day=system.date.day,
-               system.date.hour=system.date.hour,
-               system.date.minute=system.date.minute,
-               system.date.second=system.date.second,
-               system.date.hundreds=system.date.hundreds,
-               speed.of.sound=speed.of.sound
-               ))
+    ## ensure that header is not ill-formed
     if (VLD[1] != 0x80) stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
-    if (VLD[2] != 0x00) stop("byte 1 of variable leader data should be 0x00, but it is ", VLD[1])
+    if (VLD[2] != 0x00) stop("byte 1 of variable leader data should be 0x00, but it is ", VLD[2])
+    ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
+    RTC.year <- readBin(VLD[5], "integer", n=1, size=1)
+    if (RTC.year < 1800) RTC.year <- RTC.year + 2000 # fix Y2K problem
+    RTC.month <- readBin(VLD[6], "integer", n=1, size=1)
+    RTC.day <- readBin(VLD[7], "integer", n=1, size=1)
+    RTC.hour <- readBin(VLD[8], "integer", n=1, size=1)
+    RTC.minute <- readBin(VLD[9], "integer", n=1, size=1)
+    RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
+    RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
+
+    RTC.time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "GMT") # not sure on TZ
+
+
+    ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
+    bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
+    speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
+    if (speed.of.sound < 1400 || speed.of.sound > 1500) stop("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1500 m/s")
 
     ##
-    ## BT (bottom track) 81 bytes
-    ##  ... more, see Figure D-3
+    ## FIXME: more code needed here ... but first fix VLD header
+    ##
 
     metadata <- list(filename=filename,
-                     program.version=program.version, # ok
-                     num.cells=num.cells, # ok
-                     num.data.types=num.data.types,
+                     program.version=program.version,
+                     number.of.data.types=number.of.data.types,
+                     data.offset=data.offset,
+                     number.of.beams=number.of.beams,
+                     number.of.cells=number.of.cells,
+                     pings.per.ensemble=pings.per.ensemble,
                      profiling.mode=profiling.mode,
-                     num.beams=num.beams,
-                                        # ok (checks with matlab) above this comment
-                     blank.after.transmit=blank.after.transmit,
+                     low.corr.thresh=low.corr.thresh,
+                     number.of.code.reps=number.of.code.reps,
+                     percent.gd.minimum=percent.gd.minimum,
+                     error.velocity.maximum=error.velocity.maximum,
+                     tpp.minutes=tpp.minutes,
+                     tpp.seconds=tpp.seconds,
+                     tpp.hundredths=tpp.hundredths,
+                     coordinate.transform=coordinate.transform,
                      heading.alignment=heading.alignment,
+                     heading.bias=heading.bias,
                      sensor.source=sensor.source,
+                     sensors.available=sensors.available,
                      bin1.distance=bin1.distance,
                      xmit.pulse.length=xmit.pulse.length,
-                     ref.layer.average=ref.layer.average,
+                     wp.ref.layer.average=wp.ref.layer.average,
                      false.target.thresh=false.target.thresh,
                      transmit.lag.distance=transmit.lag.distance,
-                     depth.cell.length=depth.cell.length,
-                     data.offset=data.offset,
-                     ## fv=fv,
-                     ## fr=fr,
-                     system.configuration=system.configuration)
+                     cpu.board.serial.number=cpu.board.serial.number,
+                     system.bandwidth=system.bandwidth,
+                     system.power=system.power,
+                     instrument.serial.number=instrument.serial.number,
+                     # VLD
+                     ensemble.number=ensemble.number,
+                     RTC.year=RTC.year,
+                     RTC.month=RTC.month,
+                     RTC.day=RTC.day,
+                     RTC.hour=RTC.hour,
+                     RTC.minute=RTC.minute,
+                     RTC.second=RTC.second,
+                     RTC.hundredths=RTC.hundredths,
+                     RTC.time=RTC.time,
+                     ensemble.number.MSB=ensemble.number.MSB,
+                     bit.result=bit.result,
+                     speed.of.sound=speed.of.sound
+                     )
     print(metadata)
     #show.bytes(file, 50)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
