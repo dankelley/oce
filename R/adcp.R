@@ -124,9 +124,8 @@ read.adcp <- function(file, type ="RDI", debug=FALSE, log.action)
     ## Skipping a lot ...
     pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little")
 
-
     ##
-    ## FIXME: more code needed here ... but first fix VLD header
+    ## FIXME: more code needed here (rest of VLD header + data)
     ##
 
     metadata <- list(filename=filename,
