@@ -453,3 +453,30 @@ stickplot <- function(t, x, y, ...)
     lines(xx, yy, type='l', ...)
     ##points(xx[ones],yy[ones],col="red")
 }
+
+byte2binary <- function(x)
+{
+    onebyte2binary <- function(x)
+    {
+        c("0001","0010","0011","0100",
+          "0101","0110","0111","1000",
+          "1001","1010","1011","1100",
+          "1101","1110", "1111")[x]
+    }
+    rval <- NULL
+    if (class(x) == "raw")
+        x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
+    for (i in 1:length(x)) {
+        if (x[i] < 1) {
+            rval <- c(rval, "??")
+        } else if (x[i] > 15) {
+            byte1 <- as.integer(floor(x[i] / 16))
+            byte2 <- x[i] - 16 * byte1
+            rval <- c(rval, paste(onebyte2binary(byte1),
+                                  onebyte2binary(byte2), sep=""))
+        } else {
+            rval <- c(rval, onebyte2binary(x[i]))
+        }
+    }
+    rval
+}

@@ -6,6 +6,7 @@ export(
        as.ctd,
        as.sealevel,
        as.windrose,
+       byte2binary,
        coriolis,
        ctd.add.column,
        ctd.decimate,

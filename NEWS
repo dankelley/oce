@@ -1,4 +1,5 @@
 0.1-77
+- add byte2binary()
 - add read.adcp(), summary.adcp(), and print.summary.adcp()
 - add "lty.grid" to all CTD plotting functions
 - add "+.section", a more convenient way to build sections from stations
