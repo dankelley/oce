@@ -231,7 +231,7 @@ read.profile <- function(file, header, debug)
 }
 
 read.adcp <- function(file, type ="RDI",
-                      skip=0, read=4,
+                      skip=0, read,
                       debug=0, log.action)
 {
     if (is.character(file)) {
