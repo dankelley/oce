@@ -58,7 +58,6 @@ and
 \examples{
 \dontrun{
 library(oce)
-library(oce)
 d <- read.oce("~/SL08F001.000",read=60)
 e <- adcp.beam2velo(d)
 summary(e)
