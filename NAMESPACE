@@ -6,6 +6,7 @@ export(
        as.ctd,
        as.sealevel,
        as.windrose,
+       adcp.beam2velo,
        byte2binary,
        coriolis,
        ctd.add.column,
