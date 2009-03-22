@@ -31,7 +31,7 @@ export(
        oce.edit,
        oce.write.table,
        parse.latlon,
-       ##plot.adcp,
+       plot.adcp,
        plot.TS,
        plot.coastline,
        plot.ctd,
@@ -88,7 +88,7 @@ export(
        undrift.time
        )
 
-#S3method(plot, adcp)
+S3method(plot, adcp)
 S3method(plot, coastline)
 S3method(plot, ctd)
 S3method(plot, lobo)

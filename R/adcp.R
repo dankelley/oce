@@ -59,7 +59,7 @@ read.header <- function(file, debug) {
     heading.bias <- readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
     sensors.available <- readBin(FLD[32], "integer", n=1, size=1)
-    bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little")
+    bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little") * 0.01
     xmit.pulse.length <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little")
     wp.ref.layer.average <- readBin(FLD[37:38], "integer", n=1, size=2, endian="little")
     false.target.thresh <- readBin(FLD[39], "integer", n=1, size=1)
@@ -74,7 +74,7 @@ read.header <- function(file, debug) {
 
     beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n")
-    dist.bin1  <- readBin(FLD[65:68], "integer", n=1, size=4, endian="little")
+
     ##
     ## VLD (variable leader data) 65 bytes
     ##
@@ -101,7 +101,7 @@ read.header <- function(file, debug) {
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
-    if (speed.of.sound < 1400 || speed.of.sound > 1500) stop("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1500 m/s")
+    if (speed.of.sound < 1400 || speed.of.sound > 1600) stop("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
     depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
     heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little") * 0.01
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
@@ -147,7 +147,6 @@ read.header <- function(file, debug) {
          system.power=system.power,
          instrument.serial.number=instrument.serial.number,
          beam.angle=beam.angle,
-         dist.bin1=dist.bin1,
          ensemble.number=ensemble.number,
          RTC.year=RTC.year,
          RTC.month=RTC.month,
@@ -248,27 +247,35 @@ read.adcp <- function(file, type ="RDI",
         on.exit(close(file))
     }
     ## read a profile, to get length so we can seek
-    junk <- read.profile(file, debug=debug)
+    p <- read.profile(file, debug=debug)
     bytes.per.profile <- seek(file)
     seek(file, where=bytes.per.profile * skip)
     if (read < 1) stop("cannot read fewer than one profile")
-    b1 <- array(dim=c(read, a1$header$number.of.cells))
-    b2 <- array(dim=c(read, a1$header$number.of.cells))
-    b3 <- array(dim=c(read, a1$header$number.of.cells))
-    b4 <- array(dim=c(read, a1$header$number.of.cells))
-    times <- NULL
+    b1 <- array(dim=c(read, p$header$number.of.cells))
+    b2 <- array(dim=c(read, p$header$number.of.cells))
+    b3 <- array(dim=c(read, p$header$number.of.cells))
+    b4 <- array(dim=c(read, p$header$number.of.cells))
+    time <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
         b1[i,] <- p$v[,1]
         b2[i,] <- p$v[,2]
         b3[i,] <- p$v[,3]
         b4[i,] <- p$v[,4]
-        times <- c(times, p$header$RTC.time)
+        time <- c(time, p$header$RTC.time)
         if (i == 1) metadata <- c(p$header, filename=filename)
     }
-    class(times) <- "POSIXct"           # BUG: should make GMT
-    attr(times, "tzone") <- attr(p$header$RTC.time, "tzone")
-    data <- list(b1=b1, b2=b2, b3=b3, b4=b4, times=times, depths=seq(0, by=p$header$depth.cell.length, length.out=p$header$number.of.cells))
+    class(time) <- "POSIXct"
+    attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
+    data <- list(b1=b1,
+                 b2=b2,
+                 b3=b3,
+                 b4=b4,
+                 time=time,
+                 distance=seq(p$header$bin1.distance,
+                 by=p$header$depth.cell.length,
+                 length.out=p$header$number.of.cells)
+                 )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -303,7 +310,7 @@ summary.adcp <- function(object, ...)
                 kHz=kHz,
                 beam.angle=beam.angle,
                 fives=fives,
-                profiles=length(object$data$times),
+                profiles=length(object$data$time),
                 processing.log=processing.log.summary(object))
     class(res) <- "summary.adcp"
     res
@@ -317,7 +324,8 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  System configuration:     ", x$metadata$system.configuration, "\n")
     cat("  CPU board serial number:  ", x$metadata$cpu.board.serial.number, "\n")
     cat("  Instrument serial number: ", x$metadata$instrument.serial.number, "\n")
-    cat("  Pressure:                 ", x$metadata$pressure, "db (in first record)\n")
+    cat("  Transducer depth:         ", x$metadata$depth.of.transducer*0.01, "\n")
+    cat("  Pressure:                 ", x$metadata$pressure*0.01, "db (in first record)\n")
     cat("  Salinity:                 ", x$metadata$salinity, "PSU (in first record)\n")
     cat("  Temperature:              ", x$metadata$temperature, "degC (in first record)\n")
     cat("  Sampling\n",
@@ -338,17 +346,48 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-## TESTS
-if (FALSE) {
-    source("misc.R")
-    source("processing.log.R")
-    source("adcp.R")
-    d <- read.adcp("~/SL08F001.000",read=50)
-    print(summary(d))
-    image(x=d$data$times,y=d$data$depths, z=d$data$b2, xlab="Time", ylab="Distance", axes=FALSE)
-    axis.POSIXct(1, at=d$data$times)
-    box()
-    axis(2)
-    title("Beam 1")
-}
+plot.adcp <- function(x, which=1:4, ...)
+{
+    lw <- length(which)
+    if (lw > 1) oldpar <- par(no.readonly = TRUE)
+    par(mfrow = c(lw, 1))
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1],mgp[1]+1,1,1))
 
+    for (w in 1:length(which)) {
+        if (which[w] == 1) {
+            image(x=x$data$time,y=x$data$distance, z=x$data$b1,
+                  xlab="Time", ylab="Distance", axes=FALSE)
+            axis.POSIXct(1, at=x$data$time)
+            box()
+            axis(2)
+            mtext("Beam 1", side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 2) {
+            image(x=x$data$time,y=x$data$distance, z=x$data$b2,
+                  xlab="Time", ylab="Distance", axes=FALSE)
+            axis.POSIXct(1, at=x$data$time)
+            box()
+            axis(2)
+            mtext("Beam 2", side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 3) {
+            image(x=x$data$time,y=x$data$distance, z=x$data$b3,
+                  xlab="Time", ylab="Distance", axes=FALSE)
+            axis.POSIXct(1, at=x$data$time)
+            box()
+            axis(2)
+            mtext("Beam 3", side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 4) {
+            image(x=x$data$time,y=x$data$distance, z=x$data$b4,
+                  xlab="Time", ylab="Distance", axes=FALSE)
+            axis.POSIXct(1, at=x$data$time)
+            box()
+            axis(2)
+            mtext("Beam 4", side=3, cex=2/3, adj=1)
+        }
+    }
+    if (lw > 1) par(oldpar)
+}

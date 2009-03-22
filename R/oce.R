@@ -151,6 +151,7 @@ read.oce <- function(file, ...)
 {
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
+    if (type == "adcp")        return(read.adcp(file, ..., log.action=log.action))
     if (type == "ctd.woce")    return(read.ctd(file, ..., log.action=log.action))
     if (type == "ctd.seabird") return(read.ctd(file, ..., log.action=log.action))
     if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))

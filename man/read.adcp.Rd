@@ -14,8 +14,8 @@
     file to load.}
   \item{type}{if \code{NULL}, then the first line is studied, in order
     to determine the file type.  (Ignored at present.)}
-  \item{skip}{optional number of profiles to skip at start}
-  \item{read}{optional number of profiles to read}
+  \item{skip}{optional number of profiles to skip at start.}
+  \item{read}{optional number of profiles to read.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
     amount of debugging information, or to 2 to get more.}
   \item{log.action}{if provided, the action item to be stored in the
@@ -25,19 +25,20 @@
 
 \details{Reads a binary-format ADCP file.}
 
-\value{An object of \code{\link[base]{class}} \code{"adcp"}, which is a
-  list with elements described below.
-
-  (FILL IN DETAILS LATER.)
-}
+\value{An object of \code{\link[base]{class}} \code{"adcp"}, which
+  contains measurements made with an ADCP device.}
 
 \seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.}
+  alternative to this. An \code{adcp} object may be summarized with
+  \code{\link{summary.adcp}}, and plotted with \code{\link{plot.adcp}}.
+}
 
 \examples{
 \dontrun{
 library(oce)
-x <- read.oce("mooring-A")
+d <- read.oce("~/SL08F001.000",read=60)
+summary(d)
+plot(d)
 }
 }
 
