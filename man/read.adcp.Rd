@@ -23,7 +23,8 @@
     it provides is better for normal calls by a user.)}
 }
 
-\details{Reads a binary-format ADCP file.}
+\details{Reads a binary-format ADCP file.  The file structure is
+explained in Chapter 5 of Teledyne-RDI (2007).}
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}, which
   contains measurements made with an ADCP device.}
@@ -42,9 +43,10 @@ plot(d)
 }
 }
 
-\references{The file format seems to be described only in files that are
-  non-public (restricted to those who register on the RDI website), so
-  no references can be provided here.}
+\references{Teledyne-RDI, 2007.
+WorkHorse commands and output data format.
+P/N 957-6156-00 (November 2007).
+}
 
 \author{Dan Kelley}
 

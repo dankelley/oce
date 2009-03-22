@@ -22,15 +22,17 @@
   cast. The panels are controlled by the \code{which} argument.
 }
 
-\seealso{The data may be read with \code{\link{read.adcp}}. Summaries of
-  ADCP data are provided by \code{\link{summary.adcp}}.}
+\seealso{The data may be read with \code{\link{read.adcp}}. Conversion
+  from beam to velocity values can be done with
+  \code{\link{adcp.beam2velo}}. Summaries of ADCP data are provided by
+  \code{\link{summary.adcp}}.}
 
 \examples{
 \dontrun{
 library(oce)
 d <- read.oce("~/SL08F001.000",read=60)
 summary(d)
-plot(d)
+plot(d, col=cm.colors(128))
 }
 }
 \author{Dan Kelley}

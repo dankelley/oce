@@ -58,16 +58,16 @@ and
 \examples{
 \dontrun{
 library(oce)
-d <- read.oce("~/SL08F001.000",read=60)
+d <- read.oce("~/SL08F001.000",read=120) # 20 minutes
 e <- adcp.beam2velo(d)
 summary(e)
-plot(e)
+plot(e, which=3, zlim=c(-0.1, 0.1), col=cm.colors(128)) # w(z,t)
 }
 }
 
-\references{RDI Instruments, 1998.
-  ADCP Coordinate Transformation, formulas and calculations.
-  P/N 951-6079-00 (July 1998).
+\references{Teledyn-RDI, 1998.
+ADCP Coordinate Transformation, formulas and calculations.
+P/N 951-6079-00 (July 1998).
 }
 
 
