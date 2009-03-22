@@ -35,9 +35,31 @@ read.header <- function(file, debug) {
     fr <- readBin(FLD[4], "integer", n=1, size=1)
     ##program.version <- paste(fv, fr, sep=".") # don't want to rely on number of digits
     ##if (debug) cat("program version=", program.version, "\n")
-    system.configuration <- readBin(FLD[5:6], "raw", n=2, size=1)
-    system.configuration <- paste(byte2binary(system.configuration[1]),
-                                  byte2binary(system.configuration[2]),sep="-")
+##    system.configuration <- readBin(FLD[5:6], "raw", n=2, size=1)
+    system.configuration <- paste(byte2binary(FLD[5]),
+                                  byte2binary(FLD[6]),sep="-")
+    bits <- substr(system.configuration, 6, 8)
+    if (bits == "000") kHz <- 75
+    else if (bits == "001") kHz <-  150
+    else if (bits == "010") kHz <-  300
+    else if (bits == "011") kHz <-  600
+    else if (bits == "100") kHz <- 1200
+    else if (bits == "101") kHz <- 2400
+    bits <- substr(system.configuration, 16, 17)
+    if (bits == "00") beam.angle <- 15
+    else if (bits == "01") beam.angle <- 20
+    else if (bits == "10") beam.angle <- 30
+    else if (bits == "11") beam.angle <- NA # means 'other'
+    bits <- substr(system.configuration, 5, 5)
+    if (bits == "0") beam.pattern <- "concave"
+    else beam.pattern <- "convex"
+    ##cat("BITS='",bits,"'\n",sep="")
+    beam.config <- "?"
+    bits <- substr(system.configuration, 10, 13)
+    if (bits == "0100") beam.config <- "4-beam janus"
+    else if (bits == "0101") beam.config <- "5-beam janus demod"
+    else if (bits == "1111") beam.config <- "5-beam janus 2 demd"
+    ##cat("beam.config=", beam.config, "\n")
     real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     lag.length <- readBin(FLD[8], "integer", n=1, size=1)
     number.of.beams <- readBin(FLD[9], "integer", n=1, size=1)
@@ -54,7 +76,12 @@ read.header <- function(file, debug) {
     tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
     tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
     tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
-    coordinate.transform <- readBin(FLD[26], "integer", n=1, size=1)
+    bits <- substr(byte2binary(FLD[26]), 4, 5)
+    coordinate.transformation <- "???"
+    if (bits == "00") coordinate.transformation <- "beam"
+    else if (bits == "01") coordinate.transformation <- "instrument"
+    else if (bits == "10") coordinate.transformation <- "ship"
+    else if (bits == "11") coordinate.transformation <- "earth"
     heading.alignment <- readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
     heading.bias <- readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
@@ -72,7 +99,7 @@ read.header <- function(file, debug) {
     instrument.serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
     ##cat("INSTRUMENT SERIAL NUMBER", FLD[55:58], "\n")
 
-    beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
+    ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n")
 
     ##
@@ -118,6 +145,10 @@ read.header <- function(file, debug) {
          program.version.minor=fr,
          ##program.version=program.version,
          system.configuration=system.configuration,
+         kHz=kHz,
+         beam.angle=beam.angle,
+         beam.pattern=beam.pattern,
+         beam.config=beam.config,
          number.of.data.types=number.of.data.types,
          data.offset=data.offset,
          number.of.beams=number.of.beams,
@@ -132,7 +163,7 @@ read.header <- function(file, debug) {
          tpp.minutes=tpp.minutes,
          tpp.seconds=tpp.seconds,
          tpp.hundredths=tpp.hundredths,
-         coordinate.transform=coordinate.transform,
+         coordinate.transformation=coordinate.transformation,
          heading.alignment=heading.alignment,
          heading.bias=heading.bias,
          sensor.source=sensor.source,
@@ -146,7 +177,7 @@ read.header <- function(file, debug) {
          system.bandwidth=system.bandwidth,
          system.power=system.power,
          instrument.serial.number=instrument.serial.number,
-         beam.angle=beam.angle,
+         ## beam.angle=beam.angle,  # wrong in my tests, anyway
          ensemble.number=ensemble.number,
          RTC.year=RTC.year,
          RTC.month=RTC.month,
@@ -272,9 +303,7 @@ read.adcp <- function(file, type ="RDI",
                  b3=b3,
                  b4=b4,
                  time=time,
-                 distance=seq(p$header$bin1.distance,
-                 by=p$header$depth.cell.length,
-                 length.out=p$header$number.of.cells)
+                 distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells)
                  )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -287,28 +316,20 @@ summary.adcp <- function(object, ...)
 {
     if (!inherits(object, "adcp")) stop("method is only for adcp objects")
     fives <- matrix(nrow=4, ncol=5) # 4 beams
-    fives[1,] <- fivenum(object$data$b1, na.rm=TRUE)
-    fives[2,] <- fivenum(object$data$b2, na.rm=TRUE)
-    fives[3,] <- fivenum(object$data$b3, na.rm=TRUE)
-    fives[4,] <- fivenum(object$data$b4, na.rm=TRUE)
-    rownames(fives) <- paste("Beam", 1:4)
+    fives[1,] <- fivenum(object$data[[1]], na.rm=TRUE)
+    fives[2,] <- fivenum(object$data[[2]], na.rm=TRUE)
+    fives[3,] <- fivenum(object$data[[3]], na.rm=TRUE)
+    fives[4,] <- fivenum(object$data[[4]], na.rm=TRUE)
+    rownames(fives) <- names(object$data)[1:4]
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    bits <- substr(object$metadata$system.configuration, 6, 8)
-    if (bits == "000") kHz <- 75
-    else if (bits == "001") kHz <-  150
-    else if (bits == "010") kHz <-  300
-    else if (bits == "011") kHz <-  600
-    else if (bits == "100") kHz <- 1200
-    else if (bits == "101") kHz <- 2400
-    bits <- substr(object$metadata$system.configuration, 16, 17)
-    if (bits == "00") beam.angle <- 15
-    else if (bits == "01") beam.angle <- 20
-    else if (bits == "10") beam.angle <- 30
-    else if (bits == "11") beam.angle <- NA # means 'other'
     res <- list(filename=object$metadata$filename,
                 metadata=object$metadata,
-                kHz=kHz,
-                beam.angle=beam.angle,
+                kHz=object$metadata$kHz,
+                number.of.beams=object$metadata$number.of.beams,
+                beam.angle=object$metadata$beam.angle,
+                beam.config=object$metadata$beam.config,
+                beam.pattern=object$metadata$beam.pattern,
+                coordinate.transformation=object$metadata$coordinate.transformation,
                 fives=fives,
                 profiles=length(object$data$time),
                 processing.log=processing.log.summary(object))
@@ -319,19 +340,22 @@ summary.adcp <- function(object, ...)
 print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADCP timeseries\n")
-    cat("  Filename:                 ", x$filename, "\n")
-    cat("  Software version:         ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n")
-    cat("  System configuration:     ", x$metadata$system.configuration, "\n")
-    cat("  CPU board serial number:  ", x$metadata$cpu.board.serial.number, "\n")
-    cat("  Instrument serial number: ", x$metadata$instrument.serial.number, "\n")
-    cat("  Transducer depth:         ", x$metadata$depth.of.transducer*0.01, "\n")
-    cat("  Pressure:                 ", x$metadata$pressure*0.01, "db (in first record)\n")
-    cat("  Salinity:                 ", x$metadata$salinity, "PSU (in first record)\n")
-    cat("  Temperature:              ", x$metadata$temperature, "degC (in first record)\n")
+    cat("  Filename:                   ", x$filename, "\n")
+    cat("  Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n")
+    cat("  System configuration:       ", x$metadata$system.configuration, "\n")
+    cat("  CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n")
+    cat("  Instrument serial number:   ", x$metadata$instrument.serial.number, "\n")
+    cat("  Coordinate transformation:  ", x$coordinate.transformation, "\n")
+    cat("  Transducer depth:           ", x$metadata$depth.of.transducer*0.01, "\n")
+    cat("  Pressure:                   ", x$metadata$pressure*0.01, "db (in first record)\n")
+    cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
+    cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
     cat("  Sampling\n",
         "    Frequency:          ", x$kHz, "kHz\n",
-        "    Number of beams:    ", x$metadata$number.of.beams, "\n",
-        "    Beam angle:         ", x$beam.angle, "degrees\n",
+        "    Number of beams:    ", x$number.of.beams, "\n",
+        "    Beam configuration: ", x$beam.config, "\n",
+        "    Beam angle:         ", x$beam.angle, "degree\n",
+        "    Beam pattern:       ", x$beam.pattern, "\n",
         "    Number of cells:    ", x$metadata$number.of.cells, "\n",
         "    Cell length:        ", x$metadata$depth.cell.length, "m\n",
         "    First cell:         ", x$metadata$bin1.dist,"m from the instrument\n",
@@ -354,40 +378,65 @@ plot.adcp <- function(x, which=1:4, ...)
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
-
+    data.names <- names(x$data)
     for (w in 1:length(which)) {
         if (which[w] == 1) {
-            image(x=x$data$time,y=x$data$distance, z=x$data$b1,
-                  xlab="Time", ylab="Distance", axes=FALSE)
+            image(x=x$data$time,y=x$data$distance, z=x$data[[1]],
+                  xlab="Time", ylab="Distance", axes=FALSE, ...)
             axis.POSIXct(1, at=x$data$time)
             box()
             axis(2)
-            mtext("Beam 1", side=3, cex=2/3, adj=1)
+            mtext(data.names[1], side=3, cex=2/3, adj=1)
         }
         if (which[w] == 2) {
-            image(x=x$data$time,y=x$data$distance, z=x$data$b2,
-                  xlab="Time", ylab="Distance", axes=FALSE)
+            image(x=x$data$time,y=x$data$distance, z=x$data[[2]],
+                  xlab="Time", ylab="Distance", axes=FALSE, ...)
             axis.POSIXct(1, at=x$data$time)
             box()
             axis(2)
-            mtext("Beam 2", side=3, cex=2/3, adj=1)
+            mtext(data.names[2], side=3, cex=2/3, adj=1)
         }
         if (which[w] == 3) {
-            image(x=x$data$time,y=x$data$distance, z=x$data$b3,
-                  xlab="Time", ylab="Distance", axes=FALSE)
+            image(x=x$data$time,y=x$data$distance, z=x$data[[3]],
+                  xlab="Time", ylab="Distance", axes=FALSE, ...)
             axis.POSIXct(1, at=x$data$time)
             box()
             axis(2)
-            mtext("Beam 3", side=3, cex=2/3, adj=1)
+            mtext(data.names[3], side=3, cex=2/3, adj=1)
         }
         if (which[w] == 4) {
-            image(x=x$data$time,y=x$data$distance, z=x$data$b4,
-                  xlab="Time", ylab="Distance", axes=FALSE)
+            image(x=x$data$time,y=x$data$distance, z=x$data[[4]],
+                  xlab="Time", ylab="Distance", axes=FALSE, ...)
             axis.POSIXct(1, at=x$data$time)
             box()
             axis(2)
-            mtext("Beam 4", side=3, cex=2/3, adj=1)
+            mtext(data.names[4], side=3, cex=2/3, adj=1)
         }
     }
     if (lw > 1) par(oldpar)
+}
+
+adcp.beam2velo <- function(x)
+{
+    if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
+    dim <- dim(x$data$b1)
+    u <- array(dim=dim)
+    v <- array(dim=dim)
+    w <- array(dim=dim)
+    e <- array(dim=dim)
+    c <- if(x$metadata$beam.pattern == "convex") 1 else -1;
+    a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
+    b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
+    d <- a / sqrt(2)
+    u <- c * a * (x$data$b1 - x$data$b2)
+    v <- c * a * (x$data$b4 - x$data$b3)
+    w <- b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
+    e <- d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4)
+    res <- list(metadata=x$metadata,
+                data=list(u=u, v=v, w=w, e=e, time=x$data$time, distance=x$data$distance), # FIXME
+                processing.log=x$processing.log)
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    class(res) <- c("adcp", "oce")
+    res <- processing.log.append(res, log.action)
+    return(res)
 }
