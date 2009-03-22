@@ -347,7 +347,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Instrument serial number:   ", x$metadata$instrument.serial.number, "\n")
     cat("  Coordinate transformation:  ", x$coordinate.transformation, "\n")
     cat("  Transducer depth:           ", x$metadata$depth.of.transducer*0.01, "\n")
-    cat("  Pressure:                   ", x$metadata$pressure*0.01, "db (in first record)\n")
+    cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
     cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
     cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
     cat("  Sampling\n",
