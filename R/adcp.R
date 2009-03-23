@@ -1,4 +1,5 @@
-read.header <- function(file, debug) {
+read.header <- function(file, debug)
+{
     ##
     ## header, 6 + 2 * number.of.data.types
     ##
@@ -59,6 +60,9 @@ read.header <- function(file, debug) {
     if (bits == "0100") beam.config <- "4-beam janus"
     else if (bits == "0101") beam.config <- "5-beam janus demod"
     else if (bits == "1111") beam.config <- "5-beam janus 2 demd"
+    bits <- substr(system.configuration, 1, 1)
+    if (bits == "1") orientation <- "up"
+    else orientation <- "down"
     ##cat("beam.config=", beam.config, "\n")
     real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     lag.length <- readBin(FLD[8], "integer", n=1, size=1)
@@ -93,6 +97,7 @@ read.header <- function(file, debug) {
     ## FLD[40] spare
     transmit.lag.distance <- readBin(FLD[41:42], "integer", n=1, size=2, endian="little")
     cpu.board.serial.number <- readBin(FLD[43:50], "integer", n=1, size=8, endian="little")
+    if (debug) cat("CPU.BOARD.SERIAL.NUMBER = '", FLD[43:50], "'\n", sep="")
     system.bandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
     system.power <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
@@ -139,6 +144,13 @@ read.header <- function(file, debug) {
     if (temperature < -5 || temperature > 40) stop("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
     ## Skipping a lot ...
     pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE)
+
+    if (1) {#debug) {
+        cat("PRESSURE: ", VLD[49:52], "\n")
+        cat(" (as   signed): ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE),"\n")
+        cat(" (as unsigned): ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=TRUE),"\n")
+    }
+
     list(header=header,
          header.length=length(header),
          program.version.major=fv,
@@ -149,6 +161,7 @@ read.header <- function(file, debug) {
          beam.angle=beam.angle,
          beam.pattern=beam.pattern,
          beam.config=beam.config,
+         orientation=orientation,
          number.of.data.types=number.of.data.types,
          data.offset=data.offset,
          number.of.beams=number.of.beams,
@@ -286,7 +299,7 @@ read.adcp <- function(file, type ="RDI",
     b2 <- array(dim=c(read, p$header$number.of.cells))
     b3 <- array(dim=c(read, p$header$number.of.cells))
     b4 <- array(dim=c(read, p$header$number.of.cells))
-    time <- NULL
+    time <- pressure <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
         b1[i,] <- p$v[,1]
@@ -294,6 +307,7 @@ read.adcp <- function(file, type ="RDI",
         b3[i,] <- p$v[,3]
         b4[i,] <- p$v[,4]
         time <- c(time, p$header$RTC.time)
+        pressure <- c(pressure, p$header$pressure)
         if (i == 1) metadata <- c(p$header, filename=filename)
     }
     class(time) <- "POSIXct"
@@ -303,7 +317,8 @@ read.adcp <- function(file, type ="RDI",
                  b3=b3,
                  b4=b4,
                  time=time,
-                 distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells)
+                 distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
+                 pressure=pressure
                  )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -328,6 +343,7 @@ summary.adcp <- function(object, ...)
                 number.of.beams=object$metadata$number.of.beams,
                 beam.angle=object$metadata$beam.angle,
                 beam.config=object$metadata$beam.config,
+                orientation=object$metadata$orientation,
                 beam.pattern=object$metadata$beam.pattern,
                 coordinate.transformation=object$metadata$coordinate.transformation,
                 fives=fives,
@@ -354,6 +370,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         "    Frequency:          ", x$kHz, "kHz\n",
         "    Number of beams:    ", x$number.of.beams, "\n",
         "    Beam configuration: ", x$beam.config, "\n",
+        "    Beam orientation:   ", x$orientation, "\n",
         "    Beam angle:         ", x$beam.angle, "degree\n",
         "    Beam pattern:       ", x$beam.pattern, "\n",
         "    Number of cells:    ", x$metadata$number.of.cells, "\n",
