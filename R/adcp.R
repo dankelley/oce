@@ -1,3 +1,5 @@
+# readBin(writeBin(as.integer(400000000),raw()), "raw",size=1,n=8)
+
 read.header <- function(file, debug)
 {
     ##
@@ -149,6 +151,10 @@ read.header <- function(file, debug)
         cat("PRESSURE: ", VLD[49:52], "\n")
         cat(" (as   signed): ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE),"\n")
         cat(" (as unsigned): ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=TRUE),"\n")
+        cat(" (as   signed): ", readBin(VLD[49:52], "int", n=1, size=4, endian="little", signed=FALSE),"\n")
+        cat(" (as unsigned): ", readBin(VLD[49:52], "int", n=1, size=4, endian="little", signed=TRUE),"\n")
+        cat(" (as   signed): ", readBin(VLD[49:52], "int", n=1, size=4, endian="big", signed=FALSE),"\n")
+        cat(" (as unsigned): ", readBin(VLD[49:52], "int", n=1, size=4, endian="big", signed=TRUE),"\n")
     }
 
     list(header=header,
@@ -299,7 +305,7 @@ read.adcp <- function(file, type ="RDI",
     b2 <- array(dim=c(read, p$header$number.of.cells))
     b3 <- array(dim=c(read, p$header$number.of.cells))
     b4 <- array(dim=c(read, p$header$number.of.cells))
-    time <- pressure <- NULL
+    time <- pressure <- temperature <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
         b1[i,] <- p$v[,1]
@@ -308,6 +314,7 @@ read.adcp <- function(file, type ="RDI",
         b4[i,] <- p$v[,4]
         time <- c(time, p$header$RTC.time)
         pressure <- c(pressure, p$header$pressure)
+        temperature <- c(temperature, p$header$temperature)
         if (i == 1) metadata <- c(p$header, filename=filename)
     }
     class(time) <- "POSIXct"
@@ -318,7 +325,8 @@ read.adcp <- function(file, type ="RDI",
                  b4=b4,
                  time=time,
                  distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
-                 pressure=pressure
+                 pressure=pressure,
+                 temperature=temperature
                  )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
