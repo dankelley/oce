@@ -429,7 +429,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adcp <- function(x, which=1:4, col=oce.colors(128), ...)
+plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
 {
     lw <- length(which)
     if (lw > 1) {
@@ -440,24 +440,20 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), ...)
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
     data.names <- names(x$data)
-    dots <- names(list(...))
-    gave.zlim <- "zlim" %in% dots
+    ##dots <- names(list(...))
+    ##gave.zlim <- "zlim" %in% dots
     shown.time.interval <- FALSE
     tt <- x$data$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
+    zlim.not.given <- missing(zlim)
     for (w in 1:length(which)) {
+        if (zlim.not.given)
+            zlim <- max(abs(x$data[[which[w]]]), na.rm=TRUE) * c(-1,1)
         if (which[w] == 1) {
-            if (gave.zlim) {
-                image(x=tt, y=x$data$distance, z=x$data[[1]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      col=col, ...)
-            } else {
-                zlim <- max(abs(x$data[[1]]), na.rm=TRUE) * c(-1,1)
-                image(x=tt, y=x$data$distance, z=x$data[[1]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      zlim=zlim,
-                      col=col, ...)
-            }
+            image(x=tt, y=x$data$distance, z=x$data[[1]],
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
             axis.POSIXct(1, x=x$data$time)
             box()
             axis(2)
@@ -465,51 +461,30 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), ...)
             mtext(paste(data.names[1], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 2) {
-            if (gave.zlim) {
-                image(x=tt, y=x$data$distance, z=x$data[[2]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      col=col, ...)
-            } else {
-                zlim <- max(abs(x$data[[2]]), na.rm=TRUE) * c(-1,1)
-                image(x=tt, y=x$data$distance, z=x$data[[2]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      zlim=zlim,
-                      col=col, ...)
-            }
+            image(x=tt, y=x$data$distance, z=x$data[[2]],
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
             axis.POSIXct(1, x=x$data$time)
             box()
             axis(2)
             mtext(paste(data.names[2], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 3) {
-            if (gave.zlim) {
-                image(x=tt, y=x$data$distance, z=x$data[[3]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      col=col, ...)
-            } else {
-                zlim <- max(abs(x$data[[3]]), na.rm=TRUE) * c(-1,1)
-                image(x=tt, y=x$data$distance, z=x$data[[3]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      zlim=zlim,
-                      col=col, ...)
-            }
+            image(x=tt, y=x$data$distance, z=x$data[[3]],
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
             axis.POSIXct(1, x=x$data$time)
             box()
             axis(2)
             mtext(paste(data.names[3], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 4) {
-            if (gave.zlim) {
-                image(x=tt, y=x$data$distance, z=x$data[[4]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      col=col, ...)
-            } else {
-                zlim <- max(abs(x$data[[4]]), na.rm=TRUE) * c(-1,1)
-                image(x=tt, y=x$data$distance, z=x$data[[4]],
-                      xlab="Time", ylab="Distance", axes=FALSE,
-                      zlim=zlim,
-                      col=col, ...)
-            }
+            image(x=tt, y=x$data$distance, z=x$data[[4]],
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
             axis.POSIXct(1, x=x$data$time)
             box()
             axis(2)

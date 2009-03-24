@@ -6,7 +6,7 @@
 
 \description{Plot ADCP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors(128), \dots)}
+\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors(128), zlim, \dots)}
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.adcp}}.}
@@ -18,6 +18,12 @@
   \item{col}{color palette to use.  The default \code{\link{oce.colors}}
     palette blends from blue for negative values, through white at zero,
     to red at positive values; see \dQuote{Details}.}
+  \item{zlim}{a range to be used as the \code{zlim} parameter to the
+    \code{\link{image}} call that is used to create the image.  If
+    omitted, \code{zlim} is set for each panel individually, to
+    encompass the data of the panel and to be centred around zero.
+    (Centring on zero is convenient for colour palettes that place a
+    neutral colour there; see \dQuote{Details}.)}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
