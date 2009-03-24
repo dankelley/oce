@@ -65,9 +65,9 @@ read.header <- function(file, debug)
     ##cat("BITS='",bits,"'\n",sep="")
     beam.config <- "?"
     bits <- substr(system.configuration, 10, 13)
-    if (bits == "0100") beam.config <- "4-beam janus"
-    else if (bits == "0101") beam.config <- "5-beam janus demod"
-    else if (bits == "1111") beam.config <- "5-beam janus 2 demd"
+    if (bits == "0100") beam.config <- "janus"
+    else if (bits == "0101") beam.config <- "janus demod"
+    else if (bits == "1111") beam.config <- "janus 2 demd"
     bits <- substr(system.configuration, 1, 1)
     if (bits == "1") orientation <- "up"
     else orientation <- "down"
@@ -235,7 +235,7 @@ read.header <- function(file, debug)
          heading=heading,
          pitch=pitch,
          roll=roll,
-         salinity=salinity,
+         salinity=salinity,             # seems to be constant
          temperature=temperature,
          pressure=pressure  # FIXME: -244 in SLEIWEX data SL08F001.000
          )
@@ -329,7 +329,7 @@ read.adcp <- function(file, type ="RDI",
     b2 <- array(dim=c(read, p$header$number.of.cells))
     b3 <- array(dim=c(read, p$header$number.of.cells))
     b4 <- array(dim=c(read, p$header$number.of.cells))
-    time <- pressure <- temperature <- depth.of.transducer <- NULL
+    time <- pressure <- temperature <- salinity <- depth.of.transducer <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
         b1[i,] <- p$v[,1]
@@ -339,6 +339,7 @@ read.adcp <- function(file, type ="RDI",
         time <- c(time, p$header$RTC.time)
         pressure <- c(pressure, p$header$pressure)
         temperature <- c(temperature, p$header$temperature)
+        salinity <- c(salinity, p$header$salinity)
         depth.of.transducer <- c(depth.of.transducer, p$header$depth.of.transducer)
         if (i == 1) metadata <- c(p$header, filename=filename)
         if (monitor) {
@@ -356,6 +357,7 @@ read.adcp <- function(file, type ="RDI",
                  distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
                  pressure=pressure,
                  temperature=temperature,
+                 salinity=salinity,
                  depth.of.transducer=depth.of.transducer
                  )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -376,6 +378,8 @@ summary.adcp <- function(object, ...)
     rownames(fives) <- names
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
+                start.time=object$data$time[1],
+                delta.time=difftime(object$data$time[2], object$data$time[1], units="secs"),
                 metadata=object$metadata,
                 kHz=object$metadata$kHz,
                 number.of.data.types=object$metadata$number.of.data.types,
@@ -402,10 +406,12 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Instrument serial number:   ", x$metadata$instrument.serial.number, "\n")
     cat("  Coordinate transformation:  ", x$coordinate.transformation, "\n")
     cat("  Transducer depth:           ", x$metadata$depth.of.transducer*0.01, "\n")
-    cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
-    cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
-    cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
+##    cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
+##    cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
+##    cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
     cat("  Sampling\n",
+        "    First profile at:     ", as.character(x$start.time), "\n",
+        "    Time between profiles:", x$delta.time, "sec\n",
         "    Number of data types: ", x$number.of.data.types, "\n",
         "    Frequency:            ", x$kHz, "kHz\n",
         "    Number of beams:      ", x$number.of.beams, "\n",
@@ -417,7 +423,6 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         "    Cell length:          ", x$metadata$depth.cell.length, "m\n",
         "    First cell:           ", x$metadata$bin1.dist,"m from the instrument\n",
         "    Pings per ensemble:   ", x$metadata$pings.per.ensemble, "\n",
-        "    Start time:           ", as.character(x$metadata$RTC.time), "\n",
         "    Profiles:             ", x$profiles, "\n"
         )
     cat("\nStatistics:\n")
