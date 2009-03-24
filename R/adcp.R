@@ -3,12 +3,14 @@
 read.header <- function(file, debug)
 {
     ##
-    ## header, 6 + 2 * number.of.data.types
+    ## header, of length 6 + 2 * number.of.data.types bytes
     ##
+
+    ##cat("before reading header.part1, ftell=", seek(file),"\n")
+
     header.part1 <- readBin(file, "raw", n=6, size=1)
-    if (debug > 1) {
+    if (debug > 1)
         cat("First 6 bytes of header:", paste(header.part1, sep=' '), "\n")
-    }
     header <- header.part1
     if (header.part1[1] != 0x7f) stop("first byte in file must be 0x7f, but it was", header.part1[1])
     if (header.part1[2] != 0x7f) stop("second byte in file must be 0x7f but it was", header.part1[2])
@@ -20,6 +22,9 @@ read.header <- function(file, debug)
     if (debug) cat("number.of.data.types=", number.of.data.types, "\n")
     ## part 2 of header is these data offsets
     header.part2 <- readBin(file, "raw", n=2*number.of.data.types, size=1)
+
+    ##cat("after reading header, ftell=", seek(file), "\n")
+
     header <- c(header, header.part2)
     data.offset <- readBin(header.part2, "integer", n=number.of.data.types, size=2, endian="little")
     if (debug) cat("data.offset=", paste(data.offset, sep=" "), "\n")
@@ -27,6 +32,9 @@ read.header <- function(file, debug)
     ## FLD (fixed leader data) 59 bytes
     ##
     FLD <- readBin(file, "raw", n=59, size=1) # binary fixed leader data (Figure D-5)
+
+    ##cat("after reading FLD, ftell=", seek(file), "\n")
+
     header <- c(header, FLD)
     if (debug > 1) {
         cat("fixed leader data (59 bytes):\n")
@@ -98,8 +106,16 @@ read.header <- function(file, debug)
     false.target.thresh <- readBin(FLD[39], "integer", n=1, size=1)
     ## FLD[40] spare
     transmit.lag.distance <- readBin(FLD[41:42], "integer", n=1, size=2, endian="little")
-    cpu.board.serial.number <- readBin(FLD[43:50], "integer", n=1, size=8, endian="little")
+    cpu.board.serial.number <- c(readBin(FLD[43], "integer", n=1, size=1, signed=FALSE),
+                                 readBin(FLD[44], "integer", n=1, size=1, signed=FALSE),
+                                 readBin(FLD[45], "integer", n=1, size=1, signed=FALSE),
+                                 readBin(FLD[46], "integer", n=1, size=1, signed=FALSE),
+                                 readBin(FLD[47], "integer", n=1, size=1, signed=FALSE),
+                                 readBin(FLD[48], "integer", n=1, size=1, signed=FALSE),
+                                 readBin(FLD[49], "integer", n=1, size=1, signed=FALSE),
+                                 readBin(FLD[50], "integer", n=1, size=1, signed=FALSE))
     if (debug) cat("CPU.BOARD.SERIAL.NUMBER = '", FLD[43:50], "'\n", sep="")
+    if (debug) cat("CPU.BOARD.SERIAL.NUMBER = '", cpu.board.serial.number, "'\n", sep="")
     system.bandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
     system.power <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
@@ -112,6 +128,9 @@ read.header <- function(file, debug)
     ##
     ## VLD (variable leader data) 65 bytes
     ##
+
+    ##cat("before reading VLD (65 bytes), ftell=", seek(file), "\n")
+
     VLD <- readBin(file, "raw", n=65, size=1)
     header <- c(header, VLD)
     ##cat("position in file=", seek(file, NA), "after reading VLD\n")
@@ -136,7 +155,7 @@ read.header <- function(file, debug)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
     if (speed.of.sound < 1400 || speed.of.sound > 1600) stop("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
-    depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
+    depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
     heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little") * 0.01
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
     roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
@@ -144,17 +163,22 @@ read.header <- function(file, debug)
     if (salinity < 0 || salinity > 40) stop("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
     temperature <- readBin(VLD[27:28], "integer", n=1, size=2, endian="little") * 0.01
     if (temperature < -5 || temperature > 40) stop("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
-    ## Skipping a lot ...
-    pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE)
 
-    if (1) {#debug) {
+    ## Skipping a lot ...
+    pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
+
+    if (0) {#debug) {
         cat("PRESSURE: ", VLD[49:52], "\n")
-        cat(" (as   signed): ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE),"\n")
-        cat(" (as unsigned): ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=TRUE),"\n")
-        cat(" (as   signed): ", readBin(VLD[49:52], "int", n=1, size=4, endian="little", signed=FALSE),"\n")
-        cat(" (as unsigned): ", readBin(VLD[49:52], "int", n=1, size=4, endian="little", signed=TRUE),"\n")
-        cat(" (as   signed): ", readBin(VLD[49:52], "int", n=1, size=4, endian="big", signed=FALSE),"\n")
-        cat(" (as unsigned): ", readBin(VLD[49:52], "int", n=1, size=4, endian="big", signed=TRUE),"\n")
+        cat(" little/signed   ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=TRUE),"\n")
+        cat(" little/unsigned ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE),"\n")
+        cat(" big/signed      ", readBin(VLD[49:52], "integer", n=1, size=4, endian="big",    signed=TRUE),"\n")
+        cat(" big/unsigned    ", readBin(VLD[49:52], "integer", n=1, size=4, endian="big",    signed=FALSE),"\n")
+        cat("\nbyte by byte:")
+        cat(readBin(VLD[49], "integer", n=1, size=1, signed=FALSE), " ")
+        cat(readBin(VLD[50], "integer", n=1, size=1, signed=FALSE), " ")
+        cat(readBin(VLD[51], "integer", n=1, size=1, signed=FALSE), " ")
+        cat(readBin(VLD[52], "integer", n=1, size=1, signed=FALSE), " ")
+        cat("\n")
     }
 
     list(header=header,
@@ -281,7 +305,9 @@ read.profile <- function(file, header, debug)
 
 read.adcp <- function(file, type ="RDI",
                       skip=0, read,
-                      debug=0, log.action)
+                      debug=0,
+                      monitor=TRUE,
+                      log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -305,7 +331,7 @@ read.adcp <- function(file, type ="RDI",
     b2 <- array(dim=c(read, p$header$number.of.cells))
     b3 <- array(dim=c(read, p$header$number.of.cells))
     b4 <- array(dim=c(read, p$header$number.of.cells))
-    time <- pressure <- temperature <- NULL
+    time <- pressure <- temperature <- depth.of.transducer <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
         b1[i,] <- p$v[,1]
@@ -315,7 +341,12 @@ read.adcp <- function(file, type ="RDI",
         time <- c(time, p$header$RTC.time)
         pressure <- c(pressure, p$header$pressure)
         temperature <- c(temperature, p$header$temperature)
+        depth.of.transducer <- c(depth.of.transducer, p$header$depth.of.transducer)
         if (i == 1) metadata <- c(p$header, filename=filename)
+        if (monitor) {
+            cat(".")
+            if (!(i %% 50)) cat(i, "\n")
+        }
     }
     class(time) <- "POSIXct"
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
@@ -326,7 +357,8 @@ read.adcp <- function(file, type ="RDI",
                  time=time,
                  distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
                  pressure=pressure,
-                 temperature=temperature
+                 temperature=temperature,
+                 depth.of.transducer=depth.of.transducer
                  )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -338,16 +370,17 @@ read.adcp <- function(file, type ="RDI",
 summary.adcp <- function(object, ...)
 {
     if (!inherits(object, "adcp")) stop("method is only for adcp objects")
-    fives <- matrix(nrow=4, ncol=5) # 4 beams
-    fives[1,] <- fivenum(object$data[[1]], na.rm=TRUE)
-    fives[2,] <- fivenum(object$data[[2]], na.rm=TRUE)
-    fives[3,] <- fivenum(object$data[[3]], na.rm=TRUE)
-    fives[4,] <- fivenum(object$data[[4]], na.rm=TRUE)
-    rownames(fives) <- names(object$data)[1:4]
+    names <- names(object$data)
+    names <- names[names != "time"]     # do not report stats on time column
+    fives <- matrix(nrow=length(names), ncol=5)
+    for (i in 1:length(names))
+        fives[i,] <- fivenum(object$data[[names[i]]], na.rm=TRUE)
+    rownames(fives) <- names
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
                 metadata=object$metadata,
                 kHz=object$metadata$kHz,
+                number.of.data.types=object$metadata$number.of.data.types,
                 number.of.beams=object$metadata$number.of.beams,
                 beam.angle=object$metadata$beam.angle,
                 beam.config=object$metadata$beam.config,
@@ -375,18 +408,19 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
     cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
     cat("  Sampling\n",
-        "    Frequency:          ", x$kHz, "kHz\n",
-        "    Number of beams:    ", x$number.of.beams, "\n",
-        "    Beam configuration: ", x$beam.config, "\n",
-        "    Beam orientation:   ", x$orientation, "\n",
-        "    Beam angle:         ", x$beam.angle, "degree\n",
-        "    Beam pattern:       ", x$beam.pattern, "\n",
-        "    Number of cells:    ", x$metadata$number.of.cells, "\n",
-        "    Cell length:        ", x$metadata$depth.cell.length, "m\n",
-        "    First cell:         ", x$metadata$bin1.dist,"m from the instrument\n",
-        "    Pings per ensemble: ", x$metadata$pings.per.ensemble, "\n",
-        "    Start time:         ", as.character(x$metadata$RTC.time), "\n",
-        "    Profiles:           ", x$profiles, "\n"
+        "    Number of data types: ", x$number.of.data.types, "\n",
+        "    Frequency:            ", x$kHz, "kHz\n",
+        "    Number of beams:      ", x$number.of.beams, "\n",
+        "    Beam configuration:   ", x$beam.config, "\n",
+        "    Beam orientation:     ", x$orientation, "\n",
+        "    Beam angle:           ", x$beam.angle, "degree\n",
+        "    Beam pattern:         ", x$beam.pattern, "\n",
+        "    Number of cells:      ", x$metadata$number.of.cells, "\n",
+        "    Cell length:          ", x$metadata$depth.cell.length, "m\n",
+        "    First cell:           ", x$metadata$bin1.dist,"m from the instrument\n",
+        "    Pings per ensemble:   ", x$metadata$pings.per.ensemble, "\n",
+        "    Start time:           ", as.character(x$metadata$RTC.time), "\n",
+        "    Profiles:             ", x$profiles, "\n"
         )
     cat("\nStatistics:\n")
     print(x$fives)
