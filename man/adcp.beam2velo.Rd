@@ -61,7 +61,7 @@ library(oce)
 d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
 e <- adcp.beam2velo(d)
 summary(e)
-plot(e, which=1:3, col=cm.colors(128))
+plot(e, which=1:3)
 }
 }
 
