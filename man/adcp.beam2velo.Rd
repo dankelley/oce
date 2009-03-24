@@ -58,10 +58,10 @@ and
 \examples{
 \dontrun{
 library(oce)
-d <- read.oce("~/SL08F001.000",read=120) # 20 minutes
+d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
 e <- adcp.beam2velo(d)
 summary(e)
-plot(e, which=3, zlim=c(-0.1, 0.1), col=cm.colors(128)) # w(z,t)
+plot(e, which=1:3, col=cm.colors(128))
 }
 }
 

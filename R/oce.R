@@ -162,3 +162,20 @@ read.oce <- function(file, ...)
     stop("unknown file type")
 }
 
+oce.colors <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+{
+    ## code borrows heavily from cm.color()
+    if ((n <- as.integer(n[1])) > 0) {
+        even.n <- n%%2 == 0
+        k <- n%/%2
+        l1 <- k + 1 - even.n
+        l2 <- n - k + even.n
+        c(if (l1 > 0) hsv(h = low,
+                          s = seq.int(smax, ifelse(even.n, 0.5/k, 0), length.out = l1),
+                          v = 1, alpha = alpha),
+          if (l2 > 1) hsv(h = high,
+                          s = seq.int(0, smax, length.out = l2)[-1],
+                          v = 1, alpha = alpha))
+    }
+    else character(0)
+}

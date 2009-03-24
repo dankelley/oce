@@ -29,6 +29,7 @@ export(
        make.filter,
        make.section,
        oce.as.POSIXlt,
+       oce.colors,
        oce.edit,
        oce.write.table,
        parse.latlon,

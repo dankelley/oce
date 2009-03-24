@@ -6,7 +6,7 @@
 
 \description{Plot ADCP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:4, \dots)}
+\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors(128), \dots)}
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.adcp}}.}
@@ -15,11 +15,28 @@
     Which=1 gives an image plot of beam 1 as a function of time and
     distance from sensoe.  Which=2 to 4 gives similar plots, for the
     other beams.}
+  \item{col}{color palette to use.  The default \code{\link{oce.colors}}
+    palette blends from blue for negative values, through white at zero,
+    to red at positive values; see \dQuote{Details}.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADCP
   cast. The panels are controlled by the \code{which} argument.
+
+  A more colourful plot is provided by using a \code{\link{rainbow}}
+  palette for \code{col}, although interpreting these in a quantitative
+  way is tricker, without a color map.  See \dQuote{Examples} for a
+  comparison.
+
+  By default, \code{plot.adcp} uses a \code{zlim} value for the
+  \code{\link{image}} that is constructed to contain all the data, but
+  to be symmetric about zero.  This is done on a per-panel basis, and
+  the scale is plotted at the top-right corner, along with the name of
+  the variable being plotted. You may also supply \code{zlim} as one of
+  the \dots arguments, but be aware that a reasonable limit on
+  horizontal velocity components is unlikely to be of much use for the
+  vertical component.
 }
 
 \seealso{The data may be read with \code{\link{read.adcp}}. Conversion
@@ -30,9 +47,13 @@
 \examples{
 \dontrun{
 library(oce)
-d <- read.oce("~/SL08F001.000",read=60)
-summary(d)
-plot(d, col=cm.colors(128))
+d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
+e <- adcp.beam2velo(d)
+plot(e, which=1:3)
+
+par(mfrow=c(2,1))
+plot.adcp(e, which=3)
+plot.adcp(e, which=3, col=rainbow(256))
 }
 }
 \author{Dan Kelley}

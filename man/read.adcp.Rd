@@ -40,9 +40,11 @@ explained in Chapter 5 of Teledyne-RDI (2007).}
 \examples{
 \dontrun{
 library(oce)
-d <- read.oce("~/SL08F001.000",read=60)
+# Beamwise plots (skip in-air, then 30min of in-water)
+d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
 summary(d)
 plot(d)
+# See adcp.beam2velo for velocity plots
 }
 }
 
