@@ -349,10 +349,7 @@ read.adcp <- function(file, type ="RDI",
     }
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
-    data <- list(b1=b1,
-                 b2=b2,
-                 b3=b3,
-                 b4=b4,
+    data <- list(b1=b1, b2=b2, b3=b3, b4=b4,
                  time=time,
                  distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
                  pressure=pressure,
@@ -465,7 +462,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), ...)
             box()
             axis(2)
             ##mtext(data.names[1], side=3, cex=2/3, adj=1)
-            mtext(paste(data.names[1], " [", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+            mtext(paste(data.names[1], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 2) {
             if (gave.zlim) {
@@ -482,7 +479,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), ...)
             axis.POSIXct(1, x=x$data$time)
             box()
             axis(2)
-            mtext(paste(data.names[2], " [", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+            mtext(paste(data.names[2], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 3) {
             if (gave.zlim) {
@@ -499,7 +496,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), ...)
             axis.POSIXct(1, x=x$data$time)
             box()
             axis(2)
-            mtext(paste(data.names[3], " [", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+            mtext(paste(data.names[3], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 4) {
             if (gave.zlim) {
@@ -517,7 +514,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), ...)
             box()
             axis(2)
             mtext(paste(range(x$data$time)), side=3, cex=2/3, adj=0)
-            mtext(paste(data.names[4], " [", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+            mtext(paste(data.names[4], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (!shown.time.interval) {
             mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
@@ -544,7 +541,14 @@ adcp.beam2velo <- function(x)
     w <- b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
     e <- d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4)
     res <- list(metadata=x$metadata,
-                data=list(u=u, v=v, w=w, e=e, time=x$data$time, distance=x$data$distance), # FIXME
+                data=list(u=u, v=v, w=w, e=e,
+                time=x$data$time,
+                distance=x$data$distance,
+                pressure=x$data$pressure,
+                temperature=x$data$temperature,
+                salinity=x$data$salinity,
+                depth.of.transducer=x$data$depth.of.transducer
+                ), # FIXME: this is too hard-wired
                 processing.log=x$processing.log)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")
