@@ -465,6 +465,13 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
     tt <- x$data$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     zlim.not.given <- missing(zlim)
+    if (zlim.not.given && all(which %in% 5:8)) { # ei uses a single scale for all
+        zlim <- range(abs(x$data[[which[1]]]), na.rm=TRUE)
+        for (w in 2:length(which)) {
+            zlim <- range(abs(c(zlim, x$data[[which[w]]])), na.rm=TRUE)
+        }
+        zlim.not.given <- FALSE                                    # fake it
+    }
     for (w in 1:length(which)) {
         if (zlim.not.given)
             zlim <- max(abs(x$data[[which[w]]]), na.rm=TRUE) * c(-1,1)
@@ -510,7 +517,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
             mtext(paste(data.names[4], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 5) {            # ei1
-            zlim <- c(0, max(x$data$ei1, na.rm=TRUE)) # never negative
             image(x=tt, y=x$data$distance, z=x$data$ei1,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
@@ -521,7 +527,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
             mtext(paste("ei1 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 6) {            # ei2
-            zlim <- c(0, max(x$data$ei2, na.rm=TRUE)) # never negative
             image(x=tt, y=x$data$distance, z=x$data$ei2,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
@@ -532,7 +537,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
             mtext(paste("ei2 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 7) {            # ei3
-            zlim <- c(0, max(x$data$ei3, na.rm=TRUE)) # never negative
             image(x=tt, y=x$data$distance, z=x$data$ei3,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
@@ -543,7 +547,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
             mtext(paste("ei3 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 8) {            # ei4
-            zlim <- c(0, max(x$data$ei4, na.rm=TRUE)) # never negative
             image(x=tt, y=x$data$distance, z=x$data$ei4,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
