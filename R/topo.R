@@ -45,7 +45,7 @@ plot.topo <- function(x,
         }
         nz <- length(water.z)
         if (missing(water.col))
-            water.col <- gebco.colors(nz, "water", "line")
+            water.col <- oce.colors.gebco(nz, "water", "line")
         if (missing(water.lty))
             water.lty <- rep(par("lty"), nz)
         else if (length(water.lty) == 1)
@@ -73,7 +73,7 @@ plot.topo <- function(x,
         }
         nz <- length(land.z)
         if (missing(land.col))
-            land.col <- gebco.colors(nz, "land", "line")
+            land.col <- oce.colors.gebco(nz, "land", "line")
         if (missing(land.lty))
             land.lty <- rep(par("lty"), nz)
         else if (length(land.lty) == 1)

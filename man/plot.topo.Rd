@@ -17,14 +17,14 @@
     provided, these are inferred from the data.}
   \item{water.col}{colors corresponding to \code{water.z} values.  If
     not provided, these will be \code{"fill"} colors from
-    \code{\link{gebco.colors}}.}
+    \code{\link{oce.colors.gebco}}.}
   \item{water.lty}{line type(s) for water contours}
   \item{water.lwd}{line width(s) for water contours}
   \item{land.z}{depths at which to plot land contours.  If not provided,
     these are inferred from the data.} 
   \item{land.col}{colors corresponding to \code{land.z} values.  If
     not provided, these will be \code{"fill"} colors from
-    \code{\link{gebco.colors}}.}
+    \code{\link{oce.colors.gebco}}.}
   \item{land.lty}{line type(s) for land contours}
   \item{land.lwd}{line width(s) for land contours}
   \item{legend.loc}{location for a legend (or FALSE, for no legend).}

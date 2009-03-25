@@ -1,6 +1,7 @@
 0.1-77
 - add adcp.beam.attenuate()
-- add oce.colors()
+- add oce.colors.two() and oce.colors.jet()
+- rename gebco.colors() as oce.colors.gebco()
 - add byte2binary()
 - add read.adcp(), summary.adcp(), print.summary.adcp(), plot.adcp(), and adcp.beam2velo()
 - add "lty.grid" to all CTD plotting functions
@@ -91,7 +92,7 @@
 - add oce.edit()
 - add topo.maritimes dataset
 - add read.topo(), plot.topo(), and summary.topo()
-- add gebco.colors()
+- add gebco.colors() ... renamed oce.colors.gebco() in version 0.1.77
 - make plot.section() check that pressures coincide
 
 0.1.70

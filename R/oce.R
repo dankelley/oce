@@ -183,11 +183,11 @@ oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 oce.colors.jet <- function(n)
 {
     # matlab::jet, cleaned of matlab:: calls
-    n4 <- ceil(n / 4)
+    n4 <- ceiling(n / 4)
     u <- c(seq(1, n4) / n4,
            if (n4 > 1) rep(1, n4-1) else NULL,
            seq(n4, 1, by = -1) / n4)
-    g <- ceil(n4 / 2) - (mod(n, 4) == 1) + (1:length(u))
+    g <- ceiling(n4 / 2) - (n%%4 == 1) + (1:length(u))
     r <- g + n4
     b <- g - n4
     g <- g[g <= n]
