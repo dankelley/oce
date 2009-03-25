@@ -561,6 +561,22 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
     if (lw > 1) par(oldpar)
 }
 
+adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
+{
+    res <- x
+    num.profiles <- dim(x$data$ei1)[1]
+    ##print(num.profiles)
+    correction <- matrix(rep(20 * log10(x$data$distance), num.profiles), nrow=num.profiles, byrow=TRUE)
+    ##print(dim(x$data$ei1))
+    ##print(dim(correction))
+    res$data$ei1 <- count2db[1] * x$data$ei1 + correction
+    res$data$ei2 <- count2db[2] * x$data$ei2 + correction
+    res$data$ei3 <- count2db[3] * x$data$ei3 + correction
+    res$data$ei4 <- count2db[4] * x$data$ei4 + correction
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    res <- processing.log.append(res, log.action)
+}
+
 adcp.beam2velo <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
@@ -577,6 +593,7 @@ adcp.beam2velo <- function(x)
     v <- c * a * (x$data$b4 - x$data$b3)
     w <- b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
     e <- d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4)
+    ##print(list(a=a,b=b,c=c,d=d))
     res <- list(metadata=x$metadata,
                 data=list(u=u, v=v, w=w, e=e, ei=x$data$ei, pg=x$data$pg,
                 time=x$data$time,
