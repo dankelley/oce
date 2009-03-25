@@ -21,7 +21,14 @@
 
 \value{A list of colors, as for \code{terrain.colors} and similar routines.}
 
-\examples{plot(1:10, 1:10, col=oce.colors.gebco(10, "water", "line"), cex=5, pch=20)}
+\examples{
+library(oce)
+x <- array(1:1000, dim=c(1,1000))
+par(mfrow=c(1,3))
+image(x, col=oce.colors.two(100), main="oce.colors.two")
+image(x, col=oce.colors.jet(100), main="oce.colors.jet")
+image(x, col=oce.colors.gebco(100), main="oce.colors.gebco")
+}
 
 \source{The \code{"fill"} colours came from scanning a chart, and adding
 a few lighter land colours by linear extrapolation.  The \code{"water"}

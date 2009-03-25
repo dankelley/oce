@@ -343,7 +343,7 @@ fill.gap <- function(x, start, end, column)
     rval
 }
 
-gebco.colors <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
+oce.colors.gebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
 {
     region <- match.arg(region)
     type <- match.arg(type)

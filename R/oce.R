@@ -162,7 +162,7 @@ read.oce <- function(file, ...)
     stop("unknown file type")
 }
 
-oce.colors <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
     if ((n <- as.integer(n[1])) > 0) {
@@ -178,4 +178,24 @@ oce.colors <- function (n, low=2/3, high=0, smax=1, alpha = 1)
                           v = 1, alpha = alpha))
     }
     else character(0)
+}
+
+oce.colors.jet <- function(n)
+{
+    # matlab::jet, cleaned of matlab:: calls
+    n4 <- ceil(n / 4)
+    u <- c(seq(1, n4) / n4,
+           if (n4 > 1) rep(1, n4-1) else NULL,
+           seq(n4, 1, by = -1) / n4)
+    g <- ceil(n4 / 2) - (mod(n, 4) == 1) + (1:length(u))
+    r <- g + n4
+    b <- g - n4
+    g <- g[g <= n]
+    r <- r[r <= n]
+    b <- b[b >= 1]
+    J <- matrix(0, nrow=n, ncol=3)
+    J[r, 1] <- u[seq(along = r)]
+    J[g, 2] <- u[seq(along = g)]
+    J[b, 3] <- u[seq(length(u)-length(b)+1, length(u))]
+    rgb(J)
 }

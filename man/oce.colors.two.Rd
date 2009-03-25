@@ -1,8 +1,8 @@
-\name{oce.colors}
-\alias{oce.colors}
+\name{oce.colors.two}
+\alias{oce.colors.two}
 \title{Two-hue colormap}
 \description{Two-hue colormap}
-\usage{oce.colors(n, low=2/3, high=0, smax=1, alpha = 1)}
+\usage{oce.colors.two(n, low=2/3, high=0, smax=1, alpha = 1)}
 \arguments{
 \item{n}{the number of colors (\eqn{\ge 1}{>=1}) to be in the palette.}
 \item{low}{the hue for the low end of the palette, a number in [0,1], as
@@ -29,9 +29,10 @@
 \examples{
 library(oce)
 x <- array(1:1000, dim=c(1,1000))
-par(mfrow=c(1,2))
-image(x, col=oce.colors(100))
-image(x, col=cm.colors(100))
+par(mfrow=c(1,3))
+image(x, col=oce.colors.two(100), main="oce.colors.two")
+image(x, col=oce.colors.jet(100), main="oce.colors.jet")
+image(x, col=oce.colors.gebco(100), main="oce.colors.gebco")
 }
 \author{Dan Kelley}
 \keyword{misc}
