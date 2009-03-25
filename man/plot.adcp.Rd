@@ -10,11 +10,10 @@
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.adcp}}.}
-  \item{which}{list of desired plot types.  These are graphed in panels
-    running down from the top of the page.  
-    Which=1 gives an image plot of beam 1 as a function of time and
-    distance from sensoe.  Which=2 to 4 gives similar plots, for the
-    other beams.}
+  \item{which}{list of desired plot types.  These are graphed in
+    panels running down from the top of the page.  See
+    \dQuote{Details} for the meanings of various values of
+    \code{which}.}
   \item{col}{color palette to use.  The default \code{\link{oce.colors}}
     palette blends from blue for negative values, through white at zero,
     to red at positive values; see \dQuote{Details}.}
@@ -30,19 +29,35 @@
 \details{Creates a multi-panel summary plot of data measured by an ADCP
   cast. The panels are controlled by the \code{which} argument.
 
-  A more colourful plot is provided by using a \code{\link{rainbow}}
-  palette for \code{col}, although interpreting these in a quantitative
-  way is tricker, without a color map.  See \dQuote{Examples} for a
-  comparison.
+  \itemize{ 
+    
+    \item For beamwise data, \code{which}=1 gives an image plot of beam
+    1 as a function of time and distance from sensor, and \code{which}
+    values of 2 to 4 yield similar plots for the other beams.
 
-  By default, \code{plot.adcp} uses a \code{zlim} value for the
-  \code{\link{image}} that is constructed to contain all the data, but
-  to be symmetric about zero.  This is done on a per-panel basis, and
-  the scale is plotted at the top-right corner, along with the name of
-  the variable being plotted. You may also supply \code{zlim} as one of
-  the \dots arguments, but be aware that a reasonable limit on
-  horizontal velocity components is unlikely to be of much use for the
-  vertical component.
+    \item For velocity data, \code{which}=1, 2, and 3 yield the x, y,
+    and z components of velocity, and \code{which}=4 yields a velocity
+    error estimate computed from all beams together.
+
+    \item For both beamwise and velocity data, \code{which}=5 yields
+    backscatter intensity.
+
+}
+
+A more colourful plot is provided by using a \code{\link{rainbow}}
+palette for \code{col}, although interpreting these in a quantitative
+way is tricker, without a color map.  See \dQuote{Examples} for a
+comparison.
+
+By default, \code{plot.adcp} uses a \code{zlim} value for the
+\code{\link{image}} that is constructed to contain all the data, but to
+be symmetric about zero.  This is done on a per-panel basis, and the
+scale is plotted at the top-right corner, along with the name of the
+variable being plotted. You may also supply \code{zlim} as one of the
+\dots arguments, but be aware that a reasonable limit on horizontal
+velocity components is unlikely to be of much use for the vertical
+component.
+
 }
 
 \seealso{The data may be read with \code{\link{read.adcp}}. Conversion

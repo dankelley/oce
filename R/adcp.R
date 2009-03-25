@@ -273,7 +273,7 @@ read.profile <- function(file, header, debug)
     if (ei.ID[2] != 0x03) stop("first byte of echo-intensity segment should be 0x03 but is ", ei.ID[2])
     ei <- readBin(file, "integer",
                   n=header$number.of.beams * header$number.of.cells,
-                  size=1, endian="little")
+                  size=1, endian="little", signed=FALSE)
     ei <- matrix(ei, ncol=header$number.of.beams, byrow=TRUE)
 
     if (debug) cat("got echo intensity\n")
@@ -283,7 +283,7 @@ read.profile <- function(file, header, debug)
     if (pg.ID[2] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", pg.ID[2])
     pg <- readBin(file, "integer",
                   n=header$number.of.beams * header$number.of.cells,
-                  size=1, endian="little")
+                  size=1, endian="little", signed=FALSE)
     pg <- matrix(pg, ncol=header$number.of.beams, byrow=TRUE)
     if (debug) cat("got percent-good\n")
     bt <- NULL
@@ -317,7 +317,7 @@ read.adcp <- function(file, type ="RDI",
     }
     if (!isOpen(file)) {
         filename <- "(connection)"
-        open(file, "r")
+        open(file, "rb")
         on.exit(close(file))
     }
     ## read a profile, to get length so we can seek
@@ -329,6 +329,14 @@ read.adcp <- function(file, type ="RDI",
     b2 <- array(dim=c(read, p$header$number.of.cells))
     b3 <- array(dim=c(read, p$header$number.of.cells))
     b4 <- array(dim=c(read, p$header$number.of.cells))
+    ei1 <- array(dim=c(read, p$header$number.of.cells)) # echo intensity
+    ei2 <- array(dim=c(read, p$header$number.of.cells))
+    ei3 <- array(dim=c(read, p$header$number.of.cells))
+    ei4 <- array(dim=c(read, p$header$number.of.cells))
+##    pg1 <- array(dim=c(read, p$header$number.of.cells))
+##    pg2 <- array(dim=c(read, p$header$number.of.cells))
+##    pg3 <- array(dim=c(read, p$header$number.of.cells))
+##    pg4 <- array(dim=c(read, p$header$number.of.cells))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
@@ -336,6 +344,14 @@ read.adcp <- function(file, type ="RDI",
         b2[i,] <- p$v[,2]
         b3[i,] <- p$v[,3]
         b4[i,] <- p$v[,4]
+        ei1[i,] <- p$ei[,1]
+        ei2[i,] <- p$ei[,2]
+        ei3[i,] <- p$ei[,3]
+        ei4[i,] <- p$ei[,4]
+##        pg1[i,] <- p$pg[,1]
+##        pg2[i,] <- p$pg[,2]
+##        pg3[i,] <- p$pg[,3]
+##        pg4[i,] <- p$pg[,4]
         time <- c(time, p$header$RTC.time)
         pressure <- c(pressure, p$header$pressure)
         temperature <- c(temperature, p$header$temperature)
@@ -347,9 +363,12 @@ read.adcp <- function(file, type ="RDI",
             if (!(i %% 50)) cat(i, "\n")
         }
     }
+    ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
     data <- list(b1=b1, b2=b2, b3=b3, b4=b4,
+                 ei1=ei1, ei2=ei2, ei3=ei3, ei4=ei4,
+                 ##pg,
                  time=time,
                  distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
                  pressure=pressure,
@@ -488,8 +507,51 @@ plot.adcp <- function(x, which=1:4, col=oce.colors(128), zlim, ...)
             axis.POSIXct(1, x=x$data$time)
             box()
             axis(2)
-            mtext(paste(range(x$data$time)), side=3, cex=2/3, adj=0)
             mtext(paste(data.names[4], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 5) {            # ei1
+            zlim <- c(0, max(x$data$ei1, na.rm=TRUE)) # never negative
+            image(x=tt, y=x$data$distance, z=x$data$ei1,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("ei1 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 6) {            # ei2
+            zlim <- c(0, max(x$data$ei2, na.rm=TRUE)) # never negative
+            image(x=tt, y=x$data$distance, z=x$data$ei2,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("ei2 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 7) {            # ei3
+            zlim <- c(0, max(x$data$ei3, na.rm=TRUE)) # never negative
+            image(x=tt, y=x$data$distance, z=x$data$ei3,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("ei3 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 8) {            # ei4
+            zlim <- c(0, max(x$data$ei4, na.rm=TRUE)) # never negative
+            image(x=tt, y=x$data$distance, z=x$data$ei4,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=zlim,
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("ei4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (!shown.time.interval) {
             mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
@@ -516,7 +578,7 @@ adcp.beam2velo <- function(x)
     w <- b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
     e <- d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4)
     res <- list(metadata=x$metadata,
-                data=list(u=u, v=v, w=w, e=e,
+                data=list(u=u, v=v, w=w, e=e, ei=x$data$ei, pg=x$data$pg,
                 time=x$data$time,
                 distance=x$data$distance,
                 pressure=x$data$pressure,
