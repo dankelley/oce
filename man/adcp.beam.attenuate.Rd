@@ -6,7 +6,7 @@
 
 \description{Convert ADCP from beam to velocity}
 
-\usage{adcp.beam.attenuate(x, count2db=c(0.45, 0.45, 0.45, 0.45)}
+\usage{adcp.beam.attenuate(x, count2db=c(0.45, 0.45, 0.45, 0.45))}
 
 \arguments{
   \item{x}{an object of class \code{"adcp"}}
