@@ -1,12 +1,12 @@
-\name{gebco.colors}
+\name{oce.colors.gebco}
 
-\alias{gebco.colors}
+\alias{oce.colors.gebco}
 
 \title{GEBCO colors}
 
 \description{Return colors as used on GEBCO charts of ocean depth.}
 
-\usage{gebco.colors(n=9, region=c("water", "land", "both"), type=c("fill","line"))}
+\usage{oce.colors.gebco(n=9, region=c("water", "land", "both"), type=c("fill","line"))}
 
 \arguments{
   \item{n}{number of colors to return.}
@@ -21,7 +21,7 @@
 
 \value{A list of colors, as for \code{terrain.colors} and similar routines.}
 
-\examples{plot(1:10, 1:10, col=gebco.colors(10, "water", "line"), cex=5, pch=20)}
+\examples{plot(1:10, 1:10, col=oce.colors.gebco(10, "water", "line"), cex=5, pch=20)}
 
 \source{The \code{"fill"} colours came from scanning a chart, and adding
 a few lighter land colours by linear extrapolation.  The \code{"water"}
