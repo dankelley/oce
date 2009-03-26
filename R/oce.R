@@ -182,20 +182,48 @@ oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 
 oce.colors.jet <- function(n)
 {
-    # matlab::jet, cleaned of matlab:: calls
-    n4 <- ceiling(n / 4)
-    u <- c(seq(1, n4) / n4,
-           if (n4 > 1) rep(1, n4-1) else NULL,
-           seq(n4, 1, by = -1) / n4)
-    g <- ceiling(n4 / 2) - (n%%4 == 1) + (1:length(u))
-    r <- g + n4
-    b <- g - n4
-    g <- g[g <= n]
-    r <- r[r <= n]
-    b <- b[b >= 1]
-    J <- matrix(0, nrow=n, ncol=3)
-    J[r, 1] <- u[seq(along = r)]
-    J[g, 2] <- u[seq(along = g)]
-    J[b, 3] <- u[seq(length(u)-length(b)+1, length(u))]
-    rgb(J)
+    if ((n <- as.integer(n[1])) > 0) {
+                                        # matlab::jet, cleaned of matlab:: calls
+        n4 <- ceiling(n / 4)
+        u <- c(seq(1, n4) / n4,
+               if (n4 > 1) rep(1, n4-1) else NULL,
+               seq(n4, 1, by = -1) / n4)
+        g <- ceiling(n4 / 2) - (n%%4 == 1) + (1:length(u))
+        r <- g + n4
+        b <- g - n4
+        g <- g[g <= n]
+        r <- r[r <= n]
+        b <- b[b >= 1]
+        J <- matrix(0, nrow=n, ncol=3)
+        J[r, 1] <- u[seq(along = r)]
+        J[g, 2] <- u[seq(along = g)]
+        J[b, 3] <- u[seq(length(u)-length(b)+1, length(u))]
+        rgb(J)
+    }
+    else character(0)
 }
+
+oce.colors.palette <- function(n, which=1)
+{
+    if ((n <- as.integer(n[1])) > 0) {
+        if (which == 1) {
+            ## http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
+            m <- 11                         # number of classes
+            r <- c(165, 215, 244, 253, 254, 255, 224, 171, 116,  69,  49) / 255
+            g <- c(  0,  48, 109, 174, 224, 255, 243, 217, 173, 117,  54) / 255
+            b <- c( 38,  39,  67,  97, 144, 191, 248, 233, 209, 180, 149) / 255
+            i <- 1:m
+            xout <- seq(1, m, length.out=n)
+            ##print(i)
+            ##print(xout)
+                                        #print(approx(i, r, xout, rule=1)$y)
+            ##print(approx(i, g, xout, rule=1)$y)
+            ##print(approx(i, b, xout, rule=1)$y)
+            rev(rgb(approx(i, r, xout, rule=1)$y,
+                    approx(i, g, xout, rule=1)$y,
+                    approx(i, b, xout, rule=1)$y))
+        } else stop("unknown which")
+    }
+    else character(0)
+}
+

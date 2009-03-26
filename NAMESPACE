@@ -30,6 +30,7 @@ export(
        make.section,
        oce.as.POSIXlt,
        oce.colors.gebco,
+       oce.colors.palette,
        oce.colors.jet,
        oce.colors.two,
        oce.edit,

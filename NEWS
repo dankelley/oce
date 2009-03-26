@@ -1,6 +1,6 @@
 0.1-77
 - add adcp.beam.attenuate()
-- add oce.colors.two() and oce.colors.jet()
+- add oce.colors.two(), oce.colors.jet(), and oce.colors.palette()
 - rename gebco.colors() as oce.colors.gebco()
 - add byte2binary()
 - add read.adcp(), summary.adcp(), print.summary.adcp(), plot.adcp(), and adcp.beam2velo()
