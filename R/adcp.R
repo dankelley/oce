@@ -670,9 +670,13 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     ## print(round(m3))
     m <- m1 %*% m2 %*% m3               #rotation matrix
 
+    m <- m3 %*% m2 %*% m1               #rotation matrix
+
     if (TRUE) {
         cat("Rotation matrix:\n")
         print(m)
+        cat("Rotation matrix (trials):\n")
+        print(m2 %*% m1 %*% m3)
     }
 
     res <- x
