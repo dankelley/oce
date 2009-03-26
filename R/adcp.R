@@ -384,7 +384,7 @@ read.adcp <- function(file, type ="RDI",
                  heading=heading,
                  pitch=pitch,
                  roll=roll
-                 )
+                 )                     # FIXME: this is too hard-wired
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -613,8 +613,11 @@ adcp.beam2frame <- function(x)
                 pressure=x$data$pressure,
                 temperature=x$data$temperature,
                 salinity=x$data$salinity,
-                depth.of.transducer=x$data$depth.of.transducer
-                ), # FIXME: this is too hard-wired
+                depth.of.transducer=x$data$depth.of.transducer,
+                heading=x$data$heading,
+                pitch=x$data$pitch,
+                roll=x$data$roll
+                ),                     # FIXME: this is too hard-wired
                 processing.log=x$processing.log)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")
@@ -625,7 +628,7 @@ adcp.beam2frame <- function(x)
 adcp.frame2earth <- function(x, pitch, heading, roll)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
-    if (!("u" %in% names(x$data))) stop("first, use adcp.beam2velo")
+    if (!("u" %in% names(x$data))) stop("first, use adcp.beam2frame")
 
     ## FIXME: ignoring time-dependent heading, etc
     if (missing(pitch)) {
@@ -633,6 +636,11 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
         heading <- x$data$heading[1]
         roll <- x$data$roll[1]
     }
+
+    ##str(pitch)
+    ##str(heading)
+    ##str(roll)
+
 
     ## RD Instruments, 1998.
     ## ADCP Coordinate Transformation
@@ -661,7 +669,12 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     ## print(round(m2))
     ## print(round(m3))
     m <- m1 %*% m2 %*% m3               #rotation matrix
-    print(m)
+
+    if (TRUE) {
+        cat("Rotation matrix:\n")
+        print(m)
+    }
+
     res <- x
     dim <- dim(x$data$u)
     len <- prod(dim)
@@ -674,17 +687,17 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     dim(w) <- len
     ## construct velocity vectors
     vec <- matrix(c(u, v, w), nrow=3, byrow=TRUE)
-    str(vec)
-    str(m)
+    ##str(vec)
+    ##str(m)
     rvec <- m %*% vec
-    str(rvec)
+    ##str(rvec)
     res$data$u <- rvec[1,]
     dim(res$data$u) <- dim
     res$data$v <- rvec[2,]
     dim(res$data$v) <- dim
     res$data$w <- rvec[3,]
     dim(res$data$w) <- dim
-    str(res$data$u)
-    str(x$data$u)
+    ##str(res$data$u)
+    ##str(x$data$u)
     res
 }
