@@ -23,7 +23,6 @@
 
 \details{Beams are converted to velocity components using formulae from
   page 13 and 14 of RD Instruments (1998).}
-}
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}.}
 
