@@ -1,12 +1,12 @@
-\name{adcp.beam2velo}
+\name{adcp.beam2frame}
 
-\alias{adcp.beam2velo}
+\alias{adcp.beam2frame}
 
 \title{Convert ADCP from beam to velocity}
 
 \description{Convert ADCP from beam to velocity}
 
-\usage{adcp.beam2velo(x)}
+\usage{adcp.beam2frame(x)}
 
 \arguments{
   \item{x}{an object of class \code{"adcp"}}
@@ -59,7 +59,7 @@ and
 \dontrun{
 library(oce)
 d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
-e <- adcp.beam2velo(d)
+e <- adcp.beam2frame(d)
 summary(e)
 plot(e, which=1:3)
 }

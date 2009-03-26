@@ -194,6 +194,9 @@ read.header <- function(file, debug)
          data.offset=data.offset,
          number.of.beams=number.of.beams,
          number.of.cells=number.of.cells,
+         heading=heading,
+         pitch=pitch,
+         roll=roll,
          pings.per.ensemble=pings.per.ensemble,
          depth.cell.length=depth.cell.length,
          profiling.mode=profiling.mode,
@@ -337,7 +340,7 @@ read.adcp <- function(file, type ="RDI",
 ##    pg2 <- array(dim=c(read, p$header$number.of.cells))
 ##    pg3 <- array(dim=c(read, p$header$number.of.cells))
 ##    pg4 <- array(dim=c(read, p$header$number.of.cells))
-    time <- pressure <- temperature <- salinity <- depth.of.transducer <- NULL
+    time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
         b1[i,] <- p$v[,1]
@@ -357,6 +360,9 @@ read.adcp <- function(file, type ="RDI",
         temperature <- c(temperature, p$header$temperature)
         salinity <- c(salinity, p$header$salinity)
         depth.of.transducer <- c(depth.of.transducer, p$header$depth.of.transducer)
+        heading <- c(heading, p$header$heading)
+        pitch <- c(pitch, p$header$pitch)
+        roll <- c(roll, p$header$roll)
         if (i == 1) metadata <- c(p$header, filename=filename)
         if (monitor) {
             cat(".")
@@ -374,7 +380,10 @@ read.adcp <- function(file, type ="RDI",
                  pressure=pressure,
                  temperature=temperature,
                  salinity=salinity,
-                 depth.of.transducer=depth.of.transducer
+                 depth.of.transducer=depth.of.transducer,
+                 heading=heading,
+                 pitch=pitch,
+                 roll=roll
                  )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -580,7 +589,7 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     res <- processing.log.append(res, log.action)
 }
 
-adcp.beam2velo <- function(x)
+adcp.beam2frame <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
     dim <- dim(x$data$b1)
@@ -611,4 +620,71 @@ adcp.beam2velo <- function(x)
     class(res) <- c("adcp", "oce")
     res <- processing.log.append(res, log.action)
     return(res)
+}
+
+adcp.frame2earth <- function(x, pitch, heading, roll)
+{
+    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (!("u" %in% names(x$data))) stop("first, use adcp.beam2velo")
+
+    ## FIXME: ignoring time-dependent heading, etc
+    if (missing(pitch)) {
+        pitch <- x$data$pitch[1]
+        heading <- x$data$heading[1]
+        roll <- x$data$roll[1]
+    }
+
+    ## RD Instruments, 1998.
+    ## ADCP Coordinate Transformation
+    ## P/N 951-6079-00 (July 1998)
+    ## Pages 13 and 14
+    a <- pi / 180
+    CH <- cos(a * heading)
+    SH <- sin(a * heading)
+    CP <- cos(a * pitch)
+    SP <- sin(a * pitch)
+    CR <- cos(a * roll)
+    SR <- sin(a * roll)
+    m1 <- matrix(c(CH, SH, 0,
+                   -SH, CH, 0,
+                   0, 0, 1),
+                 nrow=3, byrow=TRUE)
+    m2 <- matrix(c(1, 0, 0,
+                   0, CP, -SP,
+                   0, SP, CP),
+                 nrow=3, byrow=TRUE)
+    m3 <-  matrix(c(CR, 0, SR,
+                    0, 1, 0,
+                    -SR, 0, CR),
+                  nrow=3, byrow=TRUE)
+    ## print(round(m1))
+    ## print(round(m2))
+    ## print(round(m3))
+    m <- m1 %*% m2 %*% m3               #rotation matrix
+    print(m)
+    res <- x
+    dim <- dim(x$data$u)
+    len <- prod(dim)
+    ## Flatten the velocity-componetn arrays
+    u <- x$data$u
+    dim(u) <- len
+    v <- x$data$v
+    dim(v) <- len
+    w <- x$data$w
+    dim(w) <- len
+    ## construct velocity vectors
+    vec <- matrix(c(u, v, w), nrow=3, byrow=TRUE)
+    str(vec)
+    str(m)
+    rvec <- m %*% vec
+    str(rvec)
+    res$data$u <- rvec[1,]
+    dim(res$data$u) <- dim
+    res$data$v <- rvec[2,]
+    dim(res$data$v) <- dim
+    res$data$w <- rvec[3,]
+    dim(res$data$w) <- dim
+    str(res$data$u)
+    str(x$data$u)
+    res
 }

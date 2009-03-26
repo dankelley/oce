@@ -3,7 +3,7 @@
 - add oce.colors.two(), oce.colors.jet(), and oce.colors.palette()
 - rename gebco.colors() as oce.colors.gebco()
 - add byte2binary()
-- add read.adcp(), summary.adcp(), print.summary.adcp(), plot.adcp(), and adcp.beam2velo()
+- add read.adcp(), summary.adcp(), print.summary.adcp(), plot.adcp(), adcp.beam2frame() and adcp.frame2earth()
 - add "lty.grid" to all CTD plotting functions
 - add "+.section", a more convenient way to build sections from stations
 - rework summary() for tidem, ctd, section, tdr, sealevel, coastline, topo and lobo

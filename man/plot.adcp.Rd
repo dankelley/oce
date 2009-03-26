@@ -63,19 +63,20 @@ component.
 
 \seealso{The data may be read with \code{\link{read.adcp}}. Conversion
   from beam to velocity values can be done with
-  \code{\link{adcp.beam2velo}}. Summaries of ADCP data are provided by
+  \code{\link{adcp.beam2frame}}. Summaries of ADCP data are provided by
   \code{\link{summary.adcp}}.}
 
 \examples{
 \dontrun{
 library(oce)
 d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
-e <- adcp.beam2velo(d)
+e <- adcp.beam2frame(d)
 plot(e, which=1:3)
 
-par(mfrow=c(2,1))
+par(mfrow=c(3,1))
 plot.adcp(e, which=3)
-plot.adcp(e, which=3, col=rainbow(256))
+plot.adcp(e, which=3, col=oce.colors.palette(256, 1))
+plot.adcp(e, which=3, col=oce.colors.jet(256))
 }
 }
 \author{Dan Kelley}

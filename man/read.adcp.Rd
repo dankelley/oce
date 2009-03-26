@@ -44,7 +44,7 @@ library(oce)
 d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
 summary(d)
 plot(d)
-# See adcp.beam2velo for velocity plots
+# See adcp.beam2frame for velocity plots
 }
 }
 
