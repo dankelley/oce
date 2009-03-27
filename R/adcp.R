@@ -363,7 +363,10 @@ read.adcp <- function(file, type ="RDI",
         heading <- c(heading, p$header$heading)
         pitch <- c(pitch, p$header$pitch)
         roll <- c(roll, p$header$roll)
-        if (i == 1) metadata <- c(p$header, filename=filename)
+        if (i == 1) metadata <- c(p$header,
+            filename=filename,
+            number.of.profiles=read,
+            oce.coordinate="beam")
         if (monitor) {
             cat(".")
             if (!(i %% 50)) cat(i, "\n")
@@ -374,7 +377,7 @@ read.adcp <- function(file, type ="RDI",
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
     data <- list(b1=b1, b2=b2, b3=b3, b4=b4,
                  ei1=ei1, ei2=ei2, ei3=ei3, ei4=ei4,
-                 ##pg,
+                 ##pg1=ETC,
                  time=time,
                  distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
                  pressure=pressure,
@@ -398,13 +401,16 @@ summary.adcp <- function(object, ...)
     names <- names(object$data)
     names <- names[names != "time"]     # do not report stats on time column
     fives <- matrix(nrow=length(names), ncol=5)
-    for (i in 1:length(names))
+    for (i in 1:length(names)) {
+        ##cat("DEBUG: doing fivenum for name=", names[i], "\n")
         fives[i,] <- fivenum(object$data[[names[i]]], na.rm=TRUE)
+    }
     rownames(fives) <- names
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
                 start.time=object$data$time[1],
                 delta.time=difftime(object$data$time[2], object$data$time[1], units="secs"),
+                number.of.profiles=object$metadata$number.of.profiles,
                 metadata=object$metadata,
                 kHz=object$metadata$kHz,
                 number.of.data.types=object$metadata$number.of.data.types,
@@ -415,7 +421,8 @@ summary.adcp <- function(object, ...)
                 beam.pattern=object$metadata$beam.pattern,
                 coordinate.transformation=object$metadata$coordinate.transformation,
                 fives=fives,
-                profiles=length(object$data$time),
+                oce.coordinate=object$metadata$oce.coordinate,
+                number.of.profiles=object$metadata$number.of.profiles,
                 processing.log=processing.log.summary(object))
     class(res) <- "summary.adcp"
     res
@@ -429,8 +436,9 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  System configuration:       ", x$metadata$system.configuration, "\n")
     cat("  CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n")
     cat("  Instrument serial number:   ", x$metadata$instrument.serial.number, "\n")
-    cat("  Coordinate transformation:  ", x$coordinate.transformation, "\n")
-    cat("  Transducer depth:           ", x$metadata$depth.of.transducer*0.01, "\n")
+    cat("  Coordinate transformation:  ", x$coordinate.transformation, "[originally],",
+        x$oce.coordinate, "[presently]\n")
+    cat("  Transducer depth:           ", x$metadata$depth.of.transducer, "m\n")
 ##    cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
 ##    cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
 ##    cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
@@ -439,16 +447,18 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         "    Time between profiles:", x$delta.time, "sec\n",
         "    Number of data types: ", x$number.of.data.types, "\n",
         "    Frequency:            ", x$kHz, "kHz\n",
-        "    Number of beams:      ", x$number.of.beams, "\n",
-        "    Beam configuration:   ", x$beam.config, "\n",
-        "    Beam orientation:     ", x$orientation, "\n",
-        "    Beam angle:           ", x$beam.angle, "degree\n",
-        "    Beam pattern:         ", x$beam.pattern, "\n",
-        "    Number of cells:      ", x$metadata$number.of.cells, "\n",
-        "    Cell length:          ", x$metadata$depth.cell.length, "m\n",
-        "    First cell:           ", x$metadata$bin1.dist,"m from the instrument\n",
+        paste("    Beams:                 ",
+              "", x$number.of.beams, " beams",
+              ", ", x$beam.config, " configuration",
+              ", ", x$beam.pattern," geometry, directed ",
+              x$orientation,"wards",
+              ", ", x$beam.angle, " deg angle to the vertical.\n", sep=""),
+        paste("    Cells:                ",
+              " number=", x$metadata$number.of.cells,
+              "           size=", x$metadata$depth.cell.length, "m",
+              "  dist. to first=", x$metadata$bin1.dist,"m\n", sep=""),
         "    Pings per ensemble:   ", x$metadata$pings.per.ensemble, "\n",
-        "    Profiles:             ", x$profiles, "\n"
+        "    Number of profiles:   ", x$number.of.profiles, "\n"
         )
     cat("\nStatistics:\n")
     print(x$fives)
@@ -606,8 +616,15 @@ adcp.beam2frame <- function(x)
     w <- b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
     e <- d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4)
     ##print(list(a=a,b=b,c=c,d=d))
-    res <- list(metadata=x$metadata,
-                data=list(u=u, v=v, w=w, e=e, ei=x$data$ei, pg=x$data$pg,
+    metadata <- x$metadata
+    metadata$oce.coordinate <- "frame"
+    res <- list(metadata=metadata,
+                data=list(u=u, v=v, w=w, e=e,
+                ei1=x$data$ei1,
+                ei2=x$data$ei2,
+                ei3=x$data$ei3,
+                ei4=x$data$ei4,
+                #pg1=x$data$pg1, ETC
                 time=x$data$time,
                 distance=x$data$distance,
                 pressure=x$data$pressure,
@@ -668,21 +685,15 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     ## print(round(m1))
     ## print(round(m2))
     ## print(round(m3))
-    m <- m1 %*% m2 %*% m3               #rotation matrix
-
-    m <- m3 %*% m2 %*% m1               #rotation matrix
-
-    if (TRUE) {
+    rotation.matrix <- m3 %*% m2 %*% m1
+    if (!TRUE) {
         cat("Rotation matrix:\n")
-        print(m)
-        cat("Rotation matrix (trials):\n")
-        print(m2 %*% m1 %*% m3)
+        print(rotation.matrix)
     }
-
     res <- x
     dim <- dim(x$data$u)
     len <- prod(dim)
-    ## Flatten the velocity-componetn arrays
+    ## Flatten the velocity-component arrays
     u <- x$data$u
     dim(u) <- len
     v <- x$data$v
@@ -693,7 +704,7 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     vec <- matrix(c(u, v, w), nrow=3, byrow=TRUE)
     ##str(vec)
     ##str(m)
-    rvec <- m %*% vec
+    rvec <- rotation.matrix %*% vec
     ##str(rvec)
     res$data$u <- rvec[1,]
     dim(res$data$u) <- dim
@@ -701,7 +712,9 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     dim(res$data$v) <- dim
     res$data$w <- rvec[3,]
     dim(res$data$w) <- dim
+    ##cat("names for earth ...", paste(names(res$data), collapse=","), "\n")
     ##str(res$data$u)
     ##str(x$data$u)
+    res$metadata$oce.coordinate <- "earth"
     res
 }
