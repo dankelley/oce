@@ -611,9 +611,9 @@ adcp.beam2frame <- function(x)
     a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
     b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
     d <- a / sqrt(2)
-    u <- c * a * (x$data$b1 - x$data$b2)
+    u <- -c * a * (x$data$b1 - x$data$b2)
     v <- c * a * (x$data$b4 - x$data$b3)
-    w <- b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
+    w <- -b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
     e <- d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4)
     ##print(list(a=a,b=b,c=c,d=d))
     metadata <- x$metadata
@@ -654,10 +654,14 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
         roll <- x$data$roll[1]
     }
 
+    if (x$metadata$orientation == "up") { # rotate roll and pitch, only if pointing up
+        roll <- -roll
+        pitch <- -pitch
+    }
+
     ##str(pitch)
     ##str(heading)
     ##str(roll)
-
 
     ## RD Instruments, 1998.
     ## ADCP Coordinate Transformation
