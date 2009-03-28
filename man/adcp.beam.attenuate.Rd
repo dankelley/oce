@@ -25,14 +25,12 @@
 \value{An object of \code{\link[base]{class}} \code{"adcp"}.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
+data(adcp)
 par(mfrow=c(2,1))
-plot(d, which=5) # beam 1 echo intensity
-da <- adcp.beam.attenuate(d)
-plot(da, which=5) # beam 1 echo intensity
-}
+plot(adcp, which=5) # beam 1 echo intensity
+adcp.att <- adcp.beam.attenuate(adcp)
+plot(adcp.att, which=5) # beam 1 echo intensity
 }
 
 \references{The coefficient to convert to decibels is a personal

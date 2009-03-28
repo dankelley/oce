@@ -48,9 +48,19 @@
     velocity, and \code{which}=4 yields a velocity error estimate
     computed from all beams together.
 
-    \item For all types of data, \code{which}=5:8 yields
-    backscatter intensity of beams 1:4, while \code{which}=9:12 yields
-    the percent-good flag for beams 1:4.
+    \item For all types of data: \code{which} values of 5 through 8
+    yield image of backscatter intensity of beams 1 through 4,
+    respectively, and \code{which} values of 9 through 12 yield the
+    percent-good flag for beams 1 through 4.
+
+    \item Timeseries of scalar quantities can also be plotted:
+    \code{which}=13 yields salinity, 14 yields temperature, 15 yields
+    pressure at sensor head, 16 yields instrument heading, 17 yields
+    instrument pitch, and 18 yields instrument roll.  A common
+    quick-look plot to assess mooring movement is to use
+    \code{which=15:18} (pressure being included to signal the tide, and
+    tidal currents may dislodge a mooring or cause it to settle).
+
   }
 
   A great deal of control over the colour scheme is provided by the
@@ -80,10 +90,9 @@
   provided by \code{\link{summary.adcp}}.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
-e <- adcp.beam2frame(d)
+data(adcp)
+e <- adcp.beam2frame(adcp)
 plot(e, which=1:3)
 
 # comparisons of colour schemes
@@ -92,6 +101,6 @@ plot.adcp(e, which=3)
 plot.adcp(e, which=3, col=oce.colors.palette(256, 1))
 plot.adcp(e, which=3, col=oce.colors.jet(256))
 }
-}
+
 \author{Dan Kelley}
 \keyword{misc}

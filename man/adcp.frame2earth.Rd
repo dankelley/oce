@@ -12,33 +12,34 @@
   \item{x}{an object of class \code{"adcp"}}
   \item{pitch}{a number indicating the pitch of the instrument frame, in
     degrees. If not supplied, which is the norm, this is inferred from
-    \code{x}.}
-  \item{heading}{a number indicating the heading of the instrument
-    frame, in degrees.  If not supplied, which is the norm, this is
-    inferred from \code{x}.}
-  \item{roll}{a number indicating the pitch of the instrument frame, in
-    degrees.  If not supplied, which is the norm, this is inferred from
-    \code{x}.}
+    \code{x}, on a profile-by-profile basis.}
+  \item{heading}{as \code{pitch}, but for the heading of the instrument
+    frame.}
+  \item{roll}{as \code{pitch}, but for the roll of the instrument frame.}
 }
 
-\details{Beams are converted to velocity components using formulae from
-  page 13 and 14 of RD Instruments (1998).}
+\details{Beams are converted to velocity components using formulae
+  from page 13 and 14 of \emph{RD Instruments} (1998).  Note that for
+  downward-facing instruments (i.e. for
+  \code{x$metadata$orientation="down"}), pitch and roll are multiplied
+  by -1 before the calculation is done.}
 
-\value{An object of \code{\link[base]{class}} \code{"adcp"}.}
+\value{An object of \code{\link[base]{class}} \code{"adcp"}, with
+  columns renamed from \code{u}, \code{v} and \code{w} to \code{east},
+  \code{north}, and \code{up}.  Also, \code{metadata$oce.orientation}
+  is changes from \code{frame} to \code{earth}.}
 
 \examples{
-\dontrun{
 library(oce)
-b <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
-f <- adcp.beam2frame(b)
+data(adcp)
+f <- adcp.beam2frame(adcp)
 e <- adcp.frame2earth(f)
 plot(e, which=1:3)
-}
 }
 
 \references{
 RD Instruments, 1998.
-ADCP Coordinate Transformation
+\emph{ADCP Coordinate Transformation, formulas and calculations.}
 P/N 951-6079-00 (July 1998)
 }
 

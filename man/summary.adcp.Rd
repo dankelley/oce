@@ -31,14 +31,10 @@
   \code{\link{read.oce}}.}
 
 \examples{
-\dontrun{
 library(oce)
-adcp <- read.adcp("mooring-A")
+data(adcp)
 summary(adcp)
 }
-}
-
-\references{(FILL IN LATER)}
 
 \author{Dan Kelley}
 

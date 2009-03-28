@@ -4,7 +4,7 @@ read.header <- function(file, debug)
     ## header, of length 6 + 2 * number.of.data.types bytes
     ##
 
-    ##cat("before reading header.part1, ftell=", seek(file),"\n")
+    ##cat("before reading header.part1, at file position=", seek(file),"\n")
 
     header.part1 <- readBin(file, "raw", n=6, size=1)
     if (debug > 1)
@@ -21,7 +21,7 @@ read.header <- function(file, debug)
     ## part 2 of header is these data offsets
     header.part2 <- readBin(file, "raw", n=2*number.of.data.types, size=1)
 
-    ##cat("after reading header, ftell=", seek(file), "\n")
+    ##cat("after reading header, seek(file)=", seek(file), "\n")
 
     header <- c(header, header.part2)
     data.offset <- readBin(header.part2, "integer", n=number.of.data.types, size=2, endian="little")
@@ -328,10 +328,10 @@ read.adcp <- function(file, type ="RDI",
     bytes.per.profile <- seek(file)
     seek(file, where=bytes.per.profile * skip)
     if (read < 1) stop("cannot read fewer than one profile")
-    b1 <- array(dim=c(read, p$header$number.of.cells))
-    b2 <- array(dim=c(read, p$header$number.of.cells))
-    b3 <- array(dim=c(read, p$header$number.of.cells))
-    b4 <- array(dim=c(read, p$header$number.of.cells))
+    bm1 <- array(dim=c(read, p$header$number.of.cells))
+    bm2 <- array(dim=c(read, p$header$number.of.cells))
+    bm3 <- array(dim=c(read, p$header$number.of.cells))
+    bm4 <- array(dim=c(read, p$header$number.of.cells))
     ei1 <- array(dim=c(read, p$header$number.of.cells)) # echo intensity
     ei2 <- array(dim=c(read, p$header$number.of.cells))
     ei3 <- array(dim=c(read, p$header$number.of.cells))
@@ -343,10 +343,10 @@ read.adcp <- function(file, type ="RDI",
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
-        b1[i,] <- p$v[,1]
-        b2[i,] <- p$v[,2]
-        b3[i,] <- p$v[,3]
-        b4[i,] <- p$v[,4]
+        bm1[i,] <- p$v[,1]
+        bm2[i,] <- p$v[,2]
+        bm3[i,] <- p$v[,3]
+        bm4[i,] <- p$v[,4]
         ei1[i,] <- p$ei[,1]
         ei2[i,] <- p$ei[,2]
         ei3[i,] <- p$ei[,3]
@@ -366,6 +366,7 @@ read.adcp <- function(file, type ="RDI",
         if (i == 1) metadata <- c(p$header,
             filename=filename,
             number.of.profiles=read,
+            oce.beam.attenuated=FALSE,
             oce.coordinate="beam")
         if (monitor) {
             cat(".")
@@ -376,7 +377,7 @@ read.adcp <- function(file, type ="RDI",
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
-    data <- list(b1=b1, b2=b2, b3=b3, b4=b4,
+    data <- list(bm1=bm1, bm2=bm2, bm3=bm3, bm4=bm4,
                  ei1=ei1, ei2=ei2, ei3=ei3, ei4=ei4,
                  pg1=pg1, pg2=pg2, pg3=pg3, pg4=pg4,
                  time=time,
@@ -416,6 +417,7 @@ summary.adcp <- function(object, ...)
                 kHz=object$metadata$kHz,
                 number.of.data.types=object$metadata$number.of.data.types,
                 number.of.beams=object$metadata$number.of.beams,
+                oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                 beam.angle=object$metadata$beam.angle,
                 beam.config=object$metadata$beam.config,
                 orientation=object$metadata$orientation,
@@ -450,10 +452,12 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         "    Frequency:            ", x$kHz, "kHz\n",
         paste("    Beams:                 ",
               "", x$number.of.beams, " beams",
+              ##if (x$oce.beam.attenuated) "(attenuated)" else "(not attenuated)",
               ", ", x$beam.config, " configuration",
               ", ", x$beam.pattern," geometry, directed ",
               x$orientation,"wards",
               ", ", x$beam.angle, " deg angle to the vertical.\n", sep=""),
+
         paste("    Cells:                ",
               " number=", x$metadata$number.of.cells,
               "           size=", x$metadata$depth.cell.length, "m",
@@ -494,10 +498,13 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.two(128), zlim, ...)
     }
     for (w in 1:length(which)) {
         if (zlim.not.given) {
-            if (which[w] %in% 9:12)     # pg goes from 0 to 100 percent
+            if (which[w] %in% 9:12) {    # pg goes from 0 to 100 percent
                 zlim <- c(0, 100)
-            else
-                zlim <- max(abs(x$data[[which[w]]]), na.rm=TRUE) * c(-1,1)
+            } else {
+                if (which[w] < 12) {
+                    zlim <- max(abs(x$data[[which[w]]]), na.rm=TRUE) * c(-1,1)
+                }
+            }
         }
         if (which[w] == 1) {
             image(x=tt, y=x$data$distance, z=x$data[[1]],
@@ -620,6 +627,17 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.two(128), zlim, ...)
             axis(2)
             mtext(paste("pg4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
+        if (which[w] %in% 13:18) {            # salinity
+            if (which[w] == 13) plot(x$data$time, x$data$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
+            if (which[w] == 14) plot(x$data$time, x$data$temperature, ylab= expression(paste("T [ ", degree, "C ]")),       type='l', axes=FALSE)
+            if (which[w] == 15) plot(x$data$time, x$data$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
+            if (which[w] == 16) plot(x$data$time, x$data$heading,     ylab="heading", type='l', axes=FALSE)
+            if (which[w] == 17) plot(x$data$time, x$data$pitch,       ylab="pitch",   type='l', axes=FALSE)
+            if (which[w] == 18) plot(x$data$time, x$data$roll,        ylab="roll",    type='l', axes=FALSE)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+        }
         if (!shown.time.interval) {
             mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
             shown.time.interval <- TRUE
@@ -630,6 +648,8 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.two(128), zlim, ...)
 
 adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
 {
+    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (x$metadata$oce.beam.attenuated) stop("the beams are already attenuated in this dataset")
     res <- x
     num.profiles <- dim(x$data$ei1)[1]
     ##print(num.profiles)
@@ -640,6 +660,7 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     res$data$ei2 <- count2db[2] * x$data$ei2 + correction
     res$data$ei3 <- count2db[3] * x$data$ei3 + correction
     res$data$ei4 <- count2db[4] * x$data$ei4 + correction
+    res$metadata$oce.beam.attenuated <- TRUE
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     res <- processing.log.append(res, log.action)
 }
@@ -648,7 +669,7 @@ adcp.beam2frame <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
-    dim <- dim(x$data$b1)
+    dim <- dim(x$data$bm1)
     u <- array(dim=dim)
     v <- array(dim=dim)
     w <- array(dim=dim)
@@ -657,10 +678,10 @@ adcp.beam2frame <- function(x)
     a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
     b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
     d <- a / sqrt(2)
-    u <- -c * a * (x$data$b1 - x$data$b2)
-    v <-  c * a * (x$data$b4 - x$data$b3)
-    w <- -b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
-    e <-  d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4) # FIXME Dal people use 'a' here
+    u <- -c * a * (x$data$bm1 - x$data$bm2)
+    v <-  c * a * (x$data$bm4 - x$data$bm3)
+    w <- -b * (x$data$bm1 + x$data$bm2 + x$data$bm3 + x$data$bm4)
+    e <-  d * (x$data$bm1 + x$data$bm2 - x$data$bm3 - x$data$bm4) # FIXME Dal people use 'a' here
     ##print(list(a=a,b=b,c=c,d=d))
     metadata <- x$metadata
     metadata$oce.coordinate <- "frame"
@@ -689,86 +710,62 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
-
-
-    ## FIXME: ignoring time-dependent heading, etc
-    if (missing(pitch)) {
-        pitch <- x$data$pitch[1]
-        heading <- x$data$heading[1]
-        roll <- x$data$roll[1]
-    }
-    if (x$metadata$orientation != "up") { # rotate roll and pitch, only if pointing up
-        roll <- -roll
-        pitch <- -pitch
-        warning("reversing sign of pitch and roll ... but not sure if this is correct!")
-    }
-    ## RD Instruments, 1998.
-    ## ADCP Coordinate Transformation
-    ## P/N 951-6079-00 (July 1998)
-    ## Pages 13 and 14
-    a <- pi / 180
-    CH <- cos(a * heading)
-    SH <- sin(a * heading)
-    CP <- cos(a * pitch)
-    SP <- sin(a * pitch)
-    CR <- cos(a * roll)
-    SR <- sin(a * roll)
-    m1 <- matrix(c(CH,  SH, 0,
-                   -SH, CH, 0,
-                   0,    0, 1),
-                 nrow=3, byrow=TRUE)
-    m2 <- matrix(c(1,  0,  0,
-                   0, CP, -SP,
-                   0, SP,  CP),
-                 nrow=3, byrow=TRUE)
-    m3 <-  matrix(c(CR,  0, SR,
-                    0,   1,  0,
-                    -SR, 0, CR),
-                  nrow=3, byrow=TRUE)
-
-    ## redefine to test matlab
-
-if (0) {
-    m1 <- matrix(c( CH, SH, 0,
-                   -SH, CH, 0,
-                   0,    0, 1),
-                 nrow=3, byrow=TRUE)
-    m2 <- matrix(c(1,   0,  0,
-                   0,  CP, SP,
-                   0, -SP, CP),
-                 nrow=3, byrow=TRUE)
-    m3 <-  matrix(c(CR, 0, -SR,
-                    0,  1,   0,
-                    SR, 0,  CR),
-                  nrow=3, byrow=TRUE)
-}
-    ## print(round(m1))
-    ## print(round(m2))
-    ## print(round(m3))
-    rotation.matrix <- m1 %*% m2 %*% m3
-    if (!TRUE) {
-        cat("Rotation matrix:\n")
-        print(rotation.matrix)
-    }
+    ## FIXME: should we negate roll and pitch, or obey the arg values?
     res <- x
-    dim <- dim(x$data$u)
-    len <- prod(dim)
-    ## Flatten the velocity-component arrays
-    u <- x$data$u
-    dim(u) <- len
-    v <- x$data$v
-    dim(v) <- len
-    w <- x$data$w
-    dim(w) <- len
-    ## construct velocity vectors
-    vec <- matrix(c(u, v, w), nrow=3, byrow=TRUE)
-    rvec <- rotation.matrix %*% vec
-    res$data$u <- rvec[1,]
-    dim(res$data$u) <- dim
-    res$data$v <- rvec[2,]
-    dim(res$data$v) <- dim
-    res$data$w <- rvec[3,]
-    dim(res$data$w) <- dim
+    angles.from.data <- missing(pitch)
+    if (angles.from.data) {
+        if (!missing(heading)) stop("if pitch given, then heading must also be given")
+        if (!missing(roll)) stop("if pitch and heading given, then roll must also be given")
+        if (x$metadata$orientation == "down") {
+            roll <- -roll
+            pitch <- -pitch
+        }
+    }
+    to.radians <- pi / 180
+    for (p in 1:x$metadata$number.of.profiles) {
+        if (angles.from.data) {
+            heading <- res$data$heading[p]
+            if (res$metadata$orientation == "down") {
+                pitch <- -res$data$pitch[p]
+                roll <- -res$data$roll[p]
+            } else {
+                pitch <- res$data$pitch[p]
+                roll <- res$data$roll[p]
+            }
+        }
+        CH <- cos(to.radians * heading)
+        SH <- sin(to.radians * heading)
+        CP <- cos(to.radians * pitch)
+        SP <- sin(to.radians * pitch)
+        CR <- cos(to.radians * roll)
+        SR <- sin(to.radians * roll)
+        m1 <- matrix(c(CH,  SH, 0,
+                       -SH, CH, 0,
+                       0,    0, 1),
+                     nrow=3, byrow=TRUE)
+        m2 <- matrix(c(1,  0,  0,
+                       0, CP, -SP,
+                       0, SP,  CP),
+                     nrow=3, byrow=TRUE)
+        m3 <-  matrix(c(CR,  0, SR,
+                        0,   1,  0,
+                        -SR, 0, CR),
+                      nrow=3, byrow=TRUE)
+        rotation.matrix <- m1 %*% m2 %*% m3
+        if (!TRUE) {
+            cat("Rotation matrix:\n")
+            print(rotation.matrix)
+        }
+        u <- res$data$u[p,]
+        v <- res$data$v[p,]
+        w <- res$data$w[p,]
+        uvw.rotated <- rotation.matrix %*% matrix(c(u, v, w), nrow=3, byrow=TRUE)
+        res$data$u[p,] <- uvw.rotated[1,]
+        res$data$v[p,] <- uvw.rotated[2,]
+        res$data$w[p,] <- uvw.rotated[3,]
+        ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
+    }
+    ## Give these new names
     names <- names(res$data)
     names[names=="u"] <- "east"
     names[names=="v"] <- "north"

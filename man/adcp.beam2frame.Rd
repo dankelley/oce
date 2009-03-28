@@ -13,7 +13,7 @@
 }
 
 \details{Beams are converted to velocity components using formulae from
-  section 5.5 of a Teledyne-RDI manual.
+  section 5.5 of \emph{RD Instruments} (1998).
 
   Velocity components
   \eqn{u}{u},
@@ -53,20 +53,23 @@ and
 
 }
 
-\value{An object of \code{\link[base]{class}} \code{"adcp"}.}
+\value{An object of \code{\link[base]{class}} \code{"adcp"}, with
+  columns renamed from \code{b1}, \code{b2}, \code{b3} and \code{b4}
+  to \code{u}, \code{v}, \code{w}, and \code{e}.  Also,
+  \code{metadata$oce.orientation} is changes from \code{beam} to
+  \code{frame}.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
-e <- adcp.beam2frame(d)
-summary(e)
-plot(e, which=1:3)
-}
+data(adcp)
+f <- adcp.beam2frame(adcp)
+summary(f)
+plot(f, which=1:3)
 }
 
-\references{Teledyn-RDI, 1998.
-ADCP Coordinate Transformation, formulas and calculations.
+\references{
+R D Instruments, 1998.
+\emph{ADCP Coordinate Transformation, formulas and calculations.}
 P/N 951-6079-00 (July 1998).
 }
 
