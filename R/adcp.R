@@ -315,9 +315,9 @@ read.adcp <- function(file, type ="RDI",
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) {
+    if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-    }
+
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -326,7 +326,12 @@ read.adcp <- function(file, type ="RDI",
     ## read a profile, to get length so we can seek
     p <- read.profile(file, debug=debug)
     bytes.per.profile <- seek(file)
-    seek(file, where=bytes.per.profile * skip)
+    ## go to the end, so the next seek (to get to the data) reveals file length
+    seek(file, where=0, origin="end")
+    bytes.in.file <- seek(file, where=bytes.per.profile * skip)
+    ##cat("bytes.per.profile=", bytes.per.profile," bytes.in.file=", bytes.in.file, "\n")
+    profiles.in.file <- bytes.in.file / bytes.per.profile
+    ##cat("profiles in file:", profiles.in.file, "\n")
     if (read < 1) stop("cannot read fewer than one profile")
     bm1 <- array(dim=c(read, p$header$number.of.cells))
     bm2 <- array(dim=c(read, p$header$number.of.cells))
@@ -373,7 +378,7 @@ read.adcp <- function(file, type ="RDI",
             if (!(i %% 50)) cat(i, "\n")
         }
     }
-    if (monitor) cat("\n")
+    if (monitor) cat("\nRead", read, "profiles, out of a total of",profiles.in.file,"profiles in this file.\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
