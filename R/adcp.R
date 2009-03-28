@@ -382,18 +382,18 @@ read.adcp <- function(file, type ="RDI",
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
-    data <- list(bm1=bm1, bm2=bm2, bm3=bm3, bm4=bm4,
+    data <- list(ma=list(bm1=bm1, bm2=bm2, bm3=bm3, bm4=bm4,
                  ei1=ei1, ei2=ei2, ei3=ei3, ei4=ei4,
-                 pg1=pg1, pg2=pg2, pg3=pg3, pg4=pg4,
-                 time=time,
-                 distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
+                 pg1=pg1, pg2=pg2, pg3=pg3, pg4=pg4),
+                 ss=list(distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells)),
+                 ts=list(time=time,
                  pressure=pressure,
                  temperature=temperature,
                  salinity=salinity,
                  depth.of.transducer=depth.of.transducer,
                  heading=heading,
                  pitch=pitch,
-                 roll=roll
+                 roll=roll)
                  )                     # FIXME: this is too hard-wired
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -405,18 +405,25 @@ read.adcp <- function(file, type ="RDI",
 summary.adcp <- function(object, ...)
 {
     if (!inherits(object, "adcp")) stop("method is only for adcp objects")
-    names <- names(object$data)
-    names <- names[names != "time"]     # do not report stats on time column
-    fives <- matrix(nrow=length(names), ncol=5)
-    for (i in 1:length(names)) {
-        ##cat("DEBUG: doing fivenum for name=", names[i], "\n")
-        fives[i,] <- fivenum(object$data[[names[i]]], na.rm=TRUE)
+    ts.names <- names(object$data$ts)
+    ma.names <- names(object$data$ma)
+    fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
+    ii <- 1
+    for (i in 1:length(ts.names)) {
+        if (names(object$data$ts)[i] != "time") {
+            fives[ii,] <- fivenum(object$data$ts[[ts.names[i]]], na.rm=TRUE)
+            ii <- ii + 1
+        }
     }
-    rownames(fives) <- names
+    for (i in 1:length(ma.names)) {
+        fives[ii,] <- fivenum(object$data$ma[[ma.names[i]]], na.rm=TRUE)
+        ii <- ii + 1
+    }
+    rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
-                start.time=object$data$time[1],
-                delta.time=difftime(object$data$time[2], object$data$time[1], units="secs"),
+                start.time=object$data$ts$time[1],
+                delta.time=difftime(object$data$ts$time[2], object$data$ts$time[1], units="secs"),
                 number.of.profiles=object$metadata$number.of.profiles,
                 metadata=object$metadata,
                 kHz=object$metadata$kHz,
@@ -444,32 +451,25 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  System configuration:       ", x$metadata$system.configuration, "\n")
     cat("  CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n")
     cat("  Instrument serial number:   ", x$metadata$instrument.serial.number, "\n")
-    cat("  Coordinate transformation:  ", x$coordinate.transformation, "[originally],",
-        x$oce.coordinate, "[presently]\n")
+    cat("  Coordinate transformation:  ", x$coordinate.transformation, "[originally],", x$oce.coordinate, "[presently]\n")
     cat("  Transducer depth:           ", x$metadata$depth.of.transducer, "m\n")
-##    cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
-##    cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
-##    cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
-    cat("  Sampling\n",
-        "    First profile at:     ", as.character(x$start.time), "\n",
-        "    Time between profiles:", x$delta.time, "sec\n",
-        "    Number of data types: ", x$number.of.data.types, "\n",
-        "    Frequency:            ", x$kHz, "kHz\n",
-        paste("    Beams:                 ",
-              "", x$number.of.beams, " beams",
-              ##if (x$oce.beam.attenuated) "(attenuated)" else "(not attenuated)",
-              ", ", x$beam.config, " configuration",
-              ", ", x$beam.pattern," geometry, directed ",
-              x$orientation,"wards",
-              ", ", x$beam.angle, " deg angle to the vertical.\n", sep=""),
-
-        paste("    Cells:                ",
-              " number=", x$metadata$number.of.cells,
-              "           size=", x$metadata$depth.cell.length, "m",
-              "  dist. to first=", x$metadata$bin1.dist,"m\n", sep=""),
-        "    Pings per ensemble:   ", x$metadata$pings.per.ensemble, "\n",
-        "    Number of profiles:   ", x$number.of.profiles, "\n"
-        )
+    ##cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
+    ##cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
+    ##cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
+    cat("  First profile at:           ", as.character(x$start.time), "\n")
+    cat("  Time between profiles:      ", x$delta.time, "sec\n")
+    cat("  Number of data types:       ", x$number.of.data.types, "\n")
+    cat("  Frequency:                  ", x$kHz, "kHz\n")
+    cat("  Beams:                      ", x$number.of.beams, "\n")
+    ##if (x$oce.beam.attenuated) "(attenuated)" else "(not attenuated)"
+    cat("  Pattern:                    ", x$beam.config, "\n")
+    cat("  Orientation:                ", x$orientation, "\n")
+    cat("  Angle to vertical:          ", x$beam.angle, "deg\n")
+    cat("  Number of cells:            ", x$metadata$number.of.cells, "\n")
+    cat("  Cell thickness:             ", x$metadata$depth.cell.length, "m\n")
+    cat("  First cell centred:         ", x$metadata$bin1.dist,"m from sensor\n")
+    cat("  Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n")
+    cat("  Number of profiles:         ", x$number.of.profiles, "\n")
     cat("\nStatistics:\n")
     print(x$fives)
     cat("\n")
@@ -487,164 +487,163 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.two(128), zlim, ...)
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
-    data.names <- names(x$data)
-    ##dots <- names(list(...))
-    ##gave.zlim <- "zlim" %in% dots
+    data.names <- names(x$data$ma)
     shown.time.interval <- FALSE
-    tt <- x$data$time
+    tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     zlim.not.given <- missing(zlim)
     if (zlim.not.given && all(which %in% 5:8)) { # ei uses a single scale for all
-        zlim <- range(abs(x$data[[which[1]]]), na.rm=TRUE)
+        zlim <- range(abs(x$data$ma[[which[1]]]), na.rm=TRUE)
         for (w in 2:length(which)) {
-            zlim <- range(abs(c(zlim, x$data[[which[w]]])), na.rm=TRUE)
+            zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
         zlim.not.given <- FALSE                                    # fake it
     }
     for (w in 1:length(which)) {
+        ##cat("which[w]=", which[w], "\n")
         if (zlim.not.given) {
             if (which[w] %in% 9:12) {    # pg goes from 0 to 100 percent
                 zlim <- c(0, 100)
             } else {
                 if (which[w] < 12) {
-                    zlim <- max(abs(x$data[[which[w]]]), na.rm=TRUE) * c(-1,1)
+                    zlim <- max(abs(x$data$ma[[which[w]]]), na.rm=TRUE) * c(-1,1)
                 }
             }
         }
         if (which[w] == 1) {
-            image(x=tt, y=x$data$distance, z=x$data[[1]],
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[1]],
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             ##mtext(data.names[1], side=3, cex=2/3, adj=1)
             mtext(paste(data.names[1], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 2) {
-            image(x=tt, y=x$data$distance, z=x$data[[2]],
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[2]],
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste(data.names[2], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 3) {
-            image(x=tt, y=x$data$distance, z=x$data[[3]],
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[3]],
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste(data.names[3], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 4) {
-            image(x=tt, y=x$data$distance, z=x$data[[4]],
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[4]],
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste(data.names[4], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 5) {            # ei1
-            image(x=tt, y=x$data$distance, z=x$data$ei1,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei1,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("ei1 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 6) {            # ei2
-            image(x=tt, y=x$data$distance, z=x$data$ei2,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei2,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("ei2 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 7) {            # ei3
-            image(x=tt, y=x$data$distance, z=x$data$ei3,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei3,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("ei3 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 8) {            # ei4
-            image(x=tt, y=x$data$distance, z=x$data$ei4,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei4,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("ei4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 9) {            # pg1
-            image(x=tt, y=x$data$distance, z=x$data$pg1,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg1,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=c(0, 100),
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("pg1 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 10) {            # pg2
-            image(x=tt, y=x$data$distance, z=x$data$pg2,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg2,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=c(0, 100),
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("pg2 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 11) {            # pg3
-            image(x=tt, y=x$data$distance, z=x$data$pg3,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg3,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=c(0, 100),
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("pg3 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] == 12) {            # pg4
-            image(x=tt, y=x$data$distance, z=x$data$pg4,
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg4,
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=c(0, 100),
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$time)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
             mtext(paste("pg4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
         if (which[w] %in% 13:18) {            # salinity
-            if (which[w] == 13) plot(x$data$time, x$data$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
-            if (which[w] == 14) plot(x$data$time, x$data$temperature, ylab= expression(paste("T [ ", degree, "C ]")),       type='l', axes=FALSE)
-            if (which[w] == 15) plot(x$data$time, x$data$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
-            if (which[w] == 16) plot(x$data$time, x$data$heading,     ylab="heading", type='l', axes=FALSE)
-            if (which[w] == 17) plot(x$data$time, x$data$pitch,       ylab="pitch",   type='l', axes=FALSE)
-            if (which[w] == 18) plot(x$data$time, x$data$roll,        ylab="roll",    type='l', axes=FALSE)
-            axis.POSIXct(1, x=x$data$time)
+            if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
+            if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")),       type='l', axes=FALSE)
+            if (which[w] == 15) plot(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
+            if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
+            if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
+            if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
+            axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
         }
         if (!shown.time.interval) {
-            mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
+            mtext(paste(format(range(x$data$ts$time)), collapse=" to "), side=3, cex=2/3, adj=0)
             shown.time.interval <- TRUE
         }
     }
@@ -656,15 +655,16 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     if (x$metadata$oce.beam.attenuated) stop("the beams are already attenuated in this dataset")
     res <- x
-    num.profiles <- dim(x$data$ei1)[1]
+    num.profiles <- dim(x$data$ma$ei1)[1]
     ##print(num.profiles)
-    correction <- matrix(rep(20 * log10(x$data$distance), num.profiles), nrow=num.profiles, byrow=TRUE)
+    correction <- matrix(rep(20 * log10(x$data$ss$distance), num.profiles),
+                         nrow=num.profiles, byrow=TRUE)
     ##print(dim(x$data$ei1))
     ##print(dim(correction))
-    res$data$ei1 <- count2db[1] * x$data$ei1 + correction
-    res$data$ei2 <- count2db[2] * x$data$ei2 + correction
-    res$data$ei3 <- count2db[3] * x$data$ei3 + correction
-    res$data$ei4 <- count2db[4] * x$data$ei4 + correction
+    res$data$ma$ei1 <- count2db[1] * x$data$ma$ei1 + correction
+    res$data$ma$ei2 <- count2db[2] * x$data$ma$ei2 + correction
+    res$data$ma$ei3 <- count2db[3] * x$data$ma$ei3 + correction
+    res$data$ma$ei4 <- count2db[4] * x$data$ma$ei4 + correction
     res$metadata$oce.beam.attenuated <- TRUE
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     res <- processing.log.append(res, log.action)
@@ -674,7 +674,7 @@ adcp.beam2frame <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
-    dim <- dim(x$data$bm1)
+    dim <- dim(x$data$ma$bm1)
     u <- array(dim=dim)
     v <- array(dim=dim)
     w <- array(dim=dim)
@@ -683,32 +683,25 @@ adcp.beam2frame <- function(x)
     a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
     b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
     d <- a / sqrt(2)
-    u <- -c * a * (x$data$bm1 - x$data$bm2)
-    v <-  c * a * (x$data$bm4 - x$data$bm3)
-    w <- -b * (x$data$bm1 + x$data$bm2 + x$data$bm3 + x$data$bm4)
-    e <-  d * (x$data$bm1 + x$data$bm2 - x$data$bm3 - x$data$bm4) # FIXME Dal people use 'a' here
+    u <- -c * a * (x$data$ma$bm1 - x$data$ma$bm2)
+    v <-  c * a * (x$data$ma$bm4 - x$data$ma$bm3)
+    w <- -b * (x$data$ma$bm1 + x$data$ma$bm2 + x$data$ma$bm3 + x$data$ma$bm4)
+    ## FIXME Dal people use 'a' in e, and RDI has two definitions!
+    e <-  d * (x$data$ma$bm1 + x$data$ma$bm2 - x$data$ma$bm3 - x$data$ma$bm4)
     ##print(list(a=a,b=b,c=c,d=d))
-    metadata <- x$metadata
-    metadata$oce.coordinate <- "frame"
-    res <- list(metadata=metadata,
-                data=list(u=u, v=v, w=w, e=e,
-                ei1=x$data$ei1, ei2=x$data$ei2, ei3=x$data$ei3, ei4=x$data$ei4,
-                pg1=x$data$pg1, pg2=x$data$pg2, pg3=x$data$pg3, pg4=x$data$pg4,
-                time=x$data$time,
-                distance=x$data$distance,
-                pressure=x$data$pressure,
-                temperature=x$data$temperature,
-                salinity=x$data$salinity,
-                depth.of.transducer=x$data$depth.of.transducer,
-                heading=x$data$heading,
-                pitch=x$data$pitch,
-                roll=x$data$roll
-                ),                     # FIXME: this is too hard-wired
-                processing.log=x$processing.log)
+    res <- x
+    res$data$ma$bm1 <- u
+    res$data$ma$bm2 <- v
+    res$data$ma$bm3 <- w
+    res$data$ma$bm4 <- e
+    names <- names(x$data$ma)
+    names[names==c("bm1", "bm2", "bm3", "bm4")] <- c("u", "v", "w", "e")
+    names(res$data$ma) <- names
+    res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")
     res <- processing.log.append(res, log.action)
-    return(res)
+    res
 }
 
 adcp.frame2earth <- function(x, pitch, heading, roll)
@@ -729,13 +722,13 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     to.radians <- pi / 180
     for (p in 1:x$metadata$number.of.profiles) {
         if (angles.from.data) {
-            heading <- res$data$heading[p]
+            heading <- res$data$ts$heading[p]
             if (res$metadata$orientation == "down") {
-                pitch <- -res$data$pitch[p]
-                roll <- -res$data$roll[p]
+                pitch <- -res$data$ts$pitch[p]
+                roll <- -res$data$ts$roll[p]
             } else {
-                pitch <- res$data$pitch[p]
-                roll <- res$data$roll[p]
+                pitch <- res$data$ts$pitch[p]
+                roll <- res$data$ts$roll[p]
             }
         }
         CH <- cos(to.radians * heading)
@@ -761,21 +754,21 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
             cat("Rotation matrix:\n")
             print(rotation.matrix)
         }
-        u <- res$data$u[p,]
-        v <- res$data$v[p,]
-        w <- res$data$w[p,]
+        u <- res$data$ma$u[p,]
+        v <- res$data$ma$v[p,]
+        w <- res$data$ma$w[p,]
         uvw.rotated <- rotation.matrix %*% matrix(c(u, v, w), nrow=3, byrow=TRUE)
-        res$data$u[p,] <- uvw.rotated[1,]
-        res$data$v[p,] <- uvw.rotated[2,]
-        res$data$w[p,] <- uvw.rotated[3,]
+        res$data$ma$u[p,] <- uvw.rotated[1,]
+        res$data$ma$v[p,] <- uvw.rotated[2,]
+        res$data$ma$w[p,] <- uvw.rotated[3,]
         ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
     }
     ## Give these new names
     names <- names(res$data)
-    names[names=="u"] <- "east"
-    names[names=="v"] <- "north"
-    names[names=="w"] <- "up"
-    names(res$data) <- names
+    names[names==c("u","v","w")] <- c("east", "north", "up")
     res$metadata$oce.coordinate <- "earth"
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    class(res) <- c("adcp", "oce")
+    res <- processing.log.append(res, log.action)
     res
 }

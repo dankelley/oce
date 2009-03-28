@@ -29,37 +29,37 @@
 \details{Reads a binary-format ADCP file.  The file structure is
   explained in Chapter 5 of \emph{Teledyne-RDI} (2007).
 
-
   There are three types of data stored in the result's \code{data}
-  entry.  
+  entry, detailed below with headings indicating names within
+  \code{data}.
 
   \enumerate{
     
-    \item{1.}{A single vector named \code{data$distance}, which stores
+    \item{ss}{A space-series named \code{data$ss$distance}, which stores
       the distance of cells from the transducer head, in the vertical
       (not slant-wise) direction.}
 
-    \item{2.}{A set of vectors that have one element per profile:
-      \code{data$time} (the POSIXct time of the profile),
-      \code{data$pressure} (the pressure at the sensor head),
-      \code{data$temperature} (the temperature at the sensor head, in
-      deg C), \code{data$salinity} (the salinity at the sensor head, in
-      PSU ... often, not actually measured, but rather set to a constant
-      value for the experiment), \code{data$depth.of.transducer} (depth
-      of the transducer), \code{data$heading} (heading of the instrument
-      package, a value used by \code{\link{adcp.frame2earth}} for
-      converting to earth-based coordinates), \code{data$pitch} (as
-      \code{data$heading}, but the pitch), \code{data$roll} (as
-      \code{data$heading}, but the roll).}
+    \item{ts}{A set of time-series made up of values for the profiles:
+      \code{data$ts$time} (POSIXct time of profile),
+      \code{data$ts$pressure} (pressure at the sensor head),
+      \code{data$ts$temperature} (temperature at the sensor head, in deg
+      C), \code{data$ts$salinity} (the salinity at the sensor head, in
+      PSU--often, not actually measured, but rather set to a constant
+      value for the experiment), \code{data$ts$depth.of.transducer}
+      (depth of the transducer), \code{data$ts$heading} (heading of the
+      instrument package, a value used by \code{\link{adcp.frame2earth}}
+      for converting to earth-based coordinates), \code{data$ts$pitch}
+      (as \code{data$ts$heading}, but the pitch), \code{data$ts$roll}
+      (as \code{data$ts$heading}, but the roll).}
 
-    \item{3.}{The third type is a set of matrices, with rows
-      corresponding to profiles, and columns corresponding to ADCP
-      cells.  These matrices store velocities along the individual beams
-      (\code{data$bm1}, \code{data$bm2}, \code{data$bm3}, and
-      \code{data$bm4}), echo intensity data (\code{data$ei1},
-      \code{data$ei2}, \code{data$ei3}, and \code{data$ei4}) and a
-      percent-good flag (\code{data$pg1}, \code{data$pg2},
-      \code{data$pg3}, and \code{data$pg4}).}
+    \item{ma}{A set of matrices, with rows corresponding to profiles,
+      and columns corresponding to ADCP cells.  These matrices store
+      velocities along the individual beams (\code{data$ma$bm1},
+      \code{data$ma$bm2}, \code{data$ma$bm3}, and \code{data$ma$bm4}),
+      echo intensity data (\code{data$ma$ei1}, \code{data$ma$ei2},
+      \code{data$ma$ei3}, and \code{data$ma$ei4}) and a percent-good
+      flag (\code{data$ma$pg1}, \code{data$ma$pg2}, \code{data$ma$pg3},
+      and \code{data$ma$pg4}).}
 
   }
 

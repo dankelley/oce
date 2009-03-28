@@ -72,7 +72,31 @@ oce.write.table <- function (x, file="", ...)
 subset.oce <- function (x, subset, indices=NULL, ...)
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (inherits(x, "section")) {
+    if (inherits(x, "adcp")) {
+        if (!is.null(indices)) {
+            rval <- x
+            keep <- (1:x$metadata$number.of.profiles)[indices]
+            print(keep)
+            stop("testing")
+        } else if (!missing(subset)) {
+            ss <- substitute(subset)
+            profiles.to.keep <- eval(substitute(subset), x$data, parent.frame())
+            cat("keep profiles: ", paste(profiles.to.keep, collapse=" "), "\n")
+            print(dim(x$data[[1]]))
+            ## FIXME: ugly kludge; see adcp.R for rest of kludge
+            rval <- x
+            for (i in 1:12) {
+                rval$data[[i]] <- x$data[[i]][profiles.to.keep,]
+            }
+            for (i in 13:21) {
+                if (names(x$data)[i] != "distance")
+                    rval$data[[i]] <- x$data[[i]][profiles.to.keep]
+            }
+            ## end of ugly kludge
+        } else {
+            stop("must supply either 'subset' or 'indices'")
+        }
+    } else if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
             n <- length(indices)
             station <- vector("list", n)

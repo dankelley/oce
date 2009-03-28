@@ -19,7 +19,7 @@
   corrected by adding the term \eqn{20\log10(r)}{20*log10(r)}, where
   \eqn{r}{r} is the distance from the sensor head to the water from
   which scattering is occuring.  \eqn{r}{r} is given by
-  \code{x$data$distance}.
+  \code{x$data$ss$distance}.
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}.}
@@ -34,8 +34,8 @@ adcp.att <- adcp.beam.attenuate(adcp)
 plot(adcp.att, which=5) # beam 1 echo intensity
 
 par(mar=c(4, 4, 1, 1))
-plot(apply(adcp$data$ei1, 2, mean), adcp$data$distance, type='l', xlim=c(0,256))
-lines(apply(adcp.att$data$ei1, 2, mean), adcp$data$distance, type='l', col='red')
+plot(apply(adcp$data$ma$ei1, 2, mean), adcp$data$ss$distance, type='l', xlim=c(0,256))
+lines(apply(adcp.att$data$ma$ei1, 2, mean), adcp$data$ss$distance, type='l', col='red')
 legend("topright", lwd=1, col=c("black", "red"), legend=c("original", "attenuated"))
 }
 
