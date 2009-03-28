@@ -615,9 +615,9 @@ bleeding-edge version from the development website, perhaps to see whether the
 author has successfully addressed a deficiency that you reported.  You will need
 to have subversion installed on you machine, and then can do e.g.
 
-\verb@svn checkout http://r-oce.googlecode.com/svn/trunk/ -r 441 r-oce-read-only@
+\verb@svn checkout http://r-oce.googlecode.com/svn/trunk/ -r 835 r-oce-read-only@
 
-\noindent to retrieve the intermediate version number 441. Naturally, you should
+\noindent to retrieve the intermediate version number 835. Naturally, you should
 rename the directory from \verb@r-oce-read-only@ to \verb@oce@ before attempting
 to check, build, or install the package.
 
