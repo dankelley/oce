@@ -27,10 +27,16 @@
 \examples{
 library(oce)
 data(adcp)
-par(mfrow=c(2,1))
+par(mfrow=c(3,1))
 plot(adcp, which=5) # beam 1 echo intensity
+
 adcp.att <- adcp.beam.attenuate(adcp)
 plot(adcp.att, which=5) # beam 1 echo intensity
+
+par(mar=c(4, 4, 1, 1))
+plot(apply(adcp$data$ei1, 2, mean), adcp$data$distance, type='l', xlim=c(0,256))
+lines(apply(adcp.att$data$ei1, 2, mean), adcp$data$distance, type='l', col='red')
+legend("topright", lwd=1, col=c("black", "red"), legend=c("original", "attenuated"))
 }
 
 \references{The coefficient to convert to decibels is a personal
