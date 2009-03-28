@@ -32,39 +32,52 @@
 
   \itemize{ 
     
-    \item For beamwise data, \code{which}=1 gives an image plot of beam
-    1 as a function of time and distance from sensor, and \code{which}
+    \item For \code{beam} data, as created by \code{\link{read.adcp}} or
+    \code{\link{read.oce}}, \code{which}=1 gives an image plot of beam 1
+    as a function of time and distance from sensor, and \code{which}
     values of 2 to 4 yield similar plots for the other beams.
 
-    \item For velocity data, \code{which}=1, 2, and 3 yield the x, y,
-    and z components of velocity, and \code{which}=4 yields a velocity
+    \item For \code{frame}data, as created by
+    \code{\link{adcp.beam2frame}}, \code{which}=1, 2, and 3 yield u, v,
+    and w components of velocity, and \code{which}=4 yields a velocity
     error estimate computed from all beams together.
 
-    \item For both beamwise and velocity data, \code{which}=5 yields
-    backscatter intensity.
+    \item For \code{earth}data, as created by
+    \code{\link{adcp.frame2earth}}, \code{which}=1, 2, and 3 yield
+    \code{east}-, \code{north}-, and \code{up}-ward components of
+    velocity, and \code{which}=4 yields a velocity error estimate
+    computed from all beams together.
+
+    \item For all types of data, \code{which}=5:8 yields
+    backscatter intensity of beams 1:4, while \code{which}=9:12 yields
+    the percent-good flag for beams 1:4.
+  }
+
+  A great deal of control over the colour scheme is provided by the
+  \code{col} argument, which is passed to \code{\link{image}} to do the
+  actual plotting.  See \dQuote{Examples} for some comparisons.
+
+  By default, \code{plot.adcp} uses a \code{zlim} value for the
+  \code{\link{image}} that is constructed to contain all the data, but
+  to be symmetric about zero.  This is done on a per-panel basis, and
+  the scale is plotted at the top-right corner, along with the name of
+  the variable being plotted. You may also supply \code{zlim} as one of
+  the \dots arguments, but be aware that a reasonable limit on
+  horizontal velocity components is unlikely to be of much use for the
+  vertical component.
 
 }
 
-A more colourful plot is provided by using a \code{\link{rainbow}}
-palette for \code{col}, although interpreting these in a quantitative
-way is tricker, without a color map.  See \dQuote{Examples} for a
-comparison.
-
-By default, \code{plot.adcp} uses a \code{zlim} value for the
-\code{\link{image}} that is constructed to contain all the data, but to
-be symmetric about zero.  This is done on a per-panel basis, and the
-scale is plotted at the top-right corner, along with the name of the
-variable being plotted. You may also supply \code{zlim} as one of the
-\dots arguments, but be aware that a reasonable limit on horizontal
-velocity components is unlikely to be of much use for the vertical
-component.
-
-}
-
-\seealso{The data may be read with \code{\link{read.adcp}}. Conversion
-  from beam to velocity values can be done with
-  \code{\link{adcp.beam2frame}}. Summaries of ADCP data are provided by
-  \code{\link{summary.adcp}}.}
+\seealso{The data may be read with \code{\link{read.adcp}}. Converting
+  velocities from beam coordinates (the raw data, columns \code{b1}
+  through \code{b4} in \code{x$data$} for a four-beam setup) to frame
+  coordinates (\code{u}, \code{v}, \code{w}) columns is done with
+  \code{\link{adcp.beam2frame}}.  Thereafter,
+  \code{\link{adcp.frame2earth}} may be used to convert to earth-based
+  coordinates (\code{east}, \code{north}, \code{up}).  Correction of
+  echo intensity for beam-spreading can be done at any stage, using
+  \code{\link{adcp.beam.attenuate}}.  Summaries of ADCP data are
+  provided by \code{\link{summary.adcp}}.}
 
 \examples{
 \dontrun{
@@ -73,6 +86,7 @@ d <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
 e <- adcp.beam2frame(d)
 plot(e, which=1:3)
 
+# comparisons of colour schemes
 par(mfrow=c(3,1))
 plot.adcp(e, which=3)
 plot.adcp(e, which=3, col=oce.colors.palette(256, 1))

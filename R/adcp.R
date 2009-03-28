@@ -336,10 +336,10 @@ read.adcp <- function(file, type ="RDI",
     ei2 <- array(dim=c(read, p$header$number.of.cells))
     ei3 <- array(dim=c(read, p$header$number.of.cells))
     ei4 <- array(dim=c(read, p$header$number.of.cells))
-##    pg1 <- array(dim=c(read, p$header$number.of.cells))
-##    pg2 <- array(dim=c(read, p$header$number.of.cells))
-##    pg3 <- array(dim=c(read, p$header$number.of.cells))
-##    pg4 <- array(dim=c(read, p$header$number.of.cells))
+    pg1 <- array(dim=c(read, p$header$number.of.cells))
+    pg2 <- array(dim=c(read, p$header$number.of.cells))
+    pg3 <- array(dim=c(read, p$header$number.of.cells))
+    pg4 <- array(dim=c(read, p$header$number.of.cells))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
@@ -351,10 +351,10 @@ read.adcp <- function(file, type ="RDI",
         ei2[i,] <- p$ei[,2]
         ei3[i,] <- p$ei[,3]
         ei4[i,] <- p$ei[,4]
-##        pg1[i,] <- p$pg[,1]
-##        pg2[i,] <- p$pg[,2]
-##        pg3[i,] <- p$pg[,3]
-##        pg4[i,] <- p$pg[,4]
+        pg1[i,] <- p$pg[,1]
+        pg2[i,] <- p$pg[,2]
+        pg3[i,] <- p$pg[,3]
+        pg4[i,] <- p$pg[,4]
         time <- c(time, p$header$RTC.time)
         pressure <- c(pressure, p$header$pressure)
         temperature <- c(temperature, p$header$temperature)
@@ -372,12 +372,13 @@ read.adcp <- function(file, type ="RDI",
             if (!(i %% 50)) cat(i, "\n")
         }
     }
+    if (monitor) cat("\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
     data <- list(b1=b1, b2=b2, b3=b3, b4=b4,
                  ei1=ei1, ei2=ei2, ei3=ei3, ei4=ei4,
-                 ##pg1=ETC,
+                 pg1=pg1, pg2=pg2, pg3=pg3, pg4=pg4,
                  time=time,
                  distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells),
                  pressure=pressure,
@@ -492,8 +493,12 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.two(128), zlim, ...)
         zlim.not.given <- FALSE                                    # fake it
     }
     for (w in 1:length(which)) {
-        if (zlim.not.given)
-            zlim <- max(abs(x$data[[which[w]]]), na.rm=TRUE) * c(-1,1)
+        if (zlim.not.given) {
+            if (which[w] %in% 9:12)     # pg goes from 0 to 100 percent
+                zlim <- c(0, 100)
+            else
+                zlim <- max(abs(x$data[[which[w]]]), na.rm=TRUE) * c(-1,1)
+        }
         if (which[w] == 1) {
             image(x=tt, y=x$data$distance, z=x$data[[1]],
                   xlab="Time", ylab="Distance", axes=FALSE,
@@ -575,6 +580,46 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.two(128), zlim, ...)
             axis(2)
             mtext(paste("ei4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
         }
+        if (which[w] == 9) {            # pg1
+            image(x=tt, y=x$data$distance, z=x$data$pg1,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=c(0, 100),
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("pg1 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 10) {            # pg2
+            image(x=tt, y=x$data$distance, z=x$data$pg2,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=c(0, 100),
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("pg2 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 11) {            # pg3
+            image(x=tt, y=x$data$distance, z=x$data$pg3,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=c(0, 100),
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("pg3 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
+        if (which[w] == 12) {            # pg4
+            image(x=tt, y=x$data$distance, z=x$data$pg4,
+                  xlab="Time", ylab="Distance", axes=FALSE,
+                  zlim=c(0, 100),
+                  col=col, ...)
+            axis.POSIXct(1, x=x$data$time)
+            box()
+            axis(2)
+            mtext(paste("pg4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+        }
         if (!shown.time.interval) {
             mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
             shown.time.interval <- TRUE
@@ -602,6 +647,7 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
 adcp.beam2frame <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
+    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
     dim <- dim(x$data$b1)
     u <- array(dim=dim)
     v <- array(dim=dim)
@@ -612,19 +658,16 @@ adcp.beam2frame <- function(x)
     b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
     d <- a / sqrt(2)
     u <- -c * a * (x$data$b1 - x$data$b2)
-    v <- c * a * (x$data$b4 - x$data$b3)
+    v <-  c * a * (x$data$b4 - x$data$b3)
     w <- -b * (x$data$b1 + x$data$b2 + x$data$b3 + x$data$b4)
-    e <- d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4)
+    e <-  d * (x$data$b1 + x$data$b2 - x$data$b3 - x$data$b4) # FIXME Dal people use 'a' here
     ##print(list(a=a,b=b,c=c,d=d))
     metadata <- x$metadata
     metadata$oce.coordinate <- "frame"
     res <- list(metadata=metadata,
                 data=list(u=u, v=v, w=w, e=e,
-                ei1=x$data$ei1,
-                ei2=x$data$ei2,
-                ei3=x$data$ei3,
-                ei4=x$data$ei4,
-                #pg1=x$data$pg1, ETC
+                ei1=x$data$ei1, ei2=x$data$ei2, ei3=x$data$ei3, ei4=x$data$ei4,
+                pg1=x$data$pg1, pg2=x$data$pg2, pg3=x$data$pg3, pg4=x$data$pg4,
                 time=x$data$time,
                 distance=x$data$distance,
                 pressure=x$data$pressure,
@@ -645,7 +688,8 @@ adcp.beam2frame <- function(x)
 adcp.frame2earth <- function(x, pitch, heading, roll)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
-    if (!("u" %in% names(x$data))) stop("first, use adcp.beam2frame")
+    if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
+
 
     ## FIXME: ignoring time-dependent heading, etc
     if (missing(pitch)) {
@@ -653,16 +697,11 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
         heading <- x$data$heading[1]
         roll <- x$data$roll[1]
     }
-
-    if (x$metadata$orientation == "up") { # rotate roll and pitch, only if pointing up
+    if (x$metadata$orientation != "up") { # rotate roll and pitch, only if pointing up
         roll <- -roll
         pitch <- -pitch
+        warning("reversing sign of pitch and roll ... but not sure if this is correct!")
     }
-
-    ##str(pitch)
-    ##str(heading)
-    ##str(roll)
-
     ## RD Instruments, 1998.
     ## ADCP Coordinate Transformation
     ## P/N 951-6079-00 (July 1998)
@@ -674,22 +713,39 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     SP <- sin(a * pitch)
     CR <- cos(a * roll)
     SR <- sin(a * roll)
-    m1 <- matrix(c(CH, SH, 0,
+    m1 <- matrix(c(CH,  SH, 0,
                    -SH, CH, 0,
-                   0, 0, 1),
+                   0,    0, 1),
                  nrow=3, byrow=TRUE)
-    m2 <- matrix(c(1, 0, 0,
+    m2 <- matrix(c(1,  0,  0,
                    0, CP, -SP,
-                   0, SP, CP),
+                   0, SP,  CP),
                  nrow=3, byrow=TRUE)
-    m3 <-  matrix(c(CR, 0, SR,
-                    0, 1, 0,
+    m3 <-  matrix(c(CR,  0, SR,
+                    0,   1,  0,
                     -SR, 0, CR),
                   nrow=3, byrow=TRUE)
+
+    ## redefine to test matlab
+
+if (0) {
+    m1 <- matrix(c( CH, SH, 0,
+                   -SH, CH, 0,
+                   0,    0, 1),
+                 nrow=3, byrow=TRUE)
+    m2 <- matrix(c(1,   0,  0,
+                   0,  CP, SP,
+                   0, -SP, CP),
+                 nrow=3, byrow=TRUE)
+    m3 <-  matrix(c(CR, 0, -SR,
+                    0,  1,   0,
+                    SR, 0,  CR),
+                  nrow=3, byrow=TRUE)
+}
     ## print(round(m1))
     ## print(round(m2))
     ## print(round(m3))
-    rotation.matrix <- m3 %*% m2 %*% m1
+    rotation.matrix <- m1 %*% m2 %*% m3
     if (!TRUE) {
         cat("Rotation matrix:\n")
         print(rotation.matrix)
@@ -706,19 +762,18 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     dim(w) <- len
     ## construct velocity vectors
     vec <- matrix(c(u, v, w), nrow=3, byrow=TRUE)
-    ##str(vec)
-    ##str(m)
     rvec <- rotation.matrix %*% vec
-    ##str(rvec)
     res$data$u <- rvec[1,]
     dim(res$data$u) <- dim
     res$data$v <- rvec[2,]
     dim(res$data$v) <- dim
     res$data$w <- rvec[3,]
     dim(res$data$w) <- dim
-    ##cat("names for earth ...", paste(names(res$data), collapse=","), "\n")
-    ##str(res$data$u)
-    ##str(x$data$u)
+    names <- names(res$data)
+    names[names=="u"] <- "east"
+    names[names=="v"] <- "north"
+    names[names=="w"] <- "up"
+    names(res$data) <- names
     res$metadata$oce.coordinate <- "earth"
     res
 }
