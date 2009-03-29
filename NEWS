@@ -1,14 +1,15 @@
 0.1-77
-- add adcp dataset
-- add adcp.beam.attenuate()
 - add oce.colors.two(), oce.colors.jet(), and oce.colors.palette()
 - rename gebco.colors() as oce.colors.gebco()
 - add byte2binary()
-- add read.adcp(), summary.adcp(), print.summary.adcp(), plot.adcp(), adcp.beam2frame() and adcp.frame2earth()
+- add adcp dataset
+- add read.adcp(), summary.adcp(), print.summary.adcp(), plot.adcp(),
+  adcp.beam2frame(), adcp.frame2earth(), adcp.earth2other() and
+  adcp.beam.attenuate()
 - add "lty.grid" to all CTD plotting functions
 - add "+.section", a more convenient way to build sections from stations
-- rework summary() for tidem, ctd, section, tdr, sealevel, coastline, topo and lobo
-- as.sealevel(): rename sampling.interval as deltat, and infer it from data if possible
+- rework summary() for all existing objects
+- as.sealevel(): rename sampling.interval as deltat
 
 0.1-76
 - sw.N2(): make it tolerate NAs; adjust df to make result smoother

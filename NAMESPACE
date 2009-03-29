@@ -8,6 +8,7 @@ export(
        as.windrose,
        adcp.beam2frame,
        adcp.frame2earth,
+       adcp.earth2other,
        adcp.beam.attenuate,
        byte2binary,
        coriolis,

@@ -709,32 +709,21 @@ adcp.beam2frame <- function(x)
     res
 }
 
-adcp.frame2earth <- function(x, pitch, heading, roll)
+adcp.frame2earth <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
     ## FIXME: should we negate roll and pitch, or obey the arg values?
     res <- x
-    angles.from.data <- missing(pitch)
-    if (angles.from.data) {
-        if (!missing(heading)) stop("if pitch given, then heading must also be given")
-        if (!missing(roll)) stop("if pitch and heading given, then roll must also be given")
-        if (x$metadata$orientation == "down") {
-            roll <- -roll
-            pitch <- -pitch
-        }
-    }
     to.radians <- pi / 180
     for (p in 1:x$metadata$number.of.profiles) {
-        if (angles.from.data) {
-            heading <- res$data$ts$heading[p]
-            if (res$metadata$orientation == "down") {
-                pitch <- -res$data$ts$pitch[p]
-                roll <- -res$data$ts$roll[p]
-            } else {
-                pitch <- res$data$ts$pitch[p]
-                roll <- res$data$ts$roll[p]
-            }
+        heading <- res$data$ts$heading[p]
+        if (res$metadata$orientation == "down") {
+            pitch <- -res$data$ts$pitch[p]
+            roll <- -res$data$ts$roll[p]
+        } else {
+            pitch <- res$data$ts$pitch[p]
+            roll <- res$data$ts$roll[p]
         }
         CH <- cos(to.radians * heading)
         SH <- sin(to.radians * heading)
@@ -762,18 +751,71 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
         u <- res$data$ma$u[p,]
         v <- res$data$ma$v[p,]
         w <- res$data$ma$w[p,]
-        uvw.rotated <- rotation.matrix %*% matrix(c(u, v, w), nrow=3, byrow=TRUE)
-        res$data$ma$u[p,] <- uvw.rotated[1,]
-        res$data$ma$v[p,] <- uvw.rotated[2,]
-        res$data$ma$w[p,] <- uvw.rotated[3,]
+        rotated <- rotation.matrix %*% matrix(c(u, v, w), nrow=3, byrow=TRUE)
+        res$data$ma$u[p,] <- rotated[1,]
+        res$data$ma$v[p,] <- rotated[2,]
+        res$data$ma$w[p,] <- rotated[3,]
         ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
     }
     ## Give these new names
-    names <- names(res$data)
+    names <- names(res$data$ma)
     names[names=="u"] <- "east"
     names[names=="v"] <- "north"
     names[names=="w"] <- "up"
+    names(res$data$ma) <- names
     res$metadata$oce.coordinate <- "earth"
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    class(res) <- c("adcp", "oce")
+    res <- processing.log.append(res, log.action)
+    res
+}
+
+adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
+{
+    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (x$metadata$oce.coordinate != "earth") stop("input must be in earth coordinates")
+    res <- x
+    to.radians <- pi / 180
+    CH <- cos(to.radians * heading)
+    SH <- sin(to.radians * heading)
+    CP <- cos(to.radians * pitch)
+    SP <- sin(to.radians * pitch)
+    CR <- cos(to.radians * roll)
+    SR <- sin(to.radians * roll)
+    for (p in 1:x$metadata$number.of.profiles) {
+        m1 <- matrix(c(CH,  SH, 0,
+                       -SH, CH, 0,
+                       0,    0, 1),
+                     nrow=3, byrow=TRUE)
+        m2 <- matrix(c(1,  0,  0,
+                       0, CP, -SP,
+                       0, SP,  CP),
+                     nrow=3, byrow=TRUE)
+        m3 <-  matrix(c(CR,  0, SR,
+                        0,   1,  0,
+                        -SR, 0, CR),
+                      nrow=3, byrow=TRUE)
+        rotation.matrix <- m1 %*% m2 %*% m3
+        if (!TRUE) {
+            cat("Rotation matrix:\n")
+            print(rotation.matrix)
+        }
+        east <- x$data$ma$east[p,]
+        north <- x$data$ma$north[p,]
+        up <- x$data$ma$up[p,]
+        rotated <- rotation.matrix %*% matrix(c(east, north, up), nrow=3, byrow=TRUE)
+        res$data$ma$east[p,] <- rotated[1,]
+        res$data$ma$north[p,] <- rotated[2,]
+        res$data$ma$up[p,] <- rotated[3,]
+        ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
+    }
+    ## Give these new names
+    names <- names(res$data$ma)
+    names[names=="east"] <- "u'"
+    names[names=="north"] <- "v'"
+    names[names=="up"] <- "w'"
+    names(res$data$ma) <- names
+    res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")
     res <- processing.log.append(res, log.action)
