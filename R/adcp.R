@@ -3,7 +3,6 @@ read.header <- function(file, debug)
     ##
     ## header, of length 6 + 2 * number.of.data.types bytes
     ##
-
     ##cat("before reading header.part1, at file position=", seek(file),"\n")
 
     header.part1 <- readBin(file, "raw", n=6, size=1)
