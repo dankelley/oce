@@ -305,7 +305,7 @@ read.profile <- function(file, header, debug)
 }
 
 read.adcp <- function(file, type ="RDI",
-                      skip=0, read,
+                      skip=0, read, stride=1,
                       debug=0,
                       monitor=TRUE,
                       log.action)
@@ -376,6 +376,9 @@ read.adcp <- function(file, type ="RDI",
         if (monitor) {
             cat(".")
             if (!(i %% 50)) cat(i, "\n")
+        }
+        if (stride > 1) {
+            seek(file, bytes.per.profile * (stride - 1), origin="current")
         }
     }
     if (monitor) cat("\nRead", read, "profiles, out of a total of",profiles.in.file,"profiles in this file.\n")

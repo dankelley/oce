@@ -6,23 +6,36 @@
 
 \title{Sample ADCP dataset}
 
-\description{This is a 10 minute segment of data measured with an
+\description{This is a sampling of measurements made with an
   upward-pointing ADCP (acoustic doppler current profiler) manufactured
-  by Teledyne-RDI.}
+  by Teledyne-RDI, as part of the St Lawrence Internal Wave Experiment.}
 
 \examples{
 library(oce)
 data(adcp)
 adcp.earth <- adcp.frame2earth(adcp.beam2frame(adcp))
+
+# Plot overview images
 plot(adcp.earth)
+
+# Plot diagnostic timeseries (e.g. heading should *not* vary)
+plot(adcp.earth, which=13:18)
+
+# Plot u=u(z,t) as an image, with p=p(t) overlaid as a line
+plot(adcp.earth, which=1)
+lines(adcp.earth$data$ts$time, adcp.earth$data$ts$pressure, lwd=2, col="blue")
 }
 
 \usage{data(adcp)}
 
-\source{\code{adcp <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 60)}}
+\source{This file was created with the following command, which uses
+  a large file (a week of 10-second data) not provided with the package:
+\code{adcp <- read.oce(file = "~/SL08F001.000", 
+                 skip = 5040, read = 1 + 24 * 2, stride = 30 * 6)
+}}
 
 \seealso{See \code{\link{read.adcp}} for information on reading such
-  files, the data stored therein, and the various functions provided to
+  files, the data stored therein, and the \code{oce} functions provided to
   work with ADCP data.}
 
 \author{Dan Kelley}
