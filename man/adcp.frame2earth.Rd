@@ -4,7 +4,9 @@
 
 \title{Convert ADCP from frame coordinates to earth coordinates}
 
-\description{Convert ADCP from frame coordinates to earth coordinates}
+\description{Convert ADCP velocity components from a frame-based
+  coordinate system (u, v, w, e) to an earth-based coordinate system
+  (east, north, up, e).}
 
 \usage{adcp.frame2earth(x, pitch, heading, roll)}
 
@@ -26,8 +28,9 @@
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}, with
   columns renamed from \code{u}, \code{v} and \code{w} to \code{east},
-  \code{north}, and \code{up}.  Also, \code{metadata$oce.orientation}
-  is changes from \code{frame} to \code{earth}.}
+  \code{north}, and \code{up}.  (Note that \code{e} is left unaltered.)
+  Also, \code{metadata$oce.orientation} is changed from \code{frame} to
+  \code{earth}.}
 
 \examples{
 library(oce)

@@ -32,18 +32,19 @@
 \details{Reads a binary-format ADCP file.  The file structure is
   explained in Chapter 5 of \emph{Teledyne-RDI} (2007).
 
-  There are three types of data stored in the result's \code{data}
-  entry, detailed below with headings indicating names within
-  \code{data}.
+  There are three types of element stored in the result's \code{data},
+  namely space-series, time-series, and matrix.  These are contained
+  within lists named \code{data$ss}, \code{data$ts} and \code{data$ma},
+  and their contents are as follows.
 
   \enumerate{
     
-    \item{ss}{A space-series named \code{data$ss$distance}, which stores
-      the distance of cells from the transducer head, in the vertical
-      (not slant-wise) direction.}
+    \item{\code{ss}}{A space-series named \code{data$ss$distance}, which
+      stores the distance of cells from the transducer head, in the
+      vertical (not slant-wise) direction.}
 
-    \item{ts}{A set of time-series made up of values for the profiles:
-      \code{data$ts$time} (POSIXct time of profile),
+    \item{\code{ts}}{A set of time-series made up of values for the
+      profiles: \code{data$ts$time} (POSIXct time of profile),
       \code{data$ts$pressure} (pressure at the sensor head),
       \code{data$ts$temperature} (temperature at the sensor head, in deg
       C), \code{data$ts$salinity} (the salinity at the sensor head, in
@@ -55,16 +56,17 @@
       (as \code{data$ts$heading}, but the pitch), \code{data$ts$roll}
       (as \code{data$ts$heading}, but the roll).}
 
-    \item{ma}{A set of matrices, with rows corresponding to profiles,
-      and columns corresponding to ADCP cells.  These matrices store
-      velocities along the individual beams (\code{data$ma$bm1},
+    \item{\code{ma}}{A set of matrices, with rows corresponding to
+      profiles, and columns corresponding to ADCP cells.  These matrices
+      store velocities along the individual beams (\code{data$ma$bm1},
       \code{data$ma$bm2}, \code{data$ma$bm3}, and \code{data$ma$bm4}),
       echo intensity data (\code{data$ma$ei1}, \code{data$ma$ei2},
       \code{data$ma$ei3}, and \code{data$ma$ei4}) and a percent-good
       flag (\code{data$ma$pg1}, \code{data$ma$pg2}, \code{data$ma$pg3},
-      and \code{data$ma$pg4}).}
-
-  }
+      and \code{data$ma$pg4}).  Note: the beam data get replaced with
+      frame-based velocity data (u,v,w,e) by
+      \code{\link{adcp.beam2frame}}, and then with earth-based velocity
+      data (east, north, up, e) by \code{\link{adcp.frame2earth}}.}  }
 
   In addition to this \code{data} entry, the \code{metadata} entry holds
   a wealth of information as well, e.g. on beam geometry, etc.

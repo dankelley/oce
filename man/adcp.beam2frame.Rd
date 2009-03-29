@@ -2,9 +2,11 @@
 
 \alias{adcp.beam2frame}
 
-\title{Convert ADCP from beam to velocity}
+\title{Convert ADCP from beam coordinates to frame coordinates}
 
-\description{Convert ADCP from beam to velocity}
+\description{Convert ADCP velocity components from a beam-based
+  coordinate system (bm1, bm2, bm3, bm4) to a frame-based coordinate
+  system (u, v, w, e).}
 
 \usage{adcp.beam2frame(x)}
 
@@ -41,7 +43,7 @@
 where
 
 \eqn{c=1}{c=1} if the beam geometry is convex, and
-\eqn{c=-1}{c=01} if the beam geometry is concave, 
+\eqn{c=-1}{c=-1} if the beam geometry is concave, 
 
 \eqn{a=1/(2\sin(\theta))}{a=1/(2*sin(theta))}
 
@@ -54,9 +56,9 @@ and
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}, with
-  columns renamed from \code{b1}, \code{b2}, \code{b3} and \code{b4}
+  columns renamed from \code{bm1}, \code{bm2}, \code{bm3} and \code{bm4}
   to \code{u}, \code{v}, \code{w}, and \code{e}.  Also,
-  \code{metadata$oce.orientation} is changes from \code{beam} to
+  \code{metadata$oce.orientation} is changed from \code{beam} to
   \code{frame}.}
 
 \examples{

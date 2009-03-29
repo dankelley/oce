@@ -30,9 +30,11 @@ lines(adcp.earth$data$ts$time, adcp.earth$data$ts$pressure, lwd=2, col="blue")
 
 \source{This file was created with the following command, which uses
   a large file (a week of 10-second data) not provided with the package:
-\code{adcp <- read.oce(file = "~/SL08F001.000", 
+\preformatted{
+adcp <- read.oce(file = "~/SL08F001.000", 
                  skip = 5040, read = 1 + 24 * 2, stride = 30 * 6)
-}}
+}
+}
 
 \seealso{See \code{\link{read.adcp}} for information on reading such
   files, the data stored therein, and the \code{oce} functions provided to

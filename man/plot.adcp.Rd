@@ -79,8 +79,8 @@
 }
 
 \seealso{The data may be read with \code{\link{read.adcp}}. Converting
-  velocities from beam coordinates (the raw data, columns \code{b1}
-  through \code{b4} in \code{x$data$} for a four-beam setup) to frame
+  velocities from beam coordinates (the raw data, columns \code{bm1}
+  through \code{bm4} in \code{x$data$ma} for a four-beam setup) to frame
   coordinates (\code{u}, \code{v}, \code{w}) columns is done with
   \code{\link{adcp.beam2frame}}.  Thereafter,
   \code{\link{adcp.frame2earth}} may be used to convert to earth-based
