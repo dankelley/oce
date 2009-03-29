@@ -47,12 +47,11 @@
       profiles: \code{data$ts$time} (POSIXct time of profile),
       \code{data$ts$pressure} (pressure at the sensor head),
       \code{data$ts$temperature} (temperature at the sensor head, in deg
-      C), \code{data$ts$salinity} (the salinity at the sensor head, in
-      PSU--often, not actually measured, but rather set to a constant
-      value for the experiment), \code{data$ts$depth.of.transducer}
+      C), \code{data$ts$salinity} (the salinity in
+      PSU, if measured, or a constant otherwise),
+      \code{data$ts$depth.of.transducer}
       (depth of the transducer), \code{data$ts$heading} (heading of the
-      instrument package, a value used by \code{\link{adcp.frame2earth}}
-      for converting to earth-based coordinates), \code{data$ts$pitch}
+      instrument package), \code{data$ts$pitch}
       (as \code{data$ts$heading}, but the pitch), \code{data$ts$roll}
       (as \code{data$ts$heading}, but the roll).}
 
@@ -88,9 +87,10 @@
 \examples{
 \dontrun{
 library(oce)
-b <- read.oce(file = "~/SL08F001.000", skip = 5000, read = 6 * 30)
-summary(b)
-plot(b)
+adcp <- read.oce(file = "~/SL08F001.000", 
+                 skip = 5040, read = 1 + 24 * 2, stride = 30 * 6)
+summary(adcp)
+plot(adcp)
 }
 }
 

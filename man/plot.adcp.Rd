@@ -6,7 +6,7 @@
 
 \description{Plot ADCP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.two(128), zlim, \dots)}
+\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), zlim, \dots)}
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.adcp}}.}
@@ -92,14 +92,13 @@
 \examples{
 library(oce)
 data(adcp)
-e <- adcp.beam2frame(adcp)
+e <- adcp.frame2earth(adcp.beam2frame(adcp))
 plot(e, which=1:3)
 
 # comparisons of colour schemes
-par(mfrow=c(3,1))
-plot.adcp(e, which=3)
-plot.adcp(e, which=3, col=oce.colors.palette(256, 1))
-plot.adcp(e, which=3, col=oce.colors.jet(256))
+par(mfrow=c(2,1))
+plot.adcp(e, which=1)
+plot.adcp(e, which=1, col=oce.colors.jet(256))
 }
 
 \author{Dan Kelley}

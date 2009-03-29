@@ -36,8 +36,10 @@ oce.colors.two(n, low=2/3, high=0, smax=1, alpha = 1)
 
 \details{
 
-  \code{oce.colors.palette} provides a variety of pre-defined palettes,
-  e.g. from ColorBrewer.
+  \code{oce.colors.palette} provides a variety of pre-defined palettes.
+  \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
+  \code{which}=2 yields the ColorBrewer diverging RYB scheme.  (Each is
+  interpolated from the 11-class schemes provided on this site.)
 
   \code{oce.colors.gebco} provides palettes that mimic the GEBCO altas
   colours, with shades of blue for water and of brown for land.

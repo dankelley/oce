@@ -232,17 +232,33 @@ oce.colors.palette <- function(n, which=1)
     if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
             ## http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
+            ## RdBu 11 divisions
+            rgb <- matrix(c(
+                            103, 000, 031,
+                            178, 024, 043,
+                            214, 096, 077,
+                            244, 165, 130,
+                            253, 219, 199,
+                            247, 247, 247,
+                            209, 229, 240,
+                            146, 197, 222,
+                            067, 147, 195,
+                            033, 102, 172,
+                            005, 048,  97), ncol=3, byrow=TRUE) / 255
+            m <- dim(rgb)[1]
+            i <- 1:m
+            xout <- seq(1, m, length.out=n)
+            rev(rgb(approx(i, rgb[,1], xout, rule=1)$y,
+                    approx(i, rgb[,2], xout, rule=1)$y,
+                    approx(i, rgb[,3], xout, rule=1)$y))
+        } else if (which == 2) {
+            ## http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
             m <- 11                         # number of classes
             r <- c(165, 215, 244, 253, 254, 255, 224, 171, 116,  69,  49) / 255
             g <- c(  0,  48, 109, 174, 224, 255, 243, 217, 173, 117,  54) / 255
             b <- c( 38,  39,  67,  97, 144, 191, 248, 233, 209, 180, 149) / 255
             i <- 1:m
             xout <- seq(1, m, length.out=n)
-            ##print(i)
-            ##print(xout)
-                                        #print(approx(i, r, xout, rule=1)$y)
-            ##print(approx(i, g, xout, rule=1)$y)
-            ##print(approx(i, b, xout, rule=1)$y)
             rev(rgb(approx(i, r, xout, rule=1)$y,
                     approx(i, g, xout, rule=1)$y,
                     approx(i, b, xout, rule=1)$y))

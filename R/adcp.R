@@ -479,7 +479,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adcp <- function(x, which=1:4, col=oce.colors.two(128), zlim, ...)
+plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
 {
     lw <- length(which)
     if (lw > 1) {
