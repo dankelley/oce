@@ -698,7 +698,10 @@ adcp.beam2frame <- function(x)
     res$data$ma$bm3 <- w
     res$data$ma$bm4 <- e
     names <- names(x$data$ma)
-    names[names==c("bm1", "bm2", "bm3", "bm4")] <- c("u", "v", "w", "e")
+    names[names=="bm1"] <- "u"
+    names[names=="bm2"] <- "v"
+    names[names=="bm3"] <- "w"
+    names[names=="bm4"] <- "e"
     names(res$data$ma) <- names
     res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -768,7 +771,9 @@ adcp.frame2earth <- function(x, pitch, heading, roll)
     }
     ## Give these new names
     names <- names(res$data)
-    names[names==c("u","v","w")] <- c("east", "north", "up")
+    names[names=="u"] <- "east"
+    names[names=="v"] <- "north"
+    names[names=="w"] <- "up"
     res$metadata$oce.coordinate <- "earth"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")
