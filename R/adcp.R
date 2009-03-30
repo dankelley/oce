@@ -437,6 +437,7 @@ summary.adcp <- function(object, ...)
     res <- list(filename=object$metadata$filename,
                 start.time=object$data$ts$time[1],
                 delta.time=difftime(object$data$ts$time[2], object$data$ts$time[1], units="secs"),
+                end.time=object$data$ts$time[length(object$data$ts$time)],
                 number.of.profiles=object$metadata$number.of.profiles,
                 metadata=object$metadata,
                 kHz=object$metadata$kHz,
@@ -452,6 +453,7 @@ summary.adcp <- function(object, ...)
                 beam.pattern=object$metadata$beam.pattern,
                 coordinate.transformation=object$metadata$coordinate.transformation,
                 fives=fives,
+                time=object$data$ts$time,
                 oce.coordinate=object$metadata$oce.coordinate,
                 number.of.profiles=object$metadata$number.of.profiles,
                 processing.log=processing.log.summary(object))
@@ -472,8 +474,8 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     ##cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
     ##cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
     ##cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
-    cat("  First profile at:           ", as.character(x$start.time), "\n")
-    cat("  Time between profiles:      ", x$delta.time, "sec\n")
+    cat("  File sampled at times:       ", as.character(x$start.time), " to ",
+        as.character(x$end.time), " at interval ", as.character(x$delta.time), " s\n", sep="")
     cat("  Number of data types:       ", x$number.of.data.types, "\n")
     cat("  Frequency:                  ", x$kHz, "kHz\n")
     cat("  Beams:                      ", x$number.of.beams, "\n")
