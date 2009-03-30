@@ -78,6 +78,7 @@ read.header <- function(file, debug)
     pings.per.ensemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     depth.cell.length <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
     if (depth.cell.length < 0 || depth.cell.length > 64) stop("depth cell length of ", depth.cell.length, "is not in the allowed range of 0m to 64m")
+    ##cat("depth.cell.length being inferred from 0x", FLD[13:14], " as ", depth.cell.length, "\n", sep="")
     blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profiling.mode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     low.corr.thresh <- readBin(FLD[18], "integer", n=1, size=1)
@@ -97,8 +98,10 @@ read.header <- function(file, debug)
     heading.bias <- readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
     sensors.available <- readBin(FLD[32], "integer", n=1, size=1)
-    bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little") * 0.01
-    xmit.pulse.length <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little")
+    bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
+    ##cat("bin1.distance being inferred from 0x", FLD[33:34], " as ", bin1.distance, "\n", sep="")
+    xmit.pulse.length <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
+    ##cat("xmit.pulse.length being inferred from 0x", FLD[35:36], " as ", xmit.pulse.length, "\n", sep="")
     wp.ref.layer.average <- readBin(FLD[37:38], "integer", n=1, size=2, endian="little")
     false.target.thresh <- readBin(FLD[39], "integer", n=1, size=1)
     ## FLD[40] spare
@@ -324,6 +327,9 @@ read.adcp <- function(file, type ="RDI",
     }
     ## read a profile, to get length so we can seek
     p <- read.profile(file, debug=debug)
+    bin1.distance <- p$header$bin1.distance
+    xmit.pulse.length <- p$header$xmit.pulse.length
+    depth.cell.length <- p$header$depth.cell.length
     bytes.per.profile <- seek(file)
     ## go to the end, so the next seek (to get to the data) reveals file length
     seek(file, where=0, origin="end")
@@ -367,11 +373,16 @@ read.adcp <- function(file, type ="RDI",
         heading <- c(heading, p$header$heading)
         pitch <- c(pitch, p$header$pitch)
         roll <- c(roll, p$header$roll)
-        if (i == 1) metadata <- c(p$header,
-            filename=filename,
-            number.of.profiles=read,
-            oce.beam.attenuated=FALSE,
-            oce.coordinate="beam")
+        if (i == 1)  {
+            metadata <- p$header
+            metadata$bin1.distance <- bin1.distance
+            metadata$xmit.pulse.length <- xmit.pulse.length
+            metadata <- c(metadata,
+                          filename=filename,
+                          number.of.profiles=read,
+                          oce.beam.attenuated=FALSE,
+                          oce.coordinate="beam")
+        }
         if (monitor) {
             cat(".")
             if (!(i %% 50)) cat(i, "\n")
@@ -387,7 +398,7 @@ read.adcp <- function(file, type ="RDI",
     data <- list(ma=list(bm1=bm1, bm2=bm2, bm3=bm3, bm4=bm4,
                  ei1=ei1, ei2=ei2, ei3=ei3, ei4=ei4,
                  pg1=pg1, pg2=pg2, pg3=pg3, pg4=pg4),
-                 ss=list(distance=seq(p$header$bin1.distance, by=p$header$depth.cell.length, length.out=p$header$number.of.cells)),
+                 ss=list(distance=seq(bin1.distance, by=depth.cell.length, length.out=p$header$number.of.cells)),
                  ts=list(time=time,
                  pressure=pressure,
                  temperature=temperature,
@@ -431,6 +442,9 @@ summary.adcp <- function(object, ...)
                 kHz=object$metadata$kHz,
                 number.of.data.types=object$metadata$number.of.data.types,
                 number.of.beams=object$metadata$number.of.beams,
+                bin1.distance=object$metadata$bin1.distance,
+                depth.cell.length=object$metadata$depth.cell.length,
+                xmit.pulse.length=object$metadata$xmit.pulse.length,
                 oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                 beam.angle=object$metadata$beam.angle,
                 beam.config=object$metadata$beam.config,
@@ -468,8 +482,9 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Orientation:                ", x$orientation, "\n")
     cat("  Angle to vertical:          ", x$beam.angle, "deg\n")
     cat("  Number of cells:            ", x$metadata$number.of.cells, "\n")
-    cat("  Cell thickness:             ", x$metadata$depth.cell.length, "m\n")
-    cat("  First cell centred:         ", x$metadata$bin1.dist,"m from sensor\n")
+    cat("  Cell thickness:             ", x$depth.cell.length, "m\n")
+    cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
+    cat("  Xmit pulse length:          ", x$xmit.pulse.length,"m\n")
     cat("  Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n")
     cat("  Number of profiles:         ", x$number.of.profiles, "\n")
     cat("\nStatistics:\n")
