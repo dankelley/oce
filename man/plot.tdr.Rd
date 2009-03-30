@@ -17,9 +17,9 @@
 
 \details{Several plots are available: \code{which}=1 for a timeseries
   plot of temperature, \code{which}=2 for a timeseries plot of pressure,
-  \code{which}=3 for a scatterplot of the temperature profile, and
-  \code{which}=4 for textual information about the dataset.  You may
-  supply a list of \code{which} values, to get multi-panel plots.  
+  \code{which}=3 for textual information about the dataset and
+  \code{which}=4 for a scatterplot of the temperature profile, .  You
+  may supply a list of \code{which} values, to get multi-panel plots.
 
   Note that if a single-panel plot is made, then \code{\link{par}} is
   not adjusted.  This means that you may add to the plot easily, which

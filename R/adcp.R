@@ -501,7 +501,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
         }
         zlim.not.given <- FALSE                                    # fake it
     }
-    for (w in 1:length(which)) {
+    for (w in 1:lw) {
         ##cat("which[w]=", which[w], "\n")
         if (zlim.not.given) {
             if (which[w] %in% 9:12) {    # pg goes from 0 to 100 percent

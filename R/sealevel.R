@@ -54,6 +54,17 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
 {
     ## tidal constituents (in cpd):
     ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
+    title.plot <- function(x) {
+        mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
+        title <- paste("Station ",
+                       x$metadata$station.number, " (",
+                       x$metadata$station.name,   ") ",
+                       x$metadata$region,         "",
+                       " ", latlon.format(x$metadata$latitude, x$metadata$longitude),
+                       if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
+                       sep="")
+        mtext(side=3, title, adj=1, cex=2/3)
+    }
     if (!is.null(focus.time)) {
         focus.time <- as.POSIXct(focus.time)
         focus <- (focus.time[1] <= x$data$t) & (x$data$t <= focus.time[2])
@@ -63,6 +74,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
         plot(as.POSIXct(x$data$t)[focus], eta, type='l',ylab="Sealevel Anomaly [m]")
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m", MSL),at=0,col="darkgreen")
+        title.plot(x)
     } else {
         oldpar <- par(no.readonly = TRUE)
         eg.days <- 28
@@ -94,6 +106,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
         plot(as.POSIXlt(x$data$t)[1:n], eta.m-MSL,
              xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
              lwd=0.5, axes=FALSE)
+        mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
         axis(1, at.t, format(at.t, "%b %d"), cex=0.7)  # small font to get all 12 month names
         yax <- axis(2)
         box()
@@ -101,16 +114,7 @@ plot.sealevel <- function(x, focus.time=NULL, ...)
         abline(v=at.t, col="darkgray", lty="dotted")
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
-        if (!is.na(x$metadata$station.number)) {
-            title <- paste("Station ",
-                           x$metadata$station.number, " (",
-                           x$metadata$station.name,   ") ",
-                           x$metadata$region,         "",
-                           " ", latlon.format(x$metadata$latitude, x$metadata$longitude),
-                           if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
-                           sep="")
-            mtext(side=3, title, line=0.5)
-        }
+        title.plot(x)
         if (num.NA)
             par(mar=c(3,5,0,1)+0.1)
         else
