@@ -29,12 +29,15 @@
     it provides is better for normal calls by a user.)}
 }
 
-\details{Reads a binary-format ADCP file from Teledyne-RDI.  The code
-  was developed based on the file structure explained in Chapter 5 of
-  \emph{Teledyne-RDI} (2007).  It works for version 16.28 of the
-  firmware, and perhaps for other versions; no extensive tests have been
-  done, and it is not unreasonable to assume the code will fail for some
-  file formats, especially those from many years ago.
+\details{Reads a binary-format ADCP file from Teledyne-RDI.  This
+  function was developed based on the file structure explained in
+  Chapter 5 of \emph{Teledyne-RDI} (2007), and tested with a file
+  produced by version 16.28 of the machine's firmware.  \code{read.adcp}
+  may work for other versions of the firmware, but this has not been
+  tested.  Future coding efforts will focus on instruments available to
+  the author, with very little time being spent trying to make
+  \code{read.adcp} handle the dozens of formatting styles used by RDI
+  and Teledyne-RDI over the years.
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
