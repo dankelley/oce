@@ -231,19 +231,20 @@ oce.colors.palette <- function(n, which=1)
 {
     if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
-            ## http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
+            ## Started with http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
             ## RdBu 11 divisions
+            ## and then smoothed the components with smooth.spline(...,df=6)
             rgb <- matrix(c(
-                            103, 000, 031,
-                            178, 024, 043,
-                            214, 096, 077,
-                            244, 165, 130,
-                            253, 219, 199,
+                            103, 000, 026,
+                            178, 024, 046,
+                            214, 096, 072,
+                            244, 165, 136,
+                            253, 219, 195,
                             247, 247, 247,
-                            209, 229, 240,
-                            146, 197, 222,
-                            067, 147, 195,
-                            033, 102, 172,
+                            209, 229, 238,
+                            146, 197, 226,
+                            067, 147, 184,
+                            033, 102, 179,
                             005, 048,  97), ncol=3, byrow=TRUE) / 255
             m <- dim(rgb)[1]
             i <- 1:m
