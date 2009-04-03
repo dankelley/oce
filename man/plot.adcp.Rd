@@ -93,12 +93,7 @@
 library(oce)
 data(adcp)
 e <- adcp.frame2earth(adcp.beam2frame(adcp))
-plot(e, which=1:3)
-
-# comparisons of colour schemes
-par(mfrow=c(2,1))
-plot.adcp(e, which=1)
-plot.adcp(e, which=1, col=oce.colors.jet(256))
+##plot(e, which=1:3)
 }
 
 \author{Dan Kelley}

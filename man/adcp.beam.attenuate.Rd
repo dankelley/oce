@@ -28,10 +28,10 @@
 library(oce)
 data(adcp)
 par(mfrow=c(3,1))
-plot(adcp, which=5) # beam 1 echo intensity
+##plot(adcp, which=5) # beam 1 echo intensity
 
 adcp.att <- adcp.beam.attenuate(adcp)
-plot(adcp.att, which=5) # beam 1 echo intensity
+##plot(adcp.att, which=5) # beam 1 echo intensity
 
 par(mar=c(4, 4, 1, 1))
 plot(apply(adcp$data$ma$ei1, 2, mean), adcp$data$ss$distance, type='l', xlim=c(0,256))

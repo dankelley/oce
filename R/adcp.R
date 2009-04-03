@@ -496,16 +496,36 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
+setup.screens <- function(n, pw=0.075)
+{
+    ## Build up matrix for plots, with images to left and palettes to right
+    box <- NULL
+    ##cat("setup.screens(", n, ",", pw, ")\n")
+    for (i in 1:n) {
+        ybottom <- 1 - i/n
+        ytop <- ybottom + 1/n
+        box <- c(box,
+                 0,     1-pw, ybottom, ytop,
+                 1 - pw,   1, ybottom, ytop)
+    }
+    box <- matrix(box, ncol=4, byrow=TRUE)
+    print(box)
+    close.screen(all.screens=TRUE)
+    split.screen(box, erase=TRUE)
+}
+
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
 {
     lw <- length(which)
     if (lw > 1) {
         oldpar <- par(no.readonly = TRUE)
-        par(mfrow = c(lw, 1))
+#        par(mfrow = c(lw, 1))
     }
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
+
     data.names <- names(x$data$ma)
     shown.time.interval <- FALSE
     tt <- x$data$ts$time
@@ -518,8 +538,10 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
         }
         zlim.not.given <- FALSE                                    # fake it
     }
+    setup.screens(lw)
+    ma.names <- names(x$data$ma)
     for (w in 1:lw) {
-        ##cat("which[w]=", which[w], "\n")
+        cat("which[w]=", which[w], "\n")
         if (zlim.not.given) {
             if (which[w] %in% 9:12) {    # pg goes from 0 to 100 percent
                 zlim <- c(0, 100)
@@ -529,130 +551,35 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
                 }
             }
         }
-        if (which[w] == 1) {
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[1]],
+        screen(2*w - 1)                 # for items with a palette, will use screen(2*w) also
+        if (which[w] %in% 1:12) {
+            ##cat("main plot is screen", 2*w-1, "\n")
+            ##cat("mgp=",paste(mgp,collapse=" "),"\n")
+            par(mar=c(mgp[1], mgp[1]+1, 1, 0.25))
+            par(mgp=mgp)
+            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
             axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
-            ##mtext(data.names[1], side=3, cex=2/3, adj=1)
-            mtext(paste(data.names[1], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 2) {
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[2]],
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
+            mtext(ma.names[which[w]], side=3, cex=2/3, adj=1)
+            if (!shown.time.interval) {
+                mtext(paste(format(range(x$data$ts$time)), collapse=" to "), side=3, cex=2/3, adj=0)
+                shown.time.interval <- TRUE
+            }
+            screen(2*w)
+            par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
+            par(mgp=mgp)
+            palette <- seq(zlim[1], zlim[2], length.out=300)
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, ylab="", xlab="", col=col)
             box()
-            axis(2)
-            mtext(paste(data.names[2], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 3) {
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[3]],
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste(data.names[3], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 4) {
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[4]],
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste(data.names[4], " [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 5) {            # ei1
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei1,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("ei1 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 6) {            # ei2
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei2,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("ei2 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 7) {            # ei3
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei3,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("ei3 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 8) {            # ei4
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$ei4,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("ei4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 9) {            # pg1
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg1,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=c(0, 100),
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("pg1 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 10) {            # pg2
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg2,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=c(0, 100),
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("pg2 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 11) {            # pg3
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg3,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=c(0, 100),
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("pg3 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
-        }
-        if (which[w] == 12) {            # pg4
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma$pg4,
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=c(0, 100),
-                  col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
-            box()
-            axis(2)
-            mtext(paste("pg4 [colours for ", round(zlim[1], 2), " to ", round(zlim[2], 2), "]", sep=""), side=3, cex=2/3, adj=1)
+            axis(side=4, at=pretty(palette))
         }
         if (which[w] %in% 13:18) {            # salinity
             if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
-            if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")),       type='l', axes=FALSE)
+            if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', axes=FALSE)
             if (which[w] == 15) plot(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
             if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
             if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
