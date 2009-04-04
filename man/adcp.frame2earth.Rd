@@ -30,7 +30,7 @@ library(oce)
 data(adcp)
 f <- adcp.beam2frame(adcp)
 e <- adcp.frame2earth(f)
-##plot(e, which=1:3)
+plot(e, which=1:3)
 }
 
 \references{

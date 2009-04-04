@@ -16,14 +16,10 @@ data(adcp)
 adcp.earth <- adcp.frame2earth(adcp.beam2frame(adcp))
 
 # Plot overview images
-##plot(adcp.earth, which=1)
+plot(adcp.earth, which=1)
 
 # Plot diagnostic timeseries (e.g. heading should *not* vary)
-##plot(adcp.earth, which=13:18)
-
-# Plot u=u(z,t) as an image, with p=p(t) overlaid as a line
-##plot(adcp.earth, which=1)
-##lines(adcp.earth$data$ts$time, adcp.earth$data$ts$pressure, lwd=2, col="blue")
+plot(adcp.earth, which=13:18)
 }
 
 \usage{data(adcp)}

@@ -97,7 +97,7 @@ library(oce)
 adcp <- read.oce(file = "~/SL08F001.000", 
                  skip = 5040, read = 1 + 24 * 2, stride = 30 * 6)
 summary(adcp)
-##plot(adcp)
+plot(adcp)
 }
 }
 

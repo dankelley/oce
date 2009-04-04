@@ -6,7 +6,8 @@
 
 \description{Plot ADCP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), zlim, \dots)}
+\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), 
+         zlim, close.screens=TRUE, \dots)}
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.adcp}}.}
@@ -25,6 +26,10 @@
     (Centring on zero is convenient for colour palettes that place a
     neutral colour there; see \dQuote{Details}.)}
   \item{\dots}{optional arguments passed to plotting functions.}
+  \item{close.screens}{boolean, set to \code{TRUE} to close the screens
+    after plotting.  If \code{FALSE}, the screens will remain open, and
+    \code{\link{oce.screen}} can be used to add new items to the panels.
+    See \dQuote{Details}.}
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADCP
@@ -76,6 +81,8 @@
   horizontal velocity components is unlikely to be of much use for the
   vertical component.
 
+  The \code{close.screens} argument may lead to unexpected results;
+  see \code{\link{oce.screen}} for details.
 }
 
 \seealso{The data may be read with \code{\link{read.adcp}}. Converting
@@ -93,7 +100,14 @@
 library(oce)
 data(adcp)
 e <- adcp.frame2earth(adcp.beam2frame(adcp))
-##plot(e, which=1:3)
+plot(e, which=1:3)
+
+# Plot u=u(z,t) as an image, with material drawn on top later
+plot(e, which=1, close.screens=FALSE)
+oce.screen(1, new=FALSE)
+abline(v=as.POSIXct("2008-06-26 11:00:00",tz="UTC"), col="red", lwd=2)
+abline(h=20, col="red", lwd=2)
+lines(e$data$ts$time, e$data$ts$pressure, lwd=2, col="blue")
 }
 
 \author{Dan Kelley}

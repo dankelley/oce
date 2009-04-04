@@ -496,7 +496,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-setup.screens <- function(n, pw=0.075)
+setup.screens <- function(n, pw=0.1)
 {
     ## Build up matrix for plots, with images to left and palettes to right
     box <- NULL
@@ -509,18 +509,20 @@ setup.screens <- function(n, pw=0.075)
                  1 - pw,   1, ybottom, ytop)
     }
     box <- matrix(box, ncol=4, byrow=TRUE)
-    print(box)
-    close.screen(all.screens=TRUE)
-    split.screen(box, erase=TRUE)
+    ##print(box)
+    oce.close.screen(all.screens=TRUE)
+    oce.split.screen(box, erase=TRUE)
 }
 
-plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
+plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
+                      close.screens=TRUE, ...)
 {
     lw <- length(which)
     if (lw > 1) {
-        oldpar <- par(no.readonly = TRUE)
-#        par(mfrow = c(lw, 1))
+#        oldpar <- par(no.readonly = TRUE)
+###        par(mfrow = c(lw, 1))
     }
+
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
 
     mgp <- par("mgp")
@@ -541,7 +543,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
     setup.screens(lw)
     ma.names <- names(x$data$ma)
     for (w in 1:lw) {
-        cat("which[w]=", which[w], "\n")
+        ##cat("which[w]=", which[w], "\n")
         if (zlim.not.given) {
             if (which[w] %in% 9:12) {    # pg goes from 0 to 100 percent
                 zlim <- c(0, 100)
@@ -551,32 +553,44 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
                 }
             }
         }
-        screen(2*w - 1)                 # for items with a palette, will use screen(2*w) also
+        oce.screen(2*w - 1, new=TRUE)                 # for items with a palette, will use screen(2*w) also
         if (which[w] %in% 1:12) {
             ##cat("main plot is screen", 2*w-1, "\n")
             ##cat("mgp=",paste(mgp,collapse=" "),"\n")
+
             par(mar=c(mgp[1], mgp[1]+1, 1, 0.25))
             par(mgp=mgp)
+
             image(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
                   xlab="Time", ylab="Distance", axes=FALSE,
                   zlim=zlim,
                   col=col, ...)
-            axis.POSIXct(1, x=x$data$ts$time)
+            oce.axis.POSIXct(1, x=x$data$ts$time)
+            ##cat("  after drawing main image, usr=", paste(par()$usr, collapse=" "), "; mar=", paste(par()$mar, collapse=" "), "\n")
+
             box()
             axis(2)
             mtext(ma.names[which[w]], side=3, cex=2/3, adj=1)
             if (!shown.time.interval) {
-                mtext(paste(format(range(x$data$ts$time)), collapse=" to "), side=3, cex=2/3, adj=0)
+                mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
+                            attr(x$data$ts$time[1], "tzone")),
+                      side=3, cex=2/3, adj=0)
                 shown.time.interval <- TRUE
             }
-            screen(2*w)
+
+            ##cat("  before first oce.screen,    mar=",paste(par()$mar,collapse=" "), "and usr=", paste(par()$usr, collapse=" "), "\n")
+
+            oce.screen(2*w, new=TRUE)
+
             par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
             par(mgp=mgp)
+
             palette <- seq(zlim[1], zlim[2], length.out=300)
             image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, ylab="", xlab="", col=col)
             box()
             axis(side=4, at=pretty(palette))
         }
+
         if (which[w] %in% 13:18) {            # salinity
             if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
             if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', axes=FALSE)
@@ -584,7 +598,13 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
             if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
             if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
             if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
-            axis.POSIXct(1, x=x$data$ts$time)
+
+            if (FALSE){
+                cat("AT for axis --\n")
+                print(oce.axis.POSIXct(1, x=x$data$ts$time))
+                cat("\n")
+            }
+
             box()
             axis(2)
         }
@@ -593,7 +613,8 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim, ...)
             shown.time.interval <- TRUE
         }
     }
-    if (lw > 1) par(oldpar)
+    if (close.screens) oce.close.screen(all.screens=TRUE)
+###    if (lw > 1) par(oldpar)
 }
 
 adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
@@ -755,9 +776,9 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
     }
     ## Give these new names
     names <- names(res$data$ma)
-    names[names=="east"] <- "u'"
-    names[names=="north"] <- "v'"
-    names[names=="up"] <- "w'"
+    names[names=="east"] <- "u [rotated]"
+    names[names=="north"] <- "v [rotated]"
+    names[names=="up"] <- "w [rotated]"
     names(res$data$ma) <- names
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")

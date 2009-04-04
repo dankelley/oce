@@ -30,6 +30,8 @@ export(
        magic,
        make.filter,
        make.section,
+       oce.axis.POSIXct,
+       oce.split.screen, oce.screen, oce.erase.screen, oce.close.screen,
        oce.as.POSIXlt,
        oce.colors.gebco,
        oce.colors.palette,
