@@ -89,7 +89,25 @@
 \seealso{The generic function \code{\link{read.oce}} provides an
   alternative to this. An \code{adcp} object may be summarized with
   \code{\link{summary.adcp}}, and plotted with \code{\link{plot.adcp}}.
-}
+
+  Several functions are provided to manipulate \code{adcp} objects.  For
+  example, in many research applications, the records are stored in beam
+  coordinates, instead of the further-processed forms such as instrument
+  or earth coordiantes.  Accordingly, \code{\link{adcp.beam2frame}} is
+  provided, convert the velocity portions of \code{adcp} objects from
+  beam coordinates to frame-based (also called ship-based or
+  instrument-based) coordinates.  Similarly,
+  \code{\link{adcp.frame2earth}} converts from frame to earth
+  coordinates, taking into account the varying orientation of an
+  instrument attached to a ship or a mobile mooring.  For applications
+  in which earth-based coordinates are not desired (e.g. if a coordinate
+  is to be aligned with the local coastline or a mean current),
+  \code{\link{adcp.earth2other}} is provided, to convert from earth
+  coordinates to another coordinate system. 
+
+ Another convenience
+  function is \code{\link{adcp.beam.attenuate}}, which performs a
+  correction for \eqn{r^2}{r^2} beam spreading.}
 
 \examples{
 \dontrun{
