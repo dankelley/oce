@@ -134,6 +134,11 @@ tidem.vuf <- function(t, j, lat=NULL)
         u <- rep(0, length(j))
         f <- rep(1, length(j))
     }
+    if (length(v) < length(u)) {
+        warning("trimming u and f to get same length as v -- this is a bug")
+        u <- u[1:length(v)]
+        f <- f[1:length(v)]
+    }
     list(v=v, u=u, f=f)
 }
 
@@ -509,7 +514,7 @@ print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
     cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n", sep="")
     cat("\nStart time: ",
         paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
-    cat("RMS misfit to data: ", x$misfit, "\n\n")
+    cat("RMS misfit to data: ", x$misfit, "\n")
     cat("\nFitted model:\n")
     f <- x$fit[3:6]
     rownames(f) <- as.character(x$fit[,2])
