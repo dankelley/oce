@@ -2,19 +2,23 @@ plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
     plot(lobo$data$time, lobo$data$salinity, type='l', ylab="", axes=FALSE, ...)
+    mgp <- par("mgp")
+    cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
+    cat("mar=",paste(par("mar"), collapse=" "), "\n")
     axis(2, col.lab=S.col)
     axis.POSIXct(1, lobo$data$time)
-    mtext("Salinity [PSU]", side=2, line=3, col=S.col, cex=par("cex"))
+    mtext("S [PSU]", side=2, line=mgp[1], col=S.col, cex=par("cex"))
     box()
     lines(lobo$data$time, lobo$data$salinity, col=S.col, ...)
     par(new = TRUE)
     plot(lobo$data$time, lobo$data$temperature, type='l', ylab="", axes=FALSE)
     lines(lobo$data$time, lobo$data$temperature, col=T.col, ...)
     axis(4, col=T.col)
-    mtext(expression(paste("Temperature [ ", degree, "C ]")), side=4, line=2.5, col=T.col, cex=par("cex"))
+    mtext(expression(paste("T [ ", degree, "C ]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
     if (draw.legend)
         legend("topright",c("S","T"),col=c(S.col,T.col),lwd=2)
 }
+
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
 {
     peak <- max(range(c(lobo$data$u,lobo$data$v),na.rm=TRUE))
@@ -25,25 +29,28 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
     axis.POSIXct(1, lobo$data$time)
     axis(2, col=col.u)
     axis(4, col=col.v)
-    mtext("U [m/s]", side=2, line=2.5, col=col.u, cex=par("cex"))
-    mtext("V [m/s]", side=4, line=2.5, col=col.v, cex=par("cex"))
+    mgp <- par("mgp")
+    mtext("U [m/s]", side=2, line=mgp[1], col=col.u, cex=par("cex"))
+    mtext("V [m/s]", side=4, line=mgp[1], col=col.v, cex=par("cex"))
     if (draw.legend)
         legend("topright",c("U","V"),col=c(col.u,col.v),lwd=2)
 
 }
+
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
 {
     plot(lobo$data$time, lobo$data$fluorescence, type='l', ylab="", axes=FALSE, ...)
     axis(2, col.lab=col.fluorescence)
     axis.POSIXct(1, lobo$data$time)
-    mtext("Fluorescence", side=2, line=2.5, col=col.fluorescence, cex=par("cex"))
+    mgp <- par("mgp")
+    mtext("Fluorescence", side=2, line=mgp[1], col=col.fluorescence, cex=par("cex"))
     box()
     lines(lobo$data$time, lobo$data$fluorescence, col=col.fluorescence, ...)
     par(new = TRUE)
     plot(lobo$data$time, lobo$data$nitrate, type='l', ylab="", axes=FALSE, ...)
     lines(lobo$data$time, lobo$data$nitrate, col=col.nitrate)
     axis(4, col=col.nitrate)
-    mtext("Nitrate", side=4, line=2.5, col=col.nitrate, cex=par("cex"))
+    mtext("Nitrate", side=4, line=mgp[1], col=col.nitrate, cex=par("cex"))
     if (draw.legend)
         legend("top",c("nitrate","fluorescence"),col=c(col.nitrate,col.fluorescence),lwd=2, ...)
 }
@@ -52,18 +59,33 @@ plot.lobo.TS <- function(lobo, ...)
 {
     plot.TS(as.ctd(lobo$data$salinity, lobo$data$temperature, lobo$data$p), col="red", ...)
 }
-plot.lobo <- function(x, ...)
+
+plot.lobo <- function(x, close.screens=TRUE, ...)
 {
-    par(mfrow=c(4,1))
-    par(mar=c(2,5,1,5))
+    oce.close.screen(all.screens=TRUE)
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[2],mgp[1]+1.25))
+
+    cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
+    cat("mar=",paste(par("mar"), collapse=" "), "\n")
+
+    oce.split.screen(c(4, 1), erase=TRUE)
+
+    oce.screen(1)
     plot.lobo.timeseries.TS(x, ...)
-    par(mar=c(2,5,1,5))
+#    par(mar=c(2,5,1,5))
+    oce.screen(2)
     plot.lobo.timeseries.uv(x, ...)
-    par(mar=c(2,5,1,5))
+#    par(mar=c(2,5,1,5))
+    oce.screen(3)
     plot.lobo.timeseries.biology(x, ...)
-    par(mar=c(5,5,3,5))
+#    par(mar=c(5,5,3,5))
+    oce.screen(4)
     plot.lobo.TS(x, ...)
+    if (close.screens) oce.close.screen(all.screens=TRUE)
 }
+
 read.lobo <- function(file, cols=7, log.action) {
     header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)

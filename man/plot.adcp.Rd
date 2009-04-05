@@ -25,11 +25,15 @@
     encompass the data of the panel and to be centred around zero.
     (Centering on zero is convenient for color palettes that place a
     neutral color there; see \dQuote{Details}.)}
+  \item{close.screens}{boolean, indicating whether to this function
+    should use \code{\link{oce.close.screen}} to close the drawing
+    screens after plotting.  Set this to \code{FALSE} in order to
+    leave the screens open, enabling you to use
+    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
+    to the panels (see cautions at \code{\link{oce.split.screen}}).
+    Note that \code{\link{oce.close.screen}} should be called after
+    doing any such additions.}
   \item{\dots}{optional arguments passed to plotting functions.}
-  \item{close.screens}{boolean, set to \code{TRUE} to close the screens
-    after plotting.  If \code{FALSE}, the screens will remain open, and
-    \code{\link{oce.screen}} can be used to add new items to the panels.
-    See \dQuote{Details}.}
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADCP
@@ -121,6 +125,7 @@ oce.screen(1, new=FALSE)
 abline(v=as.POSIXct("2008-06-26 11:00:00",tz="UTC"), col="red", lwd=2)
 abline(h=20, col="red", lwd=2)
 lines(e$data$ts$time, e$data$ts$pressure, lwd=2, col="blue")
+oce.close.screen(all.screens=TRUE)
 }
 
 \author{Dan Kelley}

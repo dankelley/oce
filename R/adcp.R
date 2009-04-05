@@ -518,13 +518,12 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       close.screens=TRUE, ...)
 {
     lw <- length(which)
-    if (lw > 1) {
-#        oldpar <- par(no.readonly = TRUE)
-###        par(mfrow = c(lw, 1))
-    }
+    if (any(!which %in% 1:18)) stop("which must be between 1 and 18")
+    ##    if (lw > 1) {
+    ##        oldpar <- par(no.readonly = TRUE)
+    ##    }
 
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
 

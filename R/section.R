@@ -74,6 +74,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                           xtype="distance",
                           ytype="depth",
                           legend.loc="bottomright",
+                          close.screens=TRUE,
                           ...)
 {
     plot.subsection <- function(variable="temperature", title="Temperature",
@@ -240,9 +241,11 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             }
             box()
             axis(1)
-            legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1.25)
+            legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
         }
     }                                   # plot.subsection
+
+    if (any(!which %in% 1:4)) stop("which must be between 1 and 4")
 
     which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
     which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
@@ -301,18 +304,19 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
 
     lw <- length(which)
 
-    if (lw > 1) {
-        oldpar <- par(no.readonly = TRUE)
-        if (lw > 2)
-            par(mfrow=c(2,2))
-        else
-            par(mfrow=c(1,2))
-    }
-
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1)) else par(mar=c(4.5,4,1,1))
 
+    if (lw > 1) {
+        oce.close.screen(all.screens=TRUE)
+        if (lw > 2)
+            oce.split.screen(c(2, 2), erase=TRUE)
+        else
+            oce.split.screen(c(1, 2), erase=TRUE)
+    }
+
     for (w in 1:length(which)) {
+        oce.screen(w, new=TRUE)
         if (!missing(contour.levels)) {
             if (which[w] == 1) plot.subsection("temperature", "T", nlevels=contour.levels, ...)
             if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, ...)
@@ -324,7 +328,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
         }
         if (which[w] == 4) plot.subsection("map", indicate.stations=FALSE)
     }
- ##   if (lw > 1) par(oldpar)
+    if (lw > 1 && close.screens) oce.close.screen(all.screens=TRUE)
 }
 
 read.section <- function(file, section.id="", debug=FALSE, log.action)

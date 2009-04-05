@@ -324,8 +324,10 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       Slim, Tlim, plim, densitylim, dpdtlim, timelim,
                       lonlim, latlim,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
+                      close.screens=TRUE,
                       ...)
 {
+    ## FIXME: plot.ctd() should not use par(new=TRUE); it should copy plot.ctd.scan()
     dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
             if (x < 0) {
@@ -356,20 +358,28 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     ## 7=density+time
     ## 8=index
     ## 9=density
+    if (any(!which %in% 1:9)) stop("which must be between 1 and 9")
+
     lw <- length(which)
+
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1])) # 1.5 because density unit has superscript
+#    par(mar=c(3,3,3.25,2))
+
     if (lw > 1) {
         oldpar <- par(no.readonly = TRUE)
+#        par(mar=c(3,3,3.25,2))
+#        if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+        oce.close.screen(all.screens=TRUE)
         if (lw > 2)
-            par(mfrow = c(2, 2))
+            oce.split.screen(c(2, 2), erase=TRUE)
         else
-            par(mfrow = c(1, 2))
-        par(mar=c(3,3,3.25,2))
-        if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+            oce.split.screen(c(1, 2), erase=TRUE)
     }
 
     for (w in 1:length(which)) {
-        if (which[w] < 1) stop("cannot plot.ctd() with which < 1")
-        if (which[w] > 9) stop("cannot plot.ctd() with which > 9")
+        oce.screen(w, new=TRUE)
         if (which[w] == 1) plot.profile(x, type = "S+T", Slim=Slim, Tlim=Tlim, plim=plim,
                  grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         if (which[w] == 2) plot.profile(x, type = "density+N2", plim=plim,
@@ -383,7 +393,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         if (which[w] == 9) plot.profile(x, "density", plim=plim,
                  grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         if (which[w] == 3) {
-            par(mar=c(3.5,3,2,2))
+##            par(mar=c(3.5,3,2,2))
             plot.TS(x, Slim=Slim, Tlim=Tlim,
                     grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         }
@@ -394,13 +404,11 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                     yloc <<- yloc - d.yloc;
                 }
             }
-            xfake <- seq(0:10)
-            yfake <- seq(0:10)
             par(mar=c(0,0,0,0))
-            plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
-            xloc <- 1
-            yloc <- 10
-            d.yloc <- 0.7
+            plot.window(c(0,10), c(0,10))
+            xloc <- 0
+            yloc <- 9
+            d.yloc <- 0.8
             cex <- 0.8
             text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
             yloc <- yloc - d.yloc
@@ -413,9 +421,8 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             if (!is.null(xm$cruise))    	text.item(xm$cruise,      " Cruise:   ", cex=cex)
             if (!is.null(xm$station))    	text.item(xm$station,     " Station:  ", cex=cex)
             if (!is.null(xm$water.depth))  	text.item(xm$water.depth, " Depth:    ", cex=cex)
-            if (!is.na(xm$longitude) && !is.na(xm$latitude)) {
+            if (!is.na(xm$longitude) && !is.na(xm$latitude))
                 text.item(latlon.format(xm$latitude, xm$longitude),   " Location: ", cex=cex)
-            }
             if (!is.na(ref.lat) && !is.na(ref.lon)) {
                 dist <- geod.dist(xm$latitude, xm$longitude, ref.lat, ref.lon)
                 kms <- sprintf("%.2f km", dist/1000)
@@ -434,8 +441,9 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             title(paste("Station", x$metadata$station),font.main=par("font"))
         }
     }
-    if (lw > 1)
-        par(oldpar)
+#    if (lw > 1)
+#        par(oldpar)
+    if (lw > 1 && close.screens) oce.close.screen(all.screens=TRUE)
     invisible()
 }
 
@@ -443,12 +451,20 @@ plot.ctd.scan <- function(x,
                           name = "scan",
                           S.col = "darkgreen",
                           T.col = "darkred",
-                          p.col = "blue", ...)
+                          p.col = "blue",
+                          close.screens=TRUE,
+                          ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
-    oldpar <- par(no.readonly = TRUE)
-    par(mar=c(4,4,2,4)) # bot left top right
-    par(mfrow=c(2,1))
+
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+1))
+
+    oce.close.screen(all.screens=TRUE)
+    oce.split.screen(c(2,1), erase=TRUE)
+
+    oce.screen(1)
     xx <- x$data[[name]];
     xxlen <- length(xx)
     ##if (xxlen < 1) stop(paste("this ctd has no data column named '", name, "'",sep=""))
@@ -460,13 +476,15 @@ plot.ctd.scan <- function(x,
     plot(x$data[[name]], x$data$pressure,
          xlab=name, ylab="Pressure [dbar]",
          type="l", col=p.col, axes=FALSE)
-    title(paste("Station", x$metadata$station),font.main=par("font"))
+    mtext(paste("Station", x$metadata$station), side=3, adj=1)
+    mtext(latlon.format(x$metadata$latitude, x$metadata$longitude, digits=5), side=3, adj=0)
     box()
     grid(col="brown")
     axis(1)
     axis(2,col=p.col, col.axis=p.col, col.lab = p.col)
 
-    par(mar=c(4,4,1,4)) # bot left top right
+    oce.screen(2)
+##    par(mar=c(4,4,1,4)) # bot left top right
     Slen <- length(x$data$salinity)
     Tlen <- length(x$data$temperature)
     if (Slen != Tlen) stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
@@ -476,11 +494,16 @@ plot.ctd.scan <- function(x,
     box()
     grid(NULL, NA, col="brown")
     mtext("Temperature [degC]", side = 2, line = 2, col = T.col)
-    par(new=TRUE) # overplot
-    plot(x$data[[name]], x$data$salinity, xlab="", ylab="", col=S.col, type="l", axes=FALSE)
+    ## used to par(new=TRUE) here, but some say that is a bad idea
+    usr <- par("usr")
+    Sr <- range(x$data$salinity, na.rm=TRUE)
+    usr[3:4] <- Sr + c(-1, 1) * 0.04 * diff(Sr)
+    par(usr=usr)
+    lines(x$data[[name]], x$data$salinity, col=S.col)
     mtext("Salinity [PSU]", side = 4, line = 2, col = S.col)
     axis(4,col=S.col, col.axis = S.col, col.lab = S.col)
-#    par(oldpar)
+    if (close.screens) oce.close.screen(all.screens=TRUE)
+    invisible(x)
 }
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
@@ -1013,11 +1036,13 @@ plot.TS <- function (x,
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
-    old.mgp <- par("mgp")
-    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
+
+##    old.mgp <- par("mgp")
+##    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp")) #par(mgp = c(2, 2/3, 0))
+
     axis.name.loc <- par("mgp")[1]
     old.mar <- par("mar")
-    if (!rotate.rho.labels && old.mar[4] < 3) par(mar=c(old.mar[1:3], 2))
+###    if (!rotate.rho.labels && old.mar[4] < 3) par(mar=c(old.mar[1:3], 2))
 
     plot(x$data$salinity, x$data$temperature,
          xlab = if (missing(xlab)) "Salinity [ PSU ]" else xlab,
@@ -1077,8 +1102,8 @@ plot.TS <- function (x,
                                         # Freezing point
     Sr <- c(max(0, S.axis.min), S.axis.max)
     lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
-    par(mar=old.mar)
-    par(mgp=old.mgp)
+##    par(mar=old.mar)
+##    par(mgp=old.mgp)
 }
 
 plot.profile <- function (x,

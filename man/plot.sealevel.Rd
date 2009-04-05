@@ -6,11 +6,19 @@
 
 \description{Plot a summary diagram for sealevel data.}
 
-\usage{\method{plot}{sealevel}(x, focus.time=NULL, \dots)}
+\usage{\method{plot}{sealevel}(x, focus.time=NULL, close.screens=TRUE, \dots)}
 
 \arguments{
   \item{x}{A \code{sealevel} object, e.g. as read by \code{\link{read.sealevel}}.}
   \item{focus.time}{if provided, the the time interval on which to focus, each a string in a format suitable for interpretation by \code{\link{as.POSIXct}}; see the example.}
+  \item{close.screens}{boolean, indicating whether to this function
+    should use \code{\link{oce.close.screen}} to close the drawing
+    screens after plotting.  Set this to \code{FALSE} in order to
+    leave the screens open, enabling you to use
+    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
+    to the panels (see cautions at \code{\link{oce.split.screen}}).
+    Note that \code{\link{oce.close.screen}} should be called after
+    doing any such additions.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

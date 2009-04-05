@@ -12,6 +12,7 @@
   Slim, Tlim, plim, densitylim, dpdtlim, timelim,
   lonlim, latlim,
   latlon.pch=20, latlon.cex=1.5, latlon.col="red",
+  close.screens=TRUE,
   \dots)
 }
 \arguments{
@@ -49,6 +50,14 @@
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
+  \item{close.screens}{boolean, indicating whether to this function
+    should use \code{\link{oce.close.screen}} to close the drawing
+    screens after plotting.  Set this to \code{FALSE} in order to
+    leave the screens open, enabling you to use
+    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
+    to the panels (see cautions at \code{\link{oce.split.screen}}).
+    Note that \code{\link{oce.close.screen}} should be called after
+    doing any such additions.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{sw.N2} calculations.} 
 }

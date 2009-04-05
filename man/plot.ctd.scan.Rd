@@ -8,7 +8,7 @@
   with trimming extraneous data from a CTD cast.}
 
 \usage{plot.ctd.scan(x, name = "scan", 
- S.col = "darkgreen", T.col= "darkred", p.col = "blue", \dots)
+ S.col = "darkgreen", T.col= "darkred", p.col = "blue", close.screens=TRUE, \dots)
 }
 
 \arguments{
@@ -17,6 +17,14 @@
   \item{S.col}{colour for salinity}
   \item{T.col}{colour for temperature}
   \item{p.col}{colour for pressure}
+  \item{close.screens}{boolean, indicating whether to this function
+    should use \code{\link{oce.close.screen}} to close the drawing
+    screens after plotting.  Set this to \code{FALSE} in order to
+    leave the screens open, enabling you to use
+    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
+    to the panels (see cautions at \code{\link{oce.split.screen}}).
+    Note that \code{\link{oce.close.screen}} should be called after
+    doing any such additions.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
@@ -34,6 +42,12 @@
 library(oce)
 data(ctd) 
 plot.ctd.scan(ctd)
+
+# demonstrate adding elements to plots, e.g. to narrow
+# down on good start end points
+plot.ctd.scan(ctd, close.screens=FALSE)
+oce.screen(1,FALSE)
+abline(v=240,col='red')
 }
 
 \author{Dan Kelley}
