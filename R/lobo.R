@@ -3,8 +3,8 @@ plot.lobo.timeseries.TS <- function(lobo,
 {
     plot(lobo$data$time, lobo$data$salinity, type='l', ylab="", axes=FALSE, ...)
     mgp <- par("mgp")
-    cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
-    cat("mar=",paste(par("mar"), collapse=" "), "\n")
+    ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
+    ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
     axis(2, col.lab=S.col)
     axis.POSIXct(1, lobo$data$time)
     mtext("S [PSU]", side=2, line=mgp[1], col=S.col, cex=par("cex"))
@@ -14,9 +14,12 @@ plot.lobo.timeseries.TS <- function(lobo,
     plot(lobo$data$time, lobo$data$temperature, type='l', ylab="", axes=FALSE)
     lines(lobo$data$time, lobo$data$temperature, col=T.col, ...)
     axis(4, col=T.col)
-    mtext(expression(paste("T [ ", degree, "C ]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
+    mtext(expression(paste("T [", degree, "C]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
     if (draw.legend)
         legend("topright",c("S","T"),col=c(S.col,T.col),lwd=2)
+    mtext(paste(paste(format(range(lobo$data$time, na.rm=TRUE)), collapse=" to "),
+                attr(lobo$data$ts$time[1], "tzone")),
+          side=3, cex=par("cex"), adj=0)
 }
 
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
@@ -65,23 +68,26 @@ plot.lobo <- function(x, close.screens=TRUE, ...)
     oce.close.screen(all.screens=TRUE)
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
-    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[2],mgp[1]+1.25))
+    par(mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25))
 
-    cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
-    cat("mar=",paste(par("mar"), collapse=" "), "\n")
+    ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
 
     oce.split.screen(c(4, 1), erase=TRUE)
 
     oce.screen(1)
+    par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.timeseries.TS(x, ...)
-#    par(mar=c(2,5,1,5))
+
     oce.screen(2)
+    par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.timeseries.uv(x, ...)
-#    par(mar=c(2,5,1,5))
+
     oce.screen(3)
+    par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.timeseries.biology(x, ...)
-#    par(mar=c(5,5,3,5))
+
     oce.screen(4)
+    par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.TS(x, ...)
     if (close.screens) oce.close.screen(all.screens=TRUE)
 }
