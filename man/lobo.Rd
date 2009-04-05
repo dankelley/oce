@@ -13,9 +13,16 @@ plot(lobo)
 }
 
 \source{The data were downloaded from a web interface at Satlantic
-  \url{http://www.satlantic.com} that seems not to exist anymore.  This,
-  and the fact that Satlantic sells software for visualizing lobo data,
-  perhaps argues for removal of lobo support in a future version of oce.}
+  as noted below (which may not work in the future):
+\preformatted{
+uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
+  "min_date=20070220&max_date=20070305",
+  "&x=date&",
+  "y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
+  "data_format=text",sep="")
+adcp <- read.lobo(uri)
+}
+}
 
 \author{Dan Kelley}
 \keyword{misc}
