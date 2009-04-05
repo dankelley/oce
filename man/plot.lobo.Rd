@@ -31,15 +31,9 @@
 }
 
 \examples{
-\dontrun{
-uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
- 	"min_date=20070220&max_date=20070305",
- 	"&x=date&",
- 	"y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
- 	"data_format=text",sep="")
-d <- read.lobo(uri)
-plot(d)
-}
+library(oce)
+data(lobo)
+plot(lobo)
 }
 \references{\url{http://lobo.satlantic.com/} and
 \url{http://www.mbari.org/lobo/}
