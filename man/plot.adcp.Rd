@@ -10,7 +10,7 @@
          zlim, close.screens=TRUE, \dots)}
 
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.adcp}}.}
+  \item{x}{An \code{adcp} object, e.g. as read by \code{\link{read.adcp}}.}
   \item{which}{list of desired plot types.  These are graphed in
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
@@ -23,8 +23,8 @@
     \code{\link{image}} call that is used to create the image.  If
     omitted, \code{zlim} is set for each panel individually, to
     encompass the data of the panel and to be centred around zero.
-    (Centring on zero is convenient for colour palettes that place a
-    neutral colour there; see \dQuote{Details}.)}
+    (Centering on zero is convenient for color palettes that place a
+    neutral color there; see \dQuote{Details}.)}
   \item{\dots}{optional arguments passed to plotting functions.}
   \item{close.screens}{boolean, set to \code{TRUE} to close the screens
     after plotting.  If \code{FALSE}, the screens will remain open, and
@@ -42,12 +42,12 @@
     as a function of time and distance from sensor, and \code{which}
     values of 2 to 4 yield similar plots for the other beams.
 
-    \item For \code{frame}data, as created by
+    \item For \code{frame} data, as created by
     \code{\link{adcp.beam2frame}}, \code{which}=1, 2, and 3 yield u, v,
     and w components of velocity, and \code{which}=4 yields a velocity
     error estimate computed from all beams together.
 
-    \item For \code{earth}data, as created by
+    \item For \code{earth} data, as created by
     \code{\link{adcp.frame2earth}}, \code{which}=1, 2, and 3 yield
     \code{east}-, \code{north}-, and \code{up}-ward components of
     velocity, and \code{which}=4 yields a velocity error estimate
@@ -58,7 +58,7 @@
     respectively, and \code{which} values of 9 through 12 yield the
     percent-good flag for beams 1 through 4.
 
-    \item Timeseries of scalar quantities can also be plotted:
+    \item Time-series of scalar quantities can also be plotted:
     \code{which}=13 yields salinity, 14 yields temperature, 15 yields
     pressure at sensor head, 16 yields instrument heading, 17 yields
     instrument pitch, and 18 yields instrument roll.  A common
@@ -68,9 +68,9 @@
 
   }
 
-  A great deal of control over the colour scheme is provided by the
-  \code{col} argument, which is passed to \code{\link{image}} to do the
-  actual plotting.  See \dQuote{Examples} for some comparisons.
+  The color scheme for image plots (\code{which} in 1:12) is provided
+  by the \code{col} argument, which is passed to \code{\link{image}} to
+  do the actual plotting.  See \dQuote{Examples} for some comparisons.
 
   By default, \code{plot.adcp} uses a \code{zlim} value for the
   \code{\link{image}} that is constructed to contain all the data, but
@@ -81,8 +81,21 @@
   horizontal velocity components is unlikely to be of much use for the
   vertical component.
 
-  The \code{close.screens} argument may lead to unexpected results;
-  see \code{\link{oce.screen}} for details.
+  The plot panels are created using \code{\link{oce.split.screen}}.
+  Each variable gets two screens, arranged side by side.  If any of the
+  plotted variables is of an image type (\code{which} in 1:12), the
+  right panel of every plot will be wide enough to accommodate an
+  image color palette.  (The right-hand panels are the same width even
+  for time-series plots, to get the times to line up on all panels.)  The
+  screens are numbered from the top left, going across the page an then
+  down the page, i.e. palettes (or blank spots at the palette locations)
+  have odd screen numbers, and images or time-series have even screen
+  numbers.  By default, the screens are closed when \code{plot.adcp}
+  exits.  Setting \code{close.screens} to \code{FALSE} keeps the screens
+  open, permitting additions to screens using \code{\link{oce.screen}}.
+  Caution: since \code{\link{oce.split.screen}} is based on
+  \code{\link[graphics]{split.screen}}, it so suffers some of the
+  problems of that function; additions made to screens may be erroneous.
 }
 
 \seealso{The data may be read with \code{\link{read.adcp}}. Converting

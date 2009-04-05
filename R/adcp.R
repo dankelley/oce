@@ -540,7 +540,10 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         }
         zlim.not.given <- FALSE                                    # fake it
     }
-    setup.screens(lw)
+    if (any(which %in% 1:12))
+        setup.screens(lw)
+    else
+        setup.screens(lw, pw=0.01)      # basically, no space
     ma.names <- names(x$data$ma)
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "\n")
@@ -599,17 +602,14 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
             if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
 
-            if (FALSE){
-                cat("AT for axis --\n")
-                print(oce.axis.POSIXct(1, x=x$data$ts$time))
-                cat("\n")
-            }
-
+            oce.axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
         }
         if (!shown.time.interval) {
-            mtext(paste(format(range(x$data$ts$time)), collapse=" to "), side=3, cex=2/3, adj=0)
+            mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
+                        attr(x$data$ts$time[1], "tzone")),
+                  side=3, cex=2/3, adj=0)
             shown.time.interval <- TRUE
         }
     }
