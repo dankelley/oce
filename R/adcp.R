@@ -517,12 +517,10 @@ setup.screens <- function(n, pw=0.1)
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       close.screens=TRUE, ...)
 {
+    images <- 1:12
+    timeseries <- 13:18
+    if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
     lw <- length(which)
-    if (any(!which %in% 1:18)) stop("which must be between 1 and 18")
-    ##    if (lw > 1) {
-    ##        oldpar <- par(no.readonly = TRUE)
-    ##    }
-
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
@@ -539,7 +537,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         }
         zlim.not.given <- FALSE                                    # fake it
     }
-    if (any(which %in% 1:12))
+    if (any(which %in% images))
         setup.screens(lw)
     else
         setup.screens(lw, pw=0.01)      # basically, no space
@@ -556,7 +554,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             }
         }
         oce.screen(2*w - 1, new=TRUE)                 # for items with a palette, will use screen(2*w) also
-        if (which[w] %in% 1:12) {
+        if (which[w] %in% images) {                   # image types
             ##cat("main plot is screen", 2*w-1, "\n")
             ##cat("mgp=",paste(mgp,collapse=" "),"\n")
 
@@ -569,7 +567,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                   col=col, ...)
             oce.axis.POSIXct(1, x=x$data$ts$time)
             ##cat("  after drawing main image, usr=", paste(par()$usr, collapse=" "), "; mar=", paste(par()$mar, collapse=" "), "\n")
-
             box()
             axis(2)
             mtext(ma.names[which[w]], side=3, cex=2/3, adj=1)
@@ -579,41 +576,34 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       side=3, cex=2/3, adj=0)
                 shown.time.interval <- TRUE
             }
-
             ##cat("  before first oce.screen,    mar=",paste(par()$mar,collapse=" "), "and usr=", paste(par()$usr, collapse=" "), "\n")
-
             oce.screen(2*w, new=TRUE)
-
             par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
             par(mgp=mgp)
-
             palette <- seq(zlim[1], zlim[2], length.out=300)
             image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, ylab="", xlab="", col=col)
             box()
             axis(side=4, at=pretty(palette))
         }
-
-        if (which[w] %in% 13:18) {            # salinity
+        if (which[w] %in% timeseries) { # time-series types
             if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
             if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', axes=FALSE)
             if (which[w] == 15) plot(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
             if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
             if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
             if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
-
             oce.axis.POSIXct(1, x=x$data$ts$time)
             box()
             axis(2)
-        }
-        if (!shown.time.interval) {
-            mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
-                        attr(x$data$ts$time[1], "tzone")),
-                  side=3, cex=2/3, adj=0)
-            shown.time.interval <- TRUE
+            if (!shown.time.interval) {
+                mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
+                            attr(x$data$ts$time[1], "tzone")),
+                      side=3, cex=2/3, adj=0)
+                shown.time.interval <- TRUE
+            }
         }
     }
     if (close.screens) oce.close.screen(all.screens=TRUE)
-###    if (lw > 1) par(oldpar)
 }
 
 adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))

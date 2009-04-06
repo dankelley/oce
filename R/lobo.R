@@ -10,8 +10,12 @@ plot.lobo.timeseries.TS <- function(lobo,
     mtext("S [PSU]", side=2, line=mgp[1], col=S.col, cex=par("cex"))
     box()
     lines(lobo$data$time, lobo$data$salinity, col=S.col, ...)
-    par(new = TRUE)
-    plot(lobo$data$time, lobo$data$temperature, type='l', ylab="", axes=FALSE)
+    ## Set up scale for temperature
+    usr <- par("usr")
+    range <- range(lobo$data$temperature, na.rm=TRUE)
+    usr[3:4] <- range + c(-1, 1) * 0.04 * diff(range)
+    par(usr=usr)
+    ##
     lines(lobo$data$time, lobo$data$temperature, col=T.col, ...)
     axis(4, col=T.col)
     mtext(expression(paste("T [", degree, "C]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
@@ -20,6 +24,7 @@ plot.lobo.timeseries.TS <- function(lobo,
     mtext(paste(paste(format(range(lobo$data$time, na.rm=TRUE)), collapse=" to "),
                 attr(lobo$data$ts$time[1], "tzone")),
           side=3, cex=par("cex"), adj=0)
+    invisible(lobo)
 }
 
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
@@ -37,7 +42,7 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
     mtext("V [m/s]", side=4, line=mgp[1], col=col.v, cex=par("cex"))
     if (draw.legend)
         legend("topright",c("U","V"),col=c(col.u,col.v),lwd=2)
-
+    invisible(lobo)
 }
 
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
@@ -49,8 +54,12 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
     mtext("Fluorescence", side=2, line=mgp[1], col=col.fluorescence, cex=par("cex"))
     box()
     lines(lobo$data$time, lobo$data$fluorescence, col=col.fluorescence, ...)
-    par(new = TRUE)
-    plot(lobo$data$time, lobo$data$nitrate, type='l', ylab="", axes=FALSE, ...)
+    ## Set up scale for temperature
+    usr <- par("usr")
+    range <- range(lobo$data$nitrate, na.rm=TRUE)
+    usr[3:4] <- range + c(-1, 1) * 0.04 * diff(range)
+    par(usr=usr)
+    ##
     lines(lobo$data$time, lobo$data$nitrate, col=col.nitrate)
     axis(4, col=col.nitrate)
     mtext("Nitrate", side=4, line=mgp[1], col=col.nitrate, cex=par("cex"))
@@ -65,13 +74,11 @@ plot.lobo.TS <- function(lobo, ...)
 
 plot.lobo <- function(x, close.screens=TRUE, ...)
 {
-    oce.close.screen(all.screens=TRUE)
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25))
 
-    ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
-
+    oce.close.screen(all.screens=TRUE)
     oce.split.screen(c(4, 1), erase=TRUE)
 
     oce.screen(1)

@@ -1,20 +1,35 @@
 # Based on file src/library/graphics/R/screen.R
-# with two modifications: the "mfg" line is commented out (see below)
-# and a lot of things are renamed, to avoid name clashes.
-# The license of this, as the original screen software and the OCE package, is GPL.
+# GPL license applies to this, and graphics/screen, from which it is derived.
+
+debug <- !TRUE
+
 .oceSSenv <- new.env()
 
-.oceSSget <- function(x) get(paste(x, dev.cur(), sep=":"), envir=.oceSSenv, inherits=FALSE)
-.oceSSexists <- function(x) exists(paste(x, dev.cur(), sep=":"), envir=.oceSSenv, inherits=FALSE)
-.oceSSassign <- function(x, value) assign(paste(x, dev.cur(), sep=":"), value, envir=.oceSSenv)
+.oceSSget <- function(x)
+{
+    get(paste(x, dev.cur(), sep=":"), envir=.oceSSenv, inherits=FALSE)
+}
+
+.oceSSexists <- function(x)
+{
+    ##cat("exists(", x, ")=", exists(paste(x, dev.cur(), sep=":"), envir=.oceSSenv, inherits=FALSE), "\n")
+    exists(paste(x, dev.cur(), sep=":"), envir=.oceSSenv, inherits=FALSE)
+}
+.oceSSassign <- function(x, value)
+{
+    assign(paste(x, dev.cur(), sep=":"), value, envir=.oceSSenv)
+}
+
 assign("par.list",
        c("xlog","ylog",
          "adj", "bty", "cex", "col", "crt", "err", "font", "lab",
-         "las", "lty", "lwd", "mar", "mex",
+         "las", "lty", "lwd",
+         "mar", "mex",
          "fin", ## added
-         ## "mfg", ## deleted
+         ##"mfg", ## deleted
          "mgp", "pch",
-         "pty", "smo", "srt", "tck", "usr",
+         "pty", "smo", "srt", "tck",
+         "usr",
          "xaxp", "xaxs", "xaxt", "xpd",
          "yaxp", "yaxs", "yaxt", "fig"), envir=.oceSSenv)
 
@@ -102,8 +117,14 @@ oce.split.screen <- function(figs, screen, erase = TRUE)
     return(oce.new.screens)
 }
 
+show <- function(name)
+{
+    if (debug) cat("  ", name, paste(par(name), collapse=" "), "\n")
+}
+
 oce.screen <- function(n = cur.screen, new = TRUE)
 {
+    if (debug) cat("\noce.screen(n=",n,"new=",new,")\n")
     if (!.oceSSexists("oce.sp.screens"))
 	return(FALSE)
     cur.screen <- .oceSSget("oce.sp.cur.screen")
@@ -111,18 +132,48 @@ oce.screen <- function(n = cur.screen, new = TRUE)
 	return(cur.screen)
     if (!(n %in% .oceSSget("oce.sp.valid.screens")))
 	stop("invalid screen number")
+
     oce.split.screens <- .oceSSget("oce.sp.screens")
+
+    if (debug) cat("cur.screen=", cur.screen, "\n")
+
     oce.split.screens[[cur.screen]] <- par(get("par.list", envir=.oceSSenv))
     .oceSSassign("oce.sp.screens", oce.split.screens)
     .oceSSassign("oce.sp.cur.screen", n)
 
-    ##cat("in screen(n=",n,", new=",new,"), mar=",paste(oce.split.screens[[n]]$mar,collapse=" "), "and usr=", paste(oce.split.screens[[n]]$usr, collapse=" "), "\n")
-
     par(oce.split.screens[[n]])
+
+    if (debug) print(sort(names(oce.split.screens[[n]]))); show("fig"); show("mar"); show("usr")
+
     if (new)
 	oce.erase.screen(n)
+
+    #cat(rep(paste("/",n,sep=""), 20), "\n")
+
     invisible(n)
 }
+
+##oce.use.screen <- function(n)
+##{
+##    if (debug) cat("\noce.use.screen(n=",n,")\n")
+##    if (missing(n)) stop("must provide 'n'")
+##    if (!.oceSSexists("oce.sp.screens"))
+##	return(FALSE)
+##    cur.screen <- .oceSSget("oce.sp.cur.screen")
+##    if (!(n %in% .oceSSget("oce.sp.valid.screens")))
+##	stop("invalid screen number")
+##    if (n != cur.screen) {
+##        oce.split.screens <- .oceSSget("oce.sp.screens")
+##        oce.split.screens[[cur.screen]] <- par(get("par.list", envir=.oceSSenv))
+##        .oceSSassign("oce.sp.screens", oce.split.screens)
+##        .oceSSassign("oce.sp.cur.screen", n)
+##    }
+##    oce.split.screens <- .oceSSget("oce.sp.screens")
+##    par(oce.split.screens[[n]])
+##    if (debug) print(sort(names(oce.split.screens[[n]]))); show("fig"); show("mar"); show("usr")
+##    invisible(n)
+##}
+
 
 oce.erase.screen <- function(n = cur.screen)
 {
@@ -147,6 +198,7 @@ oce.erase.screen <- function(n = cur.screen)
 
 oce.close.screen <- function(n, all.screens=FALSE)
 {
+    if (debug) cat("\n\noce.close.screen(n=..., all.screens=",all.screens,")\n")
     if (!.oceSSexists("oce.sp.screens"))
 	return(FALSE)
     if (missing(n) && missing(all.screens))

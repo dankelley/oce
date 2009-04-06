@@ -2,6 +2,8 @@ latlon.format <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
     rval <- vector("character", n)
+    if (!is.numeric(lat) || !is.numeric(lon))
+        return ("(non-numeric lat or lon)")
     for (i in 1:n) {
         if (is.na(lat[i]) || is.na(lon[i]))
             rval[i] <- ""

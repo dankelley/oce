@@ -1,6 +1,7 @@
 oce.as.POSIXlt <- function (x, tz = "")
 {
-    fromchar <- function(x) {
+    fromchar <- function(x)
+    {
         xx <- x[1]
         if (is.na(xx)) {
             j <- 1
@@ -26,7 +27,8 @@ oce.as.POSIXlt <- function (x, tz = "")
                 attr(res, "tzone") <- tz
             return(res)
         }
-        stop("The string \"", x, "\" is not in a known date format")
+        warning("The string \"", x, "\" is not in a known date format")
+        return(NA)
     }
     if (inherits(x, "POSIXlt"))
         return(x)

@@ -365,7 +365,9 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1])) # 1.5 because density unit has superscript
-#    par(mar=c(3,3,3.25,2))
+
+    ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
+    ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
 
     if (lw > 1) {
         oldpar <- par(no.readonly = TRUE)
@@ -407,9 +409,9 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             par(mar=c(0,0,0,0))
             plot.window(c(0,10), c(0,10))
             xloc <- 0
-            yloc <- 9
+            yloc <- 8
             d.yloc <- 0.8
-            cex <- 0.8
+            cex <- 3/4
             text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
             yloc <- yloc - d.yloc
             xm <- x$metadata
