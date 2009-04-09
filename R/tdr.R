@@ -6,22 +6,24 @@ plot.tdr <- function (x, which=1:4, ...)
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     shown.time.interval <- FALSE
     if (lw == 2) {
-        par(mar=c(3,3,1,1))
-        par(mfcol=c(2,1))
+        layout(cind(1,2))
     } else if (lw==3 || lw==4) {
-        par(mar=c(3,3,1,1))
-        par(mfcol=c(2,2))
+        layout(rbind(c(1,2)
+                     c(3,4)))
     }
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$t, x$data$temperature,
                  xlab="", ylab=expression(paste("Temperature [ ", degree, "C ]")), type='l', ...)
-        } else if (which[w] == 2) {
+        } else if (which[w] == 3) {
             plot(x$data$t, x$data$pressure,
                  xlab="", ylab="Pressure [dbar]", type='l',
                  ylim=rev(range(x$data$pressure, na.rm=TRUE)),
                  ...)
-        } else if (which[w] == 3) {
+        } else if (which[w] == 2) {
             text.item <- function(item, cex=1.25) {
                 if (!is.null(item) && !is.na(item)) {
                     text(xloc, yloc, item, adj = c(0, 0), cex=cex);
@@ -55,7 +57,7 @@ plot.tdr <- function (x, which=1:4, ...)
             shown.time.interval <- TRUE
         }
     }
-    if (lw != 1) par(oldpar)
+    par(oldpar)
     invisible()
 }
 
