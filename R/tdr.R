@@ -6,9 +6,9 @@ plot.tdr <- function (x, which=1:4, ...)
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     shown.time.interval <- FALSE
     if (lw == 2) {
-        layout(cind(1,2))
+        layout(cbind(c(1,2)))
     } else if (lw==3 || lw==4) {
-        layout(rbind(c(1,2)
+        layout(rbind(c(1,2),
                      c(3,4)))
     }
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
