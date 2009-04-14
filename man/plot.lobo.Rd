@@ -6,18 +6,15 @@
 
 \description{Plot a summary diagram for lobo data.}
 
-\usage{\method{plot}{lobo}(x, close.screens=TRUE, \dots)}
+\usage{\method{plot}{lobo}(x, adorn=NULL, \dots)}
 
 \arguments{
   \item{x}{A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.}
-  \item{close.screens}{boolean, indicating whether to this function
-    should use \code{\link{oce.close.screen}} to close the drawing
-    screens after plotting.  Set this to \code{FALSE} in order to
-    leave the screens open, enabling you to use
-    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
-    to the panels (see cautions at \code{\link{oce.split.screen}}).
-    Note that \code{\link{oce.close.screen}} should be called after
-    doing any such additions.}
+  \item{adorn}{list of character strings containing commands to be
+    executed for the panels.  If the number matches the number of
+    panels, then the strings are applied to the appropriate panels, as
+    they are drawn from top-left to bottom-right.   If only a single
+    string is provided, it is used for all panels.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

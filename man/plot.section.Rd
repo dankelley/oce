@@ -19,7 +19,7 @@
         xtype="distance",
         ytype="depth",
         legend.loc="bottomright",
-	close.screens=TRUE,
+	adorn=NULL,
 	\dots)
 }
 
@@ -63,14 +63,11 @@
     or \code{"depth"} for depth (in m below the surface, calculated
     from pressure with \code{\link{sw.depth}}).}
   \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
-  \item{close.screens}{boolean, indicating whether to this function
-    should use \code{\link{oce.close.screen}} to close the drawing
-    screens after plotting.  Set this to \code{FALSE} in order to
-    leave the screens open, enabling you to use
-    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
-    to the panels (see cautions at \code{\link{oce.split.screen}}).
-    Note that \code{\link{oce.close.screen}} should be called after
-    doing any such additions.}
+  \item{adorn}{list of character strings containing commands to be
+    executed for the panels.  If the number matches the number of
+    panels, then the strings are applied to the appropriate panels, as
+    they are drawn from top-left to bottom-right.   If only a single
+    string is provided, it is used for all panels.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }

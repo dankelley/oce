@@ -91,7 +91,9 @@ plot(ctd)
 data(coastline.sle)
 lonlim <- -(69 + c(52, 41) / 60)
 latlim <- 47 + c(48, 58) / 60
-plot(ctd, which=c(1,2,3,5),coastline=coastline.sle,lonlim=lonlim,latlim=latlim)
+# IAL = Ile aux Lievres
+plot(ctd, which=c(1,2,3,5),coastline=coastline.sle,lonlim=lonlim,latlim=latlim,
+          adorn=c("","","","text(-69.72,47.85,'IAL',pos=4)"))
 
 # Trimming
 data(ctd.raw)

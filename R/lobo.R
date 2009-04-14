@@ -72,31 +72,45 @@ plot.lobo.TS <- function(lobo, ...)
     plot.TS(as.ctd(lobo$data$salinity, lobo$data$temperature, lobo$data$p), col="red", ...)
 }
 
-plot.lobo <- function(x, close.screens=TRUE, ...)
+plot.lobo <- function(x, adorn=NULL, ...)
 {
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25))
-
-    oce.close.screen(all.screens=TRUE)
-    oce.split.screen(c(4, 1), erase=TRUE)
-
-    oce.screen(1)
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, 4)
+        adorn.length <- 4
+    }
     par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+    layout(rbind(c(1,2),
+                 c(3,4)))
     plot.lobo.timeseries.TS(x, ...)
+    if (adorn.length > 0) {
+        t <- try(eval(parse(text=adorn[1])), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
+    }
 
-    oce.screen(2)
     par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.timeseries.uv(x, ...)
+    if (adorn.length > 0) {
+        t <- try(eval(parse(text=adorn[2])), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+    }
 
-    oce.screen(3)
     par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.timeseries.biology(x, ...)
+    if (adorn.length > 0) {
+        t <- try(eval(parse(text=adorn[3])), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
+    }
 
-    oce.screen(4)
     par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.TS(x, ...)
-    if (close.screens) oce.close.screen(all.screens=TRUE)
+    if (adorn.length > 0) {
+        t <- try(eval(parse(text=adorn[4])), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+    }
 }
 
 read.lobo <- function(file, cols=7, log.action) {

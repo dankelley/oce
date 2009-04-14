@@ -361,6 +361,11 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     if (any(!which %in% 1:9)) stop("which must be between 1 and 9")
 
     lw <- length(which)
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, lw)
+        adorn.length <- lw
+    }
 
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
@@ -441,6 +446,10 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                 plot(coastline)
             points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
             title(paste("Station", x$metadata$station),font.main=par("font"))
+        }
+        if (w <= adorn.length && nchar(adorn[w]) > 0) {
+            t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
 #    if (lw > 1)

@@ -101,7 +101,7 @@ data(adcp)
 e <- adcp.frame2earth(adcp.beam2frame(adcp))
 plot(e, which=1:3)
 plot(e, which=1:2, adorn=paste("abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)",
-                               "lines(x$data$ts$time, x$data$ts$pressure, lwd=2, col='blue', lwd=3)", sep=";"))
+                               "lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='blue')", sep=";"))
 }
 
 \author{Dan Kelley}

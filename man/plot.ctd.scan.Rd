@@ -8,7 +8,7 @@
   with trimming extraneous data from a CTD cast.}
 
 \usage{plot.ctd.scan(x, name = "scan", 
- S.col = "darkgreen", T.col= "darkred", p.col = "blue", close.screens=TRUE, 
+ S.col = "darkgreen", T.col= "darkred", p.col = "blue",
  adorn=NULL, \dots)
 }
 

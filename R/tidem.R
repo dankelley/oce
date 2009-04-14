@@ -33,6 +33,9 @@ plot.tidem <- function(x, label.if=NULL, plot.type=c("staircase", "spikes"), log
     name      <- x$name[-1]
     nc <- length(frequency)
     plot.type <- match.arg(plot.type)
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1))
     if (plot.type == "spikes") {
     	plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
         segments(frequency, 0, frequency, amplitude)
@@ -43,6 +46,8 @@ plot.tidem <- function(x, label.if=NULL, plot.type=c("staircase", "spikes"), log
     } else {
         stop("unknown plot.type ", plot.type)
     }
+    mtext(x$call, side=4, adj=1, cex=2/3)
+    mtext(paste("start time:", x$start.time), side=4, adj=0, cex=2/3)
     if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
 }
 

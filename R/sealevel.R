@@ -49,10 +49,16 @@ as.sealevel <- function(eta,
     rval
 }
 
-plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
+plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
 {
     ## tidal constituents (in cpd):
     ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, 4)
+        adorn.length <- 4
+    }
+    layout(cbind(1:4))
     title.plot <- function(x) {
         mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
         title <- paste("Station ",
@@ -67,7 +73,7 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
 
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
-    par(mar=c(mgp[1],mgp[1]+2.5,mgp[2],mgp[2]+0.25))
+    par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
 
     ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
     ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
@@ -80,7 +86,7 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
         eta <- (eta.m[focus] - MSL)
         plot(as.POSIXct(x$data$t)[focus], eta, type='l',ylab="Sealevel Anomaly [m]")
         abline(h=0,col="darkgreen")
-        mtext(side=4,text=sprintf("%.2f m", MSL),at=0,col="darkgreen")
+        mtext(side=4,text=sprintf("%.2f m", MSL),at=0,col="darkgreen", cex=0.8)
         title.plot(x)
     } else {
         oldpar <- par(no.readonly = TRUE)
@@ -100,17 +106,13 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
         to$hour <- to$min <- to$sec <- 0
         at.t <- seq(from=from, to=to, by="month")
         num.NA <- sum(is.na(x$data$eta))
-        oce.close.screen(all.screens=TRUE)
         if (num.NA) {
             warning("time series contains ", num.NA, " missing data, so no spectra will be drawn")
-            oce.split.screen(c(2, 1), erase=TRUE)
 ##            par(mar=c(4,5,3,1)+0.1)
         } else {
-            oce.split.screen(c(4, 1), erase=TRUE)
 ##            par(mar=c(2,5,2,1)+0.1)
         }
 
-        oce.screen(1)
         plot(as.POSIXlt(x$data$t)[1:n], eta.m-MSL,
              xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
              lwd=0.5, axes=FALSE)
@@ -121,10 +123,9 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
         abline(h=yax, col="darkgray", lty="dotted")
         abline(v=at.t, col="darkgray", lty="dotted")
         abline(h=0,col="darkgreen")
-        mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
+        mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
         title.plot(x)
 
-        oce.screen(2)
 ##        if (num.NA)
 ##            par(mar=c(3,5,0,1)+0.1)
 ##        else
@@ -145,14 +146,13 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
         abline(v=at.week, col="darkgray", lty="dotted")
         abline(v=at.day, col="lightgray", lty="dotted")
         abline(h=0,col="darkgreen")
-        mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen")
+        mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
 
         ## Draw spectra, if series has no NA, so that spectrum is easy to construct
         if (!num.NA) {
-            oce.screen(3)
             Eta <- ts(eta.m,start=1,deltat=x$metadata$deltat)
             s <- spectrum(Eta-mean(Eta),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
-            ##par(mar=c(2,5,1,1)+0.1)
+            par(mar=c(mgp[1]+1,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
             plot(s$freq,s$spec,xlim=c(0,0.1),
                  xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
                  type='l',log="y")
@@ -160,7 +160,7 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
             draw.constituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
             {
                 abline(v=frequency, col=col)
-                mtext(label, side=side, at=frequency, col=col,cex=0.8)
+                mtext(label, side=side, at=frequency, col=col,cex=2/3)
             }
             draw.constituents <- function()
             {
@@ -176,8 +176,8 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
             n.cum.spec <- length(s$spec)
             cum.spec <- sqrt(cumsum(s$spec) / n.cum.spec)
             e <- eta.m - mean(eta.m)
-            oce.screen(4)
             ##par(mar=c(4,5,1,1)+0.1)
+            par(mar=c(mgp[1]+1,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
             plot(s$freq,cum.spec,
                  xlab="Frequency [ cph ]",
                  ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
@@ -187,7 +187,6 @@ plot.sealevel <- function(x, focus.time=NULL, close.screens=TRUE, ...)
         }
 ##        par(oldpar)
     }
-    if (!is.null(focus.time) && close.screens) oce.close.screen(all.screens=TRUE)
 }
 
 

@@ -74,7 +74,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                           xtype="distance",
                           ytype="depth",
                           legend.loc="bottomright",
-                          close.screens=TRUE,
+                          adorn=NULL,
                           ...)
 {
     plot.subsection <- function(variable="temperature", title="Temperature",
@@ -308,15 +308,18 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
     if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1)) else par(mar=c(4.5,4,1,1))
 
     if (lw > 1) {
-        oce.close.screen(all.screens=TRUE)
         if (lw > 2)
-            oce.split.screen(c(2, 2), erase=TRUE)
+            layout(matrix(1:4, nrow=2, byrow=TRUE))
         else
-            oce.split.screen(c(1, 2), erase=TRUE)
+            layout(matrix(1:2, nrow=2, byrow=TRUE))
+    }
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, lw)
+        adorn.length <- lw
     }
 
     for (w in 1:length(which)) {
-        oce.screen(w, new=TRUE)
         if (!missing(contour.levels)) {
             if (which[w] == 1) plot.subsection("temperature", "T", nlevels=contour.levels, ...)
             if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, ...)
@@ -327,8 +330,11 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), ...)
         }
         if (which[w] == 4) plot.subsection("map", indicate.stations=FALSE)
+        if (w <= adorn.length && nchar(adorn[w]) > 0) {
+            t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+        }
     }
-    if (lw > 1 && close.screens) oce.close.screen(all.screens=TRUE)
 }
 
 read.section <- function(file, section.id="", debug=FALSE, log.action)

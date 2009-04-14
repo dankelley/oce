@@ -567,7 +567,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             if (w <= adorn.length && nchar(adorn[w]) > 0) {
                 ##cat("adorn[",w,"]\n\t\t", adorn[w], "\n")
                 t <- try(eval(parse(text=adorn[w])), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]='",adorn[w],"'\n")
             }
 
             par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
