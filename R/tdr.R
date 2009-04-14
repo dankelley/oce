@@ -1,8 +1,13 @@
-plot.tdr <- function (x, which=1:4, ...)
+plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
 {
     if (!inherits(x, "tdr")) stop("method is only for tdr objects")
     oldpar <- par(no.readonly = TRUE)
     lw <- length(which)
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, lw)
+        adorn.length <- lw
+    }
     if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     shown.time.interval <- FALSE
     if (lw == 2) {
@@ -17,12 +22,19 @@ plot.tdr <- function (x, which=1:4, ...)
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$t, x$data$temperature,
-                 xlab="", ylab=expression(paste("Temperature [ ", degree, "C ]")), type='l', ...)
+                 xlab="", ylab=expression(paste("Temperature [ ", degree, "C ]")), type='l',
+                 axes=FALSE, ...)
+            box()
+            oce.axis.POSIXct(1, x=x$data$t)
+            axis(2)
         } else if (which[w] == 3) {
             plot(x$data$t, x$data$pressure,
                  xlab="", ylab="Pressure [dbar]", type='l',
                  ylim=rev(range(x$data$pressure, na.rm=TRUE)),
-                 ...)
+                 axes=FALSE, ...)
+            box()
+            oce.axis.POSIXct(1, x=x$data$t)
+            axis(2)
         } else if (which[w] == 2) {
             text.item <- function(item, cex=1.25) {
                 if (!is.null(item) && !is.na(item)) {
@@ -53,8 +65,14 @@ plot.tdr <- function (x, which=1:4, ...)
             do.call(plot, args)
         }
         if ((which[w] %in% 1:3) & !shown.time.interval) {
-            mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
+            mtext(paste(paste(format(range(x$data$t)), collapse=" to "),
+                        attr(x$data$t[1], "tzone")),
+                  side=3, cex=2/3, adj=0)
             shown.time.interval <- TRUE
+        }
+        if (w <= adorn.length && nchar(adorn[w]) > 0) {
+            t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
     par(oldpar)

@@ -8,7 +8,8 @@
   with trimming extraneous data from a CTD cast.}
 
 \usage{plot.ctd.scan(x, name = "scan", 
- S.col = "darkgreen", T.col= "darkred", p.col = "blue", close.screens=TRUE, \dots)
+ S.col = "darkgreen", T.col= "darkred", p.col = "blue", close.screens=TRUE, 
+ adorn=NULL, \dots)
 }
 
 \arguments{
@@ -17,17 +18,14 @@
   \item{S.col}{colour for salinity}
   \item{T.col}{colour for temperature}
   \item{p.col}{colour for pressure}
-  \item{close.screens}{boolean, indicating whether to this function
-    should use \code{\link{oce.close.screen}} to close the drawing
-    screens after plotting.  Set this to \code{FALSE} in order to
-    leave the screens open, enabling you to use
-    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
-    to the panels (see cautions at \code{\link{oce.split.screen}}).
-    Note that \code{\link{oce.close.screen}} should be called after
-    doing any such additions.}
+  \item{adorn}{list of character strings containing commands to be
+    executed for the panels.  If the number matches the number of
+    panels, then the strings are applied to the appropriate panels, as
+    they are drawn from top-left to bottom-right.   If only a single
+    string is provided, it is used for all panels.  (See
+    \dQuote{Examples}.)}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
-
 
 \details{Plots \code{ctd} data as time-series against the scan number,
   as an aide to trimming to downcasts, \emph{etc}.  }
@@ -45,9 +43,7 @@ plot.ctd.scan(ctd)
 
 # demonstrate adding elements to plots, e.g. to narrow
 # down on good start end points
-plot.ctd.scan(ctd, close.screens=FALSE)
-oce.screen(1,FALSE)
-abline(v=240,col='red')
+plot.ctd.scan(ctd, adorn="abline(v=240,col='red')")
 }
 
 \author{Dan Kelley}

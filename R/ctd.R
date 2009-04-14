@@ -324,7 +324,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       Slim, Tlim, plim, densitylim, dpdtlim, timelim,
                       lonlim, latlim,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
-                      close.screens=TRUE,
+                      adorn=NULL,
                       ...)
 {
     ## FIXME: plot.ctd() should not use par(new=TRUE); it should copy plot.ctd.scan()
@@ -373,15 +373,14 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         oldpar <- par(no.readonly = TRUE)
 #        par(mar=c(3,3,3.25,2))
 #        if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
-        oce.close.screen(all.screens=TRUE)
         if (lw > 2)
-            oce.split.screen(c(2, 2), erase=TRUE)
+            lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
         else
-            oce.split.screen(c(1, 2), erase=TRUE)
+            lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
+        ##layout.show(lay)
+        ##stop()
     }
-
     for (w in 1:length(which)) {
-        oce.screen(w, new=TRUE)
         if (which[w] == 1) plot.profile(x, type = "S+T", Slim=Slim, Tlim=Tlim, plim=plim,
                  grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         if (which[w] == 2) plot.profile(x, type = "density+N2", plim=plim,
@@ -407,6 +406,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                 }
             }
             par(mar=c(0,0,0,0))
+            plot.new()
             plot.window(c(0,10), c(0,10))
             xloc <- 0
             yloc <- 8
@@ -445,7 +445,6 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     }
 #    if (lw > 1)
 #        par(oldpar)
-    if (lw > 1 && close.screens) oce.close.screen(all.screens=TRUE)
     invisible()
 }
 
@@ -454,19 +453,21 @@ plot.ctd.scan <- function(x,
                           S.col = "darkgreen",
                           T.col = "darkred",
                           p.col = "blue",
-                          close.screens=TRUE,
+                          adorn=NULL,
                           ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
 
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
-    par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+1))
+    par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+2))
 
-    oce.close.screen(all.screens=TRUE)
-    oce.split.screen(c(2,1), erase=TRUE)
-
-    oce.screen(1)
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, 2)
+        adorn.length <- 2
+    }
+    layout(matrix(1:2, nrow=2))
     xx <- x$data[[name]];
     xxlen <- length(xx)
     ##if (xxlen < 1) stop(paste("this ctd has no data column named '", name, "'",sep=""))
@@ -484,8 +485,12 @@ plot.ctd.scan <- function(x,
     grid(col="brown")
     axis(1)
     axis(2,col=p.col, col.axis=p.col, col.lab = p.col)
+    if (1 <= adorn.length && nchar(adorn[1]) > 0) {
+        ##cat("adorn[",w,"]\n\t\t", adorn[1], "\n")
+        t <- try(eval(parse(text=adorn[1])), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
+    }
 
-    oce.screen(2)
 ##    par(mar=c(4,4,1,4)) # bot left top right
     Slen <- length(x$data$salinity)
     Tlen <- length(x$data$temperature)
@@ -504,7 +509,11 @@ plot.ctd.scan <- function(x,
     lines(x$data[[name]], x$data$salinity, col=S.col)
     mtext("Salinity [PSU]", side = 4, line = 2, col = S.col)
     axis(4,col=S.col, col.axis = S.col, col.lab = S.col)
-    if (close.screens) oce.close.screen(all.screens=TRUE)
+    if (2 <= adorn.length && nchar(adorn[2]) > 0) {
+        ##cat("adorn[",w,"]\n\t\t", adorn[2], "\n")
+        t <- try(eval(parse(text=adorn[2])), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+    }
     invisible(x)
 }
 ##* Sea-Bird SBE 25 Data File:

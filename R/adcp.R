@@ -496,31 +496,18 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-setup.screens <- function(n, pw=0.1)
-{
-    ## Build up matrix for plots, with images to left and palettes to right
-    box <- NULL
-    ##cat("setup.screens(", n, ",", pw, ")\n")
-    for (i in 1:n) {
-        ybottom <- 1 - i/n
-        ytop <- ybottom + 1/n
-        box <- c(box,
-                 0,     1-pw, ybottom, ytop,
-                 1 - pw,   1, ybottom, ytop)
-    }
-    box <- matrix(box, ncol=4, byrow=TRUE)
-    ##print(box)
-    oce.close.screen(all.screens=TRUE)
-    oce.split.screen(box, erase=TRUE)
-}
-
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
-                      close.screens=TRUE, ...)
+                      adorn=NULL, ...)
 {
     images <- 1:12
     timeseries <- 13:18
     if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
     lw <- length(which)
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, lw)
+        adorn.length <- lw
+    }
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
@@ -537,10 +524,15 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         }
         zlim.not.given <- FALSE                                    # fake it
     }
-    if (any(which %in% images))
-        setup.screens(lw)
-    else
-        setup.screens(lw, pw=0.01)      # basically, no space
+    if (any(which %in% images)) {
+        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(1.5)), lw))
+        ##cat("IMAGES\n")
+    } else {
+        lay <- layout(cbind(1:lw))
+        ##cat("TIME SERIES\n")
+    }
+    ##layout.show(lay)
+    ##stop()
     ma.names <- names(x$data$ma)
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "\n")
@@ -553,11 +545,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                 }
             }
         }
-        oce.screen(2*w - 1, new=TRUE)                 # for items with a palette, will use screen(2*w) also
         if (which[w] %in% images) {                   # image types
-            ##cat("main plot is screen", 2*w-1, "\n")
-            ##cat("mgp=",paste(mgp,collapse=" "),"\n")
-
             par(mar=c(mgp[1], mgp[1]+1, 1, 0.25))
             par(mgp=mgp)
 
@@ -576,8 +564,12 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       side=3, cex=2/3, adj=0)
                 shown.time.interval <- TRUE
             }
-            ##cat("  before first oce.screen,    mar=",paste(par()$mar,collapse=" "), "and usr=", paste(par()$usr, collapse=" "), "\n")
-            oce.screen(2*w, new=TRUE)
+            if (w <= adorn.length && nchar(adorn[w]) > 0) {
+                ##cat("adorn[",w,"]\n\t\t", adorn[w], "\n")
+                t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            }
+
             par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
             par(mgp=mgp)
             palette <- seq(zlim[1], zlim[2], length.out=300)
@@ -601,9 +593,12 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       side=3, cex=2/3, adj=0)
                 shown.time.interval <- TRUE
             }
+            if (w <= adorn.length && nchar(adorn[w]) > 0) {
+                t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            }
         }
     }
-    if (close.screens) oce.close.screen(all.screens=TRUE)
 }
 
 adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))

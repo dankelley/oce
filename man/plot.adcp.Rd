@@ -7,7 +7,7 @@
 \description{Plot ADCP data.}
 
 \usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), 
-         zlim, close.screens=TRUE, \dots)}
+         zlim, adorn=NULL, \dots)}
 
 \arguments{
   \item{x}{An \code{adcp} object, e.g. as read by \code{\link{read.adcp}}.}
@@ -25,15 +25,13 @@
     encompass the data of the panel and to be centred around zero.
     (Centering on zero is convenient for color palettes that place a
     neutral color there; see \dQuote{Details}.)}
-  \item{close.screens}{boolean, indicating whether to this function
-    should use \code{\link{oce.close.screen}} to close the drawing
-    screens after plotting.  Set this to \code{FALSE} in order to
-    leave the screens open, enabling you to use
-    \code{\link{oce.screen}} (with a\code{new=FALSE}) to add new items
-    to the panels (see cautions at \code{\link{oce.split.screen}}).
-    Note that \code{\link{oce.close.screen}} should be called after
-    doing any such additions.}
-  \item{\dots}{optional arguments passed to plotting functions.}
+  \item{adorn}{list of character strings containing commands to be
+    executed for the panels.  If the number matches the number of
+    panels, then the strings are applied to the appropriate panels,
+    as they are drawn from top-left to bottom-right.   If only a single
+    string is provided, it is used for all panels.  (See
+    \dQuote{Examples}.)}
+\item{\dots}{optional arguments passed to plotting functions.}
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADCP
@@ -84,22 +82,6 @@
   the \dots arguments, but be aware that a reasonable limit on
   horizontal velocity components is unlikely to be of much use for the
   vertical component.
-
-  The plot panels are created using \code{\link{oce.split.screen}}.
-  Each variable gets two screens, arranged side by side.  If any of the
-  plotted variables is of an image type (\code{which} in 1:12), the
-  right panel of every plot will be wide enough to accommodate an
-  image color palette.  (The right-hand panels are the same width even
-  for time-series plots, to get the times to line up on all panels.)  The
-  screens are numbered from the top left, going across the page an then
-  down the page, i.e. palettes (or blank spots at the palette locations)
-  have odd screen numbers, and images or time-series have even screen
-  numbers.  By default, the screens are closed when \code{plot.adcp}
-  exits.  Setting \code{close.screens} to \code{FALSE} keeps the screens
-  open, permitting additions to screens using \code{\link{oce.screen}}.
-  Caution: since \code{\link{oce.split.screen}} is based on
-  \code{\link[graphics]{split.screen}}, it so suffers some of the
-  problems of that function; additions made to screens may be erroneous.
 }
 
 \seealso{The data may be read with \code{\link{read.adcp}}. Converting
@@ -118,14 +100,8 @@ library(oce)
 data(adcp)
 e <- adcp.frame2earth(adcp.beam2frame(adcp))
 plot(e, which=1:3)
-
-# Plot u=u(z,t) as an image, with material drawn on top later
-plot(e, which=1, close.screens=FALSE)
-oce.screen(1, new=FALSE)
-abline(v=as.POSIXct("2008-06-26 11:00:00",tz="UTC"), col="red", lwd=2)
-abline(h=20, col="red", lwd=2)
-lines(e$data$ts$time, e$data$ts$pressure, lwd=2, col="blue")
-oce.close.screen(all.screens=TRUE)
+plot(e, which=1:2, adorn=paste("abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)",
+                               "lines(x$data$ts$time, x$data$ts$pressure, lwd=2, col='blue', lwd=3)", sep=";"))
 }
 
 \author{Dan Kelley}
