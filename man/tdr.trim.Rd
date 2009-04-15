@@ -20,17 +20,23 @@
 }
 
 \details{The \code{"water"} method is mainly for quick and dirty work.
-In many cases, the user will be working with several files, and so it
-will make sense to use the \code{"time"} method, to synchronize the
-time series.  Normally, notes will have been taken in the field, so no
-guessing need be done about the time the instruments went in the
-water.  In some cases, though, the time will have to be inferred from
-the data, and so it might make sense to start by trimming with the
-\code{"water"} method, after which \code{\link{summary.tdr}} is
-used to find the probably time when the instrument was put into the
-water.}
+  In many cases, the user will be working with several files, and so it
+  will make sense to use the \code{"time"} method, to synchronize the
+  time series.  Normally, notes will have been taken in the field, so no
+  guessing need be done about the time the instruments went in the
+  water.  In some cases, though, the time will have to be inferred from
+  the data, and so it might make sense to start by trimming with the
+  \code{"water"} method, after which \code{\link{summary.tdr}} is used
+  to find the probably time when the instrument was put into the water.
 
-\value{An object of \code{\link[base]{class}} \code{"tdr"}, with data having been trimmed in some way.}
+  After the data are trimmed in time, the pressure record is modified by
+  subtracting 10.1325~dbar, the average sea-level pressure.
+
+}
+
+\value{An object of \code{\link[base]{class}} \code{"tdr"}, with data
+  having been trimmed in some way, and with the pressure being reduced
+  by mean sea-level pressure.} 
 
 \seealso{
   The \code{tdr} object may be read with \code{\link{read.tdr}}.

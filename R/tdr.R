@@ -269,6 +269,7 @@ tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
         }
     }
     res$data <- subset(x$data, keep)
+    res$data$pressure <- res$data$pressure - 10.1325 # remove avg sealevel pressure
     res <- processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
     res
 }

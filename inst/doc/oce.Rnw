@@ -480,14 +480,14 @@ narrow-banded constituents quite visible.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=sealevelfig,fig=TRUE,width=8,height=7,echo=FALSE>>=
+<<label=sealevelfig,fig=TRUE,width=8,height=8,echo=FALSE>>=
 <<sealevelplot>>
 @
 \end{center}
 \caption{Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike
 in September is the storm surge associated with Hurricane Juan, regarded by the
 Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes
-to ever hit Canada.}
+to ever hit Canada.)}
 \label{fig:sealevel}
 \end{figure}
 
@@ -549,21 +549,18 @@ The commands
 <<label=tdrplot,eval=FALSE>>=
 library(oce)
 data(tdr)
-plot(tdr) # NOTE: atmospheric pressure not removed
+plot(tdr.trim(tdr)) # NOTE: atmospheric pressure not removed
 @
 produce a plot (Figure~\ref{fig:tdr}) of temperature-depth recorder
 (TDR) measurements made during St Lawrence Estuary Internal Wave
 Experiment, a CFCAS-funded research program in which the \texttt{oce}
-author was a principal investigator.  Experienced oceanographers will
-see at a glance that this dataset still retains measurements made
-before the instrument was lowered into the water and after it was
-recovered.  (Non-experts can realize this by examining the ends of the
-dataset, when the pressure was roughly 10\,dbar, and the temperature
-variation is of a distinct character.  Evidently, the instrument was
-not turned off until after the truck ride back to Halifax!)
+author was a principal investigator.  The device was mounted on
+a mooring that tilted significantly with the tide, yielding
+strong tidal signals in pressure as well as temperature, thus
+providing a rough indication of the temperature  profile.
 
-The worked exercise illustrates methods for trimming the in-air
-samples, and for subtracting atmospheric pressure.
+This graph is trimmed of the in-air data; access to the raw data is
+part of a worked example.
 
 \begin{figure}
 \begin{center}
@@ -581,7 +578,8 @@ component of pressure.}
 \label{fig:tdr}
 \end{figure}
 
-\workedexercise{7}{Remove the atmospheric component of this record.}
+\workedexercise{7}{Access the raw data of this \texttt{tdr} record, and
+determine the atmospheric pressure to remove from it.}
 
 
 \section{The future of oce}
