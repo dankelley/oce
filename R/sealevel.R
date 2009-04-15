@@ -58,7 +58,8 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         adorn <- rep(adorn, 4)
         adorn.length <- 4
     }
-    layout(cbind(1:4))
+    if (is.null(focus.time))
+        layout(cbind(1:4))
     title.plot <- function(x) {
         mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
         title <- paste("Station ",
@@ -88,6 +89,10 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m", MSL),at=0,col="darkgreen", cex=0.8)
         title.plot(x)
+        if (adorn.length > 0) {
+            t <- try(eval(adorn[1]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
+        }
     } else {
         oldpar <- par(no.readonly = TRUE)
         eg.days <- 28
@@ -116,6 +121,10 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         plot(as.POSIXlt(x$data$t)[1:n], eta.m-MSL,
              xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
              lwd=0.5, axes=FALSE)
+        if (adorn.length > 0) {
+            t <- try(eval(adorn[1]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
+        }
         mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
         axis(1, at.t, format(at.t, "%b %d"), cex=0.7)  # small font to get all 12 month names
         yax <- axis(2)
@@ -125,7 +134,6 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
         title.plot(x)
-
 ##        if (num.NA)
 ##            par(mar=c(3,5,0,1)+0.1)
 ##        else
@@ -139,6 +147,10 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         ylim <- c(-tmp,tmp)
         plot(x$data$t[1:stop], eta.m[1:stop] - MSL,
              xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim, axes=FALSE)
+        if (adorn.length > 1) {
+            t <- try(eval(adorn[2]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+        }
         axis(1, at.week, labels=format(at.week, "%b %d"))
         yax <- axis(2)
         abline(h=yax, col="lightgray", lty="dotted")
@@ -147,7 +159,6 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         abline(v=at.day, col="lightgray", lty="dotted")
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-
         ## Draw spectra, if series has no NA, so that spectrum is easy to construct
         if (!num.NA) {
             Eta <- ts(eta.m,start=1,deltat=x$metadata$deltat)
@@ -156,6 +167,11 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
             plot(s$freq,s$spec,xlim=c(0,0.1),
                  xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
                  type='l',log="y")
+            if (adorn.length > 2) {
+                t <- try(eval(adorn[3]), silent=TRUE)
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
+            }
+
             grid()
             draw.constituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
             {
@@ -182,6 +198,10 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
                  xlab="Frequency [ cph ]",
                  ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
                  type='l',xlim=c(0,0.1))
+            if (adorn.length > 3) {
+                t <- try(eval(adorn[4]), silent=TRUE)
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+            }
             grid()
             draw.constituents()
         }

@@ -499,6 +499,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       adorn=NULL, ...)
 {
+    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     images <- 1:12
     timeseries <- 13:18
     if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
@@ -511,7 +512,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[1],mgp[1]+1,1,1))
-
     data.names <- names(x$data$ma)
     shown.time.interval <- FALSE
     tt <- x$data$ts$time
@@ -564,10 +564,9 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       side=3, cex=2/3, adj=0)
                 shown.time.interval <- TRUE
             }
-            if (w <= adorn.length && nchar(adorn[w]) > 0) {
-                ##cat("adorn[",w,"]\n\t\t", adorn[w], "\n")
-                t <- try(eval(parse(text=adorn[w])), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]='",adorn[w],"'\n")
+            if (w <= adorn.length) {
+                t <- try(eval(adorn[w]), silent=TRUE)
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
 
             par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
@@ -593,8 +592,8 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       side=3, cex=2/3, adj=0)
                 shown.time.interval <- TRUE
             }
-            if (w <= adorn.length && nchar(adorn[w]) > 0) {
-                t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+            if (w <= adorn.length) {
+                t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
         }

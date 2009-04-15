@@ -448,7 +448,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             title(paste("Station", x$metadata$station),font.main=par("font"))
         }
         if (w <= adorn.length && nchar(adorn[w]) > 0) {
-            t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+            t <- try(eval(adorn[w]), silent=TRUE)
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
@@ -494,9 +494,8 @@ plot.ctd.scan <- function(x,
     grid(col="brown")
     axis(1)
     axis(2,col=p.col, col.axis=p.col, col.lab = p.col)
-    if (1 <= adorn.length && nchar(adorn[1]) > 0) {
-        ##cat("adorn[",w,"]\n\t\t", adorn[1], "\n")
-        t <- try(eval(parse(text=adorn[1])), silent=TRUE)
+    if (1 <= adorn.length) {
+        t <- try(eval(adorn[1]), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
     }
 
@@ -518,9 +517,8 @@ plot.ctd.scan <- function(x,
     lines(x$data[[name]], x$data$salinity, col=S.col)
     mtext("Salinity [PSU]", side = 4, line = 2, col = S.col)
     axis(4,col=S.col, col.axis = S.col, col.lab = S.col)
-    if (2 <= adorn.length && nchar(adorn[2]) > 0) {
-        ##cat("adorn[",w,"]\n\t\t", adorn[2], "\n")
-        t <- try(eval(parse(text=adorn[2])), silent=TRUE)
+    if (2 <= adorn.length) {
+        t <- try(eval(adorn[2]), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
     }
     invisible(x)

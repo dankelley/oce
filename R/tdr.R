@@ -70,8 +70,8 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
                   side=3, cex=2/3, adj=0)
             shown.time.interval <- TRUE
         }
-        if (w <= adorn.length && nchar(adorn[w]) > 0) {
-            t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+        if (w <= adorn.length) {
+            t <- try(eval(adorn[w]), silent=TRUE)
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }

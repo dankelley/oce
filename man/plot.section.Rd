@@ -63,11 +63,12 @@
     or \code{"depth"} for depth (in m below the surface, calculated
     from pressure with \code{\link{sw.depth}}).}
   \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
-  \item{adorn}{list of character strings containing commands to be
-    executed for the panels.  If the number matches the number of
+  \item{adorn}{list of expressions to be executed for the panels in
+    turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, as
     they are drawn from top-left to bottom-right.   If only a single
-    string is provided, it is used for all panels.}
+    expression is provided, it is used for all panels.  (See
+    \dQuote{Examples}.)}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }
@@ -104,12 +105,16 @@ library(oce)
 data(section)
 data(coastline.hal)
 plot(section, coastline=coastline.hal)
+
 # Gulf Stream
 data(a03)
 Gulf.Stream <- subset(a03, indices=124:102)
 Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0,2000,100))
 data(coastline.world)
 plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
+# Illustate adornment
+plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60),
+     adorn=expression({abline(v=200,col='blue')}))
 }
 
 \author{Dan Kelley}

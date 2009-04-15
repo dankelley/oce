@@ -50,11 +50,11 @@
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
-  \item{adorn}{list of character strings containing commands to be
-    executed for the panels.  If the number matches the number of
-    panels, then the strings are applied to the appropriate panels,
+  \item{adorn}{list of expressions to be executed for the panels in
+    turn, e.g. to adorn the plots.  If the number matches the number of
+    panels, then the strings are applied to the appropriate panels, 
     as they are drawn from top-left to bottom-right.   If only a single
-    string is provided, it is used for all panels.  (See
+    expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{sw.N2} calculations.} 
@@ -92,8 +92,9 @@ data(coastline.sle)
 lonlim <- -(69 + c(52, 41) / 60)
 latlim <- 47 + c(48, 58) / 60
 # IAL = Ile aux Lievres
-plot(ctd, which=c(1,2,3,5),coastline=coastline.sle,lonlim=lonlim,latlim=latlim,
-          adorn=c("","","","text(-69.72,47.85,'IAL',pos=4)"))
+plot(ctd, which=c(1,2,3,5),
+     coastline=coastline.sle, lonlim=lonlim, latlim=latlim,
+     adorn=expression({},{},{},{text(-69.72,47.85,'IAL',pos=4)}))
 
 # Trimming
 data(ctd.raw)

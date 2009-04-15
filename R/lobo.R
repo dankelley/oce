@@ -87,28 +87,28 @@ plot.lobo <- function(x, adorn=NULL, ...)
                  c(3,4)))
     plot.lobo.timeseries.TS(x, ...)
     if (adorn.length > 0) {
-        t <- try(eval(parse(text=adorn[1])), silent=TRUE)
+        t <- try(eval(adorn[1]), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
     }
 
     par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.timeseries.uv(x, ...)
     if (adorn.length > 0) {
-        t <- try(eval(parse(text=adorn[2])), silent=TRUE)
+        t <- try(eval(adorn[2]), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
     }
 
     par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.timeseries.biology(x, ...)
     if (adorn.length > 0) {
-        t <- try(eval(parse(text=adorn[3])), silent=TRUE)
+        t <- try(eval(adorn[3]), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
     }
 
     par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
     plot.lobo.TS(x, ...)
     if (adorn.length > 0) {
-        t <- try(eval(parse(text=adorn[4])), silent=TRUE)
+        t <- try(eval(adorn[4]), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
     }
 }

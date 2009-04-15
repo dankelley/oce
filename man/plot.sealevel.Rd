@@ -13,11 +13,12 @@
   \item{focus.time}{if provided, the the time interval on which to
     focus, each a string in a format suitable for interpretation by
     \code{\link{as.POSIXct}}; see the example.}
-  \item{adorn}{list of character strings containing commands to be
-    executed for the panels.  If the number matches the number of
-    panels, then the strings are applied to the appropriate panels, as
-    they are drawn from top-left to bottom-right.   If only a single
-    string is provided, it is used for all panels.}
+  \item{adorn}{list of expressions to be executed for the panels in
+    turn, e.g. to adorn the plots.  If the number matches the number of
+    panels, then the strings are applied to the appropriate panels,
+    as they are drawn from top-left to bottom-right.   If only a single
+    expression is provided, it is used for all panels. (See
+    \dQuote{Examples}.)}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
@@ -61,9 +62,9 @@ data(sealevel.hal)
 # Overall plot
 plot(sealevel.hal)
 # Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
-plot(sealevel.hal, focus.time=c("2003-09-23","2003-10-05"))
-abline(v=as.POSIXct("2003-09-28 23:30:00"), col="red", lty="dotted")
-mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-28 23:30:00"), col="red")
+plot(sealevel.hal, focus.time=c("2003-09-23","2003-10-05"),
+     adorn=expression({abline(v=as.POSIXct("2003-09-28 23:30:00"), col="red", lty="dotted")
+                       mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-28 23:30:00"), col="red")}))
 }
 
 \references{The example refers to Hurricane Juan, which caused a great

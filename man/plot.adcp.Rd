@@ -25,11 +25,11 @@
     encompass the data of the panel and to be centred around zero.
     (Centering on zero is convenient for color palettes that place a
     neutral color there; see \dQuote{Details}.)}
-  \item{adorn}{list of character strings containing commands to be
-    executed for the panels.  If the number matches the number of
-    panels, then the strings are applied to the appropriate panels,
+  \item{adorn}{list of expressions to be executed for the panels in
+    turn, e.g. to adorn the plots.  If the number matches the number of
+    panels, then the strings are applied to the appropriate panels, 
     as they are drawn from top-left to bottom-right.   If only a single
-    string is provided, it is used for all panels.  (See
+    expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
 \item{\dots}{optional arguments passed to plotting functions.}
 }
@@ -100,8 +100,12 @@ library(oce)
 data(adcp)
 e <- adcp.frame2earth(adcp.beam2frame(adcp))
 plot(e, which=1:3)
-plot(e, which=1:2, adorn=paste("abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)",
-                               "lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='blue')", sep=";"))
+# Illustrate adornment
+plot(e, which=1:2,
+     adorn=expression({
+         abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
+         lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='blue')
+     } ) )
 }
 
 \author{Dan Kelley}

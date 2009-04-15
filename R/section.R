@@ -330,8 +330,8 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), ...)
         }
         if (which[w] == 4) plot.subsection("map", indicate.stations=FALSE)
-        if (w <= adorn.length && nchar(adorn[w]) > 0) {
-            t <- try(eval(parse(text=adorn[w])), silent=TRUE)
+        if (w <= adorn.length) {
+            t <- try(eval(adorn[w]), silent=TRUE)
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }

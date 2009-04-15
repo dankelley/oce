@@ -13,11 +13,11 @@
   \item{which}{if a subset of the plots is required, specify a subset of
     the numbers 1:4.  These are codes for the panels, which will be
     drawn from top-left to bottom-right (see Details).}
-  \item{adorn}{list of character strings containing commands to be
-    executed for the panels.  If the number matches the number of
-    panels, then the strings are applied to the appropriate panels, as
-    they are drawn from top-left to bottom-right.   If only a single
-    string is provided, it is used for all panels.  (See
+  \item{adorn}{list of expressions to be executed for the panels in
+    turn, e.g. to adorn the plots.  If the number matches the number
+    of panels, then the strings are applied to the appropriate panels,
+    as they are drawn from top-left to bottom-right.   If only a single
+    expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
@@ -32,7 +32,8 @@
 
 \examples{
 data(tdr)
-plot(tdr, which=c(1,3), adorn="abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'),col='red')")
+plot(tdr, which=c(1,3), 
+    adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'),col='red')}))
 }
 
 \seealso{See \code{\link{read.tdr}} for more information on dealing
