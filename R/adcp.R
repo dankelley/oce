@@ -500,6 +500,9 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       adorn=NULL, ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+
     images <- 1:12
     timeseries <- 13:18
     if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")

@@ -1,7 +1,9 @@
 plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
 {
     if (!inherits(x, "tdr")) stop("method is only for tdr objects")
-    oldpar <- par(no.readonly = TRUE)
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+
     lw <- length(which)
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -75,7 +77,6 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
-    par(oldpar)
     invisible()
 }
 

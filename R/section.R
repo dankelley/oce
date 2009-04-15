@@ -245,12 +245,15 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
         }
     }                                   # plot.subsection
 
+    if (!inherits(x, "section")) stop("method is only for section objects")
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+
     if (any(!which %in% 1:4)) stop("which must be between 1 and 4")
 
     which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
     which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
 
-    if (!inherits(x, "section")) stop("method is only for section objects")
     if (missing(station.indices)) {
         num.stations <- length(x$data$station)
         station.indices <- 1:num.stations

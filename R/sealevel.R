@@ -51,6 +51,10 @@ as.sealevel <- function(eta,
 
 plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
 {
+    if (!inherits(x, "sealevel")) stop("method is only for sealevel objects")
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+
     ## tidal constituents (in cpd):
     ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
     adorn.length <- length(adorn)
@@ -71,6 +75,7 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
                        sep="")
         mtext(side=3, title, adj=1, cex=2/3)
     }
+
 
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
@@ -205,9 +210,9 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
             grid()
             draw.constituents()
         }
-##        par(oldpar)
     }
 }
+
 
 
 read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)

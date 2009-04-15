@@ -327,6 +327,10 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       adorn=NULL,
                       ...)
 {
+    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+
     ## FIXME: plot.ctd() should not use par(new=TRUE); it should copy plot.ctd.scan()
     dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
@@ -347,8 +351,6 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             }
         }
     }
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
-
     ## 1=S+T
     ## 2=density+N2
     ## 3=TS
@@ -466,6 +468,8 @@ plot.ctd.scan <- function(x,
                           ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    opar <- par(no.readonly=TRUE)
+    on.exit(par(opar))
 
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")

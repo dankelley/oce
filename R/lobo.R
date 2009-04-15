@@ -74,6 +74,10 @@ plot.lobo.TS <- function(lobo, ...)
 
 plot.lobo <- function(x, adorn=NULL, ...)
 {
+    if (!inherits(x, "lobo")) stop("method is only for lobo objects")
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+
     if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
     mgp <- par("mgp")
     par(mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25))
@@ -112,6 +116,7 @@ plot.lobo <- function(x, adorn=NULL, ...)
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
     }
 }
+
 
 read.lobo <- function(file, cols=7, log.action) {
     header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
