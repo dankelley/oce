@@ -303,7 +303,7 @@ ctd.update.header <- function (x, debug = FALSE)
     return(xret)
 }
 
-ctd.write <- function(object, file=stop("'file' must be specified"))
+write.ctd <- function(object, file=stop("'file' must be specified"))
 {
     if (!inherits(object, "ctd")) stop("method is only for ctd objects")
     if (is.character(file)) {

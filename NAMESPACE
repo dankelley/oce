@@ -16,7 +16,6 @@ export(
        ctd.decimate,
        ctd.trim,
        ctd.update.header,
-       ctd.write,
        decimate,
        fill.gap,
        geod.dist,
@@ -93,7 +92,8 @@ export(
        tidem,
        tidem.astron,
        tidem.vuf,
-       undrift.time
+       undrift.time,
+       write.ctd
        )
 
 S3method(plot, adcp)

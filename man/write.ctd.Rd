@@ -1,10 +1,10 @@
-\name{ctd.write}
-\alias{ctd.write}
+\name{write.ctd}
+\alias{write.ctd}
 \title{Write a CTD data object as a .csv file}
 
 \description{Write a CTD data object as a \code{.csv} file.}
 
-\usage{ctd.write(object, file=stop("'file' must be specified"))}
+\usage{write.ctd(object, file=stop("'file' must be specified"))}
 
 \arguments{
   \item{object}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -19,9 +19,10 @@
 \examples{
 library(oce)
 data(ctd)
-ctd.write(ctd, "ctd.csv")
+write.ctd(ctd, "ctd.csv")
 x <- read.csv("ctd.csv")
-plot(x$temperature, x$salinity)
+plot(x$salinity, x$temperature)
+plot.TS((as.ctd(x$salinity, x$temperature,0)))
 }
 
 \author{Dan Kelley}
