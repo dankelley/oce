@@ -235,10 +235,8 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                 }
             }
 
-            if (length(bottom.x) == length(bottom.y)) {
-                ##polygon(bottom.x, bottom.y, col="gray")
-                polygon(bottom.x, bottom.y, col=rgb(1,0,0,alpha=0.05))
-            }
+            if (length(bottom.x) == length(bottom.y))
+                polygon(bottom.x, bottom.y, col="gray")
             box()
             axis(1)
             legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)

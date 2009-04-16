@@ -5,6 +5,9 @@ plot.topo <- function(x,
                       ...)
 {
     if (!inherits(x, "topo")) stop("method is only for topo objects")
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+
     lat.range <- range(x$data$lat, na.rm=TRUE)
     asp <- 1 / cos(mean(lat.range)*pi/180)
     zr <- range(x$data$z, na.rm=TRUE)
@@ -18,6 +21,10 @@ plot.topo <- function(x,
     } else {
         zr <- range(x$data$z, na.rm=TRUE)
     }
+
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1],mgp[1],0.5,0.5)) # 1.5 because density unit has superscript
 
     plot(range(x$data$lon, na.rm=TRUE), range(x$data$lat, na.rm=TRUE),
          asp=asp, xaxs="i", yaxs="i", type="n", xlab="", ylab="", ...)
