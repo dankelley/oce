@@ -511,8 +511,7 @@ plot.ctd.scan <- function(x,
     axis(2,col=T.col, col.axis = T.col, col.lab = T.col)
     box()
     grid(NULL, NA, col="brown")
-    mtext("Temperature [degC]", side = 2, line = 2, col = T.col)
-    ## used to par(new=TRUE) here, but some say that is a bad idea
+    mtext(expression(paste("Temperature [ ", degree, " C ]")), side = 2, line = 2, col = T.col)
     usr <- par("usr")
     Sr <- range(x$data$salinity, na.rm=TRUE)
     usr[3:4] <- Sr + c(-1, 1) * 0.04 * diff(Sr)
