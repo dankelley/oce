@@ -21,8 +21,7 @@ library(oce)
 data(ctd)
 write.ctd(ctd, "ctd.csv")
 x <- read.csv("ctd.csv")
-plot(x$salinity, x$temperature)
-plot.TS((as.ctd(x$salinity, x$temperature,0)))
+plot(as.ctd(x$salinity, x$temperature,x$pressure))
 }
 
 \author{Dan Kelley}

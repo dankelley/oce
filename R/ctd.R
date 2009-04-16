@@ -1055,11 +1055,13 @@ plot.TS <- function (x,
                      ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
 
-##    old.mgp <- par("mgp")
-##    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp")) #par(mgp = c(2, 2/3, 0))
+    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
+    mgp <- par("mgp")
+    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1])) # 1.5 because density unit has superscript
 
     axis.name.loc <- par("mgp")[1]
     old.mar <- par("mar")
