@@ -1,4 +1,5 @@
 0.1-77
+- use abbreviations for axis names if space is tight
 - add argument 'adorn' to all plot() functions
 - add oce.colors.two(), oce.colors.jet(), and oce.colors.palette()
 - rename gebco.colors() as oce.colors.gebco()

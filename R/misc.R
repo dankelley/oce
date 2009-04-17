@@ -1,3 +1,21 @@
+resizable.label <- function(item=c("S", "T", "p"), axis=c("x", "y"))
+{
+    item <- match.arg(item)
+    axis <- match.arg(axis)
+    if (item == "T") {
+        full <- expression(paste("Temperature [ ", degree, "C ]"))
+        abbreviated <- expression(paste("T [ ", degree, "C ]"))
+    } else if (item == "S") {
+        full <- "Salinity [ PSU ]"
+        abbreviated <- "S [ PSU ]"
+    } else if (item == "p") {
+        full <- "pressure [ dbar ]"
+        abbreviated <- "p [ dbar ]"
+    }
+    fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
+    if (fraction < 0.8) full else abbreviated
+}
+
 latlon.format <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)

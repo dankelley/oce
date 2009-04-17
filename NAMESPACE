@@ -64,6 +64,7 @@ export(
        read.tdr,
        read.sealevel,
        read.section,
+       resizable.label,
        section.grid,
        section.smooth,
        subset.oce,

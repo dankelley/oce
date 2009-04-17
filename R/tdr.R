@@ -24,14 +24,14 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$t, x$data$temperature,
-                 xlab="", ylab=expression(paste("Temperature [ ", degree, "C ]")), type='l',
+                 xlab="", ylab=resizable.label("T"), type='l',
                  axes=FALSE, ...)
             box()
             oce.axis.POSIXct(1, x=x$data$t)
             axis(2)
         } else if (which[w] == 3) {
             plot(x$data$t, x$data$pressure,
-                 xlab="", ylab="Pressure [dbar]", type='l',
+                 xlab="", ylab=resizable.label("p"), type='l',
                  ylim=rev(range(x$data$pressure, na.rm=TRUE)),
                  axes=FALSE, ...)
             box()
@@ -60,8 +60,8 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
         } else if (which[w] == 4) {
             args <- list(x=x$data$temperature, y=x$data$pressure,
                          ylim=rev(range(x$data$pressure, na.rm=TRUE)),
-                         xlab=expression(paste("Temperature [", degree, "C ]")),
-                         ylab="Pressure [dbar]", ...)
+                         xlab=resizable.label("T"),
+                         ylab=resizable.label("p"), ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=0.5)
             do.call(plot, args)

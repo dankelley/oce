@@ -140,7 +140,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
 
             ylab <- if ("ylab" %in% names(list(...)))
                 list(...)$ylab
-            else { if (which.ytype==1) "Pressure [ dbar ]" else "Depth [ m ]" }
+            else { if (which.ytype==1) resizable.label("p") else "Depth [ m ]" }
             if (is.null(at)) {
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i",
