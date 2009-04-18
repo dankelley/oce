@@ -67,7 +67,7 @@ http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
 
 Light, A., and P. J. Bartlein, 2004.
 The End of the Rainbow? Color Schemes for Improved Data Graphics.
-\emph{Eos Trans. AGU}, \textbf{85(40)}, doi:10.1029/2004EO400002.
+\emph{Eos Trans. AGU}, 85(40), doi:10.1029/2004EO400002.
 
 Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
 Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
@@ -76,7 +76,7 @@ Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
 Stephenson, David B., 2005.
 Comment on ``Color schemes for improved data graphics,''
 by A. Light and P. J. Bartlein.
-\emph{Eos Trans. AGU}, \textbf{86(20)}.
+\emph{Eos Trans. AGU}, 86(20).
 
 
 }

@@ -2,15 +2,18 @@
 \alias{as.ctd}
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
-\usage{as.ctd(S, t, p, ship=NA, scientist=NA, institute=NA, address=NA,
+\usage{as.ctd(salinity, temperature, pressure, ship=NA, scientist=NA, institute=NA, address=NA,
 cruise=NA, station=NA, date=NA, start.time=NA, 
 latitude=NA, longitude=NA, recovery=NA, water.depth=NA, 
 sample.interval=NA, src="")
 }
 \arguments{
-  \item{S}{Salinity through the water column.}
-  \item{t}{Temperature through the water column.}
-  \item{p}{pressure through the water column.}
+  \item{salinity}{Salinity through the water column, or a data frame
+    containing columns named \code{salinity}, \code{temperature}, and
+    \code{pressure}, in which case these values are extracted from the
+    data frame, and the next two arguments are ignored.} 
+  \item{temperature}{Temperature through the water column.}
+  \item{pressure}{pressure through the water column.}
   \item{ship}{optional string containing the ship from which the observations were made.}
   \item{scientist}{optional string containing the chief scientist on the cruise.}
   \item{institute}{optional string containing the institute behind the work.}
@@ -51,11 +54,12 @@ sample.interval=NA, src="")
 
 \examples{
 library(oce)
-p <- seq(0,100,1)
-T <- 10 - p / 100
-S <- 35 - p / 100
-ctd <- as.ctd(S, T, p)
+pressure <- 1:50
+temperature <- 10 - tanh((pressure - 20) / 5) + 0.02*rnorm(50)
+salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
+ctd <- as.ctd(salinity, temperature, pressure)
 summary(ctd)
+plot(ctd)
 }
 
 \author{Dan Kelley}

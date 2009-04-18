@@ -749,7 +749,7 @@ plot(tdr, which=2)
 
 tdr.trim.auto <- tdr.trim(tdr)
 plot(tdr.trim.auto)
-print(range(tdr.trim.auto$data$t)) # gives a starting point
+print(range(tdr.trim.auto$data$time)) # gives a starting point
 
 abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
 abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
@@ -758,8 +758,8 @@ abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
 abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-tdr.trim <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= t &
-                   t <= as.POSIXct("2008-07-04 12:00:00"))
+tdr.trim <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= time &
+                   time <= as.POSIXct("2008-07-04 12:00:00"))
 print(tdr.patm(tdr)) # take 10.2dbar from this
 tdr.trim <- oce.edit(tdr.trim, action="x$data$pressure <- x$data$pressure - 10.2", reason="remove atm pressure", person="DK")
 plot(tdr.trim)

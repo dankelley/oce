@@ -29,8 +29,8 @@
 
 \value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
   list with elements detailed below.
-  \item{data}{a data table containing the (t, temperature, pressure)
-    data.}
+  \item{data}{a data table containing the \code{time},
+    \code{temperature}, and \code{pressure} data.}
   \item{metadata}{a list containing the following items
     \describe{
       \item{\code{header}}{the header itself, as read from the input file.}
@@ -73,8 +73,8 @@ abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
 abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-tdr.trim.manual <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= t &
-t <= as.POSIXct("2008-07-04 12:00:00"))
+tdr.trim.manual <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= time &
+                          time <= as.POSIXct("2008-07-04 12:00:00"))
 plot(tdr.trim.manual)
 }
 

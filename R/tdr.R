@@ -23,19 +23,19 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
     par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
     for (w in 1:lw) {
         if (which[w] == 1) {
-            plot(x$data$t, x$data$temperature,
-                 xlab="", ylab=resizable.label("T"), type='l',
+            plot(x$data$time, x$data$temperature,
+                 xlab="", ylab=resizable.label("T", "y"), type='l',
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$t)
+            oce.axis.POSIXct(1, x=x$data$time)
             axis(2)
         } else if (which[w] == 3) {
-            plot(x$data$t, x$data$pressure,
+            plot(x$data$time, x$data$pressure,
                  xlab="", ylab=resizable.label("p"), type='l',
                  ylim=rev(range(x$data$pressure, na.rm=TRUE)),
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$t)
+            oce.axis.POSIXct(1, x=x$data$time)
             axis(2)
         } else if (which[w] == 2) {
             text.item <- function(item, cex=1.25) {
@@ -53,9 +53,9 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
             yloc <- 10
             d.yloc <- 0.7
             text.item(paste("Serial Number: ", x$metadata$serial.number),cex=1.25)
-            text.item(paste("Start:", x$data$t[1]), cex=1)
-            text.item(paste("End:", x$data$t[length(x$data$t)]), cex=1)
-            text.item(paste("Sampling interval:", difftime(x$data$t[2], x$data$t[1], units="s"), "s"),cex=1)
+            text.item(paste("Start:", x$data$time[1]), cex=1)
+            text.item(paste("End:", x$data$time[length(x$data$time)]), cex=1)
+            text.item(paste("Sampling interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=1)
             par(mar=mar)
         } else if (which[w] == 4) {
             args <- list(x=x$data$temperature, y=x$data$pressure,
@@ -67,8 +67,8 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
             do.call(plot, args)
         }
         if ((which[w] %in% 1:3) & !shown.time.interval) {
-            mtext(paste(paste(format(range(x$data$t)), collapse=" to "),
-                        attr(x$data$t[1], "tzone")),
+            mtext(paste(paste(format(range(x$data$time)), collapse=" to "),
+                        attr(x$data$time[1], "tzone")),
                   side=3, cex=2/3, adj=0)
             shown.time.interval <- TRUE
         }
@@ -183,7 +183,7 @@ read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
 summary.tdr <- function(object, ...)
 {
     if (!inherits(object, "tdr")) stop("method is only for tdr objects")
-    time.range <- range(object$data$t, na.rm=TRUE)
+    time.range <- range(object$data$time, na.rm=TRUE)
     fives <- matrix(nrow=2, ncol=5)
     res <- list(serial.number=object$metadata$serial.number,
                 samples=length(object$data$temperature),
@@ -254,8 +254,8 @@ tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
         } else if (which.method == 2) { # "time"
             if (verbose) cat("trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n");
             keep <- rep(TRUE, n)
-            keep[x$data$t < as.POSIXlt(parameters[1])] <- FALSE
-            keep[x$data$t > as.POSIXlt(parameters[2])] <- FALSE
+            keep[x$data$time < as.POSIXlt(parameters[1])] <- FALSE
+            keep[x$data$time > as.POSIXlt(parameters[2])] <- FALSE
         } else if (which.method == 3) { # "index"
             if (verbose)	cat("parameters:",parameters,"\n");
             if (min(parameters) < 1)

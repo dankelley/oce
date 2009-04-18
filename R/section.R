@@ -409,7 +409,7 @@ read.section <- function(file, section.id="", debug=FALSE, log.action)
         lat[i] <- latitude[select[1]]
         lon[i] <- longitude[select[1]]
         select.depths <- select[(S[select] >= 0) & (t[select] >= -2) & (p[select] >= 0)]
-        this.station <- as.ctd(S=S[select.depths], t=t[select.depths], p=p[select.depths],
+        this.station <- as.ctd(S[select.depths], t[select.depths], p[select.depths],
                                latitude=lat[i],
                                longitude=lon[i],
                                cruise=stn.section.id[select[1]],

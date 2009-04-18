@@ -23,8 +23,8 @@
   axes for heading, pitch, and roll.  Think of this as addition.  For
   example, a current of speed \code{U} running from southwest to
   northeast has equal and positive eastward and northward components in
-  earth coordinates, so setting \code{heading=45} yields \code{u'=U} and
-  \code{v'=0}.  Note that the stored values for heading, pitch, and roll
+  earth coordinates, so setting \code{heading=45} yields \code{u\'=U} and
+  \code{v\'=0}.  Note that the stored values for heading, pitch, and roll
   are \emph{not} adjusted; these values indicate the instrument
   orientation and so it makes no sense to alter them after the fact.
 
@@ -34,8 +34,8 @@
   because earth coordinates already account for instrument alignment.}
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}, with
-  columns renamed from \code{east}, \code{north} and \code{up} to \code{u'},
-  \code{v'}, and \code{w'}.  (Note that \code{e} is left unaltered.)
+  columns renamed from \code{east}, \code{north} and \code{up} to \code{u\'},
+  \code{v\'}, and \code{w\'}.  (Note that \code{e} is left unaltered.)
   Also, \code{metadata$oce.orientation} is changed from \code{earth} to
   \code{other}.}
 

@@ -1,4 +1,4 @@
-as.ctd <- function(S, t, p,
+as.ctd <- function(salinity, temperature, pressure,
                    ship=NA,scientist=NA,institute=NA,address=NA,
                    cruise=NA,station=NA,date=NA,start.time=NA,
                    latitude=NA, longitude=NA,
@@ -7,9 +7,21 @@ as.ctd <- function(S, t, p,
                    sample.interval=NA,
                    src="")
 {
-    if (length(p) == 1) # special case
-        p = rep(p, length(S))
-    data <- data.frame(salinity=S, temperature=t, pressure=p, sigma.theta=sw.sigma.theta(S, t, p))
+    if (class(salinity) == "data.frame") {
+        df <- salinity
+        names <- names(df)
+        if ("temperature" %in% names && "salinity" %in% names && "pressure" %in% names) {
+            salinity <- df$salinity
+            temperature <- df$temperature
+            pressure <- df$pressure
+        } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
+    }
+    if (length(pressure) == 1) # special case
+        pressure <- rep(pressure, length(salinity))
+    data <- data.frame(salinity=salinity,
+                       temperature=temperature,
+                       pressure=pressure,
+                       sigma.theta=sw.sigma.theta(salinity, temperature, pressure))
     metadata <- list(
                      header=NULL,
                      filename=NULL,
@@ -489,7 +501,7 @@ plot.ctd.scan <- function(x,
     }
     if (xxlen != length(x$data$pressure)) stop(paste("length mismatch.  '", name, "' has length ", xxlen, " but pressure has length ", length(x$data$pressure),sep=""))
     plot(x$data[[name]], x$data$pressure,
-         xlab=name, ylab=resizable.label("p"),
+         xlab=name, ylab=resizable.label("p", "y"),
          type="l", col=p.col, axes=FALSE)
     mtext(paste("Station", x$metadata$station), side=3, adj=1)
     mtext(latlon.format(x$metadata$latitude, x$metadata$longitude, digits=5), side=3, adj=0)
@@ -512,14 +524,14 @@ plot.ctd.scan <- function(x,
     box()
     grid(NULL, NA, col="brown")
 
-    mtext(resizable.label("T"), side = 2, line = 2, col = T.col)
+    mtext(resizable.label("T", "y"), side = 2, line = 2, col = T.col)
 
     usr <- par("usr")
     Sr <- range(x$data$salinity, na.rm=TRUE)
     usr[3:4] <- Sr + c(-1, 1) * 0.04 * diff(Sr)
     par(usr=usr)
     lines(x$data[[name]], x$data$salinity, col=S.col)
-    mtext(resizable.label("S"), side = 4, line = 2, col = S.col)
+    mtext(resizable.label("S", "y"), side = 4, line = 2, col = S.col)
     axis(4,col=S.col, col.axis = S.col, col.lab = S.col)
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
@@ -1068,8 +1080,8 @@ plot.TS <- function (x,
     old.mar <- par("mar")
 ###    if (!rotate.rho.labels && old.mar[4] < 3) par(mar=c(old.mar[1:3], 2))
     plot(x$data$salinity, x$data$temperature,
-         xlab = if (missing(xlab)) resizable.label("S") else xlab,
-         ylab = if (missing(ylab)) resizable.label("T") else ylab,
+         xlab = if (missing(xlab)) resizable.label("S","x") else xlab,
+         ylab = if (missing(ylab)) resizable.label("T","y") else ylab,
          xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
          cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
          xlim=Slim, ylim=Tlim,
@@ -1144,7 +1156,7 @@ plot.profile <- function (x,
                           ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
-    pname <- resizable.label("p")
+    pname <- resizable.label("p", "y")
     if (missing(plim)) plim <- rev(range(x$data$pressure, na.rm=TRUE))
     plim <- sort(plim, decreasing=TRUE)
     axis.name.loc <- par("mgp")[1]
@@ -1223,7 +1235,8 @@ plot.profile <- function (x,
         plot(x$data$salinity, x$data$pressure,
              xlim=Slim, ylim=plim,
              type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(resizable.label("S"), side = 3, line = axis.name.loc, col = col.S, cex=par("cex"))
+        mtext(resizable.label("S", "x"),
+              side = 3, line = axis.name.loc, col = col.S, cex=par("cex"))
         axis(2)
         axis(3, col = col.S, col.axis = col.S, col.lab = col.S)
         box()
@@ -1239,7 +1252,8 @@ plot.profile <- function (x,
         plot(x$data$temperature, x$data$pressure,
              xlim=Tlim, ylim=plim,
              type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(resizable.label("T"), side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
+        mtext(resizable.label("T", "x"),
+              side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
         axis(2)
         axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
         box()
@@ -1317,7 +1331,8 @@ plot.profile <- function (x,
              xlim=Tlim, ylim=plim,
              type = "n", xlab = "", ylab = pname, axes = FALSE)
         axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
-        mtext(resizable.label("T"), side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
+        mtext(resizable.label("T", "x"),
+              side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
         axis(2)
         box()
         lines(x$data$temperature, x$data$pressure, col = col.t, lwd=lwd)
@@ -1326,7 +1341,8 @@ plot.profile <- function (x,
              xlim=Slim, ylim=plim,
              type = "n", xlab = "", ylab = "", axes = FALSE)
         axis(1, col = col.S, col.axis = col.S, col.lab = col.S)
-        mtext(resizable.label("S"), side = 1, line = axis.name.loc, col = col.S, cex=par("cex"))
+        mtext(resizable.label("S", "x"),
+              side = 1, line = axis.name.loc, col = col.S, cex=par("cex"))
         box()
         if (grid) {
             at <- par("yaxp")
