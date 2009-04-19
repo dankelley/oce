@@ -72,14 +72,12 @@ plot.lobo.TS <- function(lobo, ...)
     plot.TS(as.ctd(lobo$data$salinity, lobo$data$temperature, lobo$data$p), col="red", ...)
 }
 
-plot.lobo <- function(x, adorn=NULL, ...)
+plot.lobo <- function(x, adorn=NULL, mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "lobo")) stop("method is only for lobo objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
-
-    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-    mgp <- par("mgp")
+    par(mgp=mgp)
     par(mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25))
     adorn.length <- length(adorn)
     if (adorn.length == 1) {

@@ -6,7 +6,8 @@
 
 \description{Plot a summary diagram for a tidal fit.}
 
-\usage{\method{plot}{tidem}(x, label.if=NULL, plot.type=c("staircase", "spikes"), log="", ...)}
+\usage{\method{plot}{tidem}(x, label.if=NULL, plot.type=c("staircase", "spikes"),
+    log="",   mgp=getOption("oce.mgp"), ...)}
 
 \arguments{
   \item{x}{a \code{tidem} object, as created by \code{\link{tidem}}.}
@@ -21,6 +22,10 @@
 	to read at a glance.} 
   \item{log}{if set to "\code{x}", the frequency axis will be
 	logarithmic.}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

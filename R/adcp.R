@@ -497,11 +497,12 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
-                      adorn=NULL, ...)
+                      adorn=NULL, mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
+    par(mgp=mgp)
 
     images <- 1:12
     timeseries <- 13:18
@@ -512,8 +513,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-    mgp <- par("mgp")
+
     par(mar=c(mgp[1],mgp[1]+1,1,1))
     data.names <- names(x$data$ma)
     shown.time.interval <- FALSE
@@ -550,7 +550,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         }
         if (which[w] %in% images) {                   # image types
             par(mar=c(mgp[1], mgp[1]+1, 1, 0.25))
-            par(mgp=mgp)
 
             image(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
                   xlab="Time", ylab="Distance", axes=FALSE,
@@ -573,7 +572,6 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             }
 
             par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
-            par(mgp=mgp)
             palette <- seq(zlim[1], zlim[2], length.out=300)
             image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, ylab="", xlab="", col=col)
             box()

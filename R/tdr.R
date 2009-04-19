@@ -1,4 +1,4 @@
-plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
+plot.tdr <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "tdr")) stop("method is only for tdr objects")
     opar <- par(no.readonly = TRUE)
@@ -10,7 +10,6 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
     shown.time.interval <- FALSE
     if (lw == 2) {
         layout(cbind(c(1,2)))
@@ -18,8 +17,7 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, ...)
         layout(rbind(c(1,2),
                      c(3,4)))
     }
-    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-    mgp <- par("mgp")
+    par(mgp=mgp)
     par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
     for (w in 1:lw) {
         if (which[w] == 1) {

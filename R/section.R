@@ -75,6 +75,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                           ytype="depth",
                           legend.loc="bottomright",
                           adorn=NULL,
+                          mgp=getOption("oce.mgp"),
                           ...)
 {
     plot.subsection <- function(variable="temperature", title="Temperature",
@@ -246,6 +247,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
     if (!inherits(x, "section")) stop("method is only for section objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
+    par(mgp=mgp)
 
     if (any(!which %in% 1:4)) stop("which must be between 1 and 4")
 
@@ -305,8 +307,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
 
     lw <- length(which)
 
-    if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
-    if (!"mgp" %in% names(list(...))) par(mar = c(3.0, 3.0, 1, 1)) else par(mar=c(4.5,4,1,1))
+    par(mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]))
 
     if (lw > 1) {
         if (lw > 2)

@@ -9,7 +9,9 @@
 \usage{\method{plot}{topo}(x, 
   water.z, water.col, water.lty, water.lwd,
   land.z,   land.col,  land.lty,  land.lwd,
-  legend.loc="topright", \dots)}
+  legend.loc="topright", 
+  mgp=getOption("oce.mgp"),
+  \dots)}
 
 \arguments{
   \item{x}{an \code{topo} object, e.g. as read by \code{\link{read.topo}}.}
@@ -28,6 +30,10 @@
   \item{land.lty}{line type(s) for land contours}
   \item{land.lwd}{line width(s) for land contours}
   \item{legend.loc}{location for a legend (or FALSE, for no legend).}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
   \item{\dots}{additional arguments passed on to plotting functions}
 }
 

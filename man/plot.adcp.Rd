@@ -7,7 +7,7 @@
 \description{Plot ADCP data.}
 
 \usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), 
-         zlim, adorn=NULL, \dots)}
+         zlim, adorn=NULL, mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
   \item{x}{An \code{adcp} object, e.g. as read by \code{\link{read.adcp}}.}
@@ -31,7 +31,11 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
-\item{\dots}{optional arguments passed to plotting functions.}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
+  \item{\dots}{optional arguments passed to plotting functions.}
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADCP

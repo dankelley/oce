@@ -6,7 +6,7 @@
 
 \description{Plot a summary diagram for lobo data.}
 
-\usage{\method{plot}{lobo}(x, adorn=NULL, \dots)}
+\usage{\method{plot}{lobo}(x, adorn=NULL, mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
   \item{x}{A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.}
@@ -16,6 +16,10 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels. (See
     \dQuote{Examples}.)}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

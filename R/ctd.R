@@ -336,13 +336,12 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
                       lonlim, latlim,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                       adorn=NULL,
+                      mgp=getOption("oce.mgp"),
                       ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
-
-    ## FIXME: plot.ctd() should not use par(new=TRUE); it should copy plot.ctd.scan()
     dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
             if (x < 0) {
@@ -380,17 +379,11 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
         adorn.length <- lw
     }
 
-    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-    mgp <- par("mgp")
+    par(mgp=mgp)
     par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1])) # 1.5 because density unit has superscript
-
-    ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
-    ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
 
     if (lw > 1) {
         oldpar <- par(no.readonly = TRUE)
-#        par(mar=c(3,3,3.25,2))
-#        if (!"mgp" %in% names(list(...))) par(mgp = c(2, 2/3, 0))
         if (lw > 2)
             lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
         else
@@ -476,14 +469,13 @@ plot.ctd.scan <- function(x,
                           T.col = "darkred",
                           p.col = "blue",
                           adorn=NULL,
+                          mgp=getOption("oce.mgp"),
                           ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     opar <- par(no.readonly=TRUE)
     on.exit(par(opar))
-
-    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-    mgp <- par("mgp")
+    par(mgp=mgp)
     par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+2))
 
     adorn.length <- length(adorn)
@@ -1065,6 +1057,7 @@ plot.TS <- function (x,
                      connect.points=FALSE,
                      xlab, ylab,
                      Slim, Tlim,
+                     mgp=getOption("oce.mgp"),
                      ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -1072,11 +1065,9 @@ plot.TS <- function (x,
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
 
-    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-    mgp <- par("mgp")
-    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1])) # 1.5 because density unit has superscript
-
-    axis.name.loc <- par("mgp")[1]
+    par(mgp=mgp)
+    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1])) # 1.5 for density superscript
+    axis.name.loc <- mgp[1]
     old.mar <- par("mar")
 ###    if (!rotate.rho.labels && old.mar[4] < 3) par(mar=c(old.mar[1:3], 2))
     plot(x$data$salinity, x$data$temperature,

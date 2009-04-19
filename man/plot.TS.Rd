@@ -17,6 +17,7 @@
 	connect.points = FALSE,
 	xlab, ylab,
 	Slim, Tlim,
+        mgp=getOption("oce.mgp"),
 	\dots)
 }
 \arguments{
@@ -39,6 +40,10 @@
   \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
   \item{Slim}{optional limits for salinity axis, otherwise inferred from data.}
   \item{Tlim}{optional limits for temperature axis, otherwise inferred from data.}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

@@ -49,7 +49,8 @@ as.sealevel <- function(eta,
     rval
 }
 
-plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
+plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
+                          mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "sealevel")) stop("method is only for sealevel objects")
     opar <- par(no.readonly = TRUE)
@@ -76,13 +77,8 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         mtext(side=3, title, adj=1, cex=2/3)
     }
 
-
-    if (!"mgp" %in% names(list(...))) par(mgp = getOption("oce.mgp"))
-    mgp <- par("mgp")
+    par(mgp=mgp)
     par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
-
-    ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
-    ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
 
     if (!is.null(focus.time)) {
         focus.time <- as.POSIXct(focus.time)
@@ -118,9 +114,6 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         num.NA <- sum(is.na(x$data$eta))
         if (num.NA) {
             warning("time series contains ", num.NA, " missing data, so no spectra will be drawn")
-##            par(mar=c(4,5,3,1)+0.1)
-        } else {
-##            par(mar=c(2,5,2,1)+0.1)
         }
 
         plot(as.POSIXlt(x$data$t)[1:n], eta.m-MSL,
@@ -139,10 +132,6 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
         title.plot(x)
-##        if (num.NA)
-##            par(mar=c(3,5,0,1)+0.1)
-##        else
-##            par(mar=c(2,5,1,1)+0.1)
         from <- as.POSIXlt(x$data$t[1])
         from$hour <- from$min <- from$sec <- 0
         to <- from + 28 * 86400 # 28 days
@@ -197,7 +186,6 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL, ...)
             n.cum.spec <- length(s$spec)
             cum.spec <- sqrt(cumsum(s$spec) / n.cum.spec)
             e <- eta.m - mean(eta.m)
-            ##par(mar=c(4,5,1,1)+0.1)
             par(mar=c(mgp[1]+1,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
             plot(s$freq,cum.spec,
                  xlab="Frequency [ cph ]",

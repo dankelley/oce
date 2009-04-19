@@ -20,6 +20,7 @@
         ytype="depth",
         legend.loc="bottomright",
 	adorn=NULL,
+        mgp=getOption("oce.mgp"),
 	\dots)
 }
 
@@ -69,6 +70,10 @@
     they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }

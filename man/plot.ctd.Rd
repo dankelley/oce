@@ -13,6 +13,7 @@
   lonlim, latlim,
   latlon.pch=20, latlon.cex=1.5, latlon.col="red",
   adorn=NULL,
+  mgp=getOption("oce.mgp"),
   \dots)
 }
 \arguments{
@@ -56,6 +57,10 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{sw.N2} calculations.} 
 }

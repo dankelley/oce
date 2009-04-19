@@ -6,7 +6,8 @@
 
 \description{Plot TDR temperature-depth recorder data}
 
-\usage{\method{plot}{tdr}(x, which=1:4, adorn=NULL, \dots)}
+\usage{\method{plot}{tdr}(x, which=1:4, adorn=NULL,
+     mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
   \item{x}{\code{cdt} object, typically result of \code{\link{read.tdr}}.}
@@ -19,6 +20,10 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
