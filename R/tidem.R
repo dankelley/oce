@@ -385,7 +385,9 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     }
     nc <- length(freq)
     ## Check Rayleigh criterion
-    interval <- as.numeric(difftime(max(sl$data$t,na.rm=TRUE),min(sl$data$t,na.rm=TRUE),units="hours"))
+    interval <- as.numeric(difftime(max(sl$data$time,na.rm=TRUE),
+                                    min(sl$data$time,na.rm=TRUE),
+                                    units="hours"))
     drop.term <- NULL
     for (i in 1:nc) {
         cc <- which(tc2$name == kmpr[i])
@@ -408,7 +410,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
 
-    hour <- unclass(as.POSIXct(sl$data$t, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
+    hour <- unclass(as.POSIXct(sl$data$time, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
 
     centralindex <- floor(length(sl$data$t) / 2)
 

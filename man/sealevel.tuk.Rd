@@ -22,9 +22,9 @@
   \preformatted{
 data(sealevel.tuk)
 plot(sealevel.tuk$data$t, sealevel.tuk$data$eta, type='l',
-  ylab="Height [m]",ylim=c(-2,6))
+     ylab="Height [m]",ylim=c(-2,6))
 legend("topright", legend=c("Tuktoyaktuk (1975)","Detided"),
-  col=c("black","red"),lwd=1)
+       col=c("black","red"),lwd=1)
 tide <- tidem(sealevel.tuk)
 detided <- sealevel.tuk$data$eta - predict(tide)
 lines(sealevel.tuk$data$t, detided, col="red")
@@ -43,9 +43,9 @@ lines(sealevel.tuk$data$t, detided, col="red")
 # Note: the data file is not supplied with the package,
 # and the 7h offset is to convert from Mountain Standard Time.
 tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
-t <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+7*3600, tz="GMT")
+time <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+7*3600, tz="GMT")
 eta <- tuk$V2
-sealevel.tuk <- as.sealevel(eta=eta, t=t,
+sealevel.tuk <- as.sealevel(eta=eta, time=time,
                             station.name="Tuktoyaktuk", region="NWT", station.number=6485,
                             longitude=133.0292, latitude=69.43889,
                             year=1975, GMT.offset=0)

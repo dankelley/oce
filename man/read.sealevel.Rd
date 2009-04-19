@@ -35,7 +35,7 @@
   is a \code{\link[base]{list}} containing
  \item{data}{A \code{\link{data.frame}} containing
    \describe{
-     \item{\code{t}}{time}
+     \item{\code{time}}{time}
      \item{\code{eta}}{sea level [m]}
    }
   }

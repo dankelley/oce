@@ -1,5 +1,5 @@
 as.sealevel <- function(eta,
-                        t,
+                        time,
                         header=NULL,
                         station.number=NA,
                         station.version=NA,
@@ -16,16 +16,16 @@ as.sealevel <- function(eta,
 {
     if (missing(eta)) stop("must supply sealevel height, eta, in metres")
     n <- length(eta)
-    if (missing(t)) {              # construct hourly from time "zero"
+    if (missing(time)) {              # construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="GMT")
-        t <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="GMT")
+        time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="GMT")
         if (is.na(GMT.offset)) GMT.offset <- 0 # FIXME: do I want to do this?
     } else {
-        t <- as.POSIXct(t, tz="GMT") # FIXME: should this be GMT?
+        time <- as.POSIXct(time, tz="GMT") # FIXME: should this be GMT?
     }
-    data <- data.frame(t=t, eta=eta)
+    data <- data.frame(time=time, eta=eta)
     if (missing(deltat))
-        deltat <- difftime(t[2], t[1], units="hours")
+        deltat <- difftime(time[2], time[1], units="hours")
     if (is.na(deltat) | deltat <= 0)
         deltat <- 1
     metadata <- list(header=header,
@@ -63,16 +63,22 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
         adorn <- rep(adorn, 4)
         adorn.length <- 4
     }
-    if (is.null(focus.time))
-        layout(cbind(1:4))
+    num.NA <- sum(is.na(x$data$eta))
+
+    if (is.null(focus.time)) {
+        if (num.NA)
+            layout(cbind(1:2))
+        else
+            layout(cbind(1:4))
+    }
     title.plot <- function(x) {
-        mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
+        mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
         title <- paste("Station ",
-                       x$metadata$station.number, " (",
-                       x$metadata$station.name,   ") ",
-                       x$metadata$region,         "",
-                       " ", latlon.format(x$metadata$latitude, x$metadata$longitude),
-                       if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
+                       x$metadata$station.number, " ",
+                       x$metadata$station.name,   " ",
+                       x$metadata$region,         " ",
+                       latlon.format(x$metadata$latitude, x$metadata$longitude),
+                       ##if (!is.na(x$metadata$year)) paste(" (", x$metadata$year, ")") else "",
                        sep="")
         mtext(side=3, title, adj=1, cex=2/3)
     }
@@ -82,11 +88,11 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
 
     if (!is.null(focus.time)) {
         focus.time <- as.POSIXct(focus.time)
-        focus <- (focus.time[1] <= x$data$t) & (x$data$t <= focus.time[2])
+        focus <- (focus.time[1] <= x$data$time) & (x$data$time <= focus.time[2])
         eta.m <- x$data$eta
         MSL <- mean(eta.m, na.rm=TRUE)
         eta <- (eta.m[focus] - MSL)
-        plot(as.POSIXct(x$data$t)[focus], eta, type='l',ylab="Sealevel Anomaly [m]")
+        plot(as.POSIXct(x$data$time)[focus], eta, type='l',ylab="Sealevel Anomaly [m]")
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m", MSL),at=0,col="darkgreen", cex=0.8)
         title.plot(x)
@@ -104,26 +110,25 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
         ylim <- c(-tmp,tmp)
                                         # Whole timeseries
         n <- length(x$data$eta) # do not trust value in metadata
-        from <- as.POSIXlt(x$data$t[1])
+        from <- as.POSIXlt(x$data$time[1])
         from$mday <- 1
         from$hour <- from$min <- from$sec <- 0
-        to <- as.POSIXlt(x$data$t[n])
+        to <- as.POSIXlt(x$data$time[n])
         to$mday <- 28
         to$hour <- to$min <- to$sec <- 0
         at.t <- seq(from=from, to=to, by="month")
-        num.NA <- sum(is.na(x$data$eta))
         if (num.NA) {
             warning("time series contains ", num.NA, " missing data, so no spectra will be drawn")
         }
 
-        plot(as.POSIXlt(x$data$t)[1:n], eta.m-MSL,
+        plot(as.POSIXlt(x$data$time)[1:n], eta.m-MSL,
              xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
              lwd=0.5, axes=FALSE)
         if (adorn.length > 0) {
             t <- try(eval(adorn[1]), silent=TRUE)
             if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
         }
-        mtext(paste(format(range(x$data$t)), collapse=" to "), side=3, cex=2/3, adj=0)
+        mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
         axis(1, at.t, format(at.t, "%b %d"), cex=0.7)  # small font to get all 12 month names
         yax <- axis(2)
         box()
@@ -132,14 +137,14 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
         abline(h=0,col="darkgreen")
         mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
         title.plot(x)
-        from <- as.POSIXlt(x$data$t[1])
+        from <- as.POSIXlt(x$data$time[1])
         from$hour <- from$min <- from$sec <- 0
         to <- from + 28 * 86400 # 28 days
         at.week <- seq(from=from, to=to, by="week")
         at.day  <- seq(from=from, to=to, by="day")
         tmp <- (pretty(max(eta.m[1:stop]-MSL,na.rm=TRUE)-min(eta.m[1:stop]-MSL,na.rm=TRUE))/2)[2]
         ylim <- c(-tmp,tmp)
-        plot(x$data$t[1:stop], eta.m[1:stop] - MSL,
+        plot(x$data$time[1:stop], eta.m[1:stop] - MSL,
              xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim, axes=FALSE)
         if (adorn.length > 1) {
             t <- try(eval(adorn[2]), silent=TRUE)
@@ -157,7 +162,7 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
         if (!num.NA) {
             Eta <- ts(eta.m,start=1,deltat=x$metadata$deltat)
             s <- spectrum(Eta-mean(Eta),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
-            par(mar=c(mgp[1]+1,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
+            par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
             plot(s$freq,s$spec,xlim=c(0,0.1),
                  xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
                  type='l',log="y")
@@ -186,7 +191,7 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
             n.cum.spec <- length(s$spec)
             cum.spec <- sqrt(cumsum(s$spec) / n.cum.spec)
             e <- eta.m - mean(eta.m)
-            par(mar=c(mgp[1]+1,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
+            par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
             plot(s$freq,cum.spec,
                  xlab="Frequency [ cph ]",
                  ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
@@ -202,8 +207,8 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
 }
 
 
-
-read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
+read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
+                          debug=FALSE)
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- file
@@ -255,8 +260,8 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
         x <- read.csv(file, skip=header.length, header=FALSE)
         eta <- as.numeric(x$V2)
         ## t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz=tz) # fails, for some reason
-        t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz="UTC")
-        t <- t + 3600 * GMT.offset
+        time <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz="UTC")
+        time <- time + 3600 * GMT.offset
     } else { # type 1
         if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
         d <- readLines(file)
@@ -310,9 +315,9 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
             last.day.portion <- day.portion
         }
         if (missing(tz))
-            t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)))
+            time <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)))
         else
-            t <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)), tz=tz)
+            time <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)), tz=tz)
         eta[eta==9999] <- NA
         if (tolower(units) == "mm") {
             eta <- eta / 1000
@@ -322,13 +327,12 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
     }
     num.missing <- sum(is.na(eta))
     if (debug) {
-        cat("t summary:");print(summary(t))
+        cat("time summary:");print(summary(time))
         cat("eta summary:");print(summary(eta))
     }
     if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(eta)), ""))
-    data <- data.frame(t=t, eta=eta)
-    metadata <- list(
-                     header=header,
+    data <- data.frame(time=time, eta=eta)
+    metadata <- list(header=header,
                      year=year,
                      station.number=station.number,
                      station.version=station.version,
@@ -341,8 +345,8 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
                      reference.offset=reference.offset,
                      reference.code=reference.code,
                      units=NA,
-                     n=length(t),
-                     deltat=as.numeric(difftime(t[2], t[1], units="hours")))
+                     n=length(time),
+                     deltat=as.numeric(difftime(time[2], time[1], units="hours")))
 
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -364,8 +368,8 @@ summary.sealevel <- function(object, ...)
                 number=object$metadata$n,
                 nonmissing=sum(!is.na(object$data$eta)),
                 deltat=object$metadata$deltat,
-                start.time=min(object$data$t, na.rm=TRUE),
-                end.time=max(object$data$t, na.rm=TRUE),
+                start.time=min(object$data$time, na.rm=TRUE),
+                end.time=max(object$data$time, na.rm=TRUE),
                 gmt.offset=if (is.na(object$metadata$GMT.offset)) "?" else object$metadata$GMT.offset,
                 fives=fives,
                 processing.log=processing.log.summary(object))
