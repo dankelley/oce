@@ -138,6 +138,22 @@ read.lobo <- function(file, cols=7, log.action) {
         temperature  <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
         p            <- rep(0, length(salinity))
         time <- as.POSIXlt(time)
+        ## Make all the same length
+        len <- max(length(u), length(v), length(salinity), length(temperature), length(p), length(nitrate), length(fluorescence))
+        fill.out <- function(x, length)
+        {
+            l <- length(x)
+            if (l < length)
+                c(x, rep(NA, length-l))
+            else x
+        }
+        u <- fill.out(u, len)
+        v <- fill.out(v, len)
+        salinity <- fill.out(salinity, len)
+        temperature <- fill.out(temperature, len)
+        p <- fill.out(p, len)
+        nitrate <- fill.out(nitrate, len)
+        fluorescence <- fill.out(fluorescence, len)
         data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
         metadata <- list(header=header)
         if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
