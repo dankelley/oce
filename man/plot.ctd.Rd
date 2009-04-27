@@ -73,15 +73,12 @@
 
   If only 2 panels are requested, they will be drawn side by side.
 
-  If only one panel is drawn, \code{par} will not be altered, which
-  means that you may follow this call with other plotting commands, and
-  the results will appear on the plot (which is not the case for the
-  multi-panel forms).  This is very useful in trimming the data,
-  e.g. you might do \code{plot(ctd, which=8)} and notice that downcast
-  is between index 10 and 300; then try 
-  \code{plot(ctd.trim(ctd, "index", 10, 300), which=8)} to see if your
-  guess is right, and thus gradually you can find good settings for
-  trimming; see also \code{\link{plot.ctd.scan}}.}
+  If more than one panel is drawn, then on exit from \code{plot.ctd},
+  the value of \code{par} will be reset to the value it had before the
+  function call.  However, if only one panel is drawn, the adjustments
+  to \code{par} made within \code{plot.ctd} are left in place, so that
+  further additions may be made to the plot.
+}
 
 \seealso{The profiles are plotted with \code{\link{plot.profile}}, and
   the TS diagram is plotted with \code{\link{plot.TS}}.  CTD data can be

@@ -341,7 +341,7 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
+    if (length(which) > 1) on.exit(par(opar))
     dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
             if (x < 0) {
