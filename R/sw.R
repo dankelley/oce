@@ -13,6 +13,7 @@ sw.N2 <- function(p, sigma.theta=NULL, ...) # BUG: think more about best density
     sigma.theta.deriv[ok] <- predict(sigma.theta.smooth, p[ok], deriv = 1)$y
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigma.theta.deriv, NA)
 }
+
 sw.S.C.T.p <- function(C, t, p)
 {
     dim <- dim(C)
@@ -31,6 +32,7 @@ sw.S.C.T.p <- function(C, t, p)
     dim(rval) <- dim
     rval
 }
+
 sw.S.T.rho <- function(t, rho, p) # FIXME: should be vectorized for speed
 {
     dim <- dim(t)
@@ -53,11 +55,14 @@ sw.S.T.rho <- function(t, rho, p) # FIXME: should be vectorized for speed
     dim(rval) <- dim
     rval
 }
+
 sw.T.S.rho <- function(S, rho, p) # FIXME: should be vectorized
 {
+    if (missing(S)) stop("must provide S")
     dim <- dim(S)
     nS <- length(S)
     nrho <- length(rho)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nrho) stop("lengths of S and rho must agree, but they are ", nS, " and ", nrho,  ", respectively")
     if (nS != np)   stop("lengths of S and p must agree, but they are ", nS, " and ", np, ", respectively")
@@ -77,34 +82,44 @@ sw.T.S.rho <- function(S, rho, p) # FIXME: should be vectorized
     dim(rval) <- dim
     rval
 }
+
 sw.T.freeze <- function(S, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
     (-.0575+1.710523e-3*sqrt(abs(S))-2.154996e-4*S)*S-7.53e-4*p
 }
- 
+
 sw.alpha <- function(S, t=NULL, p=NULL, is.theta = FALSE)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
+    nS <- length(S)
+    if (is.null(p)) p <- rep(0, nS)
     sw.alpha.over.beta(S, t, p, is.theta) * sw.beta(S, t, p, is.theta)
 }
+
 sw.alpha.over.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
                                         # sometimes give just a single p value (e.g. for a TS diagram)
@@ -125,17 +140,21 @@ sw.alpha.over.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
     dim(rval) <- dim
     rval
 }
+
 sw.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
     if (!is.theta) t = sw.theta(S, t, p)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
                                         # sometimes give just a single p value (e.g. for a TS diagram)
@@ -154,6 +173,7 @@ sw.beta <- function(S, t=NULL, p=NULL, is.theta = FALSE)
     dim(rval) <- dim
     rval
 }
+
 sw.conductivity <- function (S, t=NULL, p=NULL)
 {
     if (inherits(S, "ctd")) {
@@ -163,6 +183,7 @@ sw.conductivity <- function (S, t=NULL, p=NULL)
     }
     return(0.57057 * (1 + t * (0.003 - 1.025e-05 * t) + 0.000653 * p - 0.00029 * S))
 }
+
 sw.depth <- function(p, lat=45, degrees=TRUE)
 {
     if (inherits(p, "ctd")) {
@@ -174,6 +195,7 @@ sw.depth <- function(p, lat=45, degrees=TRUE)
     gr <- 9.780318*(1.0+(5.2788e-3+2.36e-5*x)*x) + 1.092e-6*p
     (((-1.82e-15*p+2.279e-10)*p-2.2512e-5)*p+9.72659)*p / gr
 }
+
 sw.dynamic.height <- function(x, pref=2000)
 {
     height <- function(ctd, pref)
@@ -207,16 +229,20 @@ sw.dynamic.height <- function(x, pref=2000)
         stop("method only works for 'section' or 'ctd' objects")
     }
 }
+
 sw.lapse.rate <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
     if (nS != np) stop("lengths of S and p must agree, but they are ", nS, " and ", np, ", respectively")
@@ -230,16 +256,20 @@ sw.lapse.rate <- function(S, t=NULL, p=NULL)
     dim(rval) <- dim
     rval
 }
+
 sw.rho <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
     ## sometimes give just a single p value (e.g. for a TS diagram)
@@ -258,8 +288,10 @@ sw.rho <- function(S, t=NULL, p=NULL)
     dim(rval) <- dim
     rval
 }
+
 sw.sigma <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
@@ -267,8 +299,10 @@ sw.sigma <- function(S, t=NULL, p=NULL)
     }
     sw.rho(S, t, p) - 1000
 }
+
 sw.sigma.t <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
@@ -277,8 +311,10 @@ sw.sigma.t <- function(S, t=NULL, p=NULL)
     p.top <- rep(0, length(S))
     sw.rho(S, t, p.top) - 1000
 }
+
 sw.sigma.theta <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
@@ -287,16 +323,20 @@ sw.sigma.theta <- function(S, t=NULL, p=NULL)
     p.top <- rep(0, length(S))
     sw.rho(S, sw.theta(S, t, p), p.top) - 1000
 }
+
 sw.sound.speed <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
                                         # sometimes give just a single p value (e.g. for a TS diagram)
@@ -315,18 +355,22 @@ sw.sound.speed <- function(S, t=NULL, p=NULL)
     dim(rval) <- dim
     rval
 }
+
 ## Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
 ## check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
 sw.specific.heat <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
     if (nS != np) stop("lengths of S and p must agree, but they are ", nS, " and ", np, ", respectively")
@@ -342,16 +386,20 @@ sw.specific.heat <- function(S, t=NULL, p=NULL)
     dim(rval) <- dim
     rval
 }
+
 sw.spice <- function(S, t=NULL, p=NULL)
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         t <- S$data$temperature
         p <- S$data$pressure
         S <- S$data$salinity # note: this destroys the ctd object
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
     ## sometimes give just a single p value (e.g. for a TS diagram)
@@ -370,19 +418,22 @@ sw.spice <- function(S, t=NULL, p=NULL)
     dim(rval) <- dim
     rval
 }
+
 sw.theta <- function(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983", "Bryden1973"))
 {
+    if (missing(S)) stop("must provide S")
     if (inherits(S, "ctd")) {
         tmp <- S
         S <- tmp$data$salinity
         t <- tmp$data$temperature
         p <- tmp$data$pressure
     }
+    if (is.null(t)) stop("must provide temperature")
     dim <- dim(S)
     nS <- length(S)
     nt <- length(t)
     if (nS != nt) stop("lengths of S and t must agree, but they are ", nS, " and ", nt, ", respectively")
-                                        # sometimes have just a single p value (e.g. for a TS diagram)
+    if (is.null(p)) p <- rep(0, nS)
     np <- length(p)
     if (np == 1) {
         np <- nS
@@ -418,7 +469,7 @@ sw.viscosity <- function (S, t=NULL)
         t <- S$data$temperature
         S <- S$data$salinity # note: this destroys the ctd object
     }
-    return(0.001798525 + S * (2.634749e-06 - 7.088328e-10 * t^2 + 
-                              S * (-4.702342e-09 + S * (5.32178e-11))) + t * (-6.293088e-05 + 
+    return(0.001798525 + S * (2.634749e-06 - 7.088328e-10 * t^2 +
+                              S * (-4.702342e-09 + S * (5.32178e-11))) + t * (-6.293088e-05 +
                                                                               t * (1.716685e-06 + t * (-3.479273e-08 + t * (+3.566255e-10)))))
 }

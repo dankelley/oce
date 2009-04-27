@@ -48,11 +48,11 @@ C     COMMON/ELIPSOID/A,F - original code
       DATA EPS/0.5D-13/
       DATA PI/3.1415926535897932384626433832795D0/
       DATA RAD/0.0174532925199432957692369076848861D0/
-	  if (DLAT1 .EQ. DLAT2 .AND. DLON1 .EQ. DLON2) then
-		S = 0.0D0
-		FAZ = 0.0D0
-		BAZ = 0.0D0 
-		return
+      if (DLAT1 .EQ. DLAT2 .AND. DLON1 .EQ. DLON2) then
+         S = 0.0D0
+         FAZ = 0.0D0
+         BAZ = 0.0D0 
+         return
       end if	
       R=1.D0-F
 C     
