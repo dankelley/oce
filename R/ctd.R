@@ -451,7 +451,8 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             else
                 plot(coastline)
             points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-            title(paste("Station", x$metadata$station),font.main=par("font"))
+            if (!is.na(x$metadata$station))
+                title(paste("Station", x$metadata$station),font.main=par("font"))
         }
         if (w <= adorn.length && nchar(adorn[w]) > 0) {
             t <- try(eval(adorn[w]), silent=TRUE)
