@@ -51,7 +51,8 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 	double rad = 0.0174532925199432957692369076848861;
 	double r = 1.0 - (*f);
 	double glat1, glon1, glat2, glon2, tu1, tu2, cu1, su1, cu2, x, sx, cx, sy, cy, y, sa, c2a, cz, e, c, d;
-	if ((*lat1) == (*lat2) && (*lon1) == (*lon2)) {
+	int iter;
+	if (((*lat1) == (*lat2)) && ((*lon1) == (*lon2))) {
 		*s = 0.0;
 		*faz = 0.0;
 		*baz = 0.0;
@@ -72,10 +73,11 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 	*baz = (*s) * tu2;
 	*faz = (*baz) * tu1;
 	x = glon2 - glon1;
+	iter = 1;
 	do {
 		sx = sin(x);
 		cx = cos(x);
-		tu1 = cu2*sx;
+		tu1 = cu2 * sx;
 		tu2 = (*baz) - su1 * cu2 * cx;
 		sy = sqrt(tu1 * tu1 + tu2 * tu2);
 		cy = (*s) * cx + (*faz);
@@ -90,7 +92,7 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 		d = x;
 		x = ((e * cy * c + cz) * sy * c + y) * sa;
 		x = (1.0 - c) * x * (*f) + glon2 - glon1;
-	} while(fabs(d - x) > eps);
+	} while(fabs(d - x) > eps && iter++ < 10);
 	*faz = atan2(tu1, tu2);
 	*baz = atan2(cu1 * sx, (*baz) * cx - su1 * cu2) + pi;
 	x = sqrt((1.0 / r / r - 1.0) * c2a + 1.0) + 1.0;
@@ -110,18 +112,16 @@ geod_xy(int *n,
 	double *lat, double *lon, double *latr, double *lonr,
 	double *x, double *y)
 {
-	double a = 6378137.00;/* WGS84 major axis */
+	double a = 6378137.00;	    /* WGS84 major axis */
 	double f = 1/298.257223563; /* WGS84 flattening parameter */
-	double *xptr=x, *yptr=y;
+	/*double *xptr = x, *yptr = y;*/
 	double faz, baz, s;
 	int i;
 	for (i = 0; i < *n; i++) {
-		double lat_i = *lat++;
-		double lon_i = *lon++;
 		geoddist(lat++, lon++, latr, lonr,
 			 &a, &f,
 			 &faz, &baz, &s);
-		*xptr++ = s * cos(baz / 57.2957795130823);
-		*yptr++ = s * sin(baz / 57.2957795130823);
+		*x++ = s * cos(baz / 57.2957795130823);
+		*y++ = s * sin(baz / 57.2957795130823);
 	}
 }
