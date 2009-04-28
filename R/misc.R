@@ -204,29 +204,12 @@ geod.xy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     n <- length(lat)
     if (length(lon) != n) stop("lat and lon must be vectors of the same length")
     x <- y <- vector("numeric", n)
-    for (i in 1:n) {
-        ##cat("lat=",lat[i], "lon=",lon[i],"lat.ref=",lat.ref,"lon.ref=",lon.ref,"\n")
-        if (is.finite(lat[i]) && is.finite(lon[i])) {
-            ## fres <- .Fortran("geoddist",
-            fres <- .C("geoddist",
-                       as.double(lat[i]),
-                       as.double(lon[i]),
-                       as.double(lat.ref),
-                       as.double(lon.ref),
-                       as.double(a),
-                       as.double(f),
-                       as.double(1),
-                       baz = double(1),
-                       dist = double(1),
-                       PACKAGE = "oce")
-            d <- fres$dist
-            baz <- fres$baz * pi / 180
-            x[i] <- d * cos(baz)
-            y[i] <- d * sin(baz)
-        } else {
-            x[i] <- y[i] <- NA
-        }
-    }
+    xy  <- .C("geod_xy", as.integer(n),
+              as.double(lat), as.double(lon),
+              as.double(lat.ref), as.double(lon.ref),
+              x = double(n), y=double(n))
+    x <- xy$x
+    y <- xy$y
     if (rotate != 0) {
         S <- sin(rotate * pi / 180)
         C <- cos(rotate * pi / 180)

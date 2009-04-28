@@ -104,3 +104,24 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 	*faz = (*faz) / rad;
 	*baz = (*baz) / rad;
 }
+
+void
+geod_xy(int *n,
+	double *lat, double *lon, double *latr, double *lonr,
+	double *x, double *y)
+{
+	double a = 6378137.00;/* WGS84 major axis */
+	double f = 1/298.257223563; /* WGS84 flattening parameter */
+	double *xptr=x, *yptr=y;
+	double faz, baz, s;
+	int i;
+	for (i = 0; i < *n; i++) {
+		double lat_i = *lat++;
+		double lon_i = *lon++;
+		geoddist(lat++, lon++, latr, lonr,
+			 &a, &f,
+			 &faz, &baz, &s);
+		*xptr++ = s * cos(baz / 57.2957795130823);
+		*yptr++ = s * sin(baz / 57.2957795130823);
+	}
+}
