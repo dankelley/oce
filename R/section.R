@@ -195,7 +195,8 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                     water.depth <- c(water.depth, max(x$data$station[[station.indices[i]]]$data$pressure, na.rm=TRUE))
                 }
             }
-            if (!grid) Axis(side=3, at=xx, labels=FALSE, lwd=0.5) # station locations
+            if (!grid)
+                Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
             bottom.x <- c(xx[1], xx, xx[length(xx)])
             bottom.y <- c(graph.bottom, -water.depth, graph.bottom)
             ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
