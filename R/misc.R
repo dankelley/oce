@@ -207,17 +207,18 @@ geod.xy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     for (i in 1:n) {
         ##cat("lat=",lat[i], "lon=",lon[i],"lat.ref=",lat.ref,"lon.ref=",lon.ref,"\n")
         if (is.finite(lat[i]) && is.finite(lon[i])) {
-            fres <- .Fortran("geoddist",
-                             as.double(lat[i]),
-                             as.double(lon[i]),
-                             as.double(lat.ref),
-                             as.double(lon.ref),
-                             as.double(a),
-                             as.double(f),
-                             as.double(1),
-                             baz = double(1),
-                             dist = double(1),
-                             PACKAGE = "oce")
+            ## fres <- .Fortran("geoddist",
+            fres <- .C("geoddist",
+                       as.double(lat[i]),
+                       as.double(lon[i]),
+                       as.double(lat.ref),
+                       as.double(lon.ref),
+                       as.double(a),
+                       as.double(f),
+                       as.double(1),
+                       baz = double(1),
+                       dist = double(1),
+                       PACKAGE = "oce")
             d <- fres$dist
             baz <- fres$baz * pi / 180
             x[i] <- d * cos(baz)
@@ -253,17 +254,18 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
         res <- vector("numeric", n)
         for (i in 1:n) {
             if (is.finite(lat1[1]) && is.finite(lon1[1]) && is.finite(lat1[i]) && is.finite(lon1[i])) {
-                dist <- .Fortran("geoddist",
-                                 as.double(lat1[1]),
-                                 as.double(lon1[1]),
-                                 as.double(lat1[i]),
-                                 as.double(lon1[i]),
-                                 as.double(a),
-                                 as.double(f),
-                                 as.double(1),
-                                 as.double(1),
-                                 dist = double(1),
-                                 PACKAGE = "oce")$dist
+                ## dist <- .Fortran("geoddist",
+                dist <- .C("geoddist",
+                           as.double(lat1[1]),
+                           as.double(lon1[1]),
+                           as.double(lat1[i]),
+                           as.double(lon1[i]),
+                           as.double(a),
+                           as.double(f),
+                           as.double(1),
+                           as.double(1),
+                           dist = double(1),
+                           PACKAGE = "oce")$dist
             } else {
                 dist <- NA
             }
@@ -287,17 +289,18 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
         for (i in 1:n1) {
                                         #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
             if (is.finite(lat1[i]) && is.finite(lon1[i]) && is.finite(llat2[i]) && is.finite(llon2[i])) {
-                res[i] <- .Fortran("geoddist",
-                                   as.double(lat1[i]),
-                                   as.double(lon1[i]),
-                                   as.double(llat2[i]),
-                                   as.double(llon2[i]),
-                                   as.double(a),
-                                   as.double(f),
-                                   as.double(1),
-                                   as.double(1),
-                                   dist = double(1),
-                                   PACKAGE = "oce")$dist
+                ## res[i] <- .Fortran("geoddist",
+                res[i] <- .C("geoddist",
+                             as.double(lat1[i]),
+                             as.double(lon1[i]),
+                             as.double(llat2[i]),
+                             as.double(llon2[i]),
+                             as.double(a),
+                             as.double(f),
+                             as.double(1),
+                             as.double(1),
+                             dist = double(1),
+                             PACKAGE = "oce")$dist
             } else {
                 res[i] <- NA
             }
