@@ -109,19 +109,28 @@ void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a,
 
 void
 geod_xy(int *n,
-	double *lat, double *lon, double *latr, double *lonr,
+	double *lat,		/* vector of latitudes */
+	double *lon,		/* vector of longitudes */
+	double *latr,		/* single reference latitude */
+	double *lonr,		/* single reference longitude */
+	double *a,		/* WGS84 major axis 6378137.00 */
+	double *f,    /* WGS84 flattening parameter 1/298.257223563 */
 	double *x, double *y)
 {
-	double a = 6378137.00;	    /* WGS84 major axis */
-	double f = 1/298.257223563; /* WGS84 flattening parameter */
-	/*double *xptr = x, *yptr = y;*/
+	double rad = 0.0174532925199432957692369076848861;
 	double faz, baz, s;
 	int i;
 	for (i = 0; i < *n; i++) {
-		geoddist(lat++, lon++, latr, lonr,
-			 &a, &f,
-			 &faz, &baz, &s);
-		*x++ = s * cos(baz / 57.2957795130823);
-		*y++ = s * sin(baz / 57.2957795130823);
+		geoddist(lat++, 
+			 lon++,
+			 latr, 
+			 lonr,
+			 &a,
+			 &f,
+			 &faz,
+			 &baz,
+			 &s);
+		*x++ = s * cos(baz * rad);
+		*y++ = s * sin(baz * rad);
 	}
 }

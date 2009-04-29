@@ -204,10 +204,17 @@ geod.xy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     n <- length(lat)
     if (length(lon) != n) stop("lat and lon must be vectors of the same length")
     x <- y <- vector("numeric", n)
-    xy  <- .C("geod_xy", as.integer(n),
-              as.double(lat), as.double(lon),
-              as.double(lat.ref), as.double(lon.ref),
-              x = double(n), y=double(n))
+    xy  <- .C("geod_xy",
+              as.integer(n),
+              as.double(lat),
+              as.double(lon),
+              as.double(lat.ref),
+              as.double(lon.ref),
+              as.double(a),
+              as.double(f),
+              x = double(n),
+              y = double(n),
+              PACKAGE = "oce")
     x <- xy$x
     y <- xy$y
     if (rotate != 0) {
