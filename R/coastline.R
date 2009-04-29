@@ -13,7 +13,7 @@ plot.coastline <- function (x, asp=NA, mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "coastline")) stop("method is only for coastline objects")
     par(mgp=mgp)
-    par(mar=c(mgp[1], mgp[1], 0.5, 0.5))
+    par(mar=c(mgp[1], mgp[1], 0.5*mgp[1], 0.5*mgp[1]))
     asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
     debug <- FALSE
     if (debug) cat("asp.middle=", asp.middle, "\n")
