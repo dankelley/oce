@@ -6,7 +6,7 @@
 
 \description{Plot a coastline.}
 
-\usage{\method{plot}{coastline}(x, asp=NA, \dots)}
+\usage{\method{plot}{coastline}(x, asp=NA, mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
   \item{x}{A \code{coastline} object, e.g. as read by
@@ -19,6 +19,10 @@
     e.g. coastal shapes near 45N will have the correct shape if you set
     \code{asp=1/cos(45*pi/180)}.  Setting \code{asp=1} makes sense for
     world views.}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the
+    data and less for the axes.}
   \item{\dots}{optional arguments passed to plotting functions.  For
     example, set \code{yaxp=c(-90,90,4)} for a plot extending from pole to
     pole.}

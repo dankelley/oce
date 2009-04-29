@@ -9,17 +9,18 @@ as.coastline <- function(latitude, longitude)
     res
 }
 
-plot.coastline <- function (x, asp=NA, ...)
+plot.coastline <- function (x, asp=NA, mgp=getOption("oce.mgp"), ...)
 {
-    debug <- FALSE
-    if (!inherits(x, "coastline"))
-        stop("method is only for coastline objects")
+    if (!inherits(x, "coastline")) stop("method is only for coastline objects")
+    par(mgp=mgp)
+    par(mar=c(mgp[1], mgp[1], 0.5, 0.5))
     asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+    debug <- FALSE
     if (debug) cat("asp.middle=", asp.middle, "\n")
     if (is.na(asp))
         asp <- asp.middle
-    ## The following is a somewhat provisional hack, necessiated by the tendency
-    ## of plot() to produce latitudes past the poles.
+    ## The following is a somewhat provisional hack, to get around a
+    ## tendency of plot() to produce latitudes past the poles.
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
     xr <- range(x$data$longitude, na.rm=TRUE)
     yr <- range(x$data$latitude, na.rm=TRUE)
