@@ -1,10 +1,10 @@
 plot.pt <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "pt")) stop("method is only for pt objects")
-    opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
-
     lw <- length(which)
+    opar <- par(no.readonly = TRUE)
+    if (lw > 1)
+        on.exit(par(opar))
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
@@ -30,7 +30,7 @@ plot.pt <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
         } else if (which[w] == 3) {
             plot(x$data$time, x$data$pressure,
                  xlab="", ylab=resizable.label("p"), type='l',
-                 ylim=rev(range(x$data$pressure, na.rm=TRUE)),
+                 ylim=range(x$data$pressure, na.rm=TRUE),
                  axes=FALSE, ...)
             box()
             oce.axis.POSIXct(1, x=x$data$time)
@@ -57,7 +57,7 @@ plot.pt <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
             par(mar=mar)
         } else if (which[w] == 4) {
             args <- list(x=x$data$temperature, y=x$data$pressure,
-                         ylim=rev(range(x$data$pressure, na.rm=TRUE)),
+                         ylim=range(x$data$pressure, na.rm=TRUE),
                          xlab=resizable.label("T"),
                          ylab=resizable.label("p"), ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
