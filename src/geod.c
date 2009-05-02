@@ -121,12 +121,12 @@ geod_xy(int *n,
 	double faz, baz, s;
 	int i;
 	for (i = 0; i < *n; i++) {
-		geoddist(lat++, 
+		geoddist(lat++,
 			 lon++,
 			 latr, 
 			 lonr,
-			 &a,
-			 &f,
+			 a,
+			 f,
 			 &faz,
 			 &baz,
 			 &s);

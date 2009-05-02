@@ -1,11 +1,11 @@
-\name{tdr.patm}
-\alias{tdr.patm}
-\title{Estimate atmospheric pressure in TDR record}
-\description{Estimate atmospheric pressure in TDR record}
-\usage{tdr.patm(x, dp=0.5)}
+\name{pt.patm}
+\alias{pt.patm}
+\title{Estimate atmospheric pressure in pT record}
+\description{Estimate atmospheric pressure in pT record}
+\usage{pt.patm(x, dp=0.5)}
 \arguments{
-  \item{x}{A \code{tdr} object, e.g. as read by
-    \code{\link{read.tdr}}, or a list of pressure (in decibars).}
+  \item{x}{A \code{pt} object, e.g. as read by
+    \code{\link{read.pt}}, or a list of pressures (in decibars).}
   \item{dp}{Half-width of pressure window to be examined (in decibars).}
 }
 
@@ -20,13 +20,13 @@
 \value{A list of four estimates: \code{sap}, the median, the mean, and
   the weighted mean.}
 
-\seealso{See \code{\link{read.tdr}} for more information on dealing
-  with the \code{tdr} data type, including examples.}
+\seealso{See \code{\link{read.pt}} for more information on dealing
+  with the \code{pt} data type, including examples.}
 
 \examples{
 library(oce)
-data(tdr)
-print(tdr.patm(tdr))
+data(pt)
+print(pt.patm(pt))
 }
 
 \author{Dan Kelley}
