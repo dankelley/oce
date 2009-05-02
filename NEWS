@@ -1,4 +1,5 @@
 0.1-77
+- rename tdr functions as pt, to reflect oral convention
 - add geod.xy()
 - add argument 'mgp' to all plotting functions
 - use abbreviations for axis names if space is tight
@@ -55,7 +56,7 @@
     http://code.google.com/p/r-oce/issues/detail?id=33
 - fix bug making plot.section() die if x is unordered
     http://code.google.com/p/r-oce/issues/detail?id=36
-- rename rbrtdr functions to tdr functions, improving generality
+- rename rbrpt functions to tdr functions, improving generality
 
 0.1.74
 - add argument "src" to as.ctd()

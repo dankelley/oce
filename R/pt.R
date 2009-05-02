@@ -1,6 +1,6 @@
-plot.tdr <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
+plot.pt <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
 {
-    if (!inherits(x, "tdr")) stop("method is only for tdr objects")
+    if (!inherits(x, "pt")) stop("method is only for pt objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
 
@@ -78,7 +78,7 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
     invisible()
 }
 
-read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
+read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
 {
     filename <- file
     if (is.character(file)) {
@@ -173,14 +173,14 @@ read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(rval) <- c("tdr", "oce")
+    class(rval) <- c("pt", "oce")
     rval
 }
 
 
-summary.tdr <- function(object, ...)
+summary.pt <- function(object, ...)
 {
-    if (!inherits(object, "tdr")) stop("method is only for tdr objects")
+    if (!inherits(object, "pt")) stop("method is only for pt objects")
     time.range <- range(object$data$time, na.rm=TRUE)
     fives <- matrix(nrow=2, ncol=5)
     res <- list(serial.number=object$metadata$serial.number,
@@ -197,13 +197,13 @@ summary.tdr <- function(object, ...)
     rownames(fives) <- c("Temperature", "Pressure")
     res$fives <- fives
     res$processing.log <- processing.log.summary(object)
-    class(res) <- "summary.tdr"
+    class(res) <- "summary.pt"
     res
 }
 
-print.summary.tdr <- function(x, digits=max(6, getOption("digits") - 1), ...)
+print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("\nTDR record\n")
+    cat("\nPT record\n")
     cat("Instrument Serial No. ", x$serial.number,  "\n")
     cat("No. of samples:      ", x$samples,  "\n")
     cat(sprintf("Logging start: %s (as reported in header)\n", as.character(x$logging.start)))
@@ -216,9 +216,9 @@ print.summary.tdr <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-tdr.patm <- function(x, dp=0.5)
+pt.patm <- function(x, dp=0.5)
 {
-    if (inherits(x, "tdr")) p <- x$data$pressure else p <- x
+    if (inherits(x, "pt")) p <- x$data$pressure else p <- x
     sap <- 10.1325                      # standard atm pressure
     if (length(p) < 1) return(rep(sap, 4))
     p <- p[(sap - dp) <= p & p <= (sap + dp)] # window near sap
@@ -229,14 +229,14 @@ tdr.patm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-tdr.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
+pt.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
 {
-    if (!inherits(x, "tdr")) stop("method is only for tdr objects")
+    if (!inherits(x, "pt")) stop("method is only for pt objects")
     res <- x
     n <- length(x$data$temperature)
-    if (verbose) cat("tdr.trim() working on dataset with", n, "points\n")
+    if (verbose) cat("pt.trim() working on dataset with", n, "points\n")
     if (n < 2) {
-        warning("too few data to tdr.trim()")
+        warning("too few data to pt.trim()")
     } else {
         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
         if (verbose) cat("using method", which.method,"\n")

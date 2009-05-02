@@ -44,7 +44,7 @@ export(
        plot.coastline,
        plot.ctd,
        plot.ctd.scan,
-       plot.tdr,
+       plot.pt,
        plot.topo,
        plot.profile,
        plot.sealevel,
@@ -54,15 +54,15 @@ export(
        processing.log.append,
        processing.log.item,
        processing.log.summary,
-       tdr.patm,
-       tdr.trim,
+       pt.patm,
+       pt.trim,
        read.adcp,
        read.coastline,
        read.ctd,
        read.topo,
        read.lobo,
        read.oce,
-       read.tdr,
+       read.pt,
        read.sealevel,
        read.section,
        resizable.label,
@@ -104,7 +104,7 @@ S3method(plot, ctd)
 S3method(plot, lobo)
 S3method(plot, sealevel)
 S3method(plot, section)
-S3method(plot, tdr)
+S3method(plot, pt)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
@@ -114,7 +114,7 @@ S3method(print, summary.ctd)
 S3method(print, summary.lobo)
 S3method(print, summary.sealevel)
 S3method(print, summary.section)
-S3method(print, summary.tdr)
+S3method(print, summary.pt)
 S3method(print, summary.tidem)
 S3method(print, summary.topo)
 S3method(predict, tidem)
@@ -126,7 +126,7 @@ S3method(summary, lobo)
 S3method(summary, oce)
 S3method(summary, sealevel)
 S3method(summary, section)
-S3method(summary, tdr)
+S3method(summary, pt)
 S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
