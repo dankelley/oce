@@ -25,7 +25,7 @@ as.sealevel <- function(eta,
     }
     data <- data.frame(time=time, eta=eta)
     if (missing(deltat))
-        deltat <- difftime(time[2], time[1], units="hours")
+        deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
     if (is.na(deltat) | deltat <= 0)
         deltat <- 1
     metadata <- list(header=header,

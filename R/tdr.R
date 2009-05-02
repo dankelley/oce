@@ -15,7 +15,7 @@ plot.tdr <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
         layout(cbind(c(1,2)))
     } else if (lw==3 || lw==4) {
         layout(rbind(c(1,2),
-                     c(3,4)))
+                     c(3,4)), widths=c(2,1))
     }
     par(mgp=mgp)
     par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -103,9 +103,9 @@ read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
     ## correction.to.conductivity
     ## memory type
     ## Timestamp
-    ## columns t, Temperature, p
+    ## columns time, Temperature, p
 
-##    header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
+    ##header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
     header <- c()
     logging.start <- sample.period <- NULL
     while (TRUE) {
@@ -143,29 +143,29 @@ read.tdr <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
     if (nvar == 4) {
         if (debug) cat("4 elements per data line\n")
         if (missing(tz))
-            t <- as.POSIXct(paste(d[seq(1,4*n,4)], d[seq(2,4*n,4)]))
+            time <- as.POSIXct(paste(d[seq(1,4*n,4)], d[seq(2,4*n,4)]))
         else
-            t <- as.POSIXct(paste(d[seq(1,4*n,4)], d[seq(2,4*n,4)]), tz=tz)
+            time <- as.POSIXct(paste(d[seq(1,4*n,4)], d[seq(2,4*n,4)]), tz=tz)
         temperature <- as.numeric(d[seq(3,4*n,4)])
         pressure <- as.numeric(d[seq(4,4*n,4)])
     } else if (nvar == 2) {
         if (debug) cat("2 elements per data line\n")
-        t <- logging.start + seq(1:n) * sample.period
+        time <- logging.start + seq(1:n) * sample.period
         temperature <- as.numeric(d[seq(1,2*n,2)])
         pressure <- as.numeric(d[seq(2,2*n,2)])
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
         if (debug) cat("5 elements per data line\n")
         if (missing(tz))
-            t <- as.POSIXct(paste(d[seq(1,5*n,5)], d[seq(2,5*n,5)]))
+            time <- as.POSIXct(paste(d[seq(1,5*n,5)], d[seq(2,5*n,5)]))
         else
-            t <- as.POSIXct(paste(d[seq(1,5*n,5)], d[seq(2,5*n,5)]),tz=tz)
+            time <- as.POSIXct(paste(d[seq(1,5*n,5)], d[seq(2,5*n,5)]),tz=tz)
         temperature <- as.numeric(d[seq(3,5*n,5)])
         pressure <- as.numeric(d[seq(4,5*n,5)])
         ## ignore column 5
     } else stop("wrong number of variables.  Expect 2, 4, or 5, but got ", nvar)
 
-    data <- data.frame(t=t, temperature=temperature, pressure=pressure)
+    data <- data.frame(time=time, temperature=temperature, pressure=pressure)
     metadata <- list(header=header,
                      serial.number=serial.number,
                      logging.start=logging.start,
