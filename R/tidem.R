@@ -1,4 +1,5 @@
-plot.tidem <- function(x, label.if=NULL, plot.type=c("staircase", "spikes"),
+plot.tidem <- function(x, label.if=NULL,
+                       plot.type=c("staircase", "spikes"),
                        log="",
                        mgp=getOption("oce.mgp"),
                        ...)
@@ -46,7 +47,7 @@ plot.tidem <- function(x, label.if=NULL, plot.type=c("staircase", "spikes"),
         segments(frequency, 0, frequency, amplitude)
         draw.constituents()
     } else if (plot.type == "staircase") {
-        plot(frequency, cumsum(amplitude), type='l', xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
+        plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
         draw.constituents()
     } else {
         stop("unknown plot.type ", plot.type)
