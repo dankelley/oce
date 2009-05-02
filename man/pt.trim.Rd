@@ -1,10 +1,10 @@
-\name{tdr.trim}
-\alias{tdr.trim}
-\title{Trim start/end portions of a TDR cast}
-\description{Trim start/end portions of a TDR cast.}
-\usage{tdr.trim(x, method="water",parameters=NULL, verbose=FALSE)}
+\name{pt.trim}
+\alias{pt.trim}
+\title{Trim start/end portions of a pT cast}
+\description{Trim start/end portions of a pT cast.}
+\usage{pt.trim(x, method="water",parameters=NULL, verbose=FALSE)}
 \arguments{
-  \item{x}{A \code{tdr} object, e.g. as read by \code{\link{read.tdr}}.}
+  \item{x}{A \code{pt} object, e.g. as read by \code{\link{read.pt}}.}
   \item{method}{Various methods exist, some of which use parameters:
     \describe{
       \item{\code{"water"}}{Trim data at start and end that seem to be in air
@@ -26,7 +26,7 @@
   guessing need be done about the time the instruments went in the
   water.  In some cases, though, the time will have to be inferred from
   the data, and so it might make sense to start by trimming with the
-  \code{"water"} method, after which \code{\link{summary.tdr}} is used
+  \code{"water"} method, after which \code{\link{summary.pt}} is used
   to find the probably time when the instrument was put into the water.
 
   After the data are trimmed in time, the pressure record is modified by
@@ -34,21 +34,21 @@
 
 }
 
-\value{An object of \code{\link[base]{class}} \code{"tdr"}, with data
+\value{An object of \code{\link[base]{class}} \code{"pt"}, with data
   having been trimmed in some way, and with the pressure being reduced
   by mean sea-level pressure.} 
 
 \seealso{
-  The \code{tdr} object may be read with \code{\link{read.tdr}}.
-  \code{\link{plot.tdr}} is very useful in providing guidance
-  for trimming with \code{tdr.trim}.
+  The \code{pt} object may be read with \code{\link{read.pt}}.
+  \code{\link{plot.pt}} is very useful in providing guidance
+  for trimming with \code{pt.trim}.
 }
 \examples{
 library(oce)
-data(tdr)
-plot(tdr)
-tdr.trimmed <- tdr.trim(tdr)
-plot(tdr.trimmed)
+data(pt)
+plot(pt)
+pt.trimmed <- pt.trim(pt)
+plot(pt.trimmed)
 }
 
 \author{Dan Kelley}

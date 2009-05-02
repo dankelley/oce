@@ -26,8 +26,8 @@
 
 \examples{
 library(oce)
-data(tdr)
-d <- subset(tdr, as.POSIXct("2008-06-26") <= time &
+data(pt)
+d <- subset(pt, as.POSIXct("2008-06-26") <= time &
             time <= as.POSIXct("2008-06-27"))
 plot(d$data$time, d$data$temperature, 
     type="l", lwd=2, xlab="t", ylab="Temperature [degC]")

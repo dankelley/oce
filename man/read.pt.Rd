@@ -1,12 +1,12 @@
-\name{read.tdr}
+\name{read.pt}
 
-\alias{read.tdr}
+\alias{read.pt}
 
 \title{Read an TDR temperature-depth recorder data file}
 
-\description{Read an TDR temperature-depth recorder file, producing an object of type \code{tdr}.}
+\description{Read an pT temperature-depth recorder file, producing an object of type \code{pt}.}
 
-\usage{read.tdr(file, tz=getOption("oce.tz"), log.action, debug=FALSE)}
+\usage{read.pt(file, tz=getOption("oce.tz"), log.action, debug=FALSE)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -27,7 +27,7 @@
   temperature, and pressure; and (3) a five-column style, in which depth
   in the water column is given after the pressure.}
 
-\value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"pt"}, which is a
   list with elements detailed below.
   \item{data}{a data table containing the \code{time},
     \code{temperature}, and \code{pressure} data.}
@@ -48,11 +48,11 @@
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  Objects of type \code{tdr} can be plotted
-  with \code{\link{plot.tdr}}, and summarized with
-  \code{\link{summary.tdr}}, both of which are generic functions.
+  alternative to this.  Objects of type \code{pt} can be plotted
+  with \code{\link{plot.pt}}, and summarized with
+  \code{\link{summary.pt}}, both of which are generic functions.
   In-air samples (collected before and after deployment) may be removed
-  in a crude way with \code{\link{tdr.trim}}, but the best scheme is
+  in a crude way with \code{\link{pt.trim}}, but the best scheme is
   to use \code{\link{subset.oce}}, based on a temporal window (see
   Examples).  Removal of the atmospheric component of pressure is left
   up to the user; in many cases, it makes sense to treat this as a
@@ -60,11 +60,11 @@
 
 \examples{
 library(oce)
-data(tdr)
+data(pt)
 # trim automatically
-tdr.trim.auto <- tdr.trim(tdr)
+pt.trim.auto <- pt.trim(pt)
 # trim manually
-plot(tdr, which=2)
+plot(pt, which=2)
 # try a few times near start of record (15:00:00 seems good)
 abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
 abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
@@ -73,9 +73,9 @@ abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
 abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-tdr.trim.manual <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= time &
+pt.trim.manual <- subset(pt, as.POSIXct("2008-06-25 15:00:00") <= time &
                           time <= as.POSIXct("2008-07-04 12:00:00"))
-plot(tdr.trim.manual)
+plot(pt.trim.manual)
 }
 
 \author{Dan Kelley}

@@ -1,16 +1,16 @@
-\name{plot.tdr}
+\name{plot.pt}
 
-\alias{plot.tdr}
+\alias{plot.pt}
 
-\title{Plot TDR temperature-depth recorder data}
+\title{Plot pT (pressure-temperature) recorder data}
 
-\description{Plot TDR temperature-depth recorder data}
+\description{Plot pT temperature-depth recorder data}
 
-\usage{\method{plot}{tdr}(x, which=1:4, adorn=NULL,
+\usage{\method{plot}{pt}(x, which=1:4, adorn=NULL,
      mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
-  \item{x}{\code{cdt} object, typically result of \code{\link{read.tdr}}.}
+  \item{x}{\code{pt} object, typically result of \code{\link{read.pt}}.}
   \item{which}{if a subset of the plots is required, specify a subset of
     the numbers 1:4.  These are codes for the panels, which will be
     drawn from top-left to bottom-right (see Details).}
@@ -36,13 +36,13 @@
   may supply a list of \code{which} values, to get multi-panel plots.}
 
 \examples{
-data(tdr)
-plot(tdr, which=c(1,3), 
+data(pt)
+plot(pt, which=c(1,3), 
     adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'),col='red')}))
 }
 
-\seealso{See \code{\link{read.tdr}} for more information on dealing
-  with the \code{tdr} data type, including examples.}
+\seealso{See \code{\link{read.pt}} for more information on dealing
+  with the \code{pt} data type, including examples.}
 
 \author{Dan Kelley}
 \keyword{misc}

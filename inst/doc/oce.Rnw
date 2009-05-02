@@ -545,13 +545,13 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 
 \section{Temperature-Depth Recorder data}
 The commands
-<<label=tdrplot,eval=FALSE>>=
+<<label=ptplot,eval=FALSE>>=
 library(oce)
-data(tdr)
-plot(tdr.trim(tdr)) # NOTE: atmospheric pressure not removed
+data(pt)
+plot(pt.trim(pt)) # NOTE: atmospheric pressure not removed
 @
-produce a plot (Figure~\ref{fig:tdr}) of temperature-depth recorder
-(TDR) measurements made during St Lawrence Estuary Internal Wave
+produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder
+(pt) measurements made during St Lawrence Estuary Internal Wave
 Experiment, a CFCAS-funded research program in which the \texttt{oce}
 author was a principal investigator.  The device was mounted on
 a mooring that tilted significantly with the tide, yielding
@@ -564,20 +564,21 @@ part of a worked example.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=tdrfig ,fig=TRUE, width=7, height=5, echo=FALSE>>=
-<<tdrplot>>
+<<label=ptfig ,fig=TRUE, width=7, height=5, echo=FALSE>>=
+<<ptplot>>
 @
 \end{center}
-\caption{Measurements made with a temperature-depth recorder in the St Lawrence
-Estuary.  Note that the record contains in-air measurements made during an hour
-prior to lowering into the water, and during several days of transit from the
-field site back to Dalhousie University.  The text suggests a procedure for
-isolating in-water data, and removing the approximately 10 dbar atmospheric
-component of pressure.}
-\label{fig:tdr}
+\caption{Measurements made with a pressure-temperature recorder in the
+  St Lawrence Estuary.  Note that the record contains in-air
+  measurements made during an hour prior to lowering into the water,
+  and during several days of transit from the field site back to
+  Dalhousie University.  The text suggests a procedure for isolating
+  in-water data, and removing the approximately 10 dbar atmospheric
+  component of pressure.}
+\label{fig:pt}
 \end{figure}
 
-\workedexercise{7}{Access the raw data of this \texttt{tdr} record, and
+\workedexercise{7}{Access the raw data of this \texttt{pt} record, and
 determine the atmospheric pressure to remove from it.}
 
 
@@ -726,12 +727,12 @@ abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @
 
-\workedanswer{7}{Temperature-depth Recorder plot}
-\index{subset!using with TDR data}
+\workedanswer{7}{Pressure-temperature Recorder plot}
+\index{subset!using with pt data}
 \index{data!TDR}
 
 The accuracy of automatic removal of the atmospheric component done with
-\verb@tdr.trim()@ is often quite good, but data are so valuable that it always
+\verb@pt.trim()@ is often quite good, but data are so valuable that it always
 makes sense to investigate the data by eye, in order to select a time window.
 Manual selection of a time window is also important when a researcher is dealing
 with a set of instruments whose measuremnts are to be combined and so need a
@@ -743,13 +744,13 @@ indicators is drawn on the plot, to determine proper cutoff times.
 Hint: be careful on timezones!
 <<>>=
 library(oce)
-data(tdr)
+data(pt)
 # First, get an idea for the data
-plot(tdr, which=2)
+plot(pt, which=2)
 
-tdr.trim.auto <- tdr.trim(tdr)
-plot(tdr.trim.auto)
-print(range(tdr.trim.auto$data$time)) # gives a starting point
+pt.trim.auto <- pt.trim(pt)
+plot(pt.trim.auto)
+print(range(pt.trim.auto$data$time)) # gives a starting point
 
 abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
 abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
@@ -758,11 +759,11 @@ abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
 abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-tdr.trim <- subset(tdr, as.POSIXct("2008-06-25 15:00:00") <= time &
-                   time <= as.POSIXct("2008-07-04 12:00:00"))
-print(tdr.patm(tdr)) # take 10.2dbar from this
-tdr.trim <- oce.edit(tdr.trim, action="x$data$pressure <- x$data$pressure - 10.2", reason="remove atm pressure", person="DK")
-plot(tdr.trim)
+pt.trim <- subset(pt, as.POSIXct("2008-06-25 15:00:00") <= time &
+                  time <= as.POSIXct("2008-07-04 12:00:00"))
+print(pt.patm(pt)) # take 10.2dbar from this
+pt.trim <- oce.edit(pt.trim, action="x$data$pressure <- x$data$pressure - 10.2", reason="remove atm pressure", person="DK")
+plot(pt.trim)
 @
 
 \printindex

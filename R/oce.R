@@ -168,7 +168,7 @@ magic <- function(file)
     if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) return("sealevel")
     ##275A Halifax            Canada              1920 44400N 063350W 0000 3 00000R MM
     if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line))  return("topo")
-    if ("RBR TDR" == substr(line, 1, 7))             return("tdr")
+    if ("RBR TDR" == substr(line, 1, 7))             return("pt")
     if ("BOTTLE"  == substr(line, 1, 6))             return("section")
     return("unknown")
 }
@@ -183,7 +183,7 @@ read.oce <- function(file, ...)
     if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))
     if (type == "sealevel")    return(read.sealevel(file, ..., log.action=log.action))
     if (type == "topo")        return(read.topo(file, ..., log.action=log.action))
-    if (type == "tdr")         return(read.tdr(file, ..., log.action=log.action))
+    if (type == "pt")          return(read.pt(file, ..., log.action=log.action))
     if (type == "section")     return(read.section(file, ..., log.action=log.action))
     stop("unknown file type")
 }
