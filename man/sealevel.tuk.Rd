@@ -18,18 +18,16 @@
   1600 MST as in Foreman's Appendix 7.2.
 } % description
 
-\section{Example}{
-  \preformatted{
+\examples{
 data(sealevel.tuk)
-plot(sealevel.tuk$data$t, sealevel.tuk$data$eta, type='l',
+plot(sealevel.tuk$data$time, sealevel.tuk$data$eta, type='l',
      ylab="Height [m]",ylim=c(-2,6))
 legend("topright", legend=c("Tuktoyaktuk (1975)","Detided"),
        col=c("black","red"),lwd=1)
 tide <- tidem(sealevel.tuk)
 detided <- sealevel.tuk$data$eta - predict(tide)
-lines(sealevel.tuk$data$t, detided, col="red")
-} % preformatted
-} % example
+lines(sealevel.tuk$data$time, detided, col="red")
+}
 
 \usage{data(sealevel.tuk)}
 

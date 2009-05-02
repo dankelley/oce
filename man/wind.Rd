@@ -1,5 +1,5 @@
 \name{wind}
-\docType{wind}
+\docType{data}
 \alias{wind}
 \title{Sample (wind) data for contouring}
 \description{Wind data, for contouring.}

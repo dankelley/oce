@@ -54,7 +54,7 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
 {
     if (!inherits(x, "sealevel")) stop("method is only for sealevel objects")
     opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
+    if (!is.null(focus.time)) on.exit(par(opar))
 
     ## tidal constituents (in cpd):
     ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
@@ -101,7 +101,6 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
             if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
         }
     } else {
-        oldpar <- par(no.readonly = TRUE)
         eg.days <- 28
         stop <- 24 * eg.days
         eta.m <- x$data$eta

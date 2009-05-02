@@ -10,11 +10,12 @@
     mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
-  \item{x}{A \code{sealevel} object, e.g. as read by \code{\link{read.sealevel}}.}
-  \item{focus.time}{if provided, the the time interval on which to
-    focus, each a string in a format suitable for interpretation by
-    \code{\link{as.POSIXct}}; see the example.}
-  \item{adorn}{list of expressions to be executed for the panels in
+  \item{x}{an object of class \code{"sealevel"}, e.g. as read by
+    \code{\link{read.sealevel}}.}
+  \item{focus.time}{optional vector of length two, specifying a time
+    interval on which to focus, each a string in a format suitable for
+    interpretation by \code{\link{as.POSIXct}}; see the example.}
+  \item{adorn}{vector of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels,
     as they are drawn from top-left to bottom-right.   If only a single
@@ -45,9 +46,9 @@
   contains missing values, then only these two panels are
   drawn. However, if it has no missing values, then two spectral
   representations are also drawn. The first of these is a power
-  spectrum, with some common tidal constituents being indicates with
+  spectrum, with some common tidal constituents being indicated with
   lines and labels. The units are \eqn{m^2}{m^2} per cycle-per-day. The
-  second, and thus the lower of the four panels, is a cumulative graph
+  second, the lower of the four panels, is a cumulative graph
   of the square root of the power spectrum. The unit for this graph is
   \eqn{m}{m}, so that the step for each tidal constituent may be
   interpreted as the amplitude of that constituent, and the largest
