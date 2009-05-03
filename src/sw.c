@@ -527,10 +527,6 @@ sw_tsrho(double *pS, double *prho, double *pp, double *res)
 	* bisection from working.  I found this out by using a TLOW
 	* value of -50.  The range below should be OK for oceanographic use.
 	*/
-#define TLOW  -3.0		/* left bracket on T search region */
-#define THIGH 40.0		/* right bracket on T search region */
-#define RHO_TOL 0.0001		/* stop if get to within this rho value */
-#define T_RES   0.0001		/* stop if bracket T to within this resolution */
 	bs_res = tsrho_bisection_search(&T, TLOW, THIGH, T_RES, RHO_TOL);/* BUG: ignoring result */
 	/* printf(" tsrho(S=%f  rho=%f  p=%f) returning %f\n",S,sig_0,p_ref,T); */
 	*res = T;
