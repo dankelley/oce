@@ -9,8 +9,8 @@ resizable.label <- function(item=c("S", "T", "p"), axis=c("x", "y"))
         full <- "Salinity [ PSU ]"
         abbreviated <- "S [ PSU ]"
     } else if (item == "p") {
-        full <- "pressure [ dbar ]"
-        abbreviated <- "p [ dbar ]"
+        full <- "Pressure [ dbar ]"
+        abbreviated <- "P [ dbar ]"
     }
     fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
     if (fraction < 0.8) full else abbreviated
