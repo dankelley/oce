@@ -140,30 +140,31 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
 
     d <- scan(file, character(), quiet=TRUE)
     n <- length(d) / nvar
-    if (nvar == 4) {
-        if (debug) cat("4 elements per data line\n")
-        if (missing(tz))
-            time <- as.POSIXct(paste(d[seq(1,4*n,4)], d[seq(2,4*n,4)]))
-        else
-            time <- as.POSIXct(paste(d[seq(1,4*n,4)], d[seq(2,4*n,4)]), tz=tz)
-        temperature <- as.numeric(d[seq(3,4*n,4)])
-        pressure <- as.numeric(d[seq(4,4*n,4)])
-    } else if (nvar == 2) {
+    dim(d) <- c(nvar, n)
+    if (nvar == 2) {
         if (debug) cat("2 elements per data line\n")
         time <- logging.start + seq(1:n) * sample.period
-        temperature <- as.numeric(d[seq(1,2*n,2)])
-        pressure <- as.numeric(d[seq(2,2*n,2)])
+        temperature <- as.numeric(d[1,])
+        pressure <- as.numeric(d[2,])
+    } else if (nvar == 4) {
+        if (debug) cat("4 elements per data line\n")
+        if (missing(tz))
+            time <- as.POSIXct(paste(d[1,], d[2,]))
+        else
+            time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+        temperature <- as.numeric(d[3,])
+        pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
         if (debug) cat("5 elements per data line\n")
         if (missing(tz))
-            time <- as.POSIXct(paste(d[seq(1,5*n,5)], d[seq(2,5*n,5)]))
+            time <- as.POSIXct(paste(d[1,], d[2,]))
         else
-            time <- as.POSIXct(paste(d[seq(1,5*n,5)], d[seq(2,5*n,5)]),tz=tz)
-        temperature <- as.numeric(d[seq(3,5*n,5)])
-        pressure <- as.numeric(d[seq(4,5*n,5)])
+            time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
+        temperature <- as.numeric(d[3,])
+        pressure <- as.numeric(d[4,])
         ## ignore column 5
-    } else stop("wrong number of variables.  Expect 2, 4, or 5, but got ", nvar)
+    } else stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)
 
     data <- data.frame(time=time, temperature=temperature, pressure=pressure)
     metadata <- list(header=header,
