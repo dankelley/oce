@@ -277,9 +277,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
         x <- as.POSIXct(at)
     else x <- as.POSIXct(x)
     range <- par("usr")[if (side%%2) 1:2 else 3:4]
+
     d <- range[2] - range[1]
     z <- c(range, x[is.finite(x)])
     attr(z, "tzone") <- attr(x, "tzone")
+
     if (d < 1.1 * 60) {
         sc <- 1
         if (missing(format))
@@ -308,6 +310,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
     else {
         sc <- 60 * 60 * 24
     }
+
     if (d < 60 * 60 * 24 * 50) {
         zz <- pretty(z/sc)
         z <- zz * sc

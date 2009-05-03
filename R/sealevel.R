@@ -49,29 +49,12 @@ as.sealevel <- function(eta,
     rval
 }
 
-plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
+plot.sealevel <- function(x, which=1:4,
+                          adorn=NULL,
                           mgp=getOption("oce.mgp"), ...)
 {
-    if (!inherits(x, "sealevel")) stop("method is only for sealevel objects")
-    opar <- par(no.readonly = TRUE)
-    if (!is.null(focus.time)) on.exit(par(opar))
-
-    ## tidal constituents (in cpd):
-    ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
-    adorn.length <- length(adorn)
-    if (adorn.length == 1) {
-        adorn <- rep(adorn, 4)
-        adorn.length <- 4
-    }
-    num.NA <- sum(is.na(x$data$eta))
-
-    if (is.null(focus.time)) {
-        if (num.NA)
-            layout(cbind(1:2))
-        else
-            layout(cbind(1:4))
-    }
-    title.plot <- function(x) {
+    title.plot <- function(x)
+    {
         mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
         title <- paste("Station ",
                        x$metadata$station.number, " ",
@@ -82,127 +65,138 @@ plot.sealevel <- function(x, focus.time=NULL, adorn=NULL,
                        sep="")
         mtext(side=3, title, adj=1, cex=2/3)
     }
+    draw.constituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
+    {
+        abline(v=frequency, col=col)
+        mtext(label, side=side, at=frequency, col=col,cex=2/3)
+    }
+    draw.constituents <- function()
+    {
+        draw.constituent(0.0387306544, "O1", side=1)
+        ##draw.constituent(0.0416666721, "S1", side=3)
+        draw.constituent(0.0417807462, "K1", side=3)
+        draw.constituent(0.0789992488, "N2", side=1)
+        draw.constituent(0.0805114007, "M2", side=3)
+        draw.constituent(0.0833333333, "S2", side=1)
+    }
+
+    if (!inherits(x, "sealevel")) stop("method is only for sealevel objects")
+    opar <- par(no.readonly = TRUE)
+    lw <- length(which)
+    if (lw > 1) on.exit(par(opar))
+
+    ## tidal constituents (in cpd):
+    ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
+    adorn.length <- length(adorn)
+    if (adorn.length == 1) {
+        adorn <- rep(adorn, 4)
+        adorn.length <- 4
+    }
+    num.NA <- sum(is.na(x$data$eta))
+
+    if (lw > 1)
+        layout(cbind(1:lw))
 
     par(mgp=mgp)
     par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
 
-    if (!is.null(focus.time)) {
-        focus.time <- as.POSIXct(focus.time)
-        focus <- (focus.time[1] <= x$data$time) & (x$data$time <= focus.time[2])
-        eta.m <- x$data$eta
-        MSL <- mean(eta.m, na.rm=TRUE)
-        eta <- (eta.m[focus] - MSL)
-        plot(as.POSIXct(x$data$time)[focus], eta, type='l',ylab="Sealevel Anomaly [m]")
-        abline(h=0,col="darkgreen")
-        mtext(side=4,text=sprintf("%.2f m", MSL),at=0,col="darkgreen", cex=0.8)
-        title.plot(x)
-        if (adorn.length > 0) {
-            t <- try(eval(adorn[1]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
-        }
-    } else {
-        eg.days <- 28
-        stop <- 24 * eg.days
-        eta.m <- x$data$eta
-        MSL <- mean(eta.m, na.rm=TRUE)
-        tmp <- (pretty(max(eta.m-MSL,na.rm=TRUE)-min(eta.m-MSL,na.rm=TRUE))/2)[2]
-        ylim <- c(-tmp,tmp)
-                                        # Whole timeseries
-        n <- length(x$data$eta) # do not trust value in metadata
-        from <- as.POSIXlt(x$data$time[1])
-        from$mday <- 1
-        from$hour <- from$min <- from$sec <- 0
-        to <- as.POSIXlt(x$data$time[n])
-        to$mday <- 28
-        to$hour <- to$min <- to$sec <- 0
-        at.t <- seq(from=from, to=to, by="month")
-        if (num.NA) {
-            warning("time series contains ", num.NA, " missing data, so no spectra will be drawn")
-        }
+    MSL <- mean(x$data$eta, na.rm=TRUE)
+    tmp <- (pretty(max(x$data$eta-MSL,na.rm=TRUE)-min(x$data$eta-MSL,na.rm=TRUE))/2)[2]
+    ylim <- c(-tmp,tmp)
+    n <- length(x$data$eta) # do not trust value in metadata
+    for (w in 1:length(which)) {
+        if (which[w] == 1) {
+            if ("xlim" %in% names(list(...))) {
+                from <- list(...)$xlim[1]
+                to <- list(...)$xlim[2]
+                at.t <- seq(from=from, to=to, length.out=3)
+            } else {
+                from <- as.POSIXlt(x$data$time[1])
+                from$mday <- 1
+                from$hour <- from$min <- from$sec <- 0
+                to <- as.POSIXlt(x$data$time[n])
+                to$mday <- 28
+                to$hour <- to$min <- to$sec <- 0
+                at.t <- seq(from=from, to=to, by="month")
+            }
+            ##cat("at.t=", paste(at.t, collapse=" "), "\n")
+            plot(as.POSIXlt(x$data$time), x$data$eta-MSL,
+                 xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l', ylim=ylim,
+                 lwd=0.5, axes=!FALSE, ...)
+            mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
+            tics <- oce.axis.POSIXct(1, at.t)
+            yax <- axis(2)
+            box()
+            abline(h=yax, col="darkgray", lty="dotted")
+            abline(v=tics, col="darkgray", lty="dotted")
+            abline(h=0,col="darkgreen")
+            mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
+            title.plot(x)
+        } else if (which[w] == 2) {
+            eg.days <- 28
+            stop <- 24 * eg.days
+            from <- as.POSIXlt(x$data$time[1])
+            from$hour <- from$min <- from$sec <- 0
+            to <- from + 28 * 86400 # 28 days
+            at.week <- seq(from=from, to=to, by="week")
+            at.day  <- seq(from=from, to=to, by="day")
+            tmp <- (pretty(max(x$data$eta[1:stop]-MSL,na.rm=TRUE) -
+                           min(x$data$eta[1:stop]-MSL,na.rm=TRUE))/2)[2]
+            ylim <- c(-tmp,tmp)
 
-        plot(as.POSIXlt(x$data$time)[1:n], eta.m-MSL,
-             xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
-             lwd=0.5, axes=FALSE)
-        if (adorn.length > 0) {
-            t <- try(eval(adorn[1]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
+            plot(x$data$time[1:stop], x$data$eta[1:stop] - MSL,
+                 xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim,
+                 axes=FALSE)
+            oce.axis.POSIXct(1, x$data$time[1:stop])
+            yax <- axis(2)
+            abline(h=yax, col="lightgray", lty="dotted")
+            box()
+            abline(v=at.week, col="darkgray", lty="dotted")
+            abline(v=at.day, col="lightgray", lty="dotted")
+            abline(h=0,col="darkgreen")
+            mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
+        } else if (which[w] == 3) {
+            if (num.NA == 0) {
+                Eta <- ts(x$data$eta, start=1, deltat=x$metadata$deltat)
+                s <- spectrum(Eta-mean(Eta),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
+                par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
+                plot(s$freq,s$spec,xlim=c(0,0.1),
+                     xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
+                     type='l',log="y")
+                grid()
+                draw.constituents()
+            } else {
+                warning("cannot draw sealevel spectum, because the series contains missing values")
+            }
+        } else if (which[w] == 4) {
+            if (num.NA == 0) {
+                n <- length(x$data$eta)
+                n.cum.spec <- length(s$spec)
+                cum.spec <- sqrt(cumsum(s$spec) / n.cum.spec)
+                e <- x$data$eta - mean(x$data$eta)
+                par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
+                plot(s$freq,cum.spec,
+                     xlab="Frequency [ cph ]",
+                     ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
+                     type='l',xlim=c(0,0.1))
+                if (adorn.length > 3) {
+                    t <- try(eval(adorn[4]), silent=TRUE)
+                    if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+                }
+                grid()
+                draw.constituents()
+            } else {
+                warning("cannot draw sealevel spectum, because the series contains missing values")
+            }
+        } else {
+            stop("unrecognized value of which", which[w])
         }
-        mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
-        axis(1, at.t, format(at.t, "%b %d"), cex=0.7)  # small font to get all 12 month names
-        yax <- axis(2)
-        box()
-        abline(h=yax, col="darkgray", lty="dotted")
-        abline(v=at.t, col="darkgray", lty="dotted")
-        abline(h=0,col="darkgreen")
-        mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-        title.plot(x)
-        from <- as.POSIXlt(x$data$time[1])
-        from$hour <- from$min <- from$sec <- 0
-        to <- from + 28 * 86400 # 28 days
-        at.week <- seq(from=from, to=to, by="week")
-        at.day  <- seq(from=from, to=to, by="day")
-        tmp <- (pretty(max(eta.m[1:stop]-MSL,na.rm=TRUE)-min(eta.m[1:stop]-MSL,na.rm=TRUE))/2)[2]
-        ylim <- c(-tmp,tmp)
-        plot(x$data$time[1:stop], eta.m[1:stop] - MSL,
-             xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l',ylim=ylim, axes=FALSE)
         if (adorn.length > 1) {
-            t <- try(eval(adorn[2]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
-        }
-        axis(1, at.week, labels=format(at.week, "%b %d"))
-        yax <- axis(2)
-        abline(h=yax, col="lightgray", lty="dotted")
-        box()
-        abline(v=at.week, col="darkgray", lty="dotted")
-        abline(v=at.day, col="lightgray", lty="dotted")
-        abline(h=0,col="darkgreen")
-        mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-        ## Draw spectra, if series has no NA, so that spectrum is easy to construct
-        if (!num.NA) {
-            Eta <- ts(eta.m,start=1,deltat=x$metadata$deltat)
-            s <- spectrum(Eta-mean(Eta),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
-            par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
-            plot(s$freq,s$spec,xlim=c(0,0.1),
-                 xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
-                 type='l',log="y")
-            if (adorn.length > 2) {
-                t <- try(eval(adorn[3]), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
-            }
-
-            grid()
-            draw.constituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
-            {
-                abline(v=frequency, col=col)
-                mtext(label, side=side, at=frequency, col=col,cex=2/3)
-            }
-            draw.constituents <- function()
-            {
-                draw.constituent(0.0387306544, "O1", side=1)
-                ##draw.constituent(0.0416666721, "S1", side=3)
-                draw.constituent(0.0417807462, "K1", side=3)
-                draw.constituent(0.0789992488, "N2", side=1)
-                draw.constituent(0.0805114007, "M2", side=3)
-                draw.constituent(0.0833333333, "S2", side=1)
-            }
-            draw.constituents()
-            n <- length(x$data$eta)
-            n.cum.spec <- length(s$spec)
-            cum.spec <- sqrt(cumsum(s$spec) / n.cum.spec)
-            e <- eta.m - mean(eta.m)
-            par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
-            plot(s$freq,cum.spec,
-                 xlab="Frequency [ cph ]",
-                 ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
-                 type='l',xlim=c(0,0.1))
-            if (adorn.length > 3) {
-                t <- try(eval(adorn[4]), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
-            }
-            grid()
-            draw.constituents()
+            t <- try(eval(adorn[w]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    invisible()
 }
 
 

@@ -6,9 +6,10 @@
 
 \description{Plot a summary diagram for CTD data.}
 
-\usage{\method{plot}{ctd}(x,ref.lat=NaN, ref.lon=NaN, 
+\usage{\method{plot}{ctd}(x,  which=1:4, 
+  ref.lat=NaN, ref.lon=NaN, 
   grid=TRUE, col.grid="lightgray", lty.grid="dotted",
-  which=1:4, coastline,
+  coastline,
   Slim, Tlim, plim, densitylim, dpdtlim, timelim,
   lonlim, latlim,
   latlon.pch=20, latlon.cex=1.5, latlon.col="red",
@@ -18,24 +19,24 @@
 }
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{which}{list of desired plot types.  
+    The value \code{which}=1 gives a combined profile of temperature and
+    salinity, \code{which}=2 gives a combined profile of sigma-theta and
+    \eqn{N^2}{N^2}, \code{which}=3 gives a TS plot,
+    \code{which}=4 gives a textual summary of some aspects of the data,
+    \code{which}=5 gives a map, with a dot for the station
+    location (note that this requires that a \code{coastline} be
+    given), \code{which}=6 gives a profile of density and dP/dt (useful
+    for evaluating whether the instrument is dropping properly through
+    the water column),  \code{which}=7 gives a profile of density and
+    time, \code{which}=8 gives a profile of index number (especially
+    useful for \code{\link{ctd.trim}}) and \code{which}=9 gives a plot of
+    density.}
   \item{ref.lat}{Latitude of reference point for distance calculation}
   \item{ref.lon}{Longitude of reference point for distance calculation}
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
   \item{col.grid}{colour for the grid.}
   \item{lty.grid}{line type for grid.}
-  \item{which}{list of desired plot types.  There are four panels in
-    total, and the desired plots are place in these, in reading order.
-    Which=1 gives a combined profile of temperature and salinity.
-    \code{which}=2 gives a combined profile of sigma-theta and
-    \eqn{N^2}{N^2}. \code{which}=3 gives a TS plot.
-    \code{which}=4 gives a textual summary of some aspects of the data.
-    \code{which}=5 gives a map, with a dot for the station
-    location (note that this requires that a \code{coastline} be
-    given).  \code{which}=6 gives a profile of density and dP/dt (useful
-    for evaluating whether the instrument is dropping properly through
-  the water column).  \code{which}=7 gives a profile of density and
-  time. \code{which}=8 gives a profile of index number (especially
-  useful for \code{\link{ctd.trim}}).  \code{which}=9 gives a plot of density.}
   \item{coastline}{a \code{coastline} object, e.g. as read by
     \code{\link{read.coastline}} (ignored if no map plotted).}
   \item{Slim}{optional limits of salinity axes}

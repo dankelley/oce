@@ -328,9 +328,9 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
     close(con)
 }
 
-plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
+plot.ctd <- function (x, which = 1:4,
+                      ref.lat = NaN, ref.lon = NaN,
                       grid = TRUE, col.grid="lightgray", lty.grid="dotted",
-                      which = 1:4,
                       coastline,
                       Slim, Tlim, plim, densitylim, dpdtlim, timelim,
                       lonlim, latlim,
@@ -341,7 +341,8 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     opar <- par(no.readonly = TRUE)
-    if (length(which) > 1) on.exit(par(opar))
+    lw <- length(which)
+    if (lw > 1) on.exit(par(opar))
     dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
             if (x < 0) {
@@ -372,7 +373,6 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
     ## 9=density
     if (any(!which %in% 1:9)) stop("which must be between 1 and 9")
 
-    lw <- length(which)
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
@@ -459,8 +459,6 @@ plot.ctd <- function (x, ref.lat = NaN, ref.lon = NaN,
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
-#    if (lw > 1)
-#        par(oldpar)
     invisible()
 }
 

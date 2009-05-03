@@ -1,4 +1,5 @@
 0.1-77
+- plot.sealevel(): remove argument focus.time and add argument which.
 - rename tdr functions as pt, to reflect oral convention
 - add geod.xy()
 - add argument 'mgp' to all plotting functions
