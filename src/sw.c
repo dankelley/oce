@@ -279,15 +279,9 @@ sw_strho(double *pT, double *prho, double *pp, double *res)
 	*res = NA_REAL;
 	if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
 		return;
-#define SLOW  0.0001   /* left bracket on search region */
-#define SHIGH 200.0	   /* right bracket on search region */
-#define RHO_TOL 0.00001 /* stop if get to within this rho value */
-#define S_RES   0.00001 /* stop if bracket to within this resolution */
-	bs_res = strho_bisection_search(&S, SLOW, SHIGH, S_RES, RHO_TOL);/* BUG: ignoring result */
-	/* printf(" trsho(S=%f  rho=%f  p=%f) returning %f\n",S,sig_0,p_ref,T); */
+	bs_res = strho_bisection_search(&S, 0.0001, 200.0, 0.00001, 0.00001);
 	*res = S;
 }
-
 
 double
 strho_f(double x)
@@ -527,8 +521,7 @@ sw_tsrho(double *pS, double *prho, double *pp, double *res)
 	* bisection from working.  I found this out by using a TLOW
 	* value of -50.  The range below should be OK for oceanographic use.
 	*/
-	bs_res = tsrho_bisection_search(&T, TLOW, THIGH, T_RES, RHO_TOL);/* BUG: ignoring result */
-	/* printf(" tsrho(S=%f  rho=%f  p=%f) returning %f\n",S,sig_0,p_ref,T); */
+	bs_res = tsrho_bisection_search(&T, -3.0, 40.0, 0.0001, 0.0001);
 	*res = T;
 }
 
