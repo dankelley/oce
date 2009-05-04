@@ -6,7 +6,7 @@
 
 \description{Plot pT temperature-depth recorder data}
 
-\usage{\method{plot}{pt}(x, which=1:4, adorn=NULL,
+\usage{\method{plot}{pt}(x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
      mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
@@ -14,6 +14,8 @@
   \item{which}{if a subset of the plots is required, specify a subset of
     the numbers 1:4.  These are codes for the panels, which will be
     drawn from top-left to bottom-right (see Details).}
+  \item{title}{character string to be used in the text-summary panel
+    (\code{which}=2)}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number
     of panels, then the strings are applied to the appropriate panels,

@@ -6,7 +6,7 @@
 
 \description{Correct for drift in instrument clock}
 
-\usage{undrift.time(x, slow.end=0, tname="t")}
+\usage{undrift.time(x, slow.end=0, tname="time")}
 
 \arguments{
   \item{x}{an object of \code{\link[base]{class}} "\code{oce}".}
@@ -32,7 +32,7 @@
 \dontrun{
 library(oce)
 rbr011855 <- read.oce("rbr011855")
-d <- subset(rbr011855, t < as.POSIXct("2008-06-25 10:05:00"))
+d <- subset(rbr011855, time < as.POSIXct("2008-06-25 10:05:00"))
 x <- undrift.time(d, 1)	  # a slow instrument clock lost 1 second
 summary(d)
 summary(x)

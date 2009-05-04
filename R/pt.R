@@ -1,4 +1,4 @@
-plot.pt <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
+plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL, mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "pt")) stop("method is only for pt objects")
     lw <- length(which)
@@ -50,7 +50,8 @@ plot.pt <- function (x, which=1:4, adorn=NULL, mgp=getOption("oce.mgp"), ...)
             xloc <- 1
             yloc <- 10
             d.yloc <- 0.7
-            text.item(paste("Serial Number: ", x$metadata$serial.number),cex=1.25)
+            text.item(title, cex=1.25)
+            text.item(paste("Serial Number: ", x$metadata$serial.number),cex=1)
             text.item(paste("Start:", x$data$time[1]), cex=1)
             text.item(paste("End:", x$data$time[length(x$data$time)]), cex=1)
             text.item(paste("Sampling interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=1)
