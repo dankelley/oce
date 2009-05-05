@@ -6,10 +6,10 @@
 
 \description{Compute \eqn{g}{g}, the acceleration due to gravity, as a function of latitude.}
 
-\usage{gravity(lat, degrees=TRUE)}
+\usage{gravity(latitude=45, degrees=TRUE)}
 
 \arguments{
-  \item{lat}{Latitude in \eqn{^\circ}{deg}N or radians north of the equator.}
+  \item{latitude}{Latitude in \eqn{^\circ}{deg}N or radians north of the equator.}
   \item{degrees}{Flag indicating whether degrees are used for latitude;
     if set to \code{FALSE}, radians are used.}
 }
