@@ -15,7 +15,7 @@
 \details{The filter is suitable for use by \code{\link{filter}} or
   \code{\link{convolve}}.  Note that \code{\link{convolve}} should be
   faster than \code{\link{filter}}, but it cannot be used if the time
-  series has missing values.  The half-power frequency is code{1/m} cycles
+  series has missing values.  The half-power frequency is \code{1/m} cycles
   per time unit (see \dQuote{Examples}).}
 
 \value{A list of filter coefficients, symmetric about the midpoint and
