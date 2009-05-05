@@ -15,7 +15,8 @@
 \details{The filter is suitable for use by \code{\link{filter}} or
   \code{\link{convolve}}.  Note that \code{\link{convolve}} should be
   faster than \code{\link{filter}}, but it cannot be used if the time
-  series has missing values.}
+  series has missing values.  The half-power frequency is code{1/m} cycles
+  per time unit (see \dQuote{Examples}).}
 
 \value{A list of filter coefficients, symmetric about the midpoint and
   summing to 1.}
@@ -29,6 +30,20 @@ lines(x1, col='red')
 x2 <- filter(x, make.filter("blackman-harris", 10))
 lines(x2, col='blue')
 legend("topright", lwd=1, col=c("red", "blue"), legend=c("m=5", "m=10"))
+
+# Spectral representation
+r <- rnorm(1e4)
+r.spec <- spectrum(r, spans=c(21,5,3), plot=FALSE)
+length <- 10
+f <- make.filter("blackman-harris", length)
+r.lowpass <- filter(r, f, circular=TRUE)
+r.lowpass.spec <- spectrum(r.lowpass, spans=c(21,5,3), plot=FALSE)
+
+plot(r.spec$freq, r.spec$spec, ylim=c(0.01, 2), log="xy", type="l")
+lines(r.lowpass.spec$freq, r.lowpass.spec$spec, col="red")
+abline(v=1/length, col="blue")
+abline(h=1, col="blue")
+abline(h=1/2, col="blue")               # half power
 }
 
 \references{F. J. Harris, 1978.  On the use of windows for harmonic
