@@ -115,7 +115,7 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
         header <- c(header, line)
         if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
             l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
-            logging.start <- strptime(l,"%y/%m/%d %H:%M:%S")
+            logging.start <- strptime(l,"%y/%m/%d %H:%M:%S", tz=tz)
         }
         if (0 < (r<-regexpr("Sample[ \t]*period", line))) {
             l <- sub("[ ]*Sample[ \t]*period[ ]*", "", line)
@@ -149,19 +149,13 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=FALSE)
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
         if (debug) cat("4 elements per data line\n")
-        if (missing(tz))
-            time <- as.POSIXct(paste(d[1,], d[2,]))
-        else
-            time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+        time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
         if (debug) cat("5 elements per data line\n")
-        if (missing(tz))
-            time <- as.POSIXct(paste(d[1,], d[2,]))
-        else
-            time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
+        time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
         ## ignore column 5
