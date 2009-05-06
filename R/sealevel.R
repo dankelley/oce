@@ -252,7 +252,6 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
         GMT.offset     <- GMT.offset.from.tz(tz)
         x <- read.csv(file, skip=header.length, header=FALSE)
         eta <- as.numeric(x$V2)
-        ## t <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz=tz) # fails, for some reason
         time <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz="UTC")
         time <- time + 3600 * GMT.offset
     } else { # type 1
@@ -290,10 +289,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
             eta[target.index] <- as.numeric(sp[4:15])
             day.portion <- as.numeric(substr(sp[3], 9, 9))
             if (i == 2) {
-                if (missing(tz))
-                    start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"))
-                else
-                    start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"), tz=tz)
+                start.day <- as.POSIXct(strptime(paste(substr(sp[3],1,8),"00:00:00"), "%Y%m%d"), tz=tz)
             } else {
                 if (day.portion == 1) {
                     if (last.day.portion != 2)
@@ -307,10 +303,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
             }
             last.day.portion <- day.portion
         }
-        if (missing(tz))
-            time <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)))
-        else
-            time <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)), tz=tz)
+        time <- as.POSIXct(start.day + 3600 * (seq(0, 12*(n-1)-1)), tz=tz)
         eta[eta==9999] <- NA
         if (tolower(units) == "mm") {
             eta <- eta / 1000
