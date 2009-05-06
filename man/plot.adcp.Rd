@@ -97,7 +97,8 @@
   coordinates (\code{east}, \code{north}, \code{up}).  Correction of
   echo intensity for beam-spreading can be done at any stage, using
   \code{\link{adcp.beam.attenuate}}.  Summaries of ADCP data are
-  provided by \code{\link{summary.adcp}}.}
+  provided by \code{\link{summary.adcp}}.
+}
 
 \examples{
 library(oce)

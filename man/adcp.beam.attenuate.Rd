@@ -46,4 +46,13 @@ legend("topright", lwd=1, col=c("black", "red"), legend=c("original", "attenuate
 
 \author{Dan Kelley}
 
+\seealso{
+\code{\link{read.adcp}} reads \code{adcp} objects,
+\code{\link{summary.adcp}} summarizes them, and \code{\link{plot.adcp}} plots them.
+\code{\link{adcp}} provides a sample ADCP dataset.
+\code{\link{adcp.beam2frame}} converts an \code{adcp} object from beam coordinates to frame coordinates.
+\code{\link{adcp.earth2other}} rotates \code{adcp} object currents from earth coordinates to other coordinates.
+\code{\link{adcp.frame2earth}} converts an \code{adcp} object from frame coordinates to earth coordinates.
+}
+
 \keyword{misc}

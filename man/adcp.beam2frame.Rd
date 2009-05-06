@@ -67,6 +67,14 @@ R D Instruments, 1998.
 P/N 951-6079-00 (July 1998).
 }
 
+\seealso{
+\code{\link{read.adcp}} reads \code{adcp} objects,
+\code{\link{summary.adcp}} summarizes them, and \code{\link{plot.adcp}} plots them.
+\code{\link{adcp}} provides a sample ADCP dataset.
+\code{\link{adcp.beam.attenuate}} converts an \code{adcp} object from beam to velocity.
+\code{\link{adcp.earth2other}} rotates \code{adcp} object currents from earth coordinates to other coordinates.
+\code{\link{adcp.frame2earth}} converts an \code{adcp} object from frame coordinates to earth coordinates.
+}
 
 \author{Dan Kelley}
 
