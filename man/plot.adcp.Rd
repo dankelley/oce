@@ -7,7 +7,9 @@
 \description{Plot ADCP data.}
 
 \usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), 
-         zlim, adorn=NULL, mgp=getOption("oce.mgp"), \dots)}
+         zlim, adorn=NULL,
+         draw.timerange=getOption("oce.draw.timerange"),
+         mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
   \item{x}{An \code{adcp} object, e.g. as read by \code{\link{read.adcp}}.}
@@ -31,6 +33,9 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
+  \item{draw.timerange}{boolean that applies to panels with time as the
+    horizontal axis, indicating whether to draw the time range in 
+    the top-left margin of the plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

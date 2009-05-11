@@ -497,7 +497,9 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
-                      adorn=NULL, mgp=getOption("oce.mgp"), ...)
+                      adorn=NULL,
+                      draw.timerange=getOption("oce.draw.timerange"),
+                      mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     opar <- par(no.readonly = TRUE)
@@ -560,10 +562,10 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             box()
             axis(2)
             mtext(ma.names[which[w]], side=3, cex=2/3, adj=1)
-            if (!shown.time.interval) {
+            if (!shown.time.interval & draw.timerange) {
                 mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
                             attr(x$data$ts$time[1], "tzone")),
-                      side=3, cex=2/3, adj=0)
+                      side=3, cex=3/4*par("cex.axis"), adj=0)
                 shown.time.interval <- TRUE
             }
             if (w <= adorn.length) {
@@ -590,7 +592,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             if (!shown.time.interval) {
                 mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
                             attr(x$data$ts$time[1], "tzone")),
-                      side=3, cex=2/3, adj=0)
+                      side=3, cex=3/4*par("cex.axis"), adj=0)
                 shown.time.interval <- TRUE
             }
             if (w <= adorn.length) {

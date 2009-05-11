@@ -51,11 +51,13 @@ as.sealevel <- function(eta,
 
 plot.sealevel <- function(x, which=1:4,
                           adorn=NULL,
+                          draw.timerange=getOption("oce.draw.timerange"),
                           mgp=getOption("oce.mgp"), ...)
 {
     title.plot <- function(x)
     {
-        mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
+        if (draw.timerange)
+            mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=3/4*par("cex.axis"), adj=0)
         title <- paste("Station ",
                        x$metadata$station.number, " ",
                        x$metadata$station.name,   " ",
@@ -123,7 +125,8 @@ plot.sealevel <- function(x, which=1:4,
             plot(as.POSIXlt(x$data$time), x$data$eta-MSL,
                  xlab="",ylab=expression(paste(eta-eta[0], "  [m]")), type='l', ylim=ylim,
                  lwd=0.5, axes=!FALSE, ...)
-            mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=2/3, adj=0)
+            if (draw.timerange)
+                mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=3/4*par("cex.axis"), adj=0)
             tics <- oce.axis.POSIXct(1, at.t)
             yax <- axis(2)
             box()

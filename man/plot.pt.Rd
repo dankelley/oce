@@ -7,6 +7,7 @@
 \description{Plot pT temperature-depth recorder data}
 
 \usage{\method{plot}{pt}(x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
+    plim, Tlim, draw.timerange=getOption("oce.draw.timerange"),
      mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
@@ -22,6 +23,17 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
+  \item{plim}{optional limits for pressure axis.  If not provided,
+    the value will be inferred from the data.  (It is helpful to specify
+    this, if the auto-scaled value will be inappropriate, e.g. if
+    more lines are to be added later.)}
+  \item{Tlim}{optional limits for temperature axis.  If not provided,
+    the value will be inferred from the data.  (It is helpful to specify
+    this, if the auto-scaled value will be inappropriate, e.g. if
+    more lines are to be added later.)}
+  \item{draw.timerange}{boolean that applies to panels with time as the
+    horizontal axis, indicating whether to draw the time range in 
+    the top-left margin of the plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

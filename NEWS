@@ -1,4 +1,6 @@
 0.1-77
+- add argument plot.timerange to plot.pt(), plot.adcp() and plot.sealevel()
+- plot.pt(): add plim and Tlim arguments
 - give default for latitude argument to gravity()
 - plot.sealevel(): remove argument focus.time and add argument which.
 - rename tdr functions as pt, to reflect oral convention

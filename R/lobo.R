@@ -23,7 +23,7 @@ plot.lobo.timeseries.TS <- function(lobo,
         legend("topright",c("S","T"),col=c(S.col,T.col),lwd=2)
     mtext(paste(paste(format(range(lobo$data$time, na.rm=TRUE)), collapse=" to "),
                 attr(lobo$data$ts$time[1], "tzone")),
-          side=3, cex=par("cex"), adj=0)
+          side=3, cex=3/4*par("cex.axis"), adj=0)
     invisible(lobo)
 }
 

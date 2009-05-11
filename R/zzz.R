@@ -7,7 +7,9 @@
 .onLoad <- function(libname, pkgname)
 {
     op <- options()
-    op.oce <- list(oce.tz = "UTC", oce.mgp = c(2,3/4,0))
+    op.oce <- list(oce.tz = "UTC",
+                   oce.mgp = c(2,3/4,0),
+                   oce.draw.timerange = TRUE)
     toset <- !(names(op.oce) %in% names(op))
     if(any(toset)) options(op.oce[toset])
 }

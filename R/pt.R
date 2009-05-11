@@ -1,4 +1,8 @@
-plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL, mgp=getOption("oce.mgp"), ...)
+plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
+                     plim, Tlim,
+                     draw.timerange=getOption("oce.draw.timerange"),
+                     mgp=getOption("oce.mgp"),
+                     ...)
 {
     if (!inherits(x, "pt")) stop("method is only for pt objects")
     lw <- length(which)
@@ -18,11 +22,12 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL, mgp
                      c(3,4)), widths=c(2,1))
     }
     par(mgp=mgp)
-    par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+    par(mar=c(mgp[1], mgp[1]+1, 1, 1))
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$time, x$data$temperature,
                  xlab="", ylab=resizable.label("T", "y"), type='l',
+                 ylim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
                  axes=FALSE, ...)
             box()
             oce.axis.POSIXct(1, x=x$data$time)
@@ -30,7 +35,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL, mgp
         } else if (which[w] == 3) {
             plot(x$data$time, x$data$pressure,
                  xlab="", ylab=resizable.label("p"), type='l',
-                 ylim=range(x$data$pressure, na.rm=TRUE),
+                 ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
                  axes=FALSE, ...)
             box()
             oce.axis.POSIXct(1, x=x$data$time)
@@ -58,17 +63,19 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL, mgp
             par(mar=mar)
         } else if (which[w] == 4) {
             args <- list(x=x$data$temperature, y=x$data$pressure,
-                         ylim=range(x$data$pressure, na.rm=TRUE),
                          xlab=resizable.label("T"),
-                         ylab=resizable.label("p"), ...)
+                         ylab=resizable.label("p"),
+                         xlim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
+                         ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
+                         ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=0.5)
             do.call(plot, args)
         }
-        if ((which[w] %in% 1:3) & !shown.time.interval) {
+        if ((which[w] %in% 1:3) & !shown.time.interval & draw.timerange) {
             mtext(paste(paste(format(range(x$data$time)), collapse=" to "),
                         attr(x$data$time[1], "tzone")),
-                  side=3, cex=2/3, adj=0)
+                  side=3, cex=3/4*par("cex.axis"), adj=0)
             shown.time.interval <- TRUE
         }
         if (w <= adorn.length) {
