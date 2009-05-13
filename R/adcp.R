@@ -530,7 +530,8 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         zlim.not.given <- FALSE                                    # fake it
     }
     if (any(which %in% images)) {
-        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(1.5)), lw))
+        w <- (0.5+par("mgp")[1]) * par("csi") * 2.54
+        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
         ##cat("IMAGES\n")
     } else {
         lay <- layout(cbind(1:lw))
