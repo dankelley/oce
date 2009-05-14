@@ -552,33 +552,15 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             }
         }
         if (which[w] %in% images) {                   # image types
-            par(mar=c(mgp[1], mgp[1]+1, 1, 0.25))
-
-            image(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
-                  xlab="Time", ylab="Distance", axes=FALSE,
-                  zlim=zlim,
-                  col=col, ...)
-            oce.axis.POSIXct(1, x=x$data$ts$time)
-            ##cat("  after drawing main image, usr=", paste(par()$usr, collapse=" "), "; mar=", paste(par()$mar, collapse=" "), "\n")
-            box()
-            axis(2)
-            mtext(ma.names[which[w]], side=3, cex=2/3, adj=1)
-            if (!shown.time.interval & draw.timerange) {
-                mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
-                            attr(x$data$ts$time[1], "tzone")),
-                      side=3, cex=3/4*par("cex.axis"), adj=0)
-                shown.time.interval <- TRUE
-            }
-            if (w <= adorn.length) {
-                t <- try(eval(adorn[w]), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-            }
-
-            par(mar=c(mgp[1], 0.25, 1, mgp[2]+1))
-            palette <- seq(zlim[1], zlim[2], length.out=300)
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, ylab="", xlab="", col=col)
-            box()
-            axis(side=4, at=pretty(palette))
+            imagep(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
+                   zlim=zlim,
+                   col=col,
+                   ylab="Distance",
+                   xlab="Time",
+                   zlab=ma.names[which[w]],
+                   draw.time.range=TRUE,
+                   draw.contours=FALSE,
+                   do.layout=FALSE, ...)
         }
         if (which[w] %in% timeseries) { # time-series types
             if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)

@@ -1,4 +1,5 @@
 0.1-77
+- add imagep(), and make plot.adcp() use it
 - plot.pt(): add plim and Tlim arguments
 - gravity(): give default for latitude argument
 - plot.sealevel(): remove argument focus.time and add argument which

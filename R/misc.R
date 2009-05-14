@@ -1,4 +1,4 @@
-resizable.label <- function(item=c("S", "T", "p"), axis=c("x", "y"))
+resizable.label <- function(item=c("S", "T", "p", "z"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -11,6 +11,9 @@ resizable.label <- function(item=c("S", "T", "p"), axis=c("x", "y"))
     } else if (item == "p") {
         full <- "Pressure [ dbar ]"
         abbreviated <- "P [ dbar ]"
+    } else if (item == "z") {
+        full <- "z [ m ]"
+        abbreviated <- "z [ m ]"
     }
     fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
     if (fraction < 0.8) full else abbreviated
