@@ -23,6 +23,7 @@ export(
        GMT.offset.from.tz,
        gravity,
        header,
+       imagep,
        interp.barnes,
        lat.format,
        latlon.format,
