@@ -530,18 +530,18 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         zlim.not.given <- FALSE                                    # fake it
     }
     if (any(which %in% images)) {
-        w <- (0.5+par("mgp")[1]) * par("csi") * 2.54
+        scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
+        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+        ##cat("csi=", par("csi"), "w=", w, "\n")
         lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-        ##cat("IMAGES\n")
     } else {
         lay <- layout(cbind(1:lw))
-        ##cat("TIME SERIES\n")
     }
     ##layout.show(lay)
     ##stop()
     ma.names <- names(x$data$ma)
     for (w in 1:lw) {
-        ##cat("which[w]=", which[w], "\n")
+        ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
         if (zlim.not.given) {
             if (which[w] %in% 9:12) {    # pg goes from 0 to 100 percent
                 zlim <- c(0, 100)
@@ -575,7 +575,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
             if (!shown.time.interval) {
                 mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
                             attr(x$data$ts$time[1], "tzone")),
-                      side=3, cex=3/4*par("cex.axis"), adj=0)
+                      side=3, cex=5/6*par("cex"), adj=0)
                 shown.time.interval <- TRUE
             }
             if (w <= adorn.length) {

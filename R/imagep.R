@@ -16,7 +16,7 @@ imagep <- function(x, y, z,
     if (dim[1] != length(x)) stop("dim(z)[1] must equal length(x)")
     if (dim[2] != length(y)) stop("dim(z)[2] must equal length(y)")
     par(mgp=mgp)
-    w <- (1+par("mgp")[1]) * par("csi") * 2.54
+    w <- (1.5 + par("mgp")[2]) * par("csi") * 2.54 + 0.5
     par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
         mgp[1]+if(nchar(ylab)>0) 1.5 else 0,
         mgp[2]+1/2,
@@ -46,10 +46,10 @@ imagep <- function(x, y, z,
             image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, breaks=breaks, col=col)
     }
     if (draw.time.range && x.is.time)
-        mtext(paste(paste(format(range(x)), collapse=" to "), attr(x[1], "tzone")), side=3, cex=3/4*par("cex"), adj=0)
+        mtext(paste(paste(format(range(x)), collapse=" to "), attr(x[1], "tzone")), side=3, cex=5/6*par("cex"), adj=0)
     if (draw.contours && !missing(breaks))
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
-    mtext(zlab, side=3, cex=par("cex.axis"), adj=1, line=1/6)
+    mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/6)
     ## palette
     par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
         1/4,
