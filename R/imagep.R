@@ -33,9 +33,9 @@ imagep <- function(x, y, z,
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     if (x.is.time) {
         if (missing(breaks))
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=resizable.label("p", "y"), col=col)
+            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col)
         else
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=resizable.label("p", "y"), breaks=breaks, col=col)
+            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col)
         oce.axis.POSIXct(side=1, x=x)
         box()
         axis(2)

@@ -1,4 +1,4 @@
-resizable.label <- function(item=c("S", "T", "p", "z"), axis=c("x", "y"))
+resizable.label <- function(item=c("S", "T", "p", "z", "distance"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -14,6 +14,9 @@ resizable.label <- function(item=c("S", "T", "p", "z"), axis=c("x", "y"))
     } else if (item == "z") {
         full <- "z [ m ]"
         abbreviated <- "z [ m ]"
+    } else if (item == "distance") {
+        full <- "Distance [ m ]"
+        abbreviated <- "Dist. [ m ]"
     }
     fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
     if (fraction < 0.8) full else abbreviated
@@ -543,4 +546,10 @@ byte2binary <- function(x)
         }
     }
     rval
+}
+
+matlab2POSIXt <- function(t, tz="UTC")
+{
+    ## R won't take a day "0", so subtract one
+    ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
 }
