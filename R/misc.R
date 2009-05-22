@@ -521,15 +521,25 @@ stickplot <- function(t, x, y, ...)
     ##points(xx[ones],yy[ones],col="red")
 }
 
-byte2binary <- function(x)
+bcd2integer <- function(x, endian=c("little", "big"))
+{
+    endian <- match.arg(endian)
+    x <- as.integer(x)
+    byte1 <- as.integer(floor(x / 16))
+    byte2 <- x - 16 * byte1
+    if (endian=="little") 10*byte1 + byte2 else byte1 + 10*byte2
+}
+
+byte2binary <- function(x, endian=c("little", "big"))
 {
     onebyte2binary <- function(x)
     {
         c("0000","0001","0010","0011",
           "0100","0101","0110","0111",
           "1000","1001","1010","1011",
-          "1100","1101","1110", "1111")[x+1]
+          "1100","1101","1110","1111")[x+1]
     }
+    endian <- match.arg(endian)
     rval <- NULL
     if (class(x) == "raw")
         x <- readBin(x, "int", n=length(x), size=1, signed=FALSE)
@@ -540,8 +550,10 @@ byte2binary <- function(x)
             byte1 <- as.integer(floor(x[i] / 16))
             byte2 <- x[i] - 16 * byte1
             ##cat("input=",x[i],"byte1=",byte1,"byte2=",byte2,"\n")
-            rval <- c(rval, paste(onebyte2binary(byte1),
-                                  onebyte2binary(byte2), sep=""))
+            if (endian == "little")
+                rval <- c(rval, paste(onebyte2binary(byte2), onebyte2binary(byte1), sep=""))
+            else
+                rval <- c(rval, paste(onebyte2binary(byte1), onebyte2binary(byte2), sep=""))
             ##cat(" rval=",rval,"\n")
         }
     }

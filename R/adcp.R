@@ -47,12 +47,12 @@ read.header <- function(file, debug)
     system.configuration <- paste(byte2binary(FLD[5]),
                                   byte2binary(FLD[6]),sep="-")
     bits <- substr(system.configuration, 6, 8)
-    if (bits == "000") kHz <- 75
-    else if (bits == "001") kHz <-  150
-    else if (bits == "010") kHz <-  300
-    else if (bits == "011") kHz <-  600
-    else if (bits == "100") kHz <- 1200
-    else if (bits == "101") kHz <- 2400
+    if (bits == "000") frequency <- 75        # kHz
+    else if (bits == "001") frequency <-  150
+    else if (bits == "010") frequency <-  300
+    else if (bits == "011") frequency <-  600
+    else if (bits == "100") frequency <- 1200
+    else if (bits == "101") frequency <- 2400
     bits <- substr(system.configuration, 16, 17)
     if (bits == "00") beam.angle <- 15
     else if (bits == "01") beam.angle <- 20
@@ -187,7 +187,7 @@ read.header <- function(file, debug)
          program.version.minor=fr,
          ##program.version=program.version,
          system.configuration=system.configuration,
-         kHz=kHz,
+         frequency=frequency,
          beam.angle=beam.angle,
          beam.pattern=beam.pattern,
          beam.config=beam.config,
@@ -440,7 +440,7 @@ summary.adcp <- function(object, ...)
                 end.time=object$data$ts$time[length(object$data$ts$time)],
                 number.of.profiles=object$metadata$number.of.profiles,
                 metadata=object$metadata,
-                kHz=object$metadata$kHz,
+                frequency=object$metadata$frequency,
                 number.of.data.types=object$metadata$number.of.data.types,
                 number.of.beams=object$metadata$number.of.beams,
                 bin1.distance=object$metadata$bin1.distance,
@@ -477,7 +477,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  File sampled at times:       ", as.character(x$start.time), " to ",
         as.character(x$end.time), " at interval ", as.character(x$delta.time), " s\n", sep="")
     cat("  Number of data types:       ", x$number.of.data.types, "\n")
-    cat("  Frequency:                  ", x$kHz, "kHz\n")
+    cat("  Frequency:                  ", x$frequency, "kHz\n")
     cat("  Beams:                      ", x$number.of.beams, "\n")
     ##if (x$oce.beam.attenuated) "(attenuated)" else "(not attenuated)"
     cat("  Pattern:                    ", x$beam.config, "\n")

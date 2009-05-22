@@ -10,6 +10,7 @@ export(
        adcp.frame2earth,
        adcp.earth2other,
        adcp.beam.attenuate,
+       bcd2integer,
        byte2binary,
        coriolis,
        ctd.add.column,

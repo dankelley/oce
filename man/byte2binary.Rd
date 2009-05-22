@@ -6,10 +6,13 @@
 
 \description{Format bytes as binary}
 
-\usage{byte2binary(x)}
+\usage{byte2binary(x, endian=c("little", "big"))}
 
 \arguments{
   \item{x}{an integer to be interpreted as a byte.}
+  \item{endian}{character string indicating the endian-ness ("big" or
+   "little").  The PC/intel convention is to use "little", and so most
+   data files are in that format.}
 }
 
 \value{A character string representing the bit strings for the elements
