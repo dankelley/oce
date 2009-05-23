@@ -338,6 +338,7 @@ read.adcp <- function(file, type ="RDI",
     profiles.in.file <- bytes.in.file / bytes.per.profile
     ##cat("profiles in file:", profiles.in.file, "\n")
     if (read < 1) stop("cannot read fewer than one profile")
+
     bm1 <- array(dim=c(read, p$header$number.of.cells))
     bm2 <- array(dim=c(read, p$header$number.of.cells))
     bm3 <- array(dim=c(read, p$header$number.of.cells))
@@ -502,14 +503,14 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    lw <- length(which)
     opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
+    if (lw > 1) on.exit(par(opar))
     par(mgp=mgp)
 
     images <- 1:12
     timeseries <- 13:18
     if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
-    lw <- length(which)
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)

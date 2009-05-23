@@ -17,7 +17,7 @@ imagep <- function(x, y, z,
     if (dim[2] != length(y)) stop("dim(z)[2] must equal length(y)")
     par(mgp=mgp)
     w <- (1.5 + par("mgp")[2]) * par("csi") * 2.54 + 0.5
-    par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
+    par(mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0,
         mgp[1]+if(nchar(ylab)>0) 1.5 else 0,
         mgp[2]+1/2,
         1/4))
@@ -31,19 +31,38 @@ imagep <- function(x, y, z,
     else
         col <- oce.colors.palette(n=length(breaks)-1)
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
+
     if (x.is.time) {
-        if (missing(breaks))
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col)
-        else
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col)
+        if (missing(breaks)) {
+            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
+                  xlim=if(missing(xlim))range(x) else xlim,
+                  ylim=if(missing(ylim))range(y) else ylim,
+                  zlim=if(missing(zlim))range(z) else zlim,
+                  ...)
+        } else {
+            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
+                  xlim=if(missing(xlim))range(x) else xlim,
+                  ylim=if(missing(ylim))range(y) else ylim,
+                  zlim=if(missing(zlim))range(z) else zlim,
+                  ...)
+        }
         oce.axis.POSIXct(side=1, x=x)
         box()
         axis(2)
     } else {
-        if (missing(breaks))
-            image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, col=col)
-        else
-            image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, breaks=breaks, col=col)
+        if (missing(breaks)) {
+            image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, col=col,
+                  xlim=if(missing(xlim))range(x) else xlim,
+                  ylim=if(missing(ylim))range(y) else ylim,
+                  zlim=if(missing(zlim))range(z) else zlim,
+                  ...)
+        } else {
+            image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
+                  xlim=if(missing(xlim))range(x) else xlim,
+                  ylim=if(missing(ylim))range(y) else ylim,
+                  zlim=if(missing(zlim))range(z) else zlim,
+                  ...)
+        }
     }
     if (draw.time.range && x.is.time)
         mtext(paste(paste(format(range(x)), collapse=" to "), attr(x[1], "tzone")), side=3, cex=5/6*par("cex"), adj=0)
@@ -51,16 +70,26 @@ imagep <- function(x, y, z,
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/6)
     ## palette
-    par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
+    par(mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0,
         1/4,
         mgp[2]+1/2,
         mgp[2]+1))
     if (missing(breaks)) {
-        palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
-        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col, cex=par("cex"))
+        if (missing(zlim))
+            palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
+        else
+            palette <- seq(zlim[1], zlim[2], length.out=300)
+        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
+              cex=par("cex"),
+              zlim=if(missing(zlim))range(z) else zlim)
     } else {
-        palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
-        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", breaks=breaks, col=col, cex=par("cex"))
+        if (missing(zlim))
+            palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
+        else
+            palette <- seq(zlim[1], zlim[2], length.out=300)
+        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", breaks=breaks, col=col,
+              cex=par("cex"),
+              zlim=if(missing(zlim))range(z) else zlim)
     }
     if (draw.contours && !missing(breaks))
         abline(h=breaks)
