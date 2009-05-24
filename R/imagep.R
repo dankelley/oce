@@ -68,7 +68,7 @@ imagep <- function(x, y, z,
         mtext(paste(paste(format(range(x)), collapse=" to "), attr(x[1], "tzone")), side=3, cex=5/6*par("cex"), adj=0)
     if (draw.contours && !missing(breaks))
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
-    mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/6)
+    mtext(zlab, side=3, cex=par("cex")*5/4, adj=1, line=1/6)
     ## palette
     par(mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0,
         1/4,

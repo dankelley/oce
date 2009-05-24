@@ -43,6 +43,7 @@ export(
        oce.write.table,
        parse.latlon,
        plot.adcp,
+       plot.aquadopp,
        plot.TS,
        plot.coastline,
        plot.ctd,

@@ -148,18 +148,20 @@ summary.oce <- function(object, ...)
 
 magic <- function(file)
 {
-    if (is.character(file)) {
+    filename <- file
+    if (is.character(file))
         file <- file(file, "r")
-        on.exit(close(file))
-    }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
+    if (!isOpen(file))
     	open(file, "r")
-    	on.exit(close(file))
-    }
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    pushBack(line, file)
-    if (substr(line, 1, 2) == "\177\177")            return("adcp")
+    close(file)
+    file <- file(filename, "rb")
+    bytes <- readBin(file, what="raw", n=2)
+    close(file)
+    if (bytes[1] == 0x7f && bytes[2] == 0x7f)        return("adcp")
+    if (bytes[1] == 0xa5 && bytes[2] == 0x05)        return("aquadopp")
+    ##if (substr(line, 1, 2) == "\177\177")            return("adcp")
     if (substr(line, 1, 3) == "CTD")                 return("ctd.woce")
     if ("* Sea-Bird" == substr(line, 1, 10))         return("ctd.seabird")
     if ("# -b" == substr(line, 1, 4))                return("coastline")
@@ -178,6 +180,7 @@ read.oce <- function(file, ...)
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "adcp")        return(read.adcp(file, ..., log.action=log.action))
+    if (type == "aquadopp")    return(read.aquadopp(file, ..., log.action=log.action))
     if (type == "ctd.woce")    return(read.ctd(file, ..., log.action=log.action))
     if (type == "ctd.seabird") return(read.ctd(file, ..., log.action=log.action))
     if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))

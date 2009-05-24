@@ -6,8 +6,9 @@
 
 \description{Plot ADCP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), 
-         zlim, adorn=NULL,
+\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), zlim, 
+         titles,
+	 adorn=NULL,
          draw.timerange=getOption("oce.draw.timerange"),
          mgp=getOption("oce.mgp"), \dots)}
 
@@ -18,15 +19,20 @@
     \dQuote{Details} for the meanings of various values of
     \code{which}.}
   \item{col}{color palette to use.  The default
-  \code{\link{oce.colors.two}} palette blends from blue for negative
-     values, through white at zero, to red at positive values; see
-     \dQuote{Details}.}
+    \code{\link{oce.colors.two}} palette blends from blue for negative
+    values, through white at zero, to red at positive values; see
+    \dQuote{Details}.}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
     \code{\link{image}} call that is used to create the image.  If
     omitted, \code{zlim} is set for each panel individually, to
     encompass the data of the panel and to be centred around zero.
     (Centering on zero is convenient for color palettes that place a
     neutral color there; see \dQuote{Details}.)}
+  \item{titles}{optional vector of character strings to be used as
+    labels for the plot panels.  For images, these strings will be
+    placed in the right hand side of the top margin.  For timeseries,
+    these strings are ignored.
+    If this is provided, its length must equal that of \code{which}.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, 

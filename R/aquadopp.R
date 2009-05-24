@@ -1,3 +1,10 @@
+## To do
+##  1. transformation matrix so we can have earth and frame coords
+##  2. orientation wrong, probably all bit-slicing things, too
+##  3. plot.aquadopp() is ignoring zlim
+##  4. distance (first get cell depth and blanking distance)
+##  5. make magic() handle these file
+
 ## Questions for SonTek (regarding High Resolution Aquadopp Profile data),
 ## with SIG standing for System Integrator Guide.
 ##  1. should we use "frequency" from "head configuration" or "hardware configuration"
@@ -86,8 +93,6 @@ display.bytes <- function(b, label="")
     cat("\n", label, " (", n, "bytes)\n", sep="")
     print(b)
 }
-
-
 
 read.aquadopp <- function(file,
                           type="high resolution",
@@ -194,9 +199,10 @@ read.aquadopp <- function(file,
             velocity.scale <- if (substr(mode[2], 4, 4) == "0") 0.001 else 0.00001
             if (debug) cat("  velocity.scale: ", velocity.scale, "\n")
             tmp.cs <- readBin(buf[33:34], "integer", n=1, size=2, endian="little")
-            if (tmp.cs == 0) coordinate.system <- "earth" # ENU in page 31 of System Integrator Guide
-            else if (tmp.cs == 1) coordinate.system <- "frame" # ENU in page 31 of System Integrator Guide
-            else if (tmp.cs == 2) coordinate.system <- "beam" # ENU in page 31 of System Integrator Guide
+            if (tmp.cs == 0) coordinate.system <- "earth" # page 31 of System Integrator Guide
+            else if (tmp.cs == 1) coordinate.system <- "frame"
+            else if (tmp.cs == 2) coordinate.system <- "beam"
+            else stop("unknown coordinate system ", tmp.cs)
             if (debug) cat("  coordinate.system: ", coordinate.system, "\n")
             number.of.cells <- as.integer(buf[35]) # should be using 35 and 36
             cat("  number.of.cells: ", number.of.cells, "\n")
@@ -246,15 +252,17 @@ read.aquadopp <- function(file,
     if (missing(read)) {
         read <- profiles.in.file
     }
-    v1 <- array(dim=c(read, number.of.cells))
-    v2 <- array(dim=c(read, number.of.cells))
-    v3 <- array(dim=c(read, number.of.cells))
+    v <- array(dim=c(read, number.of.cells, number.of.beams))
+    a <- array(dim=c(read, number.of.cells, number.of.beams))
+    q <- array(dim=c(read, number.of.cells, number.of.beams))
 
     for (i in 1:read) {
         p <- read.profile.aquadopp(file,debug=debug)
-        v1[i,] <- p$v[,1]
-        v2[i,] <- p$v[,2]
-        v3[i,] <- p$v[,3]
+        for (beam in 1:number.of.beams) {
+            v[i,,beam] <- p$v[,beam]
+            a[i,,beam] <- p$a[,beam]
+            q[i,,beam] <- p$q[,beam]
+        }
         time <- c(time, p$time)
         temperature <- c(temperature, p$temperature)
         salinity <- c(salinity, NA)
@@ -271,8 +279,8 @@ read.aquadopp <- function(file,
     attr(time, "tzone") <- "UTC"        # BUG should let user control this
                                         # Q: does file hold the zone?
 
-    data <- list(ma=list(v1=v1, v2=v2, v3=v3),
-                 ss=list(distance=1:number.of.cells),
+    data <- list(ma=list(v=v, a=a, q=q),
+                 ss=list(distance=seq(0, 1, length.out=number.of.cells)),
                  ts=list(time=time,
                  pressure=pressure,
                  temperature=temperature,
@@ -314,6 +322,7 @@ read.aquadopp <- function(file,
     class(res) <- c("aquadopp", "oce")
     res
 }
+
 summary.aquadopp <- function(object, ...)
 {
     if (!inherits(object, "aquadopp")) stop("method is only for aquadopp objects")
@@ -361,20 +370,22 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("    Pressure sensor:            ", if (x$config.pressure.sensor) "yes\n" else "no\n")
     cat("    Compass:                    ", if (x$config.magnetometer.sensor) "yes\n" else "no\n")
     cat("    Tilt sensor:                ", if (x$config.tilt.sensor) "yes\n" else "no\n")
-    cat("    System 1 and 2:              [not coded yet]\n")
+    if (FALSE) cat("    System 1 and 2:              [not coded yet]\n")
     cat("    Frequency:                  ", x$frequency, "kHz\n")
     cat("    Serial number:              ", x$head.serial.number, "\n")
-    cat("    Transformation matrix:       [not coded yet]\n")
-    cat("    Pressure sensor calibration: [not coded yet]\n")
+    if (FALSE) cat("    Transformation matrix:       [not coded yet]\n")
+    if (FALSE) cat("    Pressure sensor calibration: [not coded yet]\n")
     cat("    Number of beams:            ", x$number.of.beams, "\n")
-    cat("    System 5 through 20:         [not coded yet]\n")
+    if (FALSE) cat("    System 5 through 20:         [not coded yet]\n")
     cat("  User Setup\n")
     cat("    Measurement/burst interval: ", x$measurement.interval, "s\n")
-    cat("    Cell size                   ", x$cell.size, "*** should be 0.04m ***\n")
+    cat("    Cell size                   ", x$cell.size, "\n")
+    cat("    *** above should be 0.04m ***\n")
     cat("    Orientation:                ", if (x$config.downward.looking) "downward-looking\n" else "upward-looking\n")
+    cat("    *** above should be downward-looking ***\n")
     cat("    Velocity scale:             ", x$velocity.scale, "m/s\n")
-    cat("    Coordinate system:          ", x$coordinate.system, "... should be BEAM ...\n")
-    cat("
+    cat("    Coordinate system:          ", x$coordinate.system, "\n")
+    if (FALSE) cat("
 ? Distance to bottom                    1.00 m
 ? Extended velocity range               ON
 ? Pulse distance (Lag1)                 1.10 m
@@ -383,13 +394,14 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
 ? Horizontal velocity range             0.84 m/s
 ? Vertical velocity range               0.35 m/s
 ")
-    cat("    Number of cells:             ", x$number.of.cells, "\n")
-    cat("
+    cat("    Number of cells:            ", x$number.of.cells, "\n")
+    if (FALSE) cat("
 ? Average interval                      10 sec
 ? Blanking distance                     0.05 m
 ")
-    cat("    Blanking distance:           ", x$blanking.distance, "ok?\n")
-    cat("
+    cat("    Blanking distance:          ", x$blanking.distance, "\n")
+    cat("    *** above should be ??? ***\n")
+    if (FALSE) cat("
 ? Measurement load                      42 %
 ? Burst sampling                        OFF
 ? Samples per burst                     N/A
@@ -451,8 +463,8 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
     invisible(x)
 }
 
-plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1),
-                          zlim,
+plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
+                          titles,
                           adorn=NULL,
                           draw.timerange=getOption("oce.draw.timerange"),
                           mgp=getOption("oce.mgp"), ...)
@@ -460,8 +472,15 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1),
     if (!inherits(x, "aquadopp")) stop("method is only for aquadopp objects")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
+    if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp)
+    dots <- list(...)
+
+    gave.zlim <- !missing(zlim)
+    zlim.given <- if (gave.zlim) zlim else NULL
+    gave.ylim <- "ylim" %in% names(dots)
+    ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     images <- 1:12
     timeseries <- 13:18
@@ -477,14 +496,12 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1),
     shown.time.interval <- FALSE
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
-    zlim.not.given <- missing(zlim)
 
-    if (zlim.not.given && all(which %in% 4:6)) { # amplitude uses a single scale for all
-        zlim <- range(abs(x$data$ma[[which[1]]]), na.rm=TRUE)
+    if (!gave.zlim && all(which %in% 5:7)) { # amplitude uses a single scale for all
+        zlim <- range(abs(x$data$ma$a[,,which[1]-4]), na.rm=TRUE)
         for (w in 2:length(which)) {
-            zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
+            zlim <- range(abs(c(zlim, x$data$ma$a[,,which[w]-4])), na.rm=TRUE)
         }
-        zlim.not.given <- FALSE                                    # fake it
     }
     if (any(which %in% images)) {
         scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
@@ -499,30 +516,57 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1),
     ma.names <- names(x$data$ma)
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
-        if (zlim.not.given) {
-            if (which[w] %in% 7:9) {    # correlation goes from 0 to 100 percent
+        if (which[w] %in% images) {                   # image types
+            ## note that 4 and 8 cannot be used
+            skip <- FALSE
+            if (which[w] %in% 1:3) {    #velocity
+                z <- x$data$ma$v[,,which[w]]
+                y.look <- if (gave.ylim)
+                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
+                else rep(TRUE, length(x$data$ss$distance))
+                zlim <- if (gave.zlim) zlim.given else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                if (x$metadata$coordinate.system == "beam")
+                    zlab <- if (missing(titles)) c("bm1", "bm2", "bm3")[which[w]] else titles[w]
+                else if (x$metadata$coordinate.system == "earth")
+                    zlab <- if (missing(titles)) c("east", "north", "up")[which[w]] else titles[w]
+                else if (x$metadata$coordinate.system == "frame")
+                    zlab <- if (missing(titles)) c("u", "v", "w")[which[w]] else titles[w]
+                else zlab <- "?"
+            } else if (which[w] %in% 5:7) { # amplitude
+                z <- x$data$ma$a[,,which[w]-4]
+                y.look <- if (gave.ylim)
+                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
+                else rep(TRUE, length(x$data$ss$distance))
+                zlim <- range(x$data$ma$a[,y.look,], na.rm=TRUE)
+                zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
+            } else if (which[w] %in% 9:11) { # correlation
+                z <- x$data$ma$q[,,which[w]-8]
                 zlim <- c(0, 100)
-            } else {
-                if (which[w] < 12) {
-                    zlim <- max(abs(x$data$ma[[which[w]]]), na.rm=TRUE) * c(-1,1)
-                }
+                zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
+            } else skip <- TRUE
+            if (!skip) {
+                imagep(x=tt, y=x$data$ss$distance, z=z,
+                       zlim=zlim,
+                       col=col,
+                       ylab=resizable.label("distance"),
+                       xlab="Time",
+                       zlab=zlab,
+                       draw.time.range=!shown.time.interval,
+                       draw.contours=FALSE,
+                       do.layout=FALSE,
+                       ...)
+                shown.time.interval <- TRUE
             }
         }
-        if (which[w] %in% images) {                   # image types
-            imagep(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
-                   zlim=zlim,
-                   col=col,
-                   ylab=resizable.label("distance"),
-                   xlab="Time",
-                   zlab=ma.names[which[w]],
-                   draw.time.range=!shown.time.interval,
-                   draw.contours=FALSE,
-                   do.layout=FALSE,
-                   ...)
-            shown.time.interval <- TRUE
-        }
         if (which[w] %in% timeseries) { # time-series types
-            if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
+            if (which[w] == 13) {
+                if (any(!is.na(x$data$ts$salinity)))
+                    plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
+                else {
+                    warning("cannot plot panel which=13 because there are no salinity data")
+                    next
+                }
+            }
             if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', axes=FALSE)
             if (which[w] == 15) plot(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
             if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)

@@ -498,13 +498,15 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
+                      titles,
                       adorn=NULL,
                       draw.timerange=getOption("oce.draw.timerange"),
                       mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
-    lw <- length(which)
     opar <- par(no.readonly = TRUE)
+    lw <- length(which)
+    if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp)
 
@@ -558,7 +560,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                    col=col,
                    ylab=resizable.label("distance"),
                    xlab="Time",
-                   zlab=ma.names[which[w]],
+                   zlab=if (missing(titles)) ma.names[which[w]] else titles[which[w]],
                    draw.time.range=TRUE,
                    draw.contours=FALSE,
                    do.layout=FALSE, ...)
