@@ -1,9 +1,41 @@
+## notes for nortek:
+
+## 1. "spare" at offset 74 (page 31) now seems to be salinity
+## 2. extra byte
+## 3. should state the order of headers at the start, not end
+## 4. should state the algorithms to infer cell size, blanking distance, etc. from file
+## 5. beam angle should be in data file
+## 6. generally, docs should indicate everything that is in the files, e.g. (prominently!)
+##    the beam angles in the 'head' configuration section.
+## 7. the C code suggests the velocity scale is in the second bit of conf.hMode
+##    but the docs suggest the fifth bit (page 31)
+
+
+## cell size problems:
+##      > 0.04 / (cos(25*pi/180)*0.186767/frequency)
+##      [1] 472.6222
+## above says want bytes 37 and 38 to decode to 472.622.  But, I get as follows
+## for reading 2-byte chunks starting at the indicated i:
+##  > for (i in seq(30,40,by=1)) cat("i=",i,"bytes=",buf[i:(i+1)],"value=",readBin(buf[i:(i+1)],"integer",n=1,size=2,endian="little",signed=FALSE),"\n")
+## i= 30 bytes= 00 0a value= 2560
+## i= 31 bytes= 0a 00 value= 10
+## i= 32 bytes= 00 02 value= 512
+## i= 33 bytes= 02 00 value= 2
+## i= 34 bytes= 00 19 value= 6400
+## i= 35 bytes= 19 00 value= 25
+## i= 36 bytes= 00 8a value= 35328
+## i= 37 bytes= 8a 06 value= 1674
+## i= 38 bytes= 06 0a value= 2566
+## i= 39 bytes= 0a 00 value= 10
+## i= 40 bytes= 00 73 value= 29440
+##
+## so I don't see how to procede.  I asked nortek about this Monday morning.
+
+
 ## To do
 ##  1. transformation matrix so we can have earth and frame coords
-##  2. orientation wrong, probably all bit-slicing things, too
 ##  3. plot.aquadopp() is ignoring zlim
 ##  4. distance (first get cell depth and blanking distance)
-##  5. make magic() handle these file
 
 ## Questions for SonTek (regarding High Resolution Aquadopp Profile data),
 ## with SIG standing for System Integrator Guide.
@@ -136,7 +168,10 @@ read.aquadopp <- function(file,
             if (debug) cat("  hardware.serial.number", hardware.serial.number, "\n")
             config <- readBin(buf[19:20], "raw", n=2, size=1)
             if (debug) cat("  config:", config, "\n")
-            frequency <- readBin(buf[21:22], "integer", n=1, size=2, endian="little") # not used
+            frequency <- readBin(buf[21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
+
+            cat("**** HARDWARE  frequency:", frequency, "****\n")
+
             if (debug) cat("  frequency:", frequency, "\n")
             pic.version <- readBin(buf[23:24], "integer", n=1, size=2, endian="little")
             if (debug) cat("  pic.version=", pic.version, "\n")
@@ -144,8 +179,8 @@ read.aquadopp <- function(file,
             if (debug) cat("  hw.revision=", buf[25:26], "\n")
             rec.size <- readBin(buf[27:28], "integer", n=1, size=2, endian="little")
             if (debug) cat("  rec.size=", rec.size, "\n")
-            status <- readBin(buf[29:30], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  status=", status, "\n")
+            velocity.range <- readBin(buf[29:30], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  velocity.range=", velocity.range, "\n")
             fw.version <- as.numeric(paste(readBin(buf[43:46], "character", n=4, size=1), collapse=""))
             if (debug) cat("  fw.version=", fw.version, "\n")
         } else if (two.bytes[2] == id.head.configuration) {     # see page 30 of System Integrator Guide
@@ -155,27 +190,42 @@ read.aquadopp <- function(file,
             if (debug) cat("  size=", size, "\n")
             config <- byte2binary(buf[5:6], endian="little")
             if (debug) cat("  config=", config, "\n")
-            config.pressure.sensor <- substr(config[1], 8, 8) == "1"
+            config.pressure.sensor <- substr(config[1], 1, 1) == "1"
             if (debug) cat("  config.pressure.sensor=",config.pressure.sensor,"\n")
-            config.magnetometer.sensor <- substr(config[1], 7, 7) == "1"
+            config.magnetometer.sensor <- substr(config[1], 2, 2) == "1"
             if (debug) cat("  config.magnetometer.sensor=",config.magnetometer.sensor,"\n")
-            config.tilt.sensor <- substr(config[1], 6, 6) == "1"
+            config.tilt.sensor <- substr(config[1], 3, 3) == "1"
             if (debug) cat("  config.tilt.sensor=",config.tilt.sensor,"\n")
-            config.downward.looking <- substr(config[1], 5, 5) == "1"
+            config.downward.looking <- substr(config[1], 4, 4) == "1"
             if (debug) cat("  config.downward.looking=",config.downward.looking,"\n")
-            frequency <- readBin(buf[7:8], "integer", n=1, size=2, endian="little")
+            frequency <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+
+            cat("**** HEAD  frequency:", frequency, "****\n")
+
             if (debug) cat("  frequency=", frequency, "kHz\n")
             head.type <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
             if (debug) cat("  head.type=", head.type, "\n")
-            head.serial.number <- gsub(" *$", "", paste(readBin(buf[11:22], "character", n=12, size=1), collapse=""))
+            head.serial.number <- gsub(" *$", "", paste(readBin(buf[11:22], "character", n=12, size=1), collapse="")) # 12 chars
             if (debug) cat("  head.serial.number=", head.serial.number, "\n")
+
+            beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
+            cat("BEAM ANGLES=", beam.angles, "(rad)\n")
+
+            ## short hBeamToXYZ[9];          // beam to XYZ transformation matrix for up orientation
+            ##Transformation matrix (before division by 4096) -- checks out ok
+            ## 6461 -3232 -3232
+            ##    0 -5596  5596
+            ## 1506  1506  1506
+            beam.to.xyz <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
+            cat("beam.to.xyz\n");print(beam.to.xyz);
+
             number.of.beams <- readBin(buf[221:222], "integer", n=1, size=2, endian="little")
             if (debug) cat("  number.of.beams=", number.of.beams, "\n")
         } else if (two.bytes[2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
             if (debug) cat("** scanning User Configuration **\n")
             buf <- readBin(file, "raw", header.length.user)
             blanking.distance <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            if (debug) cat("  blanking.distance=", blanking.distance, "??? expect 0.05 m\n")
+            if (1|debug) cat("  blanking.distance=", blanking.distance, "??? expect 0.05 m\n")
             measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
             if (debug) cat("  measurement.inteval=", measurement.interval, "\n")
             T1 <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
@@ -184,38 +234,32 @@ read.aquadopp <- function(file,
             NPings <- readBin(buf[15:16], "integer", n=1, size=2, endian="little")
             AvgInterval <- readBin(buf[17:18], "integer", n=1, size=2, endian="little")
             NBeams <- readBin(buf[19:20], "integer", n=1, size=2, endian="little")
-            cat("\n.... T1=",T1,"T2=",T2,"T5=",T5,"NPings=",NPings,"AvgInterval=",AvgInterval,"NBeams=",NBeams,"\n\n")
-
-            ##2     T1                   8        receive length (counts)
-            ##2     T2                  10        time between pings (counts)
-            ##2     T5                  12        time between burst sequences (counts)
-            ##2     NPings              14        number of beam sequences per burst
-            ##2     AvgInterval         16        average interval in seconds
-            ##2     NBeams              18        number of beams
-
-
+            cat("\n T1=",T1,"T2=",T2,"T5=",T5,"NPings=",NPings,"AvgInterval=",AvgInterval,"NBeams=",NBeams,"\n\n")
             mode <- byte2binary(buf[59:60], endian="little")
-            if (debug) cat("  mode: ", mode, "\n")
+            if (1|debug) cat("  mode: ", mode, "\n")
             velocity.scale <- if (substr(mode[2], 4, 4) == "0") 0.001 else 0.00001
-            if (debug) cat("  velocity.scale: ", velocity.scale, "\n")
+            if (1|debug) cat("  velocity.scale: ", velocity.scale, "\n")
             tmp.cs <- readBin(buf[33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) coordinate.system <- "earth" # page 31 of System Integrator Guide
             else if (tmp.cs == 1) coordinate.system <- "frame"
             else if (tmp.cs == 2) coordinate.system <- "beam"
             else stop("unknown coordinate system ", tmp.cs)
             if (debug) cat("  coordinate.system: ", coordinate.system, "\n")
-            number.of.cells <- as.integer(buf[35]) # should be using 35 and 36
+            number.of.cells <- readBin(buf[35:36], "integer", n=1, size=2, endian="little")
             cat("  number.of.cells: ", number.of.cells, "\n")
-            cat(rep("-",10),"\n\n")
-            cell.size <- readBin(buf[37:38], "integer", n=1, size=2, endian="little")
-            cat("cell.size ... should be  0.04 m\n")
-            cat("cell.size??? ", buf[37], " ", buf[38] , "***\n")
-            cat("cell.size??? ", as.integer(buf[37]), " ", as.integer(buf[38]), "***\n")
-            cat("***cell.size:", cell.size, "WRONG\n")
-            cat(rep("-",10),"\n\n")
+
+            cell.size <- readBin(buf[37:38], "integer", n=1, size=2, endian="little", signed=FALSE) * cos(25*pi/180)*0.186767/frequency
+
+            cat("cell.size=", cell.size, "(from", buf[37:38], "and should be  0.04 m)\n")
             measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
-            if (debug) cat("measurement.interval=", measurement.interval, "****\n\n")
+            blanking.distance <- cos(25*pi/180) * (0.022888*T2 - 12*T1/frequency)
+            cat("** blanking.distance=", blanking.distance, "(should be 0.05)\n")
+            if (1|debug) cat("measurement.interval=", measurement.interval, "****\n\n")
             deployment.name <- readBin(buf[41:46], "character")
+            sw.version <- readBin(buf[73:74], "integer", n=1, size=2, endian="little")
+            if (debug) cat("sw.version=", sw.version,"\n")
+            salinity <- readBin(buf[75:76], "integer", n=1, size=2, endian="little") * 0.1
+            if (debug) cat("salinity=", salinity,"\n")
         } else {
             stop("cannot understand byte 0x", two.bytes[2], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
         }
@@ -246,50 +290,54 @@ read.aquadopp <- function(file,
         seek(file, data.start + skip * bytes.per.profile)
     else
         seek(file, data.start)
-    time <- pressure <- temperature <- salinity <- heading <- pitch <- roll <- NULL
+    time <- pressure <- temperature <- heading <- pitch <- roll <- NULL
     if (stride != 1) stop("cannot handle 'stride' values other than 1")
-    if (read < 1) stop("cannot read fewer than 1 profile")
     if (missing(read)) {
         read <- profiles.in.file
     }
-    v <- array(dim=c(read, number.of.cells, number.of.beams))
-    a <- array(dim=c(read, number.of.cells, number.of.beams))
-    q <- array(dim=c(read, number.of.cells, number.of.beams))
+    if (read > 1) {
+        v <- array(dim=c(read, number.of.cells, number.of.beams))
+        a <- array(dim=c(read, number.of.cells, number.of.beams))
+        q <- array(dim=c(read, number.of.cells, number.of.beams))
 
-    for (i in 1:read) {
-        p <- read.profile.aquadopp(file,debug=debug)
-        for (beam in 1:number.of.beams) {
-            v[i,,beam] <- p$v[,beam]
-            a[i,,beam] <- p$a[,beam]
-            q[i,,beam] <- p$q[,beam]
+        for (i in 1:read) {
+            p <- read.profile.aquadopp(file,debug=debug)
+            for (beam in 1:number.of.beams) {
+                v[i,,beam] <- p$v[,beam]
+                a[i,,beam] <- p$a[,beam]
+                q[i,,beam] <- p$q[,beam]
+            }
+            time <- c(time, p$time)
+            temperature <- c(temperature, p$temperature)
+            pressure <- c(pressure, p$pressure)
+            heading <- c(heading, p$heading)
+            pitch <- c(pitch, p$pitch)
+            roll <- c(roll, p$roll)
+            if (monitor) {
+                cat(".")
+                if (!(i %% 50)) cat(i, "\n")
+            }
         }
-        time <- c(time, p$time)
-        temperature <- c(temperature, p$temperature)
-        salinity <- c(salinity, NA)
-        pressure <- c(pressure, p$pressure)
-        heading <- c(heading, p$heading)
-        pitch <- c(pitch, p$pitch)
-        roll <- c(roll, p$roll)
-        if (monitor) {
-            cat(".")
-            if (!(i %% 50)) cat(i, "\n")
-        }
-    }
-    class(time) <- c("POSIXt", "POSIXct")
-    attr(time, "tzone") <- "UTC"        # BUG should let user control this
+        if (monitor) cat("\nRead", read, "profiles\n")
+        salinity <- rep(salinity, read)     # fake a time-series
+        class(time) <- c("POSIXt", "POSIXct")
+        attr(time, "tzone") <- "UTC"        # BUG should let user control this
                                         # Q: does file hold the zone?
 
-    data <- list(ma=list(v=v, a=a, q=q),
-                 ss=list(distance=seq(0, 1, length.out=number.of.cells)),
-                 ts=list(time=time,
-                 pressure=pressure,
-                 temperature=temperature,
-                 salinity=salinity,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll)
-                 )
+        data <- list(ma=list(v=v, a=a, q=q),
+                     ss=list(distance=seq(0, 1, length.out=number.of.cells)),
+                     ts=list(time=time,
+                     pressure=pressure,
+                     temperature=temperature,
+                     salinity=salinity,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll)
+                     )
 
+    } else {
+        data <- list(ma=NULL, ss=NULL, ts=NULL)
+    }
     metadata <- list(
                      filename=filename,
                      size=size,
@@ -298,7 +346,7 @@ read.aquadopp <- function(file,
                      internal.code.version=pic.version,
                      hardware.revision=hw.revision,
                      rec.size=rec.size,
-                     status=status,
+                     velocity.range=velocity.range,
                      firmware.version=fw.version,
                      config=config,
                      config.pressure.sensor=config.pressure.sensor,
@@ -314,7 +362,8 @@ read.aquadopp <- function(file,
                      deployment.name=deployment.name,
                      cell.size=cell.size,
                      velocity.scale=velocity.scale,
-                     coordinate.system=coordinate.system
+                     coordinate.system=coordinate.system,
+                     salinity=salinity
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -331,8 +380,8 @@ summary.aquadopp <- function(object, ...)
                 internal.code.version=object$metadata$internal.code.version,
                 hardware.revision=object$metadata$hardware.revision,
                 frequency=object$metadata$frequency,
-                rec.size=object$metadata$rec.size*65536,
-                status=object$metadata$status,
+                rec.size=object$metadata$rec.size*65536/1024/1024,
+                velocity.range=object$metadata$velocity.range,
                 firmware.version=object$metadata$firmware.version,
                 config=object$metadata$config,
                 config.pressure.sensor=object$metadata$config.pressure.sensor,
@@ -363,9 +412,9 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("    Serial number:              ", x$hardware.serial.number, "\n")
     cat("    Internal version code:      ", x$internal.code.version, "\n")
     cat("    Revision number:            ", x$hardware.revision, "\n")
-    cat("    Recorder size:              ", x$rec.size, " (???)\n")
+    cat("    Recorder size:              ", x$rec.size, "Mb\n")
     cat("    Firmware version:           ", x$firmware.version, "\n")
-    cat("    Velocity range:             ", if(x$status) "high\n" else "normal\n")
+    cat("    Velocity range:             ", if(x$velocity.range) "high\n" else "normal\n")
     cat("  Head Configuration\n")
     cat("    Pressure sensor:            ", if (x$config.pressure.sensor) "yes\n" else "no\n")
     cat("    Compass:                    ", if (x$config.magnetometer.sensor) "yes\n" else "no\n")
@@ -382,7 +431,6 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("    Cell size                   ", x$cell.size, "\n")
     cat("    *** above should be 0.04m ***\n")
     cat("    Orientation:                ", if (x$config.downward.looking) "downward-looking\n" else "upward-looking\n")
-    cat("    *** above should be downward-looking ***\n")
     cat("    Velocity scale:             ", x$velocity.scale, "m/s\n")
     cat("    Coordinate system:          ", x$coordinate.system, "\n")
     if (FALSE) cat("
@@ -400,7 +448,7 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
 ? Blanking distance                     0.05 m
 ")
     cat("    Blanking distance:          ", x$blanking.distance, "\n")
-    cat("    *** above should be ??? ***\n")
+    cat("    *** above should be 0.05m ***\n")
     if (FALSE) cat("
 ? Measurement load                      42 %
 ? Burst sampling                        OFF
@@ -458,7 +506,6 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
 ? Start command                         3
 ? CRC download                          ON
 ")
-    cat("*status", x$status, "OK???\n")
     print(x$processing.log)
     invisible(x)
 }
