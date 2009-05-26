@@ -13,6 +13,9 @@
 
 ## To do
 ##  1. transformation matrix so we can have earth and frame coords
+##  2. make image plots obey the orientation (put upper water column at
+##     the top), perhaps as an option.  (Same for adcp.)
+## 3. perhaps merge this with "adcp" class.
 
 read.profile.aquadopp <- function(file, debug=!TRUE)
 {

@@ -30,7 +30,8 @@
 \seealso{A \code{aquadopp} object may  be read with \code{\link{read.aquadopp}} or
   \code{\link{read.oce}}.}
 
-\references{http://www.nortekusa.com/}
+\references{General information on the aquadopp profiler, and other
+  NorTek products, is available at \url{http://www.nortekusa.com/}.}
 
 \examples{
 \dontrun{

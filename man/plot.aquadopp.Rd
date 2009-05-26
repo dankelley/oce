@@ -99,7 +99,8 @@
   and summarized with \code{\link{summary.aquadopp}}.
 }
 
-\references{http://www.nortekusa.com/}
+\references{General information on the aquadopp profiler, and other
+  NorTek products, is available at \url{http://www.nortekusa.com/}.}
 
 \examples{
 \dontrun{

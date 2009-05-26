@@ -86,7 +86,8 @@ abline(v=as.POSIXct("2008-06-25 13:00:00", tz="UTC"),col="red")
 }
 }
 
-\references{http://www.nortekusa.com/}
+\references{General information on the aquadopp profiler, and other
+  NorTek products, is available at \url{http://www.nortekusa.com/}.}
 
 \author{Dan Kelley}
 
