@@ -97,7 +97,7 @@ display.bytes <- function(b, label="")
 }
 
 read.aquadopp <- function(file,
-                          type="high resolution",
+                          type=c("high resolution"),
                           skip=0, read, stride=1,
                           debug=0,
                           monitor=TRUE,
@@ -114,6 +114,7 @@ read.aquadopp <- function(file,
         open(file, "rb")
         on.exit(close(file))
     }
+    type <- match.arg(type)
     ## codes
     sync.code <- as.raw(0xa5)
     id.hardware.configuration <- as.raw(0x05)

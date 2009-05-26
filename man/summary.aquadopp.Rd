@@ -30,6 +30,8 @@
 \seealso{A \code{aquadopp} object may  be read with \code{\link{read.aquadopp}} or
   \code{\link{read.oce}}.}
 
+\references{http://www.nortekusa.com/}
+
 \examples{
 \dontrun{
 library(oce)

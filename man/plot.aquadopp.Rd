@@ -99,6 +99,8 @@
   and summarized with \code{\link{summary.aquadopp}}.
 }
 
+\references{http://www.nortekusa.com/}
+
 \examples{
 \dontrun{
 library(oce)

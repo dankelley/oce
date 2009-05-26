@@ -6,7 +6,7 @@
 
 \description{Read an AQUADOPP data file, producing an object of type \code{aquadopp}.}
 
-\usage{read.aquadopp(file, type="high resolution",
+\usage{read.aquadopp(file, type=c("high resolution"),
                      skip=0, read, stride=1,
                      debug=0, monitor=TRUE, log.action)
 }
@@ -14,7 +14,9 @@
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{type}{(ignored at present.)}
+  \item{type}{type of instrument.  At present, only \code{"high
+  resolution"} is permitted, since only data from high-resolution
+  profilers is handled.}
   \item{skip}{optional number of profiles to skip at start.}
   \item{read}{optional number of profiles to read.}
   \item{stride}{a number indicating the stride length to use,
@@ -84,10 +86,7 @@ abline(v=as.POSIXct("2008-06-25 13:00:00", tz="UTC"),col="red")
 }
 }
 
-\references{Teledyne-RDI, 2007.
-\emph{WorkHorse commands and output data format.}
-P/N 957-6156-00 (November 2007).
-}
+\references{http://www.nortekusa.com/}
 
 \author{Dan Kelley}
 
