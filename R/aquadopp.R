@@ -11,38 +11,8 @@
 ##    but the docs suggest the fifth bit (page 31)
 
 
-## cell size problems:
-##      > 0.04 / (cos(25*pi/180)*0.186767/frequency)
-##      [1] 472.6222
-## above says want bytes 37 and 38 to decode to 472.622.  But, I get as follows
-## for reading 2-byte chunks starting at the indicated i:
-##  > for (i in seq(30,40,by=1)) cat("i=",i,"bytes=",buf[i:(i+1)],"value=",readBin(buf[i:(i+1)],"integer",n=1,size=2,endian="little",signed=FALSE),"\n")
-## i= 30 bytes= 00 0a value= 2560
-## i= 31 bytes= 0a 00 value= 10
-## i= 32 bytes= 00 02 value= 512
-## i= 33 bytes= 02 00 value= 2
-## i= 34 bytes= 00 19 value= 6400
-## i= 35 bytes= 19 00 value= 25
-## i= 36 bytes= 00 8a value= 35328
-## i= 37 bytes= 8a 06 value= 1674
-## i= 38 bytes= 06 0a value= 2566
-## i= 39 bytes= 0a 00 value= 10
-## i= 40 bytes= 00 73 value= 29440
-##
-## so I don't see how to procede.  I asked nortek about this Monday morning.
-
-
 ## To do
 ##  1. transformation matrix so we can have earth and frame coords
-##  3. plot.aquadopp() is ignoring zlim
-##  4. distance (first get cell depth and blanking distance)
-
-## Questions for SonTek (regarding High Resolution Aquadopp Profile data),
-## with SIG standing for System Integrator Guide.
-##  1. should we use "frequency" from "head configuration" or "hardware configuration"
-##  2. why is the cFill line commented out in the code on page 57 of SIG?
-##  3. what is the unit of blanking distance, called "counts" on page 31 of SIG
-##  4. how to decode the cell size?  (I get 1674 ... should be 0.04m)
 
 read.profile.aquadopp <- function(file, debug=!TRUE)
 {
@@ -169,9 +139,6 @@ read.aquadopp <- function(file,
             config <- readBin(buf[19:20], "raw", n=2, size=1)
             if (debug) cat("  config:", config, "\n")
             frequency <- readBin(buf[21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
-
-            cat("**** HARDWARE  frequency:", frequency, "****\n")
-
             if (debug) cat("  frequency:", frequency, "\n")
             pic.version <- readBin(buf[23:24], "integer", n=1, size=2, endian="little")
             if (debug) cat("  pic.version=", pic.version, "\n")
@@ -199,9 +166,6 @@ read.aquadopp <- function(file,
             config.downward.looking <- substr(config[1], 4, 4) == "1"
             if (debug) cat("  config.downward.looking=",config.downward.looking,"\n")
             frequency <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-
-            cat("**** HEAD  frequency:", frequency, "****\n")
-
             if (debug) cat("  frequency=", frequency, "kHz\n")
             head.type <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
             if (debug) cat("  head.type=", head.type, "\n")
@@ -209,7 +173,7 @@ read.aquadopp <- function(file,
             if (debug) cat("  head.serial.number=", head.serial.number, "\n")
 
             beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
-            cat("BEAM ANGLES=", beam.angles, "(rad)\n")
+            if (debug) cat("BEAM ANGLES=", beam.angles, "(rad)\n")
 
             ## short hBeamToXYZ[9];          // beam to XYZ transformation matrix for up orientation
             ##Transformation matrix (before division by 4096) -- checks out ok
@@ -217,7 +181,7 @@ read.aquadopp <- function(file,
             ##    0 -5596  5596
             ## 1506  1506  1506
             beam.to.xyz <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
-            cat("beam.to.xyz\n");print(beam.to.xyz);
+            if (debug) {cat("beam.to.xyz\n");print(beam.to.xyz);}
 
             number.of.beams <- readBin(buf[221:222], "integer", n=1, size=2, endian="little")
             if (debug) cat("  number.of.beams=", number.of.beams, "\n")
@@ -225,20 +189,22 @@ read.aquadopp <- function(file,
             if (debug) cat("** scanning User Configuration **\n")
             buf <- readBin(file, "raw", header.length.user)
             blanking.distance <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            if (1|debug) cat("  blanking.distance=", blanking.distance, "??? expect 0.05 m\n")
+            if (debug) cat("  blanking.distance=", blanking.distance, "??? expect 0.05 m\n")
             measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
             if (debug) cat("  measurement.inteval=", measurement.interval, "\n")
-            T1 <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
-            T2 <- readBin(buf[11:12], "integer", n=1, size=2, endian="little")
+            T1 <- readBin(buf[5:6], "integer", n=1, size=2, endian="little")
+            T2 <- readBin(buf[7:8], "integer", n=1, size=2, endian="little")
+            T3 <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
+            T4 <- readBin(buf[11:12], "integer", n=1, size=2, endian="little")
             T5 <- readBin(buf[13:14], "integer", n=1, size=2, endian="little")
             NPings <- readBin(buf[15:16], "integer", n=1, size=2, endian="little")
             AvgInterval <- readBin(buf[17:18], "integer", n=1, size=2, endian="little")
             NBeams <- readBin(buf[19:20], "integer", n=1, size=2, endian="little")
-            cat("\n T1=",T1,"T2=",T2,"T5=",T5,"NPings=",NPings,"AvgInterval=",AvgInterval,"NBeams=",NBeams,"\n\n")
+            if (debug) cat("\n T1=",T1,"T2=",T2,"T5=",T5,"NPings=",NPings,"AvgInterval=",AvgInterval,"NBeams=",NBeams,"\n\n")
             mode <- byte2binary(buf[59:60], endian="little")
-            if (1|debug) cat("  mode: ", mode, "\n")
+            if (debug) cat("  mode: ", mode, "\n")
             velocity.scale <- if (substr(mode[2], 4, 4) == "0") 0.001 else 0.00001
-            if (1|debug) cat("  velocity.scale: ", velocity.scale, "\n")
+            if (debug) cat("  velocity.scale: ", velocity.scale, "\n")
             tmp.cs <- readBin(buf[33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) coordinate.system <- "earth" # page 31 of System Integrator Guide
             else if (tmp.cs == 1) coordinate.system <- "frame"
@@ -246,15 +212,30 @@ read.aquadopp <- function(file,
             else stop("unknown coordinate system ", tmp.cs)
             if (debug) cat("  coordinate.system: ", coordinate.system, "\n")
             number.of.cells <- readBin(buf[35:36], "integer", n=1, size=2, endian="little")
-            cat("  number.of.cells: ", number.of.cells, "\n")
-
-            cell.size <- readBin(buf[37:38], "integer", n=1, size=2, endian="little", signed=FALSE) * cos(25*pi/180)*0.186767/frequency
-
-            cat("cell.size=", cell.size, "(from", buf[37:38], "and should be  0.04 m)\n")
+            if (debug) cat("  number.of.cells: ", number.of.cells, "\n")
+            hBinLength <- readBin(buf[37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (isTRUE(all.equal.numeric(frequency, 1000))) {
+                ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
+                cell.size <- cos(25*pi/180) * hBinLength * 0.000052734375
+            } else if (isTRUE(all.equal.numeric(frequency, 2000))) {
+                ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
+                cell.size <- cos(25*pi/180) * hBinLength *0.0000263671875
+            } else {
+                stop("The frequency must be 1000 or 2000, but it is ", frequency)
+            }
+            if (debug) cat("cell.size=", cell.size, "(should be  0.04 m)\n")
             measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
-            blanking.distance <- cos(25*pi/180) * (0.022888*T2 - 12*T1/frequency)
-            cat("** blanking.distance=", blanking.distance, "(should be 0.05)\n")
-            if (1|debug) cat("measurement.interval=", measurement.interval, "****\n\n")
+            if (isTRUE(all.equal.numeric(frequency, 1000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.0135*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                blanking.distance <- cos(25*pi/180) * (0.0135 * T2 - 12 * T1 / frequency)
+            } else if (isTRUE(all.equal.numeric(frequency, 2000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.00675*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                blanking.distance <- cos(25*pi/180) * (0.00675 * T2 - 12 * T1 / frequency)
+            } else {
+                stop("The frequency must be 1000 or 2000, but it is ", frequency)
+            }
+            if (debug) cat("blanking.distance=", blanking.distance, "(should be 0.05).  T1=", T1, "and T2=", T2, "\n")
+            if (debug) cat("measurement.interval=", measurement.interval, "****\n\n")
             deployment.name <- readBin(buf[41:46], "character")
             sw.version <- readBin(buf[73:74], "integer", n=1, size=2, endian="little")
             if (debug) cat("sw.version=", sw.version,"\n")
@@ -325,7 +306,7 @@ read.aquadopp <- function(file,
                                         # Q: does file hold the zone?
 
         data <- list(ma=list(v=v, a=a, q=q),
-                     ss=list(distance=seq(0, 1, length.out=number.of.cells)),
+                     ss=list(distance=seq(blanking.distance, by=cell.size, length.out=number.of.cells)),
                      ts=list(time=time,
                      pressure=pressure,
                      temperature=temperature,
@@ -429,7 +410,7 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("  User Setup\n")
     cat("    Measurement/burst interval: ", x$measurement.interval, "s\n")
     cat("    Cell size                   ", x$cell.size, "\n")
-    cat("    *** above should be 0.04m ***\n")
+    ##cat("    *** above should be 0.04m ***\n")
     cat("    Orientation:                ", if (x$config.downward.looking) "downward-looking\n" else "upward-looking\n")
     cat("    Velocity scale:             ", x$velocity.scale, "m/s\n")
     cat("    Coordinate system:          ", x$coordinate.system, "\n")
@@ -448,7 +429,7 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
 ? Blanking distance                     0.05 m
 ")
     cat("    Blanking distance:          ", x$blanking.distance, "\n")
-    cat("    *** above should be 0.05m ***\n")
+    ##cat("    *** above should be 0.05m ***\n")
     if (FALSE) cat("
 ? Measurement load                      42 %
 ? Burst sampling                        OFF
