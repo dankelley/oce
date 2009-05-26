@@ -167,8 +167,8 @@ read.aquadopp <- function(file,
             if (debug) cat("  config.magnetometer.sensor=",config.magnetometer.sensor,"\n")
             config.tilt.sensor <- substr(config[1], 3, 3) == "1"
             if (debug) cat("  config.tilt.sensor=",config.tilt.sensor,"\n")
-            config.downward.looking <- substr(config[1], 4, 4) == "1"
-            if (debug) cat("  config.downward.looking=",config.downward.looking,"\n")
+            orientation <- if (substr(config[1], 4, 4) == "1") "downward" else "upward"
+            if (debug) cat("  orientation=", orientation, "\n")
             frequency <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             if (debug) cat("  frequency=", frequency, "kHz\n")
             head.type <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
@@ -337,7 +337,7 @@ read.aquadopp <- function(file,
                      config.pressure.sensor=config.pressure.sensor,
                      config.magnetometer.sensor=config.magnetometer.sensor,
                      config.tilt.sensor=config.tilt.sensor,
-                     config.downward.looking=config.downward.looking,
+                     orientation=orientation,
                      frequency=frequency,
                      head.serial.number=head.serial.number,
                      blanking.distance=blanking.distance,
@@ -373,7 +373,7 @@ summary.aquadopp <- function(object, ...)
                 config.magnetometer.sensor=object$metadata$config.magnetometer.sensor,
                 config.tilt.sensor=object$metadata$config.pressure.sensor,
                 config.pressure.sensor=object$metadata$config.tilt.sensor,
-                config.downward.looking=object$metadata$config.downward.looking,
+                orientation=object$metadata$orientation,
                 frequency=object$metadata$frequency,
                 head.serial.number=object$metadata$head.serial.number,
                 blanking.distance=object$metadata$blanking.distance,
@@ -388,9 +388,10 @@ summary.aquadopp <- function(object, ...)
     class(res) <- "summary.aquadopp"
     res
 }
+
 print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("aquadopp timeseries\n")
+    cat("Aquadopp timeseries\n")
     cat("    Deployment name:            ", x$deployment.name, "\n")
     cat("    Filename:                   ", x$filename, "\n")
     cat("  Hardware Configuration\n")
@@ -404,21 +405,20 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("    Pressure sensor:            ", if (x$config.pressure.sensor) "yes\n" else "no\n")
     cat("    Compass:                    ", if (x$config.magnetometer.sensor) "yes\n" else "no\n")
     cat("    Tilt sensor:                ", if (x$config.tilt.sensor) "yes\n" else "no\n")
-    if (FALSE) cat("    System 1 and 2:              [not coded yet]\n")
+    ##if (FALSE) cat("    System 1 and 2:              [not coded yet]\n")
     cat("    Frequency:                  ", x$frequency, "kHz\n")
     cat("    Serial number:              ", x$head.serial.number, "\n")
-    if (FALSE) cat("    Transformation matrix:       [not coded yet]\n")
+    ##cat("    Transformation matrix:       [not coded yet]\n")
     if (FALSE) cat("    Pressure sensor calibration: [not coded yet]\n")
     cat("    Number of beams:            ", x$number.of.beams, "\n")
     if (FALSE) cat("    System 5 through 20:         [not coded yet]\n")
     cat("  User Setup\n")
     cat("    Measurement/burst interval: ", x$measurement.interval, "s\n")
     cat("    Cell size                   ", x$cell.size, "\n")
-    ##cat("    *** above should be 0.04m ***\n")
-    cat("    Orientation:                ", if (x$config.downward.looking) "downward-looking\n" else "upward-looking\n")
+    cat("    Orientation:                ", x$orientation, "\n")
     cat("    Velocity scale:             ", x$velocity.scale, "m/s\n")
     cat("    Coordinate system:          ", x$coordinate.system, "\n")
-    if (FALSE) cat("
+    cat("
 ? Distance to bottom                    1.00 m
 ? Extended velocity range               ON
 ? Pulse distance (Lag1)                 1.10 m
@@ -428,75 +428,17 @@ print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ..
 ? Vertical velocity range               0.35 m/s
 ")
     cat("    Number of cells:            ", x$number.of.cells, "\n")
-    if (FALSE) cat("
+    cat("
 ? Average interval                      10 sec
-? Blanking distance                     0.05 m
 ")
     cat("    Blanking distance:          ", x$blanking.distance, "\n")
-    ##cat("    *** above should be 0.05m ***\n")
-    if (FALSE) cat("
-? Measurement load                      42 %
-? Burst sampling                        OFF
-? Samples per burst                     N/A
-? Sampling rate                         N/A
-? Compass update rate                   10 sec
-? Analog input 1                        NONE
-? Analog input 2                        NONE
-? Power output                          DISABLED
-? Powerlevel first ping                 HIGH-
-? Powerlevel ping 2                     HIGH
-? Coordinate system                     BEAM
-? Sound speed                           MEASURED
-? Salinity                              35.0 ppt
-? Number of beams                       3
-? Number of pings per burst             17
-? Software version                      1.03
-? Deployment name                       sl08AQ
-? Wrap mode                             OFF
-? Deployment time                       6/25/2008 10:00:00 AM
-? Comments                              aquadopp high res (pc mode).
-? System1                               7
-? System2                               15
-? System3                               6
-? System4                               296
-? System5                               512
-? System9                               34
-? System10                              0
-? System11                              0
-? System12                              0
-? System13                              0
-? System14                              10
-? System16                              25
-? System17                              1674
-? System22                              3600
-? System28                              1
-? System29                              1
-? System30                              20
-? System31                              15618 15646 15673 15699
-? System32 (PhaseToVel1)                233
-? System33 (Ua1)                        32768
-? System34 (Uah1)                       16384
-? System35 (PhaseToVel2)                706
-? System36 (Ua2)                        7035
-? System37 (Uah2)                       36285
-? System38 (Lag1)                       179
-? System39 (Lag2)                       59
-? System40 (T1Lag2)                     5
-? System41 (T2Lag2)                     41
-? System42 (T3Lag2)                     17
-? System42                              0
-? System43                              30
-? System44                              0
-? System45                              5
-? Start command                         3
-? CRC download                          ON
-")
     print(x$processing.log)
     invisible(x)
 }
 
 plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
                           titles,
+                          ytype=c("profile", "distance"),
                           adorn=NULL,
                           draw.timerange=getOption("oce.draw.timerange"),
                           mgp=getOption("oce.mgp"), ...)
@@ -509,6 +451,7 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
     par(mgp=mgp)
     dots <- list(...)
 
+    ytype <- match.arg(ytype)
     gave.zlim <- !missing(zlim)
     zlim.given <- if (gave.zlim) zlim else NULL
     gave.ylim <- "ylim" %in% names(dots)
@@ -546,6 +489,9 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
     ##layout.show(lay)
     ##stop()
     ma.names <- names(x$data$ma)
+
+    flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
+
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
         if (which[w] %in% images) {                   # image types
@@ -579,6 +525,7 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
             if (!skip) {
                 imagep(x=tt, y=x$data$ss$distance, z=z,
                        zlim=zlim,
+                       flip.y=flip.y,
                        col=col,
                        ylab=resizable.label("distance"),
                        xlab="Time",

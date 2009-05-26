@@ -4,6 +4,7 @@
 \description{Plot an image with a colour palette}
 \usage{imagep(x, y, z, 
       xlim, ylim, zlim, 
+      flip.y=FALSE,
       xlab="", ylab="", zlab="",
       breaks, col,
       do.layout=TRUE,
@@ -20,6 +21,9 @@
   \item{z}{matrix containing data to be indicated on the plot.
     \code{dim(z)[1]} must equal \code{length(x)}, and the same for y.}
   \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
+  \item{flip.y}{boolean, with \code{TRUE} indicating that the image
+    should be flipped top to bottom (as to produce a profile image
+    for a downward-looking acoustic-doppler profile).}
   \item{xlab,ylab,zlab}{names for x axis, y axis, and the image values.}
   \item{breaks}{the z values for breaks in the colour scheme.}
   \item{col}{colours corresponding to the breaks.  The number of colours

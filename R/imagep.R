@@ -1,5 +1,6 @@
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
+                   flip.y=FALSE,
                    xlab="", ylab="", zlab="",
                    breaks, col,
                    do.layout=TRUE,
@@ -31,6 +32,13 @@ imagep <- function(x, y, z,
     else
         col <- oce.colors.palette(n=length(breaks)-1)
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
+
+    ylim <- if (missing(ylim)) range(y) else ylim
+    if (flip.y) ylim <- rev(ylim)
+
+    xlim <- if (missing(xlim)) range(x) else xlim
+
+    plot.window(xlim=xlim, ylim=ylim)
 
     if (x.is.time) {
         if (missing(breaks)) {
