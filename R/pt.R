@@ -73,7 +73,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             do.call(plot, args)
         }
         if ((which[w] %in% 1:3) & !shown.time.interval & draw.timerange) {
-            mtext(paste(paste(format(range(x$data$time)), collapse=" to "),
+            mtext(paste(paste(format(range(x$data$time, na.rm=TRUE)), collapse=" to "),
                         attr(x$data$time[1], "tzone")),
                   side=3, cex=3/4*par("cex.axis"), adj=0)
             shown.time.interval <- TRUE
