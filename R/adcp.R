@@ -265,21 +265,22 @@ read.profile <- function(file, header, debug)
     v[v==(-32768)] <- NA       # blank out bad data
     v <- matrix(v / 1000, ncol=header$number.of.beams, byrow=TRUE)
     ## correlation magnitude, should start with 0x00 0x01
-    cm.ID <- readBin(file, "raw", n=2, size=1)
-    if (cm.ID[1] != 0x00) stop("first byte of correlation-magnitude segment should be 0x00 but is ", cm.ID[1])
-    if (cm.ID[2] != 0x02) stop("first byte of correlation-magnitude segment should be 0x02 but is ", cm.ID[2])
-    cm <- readBin(file, "integer",
-                  n=header$number.of.beams * header$number.of.cells,
-                  size=1, endian="little")
+    q.ID <- readBin(file, "raw", n=2, size=1)
+    if (q.ID[1] != 0x00) stop("first byte of correlation-magnitude segment should be 0x00 but is ", q.ID[1])
+    if (q.ID[2] != 0x02) stop("first byte of correlation-magnitude segment should be 0x02 but is ", q.ID[2])
+    q <- readBin(file, "integer",
+                 n=header$number.of.beams * header$number.of.cells,
+                 size=1, endian="little")
+    q <- matrix(q, ncol=header$number.of.beams, byrow=TRUE)
     if (debug) cat("got correlation magnitude\n")
     ## echo intensity, should start with 0x00 0x03
-    ei.ID <- readBin(file, "raw", n=2, size=1)
-    if (ei.ID[1] != 0x00) stop("first byte of echo-intensity segment should be 0x00 but is ", ei.ID[1])
-    if (ei.ID[2] != 0x03) stop("first byte of echo-intensity segment should be 0x03 but is ", ei.ID[2])
-    ei <- readBin(file, "integer",
-                  n=header$number.of.beams * header$number.of.cells,
-                  size=1, endian="little", signed=FALSE)
-    ei <- matrix(ei, ncol=header$number.of.beams, byrow=TRUE)
+    a.ID <- readBin(file, "raw", n=2, size=1)
+    if (a.ID[1] != 0x00) stop("first byte of echo-intensity segment should be 0x00 but is ", a.ID[1])
+    if (a.ID[2] != 0x03) stop("first byte of echo-intensity segment should be 0x03 but is ", a.ID[2])
+    a <- readBin(file, "integer",
+                 n=header$number.of.beams * header$number.of.cells,
+                 size=1, endian="little", signed=FALSE)
+    a <- matrix(a, ncol=header$number.of.beams, byrow=TRUE)
 
     if (debug) cat("got echo intensity\n")
     ## percent good, should start with 0x00 0x04
@@ -303,7 +304,7 @@ read.profile <- function(file, header, debug)
     if (debug > 0) cat("reserved=", paste(reserved, collapse=" "), "\n")
     checksum <- readBin(file, "raw", n=2, size=1)
     if (debug > 0) cat("checksum=", paste(checksum, collapse=" "), "\n")
-    list(header=header, v=v, ei=ei, pg=pg, bt=bt)
+    list(header=header, v=v, a=a, q=q, pg=pg, bt=bt)
 }
 
 read.adcp <- function(file, type ="RDI",
@@ -339,34 +340,21 @@ read.adcp <- function(file, type ="RDI",
     ##cat("profiles in file:", profiles.in.file, "\n")
     if (read < 1) stop("cannot read fewer than one profile")
 
-    bm1 <- array(dim=c(read, p$header$number.of.cells))
-    bm2 <- array(dim=c(read, p$header$number.of.cells))
-    bm3 <- array(dim=c(read, p$header$number.of.cells))
-    bm4 <- array(dim=c(read, p$header$number.of.cells))
-    ei1 <- array(dim=c(read, p$header$number.of.cells)) # echo intensity
-    ei2 <- array(dim=c(read, p$header$number.of.cells))
-    ei3 <- array(dim=c(read, p$header$number.of.cells))
-    ei4 <- array(dim=c(read, p$header$number.of.cells))
-    pg1 <- array(dim=c(read, p$header$number.of.cells))
-    pg2 <- array(dim=c(read, p$header$number.of.cells))
-    pg3 <- array(dim=c(read, p$header$number.of.cells))
-    pg4 <- array(dim=c(read, p$header$number.of.cells))
+    v <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
+    a <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
+    q <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
+    cat("dim(v)=",dim(p$v),"\n")
+    cat("dim(a)=",dim(p$a),"\n")
+    cat("dim(q)=",dim(p$q),"\n")
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
-        bm1[i,] <- p$v[,1]
-        bm2[i,] <- p$v[,2]
-        bm3[i,] <- p$v[,3]
-        bm4[i,] <- p$v[,4]
-        ei1[i,] <- p$ei[,1]
-        ei2[i,] <- p$ei[,2]
-        ei3[i,] <- p$ei[,3]
-        ei4[i,] <- p$ei[,4]
-        pg1[i,] <- p$pg[,1]
-        pg2[i,] <- p$pg[,2]
-        pg3[i,] <- p$pg[,3]
-        pg4[i,] <- p$pg[,4]
-        time <- c(time, p$header$RTC.time)
+        for (beam in 1:p$header$number.of.beams) {
+            v[i,,beam] <- p$v[,beam]
+            a[i,,beam] <- p$a[,beam]
+            q[i,,beam] <- p$q[,beam]
+        }
+        time <- c(time, p$header$RTC.time) # FIXME: rename as p$time
         pressure <- c(pressure, p$header$pressure)
         temperature <- c(temperature, p$header$temperature)
         salinity <- c(salinity, p$header$salinity)
@@ -396,9 +384,7 @@ read.adcp <- function(file, type ="RDI",
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
-    data <- list(ma=list(bm1=bm1, bm2=bm2, bm3=bm3, bm4=bm4,
-                 ei1=ei1, ei2=ei2, ei3=ei3, ei4=ei4,
-                 pg1=pg1, pg2=pg2, pg3=pg3, pg4=pg4),
+    data <- list(ma=list(v=v, a=a, q=q),
                  ss=list(distance=seq(bin1.distance, by=depth.cell.length, length.out=p$header$number.of.cells)),
                  ts=list(time=time,
                  pressure=pressure,
@@ -510,7 +496,13 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp)
+    dots <- list(...)
     ytype <- match.arg(ytype)
+    ytype <- match.arg(ytype)
+    gave.zlim <- !missing(zlim)
+    zlim.given <- if (gave.zlim) zlim else NULL
+    gave.ylim <- "ylim" %in% names(dots)
+    ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     images <- 1:12
     timeseries <- 13:18
@@ -526,8 +518,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     shown.time.interval <- FALSE
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
-    zlim.not.given <- missing(zlim)
-    if (zlim.not.given && all(which %in% 5:8)) { # ei uses a single scale for all
+    if (gave.zlim && all(which %in% 5:8)) { # ei uses a single scale for all
         zlim <- range(abs(x$data$ma[[which[1]]]), na.rm=TRUE)
         for (w in 2:length(which)) {
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
@@ -542,32 +533,51 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     } else {
         lay <- layout(cbind(1:lw))
     }
-    ##layout.show(lay)
-    ##stop()
     ma.names <- names(x$data$ma)
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
-        if (zlim.not.given) {
-            if (which[w] %in% 9:12) {    # pg goes from 0 to 100 percent
-                zlim <- c(0, 100)
-            } else {
-                if (which[w] < 12) {
-                    zlim <- max(abs(x$data$ma[[which[w]]]), na.rm=TRUE) * c(-1,1)
-                }
-            }
-        }
         if (which[w] %in% images) {                   # image types
-            imagep(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
-                   zlim=zlim,
-                   flip.y=flip.y,
-                   col=col,
-                   ylab=resizable.label("distance"),
-                   xlab="Time",
-                   zlab=if (missing(titles)) ma.names[which[w]] else titles[which[w]],
-                   draw.time.range=TRUE,
-                   draw.contours=FALSE,
-                   do.layout=FALSE, ...)
+            skip <- FALSE
+            if (which[w] %in% 1:4) {    #velocity
+                z <- x$data$ma$v[,,which[w]]
+                y.look <- if (gave.ylim)
+                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
+                else rep(TRUE, length(x$data$ss$distance))
+                zlim <- if (gave.zlim) zlim.given else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                if (x$metadata$coordinate.system == "beam")
+                    zlab <- if (missing(titles)) c("bm1", "bm2", "bm3")[which[w]] else titles[w]
+                else if (x$metadata$coordinate.system == "earth")
+                    zlab <- if (missing(titles)) c("east", "north", "up")[which[w]] else titles[w]
+                else if (x$metadata$coordinate.system == "frame")
+                    zlab <- if (missing(titles)) c("u", "v", "w")[which[w]] else titles[w]
+                else zlab <- "?"
+            } else if (which[w] %in% 5:8) { # amplitude
+                z <- x$data$ma$a[,,which[w]-4]
+                y.look <- if (gave.ylim)
+                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
+                else rep(TRUE, length(x$data$ss$distance))
+                zlim <- range(x$data$ma$a[,y.look,], na.rm=TRUE)
+                zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
+            } else if (which[w] %in% 9:12) { # correlation
+                z <- x$data$ma$q[,,which[w]-8]
+                zlim <- c(0, 100)
+                zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
+            } else skip <- TRUE
+            if (!skip) {
+                imagep(x=tt, y=x$data$ss$distance, z=z,
+                       zlim=zlim,
+                       flip.y=flip.y,
+                       col=col,
+                       ylab=resizable.label("distance"),
+                       xlab="Time",
+                       zlab=zlab,
+                       draw.time.range=!shown.time.interval,
+                       draw.contours=FALSE,
+                       do.layout=FALSE,
+                       ...)
+                shown.time.interval <- TRUE
+            }
         }
         if (which[w] %in% timeseries) { # time-series types
             if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
@@ -598,16 +608,11 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     if (x$metadata$oce.beam.attenuated) stop("the beams are already attenuated in this dataset")
     res <- x
-    num.profiles <- dim(x$data$ma$ei1)[1]
-    ##print(num.profiles)
+    num.profiles <- dim(x$data$ma$a)[1]
     correction <- matrix(rep(20 * log10(x$data$ss$distance), num.profiles),
                          nrow=num.profiles, byrow=TRUE)
-    ##print(dim(x$data$ei1))
-    ##print(dim(correction))
-    res$data$ma$ei1 <- count2db[1] * x$data$ma$ei1 + correction
-    res$data$ma$ei2 <- count2db[2] * x$data$ma$ei2 + correction
-    res$data$ma$ei3 <- count2db[3] * x$data$ma$ei3 + correction
-    res$data$ma$ei4 <- count2db[4] * x$data$ma$ei4 + correction
+    for (beam in 1:x$metadata$number.of.beams)
+        res$data$ma$a[,,beam] <- count2db[1] * x$data$ma$a[,,beam] + correction
     res$metadata$oce.beam.attenuated <- TRUE
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     res <- processing.log.append(res, log.action)
@@ -617,26 +622,18 @@ adcp.beam2frame <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
-    dim <- dim(x$data$ma$bm1)
-    u <- array(dim=dim)
-    v <- array(dim=dim)
-    w <- array(dim=dim)
-    e <- array(dim=dim)
+    vprime <- array(dim=dim(x$data$ma$v))
     c <- if(x$metadata$beam.pattern == "convex") 1 else -1;
     a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
     b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
     d <- a / sqrt(2)
-    u <- -c * a * (x$data$ma$bm1 - x$data$ma$bm2)
-    v <-  c * a * (x$data$ma$bm4 - x$data$ma$bm3)
-    w <- -b * (x$data$ma$bm1 + x$data$ma$bm2 + x$data$ma$bm3 + x$data$ma$bm4)
+    vprime[,,1] <- -c * a * (x$data$ma$v[,,1] - x$data$ma$v[,,2])
+    vprime[,,2] <-  c * a * (x$data$ma$v[,,4] - x$data$ma$v[,,3])
+    vprime[,,3] <- -b * (x$data$ma$v[,,1] + x$data$ma$v[,,2] + x$data$ma$v[,,3] + x$data$ma$v[,,4])
     ## FIXME Dal people use 'a' in e, and RDI has two definitions!
-    e <-  d * (x$data$ma$bm1 + x$data$ma$bm2 - x$data$ma$bm3 - x$data$ma$bm4)
-    ##print(list(a=a,b=b,c=c,d=d))
+    vprime[,,4] <-  d * (x$data$ma$v[,,1] + x$data$ma$v[,,2] - x$data$ma$v[,,3] - x$data$ma$v[,,4])
     res <- x
-    res$data$ma$bm1 <- u
-    res$data$ma$bm2 <- v
-    res$data$ma$bm3 <- w
-    res$data$ma$bm4 <- e
+    res$data$ma$v <- vprime
     names <- names(x$data$ma)
     names[names=="bm1"] <- "u"
     names[names=="bm2"] <- "v"
@@ -657,6 +654,7 @@ adcp.frame2earth <- function(x)
     ## FIXME: should we negate roll and pitch, or obey the arg values?
     res <- x
     to.radians <- pi / 180
+    vprime <- matrix(dim=dim(x$data$ma$v)[-1])
     for (p in 1:x$metadata$number.of.profiles) {
         heading <- res$data$ts$heading[p]
         if (res$metadata$orientation == "down") {
@@ -689,13 +687,10 @@ adcp.frame2earth <- function(x)
             cat("Rotation matrix:\n")
             print(rotation.matrix)
         }
-        u <- res$data$ma$u[p,]
-        v <- res$data$ma$v[p,]
-        w <- res$data$ma$w[p,]
-        rotated <- rotation.matrix %*% matrix(c(u, v, w), nrow=3, byrow=TRUE)
-        res$data$ma$u[p,] <- rotated[1,]
-        res$data$ma$v[p,] <- rotated[2,]
-        res$data$ma$w[p,] <- rotated[3,]
+        vprime <- rotation.matrix %*% res$data$v[p,,] # FIXME: I'm pretty sure the indices are wrong, below
+        res$data$ma$v[p,,1] <- vprime[,1]
+        res$data$ma$v[p,,2] <- vprime[,2]
+        res$data$ma$v[p,,3] <- vprime[,3]
         ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
     }
     ## Give these new names
@@ -723,6 +718,7 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
     SP <- sin(to.radians * pitch)
     CR <- cos(to.radians * roll)
     SR <- sin(to.radians * roll)
+    vprime <- matrix(dim=dim(x$data$ma$v)[-1])
     for (p in 1:x$metadata$number.of.profiles) {
         m1 <- matrix(c(CH,  SH, 0,
                        -SH, CH, 0,
@@ -741,13 +737,10 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
             cat("Rotation matrix:\n")
             print(rotation.matrix)
         }
-        east <- x$data$ma$east[p,]
-        north <- x$data$ma$north[p,]
-        up <- x$data$ma$up[p,]
-        rotated <- rotation.matrix %*% matrix(c(east, north, up), nrow=3, byrow=TRUE)
-        res$data$ma$east[p,] <- rotated[1,]
-        res$data$ma$north[p,] <- rotated[2,]
-        res$data$ma$up[p,] <- rotated[3,]
+        vprime <- rotation.matrix %*% x$data$ma$v[p,,]
+        res$data$ma$v[p,,1] <- vprime[,1]
+        res$data$ma$v[p,,2] <- vprime[,2]
+        res$data$ma$v[p,,3] <- vprime[,3]
         ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
     }
     ## Give these new names

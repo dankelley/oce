@@ -284,7 +284,6 @@ read.aquadopp <- function(file,
         v <- array(dim=c(read, number.of.cells, number.of.beams))
         a <- array(dim=c(read, number.of.cells, number.of.beams))
         q <- array(dim=c(read, number.of.cells, number.of.beams))
-
         for (i in 1:read) {
             p <- read.profile.aquadopp(file,debug=debug)
             for (beam in 1:number.of.beams) {
@@ -306,7 +305,7 @@ read.aquadopp <- function(file,
         if (monitor) cat("\nRead", read, "profiles\n")
         salinity <- rep(salinity, read)     # fake a time-series
         class(time) <- c("POSIXt", "POSIXct")
-        attr(time, "tzone") <- "UTC"        # BUG should let user control this
+        attr(time, "tzone") <- "UTC" # BUG should let user control this
                                         # Q: does file hold the zone?
 
         data <- list(ma=list(v=v, a=a, q=q),
@@ -450,7 +449,6 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp)
     dots <- list(...)
-
     ytype <- match.arg(ytype)
     gave.zlim <- !missing(zlim)
     zlim.given <- if (gave.zlim) zlim else NULL
@@ -486,12 +484,8 @@ plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
     } else {
         lay <- layout(cbind(1:lw))
     }
-    ##layout.show(lay)
-    ##stop()
     ma.names <- names(x$data$ma)
-
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
-
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
         if (which[w] %in% images) {                   # image types
