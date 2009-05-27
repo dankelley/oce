@@ -8,6 +8,7 @@
 
 \usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), zlim, 
          titles,
+         ytype=c("profile", "distance"),
 	 adorn=NULL,
          draw.timerange=getOption("oce.draw.timerange"),
          mgp=getOption("oce.mgp"), \dots)}
@@ -33,6 +34,14 @@
     placed in the right hand side of the top margin.  For timeseries,
     these strings are ignored.
     If this is provided, its length must equal that of \code{which}.}
+  \item{ytype}{character string controlling the type of the y axis for
+    images (ignored for time series).  If \code{"distance"}, then the y
+    axis will be distance from the sensor head, with smaller distances
+    nearer the bottom of the graph.  If \code{"profile"}, then this will
+    still be true for upward-looking instruments, but the y axis will be
+    flipped for downward-looking instruments, so that in either case,
+    the top of the graph will represent the sample nearest the sea
+    surface.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, 

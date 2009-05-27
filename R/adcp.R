@@ -499,6 +499,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                       titles,
+                      ytype=c("profile", "distance"),
                       adorn=NULL,
                       draw.timerange=getOption("oce.draw.timerange"),
                       mgp=getOption("oce.mgp"), ...)
@@ -509,6 +510,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp)
+    ytype <- match.arg(ytype)
 
     images <- 1:12
     timeseries <- 13:18
@@ -543,6 +545,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     ##layout.show(lay)
     ##stop()
     ma.names <- names(x$data$ma)
+    flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
         if (zlim.not.given) {
@@ -557,6 +560,7 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
         if (which[w] %in% images) {                   # image types
             imagep(x=tt, y=x$data$ss$distance, z=x$data$ma[[ma.names[which[w]]]],
                    zlim=zlim,
+                   flip.y=flip.y,
                    col=col,
                    ylab=resizable.label("distance"),
                    xlab="Time",
