@@ -35,8 +35,8 @@ plot(adcp.att, which=5) # beam 1 echo intensity
 
 # Profiles
 par(mar=c(4, 4, 1, 1))
-plot(apply(adcp$data$ma$ei1, 2, mean), adcp$data$ss$distance, type='l', xlim=c(0,256))
-lines(apply(adcp.att$data$ma$ei1, 2, mean), adcp$data$ss$distance, type='l', col='red')
+plot(apply(adcp$data$ma$a, 2, mean), adcp$data$ss$distance, type='l', xlim=c(0,256))
+lines(apply(adcp.att$data$ma$a, 2, mean), adcp$data$ss$distance, type='l', col='red')
 legend("topright", lwd=1, col=c("black", "red"), legend=c("original", "attenuated"))
 }
 

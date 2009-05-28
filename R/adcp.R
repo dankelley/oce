@@ -89,11 +89,11 @@ read.header <- function(file, debug)
     tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
     tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
     bits <- substr(byte2binary(FLD[26]), 4, 5)
-    coordinate.transformation <- "???"
-    if (bits == "00") coordinate.transformation <- "beam"
-    else if (bits == "01") coordinate.transformation <- "instrument"
-    else if (bits == "10") coordinate.transformation <- "ship"
-    else if (bits == "11") coordinate.transformation <- "earth"
+    coordinate.system <- "???"
+    if (bits == "00") coordinate.system <- "beam"
+    else if (bits == "01") coordinate.system <- "instrument"
+    else if (bits == "10") coordinate.system <- "frame"
+    else if (bits == "11") coordinate.system <- "earth"
     heading.alignment <- readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
     heading.bias <- readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
@@ -209,7 +209,7 @@ read.header <- function(file, debug)
          tpp.minutes=tpp.minutes,
          tpp.seconds=tpp.seconds,
          tpp.hundredths=tpp.hundredths,
-         coordinate.transformation=coordinate.transformation,
+         coordinate.system=coordinate.system,
          heading.alignment=heading.alignment,
          heading.bias=heading.bias,
          sensor.source=sensor.source,
@@ -344,9 +344,6 @@ read.adcp <- function(file, type ="RDI",
     a <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
     q <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
-    cat("dim(v)=",dim(p$v),"\n")
-    cat("dim(a)=",dim(p$a),"\n")
-    cat("dim(q)=",dim(p$q),"\n")
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
         for (beam in 1:p$header$number.of.beams) {
@@ -438,7 +435,7 @@ summary.adcp <- function(object, ...)
                 beam.config=object$metadata$beam.config,
                 orientation=object$metadata$orientation,
                 beam.pattern=object$metadata$beam.pattern,
-                coordinate.transformation=object$metadata$coordinate.transformation,
+                coordinate.system=object$metadata$coordinate.system,
                 fives=fives,
                 time=object$data$ts$time,
                 oce.coordinate=object$metadata$oce.coordinate,
@@ -456,7 +453,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  System configuration:       ", x$metadata$system.configuration, "\n")
     cat("  CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n")
     cat("  Instrument serial number:   ", x$metadata$instrument.serial.number, "\n")
-    cat("  Coordinate transformation:  ", x$coordinate.transformation, "[originally],", x$oce.coordinate, "[presently]\n")
+    cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
     cat("  Transducer depth:           ", x$metadata$depth.of.transducer, "m\n")
     ##cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
     ##cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
@@ -514,12 +511,11 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     }
 
     par(mar=c(mgp[1],mgp[1]+1,1,1))
-    data.names <- names(x$data$ma)
     shown.time.interval <- FALSE
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     if (gave.zlim && all(which %in% 5:8)) { # ei uses a single scale for all
-        zlim <- range(abs(x$data$ma[[which[1]]]), na.rm=TRUE)
+        zlim <- range(abs(x$data$ma[,,which[1]]), na.rm=TRUE)
         for (w in 2:length(which)) {
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
@@ -545,13 +541,15 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
                 else rep(TRUE, length(x$data$ss$distance))
                 zlim <- if (gave.zlim) zlim.given else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
-                if (x$metadata$coordinate.system == "beam")
-                    zlab <- if (missing(titles)) c("bm1", "bm2", "bm3")[which[w]] else titles[w]
-                else if (x$metadata$coordinate.system == "earth")
-                    zlab <- if (missing(titles)) c("east", "north", "up")[which[w]] else titles[w]
-                else if (x$metadata$coordinate.system == "frame")
-                    zlab <- if (missing(titles)) c("u", "v", "w")[which[w]] else titles[w]
-                else zlab <- "?"
+                if (x$metadata$oce.coordinate == "beam")
+                    zlab <- if (missing(titles)) c("beam 1", "beam 2", "beam 3", "beam 4")[which[w]] else titles[w]
+                else if (x$metadata$oce.coordinate == "earth")
+                    zlab <- if (missing(titles)) c("east", "north", "up", "error")[which[w]] else titles[w]
+                else if (x$metadata$oce.coordinate == "frame")
+                    zlab <- if (missing(titles)) c("u", "v", "w", "e")[which[w]] else titles[w]
+                else if (x$metadata$oce.coordinate == "other")
+                    zlab <- if (missing(titles)) c("u'", "v'", "w'", "e")[which[w]] else titles[w]
+                else zlab <- ""
             } else if (which[w] %in% 5:8) { # amplitude
                 z <- x$data$ma$a[,,which[w]-4]
                 y.look <- if (gave.ylim)
@@ -634,12 +632,6 @@ adcp.beam2frame <- function(x)
     vprime[,,4] <-  d * (x$data$ma$v[,,1] + x$data$ma$v[,,2] - x$data$ma$v[,,3] - x$data$ma$v[,,4])
     res <- x
     res$data$ma$v <- vprime
-    names <- names(x$data$ma)
-    names[names=="bm1"] <- "u"
-    names[names=="bm2"] <- "v"
-    names[names=="bm3"] <- "w"
-    names[names=="bm4"] <- "e"
-    names(res$data$ma) <- names
     res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")
@@ -651,10 +643,8 @@ adcp.frame2earth <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
-    ## FIXME: should we negate roll and pitch, or obey the arg values?
     res <- x
     to.radians <- pi / 180
-    vprime <- matrix(dim=dim(x$data$ma$v)[-1])
     for (p in 1:x$metadata$number.of.profiles) {
         heading <- res$data$ts$heading[p]
         if (res$metadata$orientation == "down") {
@@ -683,22 +673,13 @@ adcp.frame2earth <- function(x)
                         -SR, 0, CR),
                       nrow=3, byrow=TRUE)
         rotation.matrix <- m1 %*% m2 %*% m3
-        if (!TRUE) {
-            cat("Rotation matrix:\n")
-            print(rotation.matrix)
-        }
-        vprime <- rotation.matrix %*% res$data$v[p,,] # FIXME: I'm pretty sure the indices are wrong, below
-        res$data$ma$v[p,,1] <- vprime[,1]
-        res$data$ma$v[p,,2] <- vprime[,2]
-        res$data$ma$v[p,,3] <- vprime[,3]
-        ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
+        rotated <- rotation.matrix %*% matrix(c(x$data$ma$v[p,,1],
+                                                x$data$ma$v[p,,2],
+                                                x$data$ma$v[p,,3]), nrow=3, byrow=TRUE)
+        res$data$ma$v[p,,1] <- rotated[1,]
+        res$data$ma$v[p,,2] <- rotated[2,]
+        res$data$ma$v[p,,3] <- rotated[3,]
     }
-    ## Give these new names
-    names <- names(res$data$ma)
-    names[names=="u"] <- "east"
-    names[names=="v"] <- "north"
-    names[names=="w"] <- "up"
-    names(res$data$ma) <- names
     res$metadata$oce.coordinate <- "earth"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")
@@ -718,37 +699,27 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
     SP <- sin(to.radians * pitch)
     CR <- cos(to.radians * roll)
     SR <- sin(to.radians * roll)
-    vprime <- matrix(dim=dim(x$data$ma$v)[-1])
-    for (p in 1:x$metadata$number.of.profiles) {
-        m1 <- matrix(c(CH,  SH, 0,
-                       -SH, CH, 0,
-                       0,    0, 1),
-                     nrow=3, byrow=TRUE)
-        m2 <- matrix(c(1,  0,  0,
-                       0, CP, -SP,
-                       0, SP,  CP),
-                     nrow=3, byrow=TRUE)
-        m3 <-  matrix(c(CR,  0, SR,
-                        0,   1,  0,
-                        -SR, 0, CR),
-                      nrow=3, byrow=TRUE)
-        rotation.matrix <- m1 %*% m2 %*% m3
-        if (!TRUE) {
-            cat("Rotation matrix:\n")
-            print(rotation.matrix)
-        }
-        vprime <- rotation.matrix %*% x$data$ma$v[p,,]
-        res$data$ma$v[p,,1] <- vprime[,1]
-        res$data$ma$v[p,,2] <- vprime[,2]
-        res$data$ma$v[p,,3] <- vprime[,3]
-        ##cat("rotated profile", p, "with heading", round(heading, 20), "\n")
+    m1 <- matrix(c(CH,  SH, 0,
+                   -SH, CH, 0,
+                   0,    0, 1),
+                 nrow=3, byrow=TRUE)
+    m2 <- matrix(c(1,  0,  0,
+                   0, CP, -SP,
+                   0, SP,  CP),
+                 nrow=3, byrow=TRUE)
+    m3 <-  matrix(c(CR,  0, SR,
+                    0,   1,  0,
+                    -SR, 0, CR),
+                  nrow=3, byrow=TRUE)
+    rotation.matrix <- m1 %*% m2 %*% m3
+    for (p in 1:x$metadata$number.of.profiles) { #FIXME this probably doesn't need to be in a loop
+        rotated <- rotation.matrix %*% matrix(c(x$data$ma$v[p,,1],
+                                                x$data$ma$v[p,,2],
+                                                x$data$ma$v[p,,3]), nrow=3, byrow=TRUE)
+        res$data$ma$v[p,,1] <- rotated[1,]
+        res$data$ma$v[p,,2] <- rotated[2,]
+        res$data$ma$v[p,,3] <- rotated[3,]
     }
-    ## Give these new names
-    names <- names(res$data$ma)
-    names[names=="east"] <- "u [rotated]"
-    names[names=="north"] <- "v [rotated]"
-    names[names=="up"] <- "w [rotated]"
-    names(res$data$ma) <- names
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     class(res) <- c("adcp", "oce")

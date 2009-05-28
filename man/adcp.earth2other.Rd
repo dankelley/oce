@@ -46,7 +46,7 @@ data(adcp)
 f <- adcp.beam2frame(adcp)
 e <- adcp.frame2earth(f)
 plot(e, which=1:3)
-o <- adcp.earth2other(e, heading=40)
+o <- adcp.earth2other(e, heading=31.5)
 plot(o, which=1:3)
 }
 
