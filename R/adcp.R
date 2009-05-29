@@ -76,9 +76,8 @@ read.header <- function(file, debug)
     number.of.beams <- readBin(FLD[9], "integer", n=1, size=1)
     number.of.cells <- readBin(FLD[10], "integer", n=1, size=1) # WN
     pings.per.ensemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
-    depth.cell.length <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
-    if (depth.cell.length < 0 || depth.cell.length > 64) stop("depth cell length of ", depth.cell.length, "is not in the allowed range of 0m to 64m")
-    ##cat("depth.cell.length being inferred from 0x", FLD[13:14], " as ", depth.cell.length, "\n", sep="")
+    cell.size <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
+    if (cell.size < 0 || cell.size > 64) stop("cell size of ", cell.size, "is not in the allowed range of 0m to 64m")
     blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profiling.mode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     low.corr.thresh <- readBin(FLD[18], "integer", n=1, size=1)
@@ -119,8 +118,10 @@ read.header <- function(file, debug)
     system.bandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
     system.power <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
-    instrument.serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
-    ##cat("INSTRUMENT SERIAL NUMBER", FLD[55:58], "\n")
+    serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
+    if (debug) cat("SERIAL NUMBER", serial.number, "\n")
+    if (debug) cat("SERIAL NUMBER", FLD[55:58], "\n")
+    if (serial.number == 0) serial.number <- c(cpu.board.serial.number, "(CPU board)") # FIXME: where is serial no. stored?
 
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n")
@@ -181,7 +182,8 @@ read.header <- function(file, debug)
         cat("\n")
     }
 
-    list(header=header,
+    list(instrument.type="rdi",
+         header=header,
          header.length=length(header),
          program.version.major=fv,
          program.version.minor=fr,
@@ -200,7 +202,7 @@ read.header <- function(file, debug)
          pitch=pitch,
          roll=roll,
          pings.per.ensemble=pings.per.ensemble,
-         depth.cell.length=depth.cell.length,
+         cell.size=cell.size,
          profiling.mode=profiling.mode,
          low.corr.thresh=low.corr.thresh,
          number.of.code.reps=number.of.code.reps,
@@ -222,7 +224,7 @@ read.header <- function(file, debug)
          cpu.board.serial.number=cpu.board.serial.number,
          system.bandwidth=system.bandwidth,
          system.power=system.power,
-         instrument.serial.number=instrument.serial.number,
+         serial.number=serial.number,
          ## beam.angle=beam.angle,  # wrong in my tests, anyway
          ensemble.number=ensemble.number,
          RTC.year=RTC.year,
@@ -330,7 +332,7 @@ read.adcp <- function(file, type ="RDI",
     p <- read.profile(file, debug=debug)
     bin1.distance <- p$header$bin1.distance
     xmit.pulse.length <- p$header$xmit.pulse.length
-    depth.cell.length <- p$header$depth.cell.length
+    cell.size <- p$header$cell.size
     bytes.per.profile <- seek(file)
     ## go to the end, so the next seek (to get to the data) reveals file length
     seek(file, where=0, origin="end")
@@ -382,7 +384,7 @@ read.adcp <- function(file, type ="RDI",
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
     data <- list(ma=list(v=v, a=a, q=q),
-                 ss=list(distance=seq(bin1.distance, by=depth.cell.length, length.out=p$header$number.of.cells)),
+                 ss=list(distance=seq(bin1.distance, by=cell.size, length.out=p$header$number.of.cells)),
                  ts=list(time=time,
                  pressure=pressure,
                  temperature=temperature,
@@ -395,13 +397,38 @@ read.adcp <- function(file, type ="RDI",
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adcp", "oce")
+    class(res) <- c("adcp", "rdi", "oce")
     res
 }
 
 summary.adcp <- function(object, ...)
 {
     if (!inherits(object, "adcp")) stop("method is only for adcp objects")
+    if (inherits(object, "aquadopp")) {
+        res.specific <- list(internal.code.version=object$metadata$internal.code.version,
+                             hardware.revision=object$metadata$hardware.revision,
+                             rec.size=object$metadata$rec.size*65536/1024/1024,
+                             velocity.range=object$metadata$velocity.range,
+                             firmware.version=object$metadata$firmware.version,
+                             config=object$metadata$config,
+                             config.pressure.sensor=object$metadata$config.pressure.sensor,
+                             config.magnetometer.sensor=object$metadata$config.magnetometer.sensor,
+                             config.tilt.sensor=object$metadata$config.pressure.sensor,
+                             config.pressure.sensor=object$metadata$config.tilt.sensor,
+                             serial.number.head=object$metadata$serial.number.head,
+                             blanking.distance=object$metadata$blanking.distance,
+                             measurement.interval=object$metadata$measurement.interval,
+                             deployment.name=object$metadata$deployment.name,
+                             velocity.scale=object$metadata$velocity.scale)
+    } else if (inherits(object, "rdi")) {
+        res.specific <- list(
+                number.of.data.types=object$metadata$number.of.data.types,
+                bin1.distance=object$metadata$bin1.distance,
+                xmit.pulse.length=object$metadata$xmit.pulse.length,
+                oce.beam.attenuated=object$metadata$oce.beam.attenuated,
+                number.of.data.types=object$metadata$number.of.data.types,
+                beam.config=object$metadata$beam.config)
+    } else stop("can only summarize ADCP objects of type \"rdi\" or \"nortek aquadop high resolution\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
     fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
@@ -418,28 +445,32 @@ summary.adcp <- function(object, ...)
     }
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    res <- list(filename=object$metadata$filename,
+    res <- list(res.specific,
+                filename=object$metadata$filename,
+                instrument.type=object$metadata$instrument.type,
+                serial.number=object$metadata$serial.number,
                 start.time=object$data$ts$time[1],
                 delta.time=difftime(object$data$ts$time[2], object$data$ts$time[1], units="secs"),
                 end.time=object$data$ts$time[length(object$data$ts$time)],
+                distance=object$data$ss$distance,
                 number.of.profiles=object$metadata$number.of.profiles,
                 metadata=object$metadata,
                 frequency=object$metadata$frequency,
-                number.of.data.types=object$metadata$number.of.data.types,
+                number.of.cells=object$metadata$number.of.cells,
                 number.of.beams=object$metadata$number.of.beams,
+                number.of.data.types=object$metadata$number.of.data.type,
                 bin1.distance=object$metadata$bin1.distance,
-                depth.cell.length=object$metadata$depth.cell.length,
+                cell.size=object$metadata$cell.size,
                 xmit.pulse.length=object$metadata$xmit.pulse.length,
                 oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                 beam.angle=object$metadata$beam.angle,
                 beam.config=object$metadata$beam.config,
                 orientation=object$metadata$orientation,
-                beam.pattern=object$metadata$beam.pattern,
                 coordinate.system=object$metadata$coordinate.system,
-                fives=fives,
-                time=object$data$ts$time,
                 oce.coordinate=object$metadata$oce.coordinate,
                 number.of.profiles=object$metadata$number.of.profiles,
+                fives=fives,
+                time=object$data$ts$time,
                 processing.log=processing.log.summary(object))
     class(res) <- "summary.adcp"
     res
@@ -447,32 +478,39 @@ summary.adcp <- function(object, ...)
 
 print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("ADCP timeseries\n")
+    cat("ADCP summary\n")
+    cat("  Instrument type:            ", x$instrument.type, "\n")
     cat("  Filename:                   ", x$filename, "\n")
-    cat("  Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n")
-    cat("  System configuration:       ", x$metadata$system.configuration, "\n")
-    cat("  CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n")
-    cat("  Instrument serial number:   ", x$metadata$instrument.serial.number, "\n")
+    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
     cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Transducer depth:           ", x$metadata$depth.of.transducer, "m\n")
-    ##cat("  Pressure:                   ", x$metadata$pressure*0.01, "dbar (in first record)\n")
-    ##cat("  Salinity:                   ", x$metadata$salinity, "PSU (in first record)\n")
-    ##cat("  Temperature:                ", x$metadata$temperature, "degC (in first record)\n")
-    cat("  File sampled at times:       ", as.character(x$start.time), " to ",
+    cat("  Measurements at times:       ", as.character(x$start.time), " to ",
         as.character(x$end.time), " at interval ", as.character(x$delta.time), " s\n", sep="")
+    cat("  Measurements at distances:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
     cat("  Number of data types:       ", x$number.of.data.types, "\n")
     cat("  Frequency:                  ", x$frequency, "kHz\n")
-    cat("  Beams:                      ", x$number.of.beams, "\n")
-    ##if (x$oce.beam.attenuated) "(attenuated)" else "(not attenuated)"
-    cat("  Pattern:                    ", x$beam.config, "\n")
+    cat("  Beams:                      ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n")
     cat("  Orientation:                ", x$orientation, "\n")
-    cat("  Angle to vertical:          ", x$beam.angle, "deg\n")
-    cat("  Number of cells:            ", x$metadata$number.of.cells, "\n")
-    cat("  Cell thickness:             ", x$depth.cell.length, "m\n")
-    cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
-    cat("  Xmit pulse length:          ", x$xmit.pulse.length,"m\n")
-    cat("  Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n")
+    cat("  Beam angle:                 ", x$metadata$beam.angle, "\n")
+    cat("  Number of cells:            ", x$number.of.cells, "\n")
+    ##cat("  Cell size:                  ", x$cell.size, "m\n")
+    ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
     cat("  Number of profiles:         ", x$number.of.profiles, "\n")
+    if (x$instrument.type == "rdi") {
+        cat("  RDI-specific\n")
+        cat("    Transducer depth:           ", x$metadata$depth.of.transducer, "m\n")
+        cat("    System configuration:       ", x$metadata$system.configuration, "\n")
+        cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n")
+        cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n")
+        cat("    Xmit pulse length:          ", x$metadata$xmit.pulse.length,"m\n")
+        cat("    Beam pattern:               ", x$metadata$beam.pattern, "\n")
+        cat("    Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n")
+    }
+    if (x$instrument.type == "nortek aquadopp high resolution") {
+        cat("  Aquadopp-specific:\n")
+        cat("    Internal code version:       ", x$metadata$internal.code.version, "\n")
+        cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n")
+        cat("    Head serial number:          ", x$metadata$head.serial.number, "\n")
+    }
     cat("\nStatistics:\n")
     print(x$fives)
     cat("\n")
@@ -480,7 +518,8 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
+plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
+                      col=oce.colors.palette(128, 1), zlim,
                       titles,
                       ytype=c("profile", "distance"),
                       adorn=NULL,
@@ -514,12 +553,11 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     shown.time.interval <- FALSE
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
-    if (gave.zlim && all(which %in% 5:8)) { # ei uses a single scale for all
+    if (gave.zlim && all(which %in% 5:8)) { # single scale for all
         zlim <- range(abs(x$data$ma[,,which[1]]), na.rm=TRUE)
         for (w in 2:length(which)) {
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
-        zlim.not.given <- FALSE                                    # fake it
     }
     if (any(which %in% images)) {
         scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
@@ -529,13 +567,12 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
     } else {
         lay <- layout(cbind(1:lw))
     }
-    ma.names <- names(x$data$ma)
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
-            if (which[w] %in% 1:4) {    #velocity
+            if (which[w] %in% 1:(0+x$metadata$number.of.beams)) {    #velocity
                 z <- x$data$ma$v[,,which[w]]
                 y.look <- if (gave.ylim)
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
@@ -550,14 +587,14 @@ plot.adcp <- function(x, which=1:4, col=oce.colors.palette(128, 1), zlim,
                 else if (x$metadata$oce.coordinate == "other")
                     zlab <- if (missing(titles)) c("u'", "v'", "w'", "e")[which[w]] else titles[w]
                 else zlab <- ""
-            } else if (which[w] %in% 5:8) { # amplitude
+            } else if (which[w] %in% 5:(4+x$metadata$number.of.beams)) { # amplitude
                 z <- x$data$ma$a[,,which[w]-4]
                 y.look <- if (gave.ylim)
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
                 else rep(TRUE, length(x$data$ss$distance))
                 zlim <- range(x$data$ma$a[,y.look,], na.rm=TRUE)
                 zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
-            } else if (which[w] %in% 9:12) { # correlation
+            } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation
                 z <- x$data$ma$q[,,which[w]-8]
                 zlim <- c(0, 100)
                 zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
@@ -613,12 +650,13 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
         res$data$ma$a[,,beam] <- count2db[1] * x$data$ma$a[,,beam] + correction
     res$metadata$oce.beam.attenuated <- TRUE
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    res <- processing.log.append(res, log.action)
+    processing.log.append(res, log.action)
 }
 
 adcp.beam2frame <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
+    if (!inherits(x, "rdi")) return(x)   # FIXME add aquadopp support here
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
     vprime <- array(dim=dim(x$data$ma$v))
     c <- if(x$metadata$beam.pattern == "convex") 1 else -1;
@@ -634,14 +672,13 @@ adcp.beam2frame <- function(x)
     res$data$ma$v <- vprime
     res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    class(res) <- c("adcp", "oce")
-    res <- processing.log.append(res, log.action)
-    res
+    processing.log.append(res, log.action)
 }
 
 adcp.frame2earth <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (!inherits(x, "rdi")) return(x)   # FIXME add aquadopp support here
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
     res <- x
     to.radians <- pi / 180
@@ -682,14 +719,13 @@ adcp.frame2earth <- function(x)
     }
     res$metadata$oce.coordinate <- "earth"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    class(res) <- c("adcp", "oce")
-    res <- processing.log.append(res, log.action)
-    res
+    processing.log.append(res, log.action)
 }
 
 adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (!inherits(x, "rdi")) return(x)   # FIXME add aquadopp support here
     if (x$metadata$oce.coordinate != "earth") stop("input must be in earth coordinates")
     res <- x
     to.radians <- pi / 180
@@ -722,7 +758,568 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
     }
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    class(res) <- c("adcp", "oce")
-    res <- processing.log.append(res, log.action)
+    processing.log.append(res, log.action)
+}
+
+
+### AQUADOPP
+## notes for nortek:
+
+## 1. "spare" at offset 74 (page 31) now seems to be salinity
+## 2. extra byte
+## 3. should state the order of headers at the start, not end
+## 4. should state the algorithms to infer cell size, blanking distance, etc. from file
+## 5. beam angle should be in data file
+## 6. generally, docs should indicate everything that is in the files, e.g. (prominently!)
+##    the beam angles in the 'head' configuration section.
+## 7. the C code suggests the velocity scale is in the second bit of conf.hMode
+##    but the docs suggest the fifth bit (page 31)
+
+## To do
+## * transformation matrix so we can have earth and frame coords
+## * merge this with "adcp" class.
+
+read.profile.aquadopp <- function(file, debug=!TRUE)
+{
+    sync.code <- as.raw(0xa5)
+    id.high.resolution.aquadopp.profile.data <- as.raw(0x2a) # page 38 of System Integrator Guide
+    start <- readBin(file, "raw", 54) # see page 38 of System Integrator Guide
+    time <- sontek.time(start[5:12])
+    if (debug) cat("  time=", format(time), "\n")
+    sound.speed <-  readBin(start[17:18], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.1
+    if (debug) cat("  sound.speed=",sound.speed,"\n")
+    heading <-  readBin(start[19:20], "integer", n=1, size=2, endian="little") * 0.1
+    if (debug) cat("  heading=",heading,"\n")
+    pitch <-  readBin(start[21:22], "integer", n=1, size=2, endian="little") * 0.1
+    if (debug) cat("  pitch=",pitch,"\n")
+    roll <-  readBin(start[23:24], "integer", n=1, size=2, endian="little") * 0.1
+    if (debug) cat("  roll=",roll,"\n")
+    pressureMSB <-  start[25]
+    pressureLSW <-  readBin(start[27:28], "integer", n=1, size=2, endian="little")
+    pressure <- (as.integer(pressureMSB)*65536 + pressureLSW) * 0.001
+    if (debug) cat("  pressure=",pressure,"\n")
+    temperature <-  readBin(start[29:30], "integer", n=1, size=2, endian="little") * 0.01
+    if (debug) cat("  temperature=", temperature, "\n")
+    beams <-  as.integer(start[35])
+    if (debug) cat("  beams=", beams, "\n")
+    cells <-  as.integer(start[36])
+    if (debug) cat("  cells=", cells, "\n")
+
+    ##fill <- if (cells %% 2) 1 else 0
+    data.bytes <- beams * cells * (2 + 1 + 1) + 2
+
+    ## The System Integrator Guide is contradictory on the matter of a fill byte.  On page 38
+    ## it says it is needed.  But on page 57, the data declaration for cFill is commented out.
+    ## I find that if I retain this skipping of a byte, then I cannot read one
+    ## of the SLEIWEX files (sl08AQ01.prf), so I am hiding this in a FALSE block.
+    if (FALSE)
+        if (fill) readBin(file, "raw", n=1)
+    checksum <- readBin(file, "raw", n=2, size=1)
+
+    ## bug: should perhaps be using velocity.scale instead of /1000
+    v <- matrix(readBin(file, "integer", n=beams*cells, size=2, endian="little"), ncol=beams, byrow=FALSE) / 1000
+    a <- matrix(readBin(file, "integer", n=beams*cells, size=1, signed=FALSE), ncol=beams, byrow=FALSE)
+    q <- matrix(readBin(file, "integer", n=beams*cells, size=1, signed=FALSE), ncol=beams, byrow=FALSE)
+
+    two.bytes <- peek.ahead(file, 2)
+    if (two.bytes[1] != sync.code) stop("expecting sync code 0x", sync.code, " but got 0x", two.bytes[1], " (WTF)")
+    if (two.bytes[2] != id.high.resolution.aquadopp.profile.data) stop("expecting id code 0x", id.high.resolution.aquadopp.profile.data, " but got 0x", two.bytes[2], " (while checking for next profile)")
+
+
+    ### ready for another profile
+    list(v=v, a=a, q=q,
+         heading=heading, pitch=pitch, roll=roll,
+         time=time, temperature=temperature, pressure=pressure)
+}
+
+peek.ahead <- function(file, bytes=2, debug=!TRUE)
+{
+    pos <- seek(file)
+    res <- readBin(file, "raw", n=bytes, size=1)
+    if (debug) cat("peeked at", paste("0x", paste(res, sep=" "), sep=""), "\n")
+    seek(file, pos)
     res
 }
+
+sontek.time <- function(t, tz="UTC")
+{
+    minute <- bcd2integer(t[1])
+    second <- bcd2integer(t[2])
+    day <- bcd2integer(t[3])
+    hour <- bcd2integer(t[4])
+    year <- bcd2integer(t[5])
+    year <- year + if (year >= 90) 1900 else 2000 # page 51 of System Integrator Guide
+    month <- bcd2integer(t[6])
+    milliseconds <- readBin(t[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+    ISOdatetime(year, month, day, hour, minute, second+milliseconds/1000, tz=tz)
+}
+
+display.bytes <- function(b, label="")
+{
+    n <- length(b)
+    cat("\n", label, " (", n, "bytes)\n", sep="")
+    print(b)
+}
+
+read.aquadopp <- function(file,
+                          type=c("nortek aquadopp high resolution"),
+                          skip=0, read, stride=1,
+                          debug=0,
+                          monitor=TRUE,
+                          log.action) {
+    if (is.character(file)) {
+        filename <- file
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    type <- match.arg(type)
+    ## codes
+    sync.code <- as.raw(0xa5)
+    id.hardware.configuration <- as.raw(0x05)
+    id.head.configuration <- as.raw(0x04)
+    id.user.configuration <- as.raw(0x00)
+    id.profiler.data <- as.raw(0x21) # page 37 of System Integrator Guide
+    id.high.resolution.aquadopp.profile.data <- as.raw(0x2a) # page 38 of System Integrator Guide
+    header.length.hardware <- 48
+    header.length.head <- 224
+    header.length.user <- 512
+    for (header in 1:3) {
+        two.bytes <- peek.ahead(file)
+        if (two.bytes[1] != sync.code)
+            stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", buf[1], " instead (while reading header #", header, ")")
+        if (two.bytes[2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
+            if (debug) cat("** scanning Hardware Configuration **\n")
+            buf <- readBin(file, "raw", header.length.hardware)
+            if (buf[2] != 0x05) stop("byte 2 must be 0x05 but is 0x", buf[2])
+            size <- readBin(buf[3:4], "integer",signed=FALSE, n=1, size=2)
+            if (debug) cat("  size=", size, "\n")
+            serial.number <- gsub(" *$", "", paste(readBin(buf[5:18], "character", n=14, size=1), collapse=""))
+            if (debug) cat("  serial.number", serial.number, "\n")
+            config <- readBin(buf[19:20], "raw", n=2, size=1)
+            if (debug) cat("  config:", config, "\n")
+            frequency <- readBin(buf[21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
+            if (debug) cat("  frequency:", frequency, "\n")
+            pic.version <- readBin(buf[23:24], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  pic.version=", pic.version, "\n")
+            hw.revision <- readBin(buf[25:26], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  hw.revision=", buf[25:26], "\n")
+            rec.size <- readBin(buf[27:28], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  rec.size=", rec.size, "\n")
+            velocity.range <- readBin(buf[29:30], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  velocity.range=", velocity.range, "\n")
+            fw.version <- as.numeric(paste(readBin(buf[43:46], "character", n=4, size=1), collapse=""))
+            if (debug) cat("  fw.version=", fw.version, "\n")
+        } else if (two.bytes[2] == id.head.configuration) {     # see page 30 of System Integrator Guide
+            if (debug) cat("** scanning Head Configuration **\n")
+            buf <- readBin(file, "raw", header.length.head)
+            size <- readBin(buf[3:4], "integer",signed=FALSE, n=1, size=2)
+            if (debug) cat("  size=", size, "\n")
+            config <- byte2binary(buf[5:6], endian="little")
+            if (debug) cat("  config=", config, "\n")
+            config.pressure.sensor <- substr(config[1], 1, 1) == "1"
+            if (debug) cat("  config.pressure.sensor=",config.pressure.sensor,"\n")
+            config.magnetometer.sensor <- substr(config[1], 2, 2) == "1"
+            if (debug) cat("  config.magnetometer.sensor=",config.magnetometer.sensor,"\n")
+            config.tilt.sensor <- substr(config[1], 3, 3) == "1"
+            if (debug) cat("  config.tilt.sensor=",config.tilt.sensor,"\n")
+            orientation <- if (substr(config[1], 4, 4) == "1") "downward" else "upward"
+            if (debug) cat("  orientation=", orientation, "\n")
+            frequency <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (debug) cat("  frequency=", frequency, "kHz\n")
+            head.type <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  head.type=", head.type, "\n")
+            head.serial.number <- gsub(" *$", "", paste(readBin(buf[11:22], "character", n=12, size=1), collapse="")) # 12 chars
+            if (debug) cat("  head.serial.number=", head.serial.number, "\n")
+
+            beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
+            if (debug) cat("BEAM ANGLES=", beam.angles, "(rad)\n")
+
+            ## short hBeamToXYZ[9];          // beam to XYZ transformation matrix for up orientation
+            ##Transformation matrix (before division by 4096) -- checks out ok
+            ## 6461 -3232 -3232
+            ##    0 -5596  5596
+            ## 1506  1506  1506
+            beam.to.xyz <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
+            if (debug) {cat("beam.to.xyz\n");print(beam.to.xyz);}
+
+            number.of.beams <- readBin(buf[221:222], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  number.of.beams=", number.of.beams, "\n")
+        } else if (two.bytes[2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
+            if (debug) cat("** scanning User Configuration **\n")
+            buf <- readBin(file, "raw", header.length.user)
+            blanking.distance <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (debug) cat("  blanking.distance=", blanking.distance, "??? expect 0.05 m\n")
+            measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  measurement.inteval=", measurement.interval, "\n")
+            T1 <- readBin(buf[5:6], "integer", n=1, size=2, endian="little")
+            T2 <- readBin(buf[7:8], "integer", n=1, size=2, endian="little")
+            T3 <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
+            T4 <- readBin(buf[11:12], "integer", n=1, size=2, endian="little")
+            T5 <- readBin(buf[13:14], "integer", n=1, size=2, endian="little")
+            NPings <- readBin(buf[15:16], "integer", n=1, size=2, endian="little")
+            AvgInterval <- readBin(buf[17:18], "integer", n=1, size=2, endian="little")
+            NBeams <- readBin(buf[19:20], "integer", n=1, size=2, endian="little")
+            if (debug) cat("\n T1=",T1,"T2=",T2,"T5=",T5,"NPings=",NPings,"AvgInterval=",AvgInterval,"NBeams=",NBeams,"\n\n")
+            mode <- byte2binary(buf[59:60], endian="little")
+            if (debug) cat("  mode: ", mode, "\n")
+            velocity.scale <- if (substr(mode[2], 4, 4) == "0") 0.001 else 0.00001
+            if (debug) cat("  velocity.scale: ", velocity.scale, "\n")
+            tmp.cs <- readBin(buf[33:34], "integer", n=1, size=2, endian="little")
+            if (tmp.cs == 0) coordinate.system <- "earth" # page 31 of System Integrator Guide
+            else if (tmp.cs == 1) coordinate.system <- "frame"
+            else if (tmp.cs == 2) coordinate.system <- "beam"
+            else stop("unknown coordinate system ", tmp.cs)
+            if (debug) cat("  coordinate.system: ", coordinate.system, "\n")
+            number.of.cells <- readBin(buf[35:36], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  number.of.cells: ", number.of.cells, "\n")
+            hBinLength <- readBin(buf[37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (isTRUE(all.equal.numeric(frequency, 1000))) {
+                ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
+                cell.size <- cos(25*pi/180) * hBinLength * 0.000052734375
+            } else if (isTRUE(all.equal.numeric(frequency, 2000))) {
+                ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
+                cell.size <- cos(25*pi/180) * hBinLength *0.0000263671875
+            } else {
+                stop("The frequency must be 1000 or 2000, but it is ", frequency)
+            }
+            if (debug) cat("cell.size=", cell.size, "(should be  0.04 m)\n")
+            measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
+            if (isTRUE(all.equal.numeric(frequency, 1000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.0135*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                blanking.distance <- cos(25*pi/180) * (0.0135 * T2 - 12 * T1 / frequency)
+            } else if (isTRUE(all.equal.numeric(frequency, 2000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.00675*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                blanking.distance <- cos(25*pi/180) * (0.00675 * T2 - 12 * T1 / frequency)
+            } else {
+                stop("The frequency must be 1000 or 2000, but it is ", frequency)
+            }
+            if (debug) cat("blanking.distance=", blanking.distance, "(should be 0.05).  T1=", T1, "and T2=", T2, "\n")
+            if (debug) cat("measurement.interval=", measurement.interval, "****\n\n")
+            deployment.name <- readBin(buf[41:46], "character")
+            sw.version <- readBin(buf[73:74], "integer", n=1, size=2, endian="little")
+            if (debug) cat("sw.version=", sw.version,"\n")
+            salinity <- readBin(buf[75:76], "integer", n=1, size=2, endian="little") * 0.1
+            if (debug) cat("salinity=", salinity,"\n")
+        } else {
+            stop("cannot understand byte 0x", two.bytes[2], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
+        }
+    }
+
+    ## data
+    two.bytes <- peek.ahead(file, 2)
+    if (two.bytes[1] != sync.code)
+        stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", buf[1], " instead (while looking for the start of a profile)")
+    if (two.bytes[2] == id.profiler.data) {
+        stop("cannot yet read 'Aquadopp Profiler Velocity Data")
+    } else if (two.bytes[2] == id.high.resolution.aquadopp.profile.data) {
+        if (debug) cat("\n*** should read 'High Resolution Aquadopp Profile Data' now -- TESTING ONLY!! **\n\n")
+    } else {
+        stop("id code: 0x", two.bytes[2], " ... not understood by this version of read.aquadopp()\n")
+    }
+
+    ## read profiles
+    data.start <- header.length.hardware + header.length.head + header.length.user
+    bytes.per.profile <- 54 + number.of.cells*number.of.beams*(2+1+1) + 2
+
+    ## Measure file length to determine number of profiles, using floor() in case there is extra stuff at end
+    seek(file, where=0, origin="end")
+    file.size <- seek(file)
+    profiles.in.file <- floor((file.size - data.start) / bytes.per.profile)
+
+    if (skip > 0)
+        seek(file, data.start + skip * bytes.per.profile)
+    else
+        seek(file, data.start)
+    time <- pressure <- temperature <- heading <- pitch <- roll <- NULL
+    if (stride != 1) stop("cannot handle 'stride' values other than 1")
+    if (missing(read)) {
+        read <- profiles.in.file
+    }
+    if (read > 1) {
+        v <- array(dim=c(read, number.of.cells, number.of.beams))
+        a <- array(dim=c(read, number.of.cells, number.of.beams))
+        q <- array(dim=c(read, number.of.cells, number.of.beams))
+        for (i in 1:read) {
+            p <- read.profile.aquadopp(file,debug=debug)
+            for (beam in 1:number.of.beams) {
+                v[i,,beam] <- p$v[,beam]
+                a[i,,beam] <- p$a[,beam]
+                q[i,,beam] <- p$q[,beam]
+            }
+            time <- c(time, p$time)
+            temperature <- c(temperature, p$temperature)
+            pressure <- c(pressure, p$pressure)
+            heading <- c(heading, p$heading)
+            pitch <- c(pitch, p$pitch)
+            roll <- c(roll, p$roll)
+            if (monitor) {
+                cat(".")
+                if (!(i %% 50)) cat(i, "\n")
+            }
+        }
+        if (monitor) cat("\nRead", read, "profiles\n")
+        salinity <- rep(salinity, read)     # fake a time-series
+        class(time) <- c("POSIXt", "POSIXct")
+        attr(time, "tzone") <- "UTC" # BUG should let user control this
+                                        # Q: does file hold the zone?
+
+        data <- list(ma=list(v=v, a=a, q=q),
+                     ss=list(distance=seq(blanking.distance, by=cell.size, length.out=number.of.cells)),
+                     ts=list(time=time,
+                     pressure=pressure,
+                     temperature=temperature,
+                     salinity=salinity,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll)
+                     )
+
+    } else {
+        data <- list(ma=NULL, ss=NULL, ts=NULL)
+    }
+    metadata <- list(instrument.type="nortek aquadopp high resolution",
+                     filename=filename,
+                     size=size,
+                     serial.number=serial.number,
+                     frequency=frequency,
+                     internal.code.version=pic.version,
+                     hardware.revision=hw.revision,
+                     rec.size=rec.size,
+                     velocity.range=velocity.range,
+                     firmware.version=fw.version,
+                     config=config,
+                     config.pressure.sensor=config.pressure.sensor,
+                     config.magnetometer.sensor=config.magnetometer.sensor,
+                     config.tilt.sensor=config.tilt.sensor,
+                     beam.angle=25,     # FIXME: should read from file
+                     orientation=orientation,
+                     frequency=frequency,
+                     head.serial.number=head.serial.number,
+                     bin1.distance=blanking.distance, # FIXME: is this right?
+                     blanking.distance=blanking.distance,
+                     measurement.interval=measurement.interval,
+                     number.of.beams=number.of.beams,
+                     number.of.cells=number.of.cells,
+                     deployment.name=deployment.name,
+                     cell.size=cell.size,
+                     velocity.scale=velocity.scale,
+                     coordinate.system=coordinate.system,
+                     oce.coordinate=coordinate.system,
+                     oce.beam.attenuated=FALSE,
+                     salinity=salinity,
+                     number.of.data.types=3, # velo ampl corr
+                     number.of.profiles=read
+                     )
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("adcp", "aquadopp", "oce")
+    res
+}
+
+###delete.summary.aquadopp <- function(object, ...)
+###{
+###    if (!inherits(object, "aquadopp")) stop("method is only for aquadopp objects")
+###    res <- list(instrument.type=object$metadata$instrument.type,
+###                filename=object$metadata$filename,
+###                hardware.serial.number=object$metadata$hardware.serial.number,
+###                internal.code.version=object$metadata$internal.code.version,
+###                hardware.revision=object$metadata$hardware.revision,
+###                frequency=object$metadata$frequency,
+###                rec.size=object$metadata$rec.size*65536/1024/1024,
+###                velocity.range=object$metadata$velocity.range,
+###                firmware.version=object$metadata$firmware.version,
+###                config=object$metadata$config,
+###                config.pressure.sensor=object$metadata$config.pressure.sensor,
+###                config.magnetometer.sensor=object$metadata$config.magnetometer.sensor,
+###                config.tilt.sensor=object$metadata$config.pressure.sensor,
+###                config.pressure.sensor=object$metadata$config.tilt.sensor,
+###                orientation=object$metadata$orientation,
+###                frequency=object$metadata$frequency,
+###                head.serial.number=object$metadata$head.serial.number,
+###                blanking.distance=object$metadata$blanking.distance,
+###                measurement.interval=object$metadata$measurement.interval,
+###                number.of.beams=object$metadata$number.of.beams,
+###                number.of.cells=object$metadata$number.of.cells,
+###                deployment.name=object$metadata$deployment.name,
+###                cell.size=object$metadata$cell.size,
+###                velocity.scale=object$metadata$velocity.scale,
+###                coordinate.system=object$metadata$coordinate.system,
+###                processing.log=processing.log.summary(object))
+###    class(res) <- "summary.aquadopp"
+###    res
+###}
+###
+###delete.print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ...)
+###{
+###    cat("TYPE",x$instrument.type,"\n");stop()
+###
+###
+###    cat("Aquadopp timeseries\n")
+###    cat("    Deployment name:            ", x$deployment.name, "\n")
+###    cat("    Filename:                   ", x$filename, "\n")
+###    cat("  Hardware Configuration\n")
+###    cat("    Serial number:              ", x$hardware.serial.number, "\n")
+###    cat("    Internal version code:      ", x$internal.code.version, "\n")
+###    cat("    Revision number:            ", x$hardware.revision, "\n")
+###    cat("    Recorder size:              ", x$rec.size, "Mb\n")
+###    cat("    Firmware version:           ", x$firmware.version, "\n")
+###    cat("    Velocity range:             ", if(x$velocity.range) "high\n" else "normal\n")
+###    cat("  Head Configuration\n")
+###    cat("    Pressure sensor:            ", if (x$config.pressure.sensor) "yes\n" else "no\n")
+###    cat("    Compass:                    ", if (x$config.magnetometer.sensor) "yes\n" else "no\n")
+###    cat("    Tilt sensor:                ", if (x$config.tilt.sensor) "yes\n" else "no\n")
+###    ##if (FALSE) cat("    System 1 and 2:              [not coded yet]\n")
+###    cat("    Frequency:                  ", x$frequency, "kHz\n")
+###    cat("    Serial number:              ", x$head.serial.number, "\n")
+###    ##cat("    Transformation matrix:       [not coded yet]\n")
+###    if (FALSE) cat("    Pressure sensor calibration: [not coded yet]\n")
+###    cat("    Number of beams:            ", x$number.of.beams, "\n")
+###    if (FALSE) cat("    System 5 through 20:         [not coded yet]\n")
+###    cat("  User Setup\n")
+###    cat("    Measurement/burst interval: ", x$measurement.interval, "s\n")
+###    cat("    Cell size                   ", x$cell.size, "\n")
+###    cat("    Orientation:                ", x$orientation, "\n")
+###    cat("    Velocity scale:             ", x$velocity.scale, "m/s\n")
+###    cat("    Coordinate system:          ", x$coordinate.system, "\n")
+###    cat("
+###? Distance to bottom                    1.00 m
+###? Extended velocity range               ON
+###? Pulse distance (Lag1)                 1.10 m
+###? Pulse distance (Lag2)                 0.36 m
+###? Profile range                         1.00 m
+###? Horizontal velocity range             0.84 m/s
+###? Vertical velocity range               0.35 m/s
+###")
+###    cat("    Number of cells:            ", x$number.of.cells, "\n")
+###    cat("
+###? Average interval                      10 sec
+###")
+###    cat("    Blanking distance:          ", x$blanking.distance, "\n")
+###    print(x$processing.log)
+###    invisible(x)
+###}
+
+###delete.plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
+###                          titles,
+###                          ytype=c("profile", "distance"),
+###                          adorn=NULL,
+###                          draw.timerange=getOption("oce.draw.timerange"),
+###                          mgp=getOption("oce.mgp"), ...)
+###{
+###    if (!inherits(x, "aquadopp")) stop("method is only for aquadopp objects")
+###    opar <- par(no.readonly = TRUE)
+###    lw <- length(which)
+###    if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
+###    if (lw > 1) on.exit(par(opar))
+###    par(mgp=mgp)
+###    dots <- list(...)
+###    ytype <- match.arg(ytype)
+###    gave.zlim <- !missing(zlim)
+###    zlim.given <- if (gave.zlim) zlim else NULL
+###    gave.ylim <- "ylim" %in% names(dots)
+###    ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+###
+###    images <- 1:12
+###    timeseries <- 13:18
+###    if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
+###    adorn.length <- length(adorn)
+###    if (adorn.length == 1) {
+###        adorn <- rep(adorn, lw)
+###        adorn.length <- lw
+###    }
+###
+###    par(mar=c(mgp[1],mgp[1]+1,1,1))
+###    data.names <- names(x$data$ma)
+###    shown.time.interval <- FALSE
+###    tt <- x$data$ts$time
+###    class(tt) <- "POSIXct"              # otherwise image() gives warnings
+###    if (!gave.zlim && all(which %in% 5:7)) { # single scale for all
+###        zlim <- range(abs(x$data$ma$a[,,which[1]-4]), na.rm=TRUE)
+###        for (w in 2:length(which)) {
+###            zlim <- range(abs(c(zlim, x$data$ma$a[,,which[w]-4])), na.rm=TRUE)
+###        }
+###    }
+###    if (any(which %in% images)) {
+###        scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
+###        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+###        ##cat("csi=", par("csi"), "w=", w, "\n")
+###        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+###    } else {
+###        lay <- layout(cbind(1:lw))
+###    }
+###    flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
+###    for (w in 1:lw) {
+###        ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
+###        if (which[w] %in% images) {                   # image types
+###            skip <- FALSE
+###            if (which[w] %in% 1:(0+x$metadata$number.of.beams)) { # velocity
+###                z <- x$data$ma$v[,,which[w]]
+###                y.look <- if (gave.ylim)
+###                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
+###                else rep(TRUE, length(x$data$ss$distance))
+###                zlim <- if (gave.zlim) zlim.given else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+###                if (x$metadata$coordinate.system == "beam")
+###                    zlab <- if (missing(titles)) c("beam 1", "beam 2", "beam 3")[which[w]] else titles[w]
+###                else if (x$metadata$coordinate.system == "earth")
+###                    zlab <- if (missing(titles)) c("east", "north", "up")[which[w]] else titles[w]
+###                else if (x$metadata$coordinate.system == "frame")
+###                    zlab <- if (missing(titles)) c("u", "v", "w")[which[w]] else titles[w]
+###                else zlab <- ""
+###            } else if (which[w] %in% 5:(4+x$metadata$number.of.beams)) { # amplitude
+###                z <- x$data$ma$a[,,which[w]-4]
+###                y.look <- if (gave.ylim)
+###                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
+###                else rep(TRUE, length(x$data$ss$distance))
+###                zlim <- range(x$data$ma$a[,y.look,], na.rm=TRUE)
+###                zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
+###            } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation/quality/? FIXME
+###                z <- x$data$ma$q[,,which[w]-8]
+###                zlim <- c(0, 100)
+###                zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
+###            } else skip <- TRUE
+###            if (!skip) {
+###                imagep(x=tt, y=x$data$ss$distance, z=z,
+###                       zlim=zlim,
+###                       flip.y=flip.y,
+###                       col=col,
+###                       ylab=resizable.label("distance"),
+###                       xlab="Time",
+###                       zlab=zlab,
+###                       draw.time.range=!shown.time.interval,
+###                       draw.contours=FALSE,
+###                       do.layout=FALSE,
+###                       ...)
+###                shown.time.interval <- TRUE
+###            }
+###        }
+###        if (which[w] %in% timeseries) { # time-series types
+###            if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]", type='l', axes=FALSE)
+###            if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', axes=FALSE)
+###            if (which[w] == 15) plot(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
+###            if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
+###            if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
+###            if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
+###            oce.axis.POSIXct(1, x=x$data$ts$time)
+###            box()
+###            axis(2)
+###            if (!shown.time.interval) {
+###                mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
+###                            attr(x$data$ts$time[1], "tzone")),
+###                      side=3, cex=5/6*par("cex"), adj=0)
+###                shown.time.interval <- TRUE
+###            }
+###            if (w <= adorn.length) {
+###                t <- try(eval(adorn[w]), silent=TRUE)
+###                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+###            }
+###        }
+###    }
+###}

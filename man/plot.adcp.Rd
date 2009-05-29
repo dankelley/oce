@@ -6,7 +6,8 @@
 
 \description{Plot ADCP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:4, col=oce.colors.palette(128,1), zlim, 
+\usage{\method{plot}{adcp}(x, which=1:x$metadata$number.of.beams, 
+         col=oce.colors.palette(128,1), zlim, 
          titles,
          ytype=c("profile", "distance"),
 	 adorn=NULL,
@@ -108,7 +109,8 @@
   vertical component.
 }
 
-\seealso{The data may be read with \code{\link{read.adcp}}. Converting
+\seealso{The data may be read with \code{\link{read.adcp}} or 
+\code{\link{read.aquadopp}}. Converting
   velocities from beam coordinates (the raw data, columns \code{bm1}
   through \code{bm4} in \code{x$data$ma} for a four-beam setup) to frame
   coordinates (\code{u}, \code{v}, \code{w}) columns is done with
@@ -130,8 +132,11 @@ plot(e, which=1:2,
      adorn=expression({
          abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
          lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='blue')
-     } ) )
+     }))
 }
 
 \author{Dan Kelley}
 \keyword{misc}
+
+
+

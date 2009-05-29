@@ -6,7 +6,7 @@
 
 \description{Read an AQUADOPP data file, producing an object of type \code{aquadopp}.}
 
-\usage{read.aquadopp(file, type=c("high resolution"),
+\usage{read.aquadopp(file, type=c("nortek aquadopp high resolution"),
                      skip=0, read, stride=1,
                      debug=0, monitor=TRUE, log.action)
 }
@@ -14,9 +14,8 @@
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{type}{type of instrument.  At present, only \code{"high
-  resolution"} is permitted, since only data from high-resolution
-  profilers is handled.}
+  \item{type}{type of instrument.  At present, only one type of
+    instrument is handled.}
   \item{skip}{optional number of profiles to skip at start.}
   \item{read}{optional number of profiles to read.}
   \item{stride}{a number indicating the stride length to use,
@@ -70,12 +69,11 @@
 }
 }
 
-\value{An object of \code{\link[base]{class}} \code{"aquadopp"}, which
-  contains measurements made with an AQUADOPP device.}
+\value{An object of \code{\link[base]{class}}es \code{"aquadopp"} and \code{"adcp"}.}
 
 \seealso{An \code{aquadopp} object may be summarized with
-  \code{\link{summary.aquadopp}}, and plotted with \code{\link{plot.aquadopp}}.
-}
+  \code{\link{summary.adcp}}, and plotted with \code{\link{plot.adcp}},
+  both of which are generic functions.}
 
 \examples{
 \dontrun{
