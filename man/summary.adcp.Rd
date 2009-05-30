@@ -15,7 +15,8 @@
 
 \arguments{
   \item{object}{an object of class \code{"adcp"}, usually, a result of a
-    call to \code{\link{read.adcp}}, \code{\link{read.oce}}.}
+    call to \code{\link{read.oce}}, \code{\link{read.adcp.rdi}},
+    or \code{\link{read.adcp.nortek}}.}
   \item{x}{an object of class \code{"summary.adcp"}, usually, a result of a
     call to \code{summary.adcp}.}
   \item{digits}{the number of significant digits to use when printing.}

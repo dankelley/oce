@@ -119,8 +119,9 @@
 
 \seealso{The data are normally read with \code{\link{read.oce}}, which
 is usually able to detect the type of instrument.  If that fails, the user
-should try \code{\link{read.adcp}} (for RDI files) or \code{\link{read.aquadopp}} 
-(for NorTek aquadopp files).  These files may be in beam coordinates, 
+should try \code{\link{read.adcp.rdi}} (for RDI files) 
+or \code{\link{read.adcp.nortek}} 
+(for NorTek files).  These files may be in beam coordinates, 
 in frame coordinates, or in earth coordinates.  It is common in a scientific
 setting to use beam coordinates, and so this package offers functions
 \code{\link{adcp.beam2frame}} and 

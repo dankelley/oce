@@ -305,11 +305,24 @@ read.profile <- function(file, header, debug)
     list(header=header, v=v, a=a, q=q, pg=pg, bt=bt)
 }
 
-read.adcp <- function(file, type ="RDI",
-                      skip=0, read, stride=1,
-                      debug=0,
-                      monitor=TRUE,
-                      log.action)
+read.adcp <- function(file, type=c("rdi", "nortek"),
+                          skip=0, read, stride=1,
+                          debug=0,
+                          monitor=TRUE,
+                          log.action)
+{
+    type = match.arg(type)
+    if (type == "rdi")
+        read.adcp.rdi(file, type, skip, read, stride, debug, monitor, log.action)
+    else if (type == "nortk")
+        read.adcp.rdi(file, type, skip, read, stride, debug, monitor, log.action)
+}
+
+read.adcp.rdi <- function(file, type =c("rdi"),
+                          skip=0, read, stride=1,
+                          debug=0,
+                          monitor=TRUE,
+                          log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -324,6 +337,7 @@ read.adcp <- function(file, type ="RDI",
         open(file, "rb")
         on.exit(close(file))
     }
+    type <- match.arg(type)
     ## read a profile, to get length so we can seek
     p <- read.profile(file, debug=debug)
     bin1.distance <- p$header$bin1.distance
@@ -423,7 +437,7 @@ summary.adcp <- function(object, ...)
                              oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                              number.of.data.types=object$metadata$number.of.data.types,
                              beam.config=object$metadata$beam.config)
-    } else stop("can only summarize ADCP objects of type \"rdi\" or \"nortek aquadop high resolution\", not class ", paste(class(object),collapse=","))
+    } else stop("can only summarize ADCP objects of type \"rdi\" or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
     fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
@@ -500,7 +514,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("    Beam pattern:               ", x$metadata$beam.pattern, "\n")
         cat("    Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n")
     }
-    if (x$instrument.type == "nortek aquadopp high resolution") {
+    if (x$instrument.type == "aquadopp high resolution") {
         cat("  Aquadopp-specific:\n")
         cat("    Internal code version:       ", x$metadata$internal.code.version, "\n")
         cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n")
@@ -670,6 +684,13 @@ adcp.beam2frame <- function(x)
         res$data$ma$v <- vprime
     } else if (inherits(x, "aquadopp")) {
         res <- x
+        rot <- x$metadata$beam.to.xyz
+        if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
+            ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
+            rot[2,] <- -rot[2,]
+            rot[3,] <- -rot[3,]
+        } else if (x$metadata$orientation != "upward")
+            stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
         for (p in 1:x$metadata$number.of.profiles)
             res$data$ma$v[p,,] <- t(x$metadata$beam.to.xyz %*% t(x$data$ma$v[p,,]))
     } else {
@@ -864,12 +885,12 @@ display.bytes <- function(b, label="")
     print(b)
 }
 
-read.aquadopp <- function(file,
-                          type=c("nortek aquadopp high resolution"),
-                          skip=0, read, stride=1,
-                          debug=0,
-                          monitor=TRUE,
-                          log.action) {
+read.adcp.nortek <- function(file,
+                             type=c("aquadopp high resolution"),
+                             skip=0, read, stride=1,
+                             debug=0,
+                             monitor=TRUE,
+                             log.action) {
     if (is.character(file)) {
         filename <- file
         file <- file(file, "rb")
@@ -1087,7 +1108,7 @@ read.aquadopp <- function(file,
     } else {
         data <- list(ma=NULL, ss=NULL, ts=NULL)
     }
-    metadata <- list(instrument.type="nortek aquadopp high resolution",
+    metadata <- list(instrument.type="aquadopp high resolution",
                      filename=filename,
                      size=size,
                      serial.number=serial.number,

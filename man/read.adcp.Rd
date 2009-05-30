@@ -1,5 +1,5 @@
 \name{read.adcp}
-
+\alias{read.adcp}
 \alias{read.adcp.nortek}
 \alias{read.adcp.rdi}
 
@@ -8,10 +8,15 @@
 \description{Read an ADCP data file, producing an object of type \code{adcp}.}
 
 \usage{
-read.adcp.rdi(file, type="RDI", 
+read.adcp <- function(file, type=c("rdi", "nortek"),
+                      skip=0, read, stride=1,
+                      debug=0,
+                      monitor=TRUE,
+                      log.action)
+read.adcp.rdi(file, type=c("rdi"),
               skip=0, read, stride=1,
               debug=0, monitor=TRUE, log.action)
-read.adcp.nortek(file, type="nortek aquadopp high resolution",
+read.adcp.nortek(file, type=c("aquadopp high resolution"),
                  skip=0, read, stride=1,
                  debug=0, monitor=TRUE, log.action)
 }
@@ -19,8 +24,7 @@ read.adcp.nortek(file, type="nortek aquadopp high resolution",
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{type}{if \code{NULL}, then the first line is studied, in order
-    to determine the file type.  (Ignored at present.)}
+  \item{type}{a character string indicating th type of file.}
   \item{skip}{optional number of profiles to skip at start.}
   \item{read}{optional number of profiles to read.}
   \item{stride}{a number indicating the stride length to use,

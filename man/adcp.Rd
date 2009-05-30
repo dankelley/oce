@@ -32,14 +32,8 @@ adcp <- read.oce(file = "~/SL08F001.000",
 }
 }
 
-\seealso{
-\code{\link{read.adcp}} reads \code{adcp} objects,
-\code{\link{summary.adcp}} summarizes them, and \code{\link{plot.adcp}} plots them.
-\code{\link{adcp.beam.attenuate}} converts an \code{adcp} object from beam to velocity.
-\code{\link{adcp.earth2other}} rotates \code{adcp} object currents from earth coordinates to other coordinates.
-\code{\link{adcp.frame2earth}} converts an \code{adcp} object from frame coordinates to earth coordinates.
-}
-
+\seealso{See \code{\link{read.adcp}} for notes on the contents of
+  \code{adcp} objects, and for functions to work with them.}
 
 \author{Dan Kelley}
 
