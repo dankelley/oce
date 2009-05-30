@@ -86,7 +86,7 @@ read.header <- function(file, debug)
     tpp.minutes <- readBin(FLD[23], "integer", n=1, size=1)
     tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
     tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
-    bits <- substr(byte2binary(FLD[26]), 4, 5)
+    bits <- substr(byte2binary(FLD[26], endian="big"), 4, 5)
     coordinate.system <- "???"
     if (bits == "00") coordinate.system <- "beam"
     else if (bits == "01") coordinate.system <- "instrument"
@@ -392,7 +392,7 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
                           filename=filename,
                           number.of.profiles=read,
                           oce.beam.attenuated=FALSE,
-                          oce.coordinate="beam")
+                          oce.coordinate=p$header$coordinate.system)
         }
         if (monitor) {
             cat(".")
