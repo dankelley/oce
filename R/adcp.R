@@ -305,24 +305,22 @@ read.profile <- function(file, header, debug)
     list(header=header, v=v, a=a, q=q, pg=pg, bt=bt)
 }
 
-read.adcp <- function(file, type=c("rdi", "nortek"),
-                          skip=0, read, stride=1,
-                          debug=0,
-                          monitor=TRUE,
-                          log.action)
+read.adcp <- function(file, skip=0, read, stride=1,
+                      type=c("rdi", "nortek"),
+                      debug=0, monitor=TRUE, log.action)
 {
     type = match.arg(type)
     if (type == "rdi")
-        read.adcp.rdi(file, type, skip, read, stride, debug, monitor, log.action)
-    else if (type == "nortk")
-        read.adcp.rdi(file, type, skip, read, stride, debug, monitor, log.action)
+        read.adcp.rdi(file=file, skip=skip, read=read, stride=stride,
+                      debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "nortek")
+        read.adcp.nortek(file=file, skip=skip, read=read, stride=stride,
+                         debug=debug, monitor=monitor, log.action=log.action)
 }
 
-read.adcp.rdi <- function(file, type =c("rdi"),
-                          skip=0, read, stride=1,
-                          debug=0,
-                          monitor=TRUE,
-                          log.action)
+read.adcp.rdi <- function(file, skip=0, read, stride=1,
+                          type=c("workhorse"),
+                          debug=0, monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -338,23 +336,38 @@ read.adcp.rdi <- function(file, type =c("rdi"),
         on.exit(close(file))
     }
     type <- match.arg(type)
-    ## read a profile, to get length so we can seek
-    p <- read.profile(file, debug=debug)
-    bin1.distance <- p$header$bin1.distance
-    xmit.pulse.length <- p$header$xmit.pulse.length
-    cell.size <- p$header$cell.size
-    bytes.per.profile <- seek(file)
+    ## read two profiles so we can infer total number and their times
+    p1 <- read.profile(file, debug=debug)
+    bytes.per.profile <- seek(file)     # NOTE: be careful on these seek calls
+    p2 <- read.profile(file, debug=debug)
+    bin1.distance <- p1$header$bin1.distance
+    xmit.pulse.length <- p1$header$xmit.pulse.length
+    cell.size <- p1$header$cell.size
     ## go to the end, so the next seek (to get to the data) reveals file length
     seek(file, where=0, origin="end")
-    bytes.in.file <- seek(file, where=bytes.per.profile * skip)
-    ##cat("bytes.per.profile=", bytes.per.profile," bytes.in.file=", bytes.in.file, "\n")
+    bytes.in.file <- seek(file, where=0)
     profiles.in.file <- bytes.in.file / bytes.per.profile
+
+    ## Possibly interpret skip and read as starting and ending times.
+    t1 <- p1$header$RTC.time[1]
+    t2 <- p2$header$RTC.time[1]
+    dt <- as.numeric(difftime(t2, t1, units="sec"))
+    if (!missing(skip) && inherits(skip, "POSIXt")) {
+        skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
+    }
+    if (!missing(read) && inherits(read, "POSIXt")) {
+        read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride
+        if (read < 0) stop("cannot have read < 0")
+    }
+
+    seek(file, bytes.per.profile * skip, origin="start")
+    ##cat("bytes.per.profile=", bytes.per.profile," bytes.in.file=", bytes.in.file, "\n")
     ##cat("profiles in file:", profiles.in.file, "\n")
     if (read < 1) stop("cannot read fewer than one profile")
 
-    v <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
-    a <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
-    q <- array(dim=c(read, p$header$number.of.cells, p$header$number.of.beams))
+    v <- array(dim=c(read, p1$header$number.of.cells, p1$header$number.of.beams))
+    a <- array(dim=c(read, p1$header$number.of.cells, p1$header$number.of.beams))
+    q <- array(dim=c(read, p1$header$number.of.cells, p1$header$number.of.beams))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
     for (i in 1:read) {
         p <- read.profile(file,debug=debug)
@@ -849,7 +862,6 @@ read.profile.aquadopp <- function(file, debug=!TRUE)
     if (two.bytes[1] != sync.code) stop("expecting sync code 0x", sync.code, " but got 0x", two.bytes[1], " (WTF)")
     if (two.bytes[2] != id.high.resolution.aquadopp.profile.data) stop("expecting id code 0x", id.high.resolution.aquadopp.profile.data, " but got 0x", two.bytes[2], " (while checking for next profile)")
 
-
     ### ready for another profile
     list(v=v, a=a, q=q,
          heading=heading, pitch=pitch, roll=roll,
@@ -885,12 +897,9 @@ display.bytes <- function(b, label="")
     print(b)
 }
 
-read.adcp.nortek <- function(file,
+read.adcp.nortek <- function(file, skip=0, read, stride=1,
                              type=c("aquadopp high resolution"),
-                             skip=0, read, stride=1,
-                             debug=0,
-                             monitor=TRUE,
-                             log.action) {
+                             debug=0, monitor=TRUE, log.action) {
     if (is.character(file)) {
         filename <- file
         file <- file(file, "rb")
@@ -1057,21 +1066,52 @@ read.adcp.nortek <- function(file,
     file.size <- seek(file)
     profiles.in.file <- floor((file.size - data.start) / bytes.per.profile)
 
+    ###0###
+    ###0### t1 <- p1$header$RTC.time[1]
+    ###0### t2 <- p2$header$RTC.time[1]
+    ###0### dt <- as.numeric(difftime(t2, t1, units="sec"))
+    ###0### if (!missing(skip) && inherits(skip, "POSIXt")) {
+    ###0###     skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
+    ###0### }
+    ###0### if (!missing(read) && inherits(read, "POSIXt")) {
+    ###0###     if (t2 < t1) stop("cannot have \"read\" less than \"skip\"")
+    ###0###     read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride
+    ###0###     if (read < 0) stop("cannot have read < 0")
+    ###0### }
+
+    ## Possibly interpret skip and read as starting and ending times.
+    seek(file, where=data.start, origin="start")
+    t1 <- read.profile.aquadopp(file,debug=debug)$time
+    t2 <- read.profile.aquadopp(file,debug=debug)$time
+    dt <- as.numeric(difftime(t2, t1, units="sec"))
+    if (!missing(skip) && inherits(skip, "POSIXt")) {
+        skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
+        if (skip < 0) warning("\"skip\"=", format(skip), " ignored, since it predates the first datum at ", format(t1))
+        if (debug) cat("skip=",skip,"\n")
+    }
+    if (!missing(skip) && inherits(read, "POSIXt")) {
+        read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride
+        if (read < 0) stop("cannot have read < 0")
+        if (debug) cat("read=",read,"\n")
+    }
+
     if (skip > 0)
         seek(file, data.start + skip * bytes.per.profile)
     else
         seek(file, data.start)
     time <- pressure <- temperature <- heading <- pitch <- roll <- NULL
-    if (stride != 1) stop("cannot handle 'stride' values other than 1")
+    if (stride < 1) stop("the value of \"stride\" must be an integer of 1 or larger")
     if (missing(read)) {
         read <- profiles.in.file
     }
-    if (read > 1) {
+    if (read > 0) {
         v <- array(dim=c(read, number.of.cells, number.of.beams))
         a <- array(dim=c(read, number.of.cells, number.of.beams))
         q <- array(dim=c(read, number.of.cells, number.of.beams))
         for (i in 1:read) {
+            seek(file, data.start + (skip + stride*(i-1)) * bytes.per.profile)
             p <- read.profile.aquadopp(file,debug=debug)
+            if (debug) cat("successfully read profile", i, "at time ", format(p$time), "\n")
             for (beam in 1:number.of.beams) {
                 v[i,,beam] <- p$v[,beam]
                 a[i,,beam] <- p$a[,beam]

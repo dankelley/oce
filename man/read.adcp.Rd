@@ -8,28 +8,26 @@
 \description{Read an ADCP data file, producing an object of type \code{adcp}.}
 
 \usage{
-read.adcp <- function(file, type=c("rdi", "nortek"),
-                      skip=0, read, stride=1,
-                      debug=0,
-                      monitor=TRUE,
-                      log.action)
-read.adcp.rdi(file, type=c("rdi"),
-              skip=0, read, stride=1,
+read.adcp <- function(file, skip=0, read, stride=1,
+                      type=c("rdi", "nortek"),
+                      debug=0, monitor=TRUE, log.action)
+read.adcp.rdi(file, skip=0, read, stride=1,
+              type=c("workhorse"),
               debug=0, monitor=TRUE, log.action)
-read.adcp.nortek(file, type=c("aquadopp high resolution"),
-                 skip=0, read, stride=1,
+read.adcp.nortek(file, skip=0, read, stride=1,
+                 type=c("aquadopp high resolution"),
                  debug=0, monitor=TRUE, log.action)
 }
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{type}{a character string indicating th type of file.}
-  \item{skip}{optional number of profiles to skip at start.}
-  \item{read}{optional number of profiles to read.}
+  \item{skip}{number of profiles to skip at start, or the POSIXt time at which to start reading.}
+  \item{read}{optional number of profiles to read, or the last POSIXt time to read.}
   \item{stride}{a number indicating the stride length to use,
     while reading the file.  If \code{stride}>1, then \code{stride-1}
     profiles are skipped, between every profile read.}
+  \item{type}{a character string indicating th type of file.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
@@ -53,36 +51,37 @@ read.adcp.nortek(file, type=c("aquadopp high resolution"),
   namely space-series, time-series, and matrix.  These are contained
   within lists named \code{data$ss}, \code{data$ts} and \code{data$ma},
   and their contents are as follows.
-
-  \enumerate{
-    
-    \item{\code{ss}}{A space-series named \code{data$ss$distance}, which
+  \describe{
+    \item{\code{ss}}{A space-series named \code{distance}, which
       stores the distance of cells from the transducer head, in the
       vertical (not slant-wise) direction.}
-
-    \item{\code{ts}}{A set of time-series made up of values for the
-      profiles: \code{data$ts$time} (POSIXct time of profile),
-      \code{data$ts$pressure} (pressure at the sensor head),
-      \code{data$ts$temperature} (temperature at the sensor head, in deg
-      C), \code{data$ts$salinity} (the salinity in
-      PSU, if measured, or a constant otherwise),
-      \code{data$ts$depth.of.transducer}
-      (depth of the transducer), \code{data$ts$heading} (heading of the
-      instrument package), \code{data$ts$pitch}
-      (as \code{data$ts$heading}, but the pitch), \code{data$ts$roll}
-      (as \code{data$ts$heading}, but the roll).}
-
-    \item{\code{ma}}{A set of matrices, named \code{v} (for velocity),
-      \code{a} (for amplitude of backscatter), and \code{q} (for
-      quality, e.g. correlation or percent-good).  Each of these is  a
-      3-D array, wth first index indicating profile number, second index
-      indicating cell number (distance from sensor), and third index
-      indicating beam number.  Objects of class \code{rdi} typically
-      have 4 beams, while those of type \code{aquadopp} have 3 beams.}
-
+    \item{\code{ts}}{A collection time series, each of which has a value for each
+      profile.  The series are as follows.
+      	\describe{
+	  \item{\code{time}}{Times of the profiles, in POSIXct format.}
+	  \item{\code{pressure}}{Pressure, in decibars.}
+	  \item{\code{temperature}}{The temperature, in deg C.}
+	  \item{\code{salinity}}{The salinity, in PSU.  (This may be measured, or 
+	  just a repeated constant value specified when the equipment was set up.)}
+	  \item{\code{depth.of.transducer}}{The depth of the transducer.}
+	  \item{\code{heading}}{The heading of the instrument, in degrees.}
+	  \item{\code{pitch}}{The pitch of the instrument, in degrees.}
+	  \item{\code{roll}}{The roll of the instrument, in degrees.}
+	}}
+    \item{\code{ma}}{A set of matrices containing the profile data:
+      \describe{
+        \item{\code{v}}{The velocity.}
+	\item{\code{a}}{The amplitude of backscatter.}
+	\item{\code{q}}{A measure of the quality of the data,
+   	  e.g. correlation or percent-good.}
+      }
+      Each of the above is a 3-D array, with first index indicating
+      profile number, second index indicating cell number (distance from sensor),
+      and third index indicating beam number.  Objects of class \code{rdi}
+      typically have 4 beams, while those of type \code{aquadopp} have 3 beams.}
+    }
     In addition to this \code{data} entry, the \code{metadata} entry holds
     a wealth of information as well, e.g. on beam geometry, etc.
-  }
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}, which

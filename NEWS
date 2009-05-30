@@ -1,10 +1,8 @@
 0.1-77
-- add flip.y argument to plot.adcp() and plot.aquadopp()
-- add read.aquadopp(), plus summary and plot methods
+- add support for ADCP data from RDI and NorTek
+- add imagep()
 - add bcd2integer()
-- byte2binary(): add endian argument
 - add matlab2POSIXt()
-- add imagep(), and make plot.adcp() use it
 - plot.pt(): add plim and Tlim arguments
 - gravity(): give default for latitude argument
 - plot.sealevel(): remove argument focus.time and add argument which
@@ -16,10 +14,6 @@
 - add oce.colors.two(), oce.colors.jet(), and oce.colors.palette()
 - rename gebco.colors() as oce.colors.gebco()
 - add byte2binary()
-- add adcp dataset
-- add read.adcp(), summary.adcp(), print.summary.adcp(), plot.adcp(),
-  adcp.beam2frame(), adcp.frame2earth(), adcp.earth2other() and
-  adcp.beam.attenuate()
 - add "lty.grid" to all CTD plotting functions
 - add "+.section", a more convenient way to build sections from stations
 - rework summary() for all existing objects
