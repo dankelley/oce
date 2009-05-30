@@ -1,13 +1,19 @@
 \name{read.adcp}
 
-\alias{read.adcp}
+\alias{read.adcp.nortek}
+\alias{read.adcp.rdi}
 
 \title{Read an ADCP data file}
 
 \description{Read an ADCP data file, producing an object of type \code{adcp}.}
 
-\usage{read.adcp(file, type="RDI", skip=0, read, stride=1,
-          debug=0, monitor=TRUE, log.action)
+\usage{
+read.adcp.rdi(file, type="RDI", 
+              skip=0, read, stride=1,
+              debug=0, monitor=TRUE, log.action)
+read.adcp.nortek(file, type="nortek aquadopp high resolution",
+                 skip=0, read, stride=1,
+                 debug=0, monitor=TRUE, log.action)
 }
 
 \arguments{
