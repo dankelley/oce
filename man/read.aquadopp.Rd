@@ -55,18 +55,17 @@
       (as \code{data$ts$heading}, but the pitch), \code{data$ts$roll}
       (as \code{data$ts$heading}, but the roll).}
 
-    \item{\code{ma}}{A set of matrices, with rows corresponding to
-      profiles, and columns corresponding to AQUADOPP cells.  These matrices
-      store velocities along the individual beams (\code{data$ma$v1},
-      \code{data$ma$v2}, and \code{data$ma$v3}),
-      amplitude (\code{data$ma$a1}, \code{data$ma$a2},
-      \code{data$ma$a3}) and correlation 
-      (\code{data$ma$q1}, \code{data$ma$cq}, \code{data$ma$q3}).}
+    \item{\code{ma}}{A set of matrices, named \code{v} (for velocity),
+      \code{a} (for amplitude of backscatter), and \code{q} (for
+      quality, e.g. correlation or percent-good).  Each of these is  a
+      3-D array, wth first index indicating profile number, second index
+      indicating cell number (distance from sensor), and third index
+      indicating beam number.  Objects of class \code{rdi} typically
+      have 4 beams, while those of type \code{aquadopp} have 3 beams.}
 
-  In addition to this \code{data} entry, the \code{metadata} entry holds
-  a wealth of information as well, e.g. on beam geometry, etc.
-
-}
+    In addition to this \code{data} entry, the \code{metadata} entry holds
+    a wealth of information as well, e.g. on beam geometry, etc.
+  }
 }
 
 \value{An object of \code{\link[base]{class}}es \code{"aquadopp"} and \code{"adcp"}.}

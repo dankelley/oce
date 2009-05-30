@@ -12,6 +12,7 @@
       draw.time.range=TRUE,
       mgp=getOption("oce.mgp"),
       xaxs = "i", yaxs = "i", cex=par("cex"),
+      adorn,
       \dots)
 }
 \arguments{
@@ -50,6 +51,8 @@
     \code{\link[graphics]{par}}("xaxs").}
   \item{yaxs}{as \code{xaxs} but for y axis.}
   \item{cex}{size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").}
+  \item{adorn}{optional expression to be performed immediately after
+    drawing the data panel.}     
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

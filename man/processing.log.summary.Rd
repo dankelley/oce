@@ -9,7 +9,7 @@
 \usage{processing.log.summary(object)}
 
 \arguments{
-\item{object}{An \code{oce} object.}
+\item{object}{an \code{oce} object.}
 }
 
 

@@ -62,21 +62,17 @@
       (as \code{data$ts$heading}, but the pitch), \code{data$ts$roll}
       (as \code{data$ts$heading}, but the roll).}
 
-    \item{\code{ma}}{A set of matrices, with rows corresponding to
-      profiles, and columns corresponding to ADCP cells.  These matrices
-      store velocities along the individual beams (\code{data$ma$bm1},
-      \code{data$ma$bm2}, \code{data$ma$bm3}, and \code{data$ma$bm4}),
-      echo intensity data (\code{data$ma$ei1}, \code{data$ma$ei2},
-      \code{data$ma$ei3}, and \code{data$ma$ei4}) and a percent-good
-      flag (\code{data$ma$pg1}, \code{data$ma$pg2}, \code{data$ma$pg3},
-      and \code{data$ma$pg4}).  Note: the beam data get replaced with
-      frame-based velocity data (u,v,w,e) by
-      \code{\link{adcp.beam2frame}}, and then with earth-based velocity
-      data (east, north, up, e) by \code{\link{adcp.frame2earth}}.}  }
+    \item{\code{ma}}{A set of matrices, named \code{v} (for velocity),
+      \code{a} (for amplitude of backscatter), and \code{q} (for
+      quality, e.g. correlation or percent-good).  Each of these is  a
+      3-D array, wth first index indicating profile number, second index
+      indicating cell number (distance from sensor), and third index
+      indicating beam number.  Objects of class \code{rdi} typically
+      have 4 beams, while those of type \code{aquadopp} have 3 beams.}
 
-  In addition to this \code{data} entry, the \code{metadata} entry holds
-  a wealth of information as well, e.g. on beam geometry, etc.
-
+    In addition to this \code{data} entry, the \code{metadata} entry holds
+    a wealth of information as well, e.g. on beam geometry, etc.
+  }
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}, which

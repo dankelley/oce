@@ -43,7 +43,6 @@ read.header <- function(file, debug)
     fr <- readBin(FLD[4], "integer", n=1, size=1)
     ##program.version <- paste(fv, fr, sep=".") # don't want to rely on number of digits
     ##if (debug) cat("program version=", program.version, "\n")
-##    system.configuration <- readBin(FLD[5:6], "raw", n=2, size=1)
     system.configuration <- paste(byte2binary(FLD[5]),
                                   byte2binary(FLD[6]),sep="-")
     bits <- substr(system.configuration, 6, 8)
@@ -129,9 +128,6 @@ read.header <- function(file, debug)
     ##
     ## VLD (variable leader data) 65 bytes
     ##
-
-    ##cat("before reading VLD (65 bytes), ftell=", seek(file), "\n")
-
     VLD <- readBin(file, "raw", n=65, size=1)
     header <- c(header, VLD)
     ##cat("position in file=", seek(file, NA), "after reading VLD\n")
@@ -421,13 +417,12 @@ summary.adcp <- function(object, ...)
                              deployment.name=object$metadata$deployment.name,
                              velocity.scale=object$metadata$velocity.scale)
     } else if (inherits(object, "rdi")) {
-        res.specific <- list(
-                number.of.data.types=object$metadata$number.of.data.types,
-                bin1.distance=object$metadata$bin1.distance,
-                xmit.pulse.length=object$metadata$xmit.pulse.length,
-                oce.beam.attenuated=object$metadata$oce.beam.attenuated,
-                number.of.data.types=object$metadata$number.of.data.types,
-                beam.config=object$metadata$beam.config)
+        res.specific <- list(number.of.data.types=object$metadata$number.of.data.types,
+                             bin1.distance=object$metadata$bin1.distance,
+                             xmit.pulse.length=object$metadata$xmit.pulse.length,
+                             oce.beam.attenuated=object$metadata$oce.beam.attenuated,
+                             number.of.data.types=object$metadata$number.of.data.types,
+                             beam.config=object$metadata$beam.config)
     } else stop("can only summarize ADCP objects of type \"rdi\" or \"nortek aquadop high resolution\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
@@ -510,6 +505,8 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("    Internal code version:       ", x$metadata$internal.code.version, "\n")
         cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n")
         cat("    Head serial number:          ", x$metadata$head.serial.number, "\n")
+        ##cat("    Transformation matrix:\n")
+        ##print(x$metadata$beam.to.xyz)
     }
     cat("\nStatistics:\n")
     print(x$fives)
@@ -610,6 +607,7 @@ plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
                        draw.time.range=!shown.time.interval,
                        draw.contours=FALSE,
                        do.layout=FALSE,
+                       adorn=adorn[w],
                        ...)
                 shown.time.interval <- TRUE
             }
@@ -656,20 +654,27 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
 adcp.beam2frame <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
-    if (!inherits(x, "rdi")) return(x)   # FIXME add aquadopp support here
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
-    vprime <- array(dim=dim(x$data$ma$v))
-    c <- if(x$metadata$beam.pattern == "convex") 1 else -1;
-    a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
-    b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
-    d <- a / sqrt(2)
-    vprime[,,1] <- -c * a * (x$data$ma$v[,,1] - x$data$ma$v[,,2])
-    vprime[,,2] <-  c * a * (x$data$ma$v[,,4] - x$data$ma$v[,,3])
-    vprime[,,3] <- -b * (x$data$ma$v[,,1] + x$data$ma$v[,,2] + x$data$ma$v[,,3] + x$data$ma$v[,,4])
-    ## FIXME Dal people use 'a' in e, and RDI has two definitions!
-    vprime[,,4] <-  d * (x$data$ma$v[,,1] + x$data$ma$v[,,2] - x$data$ma$v[,,3] - x$data$ma$v[,,4])
-    res <- x
-    res$data$ma$v <- vprime
+    if (inherits(x, "rdi")) {
+        vprime <- array(dim=dim(x$data$ma$v))
+        c <- if(x$metadata$beam.pattern == "convex") 1 else -1;
+        a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
+        b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
+        d <- a / sqrt(2)
+        vprime[,,1] <- -c * a * (x$data$ma$v[,,1] - x$data$ma$v[,,2])
+        vprime[,,2] <-  c * a * (x$data$ma$v[,,4] - x$data$ma$v[,,3])
+        vprime[,,3] <- -b * (x$data$ma$v[,,1] + x$data$ma$v[,,2] + x$data$ma$v[,,3] + x$data$ma$v[,,4])
+        ## FIXME Dal people use 'a' in e, and RDI has two definitions!
+        vprime[,,4] <-  d * (x$data$ma$v[,,1] + x$data$ma$v[,,2] - x$data$ma$v[,,3] - x$data$ma$v[,,4])
+        res <- x
+        res$data$ma$v <- vprime
+    } else if (inherits(x, "aquadopp")) {
+        res <- x
+        for (p in 1:x$metadata$number.of.profiles)
+            res$data$ma$v[p,,] <- t(x$metadata$beam.to.xyz %*% t(x$data$ma$v[p,,]))
+    } else {
+        stop("adcp type must be either \"rdi\" or \"aquadopp\"")
+    }
     res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
@@ -678,7 +683,6 @@ adcp.beam2frame <- function(x)
 adcp.frame2earth <- function(x)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
-    if (!inherits(x, "rdi")) return(x)   # FIXME add aquadopp support here
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
     res <- x
     to.radians <- pi / 180
@@ -725,7 +729,6 @@ adcp.frame2earth <- function(x)
 adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
-    if (!inherits(x, "rdi")) return(x)   # FIXME add aquadopp support here
     if (x$metadata$oce.coordinate != "earth") stop("input must be in earth coordinates")
     res <- x
     to.radians <- pi / 180
@@ -1106,6 +1109,7 @@ read.aquadopp <- function(file,
                      blanking.distance=blanking.distance,
                      measurement.interval=measurement.interval,
                      number.of.beams=number.of.beams,
+                     beam.to.xyz=beam.to.xyz,
                      number.of.cells=number.of.cells,
                      deployment.name=deployment.name,
                      cell.size=cell.size,
@@ -1123,203 +1127,3 @@ read.aquadopp <- function(file,
     class(res) <- c("adcp", "aquadopp", "oce")
     res
 }
-
-###delete.summary.aquadopp <- function(object, ...)
-###{
-###    if (!inherits(object, "aquadopp")) stop("method is only for aquadopp objects")
-###    res <- list(instrument.type=object$metadata$instrument.type,
-###                filename=object$metadata$filename,
-###                hardware.serial.number=object$metadata$hardware.serial.number,
-###                internal.code.version=object$metadata$internal.code.version,
-###                hardware.revision=object$metadata$hardware.revision,
-###                frequency=object$metadata$frequency,
-###                rec.size=object$metadata$rec.size*65536/1024/1024,
-###                velocity.range=object$metadata$velocity.range,
-###                firmware.version=object$metadata$firmware.version,
-###                config=object$metadata$config,
-###                config.pressure.sensor=object$metadata$config.pressure.sensor,
-###                config.magnetometer.sensor=object$metadata$config.magnetometer.sensor,
-###                config.tilt.sensor=object$metadata$config.pressure.sensor,
-###                config.pressure.sensor=object$metadata$config.tilt.sensor,
-###                orientation=object$metadata$orientation,
-###                frequency=object$metadata$frequency,
-###                head.serial.number=object$metadata$head.serial.number,
-###                blanking.distance=object$metadata$blanking.distance,
-###                measurement.interval=object$metadata$measurement.interval,
-###                number.of.beams=object$metadata$number.of.beams,
-###                number.of.cells=object$metadata$number.of.cells,
-###                deployment.name=object$metadata$deployment.name,
-###                cell.size=object$metadata$cell.size,
-###                velocity.scale=object$metadata$velocity.scale,
-###                coordinate.system=object$metadata$coordinate.system,
-###                processing.log=processing.log.summary(object))
-###    class(res) <- "summary.aquadopp"
-###    res
-###}
-###
-###delete.print.summary.aquadopp <- function(x, digits=max(6, getOption("digits") - 1), ...)
-###{
-###    cat("TYPE",x$instrument.type,"\n");stop()
-###
-###
-###    cat("Aquadopp timeseries\n")
-###    cat("    Deployment name:            ", x$deployment.name, "\n")
-###    cat("    Filename:                   ", x$filename, "\n")
-###    cat("  Hardware Configuration\n")
-###    cat("    Serial number:              ", x$hardware.serial.number, "\n")
-###    cat("    Internal version code:      ", x$internal.code.version, "\n")
-###    cat("    Revision number:            ", x$hardware.revision, "\n")
-###    cat("    Recorder size:              ", x$rec.size, "Mb\n")
-###    cat("    Firmware version:           ", x$firmware.version, "\n")
-###    cat("    Velocity range:             ", if(x$velocity.range) "high\n" else "normal\n")
-###    cat("  Head Configuration\n")
-###    cat("    Pressure sensor:            ", if (x$config.pressure.sensor) "yes\n" else "no\n")
-###    cat("    Compass:                    ", if (x$config.magnetometer.sensor) "yes\n" else "no\n")
-###    cat("    Tilt sensor:                ", if (x$config.tilt.sensor) "yes\n" else "no\n")
-###    ##if (FALSE) cat("    System 1 and 2:              [not coded yet]\n")
-###    cat("    Frequency:                  ", x$frequency, "kHz\n")
-###    cat("    Serial number:              ", x$head.serial.number, "\n")
-###    ##cat("    Transformation matrix:       [not coded yet]\n")
-###    if (FALSE) cat("    Pressure sensor calibration: [not coded yet]\n")
-###    cat("    Number of beams:            ", x$number.of.beams, "\n")
-###    if (FALSE) cat("    System 5 through 20:         [not coded yet]\n")
-###    cat("  User Setup\n")
-###    cat("    Measurement/burst interval: ", x$measurement.interval, "s\n")
-###    cat("    Cell size                   ", x$cell.size, "\n")
-###    cat("    Orientation:                ", x$orientation, "\n")
-###    cat("    Velocity scale:             ", x$velocity.scale, "m/s\n")
-###    cat("    Coordinate system:          ", x$coordinate.system, "\n")
-###    cat("
-###? Distance to bottom                    1.00 m
-###? Extended velocity range               ON
-###? Pulse distance (Lag1)                 1.10 m
-###? Pulse distance (Lag2)                 0.36 m
-###? Profile range                         1.00 m
-###? Horizontal velocity range             0.84 m/s
-###? Vertical velocity range               0.35 m/s
-###")
-###    cat("    Number of cells:            ", x$number.of.cells, "\n")
-###    cat("
-###? Average interval                      10 sec
-###")
-###    cat("    Blanking distance:          ", x$blanking.distance, "\n")
-###    print(x$processing.log)
-###    invisible(x)
-###}
-
-###delete.plot.aquadopp <- function(x, which=1:3, col=oce.colors.palette(128, 1), zlim,
-###                          titles,
-###                          ytype=c("profile", "distance"),
-###                          adorn=NULL,
-###                          draw.timerange=getOption("oce.draw.timerange"),
-###                          mgp=getOption("oce.mgp"), ...)
-###{
-###    if (!inherits(x, "aquadopp")) stop("method is only for aquadopp objects")
-###    opar <- par(no.readonly = TRUE)
-###    lw <- length(which)
-###    if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
-###    if (lw > 1) on.exit(par(opar))
-###    par(mgp=mgp)
-###    dots <- list(...)
-###    ytype <- match.arg(ytype)
-###    gave.zlim <- !missing(zlim)
-###    zlim.given <- if (gave.zlim) zlim else NULL
-###    gave.ylim <- "ylim" %in% names(dots)
-###    ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
-###
-###    images <- 1:12
-###    timeseries <- 13:18
-###    if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
-###    adorn.length <- length(adorn)
-###    if (adorn.length == 1) {
-###        adorn <- rep(adorn, lw)
-###        adorn.length <- lw
-###    }
-###
-###    par(mar=c(mgp[1],mgp[1]+1,1,1))
-###    data.names <- names(x$data$ma)
-###    shown.time.interval <- FALSE
-###    tt <- x$data$ts$time
-###    class(tt) <- "POSIXct"              # otherwise image() gives warnings
-###    if (!gave.zlim && all(which %in% 5:7)) { # single scale for all
-###        zlim <- range(abs(x$data$ma$a[,,which[1]-4]), na.rm=TRUE)
-###        for (w in 2:length(which)) {
-###            zlim <- range(abs(c(zlim, x$data$ma$a[,,which[w]-4])), na.rm=TRUE)
-###        }
-###    }
-###    if (any(which %in% images)) {
-###        scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
-###        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-###        ##cat("csi=", par("csi"), "w=", w, "\n")
-###        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-###    } else {
-###        lay <- layout(cbind(1:lw))
-###    }
-###    flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
-###    for (w in 1:lw) {
-###        ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
-###        if (which[w] %in% images) {                   # image types
-###            skip <- FALSE
-###            if (which[w] %in% 1:(0+x$metadata$number.of.beams)) { # velocity
-###                z <- x$data$ma$v[,,which[w]]
-###                y.look <- if (gave.ylim)
-###                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
-###                else rep(TRUE, length(x$data$ss$distance))
-###                zlim <- if (gave.zlim) zlim.given else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
-###                if (x$metadata$coordinate.system == "beam")
-###                    zlab <- if (missing(titles)) c("beam 1", "beam 2", "beam 3")[which[w]] else titles[w]
-###                else if (x$metadata$coordinate.system == "earth")
-###                    zlab <- if (missing(titles)) c("east", "north", "up")[which[w]] else titles[w]
-###                else if (x$metadata$coordinate.system == "frame")
-###                    zlab <- if (missing(titles)) c("u", "v", "w")[which[w]] else titles[w]
-###                else zlab <- ""
-###            } else if (which[w] %in% 5:(4+x$metadata$number.of.beams)) { # amplitude
-###                z <- x$data$ma$a[,,which[w]-4]
-###                y.look <- if (gave.ylim)
-###                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
-###                else rep(TRUE, length(x$data$ss$distance))
-###                zlim <- range(x$data$ma$a[,y.look,], na.rm=TRUE)
-###                zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
-###            } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation/quality/? FIXME
-###                z <- x$data$ma$q[,,which[w]-8]
-###                zlim <- c(0, 100)
-###                zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
-###            } else skip <- TRUE
-###            if (!skip) {
-###                imagep(x=tt, y=x$data$ss$distance, z=z,
-###                       zlim=zlim,
-###                       flip.y=flip.y,
-###                       col=col,
-###                       ylab=resizable.label("distance"),
-###                       xlab="Time",
-###                       zlab=zlab,
-###                       draw.time.range=!shown.time.interval,
-###                       draw.contours=FALSE,
-###                       do.layout=FALSE,
-###                       ...)
-###                shown.time.interval <- TRUE
-###            }
-###        }
-###        if (which[w] %in% timeseries) { # time-series types
-###            if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]", type='l', axes=FALSE)
-###            if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', axes=FALSE)
-###            if (which[w] == 15) plot(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
-###            if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
-###            if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
-###            if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
-###            oce.axis.POSIXct(1, x=x$data$ts$time)
-###            box()
-###            axis(2)
-###            if (!shown.time.interval) {
-###                mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
-###                            attr(x$data$ts$time[1], "tzone")),
-###                      side=3, cex=5/6*par("cex"), adj=0)
-###                shown.time.interval <- TRUE
-###            }
-###            if (w <= adorn.length) {
-###                t <- try(eval(adorn[w]), silent=TRUE)
-###                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-###            }
-###        }
-###    }
-###}

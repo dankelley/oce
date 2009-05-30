@@ -9,8 +9,8 @@
 \usage{processing.log.append(x, action="")}
 
 \arguments{
-  \item{x}{An \code{oce} object.}
-  \item{action}{A character string describing the action.}
+  \item{x}{an \code{oce} object.}
+  \item{action}{a character string describing the action.}
 }
 
 \details{This is used to add a time-stamped item to the processing log

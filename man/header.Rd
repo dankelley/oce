@@ -9,7 +9,7 @@
 \usage{header(x)}
 
 \arguments{
-  \item{x}{An \code{oce} object.}
+  \item{x}{an \code{oce} object.}
 }
 
 \details{Returns header, taken from the metadata of x.}

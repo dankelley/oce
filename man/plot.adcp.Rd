@@ -15,7 +15,7 @@
          mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
-  \item{x}{An \code{adcp} object, e.g. as read by \code{\link{read.adcp}}.}
+  \item{x}{an \code{adcp} object, e.g. as read by \code{\link{read.adcp}}.}
   \item{which}{list of desired plot types.  These are graphed in
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
@@ -64,14 +64,15 @@
 
   \itemize{ 
     
-    \item For \code{beam} data, as created by \code{\link{read.adcp}} or
-    \code{\link{read.oce}}, \code{which}=1 gives an image plot of beam 1
-    as a function of time and distance from sensor, and \code{which}
-    values of 2 to 4 yield similar plots for the other beams.
+    \item For data in \code{beam} coordinates, \code{which}=1 gives an
+    image plot of beam 1 as a function of time and distance from sensor;
+    \code{which} values of 2, 3 (and 4, if applicable) yield similar
+    plots for the other beams.
 
     \item For \code{frame} data, as created by
     \code{\link{adcp.beam2frame}}, \code{which}=1, 2, and 3 yield u, v,
-    and w components of velocity, and \code{which}=4 yields a velocity
+    and w components of velocity, and, for the case of 4-beam
+    instruments such as \code{rdi}, \code{which}=4 yields a velocity
     error estimate computed from all beams together.
 
     \item For \code{earth} data, as created by
@@ -82,8 +83,8 @@
 
     \item For all types of data: \code{which} values of 5 through 8
     yield image of backscatter intensity of beams 1 through 4,
-    respectively, and \code{which} values of 9 through 12 yield the
-    percent-good flag for beams 1 through 4.
+    respectively, and \code{which} values of 9 through 11 (or 12) yield
+    measures of the signal quality for the individual beams.
 
     \item Time-series of scalar quantities can also be plotted:
     \code{which}=13 yields salinity, 14 yields temperature, 15 yields
@@ -107,19 +108,32 @@
   the \dots arguments, but be aware that a reasonable limit on
   horizontal velocity components is unlikely to be of much use for the
   vertical component.
+
+  A good first step in the analysis of measurements made from a moored
+  device (stored in \code{d}, say) is to do \code{plot(d, which=14:18)}.
+  This shows time series of water properties and sensor orientation,
+  which is helpful in deciding which data to trim at the start and end
+  of the deployment, because they were measured on the dock or on the
+  ship as it travelled to the mooring site.
 }
 
-\seealso{The data may be read with \code{\link{read.adcp}} or 
-\code{\link{read.aquadopp}}. Converting
-  velocities from beam coordinates (the raw data, columns \code{bm1}
-  through \code{bm4} in \code{x$data$ma} for a four-beam setup) to frame
-  coordinates (\code{u}, \code{v}, \code{w}) columns is done with
-  \code{\link{adcp.beam2frame}}.  Thereafter,
-  \code{\link{adcp.frame2earth}} may be used to convert to earth-based
-  coordinates (\code{east}, \code{north}, \code{up}).  Correction of
-  echo intensity for beam-spreading can be done at any stage, using
-  \code{\link{adcp.beam.attenuate}}.  Summaries of ADCP data are
-  provided by \code{\link{summary.adcp}}.
+\seealso{The data are normally read with \code{\link{read.oce}}, which
+is usually able to detect the type of instrument.  If that fails, the user
+should try \code{\link{read.adcp}} (for RDI files) or \code{\link{read.aquadopp}} 
+(for NorTek aquadopp files).  These files may be in beam coordinates, 
+in frame coordinates, or in earth coordinates.  It is common in a scientific
+setting to use beam coordinates, and so this package offers functions
+\code{\link{adcp.beam2frame}} and 
+\code{\link{adcp.frame2earth}} to take the intermediate steps, and
+\code{\link{adcp.earth2other}} to go further, e.g. to rotate into
+a coordinate system aligned with the shoreline or with an isobath.
+
+The beam stength may be corrected for R-squared spreading with
+\code{\link{adcp.beam.attenuate}}.  
+
+Summaries of ADCP data are provided by \code{\link{summary.adcp}}.
+
+ADCP data may be plotted with \code{\link{plot.adcp}}.
 }
 
 \examples{

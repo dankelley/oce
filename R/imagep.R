@@ -8,6 +8,7 @@ imagep <- function(x, y, z,
                    draw.time.range=TRUE,
                    mgp=getOption("oce.mgp"),
                    xaxs = "i", yaxs = "i", cex=par("cex"),
+                   adorn,
                    ...)
 {
     if (missing(x)) stop("must supply x")
@@ -77,6 +78,12 @@ imagep <- function(x, y, z,
     if (draw.contours && !missing(breaks))
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex")*5/4, adj=1, line=1/6)
+
+    if (!missing(adorn)) {
+        t <- try(eval.parent(adorn), silent=!TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn='", adorn, "'\n")
+    }
+
     ## palette
     par(mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0,
         1/4,
