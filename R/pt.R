@@ -69,7 +69,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                          ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
                          ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
-            if (!("cex"  %in% names(list(...)))) args <- c(args, cex=0.5)
+            if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
             do.call(plot, args)
         }
         if ((which[w] %in% 1:3) & !shown.time.interval & draw.timerange) {
