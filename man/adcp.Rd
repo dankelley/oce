@@ -16,18 +16,22 @@ data(adcp)
 adcp.earth <- adcp.frame2earth(adcp.beam2frame(adcp))
 
 # Plot overview images
-plot(adcp.earth, which=1)
+plot(adcp.earth)
 
-# Plot diagnostic timeseries (e.g. heading should *not* vary)
+# Plot diagnostic timeseries.  Angles should be constant for a mooring.
 plot(adcp.earth, which=13:18)
 }
 
 \usage{data(adcp)}
 
-\source{This file was created with the following command, which uses
-  a large file (a week of 10-second data) not provided with the package:
+\source{This file was created with the following command (which uses
+  a large file that is not provided with the package).  Note the
+  use of UTC, to match how the instrument was set up.
 \preformatted{
-adcp <- read.oce(file="~/SL08F001.000", as.POSIXct("2008-06-26",tz="GMT"), as.POSIXct("2008-06-27", tz="GMT"), "30:00")
+adcp <- read.oce("~/SL08F001.000", 
+                  as.POSIXct("2008-06-26", tz="UTC"),
+                  as.POSIXct("2008-06-27", tz="UTC"), 
+                 "30:00")
 }
 }
 

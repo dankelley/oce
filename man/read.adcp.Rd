@@ -120,9 +120,13 @@ read.adcp.nortek(file, skip=0, read, stride=1,
 \examples{
 \dontrun{
 library(oce)
-adcp <- read.oce("~/SL08F001.000", as.POSIXct("2008-06-26",tz="GMT"), as.POSIXct("2008-06-27", tz="GMT"), "30:00")
-summary(adcp)
-plot(adcp)
+# A day sampled at 1/2 hour interval.  Note the timezone.
+d <- read.oce("~/SL08F001.000", 
+               as.POSIXct("2008-06-26", tz="UTC"),
+               as.POSIXct("2008-06-27", tz="UTC"), 
+              "30:00")
+summary(d)
+plot(d)
 }
 }
 
