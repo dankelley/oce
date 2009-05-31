@@ -22,8 +22,11 @@ read.adcp.nortek(file, skip=0, read, stride=1,
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{skip}{number of profiles to skip at start, or the POSIXt time at which to start reading.}
-  \item{read}{optional number of profiles to read, or the last POSIXt time to read.}
+  \item{skip}{number of profiles to skip at start, or the POSIXt time at
+    which to start reading.  See \dQuote{Examples}, and make careful
+    note of the use of the \code{tz} argument.}
+  \item{read}{optional number of profiles to read, or the last POSIXt
+    time to read.}
   \item{stride}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{stride-1}
     profiles are skipped between each pair of profiles that is read.  If
