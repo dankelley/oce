@@ -27,7 +27,7 @@ plot(adcp.earth, which=13:18)
 \source{This file was created with the following command, which uses
   a large file (a week of 10-second data) not provided with the package:
 \preformatted{
-adcp <- read.oce(file="~/SL08F001.000", as.POSIXct("2008-06-26",tz="GMT"), as.POSIXct("2008-06-27", tz="GMT"), 180)
+adcp <- read.oce(file="~/SL08F001.000", as.POSIXct("2008-06-26",tz="GMT"), as.POSIXct("2008-06-27", tz="GMT"), "30:00")
 }
 }
 

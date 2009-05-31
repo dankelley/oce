@@ -355,6 +355,18 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
     if (!missing(skip) && inherits(skip, "POSIXt")) {
         skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
     }
+    if (!missing(stride) && is.character(stride)) {
+        if (length(grep(":", stride)) > 0) {
+            parts <- as.numeric(strsplit(stride, ":")[[1]])
+            if (length(parts == 2)) stride.time <- parts[1] * 60 + parts[2]
+            else if (length(parts == 3)) stride.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+            else stop("malformed stride time", stride)
+            stride <- stride.time / dt
+        } else {
+            warning("converting \"stride\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
+            stride <- as.numeric(stride)
+        }
+    }
     if (!missing(read) && inherits(read, "POSIXt")) {
         read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride
         if (read < 0) stop("cannot have read < 0")
@@ -1088,6 +1100,18 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
         skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
         if (skip < 0) warning("\"skip\"=", format(skip), " ignored, since it predates the first datum at ", format(t1))
         if (debug) cat("skip=",skip,"\n")
+    }
+    if (!missing(stride) && is.character(stride)) {
+        if (length(grep(":", stride)) > 0) {
+            parts <- as.numeric(strsplit(stride, ":")[[1]])
+            if (length(parts == 2)) stride.time <- parts[1] * 60 + parts[2]
+            else if (length(parts == 3)) stride.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+            else stop("malformed stride time", stride)
+            stride <- stride.time / dt
+        } else {
+            warning("converting \"stride\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
+            stride <- as.numeric(stride)
+        }
     }
     if (!missing(skip) && inherits(read, "POSIXt")) {
         read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride

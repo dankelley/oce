@@ -24,9 +24,12 @@ read.adcp.nortek(file, skip=0, read, stride=1,
     file to load.}
   \item{skip}{number of profiles to skip at start, or the POSIXt time at which to start reading.}
   \item{read}{optional number of profiles to read, or the last POSIXt time to read.}
-  \item{stride}{a number indicating the stride length to use,
-    while reading the file.  If \code{stride}>1, then \code{stride-1}
-    profiles are skipped, between every profile read.}
+  \item{stride}{an indication of the stride length to use while walking
+    through the file.  If this is an integer, then \code{stride-1}
+    profiles are skipped between each pair of profiles that is read.  If
+    this is a string representing a time interval, in colon-separated
+    format, then this interval is divided by the sampling interval, to
+    get the stride length.}
   \item{type}{a character string indicating th type of file.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
@@ -37,15 +40,12 @@ read.adcp.nortek(file, skip=0, read, stride=1,
     it provides is better for normal calls by a user.)}
 }
 
-\details{Reads a binary-format ADCP file from Teledyne-RDI.  This
-  function was developed based on the file structure explained in
-  Chapter 5 of \emph{Teledyne-RDI} (2007), and tested with a file
-  produced by version 16.28 of the machine's firmware.  \code{read.adcp}
-  may work for other versions of the firmware, but this has not been
-  tested.  Future coding efforts will focus on instruments available to
-  the author, with very little time being spent trying to make
-  \code{read.adcp} handle the dozens of formatting styles used by RDI
-  and Teledyne-RDI over the years.
+\details{Reads a binary-format ADCP file.  Two types can be handled at
+  the moment: the Teledyne-RDI (2007) Workhorse instrument using
+  firmware version 16.28, and the NorTek Aquadopp High Resolution
+  profiler.  \code{read.adcp} may also work on other  RDI
+  units, but this has not been tested.  It definitely does not work on
+  other NorTek units, because the binary format is different for each.
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
@@ -117,17 +117,18 @@ read.adcp.nortek(file, skip=0, read, stride=1,
 \examples{
 \dontrun{
 library(oce)
-adcp <- read.oce(file = "~/SL08F001.000", 
-                 skip = 5040, read = 1 + 24 * 2, stride = 30 * 6)
+adcp <- read.oce("~/SL08F001.000", as.POSIXct("2008-06-26",tz="GMT"), as.POSIXct("2008-06-27", tz="GMT"), "30:00")
 summary(adcp)
 plot(adcp)
 }
 }
 
-\references{Teledyne-RDI, 2007.
-\emph{WorkHorse commands and output data format.}
-P/N 957-6156-00 (November 2007).
-}
+\references{Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
+    format.} P/N 957-6156-00 (November 2007).
+
+Information on the Nortek profiler is available at
+\url{http://www.nortekusa.com/}.  (One must join the site to see the
+manuals, so no citation is provided here.)}
 
 \author{Dan Kelley}
 
