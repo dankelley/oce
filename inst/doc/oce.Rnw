@@ -591,7 +591,6 @@ data(adcp)
 e <- adcp.frame2earth(adcp.beam2frame(adcp))
 plot(e, which=1:2,
      adorn=expression({
-       abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
        lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green')
      }))
 @
@@ -606,7 +605,7 @@ during St Lawrence Estuary Internal Wave Experiment.
 \end{center}
 \caption{Measurements made with an ADCP in the
   St Lawrence Estuary.  The data were recorded in beam format, so a two-step
-  process is used to convert to earth coordinates.  The green line indicates
+  process is used to convert to earth coordinates.  The green curve indicates
   the water surface, inferred from the pressure measured by the ADCP.}
 \label{fig:adcp}
 \end{figure}
