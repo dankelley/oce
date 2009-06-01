@@ -510,10 +510,10 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 %%% data(sealevel.hal)
 %%% tide <- tidem(sealevel.hal)
 %%% days <- 15 # focus on these days at end of series
-%%% n <- length(sealevel.hal$data$eta)
+%%% n <- length(sealevel.hal$data$elevation)
 %%% i <- seq(n-24*days, n)
 %%% t   <- sealevel.hal$data$t[i]
-%%% eta <- sealevel.hal$data$eta[i]
+%%% eta <- sealevel.hal$data$elevation[i]
 %%% eta.pred <- predict(tide)[i]
 %%% plot(t, eta, type="l", ylim=c(-0.5,3))
 %%% abline(h=0, col="pink")
@@ -753,7 +753,7 @@ and all of them contain a \verb@data@ element of a similar form to this.
 <<>>=
 library(oce)
 data(sealevel.hal)
-spectrum(sealevel.hal$data$eta, spans=c(3,7))
+spectrum(sealevel.hal$data$elevation, spans=c(3,7))
 abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @

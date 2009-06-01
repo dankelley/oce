@@ -19,8 +19,8 @@
 library(oce)
 data(sealevel.tuk)
 tide <- tidem(sealevel.tuk)
-plot(sealevel.tuk$data$time, sealevel.tuk$data$eta, type='l', ylim=c(-2,5))
-lines(sealevel.tuk$data$time, sealevel.tuk$data$eta - predict(tide), col="red")
+plot(sealevel.tuk$data$time, sealevel.tuk$data$elevation, type='l', ylim=c(-2,5))
+lines(sealevel.tuk$data$time, sealevel.tuk$data$elevation - predict(tide), col="red")
 abline(h=0, col="red")
 }
 

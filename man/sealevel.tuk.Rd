@@ -20,12 +20,12 @@
 
 \examples{
 data(sealevel.tuk)
-plot(sealevel.tuk$data$time, sealevel.tuk$data$eta, type='l',
+plot(sealevel.tuk$data$time, sealevel.tuk$data$elevation, type='l',
      ylab="Height [m]",ylim=c(-2,6))
 legend("topright", legend=c("Tuktoyaktuk (1975)","Detided"),
        col=c("black","red"),lwd=1)
 tide <- tidem(sealevel.tuk)
-detided <- sealevel.tuk$data$eta - predict(tide)
+detided <- sealevel.tuk$data$elevation - predict(tide)
 lines(sealevel.tuk$data$time, detided, col="red")
 }
 

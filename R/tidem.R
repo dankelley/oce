@@ -407,7 +407,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     }
 
     nc <- length(freq)
-    nt <- length(sl$data$eta)
+    nt <- length(sl$data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
 
@@ -432,8 +432,8 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
-    eta <- sl$data$eta
-    model <- lm(eta ~ x, na.action=na.exclude)
+    elevation <- sl$data$elevation
+    model <- lm(elevation ~ x, na.action=na.exclude)
     coef  <- model$coefficients
     p.all <- summary(model)$coefficients[,4]
     amplitude <- phase <- p <-vector("numeric", length=1+nc)

@@ -5,13 +5,13 @@
   Coerces a dataset (minimally, a sequence of times and heights) into
   a sealevel dataset.
 }
-\usage{as.sealevel(eta,  time,  header=NULL,
-  station.number=NA, station.version=NA, station.name=NULL, region=NA,
+\usage{as.sealevel(elevation,  time,  header=NULL,
+  station.number=NA, station.version=NA, station.name=NULL, region=NULL,
   year=NA, latitude=NA, longitude=NA, GMT.offset=NA, decimation.method=NA,
   reference.offset=NA, reference.code=NA, deltat)
 }
 \arguments{
-  \item{eta}{a list of sea-level heights in metres, in an hourly sequence.}
+  \item{elevation}{a list of sea-level heights in metres, in an hourly sequence.}
   \item{time}{optional list of times, in POSIXct format.  If missing, the
     list will be constructed assuming hourly samples, starting at
     0000-01-01 00:00:00.}
@@ -61,13 +61,13 @@ library(oce)
 # Construct a year of M2 tide, starting at the default time
 # 0000-01-01T00:00:00.
 h <- seq(0, 24*365)
-eta <- 2.0 * sin(2*pi*h/12.4172)
-sl <- as.sealevel(eta)
+elevation <- 2.0 * sin(2*pi*h/12.4172)
+sl <- as.sealevel(elevation)
 summary(sl)
 
 # As above, but start at the Y2K time.
 time <- as.POSIXct("2000-01-01") + h * 3600
-sl <- as.sealevel(eta, time)
+sl <- as.sealevel(elevation, time)
 summary(sl)
 }
 \references{\url{ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt}.}
