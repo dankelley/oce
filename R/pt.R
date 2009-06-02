@@ -1,5 +1,6 @@
 plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
-                     plim, Tlim,
+                     tlim, plim, Tlim,
+                     xlab, ylab,
                      draw.timerange=getOption("oce.draw.timerange"),
                      mgp=getOption("oce.mgp"),
                      ...)
@@ -22,11 +23,14 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      c(3,4)), widths=c(2,1))
     }
     par(mgp=mgp)
-    par(mar=c(mgp[1], mgp[1]+1, 1, 1))
+    par(mar=c(mgp[1], mgp[1]+1, 1, 1.5))
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$time, x$data$temperature,
-                 xlab="", ylab=resizable.label("T", "y"), type='l',
+                 xlab=if (missing(xlab)) "" else xlab,
+                 ylab=if (missing(ylab)) resizable.label("T", "y") else ylab,
+                 xaxs="i", type='l',
+                 xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
                  axes=FALSE, ...)
             box()
@@ -34,7 +38,10 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             axis(2)
         } else if (which[w] == 3) {
             plot(x$data$time, x$data$pressure,
-                 xlab="", ylab=resizable.label("p"), type='l',
+                 xlab=if (missing(xlab)) "" else xlab,
+                 ylab=if (missing(ylab)) resizable.label("p", "y") else ylab,
+                 xaxs="i", type='l',
+                 xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
                  axes=FALSE, ...)
             box()
@@ -72,9 +79,11 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
             do.call(plot, args)
         }
-        if ((which[w] %in% 1:3) & !shown.time.interval & draw.timerange) {
-            mtext(paste(paste(format(range(x$data$time, na.rm=TRUE)), collapse=" to "),
-                        attr(x$data$time[1], "tzone")),
+        if ((which[w] %in% c(1,3)) & !shown.time.interval & draw.timerange) {
+            time.range <- par("usr")[1:2]
+            class(time.range) <- c("POSIXt", "POSIXct")
+            attr(time.range, "tzone") <- attr(x$data$time, "tzone")
+            mtext(paste(paste(format(time.range), collapse=" to "), attr(x$data$time[1], "tzone")),
                   side=3, cex=3/4*par("cex.axis"), adj=0)
             shown.time.interval <- TRUE
         }
