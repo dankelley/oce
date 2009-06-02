@@ -13,7 +13,8 @@
 
 \usage{data(sealevel.hal)}
 
-\source{The data were downloaded from MEDS and then read with \code{\link{read.sealevel}}.}
+\source{The data were downloaded from MEDS and then read as follows
+\preformatted{sealevel.hal <- read.oce("490-01-jan-2003_slev.csv")}}
 
 \references{The MEDS archive is at
   \url{http://www.meds-sdmm.dfo-mpo.gc.ca/meds/Databases/TWL/TWL_inventory_e.htm}.

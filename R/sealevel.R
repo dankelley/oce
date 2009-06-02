@@ -54,13 +54,13 @@ plot.sealevel <- function(x, which=1:4,
                           draw.timerange=getOption("oce.draw.timerange"),
                           mgp=getOption("oce.mgp"), ...)
 {
+    debug <- FALSE
+    dots <- list(...)
     title.plot <- function(x)
     {
-        if (draw.timerange)
-            mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=3/4*par("cex.axis"), adj=0)
         title <- ""
         if (!is.na(x$metadata$station.number) || !is.null(x$metadata$station.name) || !is.null(x$metadata$region))
-            title <- paste(title, "Station",
+            title <- paste(title, "Station ",
                            if (!is.na(x$metadata$station.number)) x$metadata$station.number else "",
                            " ",
                            if (!is.null(x$metadata$station.name)) x$metadata$station.name else "",
@@ -105,43 +105,61 @@ plot.sealevel <- function(x, which=1:4,
         layout(cbind(1:lw))
 
     par(mgp=mgp)
-    par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
+    par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
 
     MSL <- mean(x$data$elevation, na.rm=TRUE)
     tmp <- (pretty(max(x$data$elevation-MSL,na.rm=TRUE)-min(x$data$elevation-MSL,na.rm=TRUE))/2)[2]
     ylim <- c(-tmp,tmp)
     n <- length(x$data$elevation) # do not trust value in metadata
+
+    time.range <- range(x$data$time, na.rm=TRUE)
+    if (debug) {
+        cat("time.range=", paste(format(time.range), collapse=" to "), "\n")
+        cat("class(time.range) is ", class(time.range), "\n")
+        cat("attr(time.range,\"tzone\") is ", attr(time.range, "tzone"), "\n")
+        print(dots)
+    }
+    if ("xlim" %in% names(dots)) {
+        xlim <- dots$xlim
+        time.range[1] <- if (time.range[1] < dots$xlim[1]) dots$xlim[1] else time.range[1]
+        time.range[2] <- if (time.range[2] > dots$xlim[2]) dots$xlim[2] else time.range[2]
+    }
+    if (debug) print(time.range)
+
     for (w in 1:length(which)) {
         if (which[w] == 1) {
             plot(x$data$time, x$data$elevation-MSL,
-                 xlab="",ylab=expression(paste(elevation-reference, "  [m]")), type='l', ylim=ylim,
+                 xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
                  lwd=0.5, axes=FALSE, ...)
             box()
             tics <- oce.axis.POSIXct(1, x=x$data$time)
             yax <- axis(2)
-            if (draw.timerange)
-                mtext(paste(format(range(x$data$time)), collapse=" to "), side=3, cex=3/4*par("cex.axis"), adj=0)
+            if (draw.timerange) {
+                mtext(paste(format(time.range), collapse=" to "), side=3, cex=5/6*par("cex"), adj=0)
+                draw.timerange <- FALSE
+                title.plot(x)
+            }
             abline(h=yax, col="darkgray", lty="dotted")
             abline(v=tics, col="darkgray", lty="dotted")
             abline(h=0,col="darkgreen")
             mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-            title.plot(x)
-        } else if (which[w] == 2) {
-            eg.days <- 28
-            stop <- 24 * eg.days
-            from <- as.POSIXlt(x$data$time[1])
-            from$hour <- from$min <- from$sec <- 0
+        } else if (which[w] == 2) {     # sample days
+            from <- trunc(x$data$time[1], "day")
             to <- from + 28 * 86400 # 28 days
+            xx <- subset(x, from <= time & time <= to)
             at.week <- seq(from=from, to=to, by="week")
             at.day  <- seq(from=from, to=to, by="day")
-            tmp <- (pretty(max(x$data$elevation[1:stop]-MSL,na.rm=TRUE) -
-                           min(x$data$elevation[1:stop]-MSL,na.rm=TRUE))/2)[2]
+            tmp <- (pretty(max(xx$data$elevation-MSL,na.rm=TRUE) -
+                           min(xx$data$elevation-MSL,na.rm=TRUE))/2)[2]
             ylim <- c(-tmp,tmp)
-
-            plot(x$data$time[1:stop], x$data$elevation[1:stop] - MSL,
-                 xlab="",ylab=expression(paste(elevation-elevation[0], "  [m]")), type='l',ylim=ylim,
+            plot(xx$data$time, xx$data$elevation - MSL,
+                 xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
                  axes=FALSE)
-            oce.axis.POSIXct(1, x$data$time[1:stop])
+            oce.axis.POSIXct(1, xx$data$time)
+            if (draw.timerange) {
+                mtext(paste(format(range(xx$data$time)), collapse=" to "), side=3, cex=5/6*par("cex"), adj=0)
+                draw.timerange <- FALSE
+            }
             yax <- axis(2)
             abline(h=yax, col="lightgray", lty="dotted")
             box()
@@ -241,13 +259,16 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
         station.number <- as.numeric(strsplit(header[2], ",")[[1]][2])
         latitude       <- as.numeric(strsplit(header[3], ",")[[1]][2])
         longitude      <- as.numeric(strsplit(header[4], ",")[[1]][2])
-                                        # get GMT offset
-        tz             <- strsplit(header[6], ",")[[1]][2]
+        tz             <- strsplit(header[6], ",")[[1]][2] # needed for get GMT offset
         GMT.offset     <- GMT.offset.from.tz(tz)
-        x <- read.csv(file, skip=header.length, header=FALSE)
+        x <- read.csv(file, header=FALSE)
         elevation <- as.numeric(x$V2)
-        time <- as.POSIXct(strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p"), tz="UTC")
-        time <- time + 3600 * GMT.offset
+        time <- strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p", "UTC") + 3600 * GMT.offset
+        if (debug) {
+            cat("tz=", tz, "so GMT.offset=", GMT.offset,"\n")
+            cat("first pass has time string:", as.character(x$V1)[1], "\n")
+            cat("first pass has time start:", format(time[1]), " ", attr(time[1], "tzone"), "\n")
+        }
     } else { # type 1
         if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
         d <- readLines(file)
@@ -306,10 +327,6 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
         }
     }
     num.missing <- sum(is.na(elevation))
-    if (debug) {
-        cat("time summary:");print(summary(time))
-        cat("elevation summary:");print(summary(elevation))
-    }
     if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
     data <- data.frame(time=time, elevation=elevation)
     metadata <- list(header=header,

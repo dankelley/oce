@@ -179,15 +179,15 @@ read.oce <- function(file, ...)
 {
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    if (type == "adcp.rdi")    return(read.adcp.rdi(file,    ..., log.action=log.action))
-    if (type == "adcp.nortek") return(read.adcp.nortek(file, ..., log.action=log.action))
-    if (type == "ctd.woce")    return(read.ctd(file,         ..., log.action=log.action))
-    if (type == "ctd.seabird") return(read.ctd(file,         ..., log.action=log.action))
+    if (type == "adcp.rdi")    return(read.adcp.rdi(file,                 ..., log.action=log.action))
+    if (type == "adcp.nortek") return(read.adcp.nortek(file,              ..., log.action=log.action))
+    if (type == "ctd.woce")    return(read.ctd(file,                      ..., log.action=log.action))
+    if (type == "ctd.seabird") return(read.ctd(file,                      ..., log.action=log.action))
     if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))
-    if (type == "sealevel")    return(read.sealevel(file,    ..., log.action=log.action))
-    if (type == "topo")        return(read.topo(file,        ..., log.action=log.action))
-    if (type == "pt")          return(read.pt(file,          ..., log.action=log.action))
-    if (type == "section")     return(read.section(file,     ..., log.action=log.action))
+    if (type == "sealevel")    return(read.sealevel(file,                 ..., log.action=log.action))
+    if (type == "topo")        return(read.topo(file,                     ..., log.action=log.action))
+    if (type == "pt")          return(read.pt(file,                       ..., log.action=log.action))
+    if (type == "section")     return(read.section(file,                  ..., log.action=log.action))
     stop("unknown file type")
 }
 
@@ -275,57 +275,64 @@ oce.colors.palette <- function(n, which=1)
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
 {
-    mat <- missing(at) || is.null(at)
-    if (!mat)
-        x <- as.POSIXct(at)
-    else x <- as.POSIXct(x)
-    range <- par("usr")[if (side%%2) 1:2 else 3:4]
+    dots <- list(...)
+    if ("xlim" %in% names(dots)) {
+        cat("GAVE xlim\n")
+    }
 
+    debug <- TRUE
+    mat <- missing(at) || is.null(at)
+    if (!mat) x <- as.POSIXct(at) else x <- as.POSIXct(x)
+    range <- par("usr")[if (side%%2) 1:2 else 3:4]
+    if (debug) cat("range=",range,"\n")
     d <- range[2] - range[1]
     z <- c(range, x[is.finite(x)])
     attr(z, "tzone") <- attr(x, "tzone")
-
-    if (d < 1.1 * 60) {
+    if (d < 1.1 * 60) {                 # under about a minute
         sc <- 1
         if (missing(format))
             format <- "%S"
-    }
-    else if (d < 1.1 * 60 * 60) {
+    } else if (d < 1.1 * 60 * 60) {       # under about an hour
         sc <- 60
         if (missing(format))
             format <- "%M:%S"
-    }
-    else if (d < 1.1 * 60 * 60 * 24) {
+    } else if (d < 1.1 * 60 * 60 * 24) {  # under about a day
         sc <- 60 * 60
         if (missing(format))
             format <- "%H:%M"
-    }
-    else if (d < 2 * 60 * 60 * 24) {
+    } else if (d < 2 * 60 * 60 * 24) {    # under 2 days
         sc <- 60 * 60
         if (missing(format))
             format <- "%a %H:%M"
-    }
-    else if (d < 7 * 60 * 60 * 24) {
+    } else if (d < 7 * 60 * 60 * 24) {    # under a week
+        sc <- 60 * 60 * 24
+        if (missing(format))
+            format <- "%a"
+    } else if (d < 3 * 7 * 60 * 60 * 24) {    # under 3 weeks
+        sc <- 60 * 60 * 24
+        if (missing(format))
+            format <- "%b %d"
+    } else if (d < 32 * 60 * 60 * 24) {    # under  a month
+        sc <- 60 * 60 * 24 * 7
+        if (missing(format))
+            format <- "%a"
+    } else {
         sc <- 60 * 60 * 24
         if (missing(format))
             format <- "%a"
     }
-    else {
-        sc <- 60 * 60 * 24
-    }
 
-    if (d < 60 * 60 * 24 * 50) {
-        zz <- pretty(z/sc)
-        z <- zz * sc
-        class(z) <- c("POSIXt", "POSIXct")
-        attr(z, "tzone") <- attr(x, "tzone")
-        if (sc == 60 * 60 * 24)
-            z <- as.POSIXct(round(z, "days"))
-        attr(z, "tzone") <- attr(x, "tzone")
-        if (missing(format))
+    if (d < 60 * 60 * 24 * 32) {        # under 2 weeks
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        day.start <- trunc(rr[1], "day")
+        day.end <- trunc(rr[2] + 86400, "day")
+        z <- seq(day.start, day.end, by="day")
+ #       if (missing(format))
             format <- "%b %d"
-    }
-    else if (d < 1.1 * 60 * 60 * 24 * 365) {
+        if (debug) cat("labels at", format(z), "\n")
+    } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
         class(z) <- c("POSIXt", "POSIXct")
         attr(z, "tzone") <- attr(x, "tzone")
         zz <- as.POSIXlt(z)
@@ -341,10 +348,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
         class(zz) <- c("POSIXt", "POSIXlt")
         z <- as.POSIXct(zz)
         attr(z, "tzone") <- attr(x, "tzone")
-        if (missing(format))
+#        if (missing(format))
             format <- "%b"
-    }
-    else {
+        if (debug) cat("under a year; z=",z,"\n")
+    } else {
         class(z) <- c("POSIXt", "POSIXct")
         attr(z, "tzone") <- attr(x, "tzone")
         zz <- as.POSIXlt(z)
@@ -359,10 +366,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
         attr(z, "tzone") <- attr(x, "tzone")
         if (missing(format))
             format <- "%Y"
+        if (debug) cat("z=",z,"\n")
     }
     if (!mat)
         z <- x[is.finite(x)]
-    keep <- z >= range[1] & z <= range[2]
+    keep <- range[1] <= z & z <= range[2]
     z <- z[keep]
     if (!is.logical(labels))
         labels <- labels[keep]

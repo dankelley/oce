@@ -86,9 +86,8 @@
 \examples{
 \dontrun{
 library(oce)
-# San Francisco data
-# ftp://ilikai.soest.hawaii.edu/rqds/pacific/hourly/h551a.zip
-h <- read.sealevel("h551a/h551a01.dat")
+# sealevel.hal
+h <- read.oce("490-01-jan-2003_slev.csv")
 summary(h)
 plot(h)
 }
