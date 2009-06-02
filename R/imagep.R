@@ -5,7 +5,7 @@ imagep <- function(x, y, z,
                    breaks, col,
                    do.layout=TRUE,
                    draw.contours=TRUE,
-                   draw.time.range=TRUE,
+                   draw.time.range=getOption("oce.draw.time.range"),
                    mgp=getOption("oce.mgp"),
                    xaxs = "i", yaxs = "i", cex=par("cex"),
                    adorn,
@@ -73,8 +73,13 @@ imagep <- function(x, y, z,
                   ...)
         }
     }
-    if (draw.time.range && x.is.time)
-        mtext(paste(paste(format(range(x)), collapse=" to "), attr(x[1], "tzone")), side=3, cex=5/6*par("cex"), adj=0)
+    if (draw.time.range && x.is.time) {
+        time.range <- par("usr")[1:2]
+        class(time.range) <- c("POSIXt", "POSIXct")
+        attr(time.range, "tzone") <- attr(x, "tzone")
+        mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone")),
+              side=3, cex=3/4*par("cex.axis"), adj=0)
+    }
     if (draw.contours && !missing(breaks))
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex")*5/4, adj=1, line=1/6)

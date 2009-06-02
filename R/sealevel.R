@@ -51,7 +51,7 @@ as.sealevel <- function(elevation,
 
 plot.sealevel <- function(x, which=1:4,
                           adorn=NULL,
-                          draw.timerange=getOption("oce.draw.timerange"),
+                          draw.time.range=getOption("oce.draw.time.range"),
                           mgp=getOption("oce.mgp"), ...)
 {
     debug <- FALSE
@@ -111,35 +111,16 @@ plot.sealevel <- function(x, which=1:4,
     tmp <- (pretty(max(x$data$elevation-MSL,na.rm=TRUE)-min(x$data$elevation-MSL,na.rm=TRUE))/2)[2]
     ylim <- c(-tmp,tmp)
     n <- length(x$data$elevation) # do not trust value in metadata
-
-    time.range <- range(x$data$time, na.rm=TRUE)
-    if (debug) {
-        cat("time.range=", paste(format(time.range), collapse=" to "), "\n")
-        cat("class(time.range) is ", class(time.range), "\n")
-        cat("attr(time.range,\"tzone\") is ", attr(time.range, "tzone"), "\n")
-        print(dots)
-    }
-    if ("xlim" %in% names(dots)) {
-        xlim <- dots$xlim
-        time.range[1] <- if (time.range[1] < dots$xlim[1]) dots$xlim[1] else time.range[1]
-        time.range[2] <- if (time.range[2] > dots$xlim[2]) dots$xlim[2] else time.range[2]
-    }
-    if (debug) print(time.range)
-
     for (w in 1:length(which)) {
         if (which[w] == 1) {
             plot(x$data$time, x$data$elevation-MSL,
                  xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
                  lwd=0.5, axes=FALSE, ...)
             box()
-            tics <- oce.axis.POSIXct(1, x=x$data$time)
+            tics <- oce.axis.POSIXct(1, x=x$data$time, draw.time.range=draw.time.range)
+            title.plot(x)
+            draw.time.range <- FALSE
             yax <- axis(2)
-            if (draw.timerange) {
-                mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone"), sep=" "),
-                            side=3, cex=5/6*par("cex"), adj=0)
-                draw.timerange <- FALSE
-                title.plot(x)
-            }
             abline(h=yax, col="darkgray", lty="dotted")
             abline(v=tics, col="darkgray", lty="dotted")
             abline(h=0,col="darkgreen")
@@ -156,12 +137,8 @@ plot.sealevel <- function(x, which=1:4,
             plot(xx$data$time, xx$data$elevation - MSL,
                  xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
                  axes=FALSE)
-            oce.axis.POSIXct(1, xx$data$time)
-            if (draw.timerange) {
-                mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone"), sep=" "),
-                            side=3, cex=5/6*par("cex"), adj=0)
-                draw.timerange <- FALSE
-            }
+            oce.axis.POSIXct(1, xx$data$time, draw.time.range=draw.time.range)
+            draw.time.range <- FALSE
             yax <- axis(2)
             abline(h=yax, col="lightgray", lty="dotted")
             box()

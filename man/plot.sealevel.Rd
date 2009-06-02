@@ -7,7 +7,7 @@
 \description{Plot a summary diagram for sealevel data.}
 
 \usage{\method{plot}{sealevel}(x, which=1:4, adorn=NULL,
-    draw.timerange=getOption("oce.draw.timerange"),
+    draw.time.range=getOption("oce.draw.time.range"),
     mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
@@ -24,7 +24,7 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels. (See
     \dQuote{Examples}.)}
-  \item{draw.timerange}{boolean that applies to panels with time as the
+  \item{draw.time.range}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and

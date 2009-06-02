@@ -9,7 +9,7 @@
 \usage{\method{plot}{pt}(x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
     tlim, plim, Tlim, 
     xlab, ylab,
-    draw.timerange=getOption("oce.draw.timerange"),
+    draw.time.range=getOption("oce.draw.time.range"),
     mgp=getOption("oce.mgp"), \dots)}
 
 \arguments{
@@ -37,7 +37,7 @@
     more lines are to be added later.)}
   \item{xlab}{optional label for x axis.}
   \item{ylab}{optional label for y axis.}
-  \item{draw.timerange}{boolean that applies to panels with time as the
+  \item{draw.time.range}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and

@@ -1,7 +1,7 @@
 plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      tlim, plim, Tlim,
                      xlab, ylab,
-                     draw.timerange=getOption("oce.draw.timerange"),
+                     draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
                      ...)
 {
@@ -15,7 +15,6 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-    shown.time.interval <- FALSE
     if (lw == 2) {
         layout(cbind(c(1,2)))
     } else if (lw==3 || lw==4) {
@@ -34,7 +33,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                  ylim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$time)
+            oce.axis.POSIXct(1, x=x$data$time, draw.time.range=draw.time.range)
+            draw.time.range <- FALSE
             axis(2)
         } else if (which[w] == 3) {
             plot(x$data$time, x$data$pressure,
@@ -45,7 +45,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                  ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$time)
+            oce.axis.POSIXct(1, x=x$data$time, draw.time.range=draw.time.range)
+            draw.time.range <- FALSE
             axis(2)
         } else if (which[w] == 2) {
             text.item <- function(item, cex=1.25) {
@@ -78,14 +79,6 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
             do.call(plot, args)
-        }
-        if ((which[w] %in% c(1,3)) & !shown.time.interval & draw.timerange) {
-            time.range <- par("usr")[1:2]
-            class(time.range) <- c("POSIXt", "POSIXct")
-            attr(time.range, "tzone") <- attr(x$data$time, "tzone")
-            mtext(paste(paste(format(time.range), collapse=" to "), attr(x$data$time[1], "tzone")),
-                  side=3, cex=3/4*par("cex.axis"), adj=0)
-            shown.time.interval <- TRUE
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)

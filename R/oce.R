@@ -273,7 +273,7 @@ oce.colors.palette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
+oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, ...)
 {
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 does, but not in all cases.)
@@ -368,5 +368,12 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
         labels <- format(z, format = format)
     else if (identical(labels, FALSE))
         labels <- rep("", length(z))
+    if (draw.time.range) {
+        time.range <- par("usr")[1:2]
+        class(time.range) <- c("POSIXt", "POSIXct")
+        attr(time.range, "tzone") <- attr(x, "tzone")
+        mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone")),
+              side=if (side==1) 3 else 1, cex=3/4*par("cex.axis"), adj=0)
+    }
     axis(side, at = z, labels = labels, ...)
 }

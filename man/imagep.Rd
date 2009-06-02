@@ -9,7 +9,7 @@
       breaks, col,
       do.layout=TRUE,
       draw.contours=TRUE,
-      draw.time.range=TRUE,
+      draw.time.range=getOption("oce.draw.time.range"),
       mgp=getOption("oce.mgp"),
       xaxs = "i", yaxs = "i", cex=par("cex"),
       adorn,

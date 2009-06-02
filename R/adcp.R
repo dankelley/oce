@@ -147,7 +147,7 @@ read.header <- function(file, debug)
     RTC.minute <- readBin(VLD[9], "integer", n=1, size=1)
     RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
     RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
-    RTC.time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "GMT") # not sure on TZ
+    RTC.time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "UTC") # not sure on TZ
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
@@ -559,7 +559,7 @@ plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
                       titles,
                       ytype=c("profile", "distance"),
                       adorn=NULL,
-                      draw.timerange=getOption("oce.draw.timerange"),
+                      draw.time.range=getOption("oce.draw.time.range"),
                       mgp=getOption("oce.mgp"), ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
@@ -584,9 +584,7 @@ plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-
     par(mar=c(mgp[1],mgp[1]+1,1,1))
-    shown.time.interval <- FALSE
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     if (gave.zlim && all(which %in% 5:8)) { # single scale for all
@@ -643,12 +641,12 @@ plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
                        ylab=resizable.label("distance"),
                        xlab="Time",
                        zlab=zlab,
-                       draw.time.range=!shown.time.interval,
+                       draw.time.range=draw.time.range,
                        draw.contours=FALSE,
                        do.layout=FALSE,
                        adorn=adorn[w],
                        ...)
-                shown.time.interval <- TRUE
+                draw.time.range <- TRUE
             }
         }
         if (which[w] %in% timeseries) { # time-series types
@@ -658,15 +656,10 @@ plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
             if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
             if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
             if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
-            oce.axis.POSIXct(1, x=x$data$ts$time)
+            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
+            draw.time.range=draw.time.range <- FALSE
             box()
             axis(2)
-            if (!shown.time.interval) {
-                mtext(paste(paste(format(range(x$data$ts$time)), collapse=" to "),
-                            attr(x$data$ts$time[1], "tzone")),
-                      side=3, cex=5/6*par("cex"), adj=0)
-                shown.time.interval <- TRUE
-            }
             if (w <= adorn.length) {
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
