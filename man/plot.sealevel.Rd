@@ -58,10 +58,10 @@ data(sealevel.hal)
 # Overall plot
 plot(sealevel.hal)
 
-# Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
-plot(sealevel.hal,which=1,xlim=as.POSIXct(c("2003-09-23","2003-10-05"), tz="UTC"))
-abline(v=as.POSIXct("2003-09-28 23:30:00"), col="red")
-mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-28 23:30:00"), col="red")
+# Illustrate storm surge during Hurricane Juan
+plot(sealevel.hal,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
+abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
+mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 }
 
 \references{The example refers to Hurricane Juan, which caused a great

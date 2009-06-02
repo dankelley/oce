@@ -8,7 +8,8 @@
 
 \description{This sample sea-level dataset is the 2003 record from
   Halifax Harbour in Nova Scotia, Canada. Note that Hurricane Juan hit
-  Halifax on September 28th of 2003, causing a strong storm surge.
+  Halifax a half hour before midnight on September 28th of 2003, 
+  causing a strong storm surge; see example at \code{\link{plot.sealevel}}.
 }
 
 \usage{data(sealevel.hal)}

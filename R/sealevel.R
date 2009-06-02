@@ -135,7 +135,8 @@ plot.sealevel <- function(x, which=1:4,
             tics <- oce.axis.POSIXct(1, x=x$data$time)
             yax <- axis(2)
             if (draw.timerange) {
-                mtext(paste(format(time.range), collapse=" to "), side=3, cex=5/6*par("cex"), adj=0)
+                mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone"), sep=" "),
+                            side=3, cex=5/6*par("cex"), adj=0)
                 draw.timerange <- FALSE
                 title.plot(x)
             }
@@ -157,7 +158,8 @@ plot.sealevel <- function(x, which=1:4,
                  axes=FALSE)
             oce.axis.POSIXct(1, xx$data$time)
             if (draw.timerange) {
-                mtext(paste(format(range(xx$data$time)), collapse=" to "), side=3, cex=5/6*par("cex"), adj=0)
+                mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone"), sep=" "),
+                            side=3, cex=5/6*par("cex"), adj=0)
                 draw.timerange <- FALSE
             }
             yax <- axis(2)

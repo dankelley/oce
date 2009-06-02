@@ -57,8 +57,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             d.yloc <- 0.7
             text.item(title, cex=1.25)
             text.item(paste("Serial Number: ", x$metadata$serial.number),cex=1)
-            text.item(paste("Start:", x$data$time[1]), cex=1)
-            text.item(paste("End:", x$data$time[length(x$data$time)]), cex=1)
+            text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=1)
+            text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=1)
             text.item(paste("Sampling interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=1)
             par(mar=mar)
         } else if (which[w] == 4) {

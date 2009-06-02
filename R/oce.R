@@ -275,16 +275,15 @@ oce.colors.palette <- function(n, which=1)
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
 {
-    dots <- list(...)
-    if ("xlim" %in% names(dots)) {
-        cat("GAVE xlim\n")
-    }
-
-    debug <- TRUE
+    ## This was written because axis.POSIXt in R version 2.8.x did not obey the
+    ## time zone in the data.  (Version 2.9.0 does, but not in all cases.)
+    ## FIXME: remove the stuff near the first, which came from axis.POSIXt,
+    ## FIXME: and which relies on time manipulation by "sc" (a scale factor)
+    ## FIXME: which seems less sensible than using trunc().
+    debug <- !TRUE
     mat <- missing(at) || is.null(at)
     if (!mat) x <- as.POSIXct(at) else x <- as.POSIXct(x)
     range <- par("usr")[if (side%%2) 1:2 else 3:4]
-    if (debug) cat("range=",range,"\n")
     d <- range[2] - range[1]
     z <- c(range, x[is.finite(x)])
     attr(z, "tzone") <- attr(x, "tzone")
@@ -326,32 +325,23 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, ...)
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
-        day.start <- trunc(rr[1], "day")
-        day.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(day.start, day.end, by="day")
+        t.start <- trunc(rr[1], "day")
+        t.end <- trunc(rr[2] + 86400, "day")
+        z <- seq(t.start, t.end, by="day")
  #       if (missing(format))
             format <- "%b %d"
         if (debug) cat("labels at", format(z), "\n")
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
-        class(z) <- c("POSIXt", "POSIXct")
-        attr(z, "tzone") <- attr(x, "tzone")
-        zz <- as.POSIXlt(z)
-        zz$mday <- zz$wday <- zz$yday <- 1
-        zz$isdst <- -1
-        zz$hour <- zz$min <- zz$sec <- 0
-        zz$mon <- pretty(zz$mon)
-        m <- length(zz$mon)
-        M <- 2 * m
-        m <- rep.int(zz$year[1], m)
-        zz$year <- c(m, m + 1)
-        zz <- lapply(zz, function(x) rep(x, length.out = M))
-        class(zz) <- c("POSIXt", "POSIXlt")
-        z <- as.POSIXct(zz)
-        attr(z, "tzone") <- attr(x, "tzone")
-#        if (missing(format))
-            format <- "%b"
-        if (debug) cat("under a year; z=",z,"\n")
-    } else {
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        t.start <- trunc(rr[1], "day")
+        t.end <- trunc(rr[2] + 86400, "day")
+        z <- seq(t.start, t.end, by="month")
+ #       if (missing(format))
+            format <- "%b %d"
+        if (debug) cat("labels at", format(z), "\n")
+    } else { # FIXME: do this as above.  Then remove the junk near the top.
         class(z) <- c("POSIXt", "POSIXct")
         attr(z, "tzone") <- attr(x, "tzone")
         zz <- as.POSIXlt(z)
