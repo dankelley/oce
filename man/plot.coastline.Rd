@@ -6,7 +6,7 @@
 
 \description{Plot a coastline.}
 
-\usage{\method{plot}{coastline}(x, asp=NA, mgp=getOption("oce.mgp"), \dots)}
+\usage{\method{plot}{coastline}(x, asp=NA, mgp=getOption("oce.mgp"), bg, axes=TRUE, \dots)}
 
 \arguments{
   \item{x}{A \code{coastline} object, e.g. as read by
@@ -23,6 +23,9 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
     data and less for the axes.}
+  \item{bg}{optional colour to be used for the background of the map.
+    This comes in handy for drawing insets (see \dQuote{details}).}
+  \item{axes}{boolean, set to \code{TRUE} to plot axes.}
   \item{\dots}{optional arguments passed to plotting functions.  For
     example, set \code{yaxp=c(-90,90,4)} for a plot extending from pole to
     pole.}
@@ -31,7 +34,12 @@
 \details{This function plots a coastline.  An attempt is made to fill
   the space of the plot, and this is done by limiting either the
   longitude range or the latitude range, as appropriate, by modifying
-  the eastern or northern limit, as appropriate.}
+  the eastern or northern limit, as appropriate.
+
+  To get an inset map inside another map, draw the first map, do
+  \code{par(new=TRUE)}, and then call \code{plot.coastline} with a value
+  of \code{mar} that moves the inset plot to a desired location on the
+  existing plot, and with \code{bg="white"}.}
 
 \value{None.}
 

@@ -9,11 +9,15 @@ as.coastline <- function(latitude, longitude)
     res
 }
 
-plot.coastline <- function (x, asp=NA, mgp=getOption("oce.mgp"), ...)
+plot.coastline <- function (x, asp=NA, mgp=getOption("oce.mgp"), bg, axes=TRUE, ...)
 {
     if (!inherits(x, "coastline")) stop("method is only for coastline objects")
     par(mgp=mgp)
-    par(mar=c(mgp[1], mgp[1], par("cex"), par("cex")))
+    if ("mar" %in% names(list(...))) {
+        par(mar=list(...)$mar)
+    } else {
+        par(mar=c(mgp[1], mgp[1], par("cex"), par("cex")))
+    }
     asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
     debug <- FALSE
     if (debug) cat("asp.middle=", asp.middle, "\n")
@@ -35,9 +39,15 @@ plot.coastline <- function (x, asp=NA, mgp=getOption("oce.mgp"), ...)
         if (debug) cat("type 2\n")
         yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp.middle / asp.page)
     }
-    plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i", ...)
-#    par(new=TRUE)
-    if (debug) points(xr, yr, col="blue", pch=20, cex=3)
+    if (!missing(bg)) {
+        plot.window(xr, yr, asp=asp, xlab="", ylab="", xaxs="i", yaxs="i", log="", ...)
+        usr <- par("usr")
+        polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
+        par(new=TRUE)
+    }
+    plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i",
+         axes=axes, ...)
+    if (debug) points(xr, yr, col="blue", pch=20)
     if (debug)     abline(v=xr, col="red")
     yaxp <- par("yaxp")
     if (debug) cat("par(pin)",par("pin"),"\n")
@@ -47,10 +57,10 @@ plot.coastline <- function (x, asp=NA, mgp=getOption("oce.mgp"), ...)
         yscale <- 180 / (yaxp[2] - yaxp[1])
         if (debug) cat("yscale",yscale," new opin[2]", yscale*opin[2],"\n")
         par(pin=c(opin[1], yscale*opin[2]))
-    	lines(x$data$longitude, x$data$latitude, asp=asp, yaxp=c(-90,90,6), yaxs="i", xlab="", ylab="", type="l", ...)
+    	lines(x$data$longitude, x$data$latitude, asp=asp, yaxp=c(-90,90,6), yaxs="i", xlab="", ylab="", ...)
         par("pin"=opin)
     } else {
-    	lines(x$data$longitude, x$data$latitude, asp=asp, xlab="", ylab="", ...)
+    	lines(x$data$longitude, x$data$latitude, asp=asp, yaxs="i", xaxs="i", xlab="", ylab="", ...)
     }
     if (debug) {
         cat("par(pin)",par("pin"),"\n")
