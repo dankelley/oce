@@ -7,11 +7,18 @@
 \description{Plot contours of topographic data.}
 
 \usage{\method{plot}{topo}(x, 
-  water.z, water.col, water.lty, water.lwd,
-  land.z,   land.col,  land.lty,  land.lwd,
-  legend.loc="topright", 
-  mgp=getOption("oce.mgp"),
-  \dots)}
+     water.z,
+     water.col,
+     water.lty,
+     water.lwd,
+     land.z, 
+     land.col,
+     land.lty,
+     land.lwd,
+     legend.loc="topright", 
+     mgp=getOption("oce.mgp"),
+     mar=c(mgp[1],mgp[1],0.5,0.5),
+     \dots)}
 
 \arguments{
   \item{x}{an \code{topo} object, e.g. as read by \code{\link{read.topo}}.}
@@ -34,6 +41,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{\dots}{additional arguments passed on to plotting functions}
 }
 

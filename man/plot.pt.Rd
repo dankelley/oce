@@ -6,11 +6,14 @@
 
 \description{Plot pT temperature-depth recorder data}
 
-\usage{\method{plot}{pt}(x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
-    tlim, plim, Tlim, 
-    xlab, ylab,
-    draw.time.range=getOption("oce.draw.time.range"),
-    mgp=getOption("oce.mgp"), \dots)}
+\usage{\method{plot}{pt}(x,
+     which=1:4, title=deparse(substitute(x)), adorn=NULL,
+     tlim, plim, Tlim, 
+     xlab, ylab,
+     draw.time.range=getOption("oce.draw.time.range"),
+     mgp=getOption("oce.mgp"),
+     mar=c(mgp[1], mgp[1]+1, 1, 1.5),
+     \dots)}
 
 \arguments{
   \item{x}{\code{pt} object, typically result of \code{\link{read.pt}}.}
@@ -44,6 +47,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

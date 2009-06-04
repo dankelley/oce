@@ -337,6 +337,7 @@ plot.ctd <- function (x, which = 1:4,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                       adorn=NULL,
                       mgp=getOption("oce.mgp"),
+                      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]),
                       ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -379,8 +380,7 @@ plot.ctd <- function (x, which = 1:4,
         adorn.length <- lw
     }
 
-    par(mgp=mgp)
-    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1])) # 1.5 because density unit has superscript
+    par(mgp=mgp, mar=mar)
 
     if (lw > 1) {
         oldpar <- par(no.readonly = TRUE)
@@ -1057,6 +1057,7 @@ plot.TS <- function (x,
                      xlab, ylab,
                      Slim, Tlim,
                      mgp=getOption("oce.mgp"),
+                     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
                      ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -1064,8 +1065,7 @@ plot.TS <- function (x,
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
 
-    par(mgp=mgp)
-    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1])) # 1.5 for density superscript
+    par(mgp=mgp, mar=mar)
     axis.name.loc <- mgp[1]
     old.mar <- par("mar")
 ###    if (!rotate.rho.labels && old.mar[4] < 3) par(mar=c(old.mar[1:3], 2))

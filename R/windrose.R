@@ -27,7 +27,12 @@ as.windrose <- function(x, y, dtheta = 15)
     res
 }
 
-plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  ...)
+plot.windrose <- function(x,
+                          type=c("count","mean", "median", "fivenum"),
+                          mgp=getOption("oce.mgp"),
+                          mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
+                          col,
+                          ...)
 {
     if (!inherits(x, "windrose")) stop("method is only for wind-rose objects")
     type <- match.arg(type)
@@ -36,6 +41,7 @@ plot.windrose <- function(x, type=c("count","mean", "median", "fivenum"), col,  
     dt <- t[2] - t[1]
     dt2 <- dt / 2
                                         # Plot setup
+    par(mgp=mgp, mar=mar)
     plot.new()
     pin <- par("pin")
     xlim <- ylim <- c(-1, 1)

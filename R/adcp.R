@@ -554,20 +554,24 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
-                      col=oce.colors.palette(128, 1), zlim,
+plot.adcp <- function(x,
+                      which=1:x$metadata$number.of.beams,
+                      col=oce.colors.palette(128, 1),
+                      zlim,
                       titles,
                       ytype=c("profile", "distance"),
                       adorn=NULL,
                       draw.time.range=getOption("oce.draw.time.range"),
-                      mgp=getOption("oce.mgp"), ...)
+                      mgp=getOption("oce.mgp"),
+                      mar=c(mgp[1],mgp[1]+1,1,1),
+                      ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
-    par(mgp=mgp)
+    par(mgp=mgp, mar=mar)
     dots <- list(...)
     ytype <- match.arg(ytype)
     ytype <- match.arg(ytype)
@@ -584,7 +588,6 @@ plot.adcp <- function(x, which=1:x$metadata$number.of.beams,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-    par(mar=c(mgp[1],mgp[1]+1,1,1))
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     if (gave.zlim && all(which %in% 5:8)) { # single scale for all

@@ -52,7 +52,9 @@ as.sealevel <- function(elevation,
 plot.sealevel <- function(x, which=1:4,
                           adorn=NULL,
                           draw.time.range=getOption("oce.draw.time.range"),
-                          mgp=getOption("oce.mgp"), ...)
+                          mgp=getOption("oce.mgp"),
+                          mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
+                          ...)
 {
     debug <- FALSE
     dots <- list(...)
@@ -89,6 +91,7 @@ plot.sealevel <- function(x, which=1:4,
 
     if (!inherits(x, "sealevel")) stop("method is only for sealevel objects")
     opar <- par(no.readonly = TRUE)
+    par(mgp=mgp, mar=mar)
     lw <- length(which)
     if (lw > 1) on.exit(par(opar))
 

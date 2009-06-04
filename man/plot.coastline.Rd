@@ -6,7 +6,13 @@
 
 \description{Plot a coastline.}
 
-\usage{\method{plot}{coastline}(x, asp=NA, mgp=getOption("oce.mgp"), bg, axes=TRUE, \dots)}
+\usage{\method{plot}{coastline}(x,
+     asp,
+     mgp=getOption("oce.mgp"), 
+     mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
+     bg,
+     axes=TRUE,
+     \dots)}
 
 \arguments{
   \item{x}{A \code{coastline} object, e.g. as read by
@@ -15,7 +21,7 @@
   \item{asp}{Aspect ratio for plot.  The default is for
     \code{plot.coastline} to set the aspect ratio to give natural
     latitude-longitude scaling at the average latitude in the data range.
-    In most cases, you will probably want to set \code{asp} yourself,
+    In some cases, you will probably want to set \code{asp} yourself,
     e.g. coastal shapes near 45N will have the correct shape if you set
     \code{asp=1/cos(45*pi/180)}.  Setting \code{asp=1} makes sense for
     world views.}
@@ -23,6 +29,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
     data and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{bg}{optional colour to be used for the background of the map.
     This comes in handy for drawing insets (see \dQuote{details}).}
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}

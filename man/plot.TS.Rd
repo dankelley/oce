@@ -3,22 +3,25 @@
 \title{Plot temperature-salinity diagram for seawater (CTD) data}
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 \usage{plot.TS(x,
-	rho.levels = 6,
-	grid = TRUE,
-	col.grid = "lightgray",
-        lty.grid = "dotted",
-	rho1000 = FALSE,
-	col = par("col"),
-	col.rho = "darkgray",
-	cex.rho = 0.9*par("cex"),
-	cex = par("cex"),
-	pch = 21,
-	rotate.rho.labels = FALSE,
-	connect.points = FALSE,
-	xlab, ylab,
-	Slim, Tlim,
-        mgp=getOption("oce.mgp"),
-	\dots)
+     rho.levels = 6,
+     grid = TRUE,
+     col.grid = "lightgray",
+     lty.grid = "dotted",
+     rho1000 = FALSE,
+     col = par("col"),
+     col.rho = "darkgray",
+     cex.rho = 0.9*par("cex"),
+     cex = par("cex"),
+     pch = 21,
+     rotate.rho.labels = FALSE,
+     connect.points = FALSE,
+     xlab,
+     ylab,
+     Slim,
+     Tlim,
+     mgp=getOption("oce.mgp"),
+     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
+     \dots)
 }
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -44,6 +47,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

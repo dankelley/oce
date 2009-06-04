@@ -6,7 +6,11 @@
 
 \description{Plot a summary diagram for lobo data.}
 
-\usage{\method{plot}{lobo}(x, adorn=NULL, mgp=getOption("oce.mgp"), \dots)}
+\usage{\method{plot}{lobo}(x, 
+     adorn=NULL,
+     mgp=getOption("oce.mgp"), 
+     mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
+     \dots)}
 
 \arguments{
   \item{x}{A \code{lobo} object, e.g. as read by \code{\link{read.lobo}}.}
@@ -20,6 +24,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

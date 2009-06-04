@@ -3,6 +3,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      xlab, ylab,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
+                     mar=c(mgp[1], mgp[1]+1, 1, 1.5),
                      ...)
 {
     if (!inherits(x, "pt")) stop("method is only for pt objects")
@@ -21,8 +22,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
         layout(rbind(c(1,2),
                      c(3,4)), widths=c(2,1))
     }
-    par(mgp=mgp)
-    par(mar=c(mgp[1], mgp[1]+1, 1, 1.5))
+    par(mgp=mgp, mar=mar)
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$time, x$data$temperature,

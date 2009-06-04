@@ -6,16 +6,29 @@
 
 \description{Plot a summary diagram for CTD data.}
 
-\usage{\method{plot}{ctd}(x,  which=1:4, 
-  ref.lat=NaN, ref.lon=NaN, 
-  grid=TRUE, col.grid="lightgray", lty.grid="dotted",
-  coastline,
-  Slim, Tlim, plim, densitylim, dpdtlim, timelim,
-  lonlim, latlim,
-  latlon.pch=20, latlon.cex=1.5, latlon.col="red",
-  adorn=NULL,
-  mgp=getOption("oce.mgp"),
-  \dots)
+\usage{\method{plot}{ctd}(x,
+     which=1:4, 
+     ref.lat=NaN,
+     ref.lon=NaN, 
+     grid=TRUE,
+     col.grid="lightgray",
+     lty.grid="dotted",
+     coastline,
+     Slim, 
+     Tlim, 
+     plim,
+     densitylim, 
+     dpdtlim,
+     timelim,
+     lonlim,
+     latlim,
+     latlon.pch=20,
+     latlon.cex=1.5,
+     latlon.col="red",
+     adorn=NULL,
+     mgp=getOption("oce.mgp"),
+     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]),
+     \dots)
 }
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -62,6 +75,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{sw.N2} calculations.} 
 }

@@ -9,19 +9,20 @@ as.coastline <- function(latitude, longitude)
     res
 }
 
-plot.coastline <- function (x, asp=NA, mgp=getOption("oce.mgp"), bg, axes=TRUE, ...)
+plot.coastline <- function (x,
+                            asp,
+                            mgp=getOption("oce.mgp"),
+                            mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
+                            bg,
+                            axes=TRUE,
+                            ...)
 {
     if (!inherits(x, "coastline")) stop("method is only for coastline objects")
-    par(mgp=mgp)
-    if ("mar" %in% names(list(...))) {
-        par(mar=list(...)$mar)
-    } else {
-        par(mar=c(mgp[1], mgp[1], par("cex"), par("cex")))
-    }
+    par(mgp=mgp, mar=mar)
     asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
     debug <- FALSE
     if (debug) cat("asp.middle=", asp.middle, "\n")
-    if (is.na(asp))
+    if (missing(asp))
         asp <- asp.middle
     ## The following is a somewhat provisional hack, to get around a
     ## tendency of plot() to produce latitudes past the poles.

@@ -2,7 +2,8 @@
 \alias{plot.windrose}
 \title{Plot a wind rose diagram}
 \description{Plot a wind-rose diagram}
-\usage{plot.windrose(x, type=c("count","mean","median","fivenum"), col, \dots)}
+\usage{plot.windrose(x, type=c("count","mean","median","fivenum"),  mgp=getOption("oce.mgp"), 
+     mar=c(mgp[1], mgp[1], par("cex"), par("cex")), col, \dots)}
 
 \arguments{
   \item{x}{a \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}
@@ -10,6 +11,11 @@
 	the angle interval, the mean of the values in the interval, the
 	median of the values, or a \code{\link{fivenum}} representation of
 	the values.}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the
+    data and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{col}{an optional list of colours to use.  If not set, the
     colours will be \code{c("red", "pink", "blue", "lightgray")}.  For
     the first three types of plot, the first colour in this list is 

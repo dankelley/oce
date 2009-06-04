@@ -1,14 +1,21 @@
 plot.topo <- function(x,
-                      water.z, water.col, water.lty, water.lwd,
-                      land.z,   land.col,  land.lty,  land.lwd,
+                      water.z,
+                      water.col,
+                      water.lty,
+                      water.lwd,
+                      land.z,
+                      land.col,
+                      land.lty,
+                      land.lwd,
                       legend.loc="topright",
                       mgp=getOption("oce.mgp"),
+                      mar=c(mgp[1],mgp[1],0.5,0.5),
                       ...)
 {
     if (!inherits(x, "topo")) stop("method is only for topo objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
-    par(mgp=mgp)
+    par(mgp=mgp, mar=mar)
 
     lat.range <- range(x$data$lat, na.rm=TRUE)
     asp <- 1 / cos(mean(lat.range)*pi/180)
@@ -23,9 +30,6 @@ plot.topo <- function(x,
     } else {
         zr <- range(x$data$z, na.rm=TRUE)
     }
-
-    par(mar=c(mgp[1],mgp[1],0.5,0.5)) # 1.5 because density unit has superscript
-
     plot(range(x$data$lon, na.rm=TRUE), range(x$data$lat, na.rm=TRUE),
          asp=asp, xaxs="i", yaxs="i", type="n", xlab="", ylab="", ...)
 

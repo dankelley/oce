@@ -7,21 +7,22 @@
 \description{Plot a CTD section.}
 
 \usage{\method{plot}{section}(x,
-        which=1:4,
-	at=NULL,
-	labels=TRUE,
-	grid=FALSE,
-        contour.levels=NULL,
-        contour.labels=NULL,
-	station.indices,
-	coastline=NULL,
-	map.xlim=NULL,
-        xtype="distance",
-        ytype="depth",
-        legend.loc="bottomright",
-	adorn=NULL,
-        mgp=getOption("oce.mgp"),
-	\dots)
+     which=1:4,
+     at=NULL,
+     labels=TRUE,
+     grid=FALSE,
+     contour.levels=NULL,
+     contour.labels=NULL,
+     station.indices,
+     coastline=NULL,
+     map.xlim=NULL,
+     xtype="distance",
+     ytype="depth",
+     legend.loc="bottomright",
+     adorn=NULL,
+     mgp=getOption("oce.mgp"),
+     mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]),
+     \dots)
 }
 
 \arguments{
@@ -74,6 +75,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }

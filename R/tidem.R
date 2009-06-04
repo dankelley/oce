@@ -1,7 +1,9 @@
-plot.tidem <- function(x, label.if=NULL,
+plot.tidem <- function(x,
+                       label.if=NULL,
                        plot.type=c("staircase", "spikes"),
                        log="",
                        mgp=getOption("oce.mgp"),
+                       mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
                        ...)
 {
     draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
@@ -34,9 +36,7 @@ plot.tidem <- function(x, label.if=NULL,
     if (!inherits(x, "tidem")) stop("method is only for tidal analysis objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
-    par(mgp=mgp)
-    par(mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1))
-
+    par(mgp=mgp, mar=mar)
     frequency <- x$freq[-1] # trim z0
     amplitude <- x$amplitude[-1]
     name      <- x$name[-1]

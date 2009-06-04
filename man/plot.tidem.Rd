@@ -7,8 +7,11 @@
 \description{Plot a summary diagram for a tidal fit.}
 
 \usage{\method{plot}{tidem}(x, label.if=NULL, 
-    plot.type=c("staircase", "spikes"),
-    log="",   mgp=getOption("oce.mgp"), ...)}
+     plot.type=c("staircase", "spikes"),
+     log="",
+     mgp=getOption("oce.mgp"), 
+     mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
+     ...)}
 
 \arguments{
   \item{x}{a \code{tidem} object, as created by \code{\link{tidem}}.}
@@ -27,6 +30,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
