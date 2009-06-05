@@ -19,10 +19,13 @@ imagep <- function(x, y, z,
     if (dim[2] != length(y)) stop("dim(z)[2] must equal length(y)")
     par(mgp=mgp)
     w <- (1.5 + par("mgp")[2]) * par("csi") * 2.54 + 0.5
-    par(mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0,
+    par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
         mgp[1]+if(nchar(ylab)>0) 1.5 else 0,
         mgp[2]+1/2,
         1/4))
+
+    cat("mgp=",par("mgp"),"\n")
+    cat("mar=",par("mar"),"\n")
 
     ##cat("in imagep(), w=",w,"mgp=",paste(mgp, collapse=" "), "mar=",paste(par("mar"), collapse=" "), "\n")
 
@@ -34,25 +37,25 @@ imagep <- function(x, y, z,
         col <- oce.colors.palette(n=length(breaks)-1)
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
 
-    ylim <- if (missing(ylim)) range(y) else ylim
+    ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
     if (flip.y) ylim <- rev(ylim)
 
-    xlim <- if (missing(xlim)) range(x) else xlim
+    xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
 
     plot.window(xlim=xlim, ylim=ylim)
 
     if (x.is.time) {
         if (missing(breaks)) {
             image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
-                  xlim=if(missing(xlim))range(x) else xlim,
-                  ylim=if(missing(ylim))range(y) else ylim,
-                  zlim=if(missing(zlim))range(z) else zlim,
+                  xlim=if(missing(xlim))range(x,na.rm=TRUE) else xlim,
+                  ylim=if(missing(ylim))range(y,na.rm=TRUE) else ylim,
+                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         } else {
             image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=if(missing(xlim))range(x) else xlim,
-                  ylim=if(missing(ylim))range(y) else ylim,
-                  zlim=if(missing(zlim))range(z) else zlim,
+                  xlim=if(missing(xlim))range(x,na.rm=TRUE) else xlim,
+                  ylim=if(missing(ylim))range(y,na.rm=TRUE) else ylim,
+                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         }
         oce.axis.POSIXct(side=1, x=x)
@@ -61,15 +64,15 @@ imagep <- function(x, y, z,
     } else {
         if (missing(breaks)) {
             image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, col=col,
-                  xlim=if(missing(xlim))range(x) else xlim,
-                  ylim=if(missing(ylim))range(y) else ylim,
-                  zlim=if(missing(zlim))range(z) else zlim,
+                  xlim=if(missing(xlim))range(x,na.rm=TRUE) else xlim,
+                  ylim=if(missing(ylim))range(y,na.rm=TRUE) else ylim,
+                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         } else {
             image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
-                  xlim=if(missing(xlim))range(x) else xlim,
-                  ylim=if(missing(ylim))range(y) else ylim,
-                  zlim=if(missing(zlim))range(z) else zlim,
+                  xlim=if(missing(xlim))range(x,na.rm=TRUE) else xlim,
+                  ylim=if(missing(ylim))range(y,na.rm=TRUE) else ylim,
+                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         }
     }
@@ -90,7 +93,7 @@ imagep <- function(x, y, z,
     }
 
     ## palette
-    par(mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0,
+    par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
         1/4,
         mgp[2]+1/2,
         mgp[2]+1))
@@ -101,7 +104,7 @@ imagep <- function(x, y, z,
             palette <- seq(zlim[1], zlim[2], length.out=300)
         image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
               cex=par("cex"),
-              zlim=if(missing(zlim))range(z) else zlim)
+              zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
     } else {
         if (missing(zlim))
             palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
@@ -109,7 +112,7 @@ imagep <- function(x, y, z,
             palette <- seq(zlim[1], zlim[2], length.out=300)
         image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", breaks=breaks, col=col,
               cex=par("cex"),
-              zlim=if(missing(zlim))range(z) else zlim)
+              zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
     }
     if (draw.contours && !missing(breaks))
         abline(h=breaks)
