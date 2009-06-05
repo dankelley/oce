@@ -1,3 +1,11 @@
+oce.plot.ts <- function(x, y, draw.time.range=TRUE, ...)
+{
+    plot(x, y, axes=FALSE, ...)
+    oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
+    box()
+    axis(2)
+}
+
 oce.as.POSIXlt <- function (x, tz = "")
 {
     fromchar <- function(x)

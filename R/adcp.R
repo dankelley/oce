@@ -653,14 +653,13 @@ plot.adcp <- function(x,
             }
         }
         if (which[w] %in% timeseries) { # time-series types
-            if (which[w] == 13) plot(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', axes=FALSE)
-            if (which[w] == 14) plot(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', axes=FALSE)
-            if (which[w] == 15) plot(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', axes=FALSE)
-            if (which[w] == 16) plot(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', axes=FALSE)
-            if (which[w] == 17) plot(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', axes=FALSE)
-            if (which[w] == 18) plot(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', axes=FALSE)
-            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
-            draw.time.range=draw.time.range <- FALSE
+            if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', draw.time.range=draw.time.range)
+            if (which[w] == 14) oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', draw.time.range=draw.time.range)
+            if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', draw.time.range=draw.time.range)
+            if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', draw.time.range=draw.time.range)
+            if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', draw.time.range=draw.time.range)
+            if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', draw.time.range=draw.time.range)
+            draw.time.range <- FALSE
             box()
             axis(2)
             if (w <= adorn.length) {

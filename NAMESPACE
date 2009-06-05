@@ -40,6 +40,7 @@ export(
        oce.colors.jet,
        oce.colors.two,
        oce.edit,
+       oce.plot.ts,
        oce.write.table,
        parse.latlon,
        plot.adcp,

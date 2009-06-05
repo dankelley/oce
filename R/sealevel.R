@@ -119,8 +119,8 @@ plot.sealevel <- function(x, which=1:4,
             plot(x$data$time, x$data$elevation-MSL,
                  xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
                  lwd=0.5, axes=FALSE, ...)
+            tics <- oce.axis.POSIXct(1, x$data$time, draw.time.range=draw.time.range)
             box()
-            tics <- oce.axis.POSIXct(1, x=x$data$time, draw.time.range=draw.time.range)
             title.plot(x)
             draw.time.range <- FALSE
             yax <- axis(2)
@@ -140,7 +140,7 @@ plot.sealevel <- function(x, which=1:4,
             plot(xx$data$time, xx$data$elevation - MSL,
                  xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
                  axes=FALSE)
-            oce.axis.POSIXct(1, xx$data$time, draw.time.range=draw.time.range)
+            oce.axis.POSIXct(1, xx$data$time)
             draw.time.range <- FALSE
             yax <- axis(2)
             abline(h=yax, col="lightgray", lty="dotted")
