@@ -3,6 +3,7 @@
 - add imagep()
 - add bcd2integer()
 - add matlab2POSIXt()
+- to most plot functions, add 'mgp' and 'mar' arguments
 - plot.pt(): add plim and Tlim arguments
 - gravity(): give default for latitude argument
 - plot.sealevel(): remove argument focus.time and add argument which

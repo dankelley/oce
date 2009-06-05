@@ -73,28 +73,31 @@ oce.write.table <- function (x, file="", ...)
 
 subset.oce <- function (x, subset, indices=NULL, ...)
 {
+    debug <- !TRUE
     if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (inherits(x, "adcp")) {
+    if (inherits(x, "adcp")) {          # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x$metadata$number.of.profiles)[indices]
             print(keep)
-            stop("testing")
+            stop("this version of oce cannot subset adcp data by index")
         } else if (!missing(subset)) {
-            ss <- substitute(subset)
-            profiles.to.keep <- eval(substitute(subset), x$data, parent.frame())
-            cat("keep profiles: ", paste(profiles.to.keep, collapse=" "), "\n")
-            print(dim(x$data[[1]]))
-            ## FIXME: ugly kludge; see adcp.R for rest of kludge
+            subset.string <- deparse(substitute(subset))
+            if (!length(grep("time", subset.string)))
+                stop("cannot understand the subset; it should be e.g. 'time < as.POSIXct(\"2008-06-26 12:00:00\", tz = \"UTC\")'")
+            keep <- eval(substitute(subset), x$data$ts, parent.frame())
+            if (sum(keep) < 2) stop("must keep at least 2 profiles")
+            if (debug) {
+                cat("keeping profiles:\n")
+                print(keep)
+            }
             rval <- x
-            for (i in 1:12) {
-                rval$data[[i]] <- x$data[[i]][profiles.to.keep,]
+            for (name in names(x$data$ts)) {
+                rval$data$ts[[name]] <- x$data$ts[[name]][keep]
             }
-            for (i in 13:21) {
-                if (names(x$data)[i] != "distance")
-                    rval$data[[i]] <- x$data[[i]][profiles.to.keep]
+            for (name in names(x$data$ma)) {
+                rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
             }
-            ## end of ugly kludge
         } else {
             stop("must supply either 'subset' or 'indices'")
         }
@@ -321,7 +324,36 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             format <- "%a"
     }
 
-    if (d < 60 * 60 * 24 * 32) {        # under 2 weeks
+    if (d < 60 * 60 * 6) {        # under 6 hours
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        t.start <- trunc(rr[1], "hour")
+        t.end <- trunc(rr[2] + 3600, "hour")
+        z <- seq(t.start, t.end, by="30 min")
+        format <- "%H:%M"
+        if (debug) cat("labels at", format(z), "\n")
+    } else if (d < 60 * 60 * 24) {        # under a day
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        t.start <- trunc(rr[1], "hour")
+        t.end <- trunc(rr[2] + 3600, "hour")
+        z <- seq(t.start, t.end, by="hour")
+ #       if (missing(format))
+            format <- "%H:%M"
+        if (debug) cat("labels at", format(z), "\n")
+    } else if (d < 60 * 60 * 24 * 2) {        # under 2 days
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        t.start <- trunc(rr[1], "hour")
+        t.end <- trunc(rr[2] + 86400, "hour")
+        z <- seq(t.start, t.end, by="hour")
+ #       if (missing(format))
+            format <- "%H"
+        if (debug) cat("labels at", format(z), "\n")
+    } else if (d < 60 * 60 * 24 * 32) {        # under 2 weeks
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
