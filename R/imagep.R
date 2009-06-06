@@ -24,9 +24,6 @@ imagep <- function(x, y, z,
         mgp[2]+1/2,
         1/4))
 
-    cat("mgp=",par("mgp"),"\n")
-    cat("mar=",par("mar"),"\n")
-
     ##cat("in imagep(), w=",w,"mgp=",paste(mgp, collapse=" "), "mar=",paste(par("mar"), collapse=" "), "\n")
 
     if (do.layout)
