@@ -414,7 +414,7 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
             seek(file, bytes.per.profile * (stride - 1), origin="current")
         }
     }
-    if (monitor) cat("\nRead", read, "profiles, out of a total of",profiles.in.file,"profiles in this file.\n")
+    if (monitor) cat("\nRead", read, "profiles, out of a total of",profiles.in.file,"profiles in file", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
