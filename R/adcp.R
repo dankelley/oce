@@ -27,9 +27,8 @@ read.header <- function(file, debug)
     if (debug) cat("data.offset=", paste(data.offset, sep=" "), "\n")
     ##
     ## FLD (fixed leader data) 59 bytes
-    ##
-    FLD <- readBin(file, "raw", n=59, size=1) # binary fixed leader data (Figure D-5)
-
+    ## OLD: FLD <- readBin(file, "raw", n=59, size=1) # binary fixed leader data (Figure D-5)
+    FLD <- readBin(file, "raw", n=data.offset[2]-data.offset[1], size=1)
     ##cat("after reading FLD, ftell=", seek(file), "\n")
 
     header <- c(header, FLD)
@@ -137,7 +136,7 @@ read.header <- function(file, debug)
     }
     ## ensure that header is not ill-formed
     if (VLD[1] != 0x80) stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
-    if (VLD[2] != 0x00) stop("byte 1 of variable leader data should be 0x00, but it is ", VLD[2])
+    if (VLD[2] != 0x00) stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
     ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
     RTC.year <- readBin(VLD[5], "integer", n=1, size=1)
     if (RTC.year < 1800) RTC.year <- RTC.year + 2000 # fix Y2K problem
@@ -414,7 +413,7 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
             seek(file, bytes.per.profile * (stride - 1), origin="current")
         }
     }
-    if (monitor) cat("\nRead", read, "profiles, out of a total of",profiles.in.file,"profiles in file", filename, "\n")
+    if (monitor) cat("\nRead", read, "profiles, out of a total of",profiles.in.file,"profiles in ", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
