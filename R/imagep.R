@@ -7,6 +7,7 @@ imagep <- function(x, y, z,
                    draw.contours=TRUE,
                    draw.time.range=getOption("oce.draw.time.range"),
                    mgp=getOption("oce.mgp"),
+                   mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0, mgp[1]+if(nchar(ylab)>0) 1.5 else 0, mgp[2]+1/2, 1/2),
                    xaxs = "i", yaxs = "i", cex=par("cex"),
                    adorn,
                    ...)
@@ -17,12 +18,8 @@ imagep <- function(x, y, z,
     dim <- dim(z)
     if (dim[1] != length(x)) stop("dim(z)[1] must equal length(x)")
     if (dim[2] != length(y)) stop("dim(z)[2] must equal length(y)")
-    par(mgp=mgp)
+    par(mgp=mgp, mar=mar)
     w <- (1.5 + par("mgp")[2]) * par("csi") * 2.54 + 0.5
-    par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
-        mgp[1]+if(nchar(ylab)>0) 1.5 else 0,
-        mgp[2]+1/2,
-        1/4))
 
     ##cat("in imagep(), w=",w,"mgp=",paste(mgp, collapse=" "), "mar=",paste(par("mar"), collapse=" "), "\n")
 
@@ -77,12 +74,10 @@ imagep <- function(x, y, z,
         time.range <- par("usr")[1:2]
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")
-        mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone")),
-              side=3, cex=3/4*par("cex.axis"), adj=0)
     }
     if (draw.contours && !missing(breaks))
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
-    mtext(zlab, side=3, cex=par("cex")*5/4, adj=1, line=1/6)
+    mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
 
     if (!missing(adorn)) {
         t <- try(eval.parent(adorn), silent=!TRUE)
@@ -90,7 +85,7 @@ imagep <- function(x, y, z,
     }
 
     ## palette
-    par(mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 0,
+    par(mar=c(mar[1],
         1/4,
         mgp[2]+1/2,
         mgp[2]+1))

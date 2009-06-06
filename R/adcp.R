@@ -575,8 +575,21 @@ plot.adcp <- function(x,
     dots <- list(...)
     ytype <- match.arg(ytype)
     ytype <- match.arg(ytype)
-    gave.zlim <- !missing(zlim)
-    zlim.given <- if (gave.zlim) zlim else NULL
+    if (missing(zlim)) {
+        gave.zlim <- FALSE
+        zlim.given <- NULL
+    } else {
+        gave.zlim <- TRUE
+        if (is.vector(zlim)) {
+            if (length(zlim) == 2) {
+                zlim.given <- matrix(rep(zlim, length(which)),ncol=2,byrow=TRUE)
+            } else {
+                stop("zlim must be a vector of length 2, or a matrix with 2 columns")
+            }
+        }
+        zlim.given <- zlim
+    }
+
     gave.ylim <- "ylim" %in% names(dots)
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
@@ -614,7 +627,7 @@ plot.adcp <- function(x,
                 y.look <- if (gave.ylim)
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
                 else rep(TRUE, length(x$data$ss$distance))
-                zlim <- if (gave.zlim) zlim.given else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                 if (x$metadata$oce.coordinate == "beam")
                     zlab <- if (missing(titles)) c("beam 1", "beam 2", "beam 3", "beam 4")[which[w]] else titles[w]
                 else if (x$metadata$oce.coordinate == "earth")
@@ -628,7 +641,8 @@ plot.adcp <- function(x,
                 z <- x$data$ma$a[,,which[w]-4]
                 y.look <- if (gave.ylim)
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
-                else rep(TRUE, length(x$data$ss$distance))
+                else
+                    rep(TRUE, length(x$data$ss$distance))
                 zlim <- range(x$data$ma$a[,y.look,], na.rm=TRUE)
                 zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
             } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation
@@ -648,11 +662,12 @@ plot.adcp <- function(x,
                        draw.contours=FALSE,
                        do.layout=FALSE,
                        adorn=adorn[w],
+                       mgp=mgp,
+                       mar=mar,
                        ...)
                 draw.time.range <- TRUE
             }
-        }
-        if (which[w] %in% timeseries) { # time-series types
+        } else if (which[w] %in% timeseries) { # time-series types
             if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', draw.time.range=draw.time.range)
             if (which[w] == 14) oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', draw.time.range=draw.time.range)
             if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', draw.time.range=draw.time.range)
@@ -660,8 +675,8 @@ plot.adcp <- function(x,
             if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', draw.time.range=draw.time.range)
             if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', draw.time.range=draw.time.range)
             draw.time.range <- FALSE
-            box()
-            axis(2)
+##            box()
+##            axis(2)
             if (w <= adorn.length) {
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")

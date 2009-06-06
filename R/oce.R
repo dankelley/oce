@@ -413,7 +413,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")
         mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone")),
-              side=if (side==1) 3 else 1, cex=3/4*par("cex.axis"), adj=0)
+              side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
     }
     axis(side, at = z, labels = labels, ...)
 }

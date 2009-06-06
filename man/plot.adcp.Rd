@@ -27,11 +27,15 @@
     values, through white at zero, to red at positive values; see
     \dQuote{Details}.}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
-    \code{\link{image}} call that is used to create the image.  If
+    \code{\link{imagep}} call that is used to create the image.  If
     omitted, \code{zlim} is set for each panel individually, to
     encompass the data of the panel and to be centred around zero.
-    (Centering on zero is convenient for color palettes that place a
-    neutral color there; see \dQuote{Details}.)}
+    If provided as a two-element vector, then that is used for each panel.
+    If provided as a two-column matrix, then each panel of the graph uses
+    the corresponding row of the matrix; for example, setting
+    \code{zlim=rbind(c(-1,1),c(-1,1),c(-.1,.1))} might make sense for
+    \code{which=1:3}, so that the two horizontal velocities have one
+    scale, and the smaller vertical velocity has another.}
   \item{titles}{optional vector of character strings to be used as
     labels for the plot panels.  For images, these strings will be
     placed in the right hand side of the top margin.  For timeseries,

@@ -11,6 +11,7 @@
       draw.contours=TRUE,
       draw.time.range=getOption("oce.draw.time.range"),
       mgp=getOption("oce.mgp"),
+      mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0, mgp[1]+if(nchar(ylab)>0) 1.5 else 0, mgp[2]+1/2, 1/2),
       xaxs = "i", yaxs = "i", cex=par("cex"),
       adorn,
       \dots)
@@ -46,6 +47,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
     data and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{xaxs}{character indicating whether image should extend to edge
     of x axis (with value \code{"i"}) or not; see
     \code{\link[graphics]{par}}("xaxs").}
