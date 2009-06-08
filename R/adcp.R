@@ -9,8 +9,8 @@ read.header <- function(file, debug)
     if (debug > 1)
         cat("First 6 bytes of header:", paste(header.part1, sep=' '), "\n")
     header <- header.part1
-    if (header.part1[1] != 0x7f) stop("first byte in file must be 0x7f, but it was", header.part1[1])
-    if (header.part1[2] != 0x7f) stop("second byte in file must be 0x7f but it was", header.part1[2])
+    if (header.part1[1] != 0x7f) stop("first byte in file must be 0x7f, but it was 0x", header.part1[1])
+    if (header.part1[2] != 0x7f) stop("second byte in file must be 0x7f but it was 0x", header.part1[2])
     num.bytes.in.ensemble <- readBin(header.part1[3:4], "integer", n=1, size=2, endian="little")
     if (debug) cat("num.bytes.in.ensemble=", num.bytes.in.ensemble,"\n")
     ## header.part1[5] spare
@@ -346,6 +346,9 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
     seek(file, where=0, origin="end")
     bytes.in.file <- seek(file, where=0)
     profiles.in.file <- bytes.in.file / bytes.per.profile
+    sampling.start <- p1$header$RTC.time
+    sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(p2$header$RTC.time, p1$header$RTC.time, units="sec"))
+
 
     ## Possibly interpret skip and read as starting and ending times.
     t1 <- p1$header$RTC.time[1]
@@ -399,11 +402,12 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
             metadata <- p$header
             metadata$bin1.distance <- bin1.distance
             metadata$xmit.pulse.length <- xmit.pulse.length
-            metadata <- c(metadata,
-                          filename=filename,
-                          number.of.profiles=read,
-                          oce.beam.attenuated=FALSE,
-                          oce.coordinate=p$header$coordinate.system)
+            metadata$sampling.start <- sampling.start
+            metadata$sampling.end <- sampling.end
+            metadata$filename <- filename
+            metadata$number.of.profiles <- read
+            metadata$oce.beam.attenuated <- FALSE
+            metadata$oce.coordinate <- p$header$coordinate.system
         }
         if (monitor) {
             cat(".")
@@ -431,6 +435,7 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
+
     class(res) <- c("adcp", "rdi", "oce")
     res
 }
@@ -478,6 +483,7 @@ summary.adcp <- function(object, ...)
     }
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+
     res <- list(res.specific,
                 filename=object$metadata$filename,
                 instrument.type=object$metadata$instrument.type,
@@ -485,6 +491,8 @@ summary.adcp <- function(object, ...)
                 start.time=object$data$ts$time[1],
                 delta.time=difftime(object$data$ts$time[2], object$data$ts$time[1], units="secs"),
                 end.time=object$data$ts$time[length(object$data$ts$time)],
+                sampling.start=object$metadata$sampling.start,
+                sampling.end=object$metadata$sampling.end,
                 distance=object$data$ss$distance,
                 number.of.profiles=object$metadata$number.of.profiles,
                 metadata=object$metadata,
@@ -516,18 +524,23 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Filename:                   ", x$filename, "\n")
     cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
     cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Measurements at times:       ", as.character(x$start.time), " to ",
-        as.character(x$end.time), " at interval ", as.character(x$delta.time), " s\n", sep="")
+    cat("  Measurements at times:      ", as.character(x$sampling.start), attr(x$sampling.end, "tzone"),
+        "to",
+        format(x$sampling.end), attr(x$sampling.end, "tzone"), "at interval", as.character(x$delta.time), "s\n")
     cat("  Measurements at distances:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
     cat("  Number of data types:       ", x$number.of.data.types, "\n")
     cat("  Frequency:                  ", x$frequency, "kHz\n")
+
     cat("  Beams:                      ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n")
     cat("  Orientation:                ", x$orientation, "\n")
     cat("  Beam angle:                 ", x$metadata$beam.angle, "\n")
     cat("  Number of cells:            ", x$number.of.cells, "\n")
     ##cat("  Cell size:                  ", x$cell.size, "m\n")
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
-    cat("  Number of profiles:         ", x$number.of.profiles, "\n")
+    cat("  Number of profiles :        ", x$number.of.profiles, "\n")
+    cat("  Profile times:              ", as.character(x$start.time), attr(x$start.time,"tzone"),
+        "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n")
+
     if (x$instrument.type == "rdi") {
         cat("  RDI-specific\n")
         cat("    Transducer depth:           ", x$metadata$depth.of.transducer, "m\n")
@@ -1086,25 +1099,14 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
     seek(file, where=0, origin="end")
     file.size <- seek(file)
     profiles.in.file <- floor((file.size - data.start) / bytes.per.profile)
-
-    ###0###
-    ###0### t1 <- p1$header$RTC.time[1]
-    ###0### t2 <- p2$header$RTC.time[1]
-    ###0### dt <- as.numeric(difftime(t2, t1, units="sec"))
-    ###0### if (!missing(skip) && inherits(skip, "POSIXt")) {
-    ###0###     skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
-    ###0### }
-    ###0### if (!missing(read) && inherits(read, "POSIXt")) {
-    ###0###     if (t2 < t1) stop("cannot have \"read\" less than \"skip\"")
-    ###0###     read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride
-    ###0###     if (read < 0) stop("cannot have read < 0")
-    ###0### }
-
     ## Possibly interpret skip and read as starting and ending times.
     seek(file, where=data.start, origin="start")
     t1 <- read.profile.aquadopp(file,debug=debug)$time
     t2 <- read.profile.aquadopp(file,debug=debug)$time
     dt <- as.numeric(difftime(t2, t1, units="sec"))
+    sampling.start <- t1
+    sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(t2, t1, units="sec"))
+
     if (!missing(skip) && inherits(skip, "POSIXt")) {
         skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
         if (skip < 0) warning("\"skip\"=", format(skip), " ignored, since it predates the first datum at ", format(t1))
@@ -1183,6 +1185,8 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
     }
     metadata <- list(instrument.type="aquadopp high resolution",
                      filename=filename,
+                     sampling.start=sampling.start,
+                     sampling.end=sampling.end,
                      size=size,
                      serial.number=serial.number,
                      frequency=frequency,
