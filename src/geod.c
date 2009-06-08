@@ -130,7 +130,7 @@ geod_xy(int *n,
 			 &faz,
 			 &baz,
 			 &s);
-		*x++ = s * cos(baz * rad);
-		*y++ = s * sin(baz * rad);
+		*x++ = s * sin(baz * rad);
+		*y++ = s * cos(baz * rad);
 	}
 }
