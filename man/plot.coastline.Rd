@@ -20,11 +20,12 @@
     \code{\link{as.coastline}}.}
   \item{asp}{Aspect ratio for plot.  The default is for
     \code{plot.coastline} to set the aspect ratio to give natural
-    latitude-longitude scaling at the average latitude in the data range.
-    In some cases, you will probably want to set \code{asp} yourself,
-    e.g. coastal shapes near 45N will have the correct shape if you set
-    \code{asp=1/cos(45*pi/180)}.  Setting \code{asp=1} makes sense for
-    world views.}
+    latitude-longitude scaling somewhere near the centre latitude on the
+    plot. Often, it makes sense to set \code{asp} yourself, e.g. to get
+    correct shapes at 45N, use \code{asp=1/cos(45*pi/180)}. 
+    Note that the land mass is not symmetric about the equator, so
+    to get good world views you should set \code{asp=1} or 
+    set \code{ylim} to be symmetric about zero.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the

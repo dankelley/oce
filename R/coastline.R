@@ -19,7 +19,11 @@ plot.coastline <- function (x,
 {
     if (!inherits(x, "coastline")) stop("method is only for coastline objects")
     par(mgp=mgp, mar=mar)
-    asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+    dots <- list(...)
+    if ("ylim" %in% names(dots))
+        asp.middle <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
+    else
+        asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
     debug <- FALSE
     if (debug) cat("asp.middle=", asp.middle, "\n")
     if (missing(asp))
