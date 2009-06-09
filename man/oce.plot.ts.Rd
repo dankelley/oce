@@ -5,13 +5,16 @@
 
 \description{Plot a time-series, obeying the timezone and possibly drawing the range in the top-left margin}
 
-\usage{oce.plot.ts(x, y, draw.time.range=TRUE, \dots)}
+\usage{oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", \dots)}
 
 \arguments{
 \item{x}{the times of observations.}
 \item{y}{the observations.}
 \item{draw.time.range}{a boolean, set to \code{TRUE} to indicate the range of times 
   in the top-left margin.}
+\item{xaxs}{character indicating whether image should extend to edge
+  of x axis (with value \code{"i"}) or not; see
+  \code{\link[graphics]{par}}("xaxs").}
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
 }
 

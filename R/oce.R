@@ -1,9 +1,10 @@
 oce.plot.ts <- function(x,
                         y,
                         draw.time.range=TRUE,
+                        xaxs="i",
                         ...)
 {
-    plot(x, y, axes=FALSE, ...)
+    plot(x, y, axes=FALSE, xaxs=xaxs, ...)
     oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
     box()
     axis(2)
