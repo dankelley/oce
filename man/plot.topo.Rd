@@ -16,6 +16,7 @@
      land.lty,
      land.lwd,
      legend.loc="topright", 
+     asp,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1],mgp[1],0.5,0.5),
      \dots)}
@@ -37,6 +38,14 @@
   \item{land.lty}{line type(s) for land contours}
   \item{land.lwd}{line width(s) for land contours}
   \item{legend.loc}{location for a legend (or FALSE, for no legend).}
+  \item{asp}{Aspect ratio for plot.  The default is for
+    \code{plot.coastline} to set the aspect ratio to give natural
+    latitude-longitude scaling somewhere near the centre latitude on the
+    plot. Often, it makes sense to set \code{asp} yourself, e.g. to get
+    correct shapes at 45N, use \code{asp=1/cos(45*pi/180)}. 
+    Note that the land mass is not symmetric about the equator, so
+    to get good world views you should set \code{asp=1} or 
+    set \code{ylim} to be symmetric about zero.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

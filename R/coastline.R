@@ -20,14 +20,13 @@ plot.coastline <- function (x,
     if (!inherits(x, "coastline")) stop("method is only for coastline objects")
     par(mgp=mgp, mar=mar)
     dots <- list(...)
-    if ("ylim" %in% names(dots))
-        asp.middle <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
-    else
-        asp.middle <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
     debug <- FALSE
-    if (debug) cat("asp.middle=", asp.middle, "\n")
-    if (missing(asp))
-        asp <- asp.middle
+    if (missing(asp)) {
+        if ("ylim" %in% names(dots))
+            asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
+        else
+            asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+    }
     ## The following is a somewhat provisional hack, to get around a
     ## tendency of plot() to produce latitudes past the poles.
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
@@ -35,14 +34,14 @@ plot.coastline <- function (x,
     yr <- range(x$data$latitude, na.rm=TRUE)
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
     if (debug) cat("asp.page=", asp.page, "\n")
-    gamma <- asp.middle / asp.page
-    if (debug) cat("asp.middle/asp.page=", asp.middle / asp.page, "\n")
-    if ((asp.middle / asp.page) < 1) {
+    gamma <- asp / asp.page
+    if (debug) cat("asp/asp.page=", asp / asp.page, "\n")
+    if ((asp / asp.page) < 1) {
         if (debug) cat("type 1\n")
-        xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp.middle / asp.page)
+        xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
     } else {
         if (debug) cat("type 2\n")
-        yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp.middle / asp.page)
+        yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
     }
     if (!missing(bg)) {
         plot.window(xr, yr, asp=asp, xlab="", ylab="", xaxs="i", yaxs="i", log="", ...)

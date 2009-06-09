@@ -8,6 +8,7 @@ plot.topo <- function(x,
                       land.lty,
                       land.lwd,
                       legend.loc="topright",
+                      asp,
                       mgp=getOption("oce.mgp"),
                       mar=c(mgp[1],mgp[1],0.5,0.5),
                       ...)
@@ -16,24 +17,27 @@ plot.topo <- function(x,
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
     par(mgp=mgp, mar=mar)
-
-    lat.range <- range(x$data$lat, na.rm=TRUE)
-    asp <- 1 / cos(mean(lat.range)*pi/180)
+    dots <- list(...)
+    if (missing(asp)) {
+        if ("ylim" %in% names(dots))
+            asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
+        else
+            asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+    }
     zr <- range(x$data$z, na.rm=TRUE)
 
     ## auto-scale based on data in window, if window provided
-    args <- list(...)
-    if (!is.null(args$xlim) && !is.null(args$ylim)) {
-        xf <- (args$xlim[1] <= x$data$lon) & (x$data$lon <= args$xlim[2])
-        yf <- (args$ylim[1] <= x$data$lat) & (x$data$lat <= args$ylim[2])
+    if (!is.null(dots$xlim) && !is.null(dots$ylim)) {
+        xf <- (dots$xlim[1] <= x$data$longitude) & (x$data$longitude <= dots$xlim[2])
+        yf <- (dots$ylim[1] <= x$data$latitude) & (x$data$latitude <= dots$ylim[2])
         zr <- range(x$data$z[xf, yf], na.rm=TRUE)
     } else {
         zr <- range(x$data$z, na.rm=TRUE)
     }
-    plot(range(x$data$lon, na.rm=TRUE), range(x$data$lat, na.rm=TRUE),
+    plot(range(x$data$longitude, na.rm=TRUE), range(x$data$latitude, na.rm=TRUE),
          asp=asp, xaxs="i", yaxs="i", type="n", xlab="", ylab="", ...)
 
-    contour(x$data$lon, x$data$lat, x$data$z,
+    contour(x$data$longitude, x$data$latitude, x$data$z,
             levels=0, drawlabels=FALSE, add=TRUE,
             col="black")                # coastline is always black
     legend <- lwd <- lty <- col <- NULL
@@ -69,7 +73,7 @@ plot.topo <- function(x,
         lwd    <- c(lwd,    water.lwd)
         lty    <- c(lty,    water.lty)
         col    <- c(col,    water.col)
-        contour(x$data$lon, x$data$lat, x$data$z,
+        contour(x$data$longitude, x$data$latitude, x$data$z,
                 levels=water.z, lwd=water.lwd, lty=water.lty, col=water.col,
                 drawlabels=FALSE, add=TRUE, ...)
     }
@@ -97,7 +101,7 @@ plot.topo <- function(x,
         lwd    <- c(lwd,    land.lwd)
         lty    <- c(lty,    land.lty)
         col    <- c(col,    land.col)
-        contour(x$data$lon, x$data$lat, x$data$z,
+        contour(x$data$longitude, x$data$latitude, x$data$z,
                 levels=land.z, lwd=land.lwd, lty=land.lty, col=land.col,
                 drawlabels=FALSE, add=TRUE, ...)
     }
@@ -107,6 +111,7 @@ plot.topo <- function(x,
                bg="white", legend=legend[o], col=col[o])
     }
 }
+
 read.topo <- function(file, log.action)
 {
     nh <- 6
@@ -118,9 +123,9 @@ read.topo <- function(file, log.action)
     cellsize <- as.numeric(strsplit(header[5],"[ ]+",perl=TRUE)[[1]][2])
     zz <- as.matrix(read.table(file, header=FALSE, skip=nh),byrow=TRUE)
     z <- t(zz[dim(zz)[1]:1,])
-    lon <- lon.ll + cellsize * seq(0, ncols-1)
-    lat <- lat.ll + cellsize * seq(0, nrows-1)
-    data <- list(lon=lon, lat=lat, z=z)
+    longitude <- lon.ll + cellsize * seq(0, ncols-1)
+    latitude <- lat.ll + cellsize * seq(0, nrows-1)
+    data <- list(longitude=longitude, latitude=latitude, z=z)
     metadata <- list(filename=file, cellsize=cellsize, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
