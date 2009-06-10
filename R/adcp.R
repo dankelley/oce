@@ -1,10 +1,8 @@
-read.header <- function(file, debug)
+read.header.rdi <- function(file, debug)
 {
     ##
     ## header, of length 6 + 2 * number.of.data.types bytes
     ##
-    ##cat("before reading header.part1, at file position=", seek(file),"\n")
-
     header.part1 <- readBin(file, "raw", n=6, size=1)
     if (debug > 1)
         cat("First 6 bytes of header:", paste(header.part1, sep=' '), "\n")
@@ -147,18 +145,24 @@ read.header <- function(file, debug)
     RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
     RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
     RTC.time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "UTC") # not sure on TZ
+    if (debug > 2) cat("time:", format(RTC.time), "\n")
+
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
-    if (speed.of.sound < 1400 || speed.of.sound > 1600) stop("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
+    if (speed.of.sound < 1400 || speed.of.sound > 1600) warning("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
     depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
+    if (debug > 2) cat("depth of transducer:", depth.of.transducer, "\n")
     heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little") * 0.01
+    if (debug > 2) cat("heading:", heading, "\n")
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
+    if (debug > 2) cat("pitch:", pitch, "\n")
     roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
+    if (debug > 2) cat("roll:", roll, "\n")
     salinity <- readBin(VLD[25:26], "integer", n=1, size=2, endian="little")
-    if (salinity < 0 || salinity > 40) stop("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
+    if (salinity < 0 || salinity > 40) warning("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
     temperature <- readBin(VLD[27:28], "integer", n=1, size=2, endian="little") * 0.01
-    if (temperature < -5 || temperature > 40) stop("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
+    if (temperature < -5 || temperature > 40) warning("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
 
     ## Skipping a lot ...
     pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
@@ -243,18 +247,17 @@ read.header <- function(file, debug)
          )
 }
 
-
-read.profile <- function(file, header, debug)
+read.profile.rdi <- function(file, header, debug)
 {
     if (missing(header)) {
-        header <- read.header(file, debug=debug)
+        header <- read.header.rdi(file, debug=debug)
     } else {
         junk <- readBin(file, "raw", n=header$header.length, size=1)
     }
     ## velocity, should start with 0x00 then 0x01
     v.ID <- readBin(file, "raw", n=2, size=1)
-    if (v.ID[1] != 0x00) stop("first byte of velocity segment should be 0x00 but is ", v.ID[1])
-    if (v.ID[2] != 0x01) stop("first byte of velocity segment should be 0x01 but is ", v.ID[2])
+    if (v.ID[1] != 0x00) stop("first byte of velocity segment should be 0x00 but is ", v.ID[1], " at file position ", seek(file)-2)
+    if (v.ID[2] != 0x01) stop("first byte of velocity segment should be 0x01 but is ", v.ID[2], " at file position ", seek(file)-1)
     if (debug) cat("got velo\n")
     v <- readBin(file, "integer",
                  n=header$number.of.beams * header$number.of.cells,
@@ -309,6 +312,7 @@ read.adcp <- function(file, skip=0, read, stride=1,
                       debug=0, monitor=TRUE, log.action)
 {
     type = match.arg(type)
+    if (monitor) cat(file, "\n")
     if (type == "rdi")
         read.adcp.rdi(file=file, skip=skip, read=read, stride=stride,
                       debug=debug, monitor=monitor, log.action=log.action)
@@ -336,9 +340,9 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
     }
     type <- match.arg(type)
     ## read two profiles so we can infer total number and their times
-    p1 <- read.profile(file, debug=debug)
+    p1 <- read.profile.rdi(file, debug=debug)
     bytes.per.profile <- seek(file)     # NOTE: be careful on these seek calls
-    p2 <- read.profile(file, debug=debug)
+    p2 <- read.profile.rdi(file, debug=debug)
     bin1.distance <- p1$header$bin1.distance
     xmit.pulse.length <- p1$header$xmit.pulse.length
     cell.size <- p1$header$cell.size
@@ -384,7 +388,7 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
     q <- array(dim=c(read, p1$header$number.of.cells, p1$header$number.of.beams))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
     for (i in 1:read) {
-        p <- read.profile(file,debug=debug)
+        p <- read.profile.rdi(file,debug=debug)
         for (beam in 1:p$header$number.of.beams) {
             v[i,,beam] <- p$v[,beam]
             a[i,,beam] <- p$a[,beam]
@@ -417,7 +421,7 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
             seek(file, bytes.per.profile * (stride - 1), origin="current")
         }
     }
-    if (monitor) cat("\nRead", read, "profiles, out of a total of",profiles.in.file,"profiles in ", filename, "\n")
+    if (monitor) cat("\nRead", read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
@@ -1163,7 +1167,7 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
                 if (!(i %% 50)) cat(i, "\n")
             }
         }
-        if (monitor) cat("\nRead", read, "profiles\n")
+        if (monitor) cat("\nRead", read, "profiles\n", sep="")
         salinity <- rep(salinity, read)     # fake a time-series
         class(time) <- c("POSIXt", "POSIXct")
         attr(time, "tzone") <- "UTC" # BUG should let user control this
