@@ -70,48 +70,87 @@
   cast. The panels are controlled by the \code{which} argument.
 
   \itemize{ 
+
+    \item \code{which=1} yield a distance-time image plot of a
+    velocity component.  If \code{x} is in \code{beam} coordinates
+    (signalled by \code{x$metadata$oce.coordinate=="beam"}), this will
+    be the first beam.  If \code{x} is in frame coordinates (or ship
+    coordinates), it will be the velocity component to the right of
+    the frame or ship (labelled \code{u}).  If \code{x} is in
+    \code{"earth"} coordinates, the image will show the the eastward
+    component (labelled \code{east}).  If \code{x} is in
+    \code{"other"} coordinates, it will be component corresponding to
+    east, after rotation (labelled \code{u\'}).  Note that the
+    coordinate is set by \code{\link{read.adcp}}, or by
+    \code{\link{adcp.beam2frame}},
+    \code{\link{adcp.frame2earth}},
+    or
+    \code{\link{adcp.earth2other}}.
     
-    \item For data in \code{beam} coordinates, \code{which}=1 gives an
-    image plot of beam 1 as a function of time and distance from sensor;
-    \code{which} values of 2, 3 (and 4, if applicable) yield similar
-    plots for the other beams.
+    \item \code{which=2} is as for \code{which=1}, but for the second
+    beam, forward velocity component, northward velocity component, or
+    rotated north velocity component, depending on the coordinates of
+    \code{x}.
+    
+    \item \code{which=3} is as for \code{which=1}, but for third beam,
+    up-frame velocity component, upward velocity component, or rotated
+    upward velocity component.
+    
+    \item \code{which=4} is as for \code{which=1}, but for the fourth
+    beam for \code{beam} coordinates, or for the estimate velocity
+    error, for all other coordinate systems.  (This is ignored unless
+    there are 4 beams.)
 
-    \item For \code{frame} data, as created by
-    \code{\link{adcp.beam2frame}}, \code{which}=1, 2, and 3 yield u, v,
-    and w components of velocity, and, for the case of 4-beam
-    instruments such as \code{rdi}, \code{which}=4 yields a velocity
-    error estimate computed from all beams together.
+    \item \code{which=5:7} (or \code{5:8} for 4-beam data) yields
+    distance-time images of backscatter intensity of beams 1 through 3
+    (or 4), respectively.
 
-    \item For \code{earth} data, as created by
-    \code{\link{adcp.frame2earth}}, \code{which}=1, 2, and 3 yield
-    \code{east}-, \code{north}-, and \code{up}-ward components of
-    velocity, and \code{which}=4 yields a velocity error estimate
-    computed from all beams together.
+    \item \code{which=9:11} (or \code{9:12} for 4-beam data) yields
+    distance-time images of signal quality for the respective beams.
 
-    \item For all types of data: \code{which} values of 5 through 8
-    yield image of backscatter intensity of beams 1 through 4,
-    respectively, and \code{which} values of 9 through 11 (or 12) yield
-    measures of the signal quality for the individual beams.
+    \item \code{which=13} yields a time-series plot of salinity.
 
-    \item Time-series of scalar quantities can also be plotted:
-    \code{which}=13 yields salinity, 14 yields temperature, 15 yields
-    pressure at sensor head, 16 yields instrument heading, 17 yields
-    instrument pitch, and 18 yields instrument roll.  In addition,
-    averages of velocity components along the beams are provided for
-    values 19 through 22, e.g. for an instrument in earth coordinates,
-    19 yields the east component of velocity, averaged across depth.
+    \item \code{which=14} yields a time-series plot of temperature.
 
-    \item \code{which=23} yields a progressive-vectori diagram.
+    \item \code{which=15} yields a time-series plot of pressure.
 
-    A common quick-look plot to assess mooring movement is to use
-    \code{which=15:18} (pressure being included to signal the tide,
-    and tidal currents may dislodge a mooring or cause it to settle).
+    \item \code{which=16} yields a time-series plot of instrument heading.
+
+    \item \code{which=17} yields a time-series plot of instrument pitch.
+
+    \item \code{which=18} yields a time-series plot of instrument roll.
+
+    \item \code{which=19} yields a time-series plot of
+    distance-averaged velocity for beam 1, rightward velocity,
+    eastward velocity, or rotated-eastward velocity, depending on the
+    coordinate system.
+
+    \item \code{which=20} yields a time-series of distance-averaged
+    velocity for beam 2, foreward velocity, northward velocity, or
+    rotated-northward velocity, depending on the coordinate system.
+
+    \item \code{which=21} yields a time-series of distance-averaged
+    velocity for beam 3, up-frame velocity, upward velocity, or
+    rotated-uphward velocity, depending on the coordinate system.
+
+    \item \code{which=22} yields a time-series of distance-averaged
+    velocity for beam 4, for \code{beam} coordiantes, or velocity
+    estimate, for other coordinates.  (This is ignored for 3-beam
+    data.)
+
+    \item \code{which=23} yields a progressive-vector diagram in the
+    horizontal plane.  (This only makes sense in \code{earth} or
+    \code{other} coordinate systms.)
 
   }
 
   The color scheme for image plots (\code{which} in 1:12) is provided
   by the \code{col} argument, which is passed to \code{\link{image}} to
   do the actual plotting.  See \dQuote{Examples} for some comparisons.
+
+  A common quick-look plot to assess mooring movement is to use
+  \code{which=15:18} (pressure being included to signal the tide, and
+  tidal currents may dislodge a mooring or cause it to settle).
 
   By default, \code{plot.adcp} uses a \code{zlim} value for the
   \code{\link{image}} that is constructed to contain all the data, but
