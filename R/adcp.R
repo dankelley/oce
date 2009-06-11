@@ -707,9 +707,16 @@ plot.adcp <- function(x,
             if (which[w] == 22) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE), # FIXME: what if only 3 beams?
                      ylab=image.name(x, 4),
                      type='l', draw.time.range=draw.time.range)
-            draw.time.range <- FALSE
-##            box()
-##            axis(2)
+            if (which[2] == 23) {
+                dt <- as.numeric(diff(x$data$ts$time[1:2],units="sec"))
+                m.per.km <- 1000
+                x <- cumsum(apply(x$data$ma$v[,,1], 1, mean,na.rm=TRUE)) * dt / m.per.km
+                y <- cumsum(apply(x$data$ma$v[,,2], 1, mean,na.rm=TRUE)) * dt / m.per.km
+                plot(x, y, xlab="km", ylab="km", type='l', asp=1)
+                ##grid()
+            }
+            if (timeseries)
+                draw.time.range <- FALSE
             if (w <= adorn.length) {
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")

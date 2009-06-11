@@ -101,6 +101,8 @@
     values 19 through 22, e.g. for an instrument in earth coordinates,
     19 yields the east component of velocity, averaged across depth.
 
+    \item \code{which=23} yields a progressive-vectori diagram.
+
     A common quick-look plot to assess mooring movement is to use
     \code{which=15:18} (pressure being included to signal the tide,
     and tidal currents may dislodge a mooring or cause it to settle).
