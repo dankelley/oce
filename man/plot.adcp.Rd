@@ -96,10 +96,14 @@
     \item Time-series of scalar quantities can also be plotted:
     \code{which}=13 yields salinity, 14 yields temperature, 15 yields
     pressure at sensor head, 16 yields instrument heading, 17 yields
-    instrument pitch, and 18 yields instrument roll.  A common
-    quick-look plot to assess mooring movement is to use
-    \code{which=15:18} (pressure being included to signal the tide, and
-    tidal currents may dislodge a mooring or cause it to settle).
+    instrument pitch, and 18 yields instrument roll.  In addition,
+    averages of velocity components along the beams are provided for
+    values 19 through 22, e.g. for an instrument in earth coordinates,
+    19 yields the east component of velocity, averaged across depth.
+
+    A common quick-look plot to assess mooring movement is to use
+    \code{which=15:18} (pressure being included to signal the tide,
+    and tidal currents may dislodge a mooring or cause it to settle).
 
   }
 

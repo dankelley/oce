@@ -8,13 +8,13 @@
 \description{Read an ADCP data file, producing an object of type \code{adcp}.}
 
 \usage{
-read.adcp <- function(file, skip=0, read, stride=1,
+read.adcp <- function(file, from=0, to, by=1,
                       type=c("rdi", "nortek"),
                       debug=0, monitor=TRUE, log.action)
-read.adcp.rdi(file, skip=0, read, stride=1,
+read.adcp.rdi(file, from=0, to, by=1,
               type=c("workhorse"),
               debug=0, monitor=TRUE, log.action)
-read.adcp.nortek(file, skip=0, read, stride=1,
+read.adcp.nortek(file, from=0, to, by=1,
                  type=c("aquadopp high resolution"),
                  debug=0, monitor=TRUE, log.action)
 }
@@ -22,13 +22,13 @@ read.adcp.nortek(file, skip=0, read, stride=1,
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{skip}{number of profiles to skip at start, or the POSIXt time at
+  \item{from}{number of profiles to skip at start, or the POSIXt time at
     which to start reading.  See \dQuote{Examples}, and make careful
     note of the use of the \code{tz} argument.}
-  \item{read}{optional number of profiles to read, or the last POSIXt
+  \item{to}{optional number of profiles to read, or the last POSIXt
     time to read.}
-  \item{stride}{an indication of the stride length to use while walking
-    through the file.  If this is an integer, then \code{stride-1}
+  \item{by}{an indication of the stride length to use while walking
+    through the file.  If this is an integer, then \code{by-1}
     profiles are skipped between each pair of profiles that is read.  If
     this is a string representing a time interval, in colon-separated
     format, then this interval is divided by the sampling interval, to
@@ -122,9 +122,9 @@ read.adcp.nortek(file, skip=0, read, stride=1,
 library(oce)
 # A day sampled at 1/2 hour interval.  Note the timezone.
 d <- read.oce("~/SL08F001.000", 
-               as.POSIXct("2008-06-26", tz="UTC"),
-               as.POSIXct("2008-06-27", tz="UTC"), 
-              "30:00")
+               from=as.POSIXct("2008-06-26", tz="UTC"),
+               to=as.POSIXct("2008-06-27", tz="UTC"), 
+               by="30:00")
 summary(d)
 plot(d)
 }

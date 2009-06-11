@@ -1,3 +1,16 @@
+image.name <- function(x, which)
+{
+    if (x$metadata$oce.coordinate == "beam")
+        c("beam 1", "beam 2", "beam 3", "beam 4")[which]
+    else if (x$metadata$oce.coordinate == "earth")
+        c("east", "north", "up", "error")[which]
+    else if (x$metadata$oce.coordinate == "frame")
+        c("u", "v", "w", "e")[which]
+    else if (x$metadata$oce.coordinate == "other")
+        c("u'", "v'", "w'", "e")[which]
+    else " "
+}
+
 read.header.rdi <- function(file, debug)
 {
     ##
@@ -307,21 +320,21 @@ read.profile.rdi <- function(file, header, debug)
     list(header=header, v=v, a=a, q=q, pg=pg, bt=bt)
 }
 
-read.adcp <- function(file, skip=0, read, stride=1,
+read.adcp <- function(file, from=0, to, by=1,
                       type=c("rdi", "nortek"),
                       debug=0, monitor=TRUE, log.action)
 {
     type = match.arg(type)
     if (monitor) cat(file, "\n")
     if (type == "rdi")
-        read.adcp.rdi(file=file, skip=skip, read=read, stride=stride,
+        read.adcp.rdi(file=file, from=from, to=to, by=by,
                       debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "nortek")
-        read.adcp.nortek(file=file, skip=skip, read=read, stride=stride,
+        read.adcp.nortek(file=file, from=from, to=to, by=by,
                          debug=debug, monitor=monitor, log.action=log.action)
 }
 
-read.adcp.rdi <- function(file, skip=0, read, stride=1,
+read.adcp.rdi <- function(file, from=0, to, by=1,
                           type=c("workhorse"),
                           debug=0, monitor=TRUE, log.action)
 {
@@ -354,40 +367,40 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
     sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(p2$header$RTC.time, p1$header$RTC.time, units="sec"))
 
 
-    ## Possibly interpret skip and read as starting and ending times.
+    ## Possibly interpret from and to as starting and ending times.
     t1 <- p1$header$RTC.time[1]
     t2 <- p2$header$RTC.time[1]
     dt <- as.numeric(difftime(t2, t1, units="sec"))
-    if (!missing(skip) && inherits(skip, "POSIXt")) {
-        skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
+    if (!missing(from) && inherits(from, "POSIXt")) {
+        from <- max(as.numeric(difftime(from, t1, units="sec")) / dt, 0)
     }
-    if (!missing(stride) && is.character(stride)) {
-        if (length(grep(":", stride)) > 0) {
-            parts <- as.numeric(strsplit(stride, ":")[[1]])
-            if (length(parts == 2)) stride.time <- parts[1] * 60 + parts[2]
-            else if (length(parts == 3)) stride.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
-            else stop("malformed stride time", stride)
-            stride <- stride.time / dt
+    if (!missing(by) && is.character(by)) {
+        if (length(grep(":", by)) > 0) {
+            parts <- as.numeric(strsplit(by, ":")[[1]])
+            if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
+            else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+            else stop("cannot interpret \"by\" as POSIX time", by)
+            by <- by.time / dt
         } else {
-            warning("converting \"stride\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
-            stride <- as.numeric(stride)
+            warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
+            by <- as.numeric(by)
         }
     }
-    if (!missing(read) && inherits(read, "POSIXt")) {
-        read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride
-        if (read < 0) stop("cannot have read < 0")
+    if (!missing(to) && inherits(to, "POSIXt")) {
+        to <- 1 + (as.numeric(difftime(to, t1, units="sec")) / dt - from) / by
+        if (to < 0) stop("cannot have to < 0")
     }
 
-    seek(file, bytes.per.profile * skip, origin="start")
+    seek(file, bytes.per.profile * from, origin="start")
     ##cat("bytes.per.profile=", bytes.per.profile," bytes.in.file=", bytes.in.file, "\n")
     ##cat("profiles in file:", profiles.in.file, "\n")
-    if (read < 1) stop("cannot read fewer than one profile")
+    if (to < 1) stop("cannot read fewer than one profile")
 
-    v <- array(dim=c(read, p1$header$number.of.cells, p1$header$number.of.beams))
-    a <- array(dim=c(read, p1$header$number.of.cells, p1$header$number.of.beams))
-    q <- array(dim=c(read, p1$header$number.of.cells, p1$header$number.of.beams))
+    v <- array(dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
+    a <- array(dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
+    q <- array(dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
-    for (i in 1:read) {
+    for (i in 1:to) {
         p <- read.profile.rdi(file,debug=debug)
         for (beam in 1:p$header$number.of.beams) {
             v[i,,beam] <- p$v[,beam]
@@ -409,7 +422,7 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
             metadata$sampling.start <- sampling.start
             metadata$sampling.end <- sampling.end
             metadata$filename <- filename
-            metadata$number.of.profiles <- read
+            metadata$number.of.profiles <- to
             metadata$oce.beam.attenuated <- FALSE
             metadata$oce.coordinate <- p$header$coordinate.system
         }
@@ -417,11 +430,11 @@ read.adcp.rdi <- function(file, skip=0, read, stride=1,
             cat(".")
             if (!(i %% 50)) cat(i, "\n")
         }
-        if (stride > 1) {
-            seek(file, bytes.per.profile * (stride - 1), origin="current")
+        if (by > 1) {
+            seek(file, bytes.per.profile * (by - 1), origin="current")
         }
     }
-    if (monitor) cat("\nRead", read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
+    if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
@@ -610,7 +623,7 @@ plot.adcp <- function(x,
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     images <- 1:12
-    timeseries <- 13:18
+    timeseries <- 13:21                 # was 13:18
     if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -644,15 +657,7 @@ plot.adcp <- function(x,
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
                 else rep(TRUE, length(x$data$ss$distance))
                 zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
-                if (x$metadata$oce.coordinate == "beam")
-                    zlab <- if (missing(titles)) c("beam 1", "beam 2", "beam 3", "beam 4")[which[w]] else titles[w]
-                else if (x$metadata$oce.coordinate == "earth")
-                    zlab <- if (missing(titles)) c("east", "north", "up", "error")[which[w]] else titles[w]
-                else if (x$metadata$oce.coordinate == "frame")
-                    zlab <- if (missing(titles)) c("u", "v", "w", "e")[which[w]] else titles[w]
-                else if (x$metadata$oce.coordinate == "other")
-                    zlab <- if (missing(titles)) c("u'", "v'", "w'", "e")[which[w]] else titles[w]
-                else zlab <- ""
+                zlab <- if (missing(titles)) image.name(x, which[w]) else titles[w]
             } else if (which[w] %in% 5:(4+x$metadata$number.of.beams)) { # amplitude
                 z <- x$data$ma$a[,,which[w]-4]
                 y.look <- if (gave.ylim)
@@ -690,6 +695,18 @@ plot.adcp <- function(x,
             if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', draw.time.range=draw.time.range)
             if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', draw.time.range=draw.time.range)
             if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', draw.time.range=draw.time.range)
+            if (which[w] == 19) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
+                     ylab=image.name(x, 1),
+                     type='l', draw.time.range=draw.time.range)
+            if (which[w] == 20) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
+                     ylab=image.name(x, 2),
+                     type='l', draw.time.range=draw.time.range)
+            if (which[w] == 21) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
+                     ylab=image.name(x, 3),
+                     type='l', draw.time.range=draw.time.range)
+            if (which[w] == 22) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE), # FIXME: what if only 3 beams?
+                     ylab=image.name(x, 4),
+                     type='l', draw.time.range=draw.time.range)
             draw.time.range <- FALSE
 ##            box()
 ##            axis(2)
@@ -935,7 +952,7 @@ display.bytes <- function(b, label="")
     print(b)
 }
 
-read.adcp.nortek <- function(file, skip=0, read, stride=1,
+read.adcp.nortek <- function(file, from=0, to, by=1,
                              type=c("aquadopp high resolution"),
                              debug=0, monitor=TRUE, log.action) {
     if (is.character(file)) {
@@ -1103,7 +1120,7 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
     seek(file, where=0, origin="end")
     file.size <- seek(file)
     profiles.in.file <- floor((file.size - data.start) / bytes.per.profile)
-    ## Possibly interpret skip and read as starting and ending times.
+    ## Possibly interpret from and to as starting and ending times.
     seek(file, where=data.start, origin="start")
     t1 <- read.profile.aquadopp(file,debug=debug)$time
     t2 <- read.profile.aquadopp(file,debug=debug)$time
@@ -1111,44 +1128,44 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
     sampling.start <- t1
     sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(t2, t1, units="sec"))
 
-    if (!missing(skip) && inherits(skip, "POSIXt")) {
-        skip <- max(as.numeric(difftime(skip, t1, units="sec")) / dt, 0)
-        if (skip < 0) warning("\"skip\"=", format(skip), " ignored, since it predates the first datum at ", format(t1))
-        if (debug) cat("skip=",skip,"\n")
+    if (!missing(from) && inherits(from, "POSIXt")) {
+        from <- max(as.numeric(difftime(from, t1, units="sec")) / dt, 0)
+        if (from < 0) warning("\"from\"=", format(from), " ignored, since it predates the first datum at ", format(t1))
+        if (debug) cat("from=",from,"\n")
     }
-    if (!missing(stride) && is.character(stride)) {
-        if (length(grep(":", stride)) > 0) {
-            parts <- as.numeric(strsplit(stride, ":")[[1]])
-            if (length(parts == 2)) stride.time <- parts[1] * 60 + parts[2]
-            else if (length(parts == 3)) stride.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
-            else stop("malformed stride time", stride)
-            stride <- stride.time / dt
+    if (!missing(by) && is.character(by)) {
+        if (length(grep(":", by)) > 0) {
+            parts <- as.numeric(strsplit(by, ":")[[1]])
+            if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
+            else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+            else stop("malformed by time", by)
+            by <- by.time / dt
         } else {
-            warning("converting \"stride\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
-            stride <- as.numeric(stride)
+            warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
+            by <- as.numeric(by)
         }
     }
-    if (!missing(skip) && inherits(read, "POSIXt")) {
-        read <- 1 + (as.numeric(difftime(read, t1, units="sec")) / dt - skip) / stride
-        if (read < 0) stop("cannot have read < 0")
-        if (debug) cat("read=",read,"\n")
+    if (!missing(from) && inherits(to, "POSIXt")) {
+        to <- 1 + (as.numeric(difftime(to, t1, units="sec")) / dt - from) / by
+        if (to < 0) stop("cannot have to < 0")
+        if (debug) cat("to=",to,"\n")
     }
 
-    if (skip > 0)
-        seek(file, data.start + skip * bytes.per.profile)
+    if (from > 0)
+        seek(file, data.start + from * bytes.per.profile)
     else
         seek(file, data.start)
     time <- pressure <- temperature <- heading <- pitch <- roll <- NULL
-    if (stride < 1) stop("the value of \"stride\" must be an integer of 1 or larger")
-    if (missing(read)) {
-        read <- profiles.in.file
+    if (by < 1) stop("the value of \"by\" must be an integer of 1 or larger")
+    if (missing(to)) {
+        to <- profiles.in.file
     }
-    if (read > 0) {
-        v <- array(dim=c(read, number.of.cells, number.of.beams))
-        a <- array(dim=c(read, number.of.cells, number.of.beams))
-        q <- array(dim=c(read, number.of.cells, number.of.beams))
-        for (i in 1:read) {
-            seek(file, data.start + (skip + stride*(i-1)) * bytes.per.profile)
+    if (to > 0) {
+        v <- array(dim=c(to, number.of.cells, number.of.beams))
+        a <- array(dim=c(to, number.of.cells, number.of.beams))
+        q <- array(dim=c(to, number.of.cells, number.of.beams))
+        for (i in 1:to) {
+            seek(file, data.start + (from + by*(i-1)) * bytes.per.profile)
             p <- read.profile.aquadopp(file,debug=debug)
             if (debug) cat("successfully read profile", i, "at time ", format(p$time), "\n")
             for (beam in 1:number.of.beams) {
@@ -1167,8 +1184,8 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
                 if (!(i %% 50)) cat(i, "\n")
             }
         }
-        if (monitor) cat("\nRead", read, "profiles\n", sep="")
-        salinity <- rep(salinity, read)     # fake a time-series
+        if (monitor) cat("\nRead", to, "profiles\n", sep="")
+        salinity <- rep(salinity, to)     # fake a time-series
         class(time) <- c("POSIXt", "POSIXct")
         attr(time, "tzone") <- "UTC" # BUG should let user control this
                                         # Q: does file hold the zone?
@@ -1221,7 +1238,7 @@ read.adcp.nortek <- function(file, skip=0, read, stride=1,
                      oce.beam.attenuated=FALSE,
                      salinity=salinity,
                      number.of.data.types=3, # velo ampl corr
-                     number.of.profiles=read
+                     number.of.profiles=to
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)

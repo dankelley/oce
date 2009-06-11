@@ -29,9 +29,9 @@ plot(adcp.earth, which=13:18)
   use of UTC, to match how the instrument was set up.
 \preformatted{
 adcp <- read.oce("~/SL08F001.000", 
-                  as.POSIXct("2008-06-26", tz="UTC"),
-                  as.POSIXct("2008-06-27", tz="UTC"), 
-                 "30:00")
+                 from=as.POSIXct("2008-06-26", tz="UTC"),
+                 to=as.POSIXct("2008-06-27", tz="UTC"), 
+                 by="30:00")
 }
 }
 
