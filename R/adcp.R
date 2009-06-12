@@ -618,13 +618,13 @@ plot.adcp <- function(x,
         }
         zlim.given <- zlim
     }
-
     gave.ylim <- "ylim" %in% names(dots)
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     images <- 1:12
-    timeseries <- 13:21                 # was 13:18
-    if (any(!which %in% c(images, timeseries))) stop("unknown value of 'which'")
+    timeseries <- 13:22                 # was 13:18
+    other <- 23
+    if (any(!which %in% c(images, timeseries, other))) stop("unknown value of 'which'")
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
@@ -648,7 +648,7 @@ plot.adcp <- function(x,
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
-        ##cat("which[w]=", which[w], "csi=", par("csi"), "\n")
+        ##cat("which[w]=", which[w], "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
             if (which[w] %in% 1:(0+x$metadata$number.of.beams)) {    #velocity
@@ -697,30 +697,46 @@ plot.adcp <- function(x,
             if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', draw.time.range=draw.time.range)
             if (which[w] == 19) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                      ylab=image.name(x, 1),
-                     type='l', draw.time.range=draw.time.range)
+                     type='l', draw.time.range=draw.time.range, ...)
             if (which[w] == 20) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
                      ylab=image.name(x, 2),
-                     type='l', draw.time.range=draw.time.range)
-            if (which[w] == 21) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
-                     ylab=image.name(x, 3),
-                     type='l', draw.time.range=draw.time.range)
-            if (which[w] == 22) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE), # FIXME: what if only 3 beams?
-                     ylab=image.name(x, 4),
-                     type='l', draw.time.range=draw.time.range)
-            if (which[2] == 23) {
+                     type='l', draw.time.range=draw.time.range, ...)
+            if (which[w] == 21) {
+                if (x$metadata$number.of.beams > 1)
+                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
+                                ylab=image.name(x, 3),
+                                type='l', draw.time.range=draw.time.range, ...)
+                else warning("cannot plot beam 2 because the device has only", x$metadata$number.of.beams, "beams")
+            }
+            if (which[w] == 22) {
+                if (x$metadata$number.of.beams > 2)
+                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
+                                ylab=image.name(x, 3),
+                                type='l', draw.time.range=draw.time.range)
+                else warning("cannot plot beam 3 because the device has only", x$metadata$number.of.beams, "beams")
+            }
+            if (which[w] == 23) {
+                if (x$metadata$number.of.beams > 3)
+                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
+                                ylab=image.name(x, 3),
+                                type='l', draw.time.range=draw.time.range)
+                else warning("cannot plot beam 4 because the device has only", x$metadata$number.of.beams, "beams")
+            }
+            draw.time.range <- FALSE
+        } else if (which[w] %in% other) {                   # other types
+            if (which[w] == 23) {
+                par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 dt <- as.numeric(diff(x$data$ts$time[1:2],units="sec"))
                 m.per.km <- 1000
-                x <- cumsum(apply(x$data$ma$v[,,1], 1, mean,na.rm=TRUE)) * dt / m.per.km
-                y <- cumsum(apply(x$data$ma$v[,,2], 1, mean,na.rm=TRUE)) * dt / m.per.km
-                plot(x, y, xlab="km", ylab="km", type='l', asp=1)
+                x.dist <- cumsum(apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)) * dt / m.per.km
+                y.dist <- cumsum(apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)) * dt / m.per.km
+                plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
                 ##grid()
             }
-            if (timeseries)
-                draw.time.range <- FALSE
-            if (w <= adorn.length) {
-                t <- try(eval(adorn[w]), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-            }
+        }
+        if (w <= adorn.length) {
+            t <- try(eval(adorn[w]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
 }
@@ -847,14 +863,17 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
                     -SR, 0, CR),
                   nrow=3, byrow=TRUE)
     rotation.matrix <- m1 %*% m2 %*% m3
-    for (p in 1:x$metadata$number.of.profiles) { #FIXME this probably doesn't need to be in a loop
-        rotated <- rotation.matrix %*% matrix(c(x$data$ma$v[p,,1],
-                                                x$data$ma$v[p,,2],
-                                                x$data$ma$v[p,,3]), nrow=3, byrow=TRUE)
-        res$data$ma$v[p,,1] <- rotated[1,]
-        res$data$ma$v[p,,2] <- rotated[2,]
-        res$data$ma$v[p,,3] <- rotated[3,]
-    }
+
+    ## Caution: the chunk below is inelegant, and therefore brittle.
+    vmat <- rbind(matrix(aperm(x$data$ma$v[,,1]), nrow=1, byrow=TRUE),
+                  matrix(aperm(x$data$ma$v[,,2]), nrow=1, byrow=TRUE),
+                  matrix(aperm(x$data$ma$v[,,3]), nrow=1, byrow=TRUE))
+    rotated <- rotation.matrix %*% vmat
+    np <- dim(x$data$ma$v)[1]           # number of profiles
+    res$data$ma$v[,,1] <- matrix(rotated[1,], nrow=np, byrow=TRUE)
+    res$data$ma$v[,,2] <- matrix(rotated[2,], nrow=np, byrow=TRUE)
+    res$data$ma$v[,,3] <- matrix(rotated[3,], nrow=np, byrow=TRUE)
+
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
