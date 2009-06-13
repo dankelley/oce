@@ -813,19 +813,9 @@ adcp.frame2earth <- function(x)
         SP <- sin(to.radians * pitch)
         CR <- cos(to.radians * roll)
         SR <- sin(to.radians * roll)
-        m1 <- matrix(c(CH,  SH, 0,
-                       -SH, CH, 0,
-                       0,    0, 1),
-                     nrow=3, byrow=TRUE)
-        m2 <- matrix(c(1,  0,  0,
-                       0, CP, -SP,
-                       0, SP,  CP),
-                     nrow=3, byrow=TRUE)
-        m3 <-  matrix(c(CR,  0, SR,
-                        0,   1,  0,
-                        -SR, 0, CR),
-                      nrow=3, byrow=TRUE)
-        rotation.matrix <- m1 %*% m2 %*% m3
+        rotation.matrix <- matrix(c(CH*CR+SH*SP*SR, SH*CP, CH*SR-SH*SP*CR,
+                               -SH*CR+CH*SP*SR, CH*CP, -SH*SR-CH*SP*CR,
+                               -CP*SR, SP, CP*CR), nrow=3, byrow=TRUE)
         rotated <- rotation.matrix %*% matrix(c(x$data$ma$v[p,,1],
                                                 x$data$ma$v[p,,2],
                                                 x$data$ma$v[p,,3]), nrow=3, byrow=TRUE)
