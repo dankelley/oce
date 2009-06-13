@@ -110,6 +110,7 @@ subset.oce <- function (x, subset, indices=NULL, ...)
                 for (name in names(x$data$ma)) {
                     rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
                 }
+                rval$metadata$number.of.profiles <- sum(keep)
             } else if (length(grep("distance", subset.string))) {
                 keep <- eval(substitute(subset), x$data$ss, parent.frame())
                 if (sum(keep) < 2) stop("must keep at least 2 bins")
@@ -124,6 +125,7 @@ subset.oce <- function (x, subset, indices=NULL, ...)
                 for (name in names(x$data$ma)) {
                     rval$data$ma[[name]] <- x$data$ma[[name]][,keep,]
                 }
+                rval$metadata$number.of.cells <- sum(keep)
             } else {
                 stop("should express the subset in terms of distance or time")
             }

@@ -71,20 +71,21 @@ read.adcp.nortek(file, from=0, to, by=1,
 	  \item{\code{pitch}}{The pitch of the instrument, in degrees.}
 	  \item{\code{roll}}{The roll of the instrument, in degrees.}
 	}}
-    \item{\code{ma}}{A set of matrices containing the profile data:
+    \item{\code{ma}}{A set of 3D arrays that contain the profile data,
+      as follows.
       \describe{
         \item{\code{v}}{The velocity.}
 	\item{\code{a}}{The amplitude of backscatter.}
 	\item{\code{q}}{A measure of the quality of the data,
    	  e.g. correlation or percent-good.}
       }
-      Each of the above is a 3-D array, with first index indicating
-      profile number, second index indicating cell number (distance from sensor),
-      and third index indicating beam number.  Objects of class \code{rdi}
-      typically have 4 beams, while those of type \code{aquadopp} have 3 beams.}
+      The first index corresponds to profile number, the second index
+      to cell number (distance from sensor), and the third to beam
+      number.  Objects of class \code{rdi} typically have 4 beams, while
+      those of type \code{aquadopp} have 3 beams.}
     }
-    In addition to this \code{data} entry, the \code{metadata} entry holds
-    a wealth of information as well, e.g. on beam geometry, etc.
+    In addition to the \code{data} entry, the \code{metadata} entry holds
+    general information about such things as beam geometry, etc.
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adcp"}, which

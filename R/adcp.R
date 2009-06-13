@@ -130,7 +130,7 @@ read.header.rdi <- function(file, debug)
     serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
     if (debug) cat("SERIAL NUMBER", serial.number, "\n")
     if (debug) cat("SERIAL NUMBER", FLD[55:58], "\n")
-    if (serial.number == 0) serial.number <- c(cpu.board.serial.number, "(CPU board)") # FIXME: where is serial no. stored?
+    if (serial.number == 0) serial.number <- c(cpu.board.serial.number, "(CPU board)") # FIXME: where is serial #?
 
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n")
@@ -157,8 +157,8 @@ read.header.rdi <- function(file, debug)
     RTC.minute <- readBin(VLD[9], "integer", n=1, size=1)
     RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
     RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
-    RTC.time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "UTC") # not sure on TZ
-    if (debug > 2) cat("time:", format(RTC.time), "\n")
+    time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "UTC") # not sure on TZ
+    if (debug > 2) cat("time:", format(time), "\n")
 
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
@@ -239,14 +239,7 @@ read.header.rdi <- function(file, debug)
          serial.number=serial.number,
          ## beam.angle=beam.angle,  # wrong in my tests, anyway
          ensemble.number=ensemble.number,
-         RTC.year=RTC.year,
-         RTC.month=RTC.month,
-         RTC.day=RTC.day,
-         RTC.hour=RTC.hour,
-         RTC.minute=RTC.minute,
-         RTC.second=RTC.second,
-         RTC.hundredths=RTC.hundredths,
-         RTC.time=RTC.time,
+         time=time,
          ensemble.number.MSB=ensemble.number.MSB,
          bit.result=bit.result,
          speed.of.sound=speed.of.sound,
@@ -256,7 +249,7 @@ read.header.rdi <- function(file, debug)
          roll=roll,
          salinity=salinity,             # seems to be constant
          temperature=temperature,
-         pressure=pressure  # FIXME: -244 in SLEIWEX data SL08F001.000
+         pressure=pressure
          )
 }
 
@@ -363,13 +356,13 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
     seek(file, where=0, origin="end")
     bytes.in.file <- seek(file, where=0)
     profiles.in.file <- bytes.in.file / bytes.per.profile
-    sampling.start <- p1$header$RTC.time
-    sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(p2$header$RTC.time, p1$header$RTC.time, units="sec"))
+    sampling.start <- p1$header$time
+    sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(p2$header$time, p1$header$time, units="sec"))
 
 
     ## Possibly interpret from and to as starting and ending times.
-    t1 <- p1$header$RTC.time[1]
-    t2 <- p2$header$RTC.time[1]
+    t1 <- p1$header$time[1]
+    t2 <- p2$header$time[1]
     dt <- as.numeric(difftime(t2, t1, units="sec"))
     if (!missing(from) && inherits(from, "POSIXt")) {
         from <- max(as.numeric(difftime(from, t1, units="sec")) / dt, 0)
@@ -386,6 +379,7 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
             by <- as.numeric(by)
         }
     }
+
     if (!missing(to) && inherits(to, "POSIXt")) {
         to <- 1 + (as.numeric(difftime(to, t1, units="sec")) / dt - from) / by
         if (to < 0) stop("cannot have to < 0")
@@ -407,7 +401,7 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
             a[i,,beam] <- p$a[,beam]
             q[i,,beam] <- p$q[,beam]
         }
-        time <- c(time, p$header$RTC.time) # FIXME: rename as p$time
+        time <- c(time, p$header$time)
         pressure <- c(pressure, p$header$pressure)
         temperature <- c(temperature, p$header$temperature)
         salinity <- c(salinity, p$header$salinity)
@@ -437,7 +431,7 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
     if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
-    attr(time, "tzone") <- attr(p$header$RTC.time, "tzone")
+    attr(time, "tzone") <- attr(p$header$time, "tzone")
     data <- list(ma=list(v=v, a=a, q=q),
                  ss=list(distance=seq(bin1.distance, by=cell.size, length.out=p$header$number.of.cells)),
                  ts=list(time=time,
@@ -447,12 +441,10 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
                  depth.of.transducer=depth.of.transducer,
                  heading=heading,
                  pitch=pitch,
-                 roll=roll)
-                 )                     # FIXME: this is too hard-wired
+                 roll=roll))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-
     class(res) <- c("adcp", "rdi", "oce")
     res
 }
@@ -775,15 +767,19 @@ adcp.beam2frame <- function(x)
         res$data$ma$v <- vprime
     } else if (inherits(x, "aquadopp")) {
         res <- x
-        rot <- x$metadata$beam.to.xyz
+        tr.mat <- x$metadata$beam.to.xyz
         if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
             ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
-            rot[2,] <- -rot[2,]
-            rot[3,] <- -rot[3,]
+            tr.mat[2,] <- -tr.mat[2,]
+            tr.mat[3,] <- -tr.mat[3,]
         } else if (x$metadata$orientation != "upward")
             stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
-        for (p in 1:x$metadata$number.of.profiles)
-            res$data$ma$v[p,,] <- t(x$metadata$beam.to.xyz %*% t(x$data$ma$v[p,,]))
+        np <- dim(x$data$ma$v)[1]
+        nc <- dim(x$data$ma$v)[2]
+        transformed <- array(unlist(lapply(1:np, function(p) tr.mat %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+        res$data$ma$v[,,1] <- t(transformed[1,,])
+        res$data$ma$v[,,2] <- t(transformed[2,,])
+        res$data$ma$v[,,3] <- t(transformed[3,,])
     } else {
         stop("adcp type must be either \"rdi\" or \"aquadopp\"")
     }
@@ -811,19 +807,19 @@ adcp.frame2earth <- function(x)
     SP <- sin(to.radians * pitch)
     CR <- cos(to.radians * roll)
     SR <- sin(to.radians * roll)
-    np <- x$metadata$number.of.profiles
-    rotation.matrix <- array(dim=c(3, 3, np))
-    rotation.matrix[1,1,] <-  CH * CR + SH * SP * SR
-    rotation.matrix[1,2,] <-  SH * CP
-    rotation.matrix[1,3,] <-  CH * SR - SH * SP * CR
-    rotation.matrix[2,1,] <- -SH * CR + CH * SP * SR
-    rotation.matrix[2,2,] <-  CH * CP
-    rotation.matrix[2,3,] <- -SH * SR - CH * SP * CR
-    rotation.matrix[3,1,] <- -CP * SR
-    rotation.matrix[3,2,] <-  SP
-    rotation.matrix[3,3,] <-  CP * CR
-    rotated <- array(unlist(lapply(1:np, function(p) rotation.matrix[,,p] %*% t(x$data$ma$v[p,,1:3]))),
-                     dim=c(3, x$metadata$number.of.cells, np))
+    np <- dim(x$data$ma$v)[1]
+    nc <- dim(x$data$ma$v)[2]
+    tr.mat <- array(dim=c(3, 3, np))
+    tr.mat[1,1,] <-  CH * CR + SH * SP * SR
+    tr.mat[1,2,] <-  SH * CP
+    tr.mat[1,3,] <-  CH * SR - SH * SP * CR
+    tr.mat[2,1,] <- -SH * CR + CH * SP * SR
+    tr.mat[2,2,] <-  CH * CP
+    tr.mat[2,3,] <- -SH * SR - CH * SP * CR
+    tr.mat[3,1,] <- -CP * SR
+    tr.mat[3,2,] <-  SP
+    tr.mat[3,3,] <-  CP * CR
+    rotated <- array(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
     res$data$ma$v[,,1] <- t(rotated[1,,])
     res$data$ma$v[,,2] <- t(rotated[2,,])
     res$data$ma$v[,,3] <- t(rotated[3,,])
@@ -844,30 +840,15 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
     SP <- sin(to.radians * pitch)
     CR <- cos(to.radians * roll)
     SR <- sin(to.radians * roll)
-    m1 <- matrix(c(CH,  SH, 0,
-                   -SH, CH, 0,
-                   0,    0, 1),
-                 nrow=3, byrow=TRUE)
-    m2 <- matrix(c(1,  0,  0,
-                   0, CP, -SP,
-                   0, SP,  CP),
-                 nrow=3, byrow=TRUE)
-    m3 <-  matrix(c(CR,  0, SR,
-                    0,   1,  0,
-                    -SR, 0, CR),
-                  nrow=3, byrow=TRUE)
-    rotation.matrix <- m1 %*% m2 %*% m3
-
-    ## Caution: the chunk below is inelegant, and therefore brittle.
-    vmat <- rbind(matrix(aperm(x$data$ma$v[,,1]), nrow=1, byrow=TRUE),
-                  matrix(aperm(x$data$ma$v[,,2]), nrow=1, byrow=TRUE),
-                  matrix(aperm(x$data$ma$v[,,3]), nrow=1, byrow=TRUE))
-    rotated <- rotation.matrix %*% vmat
-    np <- dim(x$data$ma$v)[1]           # number of profiles
-    res$data$ma$v[,,1] <- matrix(rotated[1,], nrow=np, byrow=TRUE)
-    res$data$ma$v[,,2] <- matrix(rotated[2,], nrow=np, byrow=TRUE)
-    res$data$ma$v[,,3] <- matrix(rotated[3,], nrow=np, byrow=TRUE)
-
+    tr.mat <- matrix(c( CH * CR + SH * SP * SR,  SH * CP,  CH * SR - SH * SP * CR,
+                       -SH * CR + CH * SP * SR,  CH * CP, -SH * SR - CH * SP * CR,
+                       -CP * SR,                 SP,       CP * CR),               nrow=3, byrow=TRUE)
+    np <- dim(x$data$ma$v)[1]
+    nc <- dim(x$data$ma$v)[2]
+    rotated <- array(unlist(lapply(1:np, function(p) tr.mat %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+    res$data$ma$v[,,1] <- t(rotated[1,,])
+    res$data$ma$v[,,2] <- t(rotated[2,,])
+    res$data$ma$v[,,3] <- t(rotated[3,,])
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
@@ -1204,7 +1185,7 @@ read.adcp.nortek <- function(file, from=0, to, by=1,
                 if (!(i %% 50)) cat(i, "\n")
             }
         }
-        if (monitor) cat("\nRead", to, "profiles\n", sep="")
+        if (monitor) cat("\nRead", to, "profiles\n")
         salinity <- rep(salinity, to)     # fake a time-series
         class(time) <- c("POSIXt", "POSIXct")
         attr(time, "tzone") <- "UTC" # BUG should let user control this
