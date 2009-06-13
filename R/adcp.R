@@ -797,32 +797,36 @@ adcp.frame2earth <- function(x)
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
     res <- x
-    to.radians <- pi / 180
-    for (p in 1:x$metadata$number.of.profiles) {
-        heading <- res$data$ts$heading[p]
-        if (res$metadata$orientation == "down") {
-            pitch <- -res$data$ts$pitch[p]
-            roll <- -res$data$ts$roll[p]
-        } else {
-            pitch <- res$data$ts$pitch[p]
-            roll <- res$data$ts$roll[p]
-        }
-        CH <- cos(to.radians * heading)
-        SH <- sin(to.radians * heading)
-        CP <- cos(to.radians * pitch)
-        SP <- sin(to.radians * pitch)
-        CR <- cos(to.radians * roll)
-        SR <- sin(to.radians * roll)
-        rotation.matrix <- matrix(c(CH*CR+SH*SP*SR, SH*CP, CH*SR-SH*SP*CR,
-                               -SH*CR+CH*SP*SR, CH*CP, -SH*SR-CH*SP*CR,
-                               -CP*SR, SP, CP*CR), nrow=3, byrow=TRUE)
-        rotated <- rotation.matrix %*% matrix(c(x$data$ma$v[p,,1],
-                                                x$data$ma$v[p,,2],
-                                                x$data$ma$v[p,,3]), nrow=3, byrow=TRUE)
-        res$data$ma$v[p,,1] <- rotated[1,]
-        res$data$ma$v[p,,2] <- rotated[2,]
-        res$data$ma$v[p,,3] <- rotated[3,]
+    heading <- res$data$ts$heading
+    pitch <- res$data$ts$pitch
+    roll <- res$data$ts$roll
+    if (res$metadata$orientation == "down") {
+        pitch <- -pitch
+        roll <- -roll
     }
+    to.radians <- pi / 180
+    CH <- cos(to.radians * heading)
+    SH <- sin(to.radians * heading)
+    CP <- cos(to.radians * pitch)
+    SP <- sin(to.radians * pitch)
+    CR <- cos(to.radians * roll)
+    SR <- sin(to.radians * roll)
+    np <- x$metadata$number.of.profiles
+    rotation.matrix <- array(dim=c(3, 3, np))
+    rotation.matrix[1,1,] <-  CH * CR + SH * SP * SR
+    rotation.matrix[1,2,] <-  SH * CP
+    rotation.matrix[1,3,] <-  CH * SR - SH * SP * CR
+    rotation.matrix[2,1,] <- -SH * CR + CH * SP * SR
+    rotation.matrix[2,2,] <-  CH * CP
+    rotation.matrix[2,3,] <- -SH * SR - CH * SP * CR
+    rotation.matrix[3,1,] <- -CP * SR
+    rotation.matrix[3,2,] <-  SP
+    rotation.matrix[3,3,] <-  CP * CR
+    rotated <- array(unlist(lapply(1:np, function(p) rotation.matrix[,,p] %*% t(x$data$ma$v[p,,1:3]))),
+                     dim=c(3, x$metadata$number.of.cells, np))
+    res$data$ma$v[,,1] <- t(rotated[1,,])
+    res$data$ma$v[,,2] <- t(rotated[2,,])
+    res$data$ma$v[,,3] <- t(rotated[3,,])
     res$metadata$oce.coordinate <- "earth"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)

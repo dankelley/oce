@@ -21,14 +21,26 @@ imagep <- function(x, y, z,
     par(mgp=mgp, mar=mar)
     w <- (1.5 + par("mgp")[2]) * par("csi") * 2.54 + 0.5
 
-    ##cat("in imagep(), w=",w,"mgp=",paste(mgp, collapse=" "), "mar=",paste(par("mar"), collapse=" "), "\n")
-
     if (do.layout)
         layout(matrix(1:2, nrow=1, byrow=TRUE), widths=c(1, lcm(w)))
-    if (missing(breaks))
-        col <- oce.colors.palette(n=256)
-    else
+
+    if (missing(breaks)) {
+        zrange <- range(z, na.rm=TRUE)
+        if (missing(zlim)) {
+            breaks <- seq(zrange[1], zrange[2], length.out=if (missing(col)) 256 else length(col)+1)
+            breaks.orig <- breaks
+        } else {
+            breaks <- seq(zlim[1], zlim[2], length.out=if (missing(col)) 256 else length(col)+1)
+            breaks.orig <- breaks
+            breaks[1] <- zrange[1]
+            breaks[length(breaks)] <- zrange[2]
+        }
+    } else {
+        breaks.orig <- breaks
+    }
+    if (missing(col))
         col <- oce.colors.palette(n=length(breaks)-1)
+
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
 
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
@@ -85,26 +97,26 @@ imagep <- function(x, y, z,
     }
 
     ## palette
-    par(mar=c(mar[1],
-        1/4,
-        mgp[2]+1/2,
-        mgp[2]+1))
+    par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
     if (missing(breaks)) {
-        if (missing(zlim))
+        if (missing(zlim)) {
             palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
-        else
+        } else {
             palette <- seq(zlim[1], zlim[2], length.out=300)
+        }
         image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
               cex=par("cex"),
               zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
     } else {
-        if (missing(zlim))
+        if (missing(zlim)) {
             palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
-        else
+        } else {
             palette <- seq(zlim[1], zlim[2], length.out=300)
-        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", breaks=breaks, col=col,
-              cex=par("cex"),
-              zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+        }
+        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+              breaks=breaks.orig,
+              col=col,
+              cex=par("cex"), zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
     }
     if (draw.contours && !missing(breaks))
         abline(h=breaks)
