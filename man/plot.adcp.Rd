@@ -6,7 +6,7 @@
 
 \description{Plot ADCP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:x$metadata$number.of.beams, 
+\usage{\method{plot}{adcp}(x, which=1:dim(x$data$ma$v)[3],
      col=oce.colors.palette(128,1), zlim, 
      titles,
      ytype=c("profile", "distance"),

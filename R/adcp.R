@@ -249,9 +249,8 @@ read.header.rdi <- function(file, debug)
          roll=roll,
          salinity=salinity,             # seems to be constant
          temperature=temperature,
-         pressure=pressure
-         )
-}
+         pressure=pressure)
+}                                       # read.header.rdi()
 
 read.profile.rdi <- function(file, header, debug)
 {
@@ -359,7 +358,6 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
     sampling.start <- p1$header$time
     sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(p2$header$time, p1$header$time, units="sec"))
 
-
     ## Possibly interpret from and to as starting and ending times.
     t1 <- p1$header$time[1]
     t2 <- p2$header$time[1]
@@ -416,7 +414,6 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
             metadata$sampling.start <- sampling.start
             metadata$sampling.end <- sampling.end
             metadata$filename <- filename
-            metadata$number.of.profiles <- to
             metadata$oce.beam.attenuated <- FALSE
             metadata$oce.coordinate <- p$header$coordinate.system
         }
@@ -493,6 +490,8 @@ summary.adcp <- function(object, ...)
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
 
+    v.dim <- dim(object$data$ma$v)
+
     res <- list(res.specific,
                 filename=object$metadata$filename,
                 instrument.type=object$metadata$instrument.type,
@@ -503,11 +502,11 @@ summary.adcp <- function(object, ...)
                 sampling.start=object$metadata$sampling.start,
                 sampling.end=object$metadata$sampling.end,
                 distance=object$data$ss$distance,
-                number.of.profiles=object$metadata$number.of.profiles,
                 metadata=object$metadata,
                 frequency=object$metadata$frequency,
-                number.of.cells=object$metadata$number.of.cells,
-                number.of.beams=object$metadata$number.of.beams,
+                number.of.profiles=v.dim[1],
+                number.of.cells=v.dim[2],
+                number.of.beams=v.dim[3],
                 number.of.data.types=object$metadata$number.of.data.type,
                 bin1.distance=object$metadata$bin1.distance,
                 cell.size=object$metadata$cell.size,
@@ -518,13 +517,12 @@ summary.adcp <- function(object, ...)
                 orientation=object$metadata$orientation,
                 coordinate.system=object$metadata$coordinate.system,
                 oce.coordinate=object$metadata$oce.coordinate,
-                number.of.profiles=object$metadata$number.of.profiles,
                 fives=fives,
                 time=object$data$ts$time,
                 processing.log=processing.log.summary(object))
     class(res) <- "summary.adcp"
     res
-}
+}                                       # summary.adcp()
 
 print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
@@ -576,7 +574,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 plot.adcp <- function(x,
-                      which=1:x$metadata$number.of.beams,
+                      which=1:dim(x$data$ma$v)[3],
                       col=oce.colors.palette(128, 1),
                       zlim,
                       titles,
@@ -1228,22 +1226,24 @@ read.adcp.nortek <- function(file, from=0, to, by=1,
                      bin1.distance=blanking.distance, # FIXME: is this right?
                      blanking.distance=blanking.distance,
                      measurement.interval=measurement.interval,
-                     number.of.beams=number.of.beams,
+
+                     ##number.of.profiles=to,
+                     ##number.of.data.types=3, # velo ampl corr
+                     ##number.of.cells=number.of.cells,
+                     ##number.of.beams=number.of.beams,
+
                      beam.to.xyz=beam.to.xyz,
-                     number.of.cells=number.of.cells,
                      deployment.name=deployment.name,
                      cell.size=cell.size,
                      velocity.scale=velocity.scale,
                      coordinate.system=coordinate.system,
                      oce.coordinate=coordinate.system,
                      oce.beam.attenuated=FALSE,
-                     salinity=salinity,
-                     number.of.data.types=3, # velo ampl corr
-                     number.of.profiles=to
+                     salinity=salinity
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("adcp", "aquadopp", "oce")
     res
-}
+}                                       # read.adcp.nortek()
