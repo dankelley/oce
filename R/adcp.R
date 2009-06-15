@@ -685,32 +685,33 @@ plot.adcp <- function(x,
             if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', draw.time.range=draw.time.range)
             if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', draw.time.range=draw.time.range)
             if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', draw.time.range=draw.time.range)
-            if (which[w] == 19) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
-                     ylab=image.name(x, 1),
-                     type='l', draw.time.range=draw.time.range, ...)
-            if (which[w] == 20) oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
-                     ylab=image.name(x, 2),
-                     type='l', draw.time.range=draw.time.range, ...)
-            if (which[w] == 21) {
+            if (which[w] == 19) {
+                if (x$metadata$number.of.beams > 0)
+                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
+                                ylab=image.name(x, 1),
+                                type='l', draw.time.range=draw.time.range, ...)
+                else warning("cannot plot beam/velo 1 because the device no beams")
+            }
+            if (which[w] == 20) {
                 if (x$metadata$number.of.beams > 1)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
-                                ylab=image.name(x, 3),
+                                ylab=image.name(x, 2),
                                 type='l', draw.time.range=draw.time.range, ...)
-                else warning("cannot plot beam 2 because the device has only", x$metadata$number.of.beams, "beams")
+                else warning("cannot plot beam/velo 2 because the device has only", x$metadata$number.of.beams, "beams")
             }
-            if (which[w] == 22) {
+            if (which[w] == 21) {
                 if (x$metadata$number.of.beams > 2)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
                                 ylab=image.name(x, 3),
-                                type='l', draw.time.range=draw.time.range)
-                else warning("cannot plot beam 3 because the device has only", x$metadata$number.of.beams, "beams")
+                                type='l', draw.time.range=draw.time.range, ...)
+                else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
             }
-            if (which[w] == 23) {
+            if (which[w] == 22) {
                 if (x$metadata$number.of.beams > 3)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
-                                ylab=image.name(x, 3),
+                                ylab=image.name(x, 4),
                                 type='l', draw.time.range=draw.time.range)
-                else warning("cannot plot beam 4 because the device has only", x$metadata$number.of.beams, "beams")
+                else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             draw.time.range <- FALSE
         } else if (which[w] %in% other) {                   # other types
