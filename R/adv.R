@@ -161,13 +161,16 @@ plot.adv <- function(x,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
+    if (!all(which %in% 1:3)) stop("\"which\" must be in the range 1:3")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
+    lay <- layout(cbind(1:lw))
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
     gave.ylim <- "ylim" %in% names(dots)
+
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     adorn.length <- length(adorn)
@@ -176,17 +179,19 @@ plot.adv <- function(x,
         adorn.length <- lw
     }
     time <- seq(from=x$metadata$sampling.start, by=x$metadata$deltat, length.out=x$metadata$number.of.samples)
+    attr(time, "tzone") <- attr(x$metadata$sampling.start, "tzone")
+
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "smooth=",smooth,"\n")
         if (which[w] == 1) oce.plot.ts(time,
                  if (smooth) as.numeric(smooth(x$data$x)) else x$data$x,
-                 ylab="u [m/s]", type='l', draw.time.range=draw.time.range)
+                 ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
         if (which[w] == 2) oce.plot.ts(time,
                  if (smooth) as.numeric(smooth(x$data$y)) else x$data$y,
-                 ylab="v [m/s]", type='l', draw.time.range=draw.time.range)
+                 ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
         if (which[w] == 3) oce.plot.ts(time,
                  if (smooth) as.numeric(smooth(x$data$z)) else x$data$z,
-                 ylab="w [m/s]", type='l', draw.time.range=draw.time.range)
+                 ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
         draw.time.range <- FALSE
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)

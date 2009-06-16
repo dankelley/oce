@@ -1227,12 +1227,6 @@ read.adcp.nortek <- function(file, from=0, to, by=1,
                      bin1.distance=blanking.distance, # FIXME: is this right?
                      blanking.distance=blanking.distance,
                      measurement.interval=measurement.interval,
-
-                     ##number.of.profiles=to,
-                     ##number.of.data.types=3, # velo ampl corr
-                     ##number.of.cells=number.of.cells,
-                     ##number.of.beams=number.of.beams,
-
                      beam.to.xyz=beam.to.xyz,
                      deployment.name=deployment.name,
                      cell.size=cell.size,

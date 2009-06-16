@@ -63,7 +63,7 @@ Summaries of ADV data are provided by \code{\link{summary.adv}}.}
 \dontrun{
 library(oce)
 adv <- read.adv("~/data/sleiwex-archive/2008/mooring/m6/autopod/day183/SL08A183.015", 
-       sampling.start=as.POSIXct("2008-07-01 15:00:00 UTC"), deltat=0.1)
+       sampling.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
 plot(adv)
 }
 }
