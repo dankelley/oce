@@ -48,13 +48,12 @@ read.adv.sontek(file, from=0, to, by=1,
     it provides is better for normal calls by a user.)}
 }
 
-\details{Reads a binary-format ADV file.  PRELIMINARY CODE ONLY.}
+\details{Reads a binary-format ADV file.  THIS IS PRELIMINARY CODE ONLY;
+  THE INTERFAE MAY CHANGE.}
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
-  contains measurements made with an ADV device.  The value of
-  \code{metadata$coordinate} is set to \code{"beam"}, a fact that is
-  used in other steps in processing.  For information on data stored in
-  the object, see \dQuote{Details}.}
+  contains measurements made with an ADV device.  For information on
+  data stored in the object, see \dQuote{Details}.}
 
 
 \seealso{Objects of class \code{adv} may be plotted with \code{\link{plot.adv}}
