@@ -8,9 +8,9 @@
 \description{Read an ADCP data file, producing an object of type \code{adcp}.}
 
 \usage{
-read.adcp <- function(file, from=0, to, by=1,
-                      type=c("rdi", "nortek"),
-                      debug=0, monitor=TRUE, log.action)
+read.adcp(file, from=0, to, by=1,
+          type=c("rdi", "nortek"),
+          debug=0, monitor=TRUE, log.action)
 read.adcp.rdi(file, from=0, to, by=1,
               type=c("workhorse"),
               debug=0, monitor=TRUE, log.action)
