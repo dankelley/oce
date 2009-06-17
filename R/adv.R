@@ -70,10 +70,11 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     pressure <- readBin(buf[sample.start2 + 20], "integer", signed=FALSE, endian="little", size=2, n=n) / 1000 # mbar?
     ## 21 and 22 are checksum
 
-    ##class(time) <- c("POSIXt", "POSIXct")
-    ##attr(time, "tzone") <- attr(p$header$time, "tzone")
-    ##data <- list(time=time, u=u, v=v, w=w)
-    data <- data.frame(time=sample.number, # FIXME: use decimal time?
+    time <- seq(from=sampling.start, by=deltat, length.out=length(x))
+    attr(time, "tzone") <- attr(sampling.start, "tzone")
+
+    data <- data.frame(time=time,
+                       sample.number=sample.number,
                        x=x, y=y, z=z,
                        a1=a1, a2=a2, a3=a3,
                        c1=c1, c2=c2, c3=c3,
@@ -185,22 +186,20 @@ plot.adv <- function(x,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-    time <- seq(from=x$metadata$sampling.start, by=x$metadata$deltat, length.out=length(x$data$x))
-    attr(time, "tzone") <- attr(x$metadata$sampling.start, "tzone")
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "smooth=",smooth,"\n")
         if (which[w] == 1) {
-            oce.plot.ts(time,
+            oce.plot.ts(x$data$time,
                         if (smooth) as.numeric(smooth(x$data$x)) else x$data$x,
                         ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
         }
         if (which[w] == 2) {
-            oce.plot.ts(time,
+            oce.plot.ts(x$data$time,
                         if (smooth) as.numeric(smooth(x$data$y)) else x$data$y,
                         ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
         }
         if (which[w] == 3) {
-            oce.plot.ts(time,
+            oce.plot.ts(x$data$time,
                         if (smooth) as.numeric(smooth(x$data$z)) else x$data$z,
                         ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
         }
