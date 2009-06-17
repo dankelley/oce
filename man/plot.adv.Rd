@@ -14,7 +14,7 @@
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
-     margins.as.image=TRUE,
+     margins.as.image=FALSE,
      \dots)}
 
 \arguments{
@@ -44,8 +44,8 @@
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
-    right of time-series plots, even if there are no images in the \code{which}
-    list.  (The margin is made wide if there are some images in the sequence.)}
+    right of time-series plots, matching the space used up by a palette
+    in an \code{\link{imagep}} plot.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

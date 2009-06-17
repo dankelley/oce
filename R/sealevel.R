@@ -53,7 +53,8 @@ plot.sealevel <- function(x, which=1:4,
                           adorn=NULL,
                           draw.time.range=getOption("oce.draw.time.range"),
                           mgp=getOption("oce.mgp"),
-                          mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
+                          mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+                          margins.as.image=FALSE,
                           ...)
 {
     debug <- FALSE
@@ -93,6 +94,14 @@ plot.sealevel <- function(x, which=1:4,
     opar <- par(no.readonly = TRUE)
     par(mgp=mgp, mar=mar)
     lw <- length(which)
+    if (margins.as.image) {
+        scale <- 0.7
+        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+    } else {
+        if (lw > 1)
+            lay <- layout(cbind(1:lw))
+    }
     if (lw > 1) on.exit(par(opar))
 
     ## tidal constituents (in cpd):
@@ -103,9 +112,6 @@ plot.sealevel <- function(x, which=1:4,
         adorn.length <- 4
     }
     num.NA <- sum(is.na(x$data$elevation))
-
-    if (lw > 1)
-        layout(cbind(1:lw))
 
     par(mgp=mgp)
     par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
@@ -184,6 +190,13 @@ plot.sealevel <- function(x, which=1:4,
             }
         } else {
             stop("unrecognized value of which", which[w])
+        }
+        if (margins.as.image)  {
+            ## blank plot, to get axis length same as for images
+            omar <- par("mar")
+            par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
+            plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+            par(mar=omar)
         }
         if (adorn.length > 1) {
             t <- try(eval(adorn[w]), silent=TRUE)

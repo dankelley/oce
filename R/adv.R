@@ -155,7 +155,7 @@ plot.adv <- function(x,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
-                     margins.as.image=TRUE,
+                     margins.as.image=FALSE,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")

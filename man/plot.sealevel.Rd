@@ -9,8 +9,9 @@
 \usage{\method{plot}{sealevel}(x, which=1:4, adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"), 
-     mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
-    \dots)}
+     mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+     margins.as.image=FALSE,
+     \dots)}
 
 \arguments{
   \item{x}{an object of class \code{"sealevel"}, e.g. as read by
@@ -34,6 +35,9 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
+    right of time-series plots, matching the space used up by a palette
+    in an \code{\link{imagep}} plot.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
