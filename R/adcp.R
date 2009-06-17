@@ -416,6 +416,7 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
             metadata$filename <- filename
             metadata$oce.beam.attenuated <- FALSE
             metadata$oce.coordinate <- p$header$coordinate.system
+            metadata$number.of.beams <- p1$header$number.of.beams
         }
         if (monitor) {
             cat(".")
@@ -582,7 +583,8 @@ plot.adcp <- function(x,
                       adorn=NULL,
                       draw.time.range=getOption("oce.draw.time.range"),
                       mgp=getOption("oce.mgp"),
-                      mar=c(mgp[1],mgp[1]+1,1,1),
+                      mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+                      margins.as.image=TRUE,
                       ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
@@ -628,10 +630,10 @@ plot.adcp <- function(x,
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
     }
-    if (any(which %in% images)) {
-        scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
+    if (any(which %in% images) || margins.as.image) {
+        ## scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
+        scale <- 0.7
         w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-        ##cat("csi=", par("csi"), "w=", w, "\n")
         lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
     } else {
         lay <- layout(cbind(1:lw))
@@ -714,6 +716,13 @@ plot.adcp <- function(x,
                 else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             draw.time.range <- FALSE
+            if (margins.as.image)  {
+                ## blank plot, to get axis length same as for images
+                omar <- par("mar")
+                par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
+                plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+                par(mar=omar)
+            }
         } else if (which[w] %in% other) {                   # other types
             if (which[w] == 23) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -764,7 +773,7 @@ adcp.beam2frame <- function(x)
         vprime[,,4] <-  d * (x$data$ma$v[,,1] + x$data$ma$v[,,2] - x$data$ma$v[,,3] - x$data$ma$v[,,4])
         res <- x
         res$data$ma$v <- vprime
-    } else if (inherits(x, "aquadopp")) {
+    } else if (inherits(x, "nortek")) {
         res <- x
         tr.mat <- x$metadata$beam.to.xyz
         if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
@@ -780,7 +789,7 @@ adcp.beam2frame <- function(x)
         res$data$ma$v[,,2] <- t(transformed[2,,])
         res$data$ma$v[,,3] <- t(transformed[3,,])
     } else {
-        stop("adcp type must be either \"rdi\" or \"aquadopp\"")
+        stop("adcp type must be either \"rdi\" or \"nortek\"")
     }
     res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -1209,6 +1218,7 @@ read.adcp.nortek <- function(file, from=0, to, by=1,
                      sampling.start=sampling.start,
                      sampling.end=sampling.end,
                      size=size,
+                     number.of.beams=3,
                      serial.number=serial.number,
                      frequency=frequency,
                      internal.code.version=pic.version,
@@ -1233,12 +1243,11 @@ read.adcp.nortek <- function(file, from=0, to, by=1,
                      velocity.scale=velocity.scale,
                      coordinate.system=coordinate.system,
                      oce.coordinate=coordinate.system,
-                     oce.beam.attenuated=FALSE,
-                     salinity=salinity
+                     oce.beam.attenuated=FALSE
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adcp", "aquadopp", "oce")
+    class(res) <- c("adcp", "nortek", "oce")
     res
 }                                       # read.adcp.nortek()

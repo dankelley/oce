@@ -490,6 +490,8 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
         i <- seq(1, dim(x$data)[1], by=by)
         res$data <- res$data[i,]
     }
+    if ("deltat" %in% names(x$metadata)) # KLUDGE for ADV; sub-second sampling is problem for time in (integer) POSIXct
+        res$metadata$deltat <- by * x$metadata$deltat
     processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
 }
 

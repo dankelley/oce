@@ -73,13 +73,12 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     ##class(time) <- c("POSIXt", "POSIXct")
     ##attr(time, "tzone") <- attr(p$header$time, "tzone")
     ##data <- list(time=time, u=u, v=v, w=w)
-    data <- list(#buf=buf,
-                 time=sample.number,
-                 x=x, y=y, z=z,
-                 a1=a1, a2=a2, a3=a3,
-                 c1=c1, c2=c2, c3=c3,
-                 temperature=temperature,
-                 pressure=pressure)
+    data <- data.frame(time=sample.number, # FIXME: use decimal time?
+                       x=x, y=y, z=z,
+                       a1=a1, a2=a2, a3=a3,
+                       c1=c1, c2=c2, c3=c3,
+                       temperature=temperature,
+                       pressure=pressure)
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      number.of.samples=length(x),
@@ -156,13 +155,23 @@ plot.adv <- function(x,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+                     margins.as.image=TRUE,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     if (!all(which %in% 1:3)) stop("\"which\" must be in the range 1:3")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
-    if (lw > 1) lay <- layout(cbind(1:lw))
+    if (margins.as.image) {
+        ## scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
+        scale <- 0.7
+        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+    } else {
+        if (lw > 1)
+            lay <- layout(cbind(1:lw))
+    }
+
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp, mar=mar)
@@ -176,20 +185,32 @@ plot.adv <- function(x,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-    time <- seq(from=x$metadata$sampling.start, by=x$metadata$deltat, length.out=x$metadata$number.of.samples)
+    time <- seq(from=x$metadata$sampling.start, by=x$metadata$deltat, length.out=length(x$data$x))
     attr(time, "tzone") <- attr(x$metadata$sampling.start, "tzone")
-
     for (w in 1:lw) {
         ##cat("which[w]=", which[w], "smooth=",smooth,"\n")
-        if (which[w] == 1) oce.plot.ts(time,
-                 if (smooth) as.numeric(smooth(x$data$x)) else x$data$x,
-                 ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
-        if (which[w] == 2) oce.plot.ts(time,
-                 if (smooth) as.numeric(smooth(x$data$y)) else x$data$y,
-                 ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
-        if (which[w] == 3) oce.plot.ts(time,
-                 if (smooth) as.numeric(smooth(x$data$z)) else x$data$z,
-                 ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
+        if (which[w] == 1) {
+            oce.plot.ts(time,
+                        if (smooth) as.numeric(smooth(x$data$x)) else x$data$x,
+                        ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
+        }
+        if (which[w] == 2) {
+            oce.plot.ts(time,
+                        if (smooth) as.numeric(smooth(x$data$y)) else x$data$y,
+                        ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
+        }
+        if (which[w] == 3) {
+            oce.plot.ts(time,
+                        if (smooth) as.numeric(smooth(x$data$z)) else x$data$z,
+                        ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
+        }
+        if (margins.as.image)  {
+            ## blank plot, to get axis length same as for images
+            omar <- par("mar")
+            par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
+            plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+            par(mar=omar)
+        }
         draw.time.range <- FALSE
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
