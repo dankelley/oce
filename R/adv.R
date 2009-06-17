@@ -136,8 +136,6 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 ##    cat("  Orientation:                ", x$orientation, "\n")
 ##    cat("  Beam angle:                 ", x$metadata$beam.angle, "\n")
     cat("  Number of samples:          ", x$number.of.samples, "\n")
-    cat("  Profile times:              ", as.character(x$start.time), attr(x$start.time,"tzone"),
-        "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n")
 
     if (x$instrument.type == "sontek") {
         cat("  SonTek-specific\n")
@@ -157,14 +155,14 @@ plot.adv <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1),
+                     mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     if (!all(which %in% 1:3)) stop("\"which\" must be in the range 1:3")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
-    lay <- layout(cbind(1:lw))
+    if (lw > 1) lay <- layout(cbind(1:lw))
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp, mar=mar)
