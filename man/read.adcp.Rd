@@ -1,6 +1,7 @@
 \name{read.adcp}
 \alias{read.adcp}
 \alias{read.adcp.nortek}
+\alias{read.adcp.sontek}
 \alias{read.adcp.rdi}
 
 \title{Read an ADCP data file}
@@ -16,6 +17,9 @@ read.adcp.rdi(file, from=0, to, by=1,
               debug=0, monitor=TRUE, log.action)
 read.adcp.nortek(file, from=0, to, by=1,
                  type=c("aquadopp high resolution"),
+                 debug=0, monitor=TRUE, log.action)
+read.adcp.sontek(file, from=0, to, by=1,
+                 type=c("adp"),
                  debug=0, monitor=TRUE, log.action)
 }
 

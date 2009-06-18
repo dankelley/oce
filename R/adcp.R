@@ -326,10 +326,10 @@ read.adcp <- function(file, from=0, to, by=1,
                          debug=debug, monitor=monitor, log.action=log.action)
 }
 
-read.adp.sontek <- function(file, from=0, to, by=1,
-                            type="default",
-                            withHeader=FALSE, sampling.start, deltat,
-                            debug=0, monitor=TRUE, log.action)
+read.adcp.sontek <- function(file, from=0, to, by=1,
+                             type="adp",
+                             withHeader=FALSE, sampling.start, deltat,
+                             debug=0, monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- file

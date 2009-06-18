@@ -64,6 +64,7 @@ export(
        read.adcp,
        read.adcp.rdi,
        read.adcp.nortek,
+       read.adcp.sontek,
        read.adv,
        read.adv.sontek,
        read.coastline,
