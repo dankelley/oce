@@ -326,6 +326,147 @@ read.adcp <- function(file, from=0, to, by=1,
                          debug=debug, monitor=monitor, log.action=log.action)
 }
 
+read.adp.sontek <- function(file, from=0, to, by=1,
+                            type="default",
+                            withHeader=FALSE, sampling.start, deltat,
+                            debug=0, monitor=TRUE, log.action)
+{
+    if (is.character(file)) {
+        filename <- file
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    type <- match.arg(type)
+    if (withHeader) {
+        stop("cannot read with header yet")
+    } else {
+        if (missing(sampling.start)) stop("must give 'sampling.start' if withHeader is FALSE")
+        if (missing(deltat)) stop("must give 'deltat' if withHeader is FALSE")
+        seek(file, 0, "end")
+        file.size <- seek(file, 0, "start")
+        if (debug) cat("file", filename, "has", file.size, "bytes\n")
+        buf <- readBin(file, "raw", n=file.size, endian="little")
+        flag1 <- as.raw(0xa5)           # id
+        flag2 <- as.raw(0x10)           # number of bytes (22 in decimal)
+        match.flag1 <- which(buf==flag1)
+        profile.start <- match.flag1[buf[match.flag1 + 1] == flag2]
+        profile.start <- profile.start[1:(-1 + length(profile.start))] # last may be partial
+        if (debug) {
+            cat("first 100 bytes of first profile:\n")
+            print(buf[profile.start[1]:(99+profile.start[1])])
+        }
+    }
+    s <- profile.start[1]
+    year <- readBin(buf[s+18:19], "integer", size=2, signed=FALSE, endian="little")
+    day <- as.integer(buf[s+20])
+    month <- as.integer(buf[s+21])
+    minute <- as.integer(buf[s+22])
+    hour <- as.integer(buf[s+23])
+    sec100 <- as.integer(buf[s+24])     # FIXME: determine whether this is 1/100th second
+    sec <- as.integer(buf[s+25])
+    if (debug) cat("year=", year, "month=", month, "day=", day, "hour=", hour, "minute=",minute,"sec100=",sec100,"sec=",sec,"\n")
+    t <- ISOdatetime(year, month, day, hour, minute, sec+sec100/100, tz="UTC")
+    print(t)
+
+    number.of.beams <- as.integer(buf[s+26])
+    if (debug) cat("number.of.beams=", number.of.beams, "\n")
+
+    orientation <- as.integer(buf[s+27])
+    if (debug) cat("orientation=", orientation, "\n")
+
+    temp.mode <- as.integer(buf[s+28])
+    if (debug) cat("temp.mode=", temp.mode, "\n")
+
+    coordinate.sytem <- as.integer(buf[s+29])
+    if (debug) cat("coordinate.system=", coordinate.sytem, "\n")
+
+    number.of.cells <- readBin(buf[s+30:31], "integer", n=1, size=2, endian="little", signed=FALSE)
+    if (debug) cat("number.of.cells=", number.of.cells, "\n")
+
+    cell.size <- readBin(buf[s+32:33], "integer", n=1, size=2, endian="little", signed=FALSE) / 100 # metres
+    if (debug) cat("cell.size=", cell.size, "m\n")
+
+    blanking.distance <- readBin(buf[s+34:35], "integer", n=1, size=2, endian="little", signed=FALSE) / 100 # metres
+    if (debug) cat("blanking.distance=", blanking.distance, "m\n")
+
+    ## avgInt 2 bytes
+    ## nPings 2 bytes
+    heading <- readBin(buf[s+40:41], "integer", n=1, size=2, endian="little", signed=TRUE) / 10
+    pitch <- readBin(buf[s+42:43], "integer", n=1, size=2, endian="little", signed=TRUE) / 10
+    roll <- readBin(buf[s+44:45], "integer", n=1, size=2, endian="little", signed=TRUE) / 10
+    if (debug) cat("heading=", heading, "pitch=", pitch, "roll=", roll, "\n")
+
+    temperature <- readBin(buf[s+46:47], "integer", n=1, size=2, endian="little", signed=TRUE) / 100
+    if (debug) cat("T=", temperature, "C\n")
+    pressure <- readBin(buf[s+48:49], "integer", n=1, size=2, endian="little", signed=FALSE)
+    if (debug) cat("p=", pressure, "counts [whatever that means]\n")
+
+    ## stdHdg   2 byte [DS reads 1 byte, but skips a second]
+    ## stdPitch 2 byte
+    ## stdRoll  2 byte
+    ## stdTemperature  2 byte (factor 10)
+    ## stdPressure  2 byte
+
+    sound.speed <- readBin(buf[s+60:61], "integer", n=1, size=2, endian="little", signed=FALSE) / 10
+    if (debug) cat("sound.speed=", sound.speed, "m/s\n")
+
+    if (!TRUE)
+        for (o in 55:65)
+            cat("o=",o,"2-byte unsigned item=",
+                readBin(buf[(o+s):(1+o+s)], "integer", size=1, signed=FALSE, endian="little"),
+                " and as signed=",
+                readBin(buf[(o+s):(1+o+s)], "integer", size=1, signed=FALSE, endian="little"),
+                "\n")
+
+    number.of.profiles <- length(profile.start)
+    id <- buf[profile.start]
+    bytes.per.profile <- diff(profile.start[1:2])
+    if (debug) cat("bytes.per.profile=", bytes.per.profile, "\n")
+
+    ## number.of.bytes <- buf[sample.start + 1]
+    profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
+
+    temperature <- readBin(buf[profile.start2 + 46], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 100
+    pressure <- readBin(buf[profile.start2 + 48], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 100
+    heading <- readBin(buf[profile.start2 + 40], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
+    pitch <- readBin(buf[profile.start2 + 42], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
+    roll <- readBin(buf[profile.start2 + 44], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
+
+    year <- readBin(buf[profile.start2+18], "integer", size=2, signed=FALSE, endian="little")
+    day <- as.integer(buf[profile.start+20])
+    month <- as.integer(buf[profile.start+21])
+    minute <- as.integer(buf[profile.start+22])
+    hour <- as.integer(buf[profile.start+23])
+    sec100 <- as.integer(buf[profile.start+24])     # FIXME: determine whether this is 1/100th second
+    second <- as.integer(buf[profile.start+25])
+    time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz="UTC")
+    data <- list(ma=NULL,
+                 ss=list(distance=seq(blanking.distance, by=cell.size, length.out=number.of.cells)),
+                 ts=list(time=time,
+                 temperature=temperature,
+                 pressure=pressure,
+                 heading=heading, pitch=pitch, roll=roll))
+    metadata <- list(filename=filename,
+                     instrument.type="sontek",
+                     number.of.samples=number.of.profiles,
+                     number.of.beams=number.of.beams,
+                     sampling.start=sampling.start,
+                     deltat=deltat)
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("adcp", "sontek adp", "oce")
+    res
+}
+
 read.adcp.rdi <- function(file, from=0, to, by=1,
                           type=c("workhorse"),
                           debug=0, monitor=TRUE, log.action)
@@ -473,7 +614,9 @@ summary.adcp <- function(object, ...)
                              oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                              number.of.data.types=object$metadata$number.of.data.types,
                              beam.config=object$metadata$beam.config)
-    } else stop("can only summarize ADCP objects of type \"rdi\" or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
+    } else if (inherits(object, "sontek adp")) {
+        ;
+    } else stop("can only summarize ADCP objects of type \"rdi\", \"sontek adp\", or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
     fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
