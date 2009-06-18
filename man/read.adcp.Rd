@@ -39,6 +39,9 @@ read.adcp.sontek(file, from=0, to, by=1,
     format, then this interval is divided by the sampling interval, to
     get the stride length.}
   \item{type}{a character string indicating th type of file.}
+  \item{withHeader}{a boolean indicating whether the file has a proper 
+    header (NOT SUPPORTED YET) or is a partial file, chopped out into
+    smaller time chunks with a deck unit (SUPPORTED.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
