@@ -327,7 +327,7 @@ read.adcp <- function(file, from=0, to, by=1,
 }
 
 read.adcp.sontek <- function(file, from=0, to, by=1,
-                             type="adp",
+                             type=c("adp"),
                              withHeader=FALSE,
                              debug=0, monitor=TRUE, log.action)
 {
