@@ -328,7 +328,7 @@ read.adcp <- function(file, from=0, to, by=1,
 
 read.adcp.sontek <- function(file, from=0, to, by=1,
                              type="adp",
-                             withHeader=FALSE, sampling.start, deltat,
+                             withHeader=FALSE,
                              debug=0, monitor=TRUE, log.action)
 {
     if (is.character(file)) {
@@ -348,8 +348,6 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     if (withHeader) {
         stop("cannot read with header yet")
     } else {
-        if (missing(sampling.start)) stop("must give 'sampling.start' if withHeader is FALSE")
-        if (missing(deltat)) stop("must give 'deltat' if withHeader is FALSE")
         seek(file, 0, "end")
         file.size <- seek(file, 0, "start")
         if (debug) cat("file", filename, "has", file.size, "bytes\n")
@@ -435,7 +433,7 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
 
     temperature <- readBin(buf[profile.start2 + 46], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 100
-    pressure <- readBin(buf[profile.start2 + 48], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 100
+    pressure <- readBin(buf[profile.start2 + 48], "integer", n=number.of.profiles, size=2, endian="little", signed=FALSE) / 100
     heading <- readBin(buf[profile.start2 + 40], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
     pitch <- readBin(buf[profile.start2 + 42], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
     roll <- readBin(buf[profile.start2 + 44], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
@@ -457,9 +455,7 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      number.of.samples=number.of.profiles,
-                     number.of.beams=number.of.beams,
-                     sampling.start=sampling.start,
-                     deltat=deltat)
+                     number.of.beams=number.of.beams)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)

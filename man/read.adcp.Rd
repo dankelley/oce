@@ -20,6 +20,7 @@ read.adcp.nortek(file, from=0, to, by=1,
                  debug=0, monitor=TRUE, log.action)
 read.adcp.sontek(file, from=0, to, by=1,
                  type=c("adp"),
+                 withHeader=FALSE,
                  debug=0, monitor=TRUE, log.action)
 }
 
