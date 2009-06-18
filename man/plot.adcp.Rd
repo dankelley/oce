@@ -13,8 +13,9 @@
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+     mar=c(mgp[1],mgp[1]+1,1,1/4),
      margins.as.image=FALSE,
+     cex=1,
      \dots)}
 
 \arguments{
@@ -67,6 +68,7 @@
   \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
     right of time-series plots, even if there are no images in the \code{which}
     list.  (The margin is made wide if there are some images in the sequence.)}
+  \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

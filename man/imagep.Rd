@@ -11,8 +11,10 @@
       draw.contours=TRUE,
       draw.time.range=getOption("oce.draw.time.range"),
       mgp=getOption("oce.mgp"),
-      mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0, mgp[1]+if(nchar(ylab)>0) 1.5 else 0, mgp[2]+1/2, 1/2),
-      xaxs = "i", yaxs = "i", cex=par("cex"),
+      mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
+      xaxs="i",
+      yaxs="i",
+      cex=par("cex"),
       adorn,
       \dots)
 }

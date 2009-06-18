@@ -7,8 +7,10 @@ imagep <- function(x, y, z,
                    draw.contours=TRUE,
                    draw.time.range=getOption("oce.draw.time.range"),
                    mgp=getOption("oce.mgp"),
-                   mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 0, mgp[1]+if(nchar(ylab)>0) 1.5 else 0, mgp[2]+1/2, 1/2),
-                   xaxs = "i", yaxs = "i", cex=par("cex"),
+                   mar=c(mgp[2]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
+                   xaxs="i",
+                   yaxs="i",
+                   cex=par("cex"),
                    adorn,
                    ...)
 {
@@ -18,8 +20,8 @@ imagep <- function(x, y, z,
     dim <- dim(z)
     if (dim[1] != length(x)) stop("dim(z)[1] must equal length(x)")
     if (dim[2] != length(y)) stop("dim(z)[2] must equal length(y)")
-    par(mgp=mgp, mar=mar)
-    w <- (1.5 + par("mgp")[2]) * par("csi") * 2.54 + 0.5
+    par(mgp=mgp, mar=mar, cex=cex)
+    w <- 1.5 # (1.5 + par("mgp")[2]) * par("csi") * 2.54 + 0.5
 
     if (do.layout)
         layout(matrix(1:2, nrow=1, byrow=TRUE), widths=c(1, lcm(w)))
@@ -27,10 +29,16 @@ imagep <- function(x, y, z,
     if (missing(breaks)) {
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
-            breaks <- seq(zrange[1], zrange[2], length.out=if (missing(col)) 256 else length(col)+1)
+            if (missing(col))
+                breaks <- pretty(zrange)
+            else
+                breaks <- seq(zrange[1], zrange[2], length.out=1+length(col))
             breaks.orig <- breaks
         } else {
-            breaks <- seq(zlim[1], zlim[2], length.out=if (missing(col)) 256 else length(col)+1)
+            if (missing(col))
+                breaks <- pretty(zlim)
+            else
+                breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
             breaks.orig <- breaks
             breaks[1] <- zrange[1]
             breaks[length(breaks)] <- zrange[2]
@@ -50,6 +58,7 @@ imagep <- function(x, y, z,
 
     plot.window(xlim=xlim, ylim=ylim)
 
+    ## 1. plot main window
     if (x.is.time) {
         if (missing(breaks)) {
             image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
@@ -64,23 +73,26 @@ imagep <- function(x, y, z,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         }
-        oce.axis.POSIXct(side=1, x=x)
+        oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex)
         box()
-        axis(2)
+        axis(2, cex.axis=cex, cex.lab=cex)
     } else {
         if (missing(breaks)) {
-            image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, col=col,
+            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, col=col,
                   xlim=if(missing(xlim))range(x,na.rm=TRUE) else xlim,
                   ylim=if(missing(ylim))range(y,na.rm=TRUE) else ylim,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         } else {
-            image(x=x, y=y, z=z, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
+            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=if(missing(xlim))range(x,na.rm=TRUE) else xlim,
                   ylim=if(missing(ylim))range(y,na.rm=TRUE) else ylim,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         }
+        axis(1, cex.axis=cex, cex.lab=cex)
+        box()
+        axis(2, cex.axis=cex, cex.lab=cex)
     }
     if (draw.time.range && x.is.time) {
         time.range <- par("usr")[1:2]
@@ -96,7 +108,7 @@ imagep <- function(x, y, z,
         if (class(t) == "try-error") warning("cannot evaluate adorn='", adorn, "'\n")
     }
 
-    ## palette
+    ## 2. plot palette
     par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
     if (missing(breaks)) {
         if (missing(zlim)) {
@@ -105,7 +117,7 @@ imagep <- function(x, y, z,
             palette <- seq(zlim[1], zlim[2], length.out=300)
         }
         image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
-              cex=par("cex"),
+              cex=cex, cex.axis=cex, cex.lab=cex,
               zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
     } else {
         if (missing(zlim)) {
@@ -116,10 +128,10 @@ imagep <- function(x, y, z,
         image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
               breaks=breaks.orig,
               col=col,
-              cex=par("cex"), zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+              zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
     }
     if (draw.contours && !missing(breaks))
         abline(h=breaks)
     box()
-    axis(side=4, at=pretty(palette))
+    axis(side=4, at=pretty(palette), cex.axis=cex)
 }

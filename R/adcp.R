@@ -583,8 +583,9 @@ plot.adcp <- function(x,
                       adorn=NULL,
                       draw.time.range=getOption("oce.draw.time.range"),
                       mgp=getOption("oce.mgp"),
-                      mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+                      mar=c(mgp[1],mgp[1]+1,1,1/4),
                       margins.as.image=FALSE,
+                      cex=1,
                       ...)
 {
     if (!inherits(x, "adcp")) stop("method is only for adcp objects")
@@ -592,7 +593,7 @@ plot.adcp <- function(x,
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
-    par(mgp=mgp, mar=mar)
+    par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
     ytype <- match.arg(ytype)
     ytype <- match.arg(ytype)
@@ -632,8 +633,9 @@ plot.adcp <- function(x,
     }
     if (any(which %in% images) || margins.as.image) {
         ## scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
-        scale <- 0.7
-        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+        ##scale <- 0.7
+        #w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+        w <- 1.5 #par("mgp")[2] + 1/2
         lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
     } else {
         lay <- layout(cbind(1:lw))
@@ -677,10 +679,12 @@ plot.adcp <- function(x,
                        adorn=adorn[w],
                        mgp=mgp,
                        mar=mar,
+                       cex=1,
                        ...)
                 draw.time.range <- TRUE
             }
         } else if (which[w] %in% timeseries) { # time-series types
+            par(mgp=mgp, mar=mar, cex=cex)
             if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', draw.time.range=draw.time.range)
             if (which[w] == 14) oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', draw.time.range=draw.time.range)
             if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', draw.time.range=draw.time.range)
@@ -691,7 +695,7 @@ plot.adcp <- function(x,
                 if (x$metadata$number.of.beams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                                 ylab=image.name(x, 1),
-                                type='l', draw.time.range=draw.time.range, ...)
+                                type='l', draw.time.range=draw.time.range, cex.axis=cex, ...)
                 else warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
