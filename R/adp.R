@@ -748,7 +748,8 @@ plot.adp <- function(x,
                      ...)
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
-    opar <- par(mgp, mar, cex) #no.readonly = TRUE)
+    ##opar <- par(mgp, mar, cex)
+    opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))

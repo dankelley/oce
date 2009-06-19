@@ -1064,11 +1064,11 @@ plot.TS <- function (x,
 
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
 
     par(mgp=mgp, mar=mar)
     axis.name.loc <- mgp[1]
-    old.mar <- par("mar")
-###    if (!rotate.rho.labels && old.mar[4] < 3) par(mar=c(old.mar[1:3], 2))
     plot(x$data$salinity, x$data$temperature,
          xlab = if (missing(xlab)) resizable.label("S","x") else xlab,
          ylab = if (missing(ylab)) resizable.label("T","y") else ylab,
@@ -1126,8 +1126,6 @@ plot.TS <- function (x,
                                         # Freezing point
     Sr <- c(max(0, S.axis.min), S.axis.max)
     lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
-##    par(mar=old.mar)
-##    par(mgp=old.mgp)
 }
 
 plot.profile <- function (x,
