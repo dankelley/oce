@@ -1,24 +1,24 @@
-\name{read.adcp}
-\alias{read.adcp}
-\alias{read.adcp.nortek}
-\alias{read.adcp.sontek}
-\alias{read.adcp.rdi}
+\name{read.adp}
+\alias{read.adp}
+\alias{read.adp.nortek}
+\alias{read.adp.sontek}
+\alias{read.adp.rdi}
 
-\title{Read an ADCP data file}
+\title{Read an ADP data file}
 
-\description{Read an ADCP data file, producing an object of type \code{adcp}.}
+\description{Read an ADP data file, producing an object of type \code{adp}.}
 
 \usage{
-read.adcp(file, from=0, to, by=1,
+read.adp(file, from=0, to, by=1,
           type=c("rdi", "nortek"),
           debug=0, monitor=TRUE, log.action)
-read.adcp.rdi(file, from=0, to, by=1,
+read.adp.rdi(file, from=0, to, by=1,
               type=c("workhorse"),
               debug=0, monitor=TRUE, log.action)
-read.adcp.nortek(file, from=0, to, by=1,
+read.adp.nortek(file, from=0, to, by=1,
                  type=c("aquadopp high resolution"),
                  debug=0, monitor=TRUE, log.action)
-read.adcp.sontek(file, from=0, to, by=1,
+read.adp.sontek(file, from=0, to, by=1,
                  type=c("adp"),
                  withHeader=FALSE,
                  debug=0, monitor=TRUE, log.action)
@@ -51,10 +51,10 @@ read.adcp.sontek(file, from=0, to, by=1,
     it provides is better for normal calls by a user.)}
 }
 
-\details{Reads a binary-format ADCP file.  Two types can be handled at
+\details{Reads a binary-format ADP file.  Two types can be handled at
   the moment: the Teledyne-RDI (2007) Workhorse instrument using
   firmware version 16.28, and the NorTek Aquadopp High Resolution
-  profiler.  \code{read.adcp} may also work on other  RDI
+  profiler.  \code{read.adp} may also work on other  RDI
   units, but this has not been tested.  It definitely does not work on
   other NorTek units, because the binary format is different for each.
 
@@ -96,34 +96,34 @@ read.adcp.sontek(file, from=0, to, by=1,
     general information about such things as beam geometry, etc.
 }
 
-\value{An object of \code{\link[base]{class}} \code{"adcp"}, which
-  contains measurements made with an ADCP device.  The value of
+\value{An object of \code{\link[base]{class}} \code{"adp"}, which
+  contains measurements made with an ADP device.  The value of
   \code{metadata$coordinate} is set to \code{"beam"}, a fact that is
   used in other steps in processing.  For information on data stored in
   the object, see \dQuote{Details}.}
 
 
 \seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this. An \code{adcp} object may be summarized with
-  \code{\link{summary.adcp}}, and plotted with \code{\link{plot.adcp}}.
+  alternative to this. An \code{adp} object may be summarized with
+  \code{\link{summary.adp}}, and plotted with \code{\link{plot.adp}}.
 
-  Several functions are provided to manipulate \code{adcp} objects.  For
+  Several functions are provided to manipulate \code{adp} objects.  For
   example, in many research applications, the records are stored in beam
   coordinates, instead of the further-processed forms such as instrument
-  or earth coordiantes.  Accordingly, \code{\link{adcp.beam2frame}} is
-  provided, convert the velocity portions of \code{adcp} objects from
+  or earth coordiantes.  Accordingly, \code{\link{adp.beam2frame}} is
+  provided, convert the velocity portions of \code{adp} objects from
   beam coordinates to frame-based (also called ship-based or
   instrument-based) coordinates.  Similarly,
-  \code{\link{adcp.frame2earth}} converts from frame to earth
+  \code{\link{adp.frame2earth}} converts from frame to earth
   coordinates, taking into account the varying orientation of an
   instrument attached to a ship or a mobile mooring.  For applications
   in which earth-based coordinates are not desired (e.g. if a coordinate
   is to be aligned with the local coastline or a mean current),
-  \code{\link{adcp.earth2other}} is provided, to convert from earth
+  \code{\link{adp.earth2other}} is provided, to convert from earth
   coordinates to another coordinate system. 
 
  Another convenience
-  function is \code{\link{adcp.beam.attenuate}}, which performs a
+  function is \code{\link{adp.beam.attenuate}}, which performs a
   correction for \eqn{r^2}{r^2} beam spreading.}
 
 \examples{

@@ -6,10 +6,10 @@ export(
        as.ctd,
        as.sealevel,
        as.windrose,
-       adcp.beam2frame,
-       adcp.frame2earth,
-       adcp.earth2other,
-       adcp.beam.attenuate,
+       adp.beam2frame,
+       adp.frame2earth,
+       adp.earth2other,
+       adp.beam.attenuate,
        bcd2integer,
        byte2binary,
        coriolis,
@@ -43,7 +43,7 @@ export(
        oce.plot.ts,
        oce.write.table,
        parse.latlon,
-       plot.adcp,
+       plot.adp,
        plot.adv,
        plot.TS,
        plot.coastline,
@@ -61,10 +61,10 @@ export(
        processing.log.summary,
        pt.patm,
        pt.trim,
-       read.adcp,
-       read.adcp.rdi,
-       read.adcp.nortek,
-       read.adcp.sontek,
+       read.adp,
+       read.adp.rdi,
+       read.adp.nortek,
+       read.adp.sontek,
        read.adv,
        read.adv.sontek,
        read.coastline,
@@ -108,7 +108,7 @@ export(
        write.ctd
        )
 
-S3method(plot, adcp)
+S3method(plot, adp)
 S3method(plot, adv)
 S3method(plot, coastline)
 S3method(plot, ctd)
@@ -119,7 +119,7 @@ S3method(plot, pt)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
-S3method(print, summary.adcp)
+S3method(print, summary.adp)
 S3method(print, summary.adv)
 S3method(print, summary.coastline)
 S3method(print, summary.ctd)
@@ -130,7 +130,7 @@ S3method(print, summary.pt)
 S3method(print, summary.tidem)
 S3method(print, summary.topo)
 S3method(predict, tidem)
-S3method(summary, adcp)
+S3method(summary, adp)
 S3method(summary, adv)
 S3method(summary, coastline)
 S3method(summary, ctd)

@@ -312,21 +312,24 @@ read.profile.rdi <- function(file, header, debug)
     list(header=header, v=v, a=a, q=q, pg=pg, bt=bt)
 }
 
-read.adcp <- function(file, from=0, to, by=1,
-                      type=c("rdi", "nortek"),
-                      debug=0, monitor=TRUE, log.action)
+read.adp <- function(file, from=0, to, by=1,
+                     type=c("rdi", "nortek", "sontek"),
+                     debug=0, monitor=TRUE, log.action)
 {
     type = match.arg(type)
     if (monitor) cat(file, "\n")
     if (type == "rdi")
-        read.adcp.rdi(file=file, from=from, to=to, by=by,
-                      debug=debug, monitor=monitor, log.action=log.action)
+        read.adp.rdi(file=file, from=from, to=to, by=by,
+                     debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "nortek")
-        read.adcp.nortek(file=file, from=from, to=to, by=by,
-                         debug=debug, monitor=monitor, log.action=log.action)
+        read.adp.nortek(file=file, from=from, to=to, by=by,
+                        debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek")
+        read.adp.sontek(file=file, from=from, to=to, by=by,
+                        debug=debug, monitor=monitor, log.action=log.action)
 }
 
-read.adcp.sontek <- function(file, from=0, to, by=1,
+read.adp.sontek <- function(file, from=0, to, by=1,
                              type=c("adp"),
                              withHeader=FALSE,
                              debug=0, monitor=TRUE, log.action)
@@ -454,11 +457,11 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adcp", "sontek adp", "oce")
+    class(res) <- c("adp", "sontek", "oce")
     res
 }
 
-read.adcp.rdi <- function(file, from=0, to, by=1,
+read.adp.rdi <- function(file, from=0, to, by=1,
                           type=c("workhorse"),
                           debug=0, monitor=TRUE, log.action)
 {
@@ -575,13 +578,13 @@ read.adcp.rdi <- function(file, from=0, to, by=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adcp", "rdi", "oce")
+    class(res) <- c("adp", "rdi", "oce")
     res
 }
 
-summary.adcp <- function(object, ...)
+summary.adp <- function(object, ...)
 {
-    if (!inherits(object, "adcp")) stop("method is only for adcp objects")
+    if (!inherits(object, "adp")) stop("method is only for adp objects")
     if (inherits(object, "aquadopp")) {
         res.specific <- list(internal.code.version=object$metadata$internal.code.version,
                              hardware.revision=object$metadata$hardware.revision,
@@ -607,7 +610,7 @@ summary.adcp <- function(object, ...)
                              beam.config=object$metadata$beam.config)
     } else if (inherits(object, "sontek adp")) {
         res.specific <- NULL
-    } else stop("can only summarize ADCP objects of type \"rdi\", \"sontek adp\", or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
+    } else stop("can only summarize ADP objects of type \"rdi\", \"sontek adp\", or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
     fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
@@ -655,13 +658,13 @@ summary.adcp <- function(object, ...)
                 fives=fives,
                 time=object$data$ts$time,
                 processing.log=processing.log.summary(object))
-    class(res) <- "summary.adcp"
+    class(res) <- "summary.adp"
     res
-}                                       # summary.adcp()
+}                                       # summary.adp()
 
-print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
+print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("ADCP summary\n")
+    cat("ADP summary\n")
     cat("  Instrument type:            ", x$instrument.type, "\n")
     cat("  Filename:                   ", x$filename, "\n")
     cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
@@ -708,7 +711,7 @@ print.summary.adcp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adcp <- function(x,
+plot.adp <- function(x,
                       which=1:dim(x$data$ma$v)[3],
                       col=oce.colors.palette(128, 1),
                       zlim,
@@ -722,7 +725,7 @@ plot.adcp <- function(x,
                       cex=1,
                       ...)
 {
-    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (!inherits(x, "adp")) stop("method is only for adp objects")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
@@ -879,9 +882,9 @@ plot.adcp <- function(x,
     }
 }
 
-adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
+adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
 {
-    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (x$metadata$oce.beam.attenuated) stop("the beams are already attenuated in this dataset")
     res <- x
     num.profiles <- dim(x$data$ma$a)[1]
@@ -894,9 +897,9 @@ adcp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     processing.log.append(res, log.action)
 }
 
-adcp.beam2frame <- function(x)
+adp.beam2frame <- function(x)
 {
-    if (!inherits(x, "adcp")) stop("method is only for objects of class 'adcp'")
+    if (!inherits(x, "adp")) stop("method is only for objects of class 'adp'")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
     if (inherits(x, "rdi")) {
         vprime <- array(dim=dim(x$data$ma$v))
@@ -927,16 +930,16 @@ adcp.beam2frame <- function(x)
         res$data$ma$v[,,2] <- t(transformed[2,,])
         res$data$ma$v[,,3] <- t(transformed[3,,])
     } else {
-        stop("adcp type must be either \"rdi\" or \"nortek\"")
+        stop("adp type must be either \"rdi\" or \"nortek\"")
     }
     res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }
 
-adcp.frame2earth <- function(x)
+adp.frame2earth <- function(x)
 {
-    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
     res <- x
     heading <- res$data$ts$heading
@@ -974,9 +977,9 @@ adcp.frame2earth <- function(x)
     processing.log.append(res, log.action)
 }
 
-adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
+adp.earth2other <- function(x, heading=0, pitch=0, roll=0)
 {
-    if (!inherits(x, "adcp")) stop("method is only for adcp objects")
+    if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "earth") stop("input must be in earth coordinates")
     res <- x
     to.radians <- pi / 180
@@ -1016,7 +1019,7 @@ adcp.earth2other <- function(x, heading=0, pitch=0, roll=0)
 
 ## To do
 ## * transformation matrix so we can have earth and frame coords
-## * merge this with "adcp" class.
+## * merge this with "adp" class.
 
 read.profile.aquadopp <- function(file, debug=!TRUE)
 {
@@ -1099,7 +1102,7 @@ display.bytes <- function(b, label="")
     print(b)
 }
 
-read.adcp.nortek <- function(file, from=0, to, by=1,
+read.adp.nortek <- function(file, from=0, to, by=1,
                              type=c("aquadopp high resolution"),
                              debug=0, monitor=TRUE, log.action) {
     if (is.character(file)) {
@@ -1386,6 +1389,6 @@ read.adcp.nortek <- function(file, from=0, to, by=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adcp", "nortek", "oce")
+    class(res) <- c("adp", "nortek", "oce")
     res
-}                                       # read.adcp.nortek()
+}                                       # read.adp.nortek()

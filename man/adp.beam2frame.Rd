@@ -1,15 +1,15 @@
-\name{adcp.beam2frame}
+\name{adp.beam2frame}
 
-\alias{adcp.beam2frame}
+\alias{adp.beam2frame}
 
-\title{Convert ADCP from beam coordinates to frame coordinates}
+\title{Convert ADP from beam coordinates to frame coordinates}
 
-\description{Convert ADCP velocity components from a beam-based
+\description{Convert ADP velocity components from a beam-based
   coordinate system to a frame-based coordinate system.}
 
-\usage{adcp.beam2frame(x)}
+\usage{adp.beam2frame(x)}
 
-\arguments{\item{x}{an object of class \code{"adcp"}.}}
+\arguments{\item{x}{an object of class \code{"adp"}.}}
 
 \details{The action depends on the type of object.
 
@@ -54,23 +54,23 @@
 
 \examples{
 library(oce)
-data(adcp)
-f <- adcp.beam2frame(adcp)
+data(adp)
+f <- adp.beam2frame(adp)
 summary(f)
 plot(f, which=1:3)
 }
 
 \references{R D Instruments, 1998.
-\emph{ADCP Coordinate Transformation, formulas and calculations.}
+\emph{ADP Coordinate Transformation, formulas and calculations.}
 P/N 951-6079-00 (July 1998).}
 
-\seealso{\code{\link{read.adcp}} reads \code{adcp} objects,
-\code{\link{summary.adcp}} summarizes them, and \code{\link{plot.adcp}} plots them.
-\code{\link{adcp}} provides a sample ADCP dataset.
-\code{\link{adcp.beam.attenuate}} converts an \code{adcp} object from beam to velocity.
-\code{\link{adcp.earth2other}} rotates \code{adcp} object currents from earth coordinates 
+\seealso{\code{\link{read.adp}} reads \code{adp} objects,
+\code{\link{summary.adp}} summarizes them, and \code{\link{plot.adp}} plots them.
+\code{\link{adp}} provides a sample ADP dataset.
+\code{\link{adp.beam.attenuate}} converts an \code{adp} object from beam to velocity.
+\code{\link{adp.earth2other}} rotates \code{adp} object currents from earth coordinates 
 to other coordinates.
-\code{\link{adcp.frame2earth}} converts an \code{adcp} object from frame coordinates to 
+\code{\link{adp.frame2earth}} converts an \code{adp} object from frame coordinates to 
 earth coordinates.}
 
 \author{Dan Kelley}

@@ -1,12 +1,12 @@
-\name{plot.adcp}
+\name{plot.adp}
 
-\alias{plot.adcp}
+\alias{plot.adp}
 
-\title{Plot ADCP data}
+\title{Plot ADP data}
 
-\description{Plot ADCP data.}
+\description{Plot ADP data.}
 
-\usage{\method{plot}{adcp}(x, which=1:dim(x$data$ma$v)[3],
+\usage{\method{plot}{adp}(x, which=1:dim(x$data$ma$v)[3],
      col=oce.colors.palette(128,1), zlim, 
      titles,
      ytype=c("profile", "distance"),
@@ -19,7 +19,7 @@
      \dots)}
 
 \arguments{
-  \item{x}{an \code{adcp} object, e.g. as read by \code{\link{read.adcp}}.}
+  \item{x}{an \code{adp} object, e.g. as read by \code{\link{read.adp}}.}
   \item{which}{list of desired plot types.  These are graphed in
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
@@ -72,7 +72,7 @@
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates a multi-panel summary plot of data measured by an ADCP
+\details{Creates a multi-panel summary plot of data measured by an ADP
   cast. The panels are controlled by the \code{which} argument.
 
   \itemize{ 
@@ -87,11 +87,11 @@
     component (labelled \code{east}).  If \code{x} is in
     \code{"other"} coordinates, it will be component corresponding to
     east, after rotation (labelled \code{u\'}).  Note that the
-    coordinate is set by \code{\link{read.adcp}}, or by
-    \code{\link{adcp.beam2frame}},
-    \code{\link{adcp.frame2earth}},
+    coordinate is set by \code{\link{read.adp}}, or by
+    \code{\link{adp.beam2frame}},
+    \code{\link{adp.frame2earth}},
     or
-    \code{\link{adcp.earth2other}}.
+    \code{\link{adp.earth2other}}.
     
     \item \code{which=2} is as for \code{which=1}, but for the second
     beam, forward velocity component, northward velocity component, or
@@ -158,7 +158,7 @@
   \code{which=15:18} (pressure being included to signal the tide, and
   tidal currents may dislodge a mooring or cause it to settle).
 
-  By default, \code{plot.adcp} uses a \code{zlim} value for the
+  By default, \code{plot.adp} uses a \code{zlim} value for the
   \code{\link{image}} that is constructed to contain all the data, but
   to be symmetric about zero.  This is done on a per-panel basis, and
   the scale is plotted at the top-right corner, along with the name of
@@ -177,28 +177,28 @@
 
 \seealso{The data are normally read with \code{\link{read.oce}}, which
 is usually able to detect the type of instrument.  If that fails, the user
-should try \code{\link{read.adcp.rdi}} (for RDI files) 
-or \code{\link{read.adcp.nortek}} 
+should try \code{\link{read.adp.rdi}} (for RDI files) 
+or \code{\link{read.adp.nortek}} 
 (for NorTek files).  These files may be in beam coordinates, 
 in frame coordinates, or in earth coordinates.  It is common in a scientific
 setting to use beam coordinates, and so this package offers functions
-\code{\link{adcp.beam2frame}} and 
-\code{\link{adcp.frame2earth}} to take the intermediate steps, and
-\code{\link{adcp.earth2other}} to go further, e.g. to rotate into
+\code{\link{adp.beam2frame}} and 
+\code{\link{adp.frame2earth}} to take the intermediate steps, and
+\code{\link{adp.earth2other}} to go further, e.g. to rotate into
 a coordinate system aligned with the shoreline or with an isobath.
 
 The beam stength may be corrected for R-squared spreading with
-\code{\link{adcp.beam.attenuate}}.  
+\code{\link{adp.beam.attenuate}}.  
 
-Summaries of ADCP data are provided by \code{\link{summary.adcp}}.
+Summaries of ADP data are provided by \code{\link{summary.adp}}.
 
-ADCP data may be plotted with \code{\link{plot.adcp}}.
+ADP data may be plotted with \code{\link{plot.adp}}.
 }
 
 \examples{
 library(oce)
-data(adcp)
-e <- adcp.frame2earth(adcp.beam2frame(adcp))
+data(adp)
+e <- adp.frame2earth(adp.beam2frame(adp))
 plot(e, which=1:3)
 # Illustrate adornment
 plot(e, which=1:2,
