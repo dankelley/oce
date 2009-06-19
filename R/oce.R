@@ -87,12 +87,12 @@ subset.oce <- function (x, subset, indices=NULL, ...)
 {
     debug <- !TRUE
     if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (inherits(x, "adcp")) {          # FIXME: should be able to select by time or space, maybe others
+    if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x$metadata$number.of.profiles)[indices]
             print(keep)
-            stop("this version of oce cannot subset adcp data by index")
+            stop("this version of oce cannot subset adp data by index")
         } else if (!missing(subset)) {
             subset.string <- deparse(substitute(subset))
             if (length(grep("time", subset.string))) {
@@ -191,9 +191,9 @@ magic <- function(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=2)
     close(file)
-    if (bytes[1] == 0x7f && bytes[2] == 0x7f)        return("adcp.rdi")
-    if (bytes[1] == 0xa5 && bytes[2] == 0x05)        return("adcp.nortek")
-    ##if (substr(line, 1, 2) == "\177\177")            return("adcp")
+    if (bytes[1] == 0x7f && bytes[2] == 0x7f)        return("adp.rdi")
+    if (bytes[1] == 0xa5 && bytes[2] == 0x05)        return("adp.nortek")
+    ##if (substr(line, 1, 2) == "\177\177")            return("adp")
     if (substr(line, 1, 3) == "CTD")                 return("ctd.woce")
     if ("* Sea-Bird" == substr(line, 1, 10))         return("ctd.seabird")
     if ("# -b" == substr(line, 1, 4))                return("coastline")
@@ -211,8 +211,8 @@ read.oce <- function(file, ...)
 {
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    if (type == "adcp.rdi")    return(read.adcp.rdi(file,                 ..., log.action=log.action))
-    if (type == "adcp.nortek") return(read.adcp.nortek(file,              ..., log.action=log.action))
+    if (type == "adp.rdi")     return(read.adp.rdi(file,                  ..., log.action=log.action))
+    if (type == "adp.nortek")  return(read.adp.nortek(file,               ..., log.action=log.action))
     if (type == "ctd.woce")    return(read.ctd(file,                      ..., log.action=log.action))
     if (type == "ctd.seabird") return(read.ctd(file,                      ..., log.action=log.action))
     if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))

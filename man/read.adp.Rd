@@ -10,7 +10,7 @@
 
 \usage{
 read.adp(file, from=0, to, by=1,
-          type=c("rdi", "nortek"),
+          type=c("rdi", "nortek", "sontek"),
           debug=0, monitor=TRUE, log.action)
 read.adp.rdi(file, from=0, to, by=1,
               type=c("workhorse"),

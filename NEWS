@@ -1,7 +1,7 @@
 0.1-77
 - add preliminary ADV support
 - add oce.plot.ts()
-- add support for ADCP data from RDI and NorTek
+- add support for ADP data from RDI and NorTek
 - add imagep()
 - add bcd2integer()
 - add matlab2POSIXt()

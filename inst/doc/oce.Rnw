@@ -583,31 +583,31 @@ then remove the atmospheric pressure from the signal.}
 
 
 \section{Acoustic Doppler Current Profiler data}
-\index{ADCP}
+\index{ADP}
 The commands
-<<label=adcpplot,eval=FALSE>>=
+<<label=adpplot,eval=FALSE>>=
 library(oce)
-data(adcp)
-e <- adcp.frame2earth(adcp.beam2frame(adcp))
+data(adp)
+e <- adp.frame2earth(adp.beam2frame(adp))
 plot(e, which=1:2,
      adorn=expression({
        lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green')
      }))
 @
-produce a plot (Figure~\ref{fig:adcp}) of ADCP measurements made
+produce a plot (Figure~\ref{fig:adp}) of ADP measurements made
 during St Lawrence Estuary Internal Wave Experiment.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=adcpfig ,fig=TRUE, width=7, height=7, echo=FALSE>>=
-<<adcpplot>>
+<<label=adpfig ,fig=TRUE, width=7, height=7, echo=FALSE>>=
+<<adpplot>>
 @
 \end{center}
-\caption{Measurements made with an ADCP in the
+\caption{Measurements made with an ADP in the
   St Lawrence Estuary.  The data were recorded in beam format, so a two-step
   process is used to convert to earth coordinates.  The green curve indicates
-  the water surface, inferred from the pressure measured by the ADCP.}
-\label{fig:adcp}
+  the water surface, inferred from the pressure measured by the ADP.}
+\label{fig:adp}
 \end{figure}
 
 

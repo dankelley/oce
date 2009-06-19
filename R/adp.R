@@ -669,13 +669,8 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Filename:                   ", x$filename, "\n")
     cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
     cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Measurements at times:      ", as.character(x$sampling.start), attr(x$sampling.end, "tzone"),
-        "to",
-        format(x$sampling.end), attr(x$sampling.end, "tzone"), "at interval", as.character(x$delta.time), "s\n")
-    cat("  Measurements at distances:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
     cat("  Number of data types:       ", x$number.of.data.types, "\n")
     cat("  Frequency:                  ", x$frequency, "kHz\n")
-
     cat("  Beams:                      ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n")
     cat("  Orientation:                ", x$orientation, "\n")
     cat("  Beam angle:                 ", x$metadata$beam.angle, "\n")
@@ -683,6 +678,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     ##cat("  Cell size:                  ", x$cell.size, "m\n")
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
     cat("  Number of profiles :        ", x$number.of.profiles, "\n")
+    cat("  Distances withing profiles: ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
     cat("  Profile times:              ", as.character(x$start.time), attr(x$start.time,"tzone"),
         "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n")
 

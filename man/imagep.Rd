@@ -70,7 +70,7 @@
 \value{None.}
 
 \seealso{
-  This is used by \code{\link{plot.adcp}}.
+  This is used by \code{\link{plot.adp}}.
 }
 \examples{
 library(oce)

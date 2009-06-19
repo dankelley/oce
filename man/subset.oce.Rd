@@ -20,7 +20,7 @@
   that it only works for objects in which the \code{data} portion is a
   data frame, e.g. \code{ctd} objects.
 
-  For objects of class \code{adcp}, the \code{subset} may be in terms
+  For objects of class \code{adp}, the \code{subset} may be in terms
   of \code{time} or \code{distance}; to combine these, use two steps
   (see \dQuote{Examples}).
 }
@@ -36,12 +36,12 @@ data(ctd)
 plot(ctd)
 plot(subset(ctd, pressure>10))
 
-# ADCP example, subsetted by time and distance
-data(adcp)
-adcp.near <- subset(adcp, distance < 10)
+# ADP example, subsetted by time and distance
+data(adp)
+adp.near <- subset(adp, distance < 10)
 # Note that the data may be accessed directly, as below
-adcp.near.early <- subset(adcp.near, time < mean(adcp.near$data$ts$time))
-plot(adcp.near.early)
+adp.near.early <- subset(adp.near, time < mean(adp.near$data$ts$time))
+plot(adp.near.early)
 }
 
 \author{Dan Kelley}
