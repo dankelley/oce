@@ -435,22 +435,32 @@ read.adp.sontek <- function(file, from=0, to, by=1,
             ## I've tried (note using 1000 to get m/s)
             ##vv <- matrix(readBin(buf[profile.start[i] + header.length + 1:(2*nd)],
             ##                    "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
+
             vv <- matrix(readBin(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],
                                  "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
-            if (i == 1) {
-                print(t(matrix(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],ncol=number.of.beams,byrow=FALSE)))
-                print(t(vv))
+            ##if (i == 1) {
+            ##    print(t(matrix(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],ncol=number.of.beams,byrow=FALSE)))
+            ##    print(t(vv))
+            ##}
+
+            aa <- matrix(as.numeric(buf[profile.start[i] + header.length + 2*nd + seq(0, nd-1)]),
+                         ncol=number.of.beams, byrow=FALSE)
+            qq <- matrix(as.numeric(buf[profile.start[i] + header.length + 3*nd + seq(0, nd-1)]),
+                         ncol=number.of.beams, byrow=FALSE)
+
+            for (b in 1:number.of.beams) {
+                v[i,,b] <- vv[,b]
+                a[i,,b] <- aa[,b]
+                q[i,,b] <- qq[,b]
             }
 
-            for (b in 1:number.of.beams)
-                v[i,,b] <- vv[,b]
             if (monitor) {
                 cat(".")
                 if (!(i %% 50)) cat(i, "\n")
             }
         }
         if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
-        ma <- list(v=v)
+        ma <- list(v=v, a=a, q=q)
     } else {
         ma <- NULL
     }
