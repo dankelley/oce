@@ -330,9 +330,9 @@ read.adp <- function(file, from=0, to, by=1,
 }
 
 read.adp.sontek <- function(file, from=0, to, by=1,
-                             type=c("adp"),
-                             withHeader=FALSE,
-                             debug=0, monitor=TRUE, log.action)
+                            type=c("adp"),
+                            withHeader=FALSE,
+                            debug=0, monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -373,7 +373,6 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     if (number.of.beams != 3) stop("there should be 3 beams, but the file indicates ", number.of.beams)
 
     orientation <- as.integer(buf[s+27])
-    if (debug) cat("orientation=", orientation, "\n")
 
     temp.mode <- as.integer(buf[s+28])
     if (debug) cat("temp.mode=", temp.mode, "\n")
@@ -427,10 +426,24 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     cat("header.length=",header.length,"\n")
     if (to > 0) {
         for (i in 1:to) {
-            vv <- matrix(readBin(buf[profile.start[i] + header.length + 1 + c(0, 2*nd)],
-                                 "integer", n=nd, size=2, signed=TRUE, endian="little"), nrow=3, byrow=TRUE)
+            ## Doug does:
+            ##   fseek(fid,adpProfiles(1)-1+18+8+58+(ii-1)*numCells(1)*2+(jj-1)*2,'bof');
+            ##   v = fread(fid,numSamples,'int16=>double',adpPacketSize-1)/10;
+            ## (he offsets by 83 ... but he also says the profile chunk size is 80+4*Nb*Nc+2-1,
+            ## or 561, but I see repeats on length 562, so I think the formula should be 80+4*Nb*Nc+2.
+            ## From that, I infer that there are 2 bytes after the profile data.
+            ## I've tried (note using 1000 to get m/s)
+            ##vv <- matrix(readBin(buf[profile.start[i] + header.length + 1:(2*nd)],
+            ##                    "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
+            vv <- matrix(readBin(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],
+                                 "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
+            if (i == 1) {
+                print(t(matrix(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],ncol=number.of.beams,byrow=FALSE)))
+                print(t(vv))
+            }
+
             for (b in 1:number.of.beams)
-                v[i,,b] <- vv[b,]
+                v[i,,b] <- vv[,b]
             if (monitor) {
                 cat(".")
                 if (!(i %% 50)) cat(i, "\n")
@@ -453,7 +466,8 @@ read.adp.sontek <- function(file, from=0, to, by=1,
                      number.of.samples=profiles.in.file,
                      oce.coordinate=c("beam", "frame", "earth", "other")[coordinate.system+1], # FIXME: check this
                      number.of.beams=number.of.beams,
-                     oce.beam.attenuated=FALSE)
+                     oce.beam.attenuated=FALSE,
+                     orientation=if(orientation==1) "upward" else "downward")
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -608,9 +622,9 @@ summary.adp <- function(object, ...)
                              oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                              number.of.data.types=object$metadata$number.of.data.types,
                              beam.config=object$metadata$beam.config)
-    } else if (inherits(object, "sontek adp")) {
+    } else if (inherits(object, "sontek")) {
         res.specific <- NULL
-    } else stop("can only summarize ADP objects of type \"rdi\", \"sontek adp\", or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
+    } else stop("can only summarize ADP objects of type \"rdi\", \"sontek\", or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
     fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
@@ -708,18 +722,18 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 plot.adp <- function(x,
-                      which=1:dim(x$data$ma$v)[3],
-                      col=oce.colors.palette(128, 1),
-                      zlim,
-                      titles,
-                      ytype=c("profile", "distance"),
-                      adorn=NULL,
-                      draw.time.range=getOption("oce.draw.time.range"),
-                      mgp=getOption("oce.mgp"),
-                      mar=c(mgp[1],mgp[1]+1,1,1/4),
-                      margins.as.image=FALSE,
-                      cex=1,
-                      ...)
+                     which=1:dim(x$data$ma$v)[3],
+                     col=oce.colors.palette(128, 1),
+                     zlim,
+                     titles,
+                     ytype=c("profile", "distance"),
+                     adorn=NULL,
+                     draw.time.range=getOption("oce.draw.time.range"),
+                     mgp=getOption("oce.mgp"),
+                     mar=c(mgp[1],mgp[1]+1,1,1/4),
+                     margins.as.image=FALSE,
+                     cex=1,
+                     ...)
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     opar <- par(no.readonly = TRUE)
@@ -748,9 +762,10 @@ plot.adp <- function(x,
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     images <- 1:12
-    timeseries <- 13:22                 # was 13:18
-    other <- 23
-    if (any(!which %in% c(images, timeseries, other))) stop("unknown value of 'which'")
+    timeseries <- 13:22
+    spatial <- 23:27
+    if (any(!which %in% c(images, timeseries, spatial))) stop("unknown value of 'which'")
+
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
@@ -860,15 +875,39 @@ plot.adp <- function(x,
                 plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
                 par(mar=omar)
             }
-        } else if (which[w] %in% other) {                   # other types
-            if (which[w] == 23) {
+        } else if (which[w] %in% spatial) {                   # various spatial types
+            if (which[w] == 23) {                             # progressive-vector
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 dt <- as.numeric(diff(x$data$ts$time[1:2],units="sec"))
                 m.per.km <- 1000
                 x.dist <- cumsum(apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)) * dt / m.per.km
                 y.dist <- cumsum(apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)) * dt / m.per.km
                 plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
+            }
+            ## 24:27 are time-integrated beam profiles
+            if (which[w] == 24) {
+                par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+                value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)
+                plot(value, x$data$ss$distance, xlab=image.name(x, 1), ylab="Distance [m]", type='l', ...)
+            }
+            if (which[w] == 25) {
+                par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+                value <- apply(x$data$ma$v[,,2], 2, mean, na.rm=TRUE)
+                plot(value, x$data$ss$distance, xlab=image.name(x, 2), ylab="Distance [m]", type='l', ...)
+            }
+            if (which[w] == 26) {
+                par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+                value <- apply(x$data$ma$v[,,3], 2, mean, na.rm=TRUE)
+                plot(value, x$data$ss$distance, xlab=image.name(x, 3), ylab="Distance [m]", type='l', ...)
                 ##grid()
+            }
+            if (which[w] == 27) {
+                if (x$metadata$number.of.beams > 3) {
+                    par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+                    value <- apply(x$data$ma$v[,,4], 2, mean, na.rm=TRUE)
+                    plot(value, x$data$ss$distance, xlab=image.name(x, 4), ylab="Distance [m]", type='l', ...)
+                    ##grid()
+                } else warning("cannot use which=27 because this device did not have 4 beams")
             }
         }
         if (w <= adorn.length) {
@@ -1002,7 +1041,6 @@ adp.earth2other <- function(x, heading=0, pitch=0, roll=0)
 
 ### AQUADOPP
 ## notes for nortek:
-
 ## 1. "spare" at offset 74 (page 31) now seems to be salinity
 ## 2. extra byte
 ## 3. should state the order of headers at the start, not end
@@ -1012,10 +1050,6 @@ adp.earth2other <- function(x, heading=0, pitch=0, roll=0)
 ##    the beam angles in the 'head' configuration section.
 ## 7. the C code suggests the velocity scale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
-
-## To do
-## * transformation matrix so we can have earth and frame coords
-## * merge this with "adp" class.
 
 read.profile.aquadopp <- function(file, debug=!TRUE)
 {

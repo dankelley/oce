@@ -137,7 +137,7 @@
 
     \item \code{which=21} yields a time-series of distance-averaged
     velocity for beam 3, up-frame velocity, upward velocity, or
-    rotated-uphward velocity, depending on the coordinate system.
+    rotated-upward velocity, depending on the coordinate system.
 
     \item \code{which=22} yields a time-series of distance-averaged
     velocity for beam 4, for \code{beam} coordiantes, or velocity
@@ -146,7 +146,17 @@
 
     \item \code{which=23} yields a progressive-vector diagram in the
     horizontal plane.  (This only makes sense in \code{earth} or
-    \code{other} coordinate systms.)
+    \code{other} coordinate systems.)
+
+    \item \code{which=24} yields a time-averaged profile of the first
+    component of velocity (see \code{which=19} for the meaning
+    of the component, in various coordinate systems).
+
+    \item \code{which=25} as for 24, but the second component.
+
+    \item \code{which=26} as for 24, but the third component.
+
+    \item \code{which=27} as for 24, but the fourth component (if that makes sense, for the given instrument).
 
   }
 

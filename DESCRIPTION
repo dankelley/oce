@@ -1,12 +1,12 @@
 Package: oce
 Version: 0.1-77
-Date: 2009-06-18
+Date: 2009-06-19
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
 Depends: R (>= 0.99)
 Description: Supports the analysis of Oceanographic data,
- including ADCP measurements, CTD measurements, sectional data,
+ including ADP measurements, CTD measurements, sectional data,
  sea-level timeseries, coastline files, etc.  Provides
  functions for calculating seawater properties such as potential
  temperature and density, as well as derived properties such as buoyancy
