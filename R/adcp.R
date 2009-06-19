@@ -362,20 +362,12 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
             print(buf[profile.start[1]:(99+profile.start[1])])
         }
     }
+    header.length <- 80                 # FIXME: should this really be hard-wired??
     s <- profile.start[1]
-    year <- readBin(buf[s+18:19], "integer", size=2, signed=FALSE, endian="little")
-    day <- as.integer(buf[s+20])
-    month <- as.integer(buf[s+21])
-    minute <- as.integer(buf[s+22])
-    hour <- as.integer(buf[s+23])
-    sec100 <- as.integer(buf[s+24])     # FIXME: determine whether this is 1/100th second
-    sec <- as.integer(buf[s+25])
-    if (debug) cat("year=", year, "month=", month, "day=", day, "hour=", hour, "minute=",minute,"sec100=",sec100,"sec=",sec,"\n")
-    t <- ISOdatetime(year, month, day, hour, minute, sec+sec100/100, tz="UTC")
-    print(t)
-
+    ## Only read (important) things that don't change profile-by-profile
     number.of.beams <- as.integer(buf[s+26])
     if (debug) cat("number.of.beams=", number.of.beams, "\n")
+    if (number.of.beams != 3) stop("there should be 3 beams, but the file indicates ", number.of.beams)
 
     orientation <- as.integer(buf[s+27])
     if (debug) cat("orientation=", orientation, "\n")
@@ -383,8 +375,8 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     temp.mode <- as.integer(buf[s+28])
     if (debug) cat("temp.mode=", temp.mode, "\n")
 
-    coordinate.sytem <- as.integer(buf[s+29])
-    if (debug) cat("coordinate.system=", coordinate.sytem, "\n")
+    coordinate.system <- as.integer(buf[s+29])
+    if (debug) cat("coordinate.system=", coordinate.system, "\n")
 
     number.of.cells <- readBin(buf[s+30:31], "integer", n=1, size=2, endian="little", signed=FALSE)
     if (debug) cat("number.of.cells=", number.of.cells, "\n")
@@ -395,36 +387,10 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     blanking.distance <- readBin(buf[s+34:35], "integer", n=1, size=2, endian="little", signed=FALSE) / 100 # metres
     if (debug) cat("blanking.distance=", blanking.distance, "m\n")
 
-    ## avgInt 2 bytes
-    ## nPings 2 bytes
-    heading <- readBin(buf[s+40:41], "integer", n=1, size=2, endian="little", signed=TRUE) / 10
-    pitch <- readBin(buf[s+42:43], "integer", n=1, size=2, endian="little", signed=TRUE) / 10
-    roll <- readBin(buf[s+44:45], "integer", n=1, size=2, endian="little", signed=TRUE) / 10
-    if (debug) cat("heading=", heading, "pitch=", pitch, "roll=", roll, "\n")
-
-    temperature <- readBin(buf[s+46:47], "integer", n=1, size=2, endian="little", signed=TRUE) / 100
-    if (debug) cat("T=", temperature, "C\n")
-    pressure <- readBin(buf[s+48:49], "integer", n=1, size=2, endian="little", signed=FALSE)
-    if (debug) cat("p=", pressure, "counts [whatever that means]\n")
-
-    ## stdHdg   2 byte [DS reads 1 byte, but skips a second]
-    ## stdPitch 2 byte
-    ## stdRoll  2 byte
-    ## stdTemperature  2 byte (factor 10)
-    ## stdPressure  2 byte
-
     sound.speed <- readBin(buf[s+60:61], "integer", n=1, size=2, endian="little", signed=FALSE) / 10
     if (debug) cat("sound.speed=", sound.speed, "m/s\n")
 
-    if (!TRUE)
-        for (o in 55:65)
-            cat("o=",o,"2-byte unsigned item=",
-                readBin(buf[(o+s):(1+o+s)], "integer", size=1, signed=FALSE, endian="little"),
-                " and as signed=",
-                readBin(buf[(o+s):(1+o+s)], "integer", size=1, signed=FALSE, endian="little"),
-                "\n")
-
-    number.of.profiles <- length(profile.start)
+    profiles.in.file <- length(profile.start)
     id <- buf[profile.start]
     bytes.per.profile <- diff(profile.start[1:2])
     if (debug) cat("bytes.per.profile=", bytes.per.profile, "\n")
@@ -432,11 +398,11 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     ## number.of.bytes <- buf[sample.start + 1]
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
 
-    temperature <- readBin(buf[profile.start2 + 46], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 100
-    pressure <- readBin(buf[profile.start2 + 48], "integer", n=number.of.profiles, size=2, endian="little", signed=FALSE) / 100
-    heading <- readBin(buf[profile.start2 + 40], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
-    pitch <- readBin(buf[profile.start2 + 42], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
-    roll <- readBin(buf[profile.start2 + 44], "integer", n=number.of.profiles, size=2, endian="little", signed=TRUE) / 10
+    temperature <- readBin(buf[profile.start2 + 46], "integer", n=profiles.in.file, size=2, endian="little", signed=TRUE) / 100
+    pressure <- readBin(buf[profile.start2 + 48], "integer", n=profiles.in.file, size=2, endian="little", signed=FALSE) / 100
+    heading <- readBin(buf[profile.start2 + 40], "integer", n=profiles.in.file, size=2, endian="little", signed=TRUE) / 10
+    pitch <- readBin(buf[profile.start2 + 42], "integer", n=profiles.in.file, size=2, endian="little", signed=TRUE) / 10
+    roll <- readBin(buf[profile.start2 + 44], "integer", n=profiles.in.file, size=2, endian="little", signed=TRUE) / 10
 
     year <- readBin(buf[profile.start2+18], "integer", size=2, signed=FALSE, endian="little")
     day <- as.integer(buf[profile.start+20])
@@ -446,16 +412,45 @@ read.adcp.sontek <- function(file, from=0, to, by=1,
     sec100 <- as.integer(buf[profile.start+24])     # FIXME: determine whether this is 1/100th second
     second <- as.integer(buf[profile.start+25])
     time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz="UTC")
-    data <- list(ma=NULL,
+
+    to <- profiles.in.file
+    warning("setting \"to\" to number of profiles in file, IGNORING any instructions you gave!")
+
+    v <- array(dim=c(to, number.of.cells, number.of.beams))
+    a <- array(dim=c(to, number.of.cells, number.of.beams))
+    q <- array(dim=c(to, number.of.cells, number.of.beams))
+    nd <- number.of.cells * number.of.beams
+    cat("nd=",nd,"\n")
+    cat("header.length=",header.length,"\n")
+    if (to > 0) {
+        for (i in 1:to) {
+            vv <- matrix(readBin(buf[profile.start[i] + header.length + 1 + c(0, 2*nd)],
+                                 "integer", n=nd, size=2, signed=TRUE, endian="little"), nrow=3, byrow=TRUE)
+            for (b in 1:number.of.beams)
+                v[i,,b] <- vv[b,]
+            if (monitor) {
+                cat(".")
+                if (!(i %% 50)) cat(i, "\n")
+            }
+        }
+        if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
+        ma <- list(v=v)
+    } else {
+        ma <- NULL
+    }
+    data <- list(ma=ma,
                  ss=list(distance=seq(blanking.distance, by=cell.size, length.out=number.of.cells)),
                  ts=list(time=time,
                  temperature=temperature,
                  pressure=pressure,
                  heading=heading, pitch=pitch, roll=roll))
+
     metadata <- list(filename=filename,
                      instrument.type="sontek",
-                     number.of.samples=number.of.profiles,
-                     number.of.beams=number.of.beams)
+                     number.of.samples=profiles.in.file,
+                     oce.coordinate=c("beam", "frame", "earth", "other")[coordinate.system+1], # FIXME: check this
+                     number.of.beams=number.of.beams,
+                     oce.beam.attenuated=FALSE)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -611,7 +606,7 @@ summary.adcp <- function(object, ...)
                              number.of.data.types=object$metadata$number.of.data.types,
                              beam.config=object$metadata$beam.config)
     } else if (inherits(object, "sontek adp")) {
-        ;
+        res.specific <- NULL
     } else stop("can only summarize ADCP objects of type \"rdi\", \"sontek adp\", or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
