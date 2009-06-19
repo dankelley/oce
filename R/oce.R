@@ -2,12 +2,17 @@ oce.plot.ts <- function(x,
                         y,
                         draw.time.range=TRUE,
                         xaxs="i",
+                        adorn=NULL,
                         ...)
 {
     plot(x, y, axes=FALSE, xaxs=xaxs, ...)
     oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
     box()
     axis(2)
+    if (!is.null(adorn)) {
+        t <- try(eval(adorn), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn {", , "}\n")
+    }
 }
 
 oce.as.POSIXlt <- function (x, tz = "")

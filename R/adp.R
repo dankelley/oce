@@ -748,7 +748,7 @@ plot.adp <- function(x,
                      ...)
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
-    opar <- par(no.readonly = TRUE)
+    opar <- par(mgp, mar, cex) #no.readonly = TRUE)
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
@@ -783,6 +783,7 @@ plot.adp <- function(x,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
+
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     if (gave.zlim && all(which %in% 5:8)) { # single scale for all
@@ -845,38 +846,48 @@ plot.adp <- function(x,
             }
         } else if (which[w] %in% timeseries) { # time-series types
             par(mgp=mgp, mar=mar, cex=cex)
-            if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l', draw.time.range=draw.time.range)
-            if (which[w] == 14) oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l', draw.time.range=draw.time.range)
-            if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l', draw.time.range=draw.time.range)
-            if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l', draw.time.range=draw.time.range)
-            if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l', draw.time.range=draw.time.range)
-            if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l', draw.time.range=draw.time.range)
+            if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l',
+                     draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 14) oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l',
+                     draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l',
+                     draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l',
+                     draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l',
+                     draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l',
+                     draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 19) {
                 if (x$metadata$number.of.beams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                                 ylab=image.name(x, 1),
-                                type='l', draw.time.range=draw.time.range, cex.axis=cex, ...)
+                                type='l', draw.time.range=draw.time.range, cex.axis=cex,
+                                adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
                 if (x$metadata$number.of.beams > 1)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
                                 ylab=image.name(x, 2),
-                                type='l', draw.time.range=draw.time.range, ...)
+                                type='l', draw.time.range=draw.time.range,
+                                adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 2 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] == 21) {
                 if (x$metadata$number.of.beams > 2)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
                                 ylab=image.name(x, 3),
-                                type='l', draw.time.range=draw.time.range, ...)
+                                type='l', draw.time.range=draw.time.range,
+                                adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] == 22) {
                 if (x$metadata$number.of.beams > 3)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
                                 ylab=image.name(x, 4),
-                                type='l', draw.time.range=draw.time.range)
+                                type='l', draw.time.range=draw.time.range,
+                                adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             draw.time.range <- FALSE
@@ -895,25 +906,20 @@ plot.adp <- function(x,
                 x.dist <- cumsum(apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)) * dt / m.per.km
                 y.dist <- cumsum(apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)) * dt / m.per.km
                 plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
-            }
-            ## 24:27 are time-integrated beam profiles
-            if (which[w] == 24) {
+            } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)
                 plot(value, x$data$ss$distance, xlab=image.name(x, 1), ylab="Distance [m]", type='l', ...)
-            }
-            if (which[w] == 25) {
+            } else if (which[w] == 25) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,2], 2, mean, na.rm=TRUE)
                 plot(value, x$data$ss$distance, xlab=image.name(x, 2), ylab="Distance [m]", type='l', ...)
-            }
-            if (which[w] == 26) {
+            } else if (which[w] == 26) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,3], 2, mean, na.rm=TRUE)
                 plot(value, x$data$ss$distance, xlab=image.name(x, 3), ylab="Distance [m]", type='l', ...)
                 ##grid()
-            }
-            if (which[w] == 27) {
+            } else if (which[w] == 27) {
                 if (x$metadata$number.of.beams > 3) {
                     par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                     value <- apply(x$data$ma$v[,,4], 2, mean, na.rm=TRUE)
@@ -921,10 +927,10 @@ plot.adp <- function(x,
                     ##grid()
                 } else warning("cannot use which=27 because this device did not have 4 beams")
             }
-        }
-        if (w <= adorn.length) {
-            t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            if (w <= adorn.length) {
+                t <- try(eval(adorn[w]), silent=TRUE)
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            }
         }
     }
 }
