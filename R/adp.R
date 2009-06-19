@@ -422,8 +422,10 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     a <- array(dim=c(to, number.of.cells, number.of.beams))
     q <- array(dim=c(to, number.of.cells, number.of.beams))
     nd <- number.of.cells * number.of.beams
-    cat("nd=",nd,"\n")
-    cat("header.length=",header.length,"\n")
+    if (debug) {
+        cat("nd=",nd,"\n")
+        cat("header.length=",header.length,"\n")
+    }
     if (to > 0) {
         for (i in 1:to) {
             ## Doug does:
