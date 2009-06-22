@@ -1244,7 +1244,7 @@ read.adp.nortek <- function(file, from=0, to, by=1,
             blanking.distance <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             if (debug) cat("  blanking.distance=", blanking.distance, "??? expect 0.05 m\n")
             measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  measurement.inteval=", measurement.interval, "\n")
+            if (debug) cat("  measurement.interval=", measurement.interval, "\n")
             T1 <- readBin(buf[5:6], "integer", n=1, size=2, endian="little")
             T2 <- readBin(buf[7:8], "integer", n=1, size=2, endian="little")
             T3 <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
@@ -1274,7 +1274,8 @@ read.adp.nortek <- function(file, from=0, to, by=1,
                 ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
                 cell.size <- cos(25*pi/180) * hBinLength *0.0000263671875
             } else {
-                stop("The frequency must be 1000 or 2000, but it is ", frequency)
+                cat("what is the cell size??  NOTE: need to see if we are looking at a vector\n")
+                stop("The frequency must be 1000 or 2000, but it is ", frequency) # FIXME vector has 6000; why check??
             }
             if (debug) cat("cell.size=", cell.size, "(should be  0.04 m)\n")
             measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
