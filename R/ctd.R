@@ -533,7 +533,7 @@ plot.ctd.scan <- function(x,
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, check.human.headers=FALSE, log.action)
+read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, log.action)
 {
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     filename <- NULL
@@ -557,13 +557,14 @@ read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, c
         if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
         else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
         else stop("type must be SBE19 or WOCE, not ", type)
-    }
+    }                                   # FIXME: should just use magic() here
     switch(type,
-           SBE19 = read.ctd.SBE19(file, filename, debug, columns, station=station, check.human.headers=check.human.headers, log.action),
-           WOCE  = read.ctd.WOCE(file, filename, debug, columns, station=station, missing.value=-999, log.action))
+           SBE19 = read.ctd.sbe(file, debug, columns, station=station, log.action=log.action),
+           WOCE  = read.ctd.woce(file, debug, columns, station=station, missing.value=-999, log.action=log.action)
+           )
 }
 
-read.ctd.WOCE <- function(file, filename, debug=FALSE, columns=NULL, station=NULL, missing.value=-999, log.item)
+read.ctd.woce <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.value=-999, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -696,7 +697,8 @@ read.ctd.WOCE <- function(file, filename, debug=FALSE, columns=NULL, station=NUL
                      sample.interval=sample.interval,
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, processing.log=log.action)
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
     res
 }
@@ -737,7 +739,7 @@ parse.latlon <- function(line, debug=FALSE)
     x
 }
 
-read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NULL, check.human.headers=TRUE, log.action)
+read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.value, log.action)
 {
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -916,7 +918,7 @@ read.ctd.SBE19 <- function(file, filename, debug=FALSE, columns=NULL, station=NU
         }
     }
     if (debug) cat("Finished reading header\n")
-    if (check.human.headers) {
+    if (debug) {
         if (is.nan(sample.interval)) warning("'* sample rate =' not found in header");
         if (is.nan(latitude))        warning("'** Latitude:' not found in header");
         if (is.nan(longitude))       warning("'** Longitude:' not found in header");

@@ -1,13 +1,20 @@
 \name{read.ctd}
 
 \alias{read.ctd}
+\alias{read.ctd.sbe}
+\alias{read.ctd.woce}
 
 \title{Read a CTD data file}
 
 \description{Read a CTD data file, producing an object of type \code{ctd}.}
 
-\usage{read.ctd(file, type=NULL, debug=FALSE,
- 	columns=NULL, station=NULL, check.human.headers=FALSE, log.action)
+\usage{
+read.ctd(file, type=NULL, debug=FALSE,
+ 	columns=NULL, station=NULL, log.action)
+read.ctd.sbe(file, debug=FALSE,
+ 	columns=NULL, station=NULL, missing.value, log.action)
+read.ctd.woce(file, debug=FALSE,
+ 	columns=NULL, station=NULL, missing.value=-999, log.action)
 }
 
 \arguments{
@@ -26,7 +33,8 @@
   \item{station}{optional character string containing an identifying name (or
     number) for the station. (This can be useful if the routine cannot determine
     the name automatically, or if another name is preferred.)}
-  \item{check.human.headers}{produces warnings for missing human-written header items.}
+  \item{missing.value}{optional missing-value flag; data matching this value will
+    be set to \code{NA} upon reading.}
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}

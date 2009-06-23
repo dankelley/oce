@@ -16,12 +16,12 @@ read.adp.rdi(file, from=0, to, by=1,
               type=c("workhorse"),
               debug=0, monitor=TRUE, log.action)
 read.adp.nortek(file, from=0, to, by=1,
-                 type=c("aquadopp high resolution"),
-                 debug=0, monitor=TRUE, log.action)
+                type=c("aquadopp high resolution"),
+                debug=0, monitor=TRUE, log.action)
 read.adp.sontek(file, from=0, to, by=1,
-                 type=c("adp"),
-                 withHeader=FALSE,
-                 debug=0, monitor=TRUE, log.action)
+                type=c("adp"),
+                withHeader=FALSE,
+                debug=0, monitor=TRUE, log.action)
 }
 
 \arguments{

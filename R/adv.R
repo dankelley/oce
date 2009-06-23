@@ -1,6 +1,6 @@
 read.adv <- function(file, from=0, to, by=1,
                      type=c("sontek"),
-                     withHeader=FALSE, sampling.start, deltat,
+                     withHeader=TRUE, sampling.start, deltat,
                      debug=0, monitor=TRUE, log.action)
 {
     type = match.arg(type)
@@ -10,9 +10,76 @@ read.adv <- function(file, from=0, to, by=1,
                         debug=debug, monitor=monitor, log.action=log.action)
 }
 
+read.adv.nortek <- function(file, from=0, to, by=1,
+                            type="default",
+                            withHeader=TRUE, sampling.start, deltat,
+                            debug=0, monitor=TRUE, log.action)
+{
+    sync.code <- as.raw(0xa5)
+    if (is.character(file)) {
+        filename <- file
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    type <- match.arg(type)
+    if (!withHeader) stop("withHeader must be TRUE")
+    header <- read.header.nortek(file)
+    metadata <- list(instrument.type="aquadopp high resolution",
+                     filename=filename,
+                     sampling.start=if (missing(sampling.start)) NA else sampling.start,
+                     sampling.end=NA,   # FIXME
+                     size=header$head$size,
+                     number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
+                     serial.number=header$hardware$serial.number,
+                     frequency=header$head$frequency,
+                     internal.code.version=header$hardware$pic.version,
+                     hardware.revision=header$hardware$hw.revision,
+                     rec.size=header$hardware$rec.size,
+                     velocity.range=header$hardware$velocity.range,
+                     firmware.version=header$hardware$fw.version,
+                     config=header$hardware$config,
+                     config.pressure.sensor=header$head$config.pressure.sensor,
+                     config.magnetometer.sensor=header$head$config.magnetometer.sensor,
+                     config.tilt.sensor=header$head$config.tilt.sensor,
+                     beam.angle=25,     # FIXME: should read from file
+                     orientation=header$head$orientation,
+                     frequency=header$head$frequency,
+                     head.serial.number=header$head$head.serial.number,
+                     bin1.distance=header$user$blanking.distance, # FIXME: is this right?
+                     blanking.distance=header$user$blanking.distance,
+                     measurement.interval=header$user$measurement.interval,
+                     beam.to.xyz=header$head$beam.to.xyz,
+                     deployment.name=header$user$deployment.name,
+                     cell.size=header$user$cell.size,
+                     velocity.scale=header$user$velocity.scale,
+                     coordinate.system=header$user$coordinate.system,
+                     oce.coordinate=header$user$coordinate.system,
+                     oce.beam.attenuated=FALSE
+                     )
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    data <- data.frame(time=1,
+                       sample.number=1,
+                       x=1, y=1, z=1,
+                       a1=1L, a2=1, a3=1,
+                       c1=1, c2=1, c3=1,
+                       temperature=1,
+                       pressure=1)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("adv", "nortek", "vector", "oce")
+    res
+}
+
 read.adv.sontek <- function(file, from=0, to, by=1,
                             type="default",
-                            withHeader=FALSE, sampling.start, deltat,
+                            withHeader=TRUE, sampling.start, deltat,
                             debug=0, monitor=TRUE, log.action)
 {
     if (is.character(file)) {
@@ -97,7 +164,9 @@ summary.adv <- function(object, ...)
     if (!inherits(object, "adv")) stop("method is only for adv objects")
     if (inherits(object, "sontek")) {
         ;
-    } else stop("can only summarize ADV objects of type \"sontek\" not class ", paste(class(object),collapse=","))
+    } else if (inherits(object, "nortek")) {
+        ;
+    } else stop("can only summarize ADV objects of sub-type \"nortek\" or \"sontek\", not class ", paste(class(object),collapse=","))
     names <- names(object$data)
     fives <- matrix(nrow=(-1+length(names)), ncol=5)
     ii <- 1

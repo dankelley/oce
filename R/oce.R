@@ -186,6 +186,7 @@ summary.oce <- function(object, ...)
 magic <- function(file, debug=FALSE)
 {
     filename <- file
+    print(filename)
     if (is.character(file))
         file <- file(file, "r")
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
@@ -194,10 +195,10 @@ magic <- function(file, debug=FALSE)
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     close(file)
-    on.exit(close(file))
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=2)
-    if (bytes[1] == 0x7f && bytes[2] == 0x7f)        return("adp.rdi")
+    on.exit(close(file))
+    if (bytes[1] == 0x7f && bytes[2] == 0x7f)        return("adp/rdi")
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
         ## NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
         ## Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
@@ -213,15 +214,16 @@ magic <- function(file, debug=FALSE)
         if (debug) cat("  user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
         if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
         next.two.bytes <- readBin(file, what="raw", n=2)
-        if (debug) cat("  next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/sontek/vector)\n")
+        if (debug) cat("  next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x12) return("adv/nortek/vector")
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) return("adp/nortek/aquadopp") # p33 SIG
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a) return("adp/nortek/aquadopp HR") # p38 SIG
         else stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2])
     }
+
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
-    if (substr(line, 1, 3) == "CTD")                 return("ctd.woce")
-    if ("* Sea-Bird" == substr(line, 1, 10))         return("ctd.seabird")
+    if (substr(line, 1, 3) == "CTD")                 return("ctd/woce/exchange")
+    if ("* Sea-Bird" == substr(line, 1, 10))         return("ctd/sbe/19")
     if ("# -b" == substr(line, 1, 4))                return("coastline")
     if ("# Station_Name," == substr(line, 1, 15))    return("sealevel")
     if ("Station_Name," == substr(line, 1, 13))      return("sealevel")
@@ -230,6 +232,7 @@ magic <- function(file, debug=FALSE)
     if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line))  return("topo")
     if ("RBR TDR" == substr(line, 1, 7))             return("pt")
     if ("BOTTLE"  == substr(line, 1, 6))             return("section")
+
     return("unknown")
 }
 
@@ -237,22 +240,17 @@ read.oce <- function(file, ...)
 {
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    if (type == "adp.rdi")     return(read.adp.rdi(file,                  ..., log.action=log.action))
+    if (type == "adp/rdi")     return(read.adp.rdi(file,                              ..., log.action=log.action))
     if (type == "adp/nortek/aquadopp")  stop("Sorry, the oce package cannot read ADP/nortek/aquadopp files yet")
-    ## FIXME: rename next to read.adp.nortek.aquadoppHR
-    ## FIXME: put read.adv.nortek.vector here
-    ## FIXME: not sure what to do about the chopped-up sontek adv data
     if (type == "adp/nortek/aquadopp HR")  return(read.adp.nortek(file,               ..., log.action=log.action))
-    if (type == "ctd.woce")    return(read.ctd(file,                      ..., log.action=log.action))
-    ## FIXME: rename next to ctd/sbe/19 calling read.ctd.sbe.19()
-    ## FIXME: can't we read non-sbe files?
-    ## FIXME: put into manual the business of 3-part, slash-delimited, magic.  Explain how "/" becomes "." and " " vanishes
-    if (type == "ctd.seabird") return(read.ctd(file,                      ..., log.action=log.action))
-    if (type == "coastline")   return(read.coastline(file, type="mapgen", ..., log.action=log.action))
-    if (type == "sealevel")    return(read.sealevel(file,                 ..., log.action=log.action))
-    if (type == "topo")        return(read.topo(file,                     ..., log.action=log.action))
-    if (type == "pt")          return(read.pt(file,                       ..., log.action=log.action))
-    if (type == "section")     return(read.section(file,                  ..., log.action=log.action))
+    if (type == "adv/nortek/vector")       return(read.adv.nortek(file,               ..., log.action=log.action))
+    if (type == "ctd/sbe/19")              return(read.ctd.sbe(file,                  ..., log.action=log.action))
+    if (type == "ctd/woce/exchange")       return(read.ctd.woce(file,                 ..., log.action=log.action))
+    if (type == "coastline")               return(read.coastline(file, type="mapgen", ..., log.action=log.action))
+    if (type == "sealevel")                return(read.sealevel(file,                 ..., log.action=log.action))
+    if (type == "topo")                    return(read.topo(file,                     ..., log.action=log.action))
+    if (type == "pt")                      return(read.pt(file,                       ..., log.action=log.action))
+    if (type == "section")                 return(read.section(file,                  ..., log.action=log.action))
     stop("unknown file type")
 }
 

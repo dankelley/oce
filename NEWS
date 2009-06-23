@@ -1,5 +1,5 @@
 0.1-77
-- add preliminary ADV support
+- add preliminary support for Sontek and Nortek ADVs
 - add oce.plot.ts()
 - add support for ADP data from RDI and NorTek
 - add imagep()

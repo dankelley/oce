@@ -1,6 +1,7 @@
 \name{read.adv}
 \alias{read.adv}
 \alias{read.adv.sontek}
+\alias{read.adv.nortek}
 
 \title{Read an ADV data file}
 
@@ -9,11 +10,15 @@
 \usage{
 read.adv(file, from=0, to, by=1,
         type=c("sontek"),
-        withHeader=FALSE, sampling.start, deltat,
+        withHeader=TRUE, sampling.start, deltat,
         debug=0, monitor=TRUE, log.action)
 read.adv.sontek(file, from=0, to, by=1,
                 type="default",
-                withHeader=FALSE, sampling.start, deltat,
+                withHeader=TRUE, sampling.start, deltat,
+                debug=0, monitor=TRUE, log.action)
+read.adv.nortek(file, from=0, to, by=1,
+                type="default",
+                withHeader=TRUE, sampling.start, deltat,
                 debug=0, monitor=TRUE, log.action)
 }
 
@@ -33,8 +38,8 @@ read.adv.sontek(file, from=0, to, by=1,
     get the stride length.(IGNORED AT PRESENT.)}
   \item{type}{a character string indicating the type of file.}
   \item{withHeader}{a boolean indicating whether the file has a proper 
-    header (NOT SUPPORTED YET) or is a partial file, chopped out into
-    smaller time chunks with a deck unit (SUPPORTED.}
+    header or is a partial file, chopped out into
+    smaller time chunks with a deck unit.}
   \item{sampling.start}{a POSIXct time corresponding to the first sample. 
     (This is mandatory if \code{withHeader=FALSE}.)}
   \item{deltat}{the time between samples.

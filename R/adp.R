@@ -636,7 +636,9 @@ summary.adp <- function(object, ...)
                              beam.config=object$metadata$beam.config)
     } else if (inherits(object, "sontek")) {
         res.specific <- NULL
-    } else stop("can only summarize ADP objects of type \"rdi\", \"sontek\", or \"aquadop high resolution\", not class ", paste(class(object),collapse=","))
+    } else if (inherits(object, "nortek")) {
+        res.specific <- NULL
+    } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
     fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
@@ -695,7 +697,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Filename:                   ", x$filename, "\n")
     cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
     cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Number of data types:       ", x$number.of.data.types, "\n")
+    ##cat("  Number of data types:       ", x$number.of.data.types, "\n")
     cat("  Frequency:                  ", x$frequency, "kHz\n")
     cat("  Beams:                      ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n")
     cat("  Orientation:                ", x$orientation, "\n")
@@ -704,7 +706,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     ##cat("  Cell size:                  ", x$cell.size, "m\n")
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
     cat("  Number of profiles :        ", x$number.of.profiles, "\n")
-    cat("  Distances withing profiles: ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
+    cat("  Distances within profiles:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
     cat("  Profile times:              ", as.character(x$start.time), attr(x$start.time,"tzone"),
         "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n")
 
@@ -1151,9 +1153,144 @@ display.bytes <- function(b, label="")
     print(b)
 }
 
+read.header.nortek <- function(file, debug=FALSE)
+{
+    sync.code <- as.raw(0xa5)
+    id.hardware.configuration <- as.raw(0x05)
+    id.head.configuration <- as.raw(0x04)
+    id.user.configuration <- as.raw(0x00)
+    header.length.hardware <- 48
+    header.length.head <- 224
+    header.length.user <- 512
+    hardware <- head <- user <- list()
+    for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
+        two.bytes <- peek.ahead(file)
+        if (two.bytes[1] != sync.code)
+            stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", buf[1], " instead (while reading header #", header, ")")
+        if (two.bytes[2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
+            if (debug) cat("** scanning Hardware Configuration **\n")
+            buf <- readBin(file, "raw", header.length.hardware)
+            if (buf[2] != 0x05) stop("byte 2 must be 0x05 but is 0x", buf[2])
+            hardware$size <- readBin(buf[3:4], "integer",signed=FALSE, n=1, size=2)
+            if (debug) cat("  hardware$size=", hardware$size, "\n")
+            hardware$serial.number <- gsub(" *$", "", paste(readBin(buf[5:18], "character", n=14, size=1), collapse=""))
+            if (debug) cat("  hardware$serial.number", hardware$serial.number, "\n")
+            hardware$config <- readBin(buf[19:20], "raw", n=2, size=1)
+            if (debug) cat("  hardware$config:", hardware$config, "\n")
+            hardware$frequency <- readBin(buf[21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
+            if (debug) cat("  hardware$frequency:", hardware$frequency, "\n")
+            hardware$pic.version <- readBin(buf[23:24], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  hardware$pic.version=", hardware$pic.version, "\n")
+            hardware$hw.revision <- readBin(buf[25:26], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  hardware$hw.revision=", hardware$hw.revision, "\n")
+            hardware$rec.size <- readBin(buf[27:28], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  hardware$rec.size=", hardware$rec.size, "\n")
+            hardware$velocity.range <- readBin(buf[29:30], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  hardware$velocity.range=", hardware$velocity.range, "\n")
+            hardware$fw.version <- as.numeric(paste(readBin(buf[43:46], "character", n=4, size=1), collapse=""))
+            if (debug) cat("  hardware$fw.version=", hardware$fw.version, "\n")
+        } else if (two.bytes[2] == id.head.configuration) {     # see page 30 of System Integrator Guide
+            if (debug) cat("** scanning Head Configuration **\n")
+            buf <- readBin(file, "raw", header.length.head)
+            head$size <- readBin(buf[3:4], "integer",signed=FALSE, n=1, size=2)
+            if (debug) cat("  head$size=", head$size, "\n")
+            head$config <- byte2binary(buf[5:6], endian="little")
+            if (debug) cat("  head$config=", head$config, "\n")
+            head$config.pressure.sensor <- substr(head$config[1], 1, 1) == "1"
+            if (debug) cat("  head$config.pressure.sensor=", head$config.pressure.sensor,"\n")
+            head$config.magnetometer.sensor <- substr(head$config[1], 2, 2) == "1"
+            if (debug) cat("  head$config.magnetometer.sensor=", head$config.magnetometer.sensor,"\n")
+            head$config.tilt.sensor <- substr(head$config[1], 3, 3) == "1"
+            if (debug) cat("  head$config.tilt.sensor=", head$config.tilt.sensor,"\n")
+            head$orientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
+            if (debug) cat("  head$orientation=", head$orientation, "\n")
+            head$frequency <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (debug) cat("  head$frequency=", head$frequency, "kHz\n")
+            head$head.type <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  head$head.type=", head$head.type, "\n")
+            head$head.serial.number <- gsub(" *$", "", paste(readBin(buf[11:22], "character", n=12, size=1), collapse=""))
+            if (debug) cat("  head$head.serial.number=", head$head.serial.number, "\n")
+            head$beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
+            if (debug) cat("  head$beam.angles=", head$beam.angles, "(rad)\n")
+
+            ## short hBeamToXYZ[9];          // beam to XYZ transformation matrix for up orientation
+            ##Transformation matrix (before division by 4096) -- checks out ok
+            ## 6461 -3232 -3232
+            ##    0 -5596  5596
+            ## 1506  1506  1506
+            head$beam.to.xyz <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
+            if (debug) {cat("  head$beam.to.xyz\n");print(head$beam.to.xyz);}
+            head$number.of.beams <- readBin(buf[221:222], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  head$number.of.beams=", head$number.of.beams, "\n")
+        } else if (two.bytes[2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
+            if (debug) cat("** scanning User Configuration **\n")
+            buf <- readBin(file, "raw", header.length.user)
+            user$blanking.distance <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (debug) cat("  user$blanking.distance=", user$blanking.distance, "??? expect 0.05 m\n")
+            user$measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  user$measurement.interval=", user$measurement.interval, "\n")
+            user$T1 <- readBin(buf[5:6], "integer", n=1, size=2, endian="little")
+            user$T2 <- readBin(buf[7:8], "integer", n=1, size=2, endian="little")
+            user$T3 <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
+            user$T4 <- readBin(buf[11:12], "integer", n=1, size=2, endian="little")
+            user$T5 <- readBin(buf[13:14], "integer", n=1, size=2, endian="little")
+            user$NPings <- readBin(buf[15:16], "integer", n=1, size=2, endian="little")
+            user$AvgInterval <- readBin(buf[17:18], "integer", n=1, size=2, endian="little")
+            user$number.of.beams <- readBin(buf[19:20], "integer", n=1, size=2, endian="little")
+            if (debug) cat("\n user$T1=",user$T1,"user$T2=",user$T2,"user$T5=",user$T5,"user$NPings=",user$NPings,"user$AvgInterval=",user$AvgInterval,"user$number.of.beams=",user$number.of.beams,"\n\n")
+            user$mode <- byte2binary(buf[59:60], endian="little")
+            if (debug) cat("  user$mode: ", user$mode, "\n")
+            user$velocity.scale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.00001
+            if (debug) cat("  user$velocity.scale: ", user$velocity.scale, "\n")
+            tmp.cs <- readBin(buf[33:34], "integer", n=1, size=2, endian="little")
+            if (tmp.cs == 0) user$coordinate.system <- "earth" # page 31 of System Integrator Guide
+            else if (tmp.cs == 1) user$coordinate.system <- "frame"
+            else if (tmp.cs == 2) user$coordinate.system <- "beam"
+            else stop("unknown coordinate system ", tmp.cs)
+            if (debug) cat("  user$coordinate.system: ", user$coordinate.system, "\n")
+            user$number.of.cells <- readBin(buf[35:36], "integer", n=1, size=2, endian="little")
+            if (debug) cat("  user$number.of.cells: ", user$number.of.cells, "\n")
+            user$hBinLength <- readBin(buf[37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
+                user$cell.size <- cos(25*pi/180) * user$hBinLength * 0.000052734375
+            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) { # FIXME: use head$frequency or hardware$frequency?
+                ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
+                user$cell.size <- cos(25*pi/180) * user$hBinLength *0.0000263671875
+            } else {
+                user$cell.size <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
+            }
+            if (debug) cat("cell.size=", user$cell.size, "m\n")
+            user$measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
+            if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.0135*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                user$blanking.distance <- cos(25*pi/180) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.00675*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                user$blanking.distance <- cos(25*pi/180) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+            } else {
+                user$blanking.distance <- 0
+                warning("setting blanking distance to 0, since the frequency is not in the list of known values")
+            }
+            if (debug) cat("blanking.distance=", user$blanking.distance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
+            if (debug) cat("measurement.interval=", user$measurement.interval, "\n")
+            user$deployment.name <- readBin(buf[41:46], "character")
+            user$sw.version <- readBin(buf[73:74], "integer", n=1, size=2, endian="little")
+            if (debug) cat("sw.version=", user$sw.version,"\n")
+            user$salinity <- readBin(buf[75:76], "integer", n=1, size=2, endian="little") * 0.1
+            if (debug) cat("salinity=", user$salinity,"\n")
+        } else {
+            stop("cannot understand byte 0x", two.bytes[2], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
+        }
+    }
+    list(hardware=hardware, head=head, user=user)
+}
+
 read.adp.nortek <- function(file, from=0, to, by=1,
                              type=c("aquadopp high resolution"),
-                             debug=0, monitor=TRUE, log.action) {
+                             debug=0, monitor=TRUE, log.action)
+{
+    sync.code <- as.raw(0xa5)
     if (is.character(file)) {
         filename <- file
         file <- file(file, "rb")
@@ -1167,143 +1304,17 @@ read.adp.nortek <- function(file, from=0, to, by=1,
         on.exit(close(file))
     }
     type <- match.arg(type)
+    header <- read.header.nortek(file)
+
     ## codes
-    sync.code <- as.raw(0xa5)
-    id.hardware.configuration <- as.raw(0x05)
-    id.head.configuration <- as.raw(0x04)
-    id.user.configuration <- as.raw(0x00)
-    id.profiler.data <- as.raw(0x21) # page 37 of System Integrator Guide
-    id.high.resolution.aquadopp.profile.data <- as.raw(0x2a) # page 38 of System Integrator Guide
-    header.length.hardware <- 48
-    header.length.head <- 224
-    header.length.user <- 512
-    for (header in 1:3) {
-        two.bytes <- peek.ahead(file)
-        if (two.bytes[1] != sync.code)
-            stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", buf[1], " instead (while reading header #", header, ")")
-        if (two.bytes[2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
-            if (debug) cat("** scanning Hardware Configuration **\n")
-            buf <- readBin(file, "raw", header.length.hardware)
-            if (buf[2] != 0x05) stop("byte 2 must be 0x05 but is 0x", buf[2])
-            size <- readBin(buf[3:4], "integer",signed=FALSE, n=1, size=2)
-            if (debug) cat("  size=", size, "\n")
-            serial.number <- gsub(" *$", "", paste(readBin(buf[5:18], "character", n=14, size=1), collapse=""))
-            if (debug) cat("  serial.number", serial.number, "\n")
-            config <- readBin(buf[19:20], "raw", n=2, size=1)
-            if (debug) cat("  config:", config, "\n")
-            frequency <- readBin(buf[21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
-            if (debug) cat("  frequency:", frequency, "\n")
-            pic.version <- readBin(buf[23:24], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  pic.version=", pic.version, "\n")
-            hw.revision <- readBin(buf[25:26], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  hw.revision=", buf[25:26], "\n")
-            rec.size <- readBin(buf[27:28], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  rec.size=", rec.size, "\n")
-            velocity.range <- readBin(buf[29:30], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  velocity.range=", velocity.range, "\n")
-            fw.version <- as.numeric(paste(readBin(buf[43:46], "character", n=4, size=1), collapse=""))
-            if (debug) cat("  fw.version=", fw.version, "\n")
-        } else if (two.bytes[2] == id.head.configuration) {     # see page 30 of System Integrator Guide
-            if (debug) cat("** scanning Head Configuration **\n")
-            buf <- readBin(file, "raw", header.length.head)
-            size <- readBin(buf[3:4], "integer",signed=FALSE, n=1, size=2)
-            if (debug) cat("  size=", size, "\n")
-            config <- byte2binary(buf[5:6], endian="little")
-            if (debug) cat("  config=", config, "\n")
-            config.pressure.sensor <- substr(config[1], 1, 1) == "1"
-            if (debug) cat("  config.pressure.sensor=",config.pressure.sensor,"\n")
-            config.magnetometer.sensor <- substr(config[1], 2, 2) == "1"
-            if (debug) cat("  config.magnetometer.sensor=",config.magnetometer.sensor,"\n")
-            config.tilt.sensor <- substr(config[1], 3, 3) == "1"
-            if (debug) cat("  config.tilt.sensor=",config.tilt.sensor,"\n")
-            orientation <- if (substr(config[1], 4, 4) == "1") "downward" else "upward"
-            if (debug) cat("  orientation=", orientation, "\n")
-            frequency <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            if (debug) cat("  frequency=", frequency, "kHz\n")
-            head.type <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  head.type=", head.type, "\n")
-            head.serial.number <- gsub(" *$", "", paste(readBin(buf[11:22], "character", n=12, size=1), collapse="")) # 12 chars
-            if (debug) cat("  head.serial.number=", head.serial.number, "\n")
-
-            beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
-            if (debug) cat("BEAM ANGLES=", beam.angles, "(rad)\n")
-
-            ## short hBeamToXYZ[9];          // beam to XYZ transformation matrix for up orientation
-            ##Transformation matrix (before division by 4096) -- checks out ok
-            ## 6461 -3232 -3232
-            ##    0 -5596  5596
-            ## 1506  1506  1506
-            beam.to.xyz <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
-            if (debug) {cat("beam.to.xyz\n");print(beam.to.xyz);}
-
-            number.of.beams <- readBin(buf[221:222], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  number.of.beams=", number.of.beams, "\n")
-        } else if (two.bytes[2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
-            if (debug) cat("** scanning User Configuration **\n")
-            buf <- readBin(file, "raw", header.length.user)
-            blanking.distance <- readBin(buf[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            if (debug) cat("  blanking.distance=", blanking.distance, "??? expect 0.05 m\n")
-            measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  measurement.interval=", measurement.interval, "\n")
-            T1 <- readBin(buf[5:6], "integer", n=1, size=2, endian="little")
-            T2 <- readBin(buf[7:8], "integer", n=1, size=2, endian="little")
-            T3 <- readBin(buf[9:10], "integer", n=1, size=2, endian="little")
-            T4 <- readBin(buf[11:12], "integer", n=1, size=2, endian="little")
-            T5 <- readBin(buf[13:14], "integer", n=1, size=2, endian="little")
-            NPings <- readBin(buf[15:16], "integer", n=1, size=2, endian="little")
-            AvgInterval <- readBin(buf[17:18], "integer", n=1, size=2, endian="little")
-            NBeams <- readBin(buf[19:20], "integer", n=1, size=2, endian="little")
-            if (debug) cat("\n T1=",T1,"T2=",T2,"T5=",T5,"NPings=",NPings,"AvgInterval=",AvgInterval,"NBeams=",NBeams,"\n\n")
-            mode <- byte2binary(buf[59:60], endian="little")
-            if (debug) cat("  mode: ", mode, "\n")
-            velocity.scale <- if (substr(mode[2], 4, 4) == "0") 0.001 else 0.00001
-            if (debug) cat("  velocity.scale: ", velocity.scale, "\n")
-            tmp.cs <- readBin(buf[33:34], "integer", n=1, size=2, endian="little")
-            if (tmp.cs == 0) coordinate.system <- "earth" # page 31 of System Integrator Guide
-            else if (tmp.cs == 1) coordinate.system <- "frame"
-            else if (tmp.cs == 2) coordinate.system <- "beam"
-            else stop("unknown coordinate system ", tmp.cs)
-            if (debug) cat("  coordinate.system: ", coordinate.system, "\n")
-            number.of.cells <- readBin(buf[35:36], "integer", n=1, size=2, endian="little")
-            if (debug) cat("  number.of.cells: ", number.of.cells, "\n")
-            hBinLength <- readBin(buf[37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
-            if (isTRUE(all.equal.numeric(frequency, 1000))) {
-                ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
-                cell.size <- cos(25*pi/180) * hBinLength * 0.000052734375
-            } else if (isTRUE(all.equal.numeric(frequency, 2000))) {
-                ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
-                cell.size <- cos(25*pi/180) * hBinLength *0.0000263671875
-            } else {
-                cat("what is the cell size??  NOTE: need to see if we are looking at a vector\n")
-                stop("The frequency must be 1000 or 2000, but it is ", frequency) # FIXME vector has 6000; why check??
-            }
-            if (debug) cat("cell.size=", cell.size, "(should be  0.04 m)\n")
-            measurement.interval <- readBin(buf[39:40], "integer", n=1, size=2, endian="little")
-            if (isTRUE(all.equal.numeric(frequency, 1000))) {
-                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.0135*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
-                blanking.distance <- cos(25*pi/180) * (0.0135 * T2 - 12 * T1 / frequency)
-            } else if (isTRUE(all.equal.numeric(frequency, 2000))) {
-                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.00675*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
-                blanking.distance <- cos(25*pi/180) * (0.00675 * T2 - 12 * T1 / frequency)
-            } else {
-                stop("The frequency must be 1000 or 2000, but it is ", frequency)
-            }
-            if (debug) cat("blanking.distance=", blanking.distance, "(should be 0.05).  T1=", T1, "and T2=", T2, "\n")
-            if (debug) cat("measurement.interval=", measurement.interval, "****\n\n")
-            deployment.name <- readBin(buf[41:46], "character")
-            sw.version <- readBin(buf[73:74], "integer", n=1, size=2, endian="little")
-            if (debug) cat("sw.version=", sw.version,"\n")
-            salinity <- readBin(buf[75:76], "integer", n=1, size=2, endian="little") * 0.1
-            if (debug) cat("salinity=", salinity,"\n")
-        } else {
-            stop("cannot understand byte 0x", two.bytes[2], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
-        }
-    }
-
     ## data
     two.bytes <- peek.ahead(file, 2)
     if (two.bytes[1] != sync.code)
-        stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", buf[1], " instead (while looking for the start of a profile)")
+        stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", two.bytes[1], " instead (while looking for the start of a profile)")
+
+    id.profiler.data <- as.raw(0x21) # page 37 of System Integrator Guide
+    id.high.resolution.aquadopp.profile.data <- as.raw(0x2a) # page 38 of System Integrator Guide
+
     if (two.bytes[2] == id.profiler.data) {
         stop("cannot yet read 'Aquadopp Profiler Velocity Data")
     } else if (two.bytes[2] == id.high.resolution.aquadopp.profile.data) {
@@ -1313,8 +1324,12 @@ read.adp.nortek <- function(file, from=0, to, by=1,
     }
 
     ## read profiles
+    header.length.hardware <- 48
+    header.length.head <- 224
+    header.length.user <- 512
+
     data.start <- header.length.hardware + header.length.head + header.length.user
-    bytes.per.profile <- 54 + number.of.cells*number.of.beams*(2+1+1) + 2
+    bytes.per.profile <- 54 + header$user$number.of.cells * header$head$number.of.beams * (2+1+1) + 2
 
     ## Measure file length to determine number of profiles, using floor() in case there is extra stuff at end
     seek(file, where=0, origin="end")
@@ -1361,14 +1376,14 @@ read.adp.nortek <- function(file, from=0, to, by=1,
         to <- profiles.in.file
     }
     if (to > 0) {
-        v <- array(dim=c(to, number.of.cells, number.of.beams))
-        a <- array(dim=c(to, number.of.cells, number.of.beams))
-        q <- array(dim=c(to, number.of.cells, number.of.beams))
+        v <- array(dim=c(to, header$user$number.of.cells, header$head$number.of.beams))
+        a <- array(dim=c(to, header$user$number.of.cells, header$head$number.of.beams))
+        q <- array(dim=c(to, header$user$number.of.cells, header$head$number.of.beams))
         for (i in 1:to) {
             seek(file, data.start + (from + by*(i-1)) * bytes.per.profile)
             p <- read.profile.aquadopp(file,debug=debug)
             if (debug) cat("successfully read profile", i, "at time ", format(p$time), "\n")
-            for (beam in 1:number.of.beams) {
+            for (beam in 1:header$head$number.of.beams) {
                 v[i,,beam] <- p$v[,beam]
                 a[i,,beam] <- p$a[,beam]
                 q[i,,beam] <- p$q[,beam]
@@ -1385,17 +1400,19 @@ read.adp.nortek <- function(file, from=0, to, by=1,
             }
         }
         if (monitor) cat("\nRead", to, "profiles\n")
-        salinity <- rep(salinity, to)     # fake a time-series
+        salinity <- rep(header$user$salinity, to)     # fake a time-series
         class(time) <- c("POSIXt", "POSIXct")
         attr(time, "tzone") <- "UTC" # BUG should let user control this
                                         # Q: does file hold the zone?
 
         data <- list(ma=list(v=v, a=a, q=q),
-                     ss=list(distance=seq(blanking.distance, by=cell.size, length.out=number.of.cells)),
+                     ss=list(distance=seq(header$user$blanking.distance,
+                             by=header$user$cell.size,
+                             length.out=header$user$number.of.cells)),
                      ts=list(time=time,
                      pressure=pressure,
                      temperature=temperature,
-                     salinity=salinity,
+                     salinity=header$user$salinity,
                      heading=heading,
                      pitch=pitch,
                      roll=roll)
@@ -1408,32 +1425,32 @@ read.adp.nortek <- function(file, from=0, to, by=1,
                      filename=filename,
                      sampling.start=sampling.start,
                      sampling.end=sampling.end,
-                     size=size,
-                     number.of.beams=3,
-                     serial.number=serial.number,
-                     frequency=frequency,
-                     internal.code.version=pic.version,
-                     hardware.revision=hw.revision,
-                     rec.size=rec.size,
-                     velocity.range=velocity.range,
-                     firmware.version=fw.version,
-                     config=config,
-                     config.pressure.sensor=config.pressure.sensor,
-                     config.magnetometer.sensor=config.magnetometer.sensor,
-                     config.tilt.sensor=config.tilt.sensor,
+                     size=header$head$size,
+                     number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
+                     serial.number=header$hardware$serial.number,
+                     frequency=header$head$frequency,
+                     internal.code.version=header$hardware$pic.version,
+                     hardware.revision=header$hardware$hw.revision,
+                     rec.size=header$hardware$rec.size,
+                     velocity.range=header$hardware$velocity.range,
+                     firmware.version=header$hardware$fw.version,
+                     config=header$hardware$config,
+                     config.pressure.sensor=header$head$config.pressure.sensor,
+                     config.magnetometer.sensor=header$head$config.magnetometer.sensor,
+                     config.tilt.sensor=header$head$config.tilt.sensor,
                      beam.angle=25,     # FIXME: should read from file
-                     orientation=orientation,
-                     frequency=frequency,
-                     head.serial.number=head.serial.number,
-                     bin1.distance=blanking.distance, # FIXME: is this right?
-                     blanking.distance=blanking.distance,
-                     measurement.interval=measurement.interval,
-                     beam.to.xyz=beam.to.xyz,
-                     deployment.name=deployment.name,
-                     cell.size=cell.size,
-                     velocity.scale=velocity.scale,
-                     coordinate.system=coordinate.system,
-                     oce.coordinate=coordinate.system,
+                     orientation=header$head$orientation,
+                     frequency=header$head$frequency,
+                     head.serial.number=header$head$head.serial.number,
+                     bin1.distance=header$user$blanking.distance, # FIXME: is this right?
+                     blanking.distance=header$user$blanking.distance,
+                     measurement.interval=header$user$measurement.interval,
+                     beam.to.xyz=header$head$beam.to.xyz,
+                     deployment.name=header$user$deployment.name,
+                     cell.size=header$user$cell.size,
+                     velocity.scale=header$user$velocity.scale,
+                     coordinate.system=header$user$coordinate.system,
+                     oce.coordinate=header$user$coordinate.system,
                      oce.beam.attenuated=FALSE
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
