@@ -65,6 +65,32 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
+    ##buf <- readBin(file, "raw", n=42);     print(buf)
+    ##buf <- readBin(file, "raw", n=28);     print(buf)
+    ##buf <- readBin(file, "raw", n=28);     print(buf)
+    ##buf <- readBin(file, "raw", n=28);     print(buf)
+    ## FIXME SIG/p54 vector starts 0xa5 0x11 and has 18bytes; p35 says 42 bytes.  Which is it?
+
+    buf <<-readBin(file, "raw", n=1e5L)
+    size <- readBin(buf[3:4], "integer", size=2, n=1, endian="little")
+    cat("size=",size,"(words)\n")
+    min <- bcd2integer(buf[5])
+    sec <- bcd2integer(buf[6])
+    day <-  bcd2integer(buf[7])
+    hour <-  bcd2integer(buf[8])
+    year <- 2000 + bcd2integer(buf[9])  # seems to start in Y2K
+    month <- bcd2integer(buf[10])
+    time <- ISOdatetime(year, month, day, hour, min, sec, tz=getOption("oce.tz"))
+    cat("time=",format(time),"\n")
+    nrecords <- readBin(buf[11:12], "integer", size=2, n=1, signed=FALSE, endian="little")
+    ##cat("min=",min,"sec=",sec,"day=",day,"year=",year,"hour=",hour,"month=",month,"nrecords=",nrecords,"\n")
+    cat("NEXT 10:", buf[1+2*size + 0:9],"\n")
+
+    ## items seem to be as follows.  FIXME: is there a required order or interlacing scheme?
+    ## a5 a10 = vector velocity data (putatively 24 bytes)
+    ## a5 a11 = vector system data (putatively 28 bytes)
+    ## a5 a12 = vector velocity data header (putatively 42 bytes)
+
     data <- data.frame(time=1,
                        sample.number=1,
                        x=1, y=1, z=1,
