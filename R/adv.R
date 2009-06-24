@@ -104,9 +104,12 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     year <- 2000 + bcd2integer(buf[vi+8])  # seems to start in Y2K
     month <- bcd2integer(buf[vi+9])
     time <- ISOdatetime(year, month, day, hour, min, sec, tz=getOption("oce.tz"))
-    n <-  length(time)
+    n.t <-  length(time)
     cat("length(time)=",length(time),"\n")
-    nrecords <- readBin(buf[vi2+10], "integer", size=2, n=1, signed=FALSE, endian="little")
+    nrecords <- readBin(buf[vi2+10], "integer", size=2, n=n.t, signed=FALSE, endian="little")
+
+    cat("nrecords=")
+    print(nrecords)
 
     ## velocity data start 0xa5 0x10
     vi <- which(buf == 0xa5)
@@ -114,16 +117,34 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     vi2 <- sort(c(vi, vi+1))
     n <- length(vi)
     cat("length(v)=",length(vi),"\n")
+    count <- as.integer(buf[vi+3])
+    p <- readBin(buf[vi2+6], "integer", size=2, n=n, signed=FALSE, endian="little")
     v1 <- readBin(buf[vi2+10], "integer", size=2, n=n, signed=TRUE, endian="little")
     v2 <- readBin(buf[vi2+12], "integer", size=2, n=n, signed=TRUE, endian="little")
     v3 <- readBin(buf[vi2+14], "integer", size=2, n=n, signed=TRUE, endian="little")
     print(vi2[1:10])
 
+    ## NOTES:
+    ## 1. count increases, modulo 255
+    ## 2. the number of samples varies -- I don't understand the
+    ##    timing of samples, or, really, of times.
+    ##> d$data$time[1:10]
+    ##[1] "2008-06-25 10:00:01 UTC" "2008-06-25 10:00:02 UTC" "2008-06-25 10:00:03 UTC"
+    ##[4] "2008-06-25 10:00:04 UTC" "2008-06-25 10:00:05 UTC" "2008-06-25 10:00:06 UTC"
+    ##[7] "2008-06-25 10:00:07 UTC" "2008-06-25 10:00:08 UTC" "2008-06-25 10:00:09 UTC"
+    ##[10] "2008-06-25 10:00:10 UTC"
+    ##> d$data$nrecords[1:10]
+    ##[1] 133 131 131 130 130 130 130 131 130 130
+
 
     data <- data.frame(time=time,
                        nrecords=nrecords,
                        sample.number=rep(1,length(time)),
-                       v1=v1, v2=v2, v3=v3,
+                       count=count[1:length(time)],
+                       p=p[1:length(time)],
+                       v1=v1[1:length(time)],
+                       v2=v2[1:length(time)],
+                       v3=v3[1:length(time)],
                        a1=rep(1,length(time)),
                        a2=rep(1,length(time)),
                        a3=rep(1,length(time)),
