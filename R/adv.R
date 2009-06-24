@@ -91,13 +91,47 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     ## a5 a11 = vector system data (putatively 28 bytes)
     ## a5 a12 = vector velocity data header (putatively 42 bytes)
 
-    data <- data.frame(time=1,
-                       sample.number=1,
-                       x=1, y=1, z=1,
-                       a1=1L, a2=1, a3=1,
-                       c1=1, c2=1, c3=1,
-                       temperature=1,
-                       pressure=1)
+    ## velocity header data start 0xa5 0x11
+    vi <- which(buf == 0xa5)
+    vi <- vi[buf[vi+1] == 0x11]
+    vi2 <- sort(c(vi, vi+1))
+
+
+    min <- bcd2integer(buf[vi+4])
+    sec <- bcd2integer(buf[vi+5])
+    day <-  bcd2integer(buf[vi+6])
+    hour <-  bcd2integer(buf[vi+7])
+    year <- 2000 + bcd2integer(buf[vi+8])  # seems to start in Y2K
+    month <- bcd2integer(buf[vi+9])
+    time <- ISOdatetime(year, month, day, hour, min, sec, tz=getOption("oce.tz"))
+    n <-  length(time)
+    cat("length(time)=",length(time),"\n")
+    nrecords <- readBin(buf[vi2+10], "integer", size=2, n=1, signed=FALSE, endian="little")
+
+    ## velocity data start 0xa5 0x10
+    vi <- which(buf == 0xa5)
+    vi <- vi[buf[vi+1] == 0x10]
+    vi2 <- sort(c(vi, vi+1))
+    n <- length(vi)
+    cat("length(v)=",length(vi),"\n")
+    v1 <- readBin(buf[vi2+10], "integer", size=2, n=n, signed=TRUE, endian="little")
+    v2 <- readBin(buf[vi2+12], "integer", size=2, n=n, signed=TRUE, endian="little")
+    v3 <- readBin(buf[vi2+14], "integer", size=2, n=n, signed=TRUE, endian="little")
+    print(vi2[1:10])
+
+
+    data <- data.frame(time=time,
+                       nrecords=nrecords,
+                       sample.number=rep(1,length(time)),
+                       v1=v1, v2=v2, v3=v3,
+                       a1=rep(1,length(time)),
+                       a2=rep(1,length(time)),
+                       a3=rep(1,length(time)),
+                       c1=rep(1,length(time)),
+                       c2=rep(1,length(time)),
+                       c3=rep(1,length(time)),
+                       temperature=rep(1,length(time)),
+                       pressure=rep(1,length(time)))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("adv", "nortek", "vector", "oce")
     res
