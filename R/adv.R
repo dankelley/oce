@@ -31,7 +31,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     type <- match.arg(type)
     if (!withHeader) stop("withHeader must be TRUE")
     header <- read.header.nortek(file)
-    metadata <- list(instrument.type="aquadopp high resolution",
+    metadata <- list(instrument.type="vector",
                      filename=filename,
                      sampling.start=if (missing(sampling.start)) NA else sampling.start,
                      sampling.end=NA,   # FIXME
@@ -65,64 +65,82 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
-    ##buf <- readBin(file, "raw", n=42);     print(buf)
-    ##buf <- readBin(file, "raw", n=28);     print(buf)
-    ##buf <- readBin(file, "raw", n=28);     print(buf)
-    ##buf <- readBin(file, "raw", n=28);     print(buf)
-    ## FIXME SIG/p54 vector starts 0xa5 0x11 and has 18bytes; p35 says 42 bytes.  Which is it?
 
-    buf <<-readBin(file, "raw", n=1e5L)
-    size <- readBin(buf[3:4], "integer", size=2, n=1, endian="little")
-    cat("size=",size,"(words)\n")
-    min <- bcd2integer(buf[5])
-    sec <- bcd2integer(buf[6])
-    day <-  bcd2integer(buf[7])
-    hour <-  bcd2integer(buf[8])
-    year <- 2000 + bcd2integer(buf[9])  # seems to start in Y2K
-    month <- bcd2integer(buf[10])
-    time <- ISOdatetime(year, month, day, hour, min, sec, tz=getOption("oce.tz"))
-    cat("time=",format(time),"\n")
-    nrecords <- readBin(buf[11:12], "integer", size=2, n=1, signed=FALSE, endian="little")
-    ##cat("min=",min,"sec=",sec,"day=",day,"year=",year,"hour=",hour,"month=",month,"nrecords=",nrecords,"\n")
-    cat("NEXT 10:", buf[1+2*size + 0:9],"\n")
+    # find file length
+    cat("before finding file length.\n")
+    seek(file, 0, "end")
+    file.length <- seek(file, 0, "start")
+    cat("file.length=", file.length, "\n")
+
+    file.length <- 50e6L                 # FIXME: trim to test
+
+
+    buf <- readBin(file, "raw", n=file.length, endian="little")
+    export.buf <<- buf
+
+    ## m8 >> vec(1).vel(1:3,1:10)
+    ##
+    ##ans =
+    ##
+    ##-0.3260    0.4520   -0.3920    0.5130   -0.2260   -0.2580    0.6820    0.2060   -0.1840    0.3340
+    ## 0.1990   -0.0250    0.3510    0.6770   -0.0360   -0.4170   -0.0890    0.0060   -0.5630    0.4050
+    ## 0.1140    0.7170    0.0950   -0.4090   -0.1860   -0.7460    0.0140    0.5230    0.2810   -0.0300
+
+
 
     ## items seem to be as follows.  FIXME: is there a required order or interlacing scheme?
+    ## a5 a12 = vector velocity data header (putatively 42 bytes)
     ## a5 a10 = vector velocity data (putatively 24 bytes)
     ## a5 a11 = vector system data (putatively 28 bytes)
-    ## a5 a12 = vector velocity data header (putatively 42 bytes)
 
-    ## velocity header data start 0xa5 0x11
-    vi <- which(buf == 0xa5)
-    vi <- vi[buf[vi+1] == 0x11]
-    vi2 <- sort(c(vi, vi+1))
+    ## velocity header data start 0xa5 0x12; for offsets, see page 35 of System Integrator Guide
+
+    i <- 1:file.length
+
+    ## this .C way is twice as fast as doing it in R
+    vhi <- match.bytes(buf, as.raw(c(0xa5, 0x12)))
+##    cvhi <<- .C("match_2bytes", as.integer(file.length), as.raw(buf), as.raw(0xa5), as.raw(0x12), match=logical(file.length), NAOK=TRUE, PACKAGE = "oce")$match
+    cat("R WAY:\n", paste(i[vhi],collapse=" "), "\n")
 
 
-    min <- bcd2integer(buf[vi+4])
-    sec <- bcd2integer(buf[vi+5])
-    day <-  bcd2integer(buf[vi+6])
-    hour <-  bcd2integer(buf[vi+7])
-    year <- 2000 + bcd2integer(buf[vi+8])  # seems to start in Y2K
-    month <- bcd2integer(buf[vi+9])
+##    stop()
+
+   # print(fivenum(as.integer(buf[vhi+1])));stop();
+    lvh <-  length(vhi)
+    vhi2 <- sort(c(vhi, vhi+1))
+    size <- readBin(buf[vhi2+2], "integer", size=2, n=lvh, signed=FALSE, endian="little")
+    min <- bcd2integer(buf[vhi+4])
+    sec <- bcd2integer(buf[vhi+5])
+    day <-  bcd2integer(buf[vhi+6])
+    hour <-  bcd2integer(buf[vhi+7])
+    year <- 2000 + bcd2integer(buf[vhi+8])  # seems to start in Y2K
+    month <- bcd2integer(buf[vhi+9])
     time <- ISOdatetime(year, month, day, hour, min, sec, tz=getOption("oce.tz"))
-    n.t <-  length(time)
-    cat("length(time)=",length(time),"\n")
-    nrecords <- readBin(buf[vi2+10], "integer", size=2, n=n.t, signed=FALSE, endian="little")
+    nrecords <- readBin(buf[vhi2+10], "integer", size=2, n=lvh, signed=FALSE, endian="little")
 
-    cat("nrecords=")
-    print(nrecords)
+    cat("** VELOCITY HEADER ** \n")
+
+    cat("size[1:100]:\n");print(size[1:100])
+    cat("vhi[1:100]:\n"); print(vhi[1:100])
+    cat("diff(vhi)[1:100]:\n")
+    print(diff(vhi)[1:100])
+    cat("nrecords:\n")
+    print(nrecords[1:100])
+    cat("diff(nrecords)[1:100]\n")
+    print(diff(nrecords)[1:100])
 
     ## velocity data start 0xa5 0x10
-    vi <- which(buf == 0xa5)
-    vi <- vi[buf[vi+1] == 0x10]
-    vi2 <- sort(c(vi, vi+1))
-    n <- length(vi)
-    cat("length(v)=",length(vi),"\n")
-    count <- as.integer(buf[vi+3])
-    p <- readBin(buf[vi2+6], "integer", size=2, n=n, signed=FALSE, endian="little")
-    v1 <- readBin(buf[vi2+10], "integer", size=2, n=n, signed=TRUE, endian="little")
-    v2 <- readBin(buf[vi2+12], "integer", size=2, n=n, signed=TRUE, endian="little")
-    v3 <- readBin(buf[vi2+14], "integer", size=2, n=n, signed=TRUE, endian="little")
-    print(vi2[1:10])
+    vdi <- which(buf == 0xa5)           # vdi stands for velocity data index
+    vdi <- vdi[buf[vdi+1] == 0x10]
+    export.vdi <<- vdi
+    lvd <- length(vdi)
+    vdi2 <- sort(c(vdi, vdi+1))
+    cat("length(header data)=",lvh," and length(velocity data)=",lvd,"\n")
+    count <- as.integer(buf[vdi+3])
+    p  <- readBin(buf[vdi2+ 6], "integer", size=2, n=lvd, signed=FALSE, endian="little")
+    v1 <- readBin(buf[vdi2+10], "integer", size=2, n=lvd, signed=TRUE,  endian="little")
+    v2 <- readBin(buf[vdi2+12], "integer", size=2, n=lvd, signed=TRUE,  endian="little")
+    v3 <- readBin(buf[vdi2+14], "integer", size=2, n=lvd, signed=TRUE,  endian="little")
 
     ## NOTES:
     ## 1. count increases, modulo 255

@@ -1,3 +1,13 @@
+match.bytes <- function(input, bytes)
+n{
+    if (length(bytes) != 2) stop("must provide 2 bytes")
+    bytes <- as.raw(bytes)
+    n <- length(input)
+    .C("match2bytes", as.integer(n), as.raw(input),
+       bytes[1], bytes[2], match=logical(n),
+       NAOK=TRUE, PACKAGE = "oce")$match
+}
+
 resizable.label <- function(item=c("S", "T", "p", "z", "distance"), axis=c("x", "y"))
 {
     item <- match.arg(item)

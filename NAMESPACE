@@ -33,6 +33,7 @@ export(
        make.filter,
        make.section,
        matlab2POSIXt,
+       match.bytes,
        oce.axis.POSIXct,
        oce.as.POSIXlt,
        oce.colors.gebco,
