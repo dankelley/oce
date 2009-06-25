@@ -1,5 +1,5 @@
 match.bytes <- function(input, bytes)
-n{
+{
     if (length(bytes) != 2) stop("must provide 2 bytes")
     bytes <- as.raw(bytes)
     n <- length(input)
