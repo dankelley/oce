@@ -186,7 +186,6 @@ summary.oce <- function(object, ...)
 magic <- function(file, debug=FALSE)
 {
     filename <- file
-    print(filename)
     if (is.character(file))
         file <- file(file, "r")
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")

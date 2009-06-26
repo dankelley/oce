@@ -601,6 +601,7 @@ read.ctd.woce <- function(file, debug=FALSE, columns=NULL, station=NULL, missing
     if ("CTD" != substr(line, 1, 3)) stop("Can only read WOCE files of type CTD")
     tmp <- sub("(.*), ", "", line);
     date <- substr(tmp, 1, 8)
+    ##cat("DATE '", date, "'\n", sep="")
     diw <- substr(tmp, 9, nchar(tmp)) # really, divisionINSTITUTEwho
     institute <- diw # BUG: really, it is division, institute, who, strung together
                                         # Kludge: recognize some institutes
@@ -858,6 +859,7 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
         if (0 < (r<-regexpr("start_time =", lline))) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
             start.time <- oce.as.POSIXlt(d)
+            ##cat("START TIME '", d, "'\n", sep="")
         }
         if (0 < (r<-regexpr("ship:", lline))) {
             ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line); # note: using full string
@@ -992,7 +994,7 @@ summary.ctd <- function(object, ...)
     fives <- matrix(nrow=dim[2], ncol=5)
     res <- list(filename="?", system.upload.time="?", date="?", institute="?",
 		scientist="?", ship="?", cruise="?", latitude=NA, longitude=NA,
-		station="?", start.time="?", deployed="?", recovery="?", water.depth="?",
+		station="?", start.time=NULL, deployed="?", recovery="?", water.depth="?",
 		levels="?",
                 fives=fives,
                 processing.log=processing.log.summary(object))
@@ -1032,7 +1034,7 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Cruise:             ",       x$cruise, "\n")
     cat("  Location:           ",       latlon.format(x$latitude, x$longitude, digits=digits), "\n")
     cat("  Station:            ",       x$station, "\n")
-    cat(paste("  Start time:         ", as.POSIXct(x$start.time), "\n"))
+    cat(paste("  Start time:         ", if (!is.null(x$start.time)) as.POSIXct(x$start.time) else "?", "\n"))
     cat(paste("  Deployed:           ", x$date, "\n"))
     cat(paste("  Recovered:          ", x$recovery, "\n"))
     cat("  Water depth:        ",       x$water.depth, "\n")
@@ -1066,9 +1068,10 @@ plot.TS <- function (x,
 
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
+    omar <- par("mar")
+    omgp <- par("mgp")
     opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
-
+    on.exit(par(mar=omar, mgp=omgp))
     par(mgp=mgp, mar=mar)
     axis.name.loc <- mgp[1]
     plot(x$data$salinity, x$data$temperature,
