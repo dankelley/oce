@@ -10,8 +10,10 @@
 
 \arguments{
 \item{input}{a vector of raw values.}
-\item{bytes}{a vector of bytes to match (must be of length 2, at present).}
+\item{bytes}{a vector of bytes to match (must be of length 2 or 3 at present; for 1-byte, use \code{\link{which}}).}
 }
+
+\value{List of the indices of \code{input} that match the start of the \code{bytes} sequence (see example).}
 
 \examples{
 buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))

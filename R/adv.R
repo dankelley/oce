@@ -72,11 +72,9 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     file.length <- seek(file, 0, "start")
     cat("file.length=", file.length, "\n")
 
-    file.length <- 50e6L                 # FIXME: trim to test
+    file.length <- 3e6L                 # FIXME: trim to test
 
-
-    buf <- readBin(file, "raw", n=file.length, endian="little")
-    export.buf <<- buf
+    buf <<- readBin(file, "raw", n=file.length, endian="little")
 
     ## m8 >> vec(1).vel(1:3,1:10)
     ##
@@ -99,16 +97,14 @@ read.adv.nortek <- function(file, from=0, to, by=1,
 
     ## this .C way is twice as fast as doing it in R
     vhi <- match.bytes(buf, as.raw(c(0xa5, 0x12)))
-##    cvhi <<- .C("match_2bytes", as.integer(file.length), as.raw(buf), as.raw(0xa5), as.raw(0x12), match=logical(file.length), NAOK=TRUE, PACKAGE = "oce")$match
-    cat("R WAY:\n", paste(i[vhi],collapse=" "), "\n")
-
-
-##    stop()
+    cat("velo-headers at:\n", paste(i[vhi],collapse=" "), "\n")
 
    # print(fivenum(as.integer(buf[vhi+1])));stop();
     lvh <-  length(vhi)
     vhi2 <- sort(c(vhi, vhi+1))
     size <- readBin(buf[vhi2+2], "integer", size=2, n=lvh, signed=FALSE, endian="little")
+    cat("header size=",paste(size, collapse=" "),"\n")
+
     min <- bcd2integer(buf[vhi+4])
     sec <- bcd2integer(buf[vhi+5])
     day <-  bcd2integer(buf[vhi+6])
@@ -116,18 +112,33 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     year <- 2000 + bcd2integer(buf[vhi+8])  # seems to start in Y2K
     month <- bcd2integer(buf[vhi+9])
     time <- ISOdatetime(year, month, day, hour, min, sec, tz=getOption("oce.tz"))
+    cat("trying to get nrecords from", paste(buf[vhi2+10], collapse=" "), "\n")
+    print(vhi2+10)
+
     nrecords <- readBin(buf[vhi2+10], "integer", size=2, n=lvh, signed=FALSE, endian="little")
+
+    cat("nrecords=",paste(nrecords, collapse=" "),"\n")
+
+    cat("time="); print(format(time))
+
+    cat("buf for this header is:\n")
+    print(buf[vhi:(vhi+size)])
+    stop()
+
+
 
     cat("** VELOCITY HEADER ** \n")
 
-    cat("size[1:100]:\n");print(size[1:100])
-    cat("vhi[1:100]:\n"); print(vhi[1:100])
-    cat("diff(vhi)[1:100]:\n")
-    print(diff(vhi)[1:100])
+    cat("size[1:10]:\n");print(size[1:10])
+    cat("vhi[1:10]:\n"); print(vhi[1:10])
+    cat("diff(vhi)[1:10]:\n")
+    print(diff(vhi)[1:10])
     cat("nrecords:\n")
-    print(nrecords[1:100])
-    cat("diff(nrecords)[1:100]\n")
-    print(diff(nrecords)[1:100])
+    print(nrecords[1:10])
+    cat("diff(nrecords)[1:10]\n")
+    print(diff(nrecords)[1:10])
+
+    stop()
 
     ## velocity data start 0xa5 0x10
     vdi <- which(buf == 0xa5)           # vdi stands for velocity data index
