@@ -273,29 +273,22 @@ read.profile.rdi <- function(file, header, debug)
     q.ID <- readBin(file, "raw", n=2, size=1)
     if (q.ID[1] != 0x00) stop("first byte of correlation-magnitude segment should be 0x00 but is ", q.ID[1])
     if (q.ID[2] != 0x02) stop("first byte of correlation-magnitude segment should be 0x02 but is ", q.ID[2])
-    q <- readBin(file, "integer",
-                 n=header$number.of.beams * header$number.of.cells,
-                 size=1, endian="little")
-    q <- matrix(q, ncol=header$number.of.beams, byrow=TRUE)
+    q <- matrix(readBin(file, "raw", n=header$number.of.beams * header$number.of.cells),
+                ncol=header$number.of.beams, byrow=TRUE)
     if (debug) cat("got correlation magnitude\n")
     ## echo intensity, should start with 0x00 0x03
     a.ID <- readBin(file, "raw", n=2, size=1)
     if (a.ID[1] != 0x00) stop("first byte of echo-intensity segment should be 0x00 but is ", a.ID[1])
     if (a.ID[2] != 0x03) stop("first byte of echo-intensity segment should be 0x03 but is ", a.ID[2])
-    a <- readBin(file, "integer",
-                 n=header$number.of.beams * header$number.of.cells,
-                 size=1, endian="little", signed=FALSE)
-    a <- matrix(a, ncol=header$number.of.beams, byrow=TRUE)
-
+    a <- matrix(readBin(file, "raw", n=header$number.of.beams * header$number.of.cells),
+                ncol=header$number.of.beams, byrow=TRUE)
     if (debug) cat("got echo intensity\n")
     ## percent good, should start with 0x00 0x04
     pg.ID <- readBin(file, "raw", n=2, size=1)
     if (pg.ID[1] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", pg.ID[1])
     if (pg.ID[2] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", pg.ID[2])
-    pg <- readBin(file, "integer",
-                  n=header$number.of.beams * header$number.of.cells,
-                  size=1, endian="little", signed=FALSE)
-    pg <- matrix(pg, ncol=header$number.of.beams, byrow=TRUE)
+    pg <- matrix(readBin(file, "raw", n=header$number.of.beams * header$number.of.cells),
+                 ncol=header$number.of.beams, byrow=TRUE)
     if (debug) cat("got percent-good\n")
     bt <- NULL
     if (header$number.of.data.types > 6) {
@@ -550,8 +543,8 @@ read.adp.rdi <- function(file, from=0, to, by=1,
     if (to < 1) stop("cannot read fewer than one profile")
 
     v <- array(dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
-    a <- array(dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
-    q <- array(dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
+    a <- array(raw(), dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
+    q <- array(raw(), dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
     for (i in 1:to) {
         p <- read.profile.rdi(file,debug=debug)
@@ -650,7 +643,7 @@ summary.adp <- function(object, ...)
         }
     }
     for (i in 1:length(ma.names)) {
-        fives[ii,] <- fivenum(object$data$ma[[ma.names[i]]], na.rm=TRUE)
+        fives[ii,] <- fivenum(as.numeric(object$data$ma[[ma.names[i]]]), na.rm=TRUE)
         ii <- ii + 1
     }
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
@@ -790,7 +783,7 @@ plot.adp <- function(x,
     tt <- x$data$ts$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     if (gave.zlim && all(which %in% 5:8)) { # single scale for all
-        zlim <- range(abs(x$data$ma[,,which[1]]), na.rm=TRUE)
+        zlim <- range(abs(as.numeric(x$data$ma[,,which[1]])), na.rm=TRUE)
         for (w in 2:length(which)) {
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
@@ -817,15 +810,17 @@ plot.adp <- function(x,
                 zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                 zlab <- if (missing(titles)) image.name(x, which[w]) else titles[w]
             } else if (which[w] %in% 5:(4+x$metadata$number.of.beams)) { # amplitude
-                z <- x$data$ma$a[,,which[w]-4]
+                z <- as.numeric(x$data$ma$a[,,which[w]-4])
+                dim(z) <- dim(x$data$ma$a)[1:2]
                 y.look <- if (gave.ylim)
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
                 else
                     rep(TRUE, length(x$data$ss$distance))
-                zlim <- range(x$data$ma$a[,y.look,], na.rm=TRUE)
+                zlim <- range(as.numeric(x$data$ma$a[,y.look,]), na.rm=TRUE)
                 zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
             } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation
-                z <- x$data$ma$q[,,which[w]-8]
+                z <- as.numeric(x$data$ma$q[,,which[w]-8])
+                dim(z) <- dim(x$data$ma$q)[1:2]
                 zlim <- c(0, 100)
                 zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
             } else skip <- TRUE
@@ -947,7 +942,7 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     correction <- matrix(rep(20 * log10(x$data$ss$distance), num.profiles),
                          nrow=num.profiles, byrow=TRUE)
     for (beam in 1:x$metadata$number.of.beams)
-        res$data$ma$a[,,beam] <- count2db[1] * x$data$ma$a[,,beam] + correction
+        res$data$ma$a[,,beam] <- as.raw(count2db[1] * as.numeric(x$data$ma$a[,,beam]) + correction)
     res$metadata$oce.beam.attenuated <- TRUE
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)

@@ -67,14 +67,14 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     log.item <- processing.log.item(log.action)
 
     # find file length
-    cat("before finding file length.\n")
-    seek(file, 0, "end")
+    cat("AT:", seek(file, 0, "end"), "\n")
     file.length <- seek(file, 0, "start")
     cat("file.length=", file.length, "\n")
 
-    file.length <- 3e6L                 # FIXME: trim to test
+    file.length <- 9e6L                 # FIXME: trim to test
 
     buf <<- readBin(file, "raw", n=file.length, endian="little")
+
 
     ## m8 >> vec(1).vel(1:3,1:10)
     ##
@@ -93,25 +93,48 @@ read.adv.nortek <- function(file, from=0, to, by=1,
 
     ## velocity header data start 0xa5 0x12; for offsets, see page 35 of System Integrator Guide
 
-    i <- 1:file.length
+    ## Using match.bytes() may speed up the operation but it may us more memory.
+    if (TRUE) {
+        vhi <- match.bytes(buf, 0xa5, 0x12, 0x15) # need 3rd byte (header length) to avoid spurious matches
+    } else {
+        vhi <- which(buf == 0xa5)
+        vhi <- vhi[buf[vhi+1] == 0x12]
+        vhi <- vhi[buf[vhi+2] == 0x15]
+    }
+    cat("velo-headers at:\n", paste(vhi,collapse=" "), "\n")
 
-    ## this .C way is twice as fast as doing it in R
-    vhi <- match.bytes(buf, as.raw(c(0xa5, 0x12)))
-    cat("velo-headers at:\n", paste(i[vhi],collapse=" "), "\n")
-
-   # print(fivenum(as.integer(buf[vhi+1])));stop();
     lvh <-  length(vhi)
     vhi2 <- sort(c(vhi, vhi+1))
-    size <- readBin(buf[vhi2+2], "integer", size=2, n=lvh, signed=FALSE, endian="little")
-    cat("header size=",paste(size, collapse=" "),"\n")
+    vh.size <- readBin(buf[vhi2+2], "integer", size=2, n=lvh, signed=FALSE, endian="little")
+    cat("vh.size=",paste(vh.size, collapse=" "),"\n")
+    time <- ISOdatetime(2000 + bcd2integer(buf[vhi+8]),  # seems to start in Y2K
+                        bcd2integer(buf[vhi+9]),         # month
+                        bcd2integer(buf[vhi+6]),         # day
+                        bcd2integer(buf[vhi+7]),         # hour
+                        bcd2integer(buf[vhi+4]),         # min
+                        bcd2integer(buf[vhi+5]),         # sec
+                        tz=getOption("oce.tz"))
 
-    min <- bcd2integer(buf[vhi+4])
-    sec <- bcd2integer(buf[vhi+5])
-    day <-  bcd2integer(buf[vhi+6])
-    hour <-  bcd2integer(buf[vhi+7])
-    year <- 2000 + bcd2integer(buf[vhi+8])  # seems to start in Y2K
-    month <- bcd2integer(buf[vhi+9])
-    time <- ISOdatetime(year, month, day, hour, min, sec, tz=getOption("oce.tz"))
+    ## 42 bytes [velocity data header]
+    vsd <- vhi + 2*vh.size
+
+    cat("next should be 0xa5 0x11 if velo-system (28 bytes)\n")
+    print(buf[vsd+seq(0,27,1)])
+
+    cat("next should be 0xa5 0x11 if velo-system (28 bytes)\n")
+    print(buf[vsd+28+seq(0,27,1)])
+
+    offset <- 6                         # FIXME: WHY DOES THIS WORK?
+    for (chunk in 1:10) {
+        cat("chunk=",chunk,"is velo (0xa5 0x10)? indices:",
+            offset+vsd+2*vh.size+2*28 + chunk*24,
+            "to",
+            offset+vsd+2*vh.size+2*28 + chunk*24+23,"\n")
+        print(buf[offset+vsd+2*vh.size+2*28+chunk*24+seq(0,23,1)])
+    }
+
+    stop()
+
     cat("trying to get nrecords from", paste(buf[vhi2+10], collapse=" "), "\n")
     print(vhi2+10)
 
@@ -126,17 +149,9 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     stop()
 
 
-
-    cat("** VELOCITY HEADER ** \n")
-
-    cat("size[1:10]:\n");print(size[1:10])
-    cat("vhi[1:10]:\n"); print(vhi[1:10])
-    cat("diff(vhi)[1:10]:\n")
-    print(diff(vhi)[1:10])
-    cat("nrecords:\n")
-    print(nrecords[1:10])
-    cat("diff(nrecords)[1:10]\n")
-    print(diff(nrecords)[1:10])
+    lbuf <- length(buf)
+    velo.data.at <- match.bytes(buf[vhi[1] + vh.size[1]]:lbuf, 0xa5, 0x10)
+    print(velo.data.at[1:10])
 
     stop()
 

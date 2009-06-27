@@ -1,15 +1,17 @@
-match.bytes <- function(input, bytes)
+match.bytes <- function(input, b1, ...)
 {
-    lb <- length(bytes)
-    bytes <- as.raw(bytes)
+    if (missing(input)) stop("must provide \"input\"")
+    if (missing(b1)) stop("must provide at least one byte to match")
     n <- length(input)
+    dots <- list(...)
+    lb <- 1 + length(dots)
     if (lb == 2)
         (1:n)[.C("match2bytes", as.integer(n), as.raw(input),
-                 bytes[1], bytes[2],
+                 as.raw(b1), as.raw(dots[[1]]),
                  match=logical(n), NAOK=TRUE, PACKAGE = "oce")$match]
     else if (lb == 3)
         (1:n)[.C("match3bytes", as.integer(n), as.raw(input),
-                 bytes[1], bytes[2], bytes[3],
+                 as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]),
                  match=logical(n), NAOK=TRUE, PACKAGE = "oce")$match]
     else stop("must provide 2 or 3 bytes")
 }
