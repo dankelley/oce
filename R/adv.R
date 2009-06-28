@@ -20,7 +20,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
     if (!missing(sampling.start)) stop("cannot handle argument \"sampling.start\"")
     if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
-    if (!missing(to)) stop("cannot handle argument \"to\"")
+    if (!missing(by)) stop("cannot handle argument \"by\"")
 
     if (is.character(file)) {
         filename <- file
@@ -133,17 +133,19 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     roll <- 0.1 * readBin(buf[sd.start2 + 18], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
     temperature <- 0.01 * readBin(buf[sd.start2 + 20], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
 
+    heading.resampled <- approx(seq(0,1,length.out=sd.len), heading)
+    ##
     ## vd (velocity data) -- several of these are found between each pair of sd
     vd.start <- match.bytes(buf, 0xa5, 0x10)
     metadata$burst.length <- round(length(vd.start) / length(sd.start), 0)
 
     vd.start2 <- sort(c(vd.start, 1 + vd.start))
     vd.len <- length(vd.start)
-    ## FIXME: need to match these to the sd
+
     p.MSB <- as.numeric(buf[vd.start + 4])
     p.LSW <- readBin(buf[vd.start2 + 6], "integer", size=2, n=vd.len, signed=FALSE, endian="little")
-    ##counter <- buf[vd.start + 3]
-    p <- (65536 * p.MSB + p.LSW) / 1000
+    pressure <- (65536 * p.MSB + p.LSW) / 1000
+
     x <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
     y <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
     z <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
@@ -153,9 +155,19 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     c1 <- buf[vd.start + 19]
     c2 <- buf[vd.start + 20]
     c3 <- buf[vd.start + 21]
-    time <- seq(from=from, to=to, length.out=vd.len)
-    data <- data.frame(time=time,       # FIXME: need to interpolate in time, pressure, and temperature
-                       p=p,
+    coarse <- seq(0,1,length.out=sd.len)
+    fine <- seq(0,1,length.out=vd.len)
+
+    print(length(pressure))
+    print(length(coarse))
+    print(length(fine))
+
+    data <- data.frame(time=seq(from=from, to=to, length.out=vd.len),
+                       heading=approx(coarse, heading, xout=fine)$y,
+                       pitch=approx(coarse, pitch, xout=fine)$y,
+                       roll=approx(coarse, roll, xout=fine)$y,
+                       temperature=approx(coarse, temperature, xout=fine)$y,
+                       pressure=pressure,
                        x=x,
                        y=y,
                        z=z,
@@ -165,7 +177,6 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                        c1=c1,
                        c2=c2,
                        c3=c3)
-                                        #temperature=rep(1,length(time)),
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("adv", "nortek", "vector", "oce")
     res
@@ -358,17 +369,17 @@ plot.adv <- function(x,
         ##cat("which[w]=", which[w], "smooth=",smooth,"\n")
         if (which[w] == 1) {
             oce.plot.ts(x$data$time,
-                        if (smooth) as.numeric(smooth(x$data$x)) else x$data$x,
+                        if (smooth) smooth(x$data$x) else x$data$x,
                         ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
         }
         if (which[w] == 2) {
             oce.plot.ts(x$data$time,
-                        if (smooth) as.numeric(smooth(x$data$y)) else x$data$y,
+                        if (smooth) smooth(x$data$y) else x$data$y,
                         ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
         }
         if (which[w] == 3) {
             oce.plot.ts(x$data$time,
-                        if (smooth) as.numeric(smooth(x$data$z)) else x$data$z,
+                        if (smooth) smooth(x$data$z) else x$data$z,
                         ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
         }
         if (margins.as.image)  {
