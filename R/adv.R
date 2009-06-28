@@ -339,7 +339,7 @@ plot.adv <- function(x,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    if (!all(which %in% 1:3)) stop("\"which\" must be in the range 1:3")
+    if (!all(which %in% c(1:3,14:15))) stop("\"which\" must be in the range c(1:3,14:15)")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (margins.as.image) {
@@ -371,16 +371,24 @@ plot.adv <- function(x,
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$x) else x$data$x,
                         ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
-        }
-        if (which[w] == 2) {
+        } else if (which[w] == 2) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$y) else x$data$y,
                         ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
-        }
-        if (which[w] == 3) {
+        } else if (which[w] == 3) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$z) else x$data$z,
                         ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
+        } else if (which[w] == 14) {    # temperature time-series
+            oce.plot.ts(x$data$time,
+                        if (smooth) smooth(x$data$temperature) else x$data$temperature,
+                        ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range, ...)
+        } else if (which[w] == 15) {    # pressure time-series
+            oce.plot.ts(x$data$time,
+                        if (smooth) smooth(x$data$pressure) else x$data$pressure,
+                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range, ...)
+        } else {
+            stop("unknown value of \"which\":", which)
         }
         if (margins.as.image)  {
             ## blank plot, to get axis length same as for images

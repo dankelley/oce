@@ -56,6 +56,8 @@
     \item \code{which=1} yields a timeseries of the x component of velocity.
     \item \code{which=2} yields a timeseries of the y component of velocity.
     \item \code{which=3} yields a timeseries of the z component of velocity.
+    \item \code{which=14} yields a timeseries of temperature.
+    \item \code{which=15} yields a timeseries of pressure.
   }
 }
 
