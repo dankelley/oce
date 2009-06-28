@@ -17,7 +17,7 @@ read.adv.sontek(file, from=0, to, by=1,
                 withHeader=TRUE, sampling.start, deltat,
                 debug=0, monitor=TRUE, log.action)
 read.adv.nortek(file, from=0, to, by=1,
-                type="default",
+                type="vector",
                 withHeader=TRUE, sampling.start, deltat,
                 debug=0, monitor=TRUE, log.action)
 }

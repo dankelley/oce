@@ -11,11 +11,17 @@ read.adv <- function(file, from=0, to, by=1,
 }
 
 read.adv.nortek <- function(file, from=0, to, by=1,
-                            type="default",
+                            type="vector",
                             withHeader=TRUE, sampling.start, deltat,
                             debug=0, monitor=TRUE, log.action)
 {
-    sync.code <- as.raw(0xa5)
+    if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
+    if (!inherits(from, "POSIXt")) stop("\"from\" must be a POSIXt time (this limitation may be relaxed in a future version)")
+    if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
+    if (!missing(sampling.start)) stop("cannot handle argument \"sampling.start\"")
+    if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
+    if (!missing(to)) stop("cannot handle argument \"to\"")
+
     if (is.character(file)) {
         filename <- file
         file <- file(file, "rb")
@@ -35,7 +41,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                      filename=filename,
                      sampling.start=if (missing(sampling.start)) NA else sampling.start,
                      sampling.end=NA,   # FIXME
-                     size=header$head$size,
+                     ##size=header$head$size, # FIXME: does this get used?
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
                      serial.number=header$hardware$serial.number,
                      frequency=header$head$frequency,
@@ -67,136 +73,99 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     log.item <- processing.log.item(log.action)
 
     # find file length
-    cat("AT:", seek(file, 0, "end"), "\n")
+    seek(file, 0, "end")
     file.length <- seek(file, 0, "start")
-    cat("file.length=", file.length, "\n")
+    if (debug) cat("file.length=", file.length, "\n")
 
-    file.length <- 9e6L                 # FIXME: trim to test
-
-    buf <<- readBin(file, "raw", n=file.length, endian="little")
-
-
-    ## m8 >> vec(1).vel(1:3,1:10)
-    ##
-    ##ans =
-    ##
-    ##-0.3260    0.4520   -0.3920    0.5130   -0.2260   -0.2580    0.6820    0.2060   -0.1840    0.3340
-    ## 0.1990   -0.0250    0.3510    0.6770   -0.0360   -0.4170   -0.0890    0.0060   -0.5630    0.4050
-    ## 0.1140    0.7170    0.0950   -0.4090   -0.1860   -0.7460    0.0140    0.5230    0.2810   -0.0300
-
-
-
-    ## items seem to be as follows.  FIXME: is there a required order or interlacing scheme?
-    ## a5 a12 = vector velocity data header (putatively 42 bytes)
-    ## a5 a10 = vector velocity data (putatively 24 bytes)
-    ## a5 a11 = vector system data (putatively 28 bytes)
-
-    ## velocity header data start 0xa5 0x12; for offsets, see page 35 of System Integrator Guide
-
-    ## Using match.bytes() may speed up the operation but it may us more memory.
-    if (TRUE) {
-        vhi <- match.bytes(buf, 0xa5, 0x12, 0x15) # need 3rd byte (header length) to avoid spurious matches
-    } else {
-        vhi <- which(buf == 0xa5)
-        vhi <- vhi[buf[vhi+1] == 0x12]
-        vhi <- vhi[buf[vhi+2] == 0x15]
+    ## Find the focus time by bisection, based on "sd" (system data, containing a time).
+    bisect.nortek.vector.sd <- function(file, file.length, value)
+    {
+        lower <- 0
+        upper <- file.length
+        passes <- 3 + log(file.length, 2) # won't need this many; only do this to catch coding errors
+        for (pass in 1:passes) {
+            middle <- (upper + lower) / 2
+            bis.chunk <- 1000           # only need about 1/4 of this
+            seek(file, middle)
+            buf <- readBin(file, "raw", n=bis.chunk, endian="little")
+            sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1] # 3-byte code for system-data chunks
+            sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
+                                bcd2integer(buf[sd.start+9]), # month
+                                bcd2integer(buf[sd.start+6]), # day
+                                bcd2integer(buf[sd.start+7]), # hour
+                                bcd2integer(buf[sd.start+4]), # min
+                                bcd2integer(buf[sd.start+5]), # sec
+                                tz=getOption("oce.tz"))
+            if (value < sd.t)
+                upper <- middle
+            else
+                lower <- middle
+            if (upper - lower < bis.chunk)
+                return(middle)
+        }
+        return(middle)
     }
-    cat("velo-headers at:\n", paste(vhi,collapse=" "), "\n")
+    ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
+    from.index <- bisect.nortek.vector.sd(file, file.length, from) # just an estimate; see below
+    to.index <- bisect.nortek.vector.sd(file, file.length, to)
+    if (debug) cat("from.index=", from.index, "to.index=",to.index,"\n")
+    seek(file, from.index - 1000)       # add 1kb on each side (trimmed a few lines below)
+    buf <- readBin(file, "raw", n=2000+(to.index - from.index))
 
-    lvh <-  length(vhi)
-    vhi2 <- sort(c(vhi, vhi+1))
-    vh.size <- readBin(buf[vhi2+2], "integer", size=2, n=lvh, signed=FALSE, endian="little")
-    cat("vh.size=",paste(vh.size, collapse=" "),"\n")
-    time <- ISOdatetime(2000 + bcd2integer(buf[vhi+8]),  # seems to start in Y2K
-                        bcd2integer(buf[vhi+9]),         # month
-                        bcd2integer(buf[vhi+6]),         # day
-                        bcd2integer(buf[vhi+7]),         # hour
-                        bcd2integer(buf[vhi+4]),         # min
-                        bcd2integer(buf[vhi+5]),         # sec
+    ## sd (system data) are interspersed in the vd sequence
+    sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
+    sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
+                        bcd2integer(buf[sd.start+9]), # month
+                        bcd2integer(buf[sd.start+6]), # day
+                        bcd2integer(buf[sd.start+7]), # hour
+                        bcd2integer(buf[sd.start+4]), # min
+                        bcd2integer(buf[sd.start+5]), # sec
                         tz=getOption("oce.tz"))
+    ok <- from <= sd.t & sd.t <= to     # trim to limits
+    sd.start <- sd.start[ok]
+    sd.t <- sd.t[ok]
+    if (0 != diff(range(diff(sd.start)))) warning("ignoring the fact that vector data unequal burst lengths")
 
-    ## 42 bytes [velocity data header]
-    vsd <- vhi + 2*vh.size
+    sd.len <- length(sd.start)
+    sd.start2 <- sort(c(sd.start, 1 + sd.start))
+    heading <- 0.1 * readBin(buf[sd.start2 + 14], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
+    pitch <- 0.1 * readBin(buf[sd.start2 + 16], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
+    roll <- 0.1 * readBin(buf[sd.start2 + 18], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
+    temperature <- 0.01 * readBin(buf[sd.start2 + 20], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
 
-    cat("next should be 0xa5 0x11 if velo-system (28 bytes)\n")
-    print(buf[vsd+seq(0,27,1)])
+    ## vd (velocity data) -- several of these are found between each pair of sd
+    vd.start <- match.bytes(buf, 0xa5, 0x10)
+    metadata$burst.length <- round(length(vd.start) / length(sd.start), 0)
 
-    cat("next should be 0xa5 0x11 if velo-system (28 bytes)\n")
-    print(buf[vsd+28+seq(0,27,1)])
-
-    offset <- 6                         # FIXME: WHY DOES THIS WORK?
-    for (chunk in 1:10) {
-        cat("chunk=",chunk,"is velo (0xa5 0x10)? indices:",
-            offset+vsd+2*vh.size+2*28 + chunk*24,
-            "to",
-            offset+vsd+2*vh.size+2*28 + chunk*24+23,"\n")
-        print(buf[offset+vsd+2*vh.size+2*28+chunk*24+seq(0,23,1)])
-    }
-
-    stop()
-
-    cat("trying to get nrecords from", paste(buf[vhi2+10], collapse=" "), "\n")
-    print(vhi2+10)
-
-    nrecords <- readBin(buf[vhi2+10], "integer", size=2, n=lvh, signed=FALSE, endian="little")
-
-    cat("nrecords=",paste(nrecords, collapse=" "),"\n")
-
-    cat("time="); print(format(time))
-
-    cat("buf for this header is:\n")
-    print(buf[vhi:(vhi+size)])
-    stop()
-
-
-    lbuf <- length(buf)
-    velo.data.at <- match.bytes(buf[vhi[1] + vh.size[1]]:lbuf, 0xa5, 0x10)
-    print(velo.data.at[1:10])
-
-    stop()
-
-    ## velocity data start 0xa5 0x10
-    vdi <- which(buf == 0xa5)           # vdi stands for velocity data index
-    vdi <- vdi[buf[vdi+1] == 0x10]
-    export.vdi <<- vdi
-    lvd <- length(vdi)
-    vdi2 <- sort(c(vdi, vdi+1))
-    cat("length(header data)=",lvh," and length(velocity data)=",lvd,"\n")
-    count <- as.integer(buf[vdi+3])
-    p  <- readBin(buf[vdi2+ 6], "integer", size=2, n=lvd, signed=FALSE, endian="little")
-    v1 <- readBin(buf[vdi2+10], "integer", size=2, n=lvd, signed=TRUE,  endian="little")
-    v2 <- readBin(buf[vdi2+12], "integer", size=2, n=lvd, signed=TRUE,  endian="little")
-    v3 <- readBin(buf[vdi2+14], "integer", size=2, n=lvd, signed=TRUE,  endian="little")
-
-    ## NOTES:
-    ## 1. count increases, modulo 255
-    ## 2. the number of samples varies -- I don't understand the
-    ##    timing of samples, or, really, of times.
-    ##> d$data$time[1:10]
-    ##[1] "2008-06-25 10:00:01 UTC" "2008-06-25 10:00:02 UTC" "2008-06-25 10:00:03 UTC"
-    ##[4] "2008-06-25 10:00:04 UTC" "2008-06-25 10:00:05 UTC" "2008-06-25 10:00:06 UTC"
-    ##[7] "2008-06-25 10:00:07 UTC" "2008-06-25 10:00:08 UTC" "2008-06-25 10:00:09 UTC"
-    ##[10] "2008-06-25 10:00:10 UTC"
-    ##> d$data$nrecords[1:10]
-    ##[1] 133 131 131 130 130 130 130 131 130 130
-
-
-    data <- data.frame(time=time,
-                       nrecords=nrecords,
-                       sample.number=rep(1,length(time)),
-                       count=count[1:length(time)],
-                       p=p[1:length(time)],
-                       v1=v1[1:length(time)],
-                       v2=v2[1:length(time)],
-                       v3=v3[1:length(time)],
-                       a1=rep(1,length(time)),
-                       a2=rep(1,length(time)),
-                       a3=rep(1,length(time)),
-                       c1=rep(1,length(time)),
-                       c2=rep(1,length(time)),
-                       c3=rep(1,length(time)),
-                       temperature=rep(1,length(time)),
-                       pressure=rep(1,length(time)))
+    vd.start2 <- sort(c(vd.start, 1 + vd.start))
+    vd.len <- length(vd.start)
+    ## FIXME: need to match these to the sd
+    p.MSB <- as.numeric(buf[vd.start + 4])
+    p.LSW <- readBin(buf[vd.start2 + 6], "integer", size=2, n=vd.len, signed=FALSE, endian="little")
+    ##counter <- buf[vd.start + 3]
+    p <- (65536 * p.MSB + p.LSW) / 1000
+    x <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    y <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    z <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    a1 <- buf[vd.start + 16]
+    a2 <- buf[vd.start + 17]
+    a3 <- buf[vd.start + 18]
+    c1 <- buf[vd.start + 19]
+    c2 <- buf[vd.start + 20]
+    c3 <- buf[vd.start + 21]
+    time <- seq(from=from, to=to, length.out=vd.len)
+    data <- data.frame(time=time,       # FIXME: need to interpolate in time, pressure, and temperature
+                       p=p,
+                       x=x,
+                       y=y,
+                       z=z,
+                       a1=a1,
+                       a2=a2,
+                       a3=a3,
+                       c1=c1,
+                       c2=c2,
+                       c3=c3)
+                                        #temperature=rep(1,length(time)),
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("adv", "nortek", "vector", "oce")
     res
@@ -288,23 +257,22 @@ summary.adv <- function(object, ...)
 {
     if (!inherits(object, "adv")) stop("method is only for adv objects")
     if (inherits(object, "sontek")) {
-        ;
+        res.specific <- NULL;
     } else if (inherits(object, "nortek")) {
-        ;
+        res.specific <- list(burst.length=object$burst.length);
     } else stop("can only summarize ADV objects of sub-type \"nortek\" or \"sontek\", not class ", paste(class(object),collapse=","))
     names <- names(object$data)
     fives <- matrix(nrow=(-1+length(names)), ncol=5)
     ii <- 1
     for (i in 1:length(names)) {
         if (names(object$data)[i] != "time") {
-            fives[ii,] <- fivenum(object$data[[names[i]]], na.rm=TRUE)
+            fives[ii,] <- fivenum(as.numeric(object$data[[names[i]]]), na.rm=TRUE)
             ii <- ii + 1
         }
     }
     rownames(fives) <- names[names != "time"]
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    res <- list(#res.specific,
-                filename=object$metadata$filename,
+    res <- list(filename=object$metadata$filename,
                 sampling.start=object$metadata$sampling.start,
                 sampling.end=object$metadata$sampling.start + object$metadata$number.of.samples*object$metadata$deltat,
                 deltat=object$metadata$deltat,
@@ -312,6 +280,8 @@ summary.adv <- function(object, ...)
                 number.of.samples=length(object$data$x),
                 fives=fives,
                 processing.log=processing.log.summary(object))
+    if (inherits(object, "nortek"))
+        res$burst.length <- object$metadata$burst.length
     class(res) <- "summary.adv"
     res
 }                                       # summary.adv()
@@ -334,6 +304,10 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
     if (x$instrument.type == "sontek") {
         cat("  SonTek-specific\n")
         cat("    -na-\n")
+    }
+    if (x$instrument.type == "nortek") {
+        cat("  NorTek-specific\n")
+        cat("    Burst Length: ", x$burst.length, "\n")
     }
     cat("\nStatistics:\n")
     print(x$fives)
