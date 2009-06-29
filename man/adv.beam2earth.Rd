@@ -1,0 +1,24 @@
+\name{adv.beam2earth}
+
+\alias{adv.beam2earth}
+
+\title{Convert ADV from beam coordinates to earth coordinates}
+
+\description{Convert ADV velocity components from a beam-based
+  coordinate system to an earth-based coordinate system.}
+
+\usage{adv.beam2earth(x)}
+
+\arguments{\item{x}{an object of class \code{"adv"}.}}
+
+\details{The coordinate transformation is done using the matrix
+  contained within the header.  To indicate the change, the value of
+  \code{metadata$oce.orientation} is changed from \code{beam} to
+  \code{earth}.}
+
+\seealso{See \code{\link{read.adv}} for notes on functions relating to
+  \code{"adv"} objects.}
+
+\author{Dan Kelley}
+
+\keyword{misc}

@@ -370,15 +370,15 @@ plot.adv <- function(x,
         if (which[w] == 1) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v1) else x$data$v1,
-                        ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
+                        ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range, ...)
         } else if (which[w] == 2) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v2) else x$data$v2,
-                        ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
+                        ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range, ...)
         } else if (which[w] == 3) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v3) else x$data$v3,
-                        ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
+                        ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range, ...)
         } else if (which[w] == 14) {    # temperature time-series
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$temperature) else x$data$temperature,
@@ -403,4 +403,43 @@ plot.adv <- function(x,
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+}
+
+adv.beam2earth <- function(x)
+{
+    if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
+    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
+    res <- x
+    earth <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
+    res$data$v1 <- earth[1,]
+    res$data$v2 <- earth[2,]
+    res$data$v3 <- earth[3,]
+    res$metadata$oce.coordinate <- "earth"
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    processing.log.append(res, log.action)
+}
+
+adv.earth2other <- function(x, heading=0, pitch=0, roll=0)
+{
+    if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
+    if (x$metadata$oce.coordinate != "earth") stop("input must be in earth coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    warning("*** adv.earth2other() does *NOTHING* yet! ***")
+    res <- x
+    to.radians <- pi / 180
+    CH <- cos(to.radians * heading)
+    SH <- sin(to.radians * heading)
+    CP <- cos(to.radians * pitch)
+    SP <- sin(to.radians * pitch)
+    CR <- cos(to.radians * roll)
+    SR <- sin(to.radians * roll)
+    tr.mat <- matrix(c( CH * CR + SH * SP * SR,  SH * CP,  CH * SR - SH * SP * CR,
+                       -SH * CR + CH * SP * SR,  CH * CP, -SH * SR - CH * SP * CR,
+                       -CP * SR,                 SP,       CP * CR),               nrow=3, byrow=TRUE)
+    other <- tr.mat %*% rbind(x$data$v1, x$data$v2, x$data$v3)
+    res$data$v1 <- other[1,]
+    res$data$v2 <- other[2,]
+    res$data$v3 <- other[3,]
+    res$metadata$oce.coordinate <- "other"
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    processing.log.append(res, log.action)
 }

@@ -1,4 +1,4 @@
-image.name <- function(x, which)
+ad.beam.name <- function(x, which)
 {
     if (x$metadata$oce.coordinate == "beam")
         c("beam 1", "beam 2", "beam 3", "beam 4")[which]
@@ -808,7 +808,7 @@ plot.adp <- function(x,
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
                 else rep(TRUE, length(x$data$ss$distance))
                 zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
-                zlab <- if (missing(titles)) image.name(x, which[w]) else titles[w]
+                zlab <- if (missing(titles)) ad.beam.name(x, which[w]) else titles[w]
             } else if (which[w] %in% 5:(4+x$metadata$number.of.beams)) { # amplitude
                 z <- as.numeric(x$data$ma$a[,,which[w]-4])
                 dim(z) <- dim(x$data$ma$a)[1:2]
@@ -859,7 +859,7 @@ plot.adp <- function(x,
             if (which[w] == 19) {
                 if (x$metadata$number.of.beams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
-                                ylab=image.name(x, 1),
+                                ylab=ad.beam.name(x, 1),
                                 type='l', draw.time.range=draw.time.range, cex.axis=cex,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 1 because the device no beams")
@@ -867,7 +867,7 @@ plot.adp <- function(x,
             if (which[w] == 20) {
                 if (x$metadata$number.of.beams > 1)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
-                                ylab=image.name(x, 2),
+                                ylab=ad.beam.name(x, 2),
                                 type='l', draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 2 because the device has only", x$metadata$number.of.beams, "beams")
@@ -875,7 +875,7 @@ plot.adp <- function(x,
             if (which[w] == 21) {
                 if (x$metadata$number.of.beams > 2)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
-                                ylab=image.name(x, 3),
+                                ylab=ad.beam.name(x, 3),
                                 type='l', draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
@@ -883,7 +883,7 @@ plot.adp <- function(x,
             if (which[w] == 22) {
                 if (x$metadata$number.of.beams > 3)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
-                                ylab=image.name(x, 4),
+                                ylab=ad.beam.name(x, 4),
                                 type='l', draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
@@ -907,21 +907,21 @@ plot.adp <- function(x,
             } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=image.name(x, 1), ylab="Distance [m]", type='l', ...)
+                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 1), ylab="Distance [m]", type='l', ...)
             } else if (which[w] == 25) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,2], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=image.name(x, 2), ylab="Distance [m]", type='l', ...)
+                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 2), ylab="Distance [m]", type='l', ...)
             } else if (which[w] == 26) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,3], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=image.name(x, 3), ylab="Distance [m]", type='l', ...)
+                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 3), ylab="Distance [m]", type='l', ...)
                 ##grid()
             } else if (which[w] == 27) {
                 if (x$metadata$number.of.beams > 3) {
                     par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                     value <- apply(x$data$ma$v[,,4], 2, mean, na.rm=TRUE)
-                    plot(value, x$data$ss$distance, xlab=image.name(x, 4), ylab="Distance [m]", type='l', ...)
+                    plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 4), ylab="Distance [m]", type='l', ...)
                     ##grid()
                 } else warning("cannot use which=27 because this device did not have 4 beams")
             }
@@ -950,7 +950,7 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
 
 adp.beam2frame <- function(x)
 {
-    if (!inherits(x, "adp")) stop("method is only for objects of class 'adp'")
+    if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
     if (inherits(x, "rdi")) {
         vprime <- array(dim=dim(x$data$ma$v))
@@ -965,6 +965,22 @@ adp.beam2frame <- function(x)
         vprime[,,4] <-  d * (x$data$ma$v[,,1] + x$data$ma$v[,,2] - x$data$ma$v[,,3] - x$data$ma$v[,,4])
         res <- x
         res$data$ma$v <- vprime
+    } else if (inherits(x, "nortek")) {
+        stop("cannot use adp.beam2frame for nortek instruments; use adp.beam2earth() instead")
+    } else {
+        stop("adp type must be either \"rdi\" or \"nortek\"")
+    }
+    res$metadata$oce.coordinate <- "frame"
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    processing.log.append(res, log.action)
+}
+
+adp.beam2earth <- function(x)
+{
+    if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
+    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
+    if (inherits(x, "rdi")) {
+        res <- adp.frame2earth(adp.beam2frame(x))
     } else if (inherits(x, "nortek")) {
         res <- x
         tr.mat <- x$metadata$beam.to.xyz
@@ -983,7 +999,7 @@ adp.beam2frame <- function(x)
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\"")
     }
-    res$metadata$oce.coordinate <- "frame"
+    res$metadata$oce.coordinate <- "earth"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }

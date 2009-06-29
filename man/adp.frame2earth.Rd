@@ -32,14 +32,8 @@ plot(e, which=1:3)
 \emph{ADCP Coordinate Transformation, formulas and calculations.}
 P/N 951-6079-00 (July 1998).}
 
-\seealso{\code{\link{read.adp}} reads \code{adp} objects,
-\code{\link{summary.adp}} summarizes them, and \code{\link{plot.adp}} plots them.
-\code{\link{adp}} provides a sample ADP dataset.
-\code{\link{adp.beam.attenuate}} converts an \code{adp} object from beam to velocity.
-\code{\link{adp.beam2frame}} converts an \code{adp} object from beam coordinates to 
-frame coordinates.
-\code{\link{adp.earth2other}} rotates \code{adp} object currents from earth coordinates 
-to other coordinates.}
+\seealso{See \code{\link{read.adp}} for other functions that relate to objects
+of class \code{"adp"}.}
 
 \author{Dan Kelley}
 

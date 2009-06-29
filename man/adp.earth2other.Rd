@@ -38,7 +38,7 @@
   because earth coordinates already account for instrument alignment.}
 
 \value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
- and with \code{metadata$oce.orientation} changed from \code{earth} to
+ and with \code{metadata$oce.coordinate} changed from \code{earth} to
   \code{other}.}
 
 \examples{
@@ -55,15 +55,8 @@ plot(o, which=1:3)
 \emph{ADP Coordinate Transformation, formulas and calculations.}
 P/N 951-6079-00 (July 1998)}
 
-\seealso{\code{\link{read.adp}} reads \code{adp} objects,
-\code{\link{summary.adp}} summarizes them, and \code{\link{plot.adp}} plots them.
-\code{\link{adp}} provides a sample ADP dataset.
-\code{\link{adp.beam.attenuate}} converts an \code{adp} object from beam to velocity.
-\code{\link{adp.beam2frame}} converts an \code{adp} object from beam coordinates to 
-frame coordinates.
-\code{\link{adp.frame2earth}} converts an \code{adp} object from frame coordinates 
-to earth coordinates.
-}
+\seealso{See \code{\link{read.adp}} for other functions that relate to objects
+of class \code{"adp"}.}
 
 \author{Dan Kelley}
 
