@@ -61,9 +61,8 @@
   }
 }
 
-\seealso{The data are normally read with \code{\link{read.adv}};
-\code{\link{read.oce}} cannot (yet) handle these files.
-Summaries of ADV data are provided by \code{\link{summary.adv}}.}
+\seealso{See \code{\link{read.adv}} for notes on functions relating to
+  \code{"adv"} objects.}
 
 \examples{
 \dontrun{
