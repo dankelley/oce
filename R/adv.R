@@ -300,25 +300,20 @@ summary.adv <- function(object, ...)
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADV summary\n")
-    cat("  Instrument type:            ", x$instrument.type, "\n")
-    cat("  Filename:                   ", x$filename, "\n")
+    cat("  Instrument type:       ", x$instrument.type, "\n")
+    cat("  Filename:              ", x$filename, "\n")
 ##    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
 ##    cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Measurements at times:      ", format(x$sampling.start), attr(x$sampling.end, "tzone"),
+    cat("  Measurements at times: ", format(x$sampling.start), attr(x$sampling.end, "tzone"),
         "to",
         format(x$sampling.end), attr(x$sampling.end, "tzone"),
         "at interval", x$deltat, "s\n")
-##    cat("  Orientation:                ", x$orientation, "\n")
-##    cat("  Beam angle:                 ", x$metadata$beam.angle, "\n")
-    cat("  Number of samples:          ", x$number.of.samples, "\n")
+##    cat("  Orientation:          ", x$orientation, "\n")
+##    cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
+    cat("  Number of samples:     ", x$number.of.samples, "\n")
 
-    if (x$instrument.type == "sontek") {
-        cat("  SonTek-specific\n")
-        cat("    -na-\n")
-    }
-    if (x$instrument.type == "nortek") {
-        cat("  NorTek-specific\n")
-        cat("    Burst Length: ", x$burst.length, "\n")
+    if (x$instrument.type == "vector") {
+        cat("  Burst Length:          ", x$burst.length, "\n")
     }
     cat("\nStatistics:\n")
     print(x$fives)
@@ -405,16 +400,30 @@ plot.adv <- function(x,
     }
 }
 
-adv.beam2earth <- function(x)
+adv.frame2earth <- function(x)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
+    if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
     earth <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
     res$data$v1 <- earth[1,]
     res$data$v2 <- earth[2,]
     res$data$v3 <- earth[3,]
-    res$metadata$oce.coordinate <- "earth"
+    res$metadata$oce.coordinate <- "frame"
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    processing.log.append(res, log.action)
+}
+
+adv.beam2frame <- function(x)
+{
+    if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
+    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    res <- x
+    earth <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
+    res$data$v1 <- earth[1,]
+    res$data$v2 <- earth[2,]
+    res$data$v3 <- earth[3,]
+    res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }

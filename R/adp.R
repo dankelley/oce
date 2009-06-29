@@ -966,22 +966,6 @@ adp.beam2frame <- function(x)
         res <- x
         res$data$ma$v <- vprime
     } else if (inherits(x, "nortek")) {
-        stop("cannot use adp.beam2frame for nortek instruments; use adp.beam2earth() instead")
-    } else {
-        stop("adp type must be either \"rdi\" or \"nortek\"")
-    }
-    res$metadata$oce.coordinate <- "frame"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
-}
-
-adp.beam2earth <- function(x)
-{
-    if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
-    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
-    if (inherits(x, "rdi")) {
-        res <- adp.frame2earth(adp.beam2frame(x))
-    } else if (inherits(x, "nortek")) {
         res <- x
         tr.mat <- x$metadata$beam.to.xyz
         if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
@@ -999,7 +983,7 @@ adp.beam2earth <- function(x)
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\"")
     }
-    res$metadata$oce.coordinate <- "earth"
+    res$metadata$oce.coordinate <- "frame"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }
