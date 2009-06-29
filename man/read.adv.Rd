@@ -9,7 +9,7 @@
 
 \usage{
 read.adv(file, from=0, to, by=1,
-        type=c("sontek"),
+        type=c("nortek", "sontek"),
         withHeader=TRUE, sampling.start, deltat,
         debug=0, monitor=TRUE, log.action)
 read.adv.sontek(file, from=0, to, by=1,

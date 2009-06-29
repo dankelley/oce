@@ -1,13 +1,18 @@
 read.adv <- function(file, from=0, to, by=1,
-                     type=c("sontek"),
+                     type=c("nortek", "sontek"),
                      withHeader=TRUE, sampling.start, deltat,
                      debug=0, monitor=TRUE, log.action)
 {
     type = match.arg(type)
-    if (type == "sontek")
+    if (type == "nortek")
+        read.adv.nortek(file=file, from=from, to=to, by=by,
+                        withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
+                        debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek")
         read.adv.sontek(file=file, from=from, to=to, by=by,
                         withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
                         debug=debug, monitor=monitor, log.action=log.action)
+
 }
 
 read.adv.nortek <- function(file, from=0, to, by=1,
@@ -157,11 +162,6 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     c3 <- buf[vd.start + 21]
     coarse <- seq(0,1,length.out=sd.len)
     fine <- seq(0,1,length.out=vd.len)
-
-    print(length(pressure))
-    print(length(coarse))
-    print(length(fine))
-
     data <- data.frame(time=seq(from=from, to=to, length.out=vd.len),
                        heading=approx(coarse, heading, xout=fine)$y,
                        pitch=approx(coarse, pitch, xout=fine)$y,

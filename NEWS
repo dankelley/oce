@@ -1,7 +1,7 @@
 0.1-77
-- add preliminary support for Sontek and Nortek ADVs
+- add read.adv() and associated functions for Nortek and Sontek ADVs
+- add read.adp() and associated functions for Nortek, RDI, and Sontek ADPs
 - add oce.plot.ts()
-- add support for ADP data from RDI and NorTek
 - add imagep()
 - add bcd2integer()
 - add matlab2POSIXt()
