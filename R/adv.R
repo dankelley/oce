@@ -405,11 +405,35 @@ adv.frame2earth <- function(x)
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    earth <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
-    res$data$v1 <- earth[1,]
-    res$data$v2 <- earth[2,]
-    res$data$v3 <- earth[3,]
-    res$metadata$oce.coordinate <- "frame"
+    to.radians <- pi / 180
+    CH <- cos(to.radians * x$data$heading)
+    SH <- sin(to.radians * x$data$heading)
+    CP <- cos(to.radians * x$data$pitch)
+    SP <- sin(to.radians * x$data$pitch)
+    CR <- cos(to.radians * x$data$roll)
+    SR <- sin(to.radians * x$data$roll)
+    if (x$metadata$orientation == "down") {
+        SP <- -SP
+        SR <- -SR
+    }
+    np <- length(x$data$v1)
+    tr.mat <- array(dim=c(3, 3, np))
+    tr.mat[1,1,] <-  CH * CR + SH * SP * SR
+    tr.mat[1,2,] <-  SH * CP
+    tr.mat[1,3,] <-  CH * SR - SH * SP * CR
+    tr.mat[2,1,] <- -SH * CR + CH * SP * SR
+    tr.mat[2,2,] <-  CH * CP
+    tr.mat[2,3,] <- -SH * SR - CH * SP * CR
+    tr.mat[3,1,] <- -CP * SR
+    tr.mat[3,2,] <-  SP
+    tr.mat[3,3,] <-  CP * CR
+    rm(CH,SH,CP,SP,CR,SR)               # might be tight on space
+    rotated <- array(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% rbind(x$data$v1, x$data$v2, x$data$v3))))
+    cat("DIM(rotated):", paste(dim(rotated), collapse=" "), "\n")
+    res$data$v1 <- rotated[1,,]
+    res$data$v2 <- rotated[2,,]
+    res$data$v3 <- rotated[3,,]
+    res$metadata$oce.coordinate <- "earth"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }
