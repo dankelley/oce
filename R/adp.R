@@ -1281,7 +1281,6 @@ read.header.nortek <- function(file, debug=FALSE)
                 user$blanking.distance <- cos(25*pi/180) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
             } else {
                 user$blanking.distance <- 0
-                warning("setting blanking distance to 0, since the frequency is not in the list of known values")
             }
             if (debug) cat("blanking.distance=", user$blanking.distance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
             if (debug) cat("measurement.interval=", user$measurement.interval, "\n")
