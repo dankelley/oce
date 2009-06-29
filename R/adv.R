@@ -151,9 +151,9 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     p.LSW <- readBin(buf[vd.start2 + 6], "integer", size=2, n=vd.len, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
 
-    x <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
-    y <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
-    z <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    v1 <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    v2 <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    v3 <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
     a1 <- buf[vd.start + 16]
     a2 <- buf[vd.start + 17]
     a3 <- buf[vd.start + 18]
@@ -168,9 +168,9 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                        roll=approx(coarse, roll, xout=fine)$y,
                        temperature=approx(coarse, temperature, xout=fine)$y,
                        pressure=pressure,
-                       x=x,
-                       y=y,
-                       z=z,
+                       v1=v1,
+                       v2=v2,
+                       v3=v3,
                        a1=a1,
                        a2=a2,
                        a3=a3,
@@ -226,9 +226,9 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     sample.number <- readBin(buf[sample.start2 + 2], "integer", signed=FALSE, endian="little", size=2, n=n)
 ##?##    temperature <- readBin(buf[sample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) / 100.0
     ## in next, divide by 100 to get to cm/s, then by 100 to get to m/s
-    x <- readBin(buf[sample.start2 +  6], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
-    y <- readBin(buf[sample.start2 +  8], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
-    z <- readBin(buf[sample.start2 + 10], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
+    v1 <- readBin(buf[sample.start2 +  6], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
+    v2 <- readBin(buf[sample.start2 +  8], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
+    v3 <- readBin(buf[sample.start2 + 10], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
     a1 <- as.numeric(buf[sample.start + 12])
     a2 <- as.numeric(buf[sample.start + 13])
     a3 <- as.numeric(buf[sample.start + 14])
@@ -242,19 +242,19 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     pressure <- readBin(buf[sample.start2 + 20], "integer", signed=FALSE, endian="little", size=2, n=n) / 1000 # mbar?
     ## 21 and 22 are checksum
 
-    time <- seq(from=sampling.start, by=deltat, length.out=length(x))
+    time <- seq(from=sampling.start, by=deltat, length.out=length(v1))
     attr(time, "tzone") <- attr(sampling.start, "tzone")
 
     data <- data.frame(time=time,
                        sample.number=sample.number,
-                       x=x, y=y, z=z,
+                       v1=v1, v2=v2, v3=v3,
                        a1=a1, a2=a2, a3=a3,
                        c1=c1, c2=c2, c3=c3,
                        temperature=temperature,
                        pressure=pressure)
     metadata <- list(filename=filename,
                      instrument.type="sontek",
-                     number.of.samples=length(x),
+                     number.of.samples=length(time),
                      sampling.start=sampling.start,
                      deltat=deltat)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -284,11 +284,11 @@ summary.adv <- function(object, ...)
     rownames(fives) <- names[names != "time"]
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
-                sampling.start=object$metadata$sampling.start,
-                sampling.end=object$metadata$sampling.start + object$metadata$number.of.samples*object$metadata$deltat,
-                deltat=object$metadata$deltat,
+                sampling.start=min(object$data$time, na.rm=TRUE),
+                sampling.end=max(object$data$time, na.rm=TRUE),
+                deltat=diff(object$data$time[1:2], unit="sec"),
                 instrument.type=object$metadata$instrument.type,
-                number.of.samples=length(object$data$x),
+                number.of.samples=length(object$data$time),
                 fives=fives,
                 processing.log=processing.log.summary(object))
     if (inherits(object, "nortek"))
@@ -369,15 +369,15 @@ plot.adv <- function(x,
         ##cat("which[w]=", which[w], "smooth=",smooth,"\n")
         if (which[w] == 1) {
             oce.plot.ts(x$data$time,
-                        if (smooth) smooth(x$data$x) else x$data$x,
+                        if (smooth) smooth(x$data$v1) else x$data$v1,
                         ylab="u [m/s]", type='l', draw.time.range=draw.time.range, ...)
         } else if (which[w] == 2) {
             oce.plot.ts(x$data$time,
-                        if (smooth) smooth(x$data$y) else x$data$y,
+                        if (smooth) smooth(x$data$v2) else x$data$v2,
                         ylab="v [m/s]", type='l', draw.time.range=draw.time.range, ...)
         } else if (which[w] == 3) {
             oce.plot.ts(x$data$time,
-                        if (smooth) smooth(x$data$z) else x$data$z,
+                        if (smooth) smooth(x$data$v3) else x$data$v3,
                         ylab="w [m/s]", type='l', draw.time.range=draw.time.range, ...)
         } else if (which[w] == 14) {    # temperature time-series
             oce.plot.ts(x$data$time,
