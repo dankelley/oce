@@ -13,7 +13,7 @@
 \examples{
 library(oce)
 data(adp)
-adp.earth <- adp.frame2earth(adp.beam2frame(adp))
+adp.earth <- adp.xyz2earth(adp.beam2xyz(adp))
 
 # Plot overview images
 plot(adp.earth)

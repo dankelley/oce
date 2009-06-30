@@ -17,7 +17,7 @@
 
 \value{A character string containing a reasonable name for the beam, of
   the form \code{"beam 1"}, etc., for beam coordinates, \code{"east"},
-  etc. for earth coordinates, \code{"u"}, etc. for \code{"frame"}, or
+  etc. for earth coordinates, \code{"u"}, etc. for \code{"xyz"}, or
   \code{"u'"}, etc., for \code{"other"} coordinates.  The coordinate is
   determined by \code{x$metadata$oce.coordinate}.}
 

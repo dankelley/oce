@@ -80,16 +80,17 @@
     \item \code{which=1} yield a distance-time image plot of a
     velocity component.  If \code{x} is in \code{beam} coordinates
     (signalled by \code{x$metadata$oce.coordinate=="beam"}), this will
-    be the first beam.  If \code{x} is in frame coordinates (or ship
-    coordinates), it will be the velocity component to the right of
+    be the first beam.  If \code{x} is in xyz coordinates (sometimes
+    called frame coordinates, or ship coordinates), it will be the
+    velocity component to the right of 
     the frame or ship (labelled \code{u}).  If \code{x} is in
     \code{"earth"} coordinates, the image will show the the eastward
     component (labelled \code{east}).  If \code{x} is in
     \code{"other"} coordinates, it will be component corresponding to
     east, after rotation (labelled \code{u\'}).  Note that the
     coordinate is set by \code{\link{read.adp}}, or by
-    \code{\link{adp.beam2frame}},
-    \code{\link{adp.frame2earth}},
+    \code{\link{adp.beam2xyz}},
+    \code{\link{adp.xyz2earth}},
     or
     \code{\link{adp.earth2other}}.
     
@@ -190,10 +191,10 @@ is usually able to detect the type of instrument.  If that fails, the user
 should try \code{\link{read.adp.rdi}} (for RDI files) 
 or \code{\link{read.adp.nortek}} 
 (for NorTek files).  These files may be in beam coordinates, 
-in frame coordinates, or in earth coordinates.  It is common in a scientific
+in xyz coordinates, or in earth coordinates.  It is common in a scientific
 setting to use beam coordinates, and so this package offers functions
-\code{\link{adp.beam2frame}} and 
-\code{\link{adp.frame2earth}} to take the intermediate steps, and
+\code{\link{adp.beam2xyz}} and 
+\code{\link{adp.xyz2earth}} to take the intermediate steps, and
 \code{\link{adp.earth2other}} to go further, e.g. to rotate into
 a coordinate system aligned with the shoreline or with an isobath.
 
@@ -208,7 +209,7 @@ ADP data may be plotted with \code{\link{plot.adp}}.
 \examples{
 library(oce)
 data(adp)
-e <- adp.frame2earth(adp.beam2frame(adp))
+e <- adp.xyz2earth(adp.beam2xyz(adp))
 plot(e, which=1:3)
 # Illustrate adornment
 plot(e, which=1:2,

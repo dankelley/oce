@@ -403,7 +403,7 @@ plot.adv <- function(x,
 }
 
 
-adv.beam2frame <- function(x)
+adv.beam2xyz <- function(x)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
@@ -412,15 +412,15 @@ adv.beam2frame <- function(x)
     res$data$v1 <- earth[1,]
     res$data$v2 <- earth[2,]
     res$data$v3 <- earth[3,]
-    res$metadata$oce.coordinate <- "frame"
+    res$metadata$oce.coordinate <- "xyz"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }
 
-adv.frame2earth <- function(x)
+adv.xyz2earth <- function(x)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
     to.radians <- pi / 180
     CH <- cos(to.radians * x$data$heading)

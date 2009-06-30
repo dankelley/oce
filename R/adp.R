@@ -4,7 +4,7 @@ ad.beam.name <- function(x, which)
         c("beam 1", "beam 2", "beam 3", "beam 4")[which]
     else if (x$metadata$oce.coordinate == "earth")
         c("east", "north", "up", "error")[which]
-    else if (x$metadata$oce.coordinate == "frame")
+    else if (x$metadata$oce.coordinate == "xyz")
         c("u", "v", "w", "e")[which]
     else if (x$metadata$oce.coordinate == "other")
         c("u'", "v'", "w'", "e")[which]
@@ -100,7 +100,7 @@ read.header.rdi <- function(file, debug)
     coordinate.system <- "???"
     if (bits == "00") coordinate.system <- "beam"
     else if (bits == "01") coordinate.system <- "instrument"
-    else if (bits == "10") coordinate.system <- "frame"
+    else if (bits == "10") coordinate.system <- "xyz"
     else if (bits == "11") coordinate.system <- "earth"
     heading.alignment <- readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
     heading.bias <- readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
@@ -469,7 +469,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      number.of.samples=profiles.in.file,
-                     oce.coordinate=c("beam", "frame", "earth", "other")[coordinate.system+1], # FIXME: check this
+                     oce.coordinate=c("beam", "xyz", "earth", "other")[coordinate.system+1], # FIXME: check this
                      number.of.beams=number.of.beams,
                      oce.beam.attenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
@@ -945,7 +945,7 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     processing.log.append(res, log.action)
 }
 
-adp.beam2frame <- function(x)
+adp.beam2xyz <- function(x)
 {
     if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
@@ -980,15 +980,15 @@ adp.beam2frame <- function(x)
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\"")
     }
-    res$metadata$oce.coordinate <- "frame"
+    res$metadata$oce.coordinate <- "xyz"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }
 
-adp.frame2earth <- function(x)
+adp.xyz2earth <- function(x)
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
-    if (x$metadata$oce.coordinate != "frame") stop("input must be in frame coordinates")
+    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates")
     res <- x
     heading <- res$data$ts$heading
     pitch <- res$data$ts$pitch
@@ -1236,7 +1236,7 @@ read.header.nortek <- function(file, debug=FALSE)
             if (debug) cat("  user$velocity.scale: ", user$velocity.scale, "\n")
             tmp.cs <- readBin(buf[33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) user$coordinate.system <- "earth" # page 31 of System Integrator Guide
-            else if (tmp.cs == 1) user$coordinate.system <- "frame"
+            else if (tmp.cs == 1) user$coordinate.system <- "xyz"
             else if (tmp.cs == 2) user$coordinate.system <- "beam"
             else stop("unknown coordinate system ", tmp.cs)
             if (debug) cat("  user$coordinate.system: ", user$coordinate.system, "\n")

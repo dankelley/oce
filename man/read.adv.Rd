@@ -63,8 +63,8 @@ read.adv.nortek(file, from=0, to, by=1,
 
 \seealso{Objects of class \code{adv} may be plotted with
   \code{\link{plot.adv}} or summarized with \code{\link{summary.adv}}.
-  Coordinate transformations are done with \code{\link{adv.beam2frame}},
-  \code{\link{adv.frame2earth}}, and \code{\link{adv.earth2other}}, in
+  Coordinate transformations are done with \code{\link{adv.beam2xyz}},
+  \code{\link{adv.xyz2earth}}, and \code{\link{adv.earth2other}}, in
   that order.}
 
 \examples{

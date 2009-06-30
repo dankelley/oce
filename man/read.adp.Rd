@@ -110,11 +110,11 @@ read.adp.sontek(file, from=0, to, by=1,
   Several functions are provided to manipulate \code{adp} objects.  For
   example, in many research applications, the records are stored in beam
   coordinates, instead of the further-processed forms such as instrument
-  or earth coordiantes.  Accordingly, \code{\link{adp.beam2frame}} is
+  or earth coordinates.  Accordingly, \code{\link{adp.beam2xyz}} is
   provided, convert the velocity portions of \code{adp} objects from
-  beam coordinates to frame-based (also called ship-based or
+  beam coordinates to xyz-based (also called ship-based or
   instrument-based) coordinates.  Similarly,
-  \code{\link{adp.frame2earth}} converts from frame to earth
+  \code{\link{adp.xyz2earth}} converts from xyz to earth
   coordinates, taking into account the varying orientation of an
   instrument attached to a ship or a mobile mooring.  For applications
   in which earth-based coordinates are not desired (e.g. if a coordinate

@@ -588,7 +588,7 @@ The commands
 <<label=adpplot,eval=FALSE>>=
 library(oce)
 data(adp)
-e <- adp.frame2earth(adp.beam2frame(adp))
+e <- adp.xyz2earth(adp.beam2xyz(adp))
 plot(e, which=1:2,
      adorn=expression({
        lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green')

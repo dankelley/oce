@@ -32,7 +32,7 @@
   not to the values of the corresponding arguments supplied to the
   present function.
 
-  The code is similar to that used by \code{\link{adp.frame2earth}},
+  The code is similar to that used by \code{\link{adp.xyz2earth}},
   but in the present case the signs of \code{pitch} and \code{roll} are
   obeyed, regardless of whether the instrument points up or down,
   because earth coordinates already account for instrument alignment.}
@@ -44,8 +44,8 @@
 \examples{
 library(oce)
 data(adp)
-f <- adp.beam2frame(adp)
-e <- adp.frame2earth(f)
+f <- adp.beam2xyz(adp)
+e <- adp.xyz2earth(f)
 plot(e, which=1:3)
 o <- adp.earth2other(e, heading=31.5)
 plot(o, which=1:3)
