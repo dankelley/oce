@@ -9,6 +9,7 @@ oce.plot.ts <- function(x,
     oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
     box()
     axis(2)
+    axis(4, labels=FALSE)
     if (!is.null(adorn)) {
         t <- try(eval(adorn), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn {", , "}\n")

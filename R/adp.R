@@ -789,10 +789,7 @@ plot.adp <- function(x,
         }
     }
     if (any(which %in% images) || margins.as.image) {
-        ## scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
-        ##scale <- 0.7
-        #w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-        w <- 1.5 #par("mgp")[2] + 1/2
+        w <- 1.5
         lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
     } else {
         lay <- layout(cbind(1:lw))

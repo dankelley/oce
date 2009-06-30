@@ -13,8 +13,9 @@
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+     mar=c(mgp[1],mgp[1]+1,1,1/4),
      margins.as.image=FALSE,
+     cex=1,
      \dots)}
 
 \arguments{
@@ -46,6 +47,7 @@
   \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
     right of time-series plots, matching the space used up by a palette
     in an \code{\link{imagep}} plot.}
+  \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
