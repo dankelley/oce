@@ -3,7 +3,7 @@
 \alias{summary.adv}
 \alias{print.summary.adv}
 
-\title{Summarize an adv object}
+\title{Summarize an ADV object}
 
 \description{Summarize data in an \code{adv} object.}
 

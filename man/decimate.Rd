@@ -16,19 +16,15 @@
 
 \details{Later on, other methods will be added, and
   \code{\link{ctd.decimate}} will be retired in favour of this, a more
-  general, function.
-
-  The filtering is done with the \code{\link{filter}} function of the
-  stats package.  This produces NA values near the start and end of the
-  series, and since this is bothersome in some applications,
-  \code{decimate} substitutes the original values in those spots.
-}
+  general, function.  The filtering is done with the
+  \code{\link{filter}} function of the stats package.}
 
 \value{An object of \code{\link[base]{class}} \code{"oce"} that has been
   subsampled appropriately.}
 
-\seealso{\code{ctd.decimate}, which will be retired when the present
-  function gains equivalent functionality.}
+\seealso{Filter coefficients may be calculated using
+  \code{\link{make.filter}}.  (Note that \code{ctd.decimate} will be
+  retired when the present function gains equivalent functionality.)}
 
 \examples{
 library(oce)

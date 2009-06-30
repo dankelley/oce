@@ -4,7 +4,7 @@
 
 \alias{print.summary.sealevel}
 
-\title{Summarize a sealevel data object}
+\title{Summarize a sealevel object}
 
 \description{Summarizes some of the data in a sealevel object.}
 

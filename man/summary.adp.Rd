@@ -3,7 +3,7 @@
 \alias{summary.adp}
 \alias{print.summary.adp}
 
-\title{Summarize an adp object}
+\title{Summarize an ADP object}
 
 \description{Summarize data in an \code{adp} object.}
 

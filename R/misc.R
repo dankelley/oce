@@ -500,15 +500,23 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
         if (missing(filter)) stop("must supply a filter")
         nvar <- dim(x$data)[2]
         for (var in 1:nvar) {
-            res$data[,var] <- filter(x$data[,var], filter)
-            fill <- is.na(res$data[,var])
-            res$data[fill,var] <- x$data[fill,var]
-            ##if (var==2)print(data.frame(fill=fill,orig=x$data[,var],new=res$data[,var]))
+            if (names(x$data)[var] != "time") {
+                if (is.raw(x$data[1,var])) {
+                    tmp <- floor(0.5 + filter(as.numeric(x$data[,var]), filter, circular=TRUE))
+                    tmp[tmp < 0] <- 0
+                    tmp[tmp > 255] <- 255
+                    res$data[,var] <- as.raw(tmp)
+                } else {
+                    res$data[,var] <- filter(x$data[,var], filter, circular=TRUE)
+                }
+                fill <- is.na(res$data[,var])
+                res$data[fill,var] <- x$data[fill,var]
+            }
         }
         i <- seq(1, dim(x$data)[1], by=by)
         res$data <- res$data[i,]
     }
-    if ("deltat" %in% names(x$metadata)) # KLUDGE for ADV; sub-second sampling is problem for time in (integer) POSIXct
+    if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
     processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
 }

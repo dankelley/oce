@@ -3,7 +3,7 @@
 \alias{summary.ctd}
 \alias{print.summary.ctd}
 
-\title{Summarize a seawater (CTD) data object}
+\title{Summarize a CTD object}
 
 \description{Summarizes some of the data in a \code{ctd} object.}
 

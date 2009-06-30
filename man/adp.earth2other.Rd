@@ -2,7 +2,7 @@
 
 \alias{adp.earth2other}
 
-\title{Rotate ADP currents from earth coordinates to other coordinates}
+\title{Convert ADP currents from earth coordinates to other coordinates}
 
 \description{Convert ADP velocity components from an earth-based
   coordinate system to another system, perhaps to align axes with the
