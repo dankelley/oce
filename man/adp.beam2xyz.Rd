@@ -1,13 +1,13 @@
-\name{adp.beam2frame}
+\name{adp.beam2xyz}
 
-\alias{adp.beam2frame}
+\alias{adp.beam2xyz}
 
-\title{Convert ADP from beam coordinates to frame coordinates}
+\title{Convert ADP from beam coordinates to xyz coordinates}
 
 \description{Convert ADP velocity components from a beam-based
-  coordinate system to a frame-based coordinate system.}
+  coordinate system to a xyz-based coordinate system.}
 
-\usage{adp.beam2frame(x)}
+\usage{adp.beam2xyz(x)}
 
 \arguments{\item{x}{an object of class \code{"adp"}.}}
 
@@ -45,17 +45,17 @@
   is the angle the beams make to the instrument \dQuote{vertical}.}
 
 \value{An object with the first 3 velocitiy indices having been
-  altered to represent velocity components in frame (or instrument)
+  altered to represent velocity components in xyz (or instrument)
   coordinates.  (For \code{rdi} data, the values at the 4th velocity 
   index are changed to represent the "error" velocity.)
 
   To indicate the change, the value of \code{metadata$oce.orientation}
-  is changed from \code{beam} to \code{frame}.}
+  is changed from \code{beam} to \code{xyz}.}
 
 \examples{
 library(oce)
 data(adp)
-f <- adp.beam2frame(adp)
+f <- adp.beam2xyz(adp)
 summary(f)
 plot(f, which=1:3)
 }
@@ -64,14 +64,8 @@ plot(f, which=1:3)
 \emph{ADP Coordinate Transformation, formulas and calculations.}
 P/N 951-6079-00 (July 1998).}
 
-\seealso{\code{\link{read.adp}} reads \code{adp} objects,
-\code{\link{summary.adp}} summarizes them, and \code{\link{plot.adp}} plots them.
-\code{\link{adp}} provides a sample ADP dataset.
-\code{\link{adp.beam.attenuate}} converts an \code{adp} object from beam to velocity.
-\code{\link{adp.earth2other}} rotates \code{adp} object currents from earth coordinates 
-to other coordinates.
-\code{\link{adp.frame2earth}} converts an \code{adp} object from frame coordinates to 
-earth coordinates.}
+\seealso{See \code{\link{read.adp}} for other functions that relate to objects
+of class \code{"adp"}.}
 
 \author{Dan Kelley}
 

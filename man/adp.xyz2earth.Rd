@@ -1,14 +1,14 @@
-\name{adp.frame2earth}
+\name{adp.xyz2earth}
 
-\alias{adp.frame2earth}
+\alias{adp.xyz2earth}
 
-\title{Convert ADP from frame coordinates to earth coordinates}
+\title{Convert ADP from xyz coordinates to earth coordinates}
 
-\description{Convert ADP velocity components from a frame-based
+\description{Convert ADP velocity components from a xyz-based
   coordinate system to an earth-based coordinate system, by using
   the instrument's recording of heading,  pitch, and roll.}
 
-\usage{adp.frame2earth(x)}
+\usage{adp.xyz2earth(x)}
 
 \arguments{\item{x}{an object of class \code{"adp"}.}}
 
@@ -17,14 +17,14 @@
   of \emph{RD Instruments} (1998).}
 
 \value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
-  and with \code{metadata$oce.orientation} changed from \code{frame} to
+  and with \code{metadata$oce.orientation} changed from \code{xyz} to
   \code{earth}.}
 
 \examples{
 library(oce)
 data(adp)
-f <- adp.beam2frame(adp)
-e <- adp.frame2earth(f)
+f <- adp.beam2xyz(adp)
+e <- adp.xyz2earth(f)
 plot(e, which=1:3)
 }
 
