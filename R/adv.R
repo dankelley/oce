@@ -329,27 +329,19 @@ plot.adv <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+                     mar=c(mgp[1],mgp[1]+1,1,1/4),
                      margins.as.image=FALSE,
+                     cex=1,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     if (!all(which %in% c(1:3,14:15))) stop("\"which\" must be in the range c(1:3,14:15)")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
-    if (margins.as.image) {
-        ## scale <- (0.132 + (0.2 - 0.132) * exp(-(lw - 1))) / 0.2
-        scale <- 0.7
-        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-    } else {
-        if (lw > 1)
-            lay <- layout(cbind(1:lw))
-    }
 
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
-    par(mgp=mgp, mar=mar)
+    par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
     gave.ylim <- "ylim" %in% names(dots)
 
@@ -360,31 +352,46 @@ plot.adv <- function(x,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
+    if (margins.as.image) {
+        w <- 1.5
+        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+    } else {
+        lay <- layout(cbind(1:lw))
+    }
     for (w in 1:lw) {
-        ##cat("which[w]=", which[w], "smooth=",smooth,"\n")
+        par(mgp=mgp, mar=mar, cex=cex)
         if (which[w] == 1) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v1) else x$data$v1,
-                        ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range, ...)
+                        ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w], ...)
+            abline(h=0, col="gray")
         } else if (which[w] == 2) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v2) else x$data$v2,
-                        ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range, ...)
+                        ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w], ...)
+            abline(h=0, col="gray")
         } else if (which[w] == 3) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v3) else x$data$v3,
-                        ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range, ...)
+                        ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w], ...)
+            abline(h=0, col="gray")
         } else if (which[w] == 14) {    # temperature time-series
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$temperature) else x$data$temperature,
-                        ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range, ...)
+                        ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w], ...)
         } else if (which[w] == 15) {    # pressure time-series
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$pressure) else x$data$pressure,
-                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range, ...)
+                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w], ...)
         } else {
             stop("unknown value of \"which\":", which)
         }
+        draw.time.range <- FALSE
         if (margins.as.image)  {
             ## blank plot, to get axis length same as for images
             omar <- par("mar")
@@ -392,12 +399,22 @@ plot.adv <- function(x,
             plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
             par(mar=omar)
         }
-        draw.time.range <- FALSE
-        if (w <= adorn.length) {
-            t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-        }
     }
+}
+
+
+adv.beam2frame <- function(x)
+{
+    if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
+    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    res <- x
+    earth <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
+    res$data$v1 <- earth[1,]
+    res$data$v2 <- earth[2,]
+    res$data$v3 <- earth[3,]
+    res$metadata$oce.coordinate <- "frame"
+    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    processing.log.append(res, log.action)
 }
 
 adv.frame2earth <- function(x)
@@ -437,25 +454,10 @@ adv.frame2earth <- function(x)
     processing.log.append(res, log.action)
 }
 
-adv.beam2frame <- function(x)
-{
-    if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    res <- x
-    earth <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
-    res$data$v1 <- earth[1,]
-    res$data$v2 <- earth[2,]
-    res$data$v3 <- earth[3,]
-    res$metadata$oce.coordinate <- "frame"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
-}
-
 adv.earth2other <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "earth") stop("input must be in earth coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    warning("*** adv.earth2other() does *NOTHING* yet! ***")
     res <- x
     to.radians <- pi / 180
     CH <- cos(to.radians * heading)
