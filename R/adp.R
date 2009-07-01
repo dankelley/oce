@@ -1202,9 +1202,10 @@ read.header.nortek <- function(file, debug=FALSE)
             if (debug) cat("  head$head.type=", head$head.type, "\n")
             head$head.serial.number <- gsub(" *$", "", paste(readBin(buf[11:22], "character", n=12, size=1), collapse=""))
             if (debug) cat("  head$head.serial.number=", head$head.serial.number, "\n")
+            ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 199;
+            ## the inference of beam.angles and beam.to.xyz is drawn from other code.
             head$beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
             if (debug) cat("  head$beam.angles=", head$beam.angles, "(rad)\n")
-
             ## short hBeamToXYZ[9];          // beam to XYZ transformation matrix for up orientation
             ##Transformation matrix (before division by 4096) -- checks out ok
             ## 6461 -3232 -3232
