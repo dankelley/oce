@@ -495,7 +495,7 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
     res <- x
     if (method == "direct") {
         if (inherits(x, "adp"))
-            stop("cannot handle ADV objects (request this from the author)")
+            stop("cannot handle ADP objects (request this from the author)")
         else if (inherits(x, "adv")) {
             i <- seq(1, length(x$data$ts$time), by=by)
             ts.nvar <- length(x$data$ts)
@@ -509,15 +509,32 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
     } else if (method == "filter") {
         if (missing(filter)) stop("must supply a filter")
         if (inherits(x, "adp"))
-            stop("cannot handle ADV objects (request this from the author)")
+            stop("cannot handle ADP objects (request this from the author)")
         else if (inherits(x, "adv")) {
             i <- seq(1, length(x$data$ts$time), by=by)
             ts.nvar <- length(x$data$ts)
-            for (v in 1:ts.nvar)
-                res$data$ts[[v]] <- x$data$ts[[v]][i]
+            for (v in 1:ts.nvar) {
+                res$data$ts[[v]] <- if (names(x$data$ts)[[v]] == "time")
+                    x$data$ts[[v]][i]
+                else
+                    filter(x$data$ts[[v]], filter, circular=TRUE)[i]
+            }
             ma.nvar <- length(x$data$ma)
-            for (v in 1:ma.nvar)
-                res$data$ma[[v]] <- x$data$ma[[v]][i,]
+            for (v in 1:ma.nvar) {
+                raw <- is.raw(x$data$ma[[v]])
+                for (beam in 1:3) {
+                    if (raw) {
+                        tmp <- filter(as.numeric(x$data$ma[[v]][,beam]), filter, circular=TRUE)
+                        tmp[tmp < 0] <- 0
+                        tmp[tmp > 255] <- 255
+                        res$data$ma[[v]][,beam] <- as.raw(tmp)
+                    } else {
+                        tmp <- filter(x$data$ma[[v]][,beam], filter, circular=TRUE)
+                        res$data$ma[[v]][,beam] <- tmp
+                    }
+                }
+                res$data$ma[[v]] <- res$data$ma[[v]][i,]
+            }
         } else {
             nvar <- dim(x$data)[2]
             for (var in 1:nvar) {

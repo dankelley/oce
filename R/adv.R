@@ -274,24 +274,29 @@ summary.adv <- function(object, ...)
     } else if (inherits(object, "nortek")) {
         res.specific <- list(burst.length=object$burst.length);
     } else stop("can only summarize ADV objects of sub-type \"nortek\" or \"sontek\", not class ", paste(class(object),collapse=","))
-    names <- names(object$data)
-    fives <- matrix(nrow=(-1+length(names)), ncol=5)
+    ts.names <- names(object$data$ts)
+    ma.names <- names(object$data$ma)
+    fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
     ii <- 1
-    for (i in 1:length(names)) {
-        if (names(object$data)[i] != "time") {
-            fives[ii,] <- fivenum(as.numeric(object$data[[names[i]]]), na.rm=TRUE)
+    for (i in 1:length(ts.names)) {
+        if (names(object$data$ts)[i] != "time") {
+            fives[ii,] <- fivenum(as.numeric(object$data$ts[[ts.names[i]]]), na.rm=TRUE)
             ii <- ii + 1
         }
     }
-    rownames(fives) <- names[names != "time"]
+    for (i in 1:length(ma.names)) {
+        fives[ii,] <- fivenum(as.numeric(object$data$ma[[i]]), na.rm=TRUE)
+        ii <- ii + 1
+    }
+    rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
                 beam.to.xyz=object$metadata$beam.to.xyz,
-                sampling.start=min(object$data$time, na.rm=TRUE),
-                sampling.end=max(object$data$time, na.rm=TRUE),
-                deltat=diff(object$data$time[1:2], unit="sec"),
+                sampling.start=min(object$data$ts$time, na.rm=TRUE),
+                sampling.end=max(object$data$ts$time, na.rm=TRUE),
+                deltat=diff(object$data$ts$time[1:2], unit="sec"),
                 instrument.type=object$metadata$instrument.type,
-                number.of.samples=length(object$data$time),
+                number.of.samples=length(object$data$ts$time),
                 fives=fives,
                 processing.log=processing.log.summary(object))
     if (inherits(object, "nortek"))
