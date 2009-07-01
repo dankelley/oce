@@ -494,27 +494,49 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
     method <- match.arg(method)
     res <- x
     if (method == "direct") {
-        i <- seq(1, dim(x$data)[1], by=by)
-        res$data <- x$data[i,]
+        if (inherits(x, "adp"))
+            stop("cannot handle ADV objects (request this from the author)")
+        else if (inherits(x, "adv")) {
+            i <- seq(1, length(x$data$ts$time), by=by)
+            ts.nvar <- length(x$data$ts)
+            for (v in 1:ts.nvar)
+                res$data$ts[[v]] <- x$data$ts[[v]][i]
+            stop("NEED TO WORK WITH MATICES NOW")
+        } else {
+            i <- seq(1, dim(x$data)[1], by=by)
+            res$data <- x$data[i,]
+        }
     } else if (method == "filter") {
         if (missing(filter)) stop("must supply a filter")
-        nvar <- dim(x$data)[2]
-        for (var in 1:nvar) {
-            if (names(x$data)[var] != "time") {
-                if (is.raw(x$data[1,var])) {
-                    tmp <- floor(0.5 + filter(as.numeric(x$data[,var]), filter, circular=TRUE))
-                    tmp[tmp < 0] <- 0
-                    tmp[tmp > 255] <- 255
-                    res$data[,var] <- as.raw(tmp)
-                } else {
-                    res$data[,var] <- filter(x$data[,var], filter, circular=TRUE)
+        if (inherits(x, "adp"))
+            stop("cannot handle ADV objects (request this from the author)")
+        else if (inherits(x, "adv")) {
+            i <- seq(1, length(x$data$ts$time), by=by)
+            ts.nvar <- length(x$data$ts)
+            for (v in 1:ts.nvar)
+                res$data$ts[[v]] <- x$data$ts[[v]][i]
+            ma.nvar <- length(x$data$ma)
+            for (v in 1:ma.nvar)
+                res$data$ma[[v]] <- x$data$ma[[v]][i,]
+        } else {
+            nvar <- dim(x$data)[2]
+            for (var in 1:nvar) {
+                if (names(x$data)[var] != "time") {
+                    if (is.raw(x$data[1,var])) {
+                        tmp <- floor(0.5 + filter(as.numeric(x$data[,var]), filter, circular=TRUE))
+                        tmp[tmp < 0] <- 0
+                        tmp[tmp > 255] <- 255
+                        res$data[,var] <- as.raw(tmp)
+                    } else {
+                        res$data[,var] <- filter(x$data[,var], filter, circular=TRUE)
+                    }
+                    fill <- is.na(res$data[,var])
+                    res$data[fill,var] <- x$data[fill,var]
                 }
-                fill <- is.na(res$data[,var])
-                res$data[fill,var] <- x$data[fill,var]
             }
+            i <- seq(1, dim(x$data)[1], by=by)
+            res$data <- res$data[i,]
         }
-        i <- seq(1, dim(x$data)[1], by=by)
-        res$data <- res$data[i,]
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat

@@ -153,32 +153,28 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     p.LSW <- readBin(buf[vd.start2 + 6], "integer", size=2, n=vd.len, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
 
-    v1 <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
-    v2 <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
-    v3 <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
-    a1 <- buf[vd.start + 16]
-    a2 <- buf[vd.start + 17]
-    a3 <- buf[vd.start + 18]
-    c1 <- buf[vd.start + 19]
-    c2 <- buf[vd.start + 20]
-    c3 <- buf[vd.start + 21]
+    v <- array(dim=c(vd.len, 3))
+    v[,1] <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    v[,2] <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    v[,3] <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+    a <- array(raw(), dim=c(vd.len, 3))
+    a[,1] <- buf[vd.start + 16]
+    a[,2] <- buf[vd.start + 17]
+    a[,3] <- buf[vd.start + 18]
+    c <- array(raw(), dim=c(vd.len, 3))
+    c[,1] <- buf[vd.start + 19]
+    c[,2] <- buf[vd.start + 20]
+    c[,3] <- buf[vd.start + 21]
     coarse <- seq(0,1,length.out=sd.len)
     fine <- seq(0,1,length.out=vd.len)
-    data <- data.frame(time=seq(from=from, to=to, length.out=vd.len),
-                       heading=approx(coarse, heading, xout=fine)$y,
-                       pitch=approx(coarse, pitch, xout=fine)$y,
-                       roll=approx(coarse, roll, xout=fine)$y,
-                       temperature=approx(coarse, temperature, xout=fine)$y,
-                       pressure=pressure,
-                       v1=v1,
-                       v2=v2,
-                       v3=v3,
-                       a1=a1,
-                       a2=a2,
-                       a3=a3,
-                       c1=c1,
-                       c2=c2,
-                       c3=c3)
+    data <- list(ts=list(time=seq(from=from, to=to, length.out=vd.len),
+                 heading=approx(coarse, heading, xout=fine)$y,
+                 pitch=approx(coarse, pitch, xout=fine)$y,
+                 roll=approx(coarse, roll, xout=fine)$y,
+                 temperature=approx(coarse, temperature, xout=fine)$y,
+                 pressure=pressure),
+                 ss=list(distance=0),
+                 ma=list(v=v, a=a, c=c))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("adv", "nortek", "vector", "oce")
     res
@@ -229,15 +225,19 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     sample.number <- readBin(buf[sample.start2 + 2], "integer", signed=FALSE, endian="little", size=2, n=n)
     ##?##    temperature <- readBin(buf[sample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) / 100.0
     ## in next, divide by 100 to get to cm/s, then by 100 to get to m/s
-    v1 <- readBin(buf[sample.start2 +  6], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
-    v2 <- readBin(buf[sample.start2 +  8], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
-    v3 <- readBin(buf[sample.start2 + 10], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
-    a1 <- as.numeric(buf[sample.start + 12])
-    a2 <- as.numeric(buf[sample.start + 13])
-    a3 <- as.numeric(buf[sample.start + 14])
-    c1 <- as.numeric(buf[sample.start + 15])
-    c2 <- as.numeric(buf[sample.start + 16])
-    c3 <- as.numeric(buf[sample.start + 17])
+
+    v <- array(dim=c(n, 3))
+    v[,1] <- readBin(buf[sample.start2 +  6], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
+    v[,2] <- readBin(buf[sample.start2 +  8], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
+    v[,3] <- readBin(buf[sample.start2 + 10], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
+    a <- array(raw(), dim=c(n, 3))
+    a[,1] <- as.numeric(buf[sample.start + 12])
+    a[,2] <- as.numeric(buf[sample.start + 13])
+    a[,3] <- as.numeric(buf[sample.start + 14])
+    c <- array(raw(), dim=c(n, 3))
+    c[,1] <- as.numeric(buf[sample.start + 15])
+    c[,2] <- as.numeric(buf[sample.start + 16])
+    c[,3] <- as.numeric(buf[sample.start + 17])
 
     ##print(buf[sample.start2 + 18][1:10])
 
@@ -245,16 +245,15 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     pressure <- readBin(buf[sample.start2 + 20], "integer", signed=FALSE, endian="little", size=2, n=n) / 1000 # mbar?
     ## 21 and 22 are checksum
 
-    time <- seq(from=sampling.start, by=deltat, length.out=length(v1))
+    time <- seq(from=sampling.start, by=deltat, length.out=n)
     attr(time, "tzone") <- attr(sampling.start, "tzone")
 
-    data <- data.frame(time=time,
-                       sample.number=sample.number,
-                       v1=v1, v2=v2, v3=v3,
-                       a1=a1, a2=a2, a3=a3,
-                       c1=c1, c2=c2, c3=c3,
-                       temperature=temperature,
-                       pressure=pressure)
+    data <- list(ts=list(time=time,
+                 sample.number=sample.number,
+                 temperature=temperature,
+                 pressure=pressure),
+                 ss=list(distance=0),
+                 ma=list(v=v, a=a, c=c))
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      number.of.samples=length(time),
@@ -365,27 +364,27 @@ plot.adv <- function(x,
     for (w in 1:lw) {
         par(mgp=mgp, mar=mar, cex=cex)
         if (which[w] == 1) {
-            oce.plot.ts(x$data$time,
-                        if (smooth) smooth(x$data$v1) else x$data$v1,
+            oce.plot.ts(x$data$ts$time,
+                        if (smooth) smooth(x$data$ma$v[,1]) else x$data$ma$v[,1],
                         ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 2) {
-            oce.plot.ts(x$data$time,
-                        if (smooth) smooth(x$data$v2) else x$data$v2,
+            oce.plot.ts(x$data$ts$time,
+                        if (smooth) smooth(x$data$ma$v[,2]) else x$data$ma$v[,2],
                         ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 3) {
-            oce.plot.ts(x$data$time,
-                        if (smooth) smooth(x$data$v3) else x$data$v3,
+            oce.plot.ts(x$data$ts$time,
+                        if (smooth) smooth(x$data$ma$v[,3]) else x$data$ma$v[,3],
                         ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 14) {    # temperature time-series
-            oce.plot.ts(x$data$time,
+            oce.plot.ts(x$data$ts$time,
                         if (smooth) smooth(x$data$temperature) else x$data$temperature,
                         ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 15) {    # pressure time-series
-            oce.plot.ts(x$data$time,
+            oce.plot.ts(x$data$ts$time,
                         if (smooth) smooth(x$data$pressure) else x$data$pressure,
                         ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
@@ -409,10 +408,10 @@ adv.beam2xyz <- function(x)
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    enu <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
-    res$data$v1 <- enu[1,]
-    res$data$v2 <- enu[2,]
-    res$data$v3 <- enu[3,]
+    enu <- x$metadata$beam.to.xyz %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
+    res$data$ma$v[,1] <- enu[1,]
+    res$data$ma$v[,2] <- enu[2,]
+    res$data$ma$v[,3] <- enu[3,]
     res$metadata$oce.coordinate <- "xyz"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
@@ -424,18 +423,18 @@ adv.xyz2enu <- function(x)
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
     to.radians <- pi / 180
-    CH <- cos(to.radians * x$data$heading)
-    SH <- sin(to.radians * x$data$heading)
-    CP <- cos(to.radians * x$data$pitch)
-    SP <- sin(to.radians * x$data$pitch)
-    CR <- cos(to.radians * x$data$roll)
-    SR <- sin(to.radians * x$data$roll)
-    if (x$metadata$orientation == "down") {
+    CH <- cos(to.radians * x$data$ts$heading)
+    SH <- sin(to.radians * x$data$ts$heading)
+    CP <- cos(to.radians * x$data$ts$pitch)
+    SP <- sin(to.radians * x$data$ts$pitch)
+    CR <- cos(to.radians * x$data$ts$roll)
+    SR <- sin(to.radians * x$data$ts$roll)
+    if (x$metadata$orientation == "downward") { #FIXME: I think this is plain wrong; should change sign of row 2 and 3 (??)
         SP <- -SP
         SR <- -SR
     }
-    np <- length(x$data$v1)
-    tr.mat <- array(dim=c(3, 3, np))
+    np <- dim(x$data$ma$v)[1]
+    tr.mat <- array(numeric(), dim=c(3, 3, np))
     tr.mat[1,1,] <-  CH * CR + SH * SP * SR
     tr.mat[1,2,] <-  SH * CP
     tr.mat[1,3,] <-  CH * SR - SH * SP * CR
@@ -446,10 +445,10 @@ adv.xyz2enu <- function(x)
     tr.mat[3,2,] <-  SP
     tr.mat[3,3,] <-  CP * CR
     rm(CH,SH,CP,SP,CR,SR)               # might be tight on space
-    rotated <- matrix(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% rbind(x$data$v1[p], x$data$v2[p], x$data$v3[p]))), nrow=3)
-    res$data$v1 <- rotated[1,]
-    res$data$v2 <- rotated[2,]
-    res$data$v3 <- rotated[3,]
+    rotated <- matrix(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% x$data$ma$v[p,])), nrow=3)
+    res$data$ma$v[,1] <- rotated[1,]
+    res$data$ma$v[,2] <- rotated[2,]
+    res$data$ma$v[,3] <- rotated[3,]
     res$metadata$oce.coordinate <- "enu"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
@@ -470,10 +469,10 @@ adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
     tr.mat <- matrix(c( CH * CR + SH * SP * SR,  SH * CP,  CH * SR - SH * SP * CR,
                        -SH * CR + CH * SP * SR,  CH * CP, -SH * SR - CH * SP * CR,
                        -CP * SR,                 SP,       CP * CR),               nrow=3, byrow=TRUE)
-    other <- tr.mat %*% rbind(x$data$v1, x$data$v2, x$data$v3)
-    res$data$v1 <- other[1,]
-    res$data$v2 <- other[2,]
-    res$data$v3 <- other[3,]
+    other <- tr.mat %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
+    res$data$ma$v[,1] <- other[1,]
+    res$data$ma$v[,2] <- other[2,]
+    res$data$ma$v[,3] <- other[3,]
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)

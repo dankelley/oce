@@ -77,8 +77,8 @@ read.header.rdi <- function(file, debug)
     else if (bits == "0101") beam.config <- "janus demod"
     else if (bits == "1111") beam.config <- "janus 2 demd"
     bits <- substr(system.configuration, 1, 1)
-    if (bits == "1") orientation <- "up"
-    else orientation <- "down"
+    if (bits == "1") orientation <- "upward"
+    else orientation <- "downward"
     ##cat("beam.config=", beam.config, "\n")
     real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     lag.length <- readBin(FLD[8], "integer", n=1, size=1)
@@ -993,7 +993,7 @@ adp.xyz2enu <- function(x)
     heading <- res$data$ts$heading
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    if (res$metadata$orientation == "down") {
+    if (res$metadata$orientation == "downward") {
         pitch <- -pitch
         roll <- -roll
     }
