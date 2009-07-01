@@ -5,7 +5,7 @@
 
 \description{Plot a time-series, obeying the timezone and possibly drawing the range in the top-left margin}
 
-\usage{oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", adorn=NULL, \dots)}
+\usage{oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL, \dots)}
 
 \arguments{
 \item{x}{the times of observations.}
@@ -15,6 +15,9 @@
 \item{xaxs}{character indicating whether image should extend to edge
   of x axis (with value \code{"i"}) or not; see
   \code{\link[graphics]{par}}("xaxs").}
+\item{grid}{boolean, set to \code{TRUE} to get a grid on the plot.  (Note that
+  \code{\link{grid}} does work correctly because it does not account
+  properly for tic locations on the time axis.}
 \item{adorn}{optional \code{\link{expression}} to be performed immediately after
   drawing the data panel.}     
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}

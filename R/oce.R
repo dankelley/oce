@@ -2,11 +2,19 @@ oce.plot.ts <- function(x,
                         y,
                         draw.time.range=TRUE,
                         xaxs="i",
+                        grid=TRUE,
                         adorn=NULL,
                         ...)
 {
     plot(x, y, axes=FALSE, xaxs=xaxs, ...)
-    oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
+    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
+    if (grid) {
+        lwd <- par("lwd")
+        abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+        yaxp <- par("yaxp")
+        abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
+               col="lightgray", lty="dotted", lwd=lwd)
+    }
     box()
     axis(2)
     axis(4, labels=FALSE)

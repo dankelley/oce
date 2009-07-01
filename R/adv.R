@@ -369,19 +369,16 @@ plot.adv <- function(x,
                         if (smooth) smooth(x$data$v1) else x$data$v1,
                         ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
-            abline(h=0, col="gray")
         } else if (which[w] == 2) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v2) else x$data$v2,
                         ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
-            abline(h=0, col="gray")
         } else if (which[w] == 3) {
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$v3) else x$data$v3,
                         ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
-            abline(h=0, col="gray")
         } else if (which[w] == 14) {    # temperature time-series
             oce.plot.ts(x$data$time,
                         if (smooth) smooth(x$data$temperature) else x$data$temperature,
