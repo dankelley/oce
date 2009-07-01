@@ -79,17 +79,17 @@ read.adv.nortek <- function(file, from=0, to, by=1,
 
     # find file length
     seek(file, 0, "end")
-    file.length <- seek(file, 0, "start")
-    if (debug) cat("file.length=", file.length, "\n")
+    file.size <- seek(file, 0, "start")
+    if (debug) cat("file.size=", file.size, "\n")
 
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
-    bisect.nortek.vector.sd <- function(file, file.length, value)
+    bisect.nortek.vector.sd <- function(file, file.size, value)
     {
         lower <- 0
-        upper <- file.length
-        passes <- 3 + log(file.length, 2) # won't need this many; only do this to catch coding errors
+        upper <- file.size
+        passes <- floor(3 + log(file.size, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
-            middle <- (upper + lower) / 2
+            middle <- floor((upper + lower) / 2)
             bis.chunk <- 1000           # only need about 1/4 of this
             seek(file, middle)
             buf <- readBin(file, "raw", n=bis.chunk, endian="little")
@@ -107,16 +107,18 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                 lower <- middle
             if (upper - lower < bis.chunk)
                 return(middle)
+            if (debug) cat("bisection (for \"from\" or \"to\" time) examining indices", lower, "to", upper, " (pass", pass, "of max", passes, ")\n")
         }
         return(middle)
     }
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
-    from.index <- bisect.nortek.vector.sd(file, file.length, from) # just an estimate; see below
-    to.index <- bisect.nortek.vector.sd(file, file.length, to)
-    if (debug) cat("from.index=", from.index, "to.index=",to.index,"\n")
-    seek(file, from.index - 1000)       # add 1kb on each side (trimmed a few lines below)
-    buf <- readBin(file, "raw", n=2000+(to.index - from.index))
-
+    from.index <- bisect.nortek.vector.sd(file, file.size, from) # just an estimate; see below
+    to.index <- bisect.nortek.vector.sd(file, file.size, to)
+    if (debug) cat("Bisection for \"from\" and \"to\" times yielded indices", from.index, "and",to.index,"\n")
+    start <- max(1, from.index - 1000)
+    n <- min(file.size - start - 1, 2000 + (to.index - from.index)) # FIXME: need the -1?
+    seek(file, start)
+    buf <- readBin(file, "raw", n=n)
     ## sd (system data) are interspersed in the vd sequence
     sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
     sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
@@ -218,13 +220,14 @@ read.adv.sontek <- function(file, from=0, to, by=1,
         if (buf[sample.start[1] + as.integer(flag2)] != flag1) stop("problem reading first sample")
         ## FIXME: should run along the data for a while, to confirm that it's ok
     }
+
     n <- length(sample.start)
     ## id <- buf[sample.start]
     ## number.of.bytes <- buf[sample.start + 1]
     sample.start2 <- sort(c(sample.start, sample.start+1)) # use this to subset for 2-byte reads
     ##print((sample.start2 + 2)[1:10])
     sample.number <- readBin(buf[sample.start2 + 2], "integer", signed=FALSE, endian="little", size=2, n=n)
-##?##    temperature <- readBin(buf[sample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) / 100.0
+    ##?##    temperature <- readBin(buf[sample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) / 100.0
     ## in next, divide by 100 to get to cm/s, then by 100 to get to m/s
     v1 <- readBin(buf[sample.start2 +  6], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
     v2 <- readBin(buf[sample.start2 +  8], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
@@ -284,6 +287,7 @@ summary.adv <- function(object, ...)
     rownames(fives) <- names[names != "time"]
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
+                beam.to.xyz=object$metadata$beam.to.xyz,
                 sampling.start=min(object$data$time, na.rm=TRUE),
                 sampling.end=max(object$data$time, na.rm=TRUE),
                 deltat=diff(object$data$time[1:2], unit="sec"),

@@ -630,7 +630,7 @@ summary.adp <- function(object, ...)
     } else if (inherits(object, "sontek")) {
         res.specific <- NULL
     } else if (inherits(object, "nortek")) {
-        res.specific <- NULL
+        res.specific <- list(beam.to.xyz=object$metadata$beam.to.xzy)
     } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
@@ -718,8 +718,8 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("    Internal code version:       ", x$metadata$internal.code.version, "\n")
         cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n")
         cat("    Head serial number:          ", x$metadata$head.serial.number, "\n")
-        ##cat("    Transformation matrix:\n")
-        ##print(x$metadata$beam.to.xyz)
+        cat("    Beam-to-xyz matrix:\n")
+        print(x$metadata$beam.to.xyz)
     }
     cat("\nStatistics:\n")
     print(x$fives)
@@ -1068,7 +1068,8 @@ read.profile.aquadopp <- function(file, debug=!TRUE)
 {
     sync.code <- as.raw(0xa5)
     id.high.resolution.aquadopp.profile.data <- as.raw(0x2a) # page 38 of System Integrator Guide
-    start <- readBin(file, "raw", 54) # see page 38 of System Integrator Guide
+    start <- readBin(file, "raw", 54) # see page 38 of System Integrator Guide (was 54 until 2009-07-01)
+    if (debug) cat("first 4 bytes of AquaDopp profile data:", paste(start[1:4], collapse=" "), "\n")
     time <- sontek.time(start[5:12])
     if (debug) cat("  time=", format(time), "\n")
     sound.speed <-  readBin(start[17:18], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.1
@@ -1099,15 +1100,16 @@ read.profile.aquadopp <- function(file, debug=!TRUE)
     ## of the SLEIWEX files (sl08AQ01.prf), so I am hiding this in a FALSE block.
     if (FALSE)
         if (fill) readBin(file, "raw", n=1)
-    checksum <- readBin(file, "raw", n=2, size=1)
 
     ## bug: should perhaps be using velocity.scale instead of /1000
     v <- matrix(readBin(file, "integer", n=beams*cells, size=2, endian="little"), ncol=beams, byrow=FALSE) / 1000
     a <- matrix(readBin(file, "integer", n=beams*cells, size=1, signed=FALSE), ncol=beams, byrow=FALSE)
     q <- matrix(readBin(file, "integer", n=beams*cells, size=1, signed=FALSE), ncol=beams, byrow=FALSE)
 
+    checksum <- readBin(file, "raw", n=2, size=1)
+
     two.bytes <- peek.ahead(file, 2)
-    if (two.bytes[1] != sync.code) stop("expecting sync code 0x", sync.code, " but got 0x", two.bytes[1], " (WTF)")
+    if (two.bytes[1] != sync.code) stop("expecting sync code 0x", sync.code, " but got 0x", two.bytes[1], " and 0x", two.bytes[2])
     if (two.bytes[2] != id.high.resolution.aquadopp.profile.data) stop("expecting id code 0x", id.high.resolution.aquadopp.profile.data, " but got 0x", two.bytes[2], " (while checking for next profile)")
 
     ### ready for another profile
@@ -1307,7 +1309,7 @@ read.adp.nortek <- function(file, from=0, to, by=1,
     if (two.bytes[2] == id.profiler.data) {
         stop("cannot yet read 'Aquadopp Profiler Velocity Data")
     } else if (two.bytes[2] == id.high.resolution.aquadopp.profile.data) {
-        if (debug) cat("\n*** should read 'High Resolution Aquadopp Profile Data' now -- TESTING ONLY!! **\n\n")
+        ;
     } else {
         stop("id code: 0x", two.bytes[2], " ... not understood by this version of read.aquadopp()\n")
     }
