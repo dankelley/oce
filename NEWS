@@ -1,6 +1,6 @@
 0.1-77
-- add read.adv() and associated functions for Nortek and Sontek ADVs
-- add read.adp() and associated functions for Nortek, RDI, and Sontek ADPs
+- add read.adv(), etc., supporting Nortek and Sontek devices
+- add read.adp(), etc., supporting Nortek, RDI and Sontek devices
 - add oce.plot.ts()
 - add imagep()
 - add bcd2integer()

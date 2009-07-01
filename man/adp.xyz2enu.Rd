@@ -1,14 +1,14 @@
-\name{adp.xyz2earth}
+\name{adp.xyz2enu}
 
-\alias{adp.xyz2earth}
+\alias{adp.xyz2enu}
 
-\title{Convert ADP from xyz coordinates to earth coordinates}
+\title{Convert ADP from xyz coordinates to enu coordinates}
 
 \description{Convert ADP velocity components from a xyz-based
-  coordinate system to an earth-based coordinate system, by using
+  coordinate system to an enu-based coordinate system, by using
   the instrument's recording of heading,  pitch, and roll.}
 
-\usage{adp.xyz2earth(x)}
+\usage{adp.xyz2enu(x)}
 
 \arguments{\item{x}{an object of class \code{"adp"}.}}
 
@@ -18,13 +18,13 @@
 
 \value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
   and with \code{metadata$oce.orientation} changed from \code{xyz} to
-  \code{earth}.}
+  \code{enu}.}
 
 \examples{
 library(oce)
 data(adp)
 f <- adp.beam2xyz(adp)
-e <- adp.xyz2earth(f)
+e <- adp.xyz2enu(f)
 plot(e, which=1:3)
 }
 

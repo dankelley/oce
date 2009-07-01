@@ -1,13 +1,13 @@
-\name{adv.earth2other}
+\name{adv.enu2other}
 
-\alias{adv.earth2other}
+\alias{adv.enu2other}
 
-\title{Convert ADV from beam coordinates to earth coordinates}
+\title{Convert ADV from beam coordinates to enu coordinates}
 
 \description{Convert ADV velocity components from a beam-based
-  coordinate system to an earth-based coordinate system.}
+  coordinate system to an enu-based coordinate system.}
 
-\usage{adv.earth2other(x, heading=0, pitch=0, roll=0)}
+\usage{adv.enu2other(x, heading=0, pitch=0, roll=0)}
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}

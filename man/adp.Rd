@@ -13,13 +13,13 @@
 \examples{
 library(oce)
 data(adp)
-adp.earth <- adp.xyz2earth(adp.beam2xyz(adp))
+adp.enu <- adp.xyz2enu(adp.beam2xyz(adp))
 
 # Plot overview images
-plot(adp.earth)
+plot(adp.enu)
 
 # Plot diagnostic timeseries.  Angles should be constant for a mooring.
-plot(adp.earth, which=13:18)
+plot(adp.enu, which=13:18)
 }
 
 \usage{data(adp)}

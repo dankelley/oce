@@ -588,7 +588,7 @@ The commands
 <<label=adpplot,eval=FALSE>>=
 library(oce)
 data(adp)
-e <- adp.xyz2earth(adp.beam2xyz(adp))
+e <- adp.xyz2enu(adp.beam2xyz(adp))
 plot(e, which=1:2,
      adorn=expression({
        lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green')
@@ -605,7 +605,7 @@ during St Lawrence Estuary Internal Wave Experiment.
 \end{center}
 \caption{Measurements made with an ADP in the
   St Lawrence Estuary.  The data were recorded in beam format, so a two-step
-  process is used to convert to earth coordinates.  The green curve indicates
+  process is used to convert to enu coordinates.  The green curve indicates
   the water surface, inferred from the pressure measured by the ADP.}
 \label{fig:adp}
 \end{figure}

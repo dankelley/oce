@@ -412,16 +412,16 @@ adv.beam2xyz <- function(x)
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    earth <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
-    res$data$v1 <- earth[1,]
-    res$data$v2 <- earth[2,]
-    res$data$v3 <- earth[3,]
+    enu <- x$metadata$beam.to.xyz %*% rbind(x$data$v1, x$data$v2, x$data$v3)
+    res$data$v1 <- enu[1,]
+    res$data$v2 <- enu[2,]
+    res$data$v3 <- enu[3,]
     res$metadata$oce.coordinate <- "xyz"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }
 
-adv.xyz2earth <- function(x)
+adv.xyz2enu <- function(x)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
@@ -453,15 +453,15 @@ adv.xyz2earth <- function(x)
     res$data$v1 <- rotated[1,]
     res$data$v2 <- rotated[2,]
     res$data$v3 <- rotated[3,]
-    res$metadata$oce.coordinate <- "earth"
+    res$metadata$oce.coordinate <- "enu"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
 }
 
-adv.earth2other <- function(x, heading=0, pitch=0, roll=0)
+adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "earth") stop("input must be in earth coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    if (x$metadata$oce.coordinate != "enu") stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
     to.radians <- pi / 180
     CH <- cos(to.radians * heading)

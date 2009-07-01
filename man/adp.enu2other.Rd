@@ -1,14 +1,14 @@
-\name{adp.earth2other}
+\name{adp.enu2other}
 
-\alias{adp.earth2other}
+\alias{adp.enu2other}
 
-\title{Convert ADP currents from earth coordinates to other coordinates}
+\title{Convert ADP currents from enu coordinates to other coordinates}
 
-\description{Convert ADP velocity components from an earth-based
+\description{Convert ADP velocity components from an enu-based
   coordinate system to another system, perhaps to align axes with the
   coastline.}
 
-\usage{adp.earth2other(x, heading=0, pitch=0, roll=0)}
+\usage{adp.enu2other(x, heading=0, pitch=0, roll=0)}
 
 \arguments{
   \item{x}{an object of class \code{"adp"}.}
@@ -22,7 +22,7 @@
   axes for heading, pitch, and roll.  Think of this as addition.  For
   example, an object \code{d} storing current of speed \code{U} running 
   from southwest to northeast has equal and positive eastward and 
-  northward components in earth coordinates, so setting \code{heading=45} 
+  northward components in enu coordinates, so setting \code{heading=45} 
   yields horizontal components \code{d$data$ma$v[,1,]=U} and 
   \code{d$data$ma$v[,2,]=0}, leaving vertical component
   \code{d$data$ma$v[,3,]} unaltered.
@@ -32,22 +32,22 @@
   not to the values of the corresponding arguments supplied to the
   present function.
 
-  The code is similar to that used by \code{\link{adp.xyz2earth}},
+  The code is similar to that used by \code{\link{adp.xyz2enu}},
   but in the present case the signs of \code{pitch} and \code{roll} are
   obeyed, regardless of whether the instrument points up or down,
-  because earth coordinates already account for instrument alignment.}
+  because enu coordinates already account for instrument alignment.}
 
 \value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
- and with \code{metadata$oce.coordinate} changed from \code{earth} to
+ and with \code{metadata$oce.coordinate} changed from \code{enu} to
   \code{other}.}
 
 \examples{
 library(oce)
 data(adp)
 f <- adp.beam2xyz(adp)
-e <- adp.xyz2earth(f)
+e <- adp.xyz2enu(f)
 plot(e, which=1:3)
-o <- adp.earth2other(e, heading=31.5)
+o <- adp.enu2other(e, heading=31.5)
 plot(o, which=1:3)
 }
 
