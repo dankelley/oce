@@ -1206,11 +1206,8 @@ read.header.nortek <- function(file, debug=FALSE)
             ## the inference of beam.angles and beam.to.xyz is drawn from other code.
             head$beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
             if (debug) cat("  head$beam.angles=", head$beam.angles, "(rad)\n")
-            ## short hBeamToXYZ[9];          // beam to XYZ transformation matrix for up orientation
-            ##Transformation matrix (before division by 4096) -- checks out ok
-            ## 6461 -3232 -3232
-            ##    0 -5596  5596
-            ## 1506  1506  1506
+            ## Transformation matrix (before division by 4096)
+            ## FIXME: should we change the sign of rows 2 and 3 if pointed down??
             head$beam.to.xyz <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
             if (debug) {cat("  head$beam.to.xyz\n");print(head$beam.to.xyz);}
             head$number.of.beams <- readBin(buf[221:222], "integer", n=1, size=2, endian="little")
