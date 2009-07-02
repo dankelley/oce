@@ -492,68 +492,48 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     method <- match.arg(method)
+    if (method == "filter" && missing(filter)) stop("must provide filter coefficients")
+    if (method == "direct" && !missing(filter)) stop("cannot supply a filter if method is \"direct\"")
     res <- x
-    if (method == "direct") {
-        if (inherits(x, "adp"))
-            stop("cannot handle ADP objects (request this from the author)")
-        else if (inherits(x, "adv")) {
-            i <- seq(1, length(x$data$ts$time), by=by)
-            ts.nvar <- length(x$data$ts)
-            for (v in 1:ts.nvar)
+    do.filter <- method == "filter"
+    if (inherits(x, "adp")) {
+        stop("cannot handle ADP objects (request this from the author)")
+    } else if (inherits(x, "adv")) {
+        i <- seq(1, length(x$data$ts[[1]]), by=by)
+        num.ts <- length(x$data$ts)
+        for (v in 1:num.ts) {
+            if (names(x$data$ts)[[v]] == "time" || !do.filter) {
                 res$data$ts[[v]] <- x$data$ts[[v]][i]
-            stop("NEED TO WORK WITH MATICES NOW")
-        } else {
-            i <- seq(1, dim(x$data)[1], by=by)
-            res$data <- x$data[i,]
-        }
-    } else if (method == "filter") {
-        if (missing(filter)) stop("must supply a filter")
-        if (inherits(x, "adp"))
-            stop("cannot handle ADP objects (request this from the author)")
-        else if (inherits(x, "adv")) {
-            i <- seq(1, length(x$data$ts$time), by=by)
-            ts.nvar <- length(x$data$ts)
-            for (v in 1:ts.nvar) {
-                res$data$ts[[v]] <- if (names(x$data$ts)[[v]] == "time")
-                    x$data$ts[[v]][i]
-                else
-                    filter(x$data$ts[[v]], filter, circular=TRUE)[i]
+            } else {
+                res$data$ts[[v]] <- filter(x$data$ts[[v]], filter, circular=TRUE)[i]
             }
-            ma.nvar <- length(x$data$ma)
-            for (v in 1:ma.nvar) {
+        }
+        num.ma <- length(x$data$ma)
+        for (v in 1:num.ma) {
+            num.beam <- dim(x$data$ma[[v]])[2] # probably always 3, but let's not guess
+            if (do.filter) {
                 raw <- is.raw(x$data$ma[[v]])
-                for (beam in 1:3) {
+                for (beam in 1:num.beam) {
                     if (raw) {
                         tmp <- filter(as.numeric(x$data$ma[[v]][,beam]), filter, circular=TRUE)
                         tmp[tmp < 0] <- 0
                         tmp[tmp > 255] <- 255
                         res$data$ma[[v]][,beam] <- as.raw(tmp)
                     } else {
-                        tmp <- filter(x$data$ma[[v]][,beam], filter, circular=TRUE)
-                        res$data$ma[[v]][,beam] <- tmp
+                        res$data$ma[[v]][,beam] <- filter(x$data$ma[[v]][,beam], filter, circular=TRUE)
                     }
                 }
                 res$data$ma[[v]] <- res$data$ma[[v]][i,]
+            } else {
+                res$data$ma[[v]] <- res$data$ma[[v]][i,]
             }
-        } else {
-            nvar <- dim(x$data)[2]
-            for (var in 1:nvar) {
-                if (names(x$data)[var] != "time") {
-                    if (is.raw(x$data[1,var])) {
-                        tmp <- floor(0.5 + filter(as.numeric(x$data[,var]), filter, circular=TRUE))
-                        tmp[tmp < 0] <- 0
-                        tmp[tmp > 255] <- 255
-                        res$data[,var] <- as.raw(tmp)
-                    } else {
-                        res$data[,var] <- filter(x$data[,var], filter, circular=TRUE)
-                    }
-                    fill <- is.na(res$data[,var])
-                    res$data[fill,var] <- x$data[fill,var]
-                }
-            }
-            i <- seq(1, dim(x$data)[1], by=by)
-            res$data <- res$data[i,]
         }
+    } else if (inherits(x, "ctd")) {
+        if (do.filter) stop("cannot (yet) filter ctd data during decimation") # FIXME
+        i <- seq(1, dim(x$data)[1], by=by)
+        res$data <- x$data[i,]
+    } else {
+        stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat

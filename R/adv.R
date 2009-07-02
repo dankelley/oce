@@ -231,13 +231,13 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     v[,2] <- readBin(buf[sample.start2 +  8], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
     v[,3] <- readBin(buf[sample.start2 + 10], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
     a <- array(raw(), dim=c(n, 3))
-    a[,1] <- as.numeric(buf[sample.start + 12])
-    a[,2] <- as.numeric(buf[sample.start + 13])
-    a[,3] <- as.numeric(buf[sample.start + 14])
+    a[,1] <- buf[sample.start + 12]
+    a[,2] <- buf[sample.start + 13]
+    a[,3] <- buf[sample.start + 14]
     c <- array(raw(), dim=c(n, 3))
-    c[,1] <- as.numeric(buf[sample.start + 15])
-    c[,2] <- as.numeric(buf[sample.start + 16])
-    c[,3] <- as.numeric(buf[sample.start + 17])
+    c[,1] <- buf[sample.start + 15]
+    c[,2] <- buf[sample.start + 16]
+    c[,3] <- buf[sample.start + 17]
 
     ##print(buf[sample.start2 + 18][1:10])
 
@@ -258,7 +258,9 @@ read.adv.sontek <- function(file, from=0, to, by=1,
                      instrument.type="sontek",
                      number.of.samples=length(time),
                      sampling.start=sampling.start,
-                     deltat=deltat)
+                     deltat=deltat,
+                     oce.coordinate="beam" # FIXME: we don't actually know this, if there is no header
+                     )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -351,9 +353,9 @@ plot.adv <- function(x,
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
-    gave.ylim <- "ylim" %in% names(dots)
 
-    ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+    gave.ylim <- "ylim" %in% names(dots) # FIXME: this is a remnant
+    ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL # FIXME: this is a remnant
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
