@@ -1,4 +1,5 @@
 0.1-77
+- add oce.smooth()
 - add read.adv(), etc., supporting Nortek and Sontek devices
 - add read.adp(), etc., supporting Nortek, RDI and Sontek devices
 - add oce.plot.ts()

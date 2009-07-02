@@ -209,12 +209,11 @@ read.adv.sontek <- function(file, from=0, to, by=1,
         if (debug) cat("file", filename, "has", file.size, "bytes\n")
         buf <- readBin(file, "raw", n=file.size, endian="little")
 
-        ## for a bit of an idea on format, see page 84 of Sontek's ADP Operations Manual (March, 2001)
-        ## but NOTE that this is for the ADP, not ADV!
+        ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
+        ## Technical Documentation (Sept 1, 2001)
         flag1 <- as.raw(0x85)           # id
         flag2 <- as.raw(0x16)           # number of bytes (22 in decimal)
-        match.flag1 <- which(buf==flag1)
-        sample.start <- match.flag1[buf[match.flag1 + 1] == flag2]
+        sample.start <- match.bytes(buf, 0x85, 0x16)
         sample.start <- sample.start[1:(-1 + length(sample.start))] # last may be partial
         if (buf[sample.start[1] + as.integer(flag2)] != flag1) stop("problem reading first sample")
         ## FIXME: should run along the data for a while, to confirm that it's ok
@@ -229,27 +228,22 @@ read.adv.sontek <- function(file, from=0, to, by=1,
 
     ## in next, divide by 100 to get to cm/s, then by 100 to get to m/s
 
-
-    hist(readBin(buf[sample.start2 +  4], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0)
-
-
-
     v <- array(dim=c(n, 3))
-    v[,1] <- readBin(buf[sample.start2 +  6], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
-    v[,2] <- readBin(buf[sample.start2 +  8], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
-    v[,3] <- readBin(buf[sample.start2 + 10], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
+    v[,1] <- readBin(buf[sample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
+    v[,2] <- readBin(buf[sample.start2 + 6], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
+    v[,3] <- readBin(buf[sample.start2 + 8], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
     a <- array(raw(), dim=c(n, 3))
-    a[,1] <- buf[sample.start + 12]
-    a[,2] <- buf[sample.start + 13]
-    a[,3] <- buf[sample.start + 14]
+    a[,1] <- buf[sample.start + 10]
+    a[,2] <- buf[sample.start + 11]
+    a[,3] <- buf[sample.start + 12]
     c <- array(raw(), dim=c(n, 3))
-    c[,1] <- buf[sample.start + 15]
-    c[,2] <- buf[sample.start + 16]
-    c[,3] <- buf[sample.start + 17]
+    c[,1] <- buf[sample.start + 13]
+    c[,2] <- buf[sample.start + 14]
+    c[,3] <- buf[sample.start + 15]
 
-    temperature <- readBin(buf[sample.start2 + 18], "integer", signed=TRUE, endian="little", size=2, n=n) / 100.0
-    pressure <- readBin(buf[sample.start2 + 20], "integer", signed=FALSE, endian="little", size=2, n=n) / 1000 # mbar?
-    ## 21 and 22 are checksum
+    temperature <- readBin(buf[sample.start2 + 16], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-2
+    pressure <- readBin(buf[sample.start2 + 18], "integer", signed=FALSE, endian="little", size=2, n=n) * 1e-4 # FIXME unit?
+    ## offsets 20 and 21 are the checksum (filling out for 22 bytes in total)
 
     time <- seq(from=sampling.start, by=deltat, length.out=n)
     attr(time, "tzone") <- attr(sampling.start, "tzone")
@@ -347,6 +341,7 @@ plot.adv <- function(x,
                      mar=c(mgp[1],mgp[1]+1,1,1/4),
                      margins.as.image=FALSE,
                      cex=1,
+                     ylim,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
@@ -359,8 +354,17 @@ plot.adv <- function(x,
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
 
-    gave.ylim <- "ylim" %in% names(dots) # FIXME: this is a remnant
-    ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL # FIXME: this is a remnant
+    ## user may specify a matrix for ylim
+    gave.ylim <- !missing(ylim)
+    if (gave.ylim) {
+        if (is.matrix(ylim)) {
+            if (dim(ylim)[2] != lw) {
+                ylim <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            }
+        } else if (is.vector(ylim)) {
+            ylim <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+        } else stop("cannot understand ylim; should be 2-element vector, or 2-column matrix")
+    }
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -378,23 +382,33 @@ plot.adv <- function(x,
         if (which[w] == 1) {
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,1],
                         ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
-                        adorn=adorn[w], ...)
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
         } else if (which[w] == 2) {
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,2],
                         ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
-                        adorn=adorn[w], ...)
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
         } else if (which[w] == 3) {
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,3],
                         ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
-                        adorn=adorn[w], ...)
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
         } else if (which[w] == 14) {    # temperature time-series
             oce.plot.ts(x$data$ts$time, x$data$temperature,
                         ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range,
-                        adorn=adorn[w], ...)
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
         } else if (which[w] == 15) {    # pressure time-series
             oce.plot.ts(x$data$ts$time, x$data$pressure,
                         ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
-                        adorn=adorn[w], ...)
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
         } else {
             stop("unknown value of \"which\":", which)
         }

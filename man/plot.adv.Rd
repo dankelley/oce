@@ -15,6 +15,7 @@
      mar=c(mgp[1],mgp[1]+1,1,1/4),
      margins.as.image=FALSE,
      cex=1,
+     ylim,
      \dots)}
 
 \arguments{
@@ -46,6 +47,8 @@
     right of time-series plots, matching the space used up by a palette
     in an \code{\link{imagep}} plot.}
   \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
+  \item{ylim}{optional 2-element list for \code{ylim}, or 2-column matrix (in which case
+    the rows are used, in order, for the panels of the graph.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

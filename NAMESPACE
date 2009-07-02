@@ -46,6 +46,7 @@ export(
        oce.colors.two,
        oce.edit,
        oce.plot.ts,
+       oce.smooth,
        oce.write.table,
        parse.latlon,
        plot.adp,

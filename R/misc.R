@@ -540,6 +540,43 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
     processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
 }
 
+oce.smooth <- function(x, ...)
+{
+    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    res <- x
+    if (inherits(x, "adp")) {
+        stop("cannot handle ADP objects (request this from the author)")
+    } else if (inherits(x, "adv")) {
+        num.ts <- length(x$data$ts)
+        for (v in 1:num.ts) {
+            if (names(x$data$ts)[[v]] != "time") {
+                res$data$ts[[v]] <- smooth(x$data$ts[[v]], ...)
+            }
+        }
+        num.ma <- length(x$data$ma)
+        for (v in 1:num.ma) {
+            num.beam <- dim(x$data$ma[[v]])[2] # probably always 3, but let's not guess
+            raw <- is.raw(x$data$ma[[v]])
+            for (beam in 1:num.beam) {
+                if (raw) {
+                    tmp <- smooth(as.numeric(x$data$ma[[v]][,beam]), ...)
+                    tmp[tmp < 0] <- 0
+                    tmp[tmp > 255] <- 255
+                    res$data$ma[[v]][,beam] <- as.raw(tmp)
+                } else {
+                    res$data$ma[[v]][,beam] <- smooth(x$data$ma[[v]][,beam], ...)
+                }
+            }
+        }
+    } else if (inherits(x, "ctd")) {
+        for (name in names(x$data))
+            x$data[[name]] <- smooth(x$data[[name]], ...)
+    } else {
+        stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
+    }
+    processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
+}
+
 stickplot <- function(t, x, y, ...)
 {
     ylim <- max(y, na.rm=TRUE) * c(-1, 1)
