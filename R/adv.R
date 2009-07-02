@@ -208,6 +208,9 @@ read.adv.sontek <- function(file, from=0, to, by=1,
         file.size <- seek(file, 0, "start")
         if (debug) cat("file", filename, "has", file.size, "bytes\n")
         buf <- readBin(file, "raw", n=file.size, endian="little")
+
+        ## for a bit of an idea on format, see page 84 of Sontek's ADP Operations Manual (March, 2001)
+        ## but NOTE that this is for the ADP, not ADV!
         flag1 <- as.raw(0x85)           # id
         flag2 <- as.raw(0x16)           # number of bytes (22 in decimal)
         match.flag1 <- which(buf==flag1)
@@ -223,8 +226,13 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     sample.start2 <- sort(c(sample.start, sample.start+1)) # use this to subset for 2-byte reads
     ##print((sample.start2 + 2)[1:10])
     sample.number <- readBin(buf[sample.start2 + 2], "integer", signed=FALSE, endian="little", size=2, n=n)
-    ##?##    temperature <- readBin(buf[sample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) / 100.0
+
     ## in next, divide by 100 to get to cm/s, then by 100 to get to m/s
+
+
+    hist(readBin(buf[sample.start2 +  4], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0)
+
+
 
     v <- array(dim=c(n, 3))
     v[,1] <- readBin(buf[sample.start2 +  6], "integer", signed=TRUE, endian="little", size=2, n=n) / 10000.0
@@ -238,8 +246,6 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     c[,1] <- buf[sample.start + 15]
     c[,2] <- buf[sample.start + 16]
     c[,3] <- buf[sample.start + 17]
-
-    ##print(buf[sample.start2 + 18][1:10])
 
     temperature <- readBin(buf[sample.start2 + 18], "integer", signed=TRUE, endian="little", size=2, n=n) / 100.0
     pressure <- readBin(buf[sample.start2 + 20], "integer", signed=FALSE, endian="little", size=2, n=n) / 1000 # mbar?
@@ -334,7 +340,6 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 plot.adv <- function(x,
                      which=1:3,
-                     smooth=TRUE,
                      titles,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
@@ -371,28 +376,23 @@ plot.adv <- function(x,
     for (w in 1:lw) {
         par(mgp=mgp, mar=mar, cex=cex)
         if (which[w] == 1) {
-            oce.plot.ts(x$data$ts$time,
-                        if (smooth) smooth(x$data$ma$v[,1]) else x$data$ma$v[,1],
+            oce.plot.ts(x$data$ts$time, x$data$ma$v[,1],
                         ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 2) {
-            oce.plot.ts(x$data$ts$time,
-                        if (smooth) smooth(x$data$ma$v[,2]) else x$data$ma$v[,2],
+            oce.plot.ts(x$data$ts$time, x$data$ma$v[,2],
                         ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 3) {
-            oce.plot.ts(x$data$ts$time,
-                        if (smooth) smooth(x$data$ma$v[,3]) else x$data$ma$v[,3],
+            oce.plot.ts(x$data$ts$time, x$data$ma$v[,3],
                         ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 14) {    # temperature time-series
-            oce.plot.ts(x$data$ts$time,
-                        if (smooth) smooth(x$data$temperature) else x$data$temperature,
+            oce.plot.ts(x$data$ts$time, x$data$temperature,
                         ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else if (which[w] == 15) {    # pressure time-series
-            oce.plot.ts(x$data$ts$time,
-                        if (smooth) smooth(x$data$pressure) else x$data$pressure,
+            oce.plot.ts(x$data$ts$time, x$data$pressure,
                         ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w], ...)
         } else {

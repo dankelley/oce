@@ -8,7 +8,6 @@
 
 \usage{\method{plot}{adv}(x,
      which=1:3,
-     smooth=TRUE,
      titles,
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
@@ -24,7 +23,6 @@
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
     \code{which}.}
-  \item{smooth}{boolean, set to \code{TRUE} to smooth the data before plotting.}
   \item{titles}{optional vector of character strings to be used as
     labels for the plot panels.  For images, these strings will be
     placed in the right hand side of the top margin.  For timeseries,

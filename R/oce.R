@@ -19,8 +19,8 @@ oce.plot.ts <- function(x,
     axis(2)
     axis(4, labels=FALSE)
     if (!is.null(adorn)) {
-        t <- try(eval(adorn), silent=TRUE)
-        if (class(t) == "try-error") warning("cannot evaluate adorn {", , "}\n")
+        t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
+        if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
     }
 }
 
