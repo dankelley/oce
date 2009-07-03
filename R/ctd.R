@@ -41,8 +41,8 @@ as.ctd <- function(salinity, temperature, pressure,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
                      src=src)
-    log <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, log=log)
+    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
     res
 }
@@ -83,7 +83,7 @@ ctd.add.column <- function (x, column=NULL, column.name="", code="", name="", un
                 flags <- flags + 1
             }
         }
-        if (after < 1) stop("Cannot locate any flagged lines in input header")
+        if (after < 1) return("")
         if (debug) cat("after=", after, "\n", "\t", h[after-1], "\n\t", h[after])
         return(c(h[1:(after-1)],
                  paste("# ", flag, " ", flags, " = ", content, sep=""),
@@ -100,8 +100,7 @@ ctd.add.column <- function (x, column=NULL, column.name="", code="", name="", un
     result$metadata$header <- h
     result$data[,column.name] <- column
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    result <- processing.log.append(result, log.action)
-    return(result)
+    processing.log.append(result, log.action)
 }
 
 ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
