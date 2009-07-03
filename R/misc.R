@@ -549,7 +549,7 @@ oce.smooth <- function(x, ...)
     } else if (inherits(x, "adv")) {
         num.ts <- length(x$data$ts)
         for (v in 1:num.ts) {
-            if (names(x$data$ts)[[v]] != "time") {
+            if (names(x$data$ts)[v] != "time") {
                 res$data$ts[[v]] <- smooth(x$data$ts[[v]], ...)
             }
         }

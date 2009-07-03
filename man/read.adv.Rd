@@ -53,8 +53,17 @@ read.adv.nortek(file, from=0, to, by=1,
     it provides is better for normal calls by a user.)}
 }
 
-\details{Reads a binary-format ADV file.  THIS IS PRELIMINARY CODE ONLY;
-  THE INTERFAE MAY CHANGE.}
+\details{Reads a binary-format ADV file.  This is preliminary code,
+  and the function calls could very well change through the summer of 
+  2009.
+
+  It is crucial to pay careful attention if \code{withHeader} is
+  \code{FALSE}, since that condition forces \code{read.adv} to make
+  guesses about important things.  In particular, it will set
+  \code{metadata$deltat=1},
+  \code{metadata$orientation="downward"} and
+  \code{metadata$oce.coordinate="beam"}.  It is up to the user to
+  modify these values if they are wrong.}
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
   contains measurements made with an ADV device.  For information on

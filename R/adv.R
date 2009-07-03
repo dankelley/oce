@@ -259,6 +259,7 @@ read.adv.sontek <- function(file, from=0, to, by=1,
                      number.of.samples=length(time),
                      sampling.start=sampling.start,
                      deltat=deltat,
+                     orientation="downward", # FIXME: a total guess
                      oce.coordinate="beam" # FIXME: we don't actually know this, if there is no header
                      )
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -296,7 +297,7 @@ summary.adv <- function(object, ...)
                 beam.to.xyz=object$metadata$beam.to.xyz,
                 sampling.start=min(object$data$ts$time, na.rm=TRUE),
                 sampling.end=max(object$data$ts$time, na.rm=TRUE),
-                deltat=diff(object$data$ts$time[1:2], unit="sec"),
+                deltat=object$metadata$deltat,
                 instrument.type=object$metadata$instrument.type,
                 number.of.samples=length(object$data$ts$time),
                 fives=fives,
@@ -423,13 +424,20 @@ plot.adv <- function(x,
     }
 }
 
-
 adv.beam2xyz <- function(x)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    enu <- x$metadata$beam.to.xyz %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
+    if (is.null(x$metadata$beam.to.xyz)) stop("can't convert coordinates because object metadata$beam.to.xyz is NULL")
+    beam.to.xyz <- x$metadata$beam.to.xyz
+    print(beam.to.xyz)
+    if (x$metadata$orientation == "downward") {
+        beam.to.xyz[2,] <- -beam.to.xyz[2,]
+        beam.to.xyz[3,] <- -beam.to.xyz[3,]
+    }
+    print(beam.to.xyz)
+    enu <- beam.to.xyz %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
     res$data$ma$v[,1] <- enu[1,]
     res$data$ma$v[,2] <- enu[2,]
     res$data$ma$v[,3] <- enu[3,]
