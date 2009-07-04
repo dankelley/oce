@@ -1,12 +1,13 @@
 \name{ctd.add.column}
-
 \alias{ctd.add.column}
 
 \title{Add a column to a CTD file}
 
 \description{Add a column to a \code{ctd} file, updating the header as appropriate.}
 
-\usage{ctd.add.column(x, column, name="", label, unit, debug=FALSE)}
+\usage{
+ctd.add.column(x, column, name="", label, unit, debug=FALSE)
+}
 
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -24,8 +25,8 @@
   \item{debug}{Set \code{TRUE} to see information about the processing.}
 }
 
-\details{
-  This adds the column to the the data frame in the the object.
+\details{These functions add the column to the the data frame in the
+  the object.
 
   Note that the arguments to this function were changed in version
   0.1.77 of the package, in order to remove confusion about their
