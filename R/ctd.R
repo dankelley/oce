@@ -40,6 +40,9 @@ as.ctd <- function(salinity, temperature, pressure,
                      recovery=recovery,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
+                     names=c("salinity", "temperature", "pressure", "sigma.theta"),
+                     labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
+                     units=c("PSU", expression(paste(degree, "C")), "dbar", expression(kg/m^3)),
                      src=src)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -47,58 +50,19 @@ as.ctd <- function(salinity, temperature, pressure,
     res
 }
 
-ctd.add.column <- function (x, column=NULL, column.name="", code="", name="", unit="", debug = FALSE)
+ctd.add.column <- function (x, column, name="", label, unit, debug = FALSE)
 {
-    if (length(column) < 1) stop("must supply column data")
-    if (column.name == "")  stop("must supply 'column.name'")
-    if (code=="")           stop("must supply 'code'")
-    if (name=="")           stop("must supply 'name'")
-    if (unit=="")           stop("must supply 'unit'")
+    if (missing(column)) stop("must supply column data")
+    if (length(column) != dim(x$data)[1]) stop("column has ", length(column), " data but it must have ", dim(x$data)[1], " data to match existing object")
+    if (name == "")  stop("must supply \"name\"")
+    if (missing(label)) label <- name
+    if (missing(unit)) unit <- ""
     result <- x
-    insert.in.header <- function(h, flag, content, content.name)
-    {
-        last.was.flag <- FALSE
-        after <- -1
-        flags <- 0 # how many flagged lines exist on input
-        pattern <- paste("^#[\t ]*", flag)
-        n <- length(h)
-        for (i in 1:n) {
-            if (flag == "name") { # increment nquan (skip on e.g. "span")
-                g <- grep("#[\t ]*nquan[\t ]*=[\t ]*", h[i], perl=TRUE, useBytes=TRUE)
-                if (length(g)) {
-                    nquan <- unlist(strsplit(h[i], "\\s"))[4]
-                    nquan.new <- as.character(1 + as.integer(nquan))
-                    h[i] <- sub(nquan, nquan.new, h[i])
-                }
-            }
-            if (last.was.flag) {
-                if (!length(grep(pattern, h[i], perl=TRUE, useBytes=TRUE))) {
-                    after <- i
-                    break
-                }
-            }
-            if (debug) cat("grep(\"", pattern, "\", \"", h[i], "\",...) -> ", length(grep(pattern,h[i],perl=TRUE,useBytes=TRUE)), "\n",sep="")
-            if (length(grep(pattern, h[i], perl=TRUE, useBytes=TRUE))) {
-                last.was.flag <- TRUE
-                flags <- flags + 1
-            }
-        }
-        if (after < 1) return("")
-        if (debug) cat("after=", after, "\n", "\t", h[after-1], "\n\t", h[after])
-        return(c(h[1:(after-1)],
-                 paste("# ", flag, " ", flags, " = ", content, sep=""),
-                 h[after:n]))
-    }
-    h <- result$metadata$header
-    h <- insert.in.header(h, "name", sprintf("%s: %s, [%s]", code, name, unit))
     r <- range(column)
-    h <- insert.in.header(h, "span", sprintf("%f, %f",r[1],r[2]))
-    if (debug) {
-        cat("Original header:", result$header,sep="\n")
-        cat("Modified header:", h,sep="\n")
-    }
-    result$metadata$header <- h
-    result$data[,column.name] <- column
+    result$data[,name] <- column
+    result$metadata$names <- c(result$metadata$names, name)
+    result$metadata$labels <- c(result$metadata$labels, label)
+    result$metadata$units <- c(result$metadata$units, unit)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(result, log.action)
 }
@@ -695,6 +659,9 @@ read.ctd.woce <- function(file, debug=FALSE, columns=NULL, station=NULL, missing
                      recovery=recovery,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
+                     names=c("pressure", "salinity", "temperature", "sigma.theta"),
+                     labels=c("Pressure", "Salinity", "Temperature", "Sigma Theta"),
+                     units=c("dbar", "PSU", expression(paste(degree, "C")), expression(kg/m^3)),
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -763,6 +730,7 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
     date <- recovery <- NA
     header <- c();
     col.names.inferred <- NULL
+    units <- NULL
     found.temperature <- found.salinity <- found.pressure <- found.depth <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
@@ -827,6 +795,15 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
                 }
             }
             col.names.inferred <- c(col.names.inferred, name)
+            if (name == "scan") units <- c(units, "")
+            else if (name == "sigma.t") units <- c(units, "kg/m^3")
+            else if (name == "sigma.theta") units <- c(units, "kg/m^3")
+            else if (name == "salinity") units <- c(units, "PSU")
+            else if (name == "conductivity") units <- c(units, "cond")
+            else if (name == "temperature") units <- c(units, "degC")
+            else if (name == "pressure") units <- c(units, "dbar")
+            else if (name == "depth") units <- c(units, "m")
+            else units <- c(units, "")
         }
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline);
@@ -936,6 +913,9 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
     col.names.inferred <- tolower(col.names.inferred)
     if (debug) cat("About to read these names:", col.names.inferred,"\n");
     data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
+    names <- names(data)
+    labels <- names
+
     if (!found.scan) {
         newnames <- c("scan", names(data))
         data <- cbind(seq(1,dim(data)[1]), data)
@@ -959,6 +939,9 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
                      recovery=recovery,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
+                     names=names,
+                     labels=labels,
+                     units=units,
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -975,14 +958,15 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
         } else {
             stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
         }
-        res <- ctd.add.column(res, S, "salinity", "sal", "salinity", "PSU")
+        res <- ctd.add.column(res, S, "salinity", "Salinity", "PSU")
     }
     if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
         g <- if (found.header.latitude) gravity(latitude) else 9.8
         rho0 <- sw.sigma.theta(median(res$data$salinity), median(res$data$temperature), rep(0, length(res$data$salinity)))
-        res <- ctd.add.column(res, res$data$depth * g * rho0 / 1e4, "pressure", "pressure", "pressure", "dbar")
+        res <- ctd.add.column(res, res$data$depth * g * rho0 / 1e4, "pressure", "Pressure", "dbar")
     }
-    res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta", "sigma.theta", "sigma.theta", "kg/m^3")
+    res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta",
+                          "Sigma Theta", "kg/m^3")
     return(res)
 }
 
@@ -1342,6 +1326,18 @@ plot.profile <- function (x,
         }
         lines(x$data$salinity, x$data$pressure, col = col.S, lwd=lwd)
     } else {
-        stop("unknown type, ", type, ", given")
+        w <- which(names(x$data) == type)
+        if (length(w) < 1) stop("unknown type \"", type, "\"; try one of: ", paste(names(x$data), collapse=" "))
+        plot(x$data[, w], x$data$pressure, ylim=plim, type = "n", xlab="", ylab="",axes = FALSE)
+        axis(3)
+        mtext(resizable.label("p"), side = 2, line = axis.name.loc, cex=par("cex"))
+        if (x$metadata$units[w] != "")
+            mtext(paste(x$metadata$labels[w], " [", x$metadata$units[w], "]", sep=""),
+                  side=3, line=axis.name.loc, cex=par("cex"))
+        else
+            mtext(x$metadata$labels[w], side=3, line=axis.name.loc, cex=par("cex"))
+        axis(2)
+        box()
+        lines(x$data[,w], x$data$pressure, lwd=lwd)
     }
 }

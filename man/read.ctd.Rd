@@ -140,7 +140,7 @@ before you try to read the data.
 \examples{
 \dontrun{
 library(oce)
-x <- read.ctd("BED0301.cnv")
+x <- read.ctd("tests/ctd.cnv")
 plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
 }

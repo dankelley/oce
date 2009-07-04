@@ -40,7 +40,7 @@ of the following is called:
 \examples{
 \dontrun{
 library(oce)
-x <- read.oce("/usr/local/lib/R/library/oce/demo/ctdprofile.cnv")
+x <- read.oce("tests/ctd.cnv")
 plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
 }
