@@ -26,18 +26,24 @@ ctd.add.column(x, column, name="", label, unit, debug=FALSE)
   \item{debug}{Set \code{TRUE} to see information about the processing.}
 }
 
-\details{These functions add the column to the the data frame in the
-  the object.
-
-  Note that the arguments to this function were changed in version
-  0.1.77 of the package, in order to remove confusion about their
-  function, and in order to make the function better able to deal with
-  a wider range of CTD devices.
+\details{
+  These functions add the column to the the data frame in the the object.
 }
 
-\value{An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.}
+\note{
+  Note that the arguments to this function were changed in version
+  0.1.77 of the package, in order to remove confusion about their
+  function, and in order to make the function better able to deal with a
+  wider range of CTD devices.
+}
 
-\seealso{See \code{\link{read.ctd}} for the data format.}
+\value{
+  An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.
+}
+
+\seealso{
+  See \code{\link{read.ctd}} for the data format.
+}
 
 \examples{
 library(oce)

@@ -42,7 +42,7 @@ as.ctd <- function(salinity, temperature, pressure,
                      sample.interval=sample.interval,
                      names=c("salinity", "temperature", "pressure", "sigma.theta"),
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
-                     units=c("PSU", expression(paste(degree, "C")), "dbar", expression(kg/m^3)),
+                     units=c("PSU", "degC", "dbar", "kg/m^3"),
                      src=src)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -661,7 +661,7 @@ read.ctd.woce <- function(file, debug=FALSE, columns=NULL, station=NULL, missing
                      sample.interval=sample.interval,
                      names=c("pressure", "salinity", "temperature", "sigma.theta"),
                      labels=c("Pressure", "Salinity", "Temperature", "Sigma Theta"),
-                     units=c("dbar", "PSU", expression(paste(degree, "C")), expression(kg/m^3)),
+                     units=c("dbar", "PSU", "degC", "kg/m^3"),
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -1129,10 +1129,13 @@ plot.profile <- function (x,
                           lty.grid = "dotted",
                           Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
                           lwd=par("lwd"),
+                          mgp=getOption("oce.mgp"),
+                          mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1, 0.5),
                           ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     pname <- resizable.label("p", "y")
+    par(mgp=mgp, mar=mar)
     if (missing(plim)) plim <- rev(range(x$data$pressure, na.rm=TRUE))
     plim <- sort(plim, decreasing=TRUE)
     axis.name.loc <- par("mgp")[1]

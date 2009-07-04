@@ -19,6 +19,8 @@ col.grid="lightgray",
 lty.grid="dotted",
 Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
 lwd,
+mgp=getOption("oce.mgp"),
+mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1, 0.5),
 \dots)
 }
 
@@ -68,8 +70,13 @@ lwd,
   \item{dpdtlim}{Optional limit for dp/dt axis}
   \item{timelim}{Optional limit for delta-time axis}
   \item{lwd}{lwd value for data line}
-  \item{\dots}{Optional arguments passed to other functions.  A common example is to set \code{df}, for 
-use in \link{sw.N2} calculations.} 
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{\dots}{Optional arguments passed to other functions.  A common example is
+    to set \code{df}, for use in \link{sw.N2} calculations.} 
 }
 
 \value{None.}
@@ -79,14 +86,9 @@ use in \link{sw.N2} calculations.}
 }
 
 \examples{
-\dontrun{
 library(oce)
 data(ctd)
-# ctd <- read.ctd("ctd.cnv")
-summary(ctd)
-plot(ctd)
 plot.profile(ctd, type="T")
-}
 }
 
 \author{Dan Kelley}
