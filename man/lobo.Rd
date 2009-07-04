@@ -1,7 +1,7 @@
 \name{lobo}
 \docType{data}
 \alias{lobo}
-\title{Sample lobo dataset}
+\title{lobo dataset}
 \description{This is sample lobo dataset obtained in the Northwest Arm
 of Halifax by Satlantic.}
 \usage{data(ctd)}

@@ -4,11 +4,10 @@
 
 \alias{ctd}
 
-\title{Sample seawater CTD profile}
+\title{Seawater CTD profile}
 
 \description{This is sample CTD profile provided for testing, created by
-  \code{ctd <- read.oce("tests/ctd.cnv")}, which uses a data file that
-  has been trimmed to the downcast portion of the profile.}
+  \code{ctd <- read.oce(system.file("data", "ctd.cnv", package="oce"))}.}
 
 \usage{data(ctd)}
 

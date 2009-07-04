@@ -1,7 +1,7 @@
 \name{coastline.maritimes}
 \docType{data}
 \alias{coastline.maritimes}
-\title{Sample coastline data set, showing Maritime provinces of Canada}
+\title{Coastline data set, showing Maritime provinces of Canada}
 \description{A sample coastline dataset, showing Nova Scotia, 
 Prince Edward Island, and part of New Brunswick.
 This is the oce author's stomping ground, and so he feels compelled

@@ -4,7 +4,7 @@
 
 \alias{sealevel.hal}
 
-\title{Sample sea-level data set}
+\title{Sea-level data set, from Halifax Harbour}
 
 \description{This sample sea-level dataset is the 2003 record from
   Halifax Harbour in Nova Scotia, Canada. Note that Hurricane Juan hit

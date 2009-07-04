@@ -1,8 +1,8 @@
 \name{wind}
 \docType{data}
 \alias{wind}
-\title{Sample (wind) data for contouring}
-\description{Wind data, for contouring.}
+\title{Wind dataset}
+\description{Wind data.}
 \usage{data(wind)}
 
 \format{Columns \code{wind$x} and \code{wind$y} are location, while

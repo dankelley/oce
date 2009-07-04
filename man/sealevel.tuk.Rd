@@ -4,7 +4,7 @@
 
 \alias{sealevel.tuk}
 
-\title{Sample sea-level data set, from Tuktoyaktuk (1975)}
+\title{Sea-level data set, from Tuktoyaktuk (1975)}
 
 \description{This sea-level dataset is provided with in Appendix 7.2 of
   Foreman (1977) and also with the \code{T_TIDE} package (Pawlowicz et al.,

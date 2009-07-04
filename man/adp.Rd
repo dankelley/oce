@@ -4,7 +4,7 @@
 
 \alias{adp}
 
-\title{Sample ADP dataset}
+\title{ADP (acoustic-doppler profiler) dataset}
 
 \description{This is a sampling of measurements made with an
   upward-pointing ADP (acoustic doppler current profiler) manufactured

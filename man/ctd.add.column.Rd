@@ -11,8 +11,9 @@ ctd.add.column(x, column, name="", label, unit, debug=FALSE)
 
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{column}{A column of data to be inserted.  The length of this
-    column must match the length of the columns already in the objecct.}
+  \item{column}{A column of data to be inserted, in the form of a
+    numeric vector, whose length matches that of columns in the
+    objecct.}
   \item{name}{String indicating the name this column will have in the
     dataframe; e.g. if set to \code{hello} in creating a \code{"ctd"}
     called \code{d}, then the column would be accessed later as

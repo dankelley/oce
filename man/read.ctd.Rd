@@ -138,12 +138,10 @@ before you try to read the data.
 }
 
 \examples{
-\dontrun{
 library(oce)
-x <- read.ctd("tests/ctd.cnv")
+x <- read.oce(system.file("data", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
-}
 }
 
 \references{The Sea-Bird SBE 19plus profiler is described at

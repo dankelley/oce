@@ -1,7 +1,7 @@
 \name{pt}
 \docType{data}
 \alias{pt}
-\title{Sample pressure-temperature recorder file}
+\title{pT (pressure-temperature) dataset}
 
 \description{A sample pT file, created by 
 \preformatted{

@@ -1,7 +1,7 @@
 \name{section}
 \docType{section}
 \alias{section}
-\title{Sample seawater (CTD) section}
+\title{Seawater CTD section}
 \description{A CTD section running the length of Halifax Harbour.}
 \usage{data(section)}
 

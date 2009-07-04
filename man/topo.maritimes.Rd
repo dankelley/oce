@@ -4,7 +4,7 @@
 
 \alias{topo.maritimes}
 
-\title{Sample topographic dataset, showing Maritime region of Canada}
+\title{Topographic dataset, showing Maritime region of Canada}
 
 \description{Topography of the Gulf of St Lawrence region, including
   portions of the Canadian provinces known as the Maritimes, as well
