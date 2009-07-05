@@ -6,7 +6,7 @@
 \description{Add a column to a \code{ctd} file, updating the header as appropriate.}
 
 \usage{
-ctd.add.column(x, column, name="", label, unit, debug=FALSE)
+ctd.add.column(x, column, name="", label, debug=FALSE)
 }
 
 \arguments{
@@ -14,15 +14,13 @@ ctd.add.column(x, column, name="", label, unit, debug=FALSE)
   \item{column}{A column of data to be inserted, in the form of a
     numeric vector, whose length matches that of columns in the
     objecct.}
-  \item{name}{String indicating the name this column will have in the
-    dataframe; e.g. if set to \code{hello} in creating a \code{"ctd"}
-    called \code{d}, then the column would be accessed later as
-    \code{d$data$hello}.}
-  \item{label}{Optional string indicating the name of the column, as
-    it will appear in plot labels.  (If not given, \code{name} will be
-    used.}
-  \item{unit}{Optional string indicating the unit for the column, 
-    as it will appear in plot labels.}
+  \item{name}{Character string indicating the name this column is to
+    have in the \code{data} dataframe; e.g. if set to \code{hello} in
+    creating a \code{"ctd"} called \code{d}, then the column would be
+    accessed later as \code{d$data$hello}.}
+  \item{label}{Optional character string or expression indicating the
+    name of the column, as it will appear in plot labels.  (If not
+    given, \code{name} will be used.}
   \item{debug}{Set \code{TRUE} to see information about the processing.}
 }
 
@@ -49,7 +47,9 @@ ctd.add.column(x, column, name="", label, unit, debug=FALSE)
 library(oce)
 data(ctd) 
 SS <- ctd$data$salinity^2
-ctd.new <- ctd.add.column(ctd, SS, "ss", "S^2", "PSU^2")
+ctd.new <- ctd.add.column(ctd, SS, "ss", 
+                          expression(paste(S^2, " [", PSU^2, " ]")))
+plot.profile(ctd.new, "ss")
 }
 
 \author{Dan Kelley}

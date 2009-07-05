@@ -42,7 +42,6 @@ as.ctd <- function(salinity, temperature, pressure,
                      sample.interval=sample.interval,
                      names=c("salinity", "temperature", "pressure", "sigma.theta"),
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
-                     units=c("PSU", "degC", "dbar", "kg/m^3"),
                      src=src)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -50,19 +49,17 @@ as.ctd <- function(salinity, temperature, pressure,
     res
 }
 
-ctd.add.column <- function (x, column, name="", label, unit, debug = FALSE)
+ctd.add.column <- function (x, column, name="", label, debug = FALSE)
 {
     if (missing(column)) stop("must supply column data")
     if (length(column) != dim(x$data)[1]) stop("column has ", length(column), " data but it must have ", dim(x$data)[1], " data to match existing object")
     if (name == "")  stop("must supply \"name\"")
     if (missing(label)) label <- name
-    if (missing(unit)) unit <- ""
     result <- x
     r <- range(column)
     result$data[,name] <- column
     result$metadata$names <- c(result$metadata$names, name)
     result$metadata$labels <- c(result$metadata$labels, label)
-    result$metadata$units <- c(result$metadata$units, unit)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(result, log.action)
 }
@@ -661,7 +658,6 @@ read.ctd.woce <- function(file, debug=FALSE, columns=NULL, station=NULL, missing
                      sample.interval=sample.interval,
                      names=c("pressure", "salinity", "temperature", "sigma.theta"),
                      labels=c("Pressure", "Salinity", "Temperature", "Sigma Theta"),
-                     units=c("dbar", "PSU", "degC", "kg/m^3"),
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -730,7 +726,6 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
     date <- recovery <- NA
     header <- c();
     col.names.inferred <- NULL
-    units <- NULL
     found.temperature <- found.salinity <- found.pressure <- found.depth <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
@@ -795,15 +790,6 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
                 }
             }
             col.names.inferred <- c(col.names.inferred, name)
-            if (name == "scan") units <- c(units, "")
-            else if (name == "sigma.t") units <- c(units, "kg/m^3")
-            else if (name == "sigma.theta") units <- c(units, "kg/m^3")
-            else if (name == "salinity") units <- c(units, "PSU")
-            else if (name == "conductivity") units <- c(units, "cond")
-            else if (name == "temperature") units <- c(units, "degC")
-            else if (name == "pressure") units <- c(units, "dbar")
-            else if (name == "depth") units <- c(units, "m")
-            else units <- c(units, "")
         }
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline);
@@ -941,7 +927,6 @@ read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.
                      sample.interval=sample.interval,
                      names=names,
                      labels=labels,
-                     units=units,
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -1331,14 +1316,11 @@ plot.profile <- function (x,
     } else {
         w <- which(names(x$data) == type)
         if (length(w) < 1) stop("unknown type \"", type, "\"; try one of: ", paste(names(x$data), collapse=" "))
-        plot(x$data[, w], x$data$pressure, ylim=plim, type = "n", xlab="", ylab="",axes = FALSE)
+        plot(x$data[, w], x$data$pressure, ylim=plim,
+             type = "n", xlab="", ylab="",axes = FALSE)
         axis(3)
         mtext(resizable.label("p"), side = 2, line = axis.name.loc, cex=par("cex"))
-        if (x$metadata$units[w] != "")
-            mtext(paste(x$metadata$labels[w], " [", x$metadata$units[w], "]", sep=""),
-                  side=3, line=axis.name.loc, cex=par("cex"))
-        else
-            mtext(x$metadata$labels[w], side=3, line=axis.name.loc, cex=par("cex"))
+        mtext(x$metadata$label[w], side=3, line=axis.name.loc, cex=par("cex"))
         axis(2)
         box()
         lines(x$data[,w], x$data$pressure, lwd=lwd)
