@@ -19,8 +19,9 @@ col.grid="lightgray",
 lty.grid="dotted",
 Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
 lwd,
+xaxs="r", yaxs="r",
 mgp=getOption("oce.mgp"),
-mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1, 0.5),
+mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
 \dots)
 }
 
@@ -70,6 +71,8 @@ mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1, 0.5),
   \item{dpdtlim}{Optional limit for dp/dt axis}
   \item{timelim}{Optional limit for delta-time axis}
   \item{lwd}{lwd value for data line}
+  \item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
+  \item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

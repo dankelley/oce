@@ -1114,8 +1114,10 @@ plot.profile <- function (x,
                           lty.grid = "dotted",
                           Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
                           lwd=par("lwd"),
+                          xaxs="r",
+                          yaxs="r",
                           mgp=getOption("oce.mgp"),
-                          mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1, 0.5),
+                          mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
                           ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -1137,13 +1139,13 @@ plot.profile <- function (x,
     }
     if (type == "index") {
         index <- 1:length(x$data$pressure)
-        plot(index, x$data$pressure, ylim=plim, xlab = "index", ylab = pname, type='l')
+        plot(index, x$data$pressure, ylim=plim, xlab = "index", ylab = pname, type='l', xaxs=xaxs, yaxs=yaxs)
     } else if (type == "density+time") {
         if (missing(densitylim)) densitylim <- range(x$data$sigma.theta, na.rm=TRUE)
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, x$data$pressure,
              xlim=densitylim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
@@ -1151,7 +1153,7 @@ plot.profile <- function (x,
         lines(st, x$data$pressure, col = col.rho, lwd=lwd)
         par(new = TRUE)
         if (missing(timelim)) timelim <- range(time, na.rm=TRUE)
-        plot(time, x$data$pressure, xlim=timelim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.time)
+        plot(time, x$data$pressure, xlim=timelim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.time)
         lines(time, x$data$pressure, lwd=lwd, col=col.time)
         if (know.time.unit)
@@ -1168,7 +1170,7 @@ plot.profile <- function (x,
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, x$data$pressure,
              xlim=densitylim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
@@ -1180,7 +1182,7 @@ plot.profile <- function (x,
         df <- min(max(x$data$pressure, na.rm=TRUE) / 5, length(x$data$pressure) / 10) # FIXME: adjust params
         dpdt.sm <- smooth.spline(x$data$pressure, dpdt, df=df)
         if (missing(dpdtlim)) dpdtlim <- range(dpdt.sm$y)
-        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt)
+        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=plim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt, xaxs=xaxs, yaxs=yaxs)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (know.time.unit)
@@ -1198,7 +1200,7 @@ plot.profile <- function (x,
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         plot(x$data$salinity, x$data$pressure,
              xlim=Slim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         mtext(resizable.label("S", "x"),
               side = 3, line = axis.name.loc, col = col.S, cex=par("cex"))
         axis(2)
@@ -1215,7 +1217,7 @@ plot.profile <- function (x,
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
         plot(x$data$temperature, x$data$pressure,
              xlim=Tlim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         mtext(resizable.label("T", "x"),
               side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
         axis(2)
@@ -1233,7 +1235,7 @@ plot.profile <- function (x,
         if (missing(densitylim)) densitylim <- range(st, na.rm=TRUE)
         plot(st, x$data$pressure,
              xlim=densitylim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -1250,18 +1252,18 @@ plot.profile <- function (x,
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, x$data$pressure,
              xlim=densitylim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         box()
         lines(st, x$data$pressure, col = col.rho, lwd=lwd)
         par(new = TRUE)
-        N2 <- sw.N2(x$data$pressure, st, ...)
+        N2 <- sw.N2(x$data$pressure, st, xaxs=xaxs, yaxs=yaxs)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         plot(N2, x$data$pressure,
              xlim=N2lim, ylim=plim,
-             type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd)
+             type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
         lines(N2, x$data$pressure, col = col.N2, lwd=lwd)
         mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
@@ -1271,12 +1273,12 @@ plot.profile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (type == "N2") {
-        N2 <- sw.N2(x$data$pressure, x$data$sigma.theta, ...)
+        N2 <- sw.N2(x$data$pressure, x$data$sigma.theta, xaxs=xaxs, yaxs=yaxs)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         plot(N2, x$data$pressure,
              xlim=N2lim, ylim=plim,
              type = "n", xlab = "", ylab = pname, axes = FALSE)
-        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col.N2, cex=par("cex"))
+        mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col.N2, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
         axis(2)
         axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2)
         box()
@@ -1293,7 +1295,7 @@ plot.profile <- function (x,
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
         plot(x$data$temperature, x$data$pressure,
              xlim=Tlim, ylim=plim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
         mtext(resizable.label("T", "x"),
               side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
@@ -1303,7 +1305,7 @@ plot.profile <- function (x,
         par(new = TRUE)
         plot(x$data$salinity, x$data$pressure,
              xlim=Slim, ylim=plim,
-             type = "n", xlab = "", ylab = "", axes = FALSE)
+             type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.S, col.axis = col.S, col.lab = col.S)
         mtext(resizable.label("S", "x"),
               side = 1, line = axis.name.loc, col = col.S, cex=par("cex"))
@@ -1317,7 +1319,7 @@ plot.profile <- function (x,
         w <- which(names(x$data) == type)
         if (length(w) < 1) stop("unknown type \"", type, "\"; try one of: ", paste(names(x$data), collapse=" "))
         plot(x$data[, w], x$data$pressure, ylim=plim,
-             type = "n", xlab="", ylab="",axes = FALSE)
+             type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3)
         mtext(resizable.label("p"), side = 2, line = axis.name.loc, cex=par("cex"))
         mtext(x$metadata$label[w], side=3, line=axis.name.loc, cex=par("cex"))
