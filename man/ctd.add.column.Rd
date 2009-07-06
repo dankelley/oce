@@ -21,7 +21,7 @@ ctd.add.column(x, column, name, label, debug=FALSE)
     \code{d$data[["hello"]]}.}
   \item{label}{Optional character string or expression indicating the
     name of the column, as it will appear in plot labels.  (If not
-    given, \code{name} will be used.}
+    given, \code{name} will be used.)}
   \item{debug}{Set \code{TRUE} to see information about the processing.}
 }
 
