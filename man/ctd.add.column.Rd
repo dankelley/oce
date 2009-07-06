@@ -6,7 +6,7 @@
 \description{Add a column to a \code{ctd} file, updating the header as appropriate.}
 
 \usage{
-ctd.add.column(x, column, name="", label, debug=FALSE)
+ctd.add.column(x, column, name, label, debug=FALSE)
 }
 
 \arguments{
@@ -15,9 +15,10 @@ ctd.add.column(x, column, name="", label, debug=FALSE)
     numeric vector, whose length matches that of columns in the
     objecct.}
   \item{name}{Character string indicating the name this column is to
-    have in the \code{data} dataframe; e.g. if set to \code{hello} in
-    creating a \code{"ctd"} called \code{d}, then the column would be
-    accessed later as \code{d$data$hello}.}
+    have in the \code{data} dataframe.  For example, using
+    \code{name="hello"} in the creation of \code{d} would mean
+    that the data could be accessed as \code{d$data$hello} or
+    \code{d$data[["hello"]]}.}
   \item{label}{Optional character string or expression indicating the
     name of the column, as it will appear in plot labels.  (If not
     given, \code{name} will be used.}

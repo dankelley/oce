@@ -49,11 +49,11 @@ as.ctd <- function(salinity, temperature, pressure,
     res
 }
 
-ctd.add.column <- function (x, column, name="", label, debug = FALSE)
+ctd.add.column <- function (x, column, name, label, debug = FALSE)
 {
     if (missing(column)) stop("must supply column data")
     if (length(column) != dim(x$data)[1]) stop("column has ", length(column), " data but it must have ", dim(x$data)[1], " data to match existing object")
-    if (name == "")  stop("must supply \"name\"")
+    if (missing(name))  stop("must supply \"name\"")
     if (missing(label)) label <- name
     result <- x
     r <- range(column)
