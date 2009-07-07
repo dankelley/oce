@@ -187,13 +187,18 @@ sw.conductivity <- function (S, t=NULL, p=NULL)
 sw.depth <- function(p, lat=45, degrees=TRUE)
 {
     if (inherits(p, "ctd")) {
-        lat <- abs(p$data$latitude)
+        lat <- abs(p$metadata$latitude)
         p <- p$data$pressure # over-writes p
     }
     if (degrees) lat <- lat * 0.0174532925199433
     x <- sin(lat)^2
     gr <- 9.780318*(1.0+(5.2788e-3+2.36e-5*x)*x) + 1.092e-6*p
     (((-1.82e-15*p+2.279e-10)*p-2.2512e-5)*p+9.72659)*p / gr
+}
+
+sw.z <- function(p, lat=45, degrees=TRUE)
+{
+    -sw.depth(p=p, lat=lat, degrees=degrees)
 }
 
 sw.dynamic.height <- function(x, pref=2000)

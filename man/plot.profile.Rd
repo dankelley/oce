@@ -7,7 +7,8 @@
 \description{Plot a CTD profile, in any of several common formats.}
 
 \usage{plot.profile(x,
-type="S", 
+xtype="S", 
+ytype=c("pressure", "z"),
 col.S="darkgreen",
 col.t="red",
 col.rho="blue",
@@ -27,7 +28,7 @@ mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{type}{Type of profile to plot, from the list below.
+  \item{xtype}{Type of profile to plot, from the list below.
     \describe{
       \item{\code{S}}{Profile of salinity.}
       \item{\code{T}}{Profile of \emph{in-situ} temperature.}
@@ -54,6 +55,7 @@ mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
 	value in the header.}
     }
   }
+  \item{ytype}{variable to use on y axis.}
   \item{col.S}{Color for salinity profile.}
   \item{col.t}{Color for temperature.}
   \item{col.rho}{Color for density.}
@@ -91,7 +93,7 @@ mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
 \examples{
 library(oce)
 data(ctd)
-plot.profile(ctd, type="T")
+plot.profile(ctd, xtype="T")
 }
 
 \author{Dan Kelley}

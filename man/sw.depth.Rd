@@ -1,12 +1,16 @@
 \name{sw.depth}
 
 \alias{sw.depth}
+\alias{sw.z}
 
 \title{Water depth}
 
 \description{Compute depth from pressure and latitude.}
 
-\usage{sw.depth(p, lat=45, degrees=TRUE)}
+\usage{
+sw.depth(p, lat=45, degrees=TRUE)
+sw.z(p, lat=45, degrees=TRUE)
+}
 
 \arguments{
   \item{p}{either pressure [dbar], in which case \code{lat} must also be
@@ -17,25 +21,21 @@
     if set to \code{FALSE}, radians are used.}
 }
 
-\details{If the first argument is a \code{ctd} object, then the pressure
-  and latitude are extracted from it, and used to for the calculation.
+\details{Depth is calculated from pressure using Saunders and Fofonoff's
+  method, with the formula refitted for 1980 UNESCO equation of state
+  (UNESCO, 1983).
 
-  The information given below is adapted from the fortran code at
-  \url{http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f}, on
-  which this R code was based.
+  Check value: 9712.653 m for 10,000 dbar at 30 deg latitude.}
 
-  Depth in meters from pressure in decibars using Saunders and
-  Fofonoff's method, with the formula refitted for 1980 equation of
-  state
+\value{For \code{sw.depth}, depth below the ocean surface, in metres.
+  For \code{sw.z}, the negative of the depth, i.e. the distance above
+  the surface.}
 
-  Check value: depth = 9712.653 m for p=10000 decibars, latitude=30 deg
-  above for standard ocean: t=0 deg. celsuis ; s=35 (ipss-78) }
+\examples{d <- sw.depth(10, 45)}
 
-\value{Depth below the ocean surface, in metres.}
-
-\examples{d <- sw.depth(10, 45);}
-
-\references{(authors?), 1976, (title?), Deep-Sea Res., 23, 109-111.}
+\references{Unesco 1983. Algorithms for computation of fundamental
+      properties of seawater, 1983. \emph{Unesco Tech. Pap. in
+      Mar. Sci.}, No. 44, 53 pp.}
 
 \author{Dan Kelley}
 

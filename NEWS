@@ -1,4 +1,6 @@
 0.1-77
+- plot.profile(): add argument ytype; change 'type' to 'xtype'
+- add sw.z()
 - add oce.smooth()
 - add read.adv(), etc., supporting Nortek and Sontek devices
 - add read.adp(), etc., supporting Nortek, RDI and Sontek devices

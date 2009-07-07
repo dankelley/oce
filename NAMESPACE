@@ -96,6 +96,7 @@ export(
        sw.beta,
        sw.conductivity,
        sw.depth,
+       sw.z,
        sw.dynamic.height,
        sw.lapse.rate,
        sw.N2,
