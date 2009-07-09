@@ -30,7 +30,7 @@ as.windrose <- function(x, y, dtheta = 15)
 plot.windrose <- function(x,
                           type=c("count","mean", "median", "fivenum"),
                           mgp=getOption("oce.mgp"),
-                          mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
+                          mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
                           col,
                           ...)
 {
