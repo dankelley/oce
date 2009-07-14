@@ -18,7 +18,7 @@ col.time="darkgreen",
 grid=TRUE,
 col.grid="lightgray",
 lty.grid="dotted",
-Slim, Tlim, densitylim, N2lim, plim, dpdtlim, timelim,
+Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
 lwd,
 xaxs="r", yaxs="r",
 mgp=getOption("oce.mgp"),
@@ -69,9 +69,9 @@ mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
   \item{Tlim}{Optional limit for T axis}
   \item{densitylim}{Optional limit for density axis}
   \item{N2lim}{Optional limit for N2 axis}
-  \item{plim}{Optional limit for p axis}
   \item{dpdtlim}{Optional limit for dp/dt axis}
   \item{timelim}{Optional limit for delta-time axis}
+  \item{ylim}{Optional limit for y axis}
   \item{lwd}{lwd value for data line}
   \item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
   \item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
