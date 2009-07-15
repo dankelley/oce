@@ -1050,20 +1050,25 @@ plot.TS <- function (x,
          xlim=Slim, ylim=Tlim,
          ...)
     if (connect.points) lines(x$data$salinity, x$data$temperature, col=col, ...)
-    S.axis.min <- par()$usr[1]
-    if (S.axis.min < 0.1) S.axis.min <- 0.1 # avoid NaN, which UNESCO density gives for freshwater
-    S.axis.max <- par()$usr[2]
-    T.axis.min <- par()$usr[3]
-    T.axis.max <- par()$usr[4]
+
+    ## grid, isopycnals, then freezing-point line
     if (grid) grid(col=col.grid, lty=lty.grid)
-    rho.corners <- sw.sigma(c(S.axis.min,
-                              S.axis.max,
-                              S.axis.min,
-                              S.axis.max),
-                            c(T.axis.min,
-                              T.axis.min,
-                              T.axis.max,
-                              T.axis.max),
+    draw.isopycnals(rho.levels=rho.levels, rotate.rho.labels=rotate.rho.labels, rho1000=rho1000, cex=cex.rho, col=col.rho)
+    usr <- par("usr")
+    Sr <- c(max(0, usr[1]), usr[2])
+    lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
+}
+
+draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray")
+{
+    usr <- par("usr")
+    S.axis.min <- usr[1]
+    if (S.axis.min < 0.1) S.axis.min <- 0.1 # avoid NaN, which UNESCO density gives for freshwater
+    S.axis.max <- usr[2]
+    T.axis.min <- usr[3]
+    T.axis.max <- usr[4]
+    rho.corners <- sw.sigma(c(S.axis.min, S.axis.max, S.axis.min, S.axis.max),
+                            c(T.axis.min, T.axis.min, T.axis.max, T.axis.max),
                             rep(0,4))
     rho.min <- min(rho.corners, na.rm=TRUE)
     rho.max <- max(rho.corners, na.rm=TRUE)
@@ -1084,21 +1089,18 @@ plot.TS <- function (x,
         ok <- !is.na(s.line) # crazy T can give crazy S
         s.ok <- s.line[ok]
         t.ok <- t.line[ok]
-        lines(s.ok, t.ok, col = col.rho)
+        lines(s.ok, t.ok, col = col)
         if (s.ok[length(s.ok)] > S.axis.max) { # to right of box
             i <- match(TRUE, s.ok > S.axis.max)
             if (rotate.rho.labels)
-                mtext(rho.label, side=4, at=t.line[i], line=0.25, cex=cex.rho, col=col.rho)
+                mtext(rho.label, side=4, at=t.line[i], line=0.25, cex=cex, col=col)
             else
-                text(par("usr")[2], t.line[i], rho.label, pos=4, cex=cex.rho/cex.par, col=col.rho, xpd=TRUE)
+                text(usr[2], t.line[i], rho.label, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
         } else { # above box ... if the line got there
             if (max(t.ok) > (T.axis.max - 0.05 * (T.axis.max - T.axis.min)))
-                mtext(rho.label, side=3, at=s.line[t.n], line=0.25, cex=cex.rho, col=col.rho)
+                mtext(rho.label, side=3, at=s.line[t.n], line=0.25, cex=cex, col=col)
         }
     }
-                                        # Freezing point
-    Sr <- c(max(0, S.axis.min), S.axis.max)
-    lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
 }
 
 plot.profile <- function (x,

@@ -7,6 +7,7 @@ export(
        as.ctd,
        as.sealevel,
        as.windrose,
+       draw.isopycnals,
        adp.beam2xyz,
        adp.xyz2enu,
        adp.enu2other,
