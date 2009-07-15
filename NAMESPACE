@@ -24,7 +24,7 @@ export(
        ctd.update.header,
        decimate,
        fill.gap,
-       format.with.ci,
+       formatci,
        geod.dist,
        geod.xy,
        GMT.offset.from.tz,

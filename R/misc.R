@@ -650,20 +650,44 @@ matlab2POSIXt <- function(t, tz="UTC")
     ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
 }
 
-format.with.ci <- function(ci, style=c("+-", "parentheses"))
+formatci <- function(ci, style=c("+-", "parentheses"))
 {
+    debug <- FALSE
     if (missing(ci)) stop("must supply ci")
     if (length(ci) != 2) stop("ci must contain 2 elements")
     style <- match.arg(style)
     ci <- as.numeric(ci)
     x <- mean(ci)
+    sign <- sign(x)
+    x <- abs(x)
     if (style == "+-") {
         paste(x, "+-", diff(ci)/2, sep="")
     } else {
         scale <- 10^floor(log10(diff(range(ci))))
-        digits <- abs(floor(log10(scale) + 0.1))
-        cat("scale=",scale,"digits=",digits,"\n")
-        print(paste(scale*round(x/scale), "(", scale*round(as.numeric(diff(ci))/scale)/2, ")", sep=""))
-        paste(scale*round(x/scale, digits=digits), "(", round(as.numeric(diff(ci))/scale/2,digits=digits), ")", sep="")
+        ##scale <- 10^floor(log10(x))
+        x0 <- x / scale
+        ci0 <- ci / scale
+        digits <- floor(log10(scale) + 0.1)
+        if (digits < 0)
+            fmt <- paste("%.", abs(digits), "f", sep="")
+        else
+            fmt <- "%.f"
+        if (debug) {
+            cat(" x=", x,  ";  ci=", paste(ci,  collapse=" "), "\n")
+            cat("x0=", x0, "; ci0=", paste(ci0, collapse=" "), "\n")
+            cat("scale=",scale,"digits=",digits,"\n")
+            cat("test: fmt=", fmt, "\n")
+            cat("test1:", sprintf(fmt, x0), "\n")
+            print(paste(scale*round(x/scale), "(", scale*round(as.numeric(diff(ci))/scale)/2, ")", sep=""))
+        }
+        x <- x * sign
+        fmt<-"%g"
+        paste(sprintf(fmt, sign*x0),
+              "(", abs(round(as.numeric(diff(ci))/scale/2)), ")",
+              if (digits)
+              paste("e", if (digits > 0) "+" else "", digits, sep="")
+              else
+              "",
+              sep="")
     }
 }

@@ -1,9 +1,9 @@
-\name{format.with.ci}
-\alias{format.with.ci}
+\name{formatci}
+\alias{formatci}
 \title{Format a confidence interval in parenthetic notation}
 \description{Format a confidence interval in parenthetic notation}
 
-\usage{format.with.ci(ci, style=c("+-", "parentheses"))}
+\usage{formatci(ci, style=c("+-", "parentheses"))}
 
 \arguments{
   \item{ci}{vector of length 2, giving lower and upper range of
@@ -16,7 +16,8 @@
 \value{Character string with the estimate and its uncertainty, in parenthetic notation.}
 
 \examples{
-cat("10 +- 2 is:", format.with.ci(c(8, 12)), "\n")
+cat("10 +- 2 is:", formatci(c(8, 12)), "\n")
+cat("10 +- 2 is:", formatci(c(8, 12), "parentheses"), "\n")
 }
 
 \author{Dan Kelley}
