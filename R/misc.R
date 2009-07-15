@@ -664,6 +664,6 @@ format.with.ci <- function(ci, style=c("+-", "parentheses"))
         digits <- abs(floor(log10(scale) + 0.1))
         cat("scale=",scale,"digits=",digits,"\n")
         print(paste(scale*round(x/scale), "(", scale*round(as.numeric(diff(ci))/scale)/2, ")", sep=""))
-        paste(scale*round(x/scale, digits=digits), "(", round(as.numeric(diff(ci))/scale,digits=digits), ")", sep="")
+        paste(scale*round(x/scale, digits=digits), "(", round(as.numeric(diff(ci))/scale/2,digits=digits), ")", sep="")
     }
 }
