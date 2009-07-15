@@ -649,3 +649,21 @@ matlab2POSIXt <- function(t, tz="UTC")
     ## R won't take a day "0", so subtract one
     ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
 }
+
+format.with.ci <- function(ci, style=c("+-", "parentheses"))
+{
+    if (missing(ci)) stop("must supply ci")
+    if (length(ci) != 2) stop("ci must contain 2 elements")
+    style <- match.arg(style)
+    ci <- as.numeric(ci)
+    x <- mean(ci)
+    if (style == "+-") {
+        paste(x, "+-", diff(ci)/2, sep="")
+    } else {
+        scale <- 10^floor(log10(diff(range(ci))))
+        digits <- abs(floor(log10(scale) + 0.1))
+        cat("scale=",scale,"digits=",digits,"\n")
+        print(paste(scale*round(x/scale), "(", scale*round(as.numeric(diff(ci))/scale)/2, ")", sep=""))
+        paste(scale*round(x/scale, digits=digits), "(", round(as.numeric(diff(ci))/scale,digits=digits), ")", sep="")
+    }
+}
