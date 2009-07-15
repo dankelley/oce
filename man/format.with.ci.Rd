@@ -3,7 +3,7 @@
 \title{Format a confidence interval in parenthetic notation}
 \description{Format a confidence interval in parenthetic notation}
 
-\usage{format.with.ci(ci, style=c("+-", "parentheses")}
+\usage{format.with.ci(ci, style=c("+-", "parentheses"))}
 
 \arguments{
   \item{ci}{vector of length 2, giving lower and upper range of
