@@ -666,10 +666,16 @@ formatci <- function(ci, style=c("+-", "parentheses"))
     style <- match.arg(style)
     sign <- sign(x)
     x <- abs(x)
+    pm <- abs(diff(ci)/2)
     if (style == "+-") {
-        paste(x, "+/-", diff(ci)/2, sep="")
+        paste(x, "+/-", pm, sep="")
     } else {
-        scale <- 10^floor(log10(diff(range(ci))))
+        scale <- 10^floor(log10(pm))
+        pmr <- round(pm / scale)
+        if (pmr == 10) {
+            pmr <- 1
+            scale <- scale * 10
+        }
         ##scale <- 10^floor(log10(x))
         x0 <- x / scale
         ci0 <- ci / scale
@@ -679,21 +685,9 @@ formatci <- function(ci, style=c("+-", "parentheses"))
         else
             fmt <- "%.f"
         if (debug) {
-            cat(" x=", x,  ";  ci=", paste(ci,  collapse=" "), "\n")
-            cat("x0=", x0, "; ci0=", paste(ci0, collapse=" "), "\n")
-            cat("scale=",scale,"digits=",digits,"\n")
-            cat("test: fmt=", fmt, "\n")
-            cat("test1:", sprintf(fmt, x0), "\n")
-            print(paste(scale*round(x/scale), "(", scale*round(as.numeric(diff(ci))/scale)/2, ")", sep=""))
+            cat("pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n")
+            cat(" x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
         }
-        x <- x * sign
-        fmt<-"%g"
-        paste(sprintf(fmt, sign*x0),
-              "(", abs(round(as.numeric(diff(ci))/scale/2)), ")",
-              if (digits)
-              paste("e", if (digits > 0) "+" else "", digits, sep="")
-              else
-              "",
-              sep="")
+        paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
     }
 }
