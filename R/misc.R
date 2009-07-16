@@ -650,45 +650,68 @@ matlab2POSIXt <- function(t, tz="UTC")
     ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
 }
 
-formatci <- function(ci, style=c("+-", "parentheses"))
+formatci <- function(ci, style=c("+-", "parentheses"), model)
 {
-    debug <- FALSE
-    if (missing(ci)) stop("must supply ci")
-    ci <- as.numeric(ci)
-    if (length(ci) == 3) {
-        x <- ci[2]
-        ci <- ci[c(1,3)]
-    } else if (length(ci) == 2) {
-        x <- mean(ci)
-    } else {
-        stop("ci must contain 2 or 3 elements")
+    formatci.one <- function(ci, style)
+    {
+        debug <- FALSE
+        if (missing(ci)) stop("must supply ci")
+        ci <- as.numeric(ci)
+        if (length(ci) == 3) {
+            x <- ci[2]
+            ci <- ci[c(1,3)]
+        } else if (length(ci) == 2) {
+            x <- mean(ci)
+        } else {
+            stop("ci must contain 2 or 3 elements")
+        }
+        sign <- sign(x)
+        x <- abs(x)
+        if (style == "+-") {
+            pm <- abs(diff(ci)/2)
+            paste(sign * x, "+/-", pm, sep="")
+        } else {
+            pm <- abs(diff(ci)/4)           # NOTE half the +-
+            scale <- 10^floor(log10(pm))
+            pmr <- round(pm / scale)
+            if (pmr == 10) {
+                pmr <- 1
+                scale <- scale * 10
+            }
+            ##scale <- 10^floor(log10(x))
+            x0 <- x / scale
+            ci0 <- ci / scale
+            if (pm > x) return(paste(sign*x, "+/-", pm, sep=""))
+            digits <- floor(log10(scale) + 0.1)
+            if (digits < 0)
+                fmt <- paste("%.", abs(digits), "f", sep="")
+            else
+                fmt <- "%.f"
+            if (debug) {
+                cat("pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n")
+                cat(" x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
+            }
+            paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
+        }
     }
     style <- match.arg(style)
-    sign <- sign(x)
-    x <- abs(x)
-    if (style == "+-") {
-        pm <- abs(diff(ci)/2)
-        paste(sign * x, "+/-", pm, sep="")
+    if (!missing(model)) {
+        cm <- class(model)
+        ## > qt(0.6914619, 100000)
+        ## [1] 0.5
+        if (cm == "lm" || cm == "nls") {
+            ci <- confint(model, level=0.6914619)
+            names <- dimnames(ci)[[1]]
+            n <- length(names)
+            rval <- matrix("character", nrow=n, ncol=1)
+            rownames(rval) <- names
+            colnames(rval) <- "value"
+            for (row in 1:dim(ci)[1]) {
+                rval[row,1] <- formatci.one(ci=ci[row,], style=style)
+            }
+        }
+        rval
     } else {
-        pm <- abs(diff(ci)/4)           # NOTE half the +-
-        scale <- 10^floor(log10(pm))
-        pmr <- round(pm / scale)
-        if (pmr == 10) {
-            pmr <- 1
-            scale <- scale * 10
-        }
-        ##scale <- 10^floor(log10(x))
-        x0 <- x / scale
-        ci0 <- ci / scale
-        digits <- floor(log10(scale) + 0.1)
-        if (digits < 0)
-            fmt <- paste("%.", abs(digits), "f", sep="")
-        else
-            fmt <- "%.f"
-        if (debug) {
-            cat("pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n")
-            cat(" x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
-        }
-        paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
+        formatci.one(ci=ci, style=style)
     }
 }
