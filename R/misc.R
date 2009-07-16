@@ -666,10 +666,11 @@ formatci <- function(ci, style=c("+-", "parentheses"))
     style <- match.arg(style)
     sign <- sign(x)
     x <- abs(x)
-    pm <- abs(diff(ci)/2)
     if (style == "+-") {
-        paste(x, "+/-", pm, sep="")
+        pm <- abs(diff(ci)/2)
+        paste(sign * x, "+/-", pm, sep="")
     } else {
+        pm <- abs(diff(ci)/4)           # NOTE half the +-
         scale <- 10^floor(log10(pm))
         pmr <- round(pm / scale)
         if (pmr == 10) {

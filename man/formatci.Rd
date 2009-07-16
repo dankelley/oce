@@ -17,10 +17,15 @@
   confidence interval, and the second element is taken as the central
   value.
 
-  The \code{+-} notation is conventional, e.g. \code{12.0+/-0.5} indicates that
-  the best estimate of value is 12.0, but that the confidence interval
-  ranges from 11.5 to 12.5.  In the \code{parentheses} notation, this
-  would be denoted \code{12.0(5)}.
+  In the \code{+-} notation, e.g. \code{12.0+/-0.2} would indicate that
+  the best estimate of value is 12.0, and that the confidence interval
+  ranges from 11.8 to 12.2.
+
+  In the \code{+-} notation, e.g. \code{12.0(1)} again indicates that
+  the best estimate of value is 12.0, and that the confidence interval
+  ranges from 11.5 to 12.5, i.e. \emph{twice} the number in
+  parentheses.  \emph{Note that this convention is not always followed;
+  some use the factor 2, others use 1.}
 }
 
 \value{Character string with the estimate and its uncertainty, in
