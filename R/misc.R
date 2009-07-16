@@ -654,14 +654,20 @@ formatci <- function(ci, style=c("+-", "parentheses"))
 {
     debug <- FALSE
     if (missing(ci)) stop("must supply ci")
-    if (length(ci) != 2) stop("ci must contain 2 elements")
-    style <- match.arg(style)
     ci <- as.numeric(ci)
-    x <- mean(ci)
+    if (length(ci) == 3) {
+        x <- ci[2]
+        ci <- ci[c(1,3)]
+    } else if (length(ci) == 2) {
+        x <- mean(ci)
+    } else {
+        stop("ci must contain 2 or 3 elements")
+    }
+    style <- match.arg(style)
     sign <- sign(x)
     x <- abs(x)
     if (style == "+-") {
-        paste(x, "+-", diff(ci)/2, sep="")
+        paste(x, "+/-", diff(ci)/2, sep="")
     } else {
         scale <- 10^floor(log10(diff(range(ci))))
         ##scale <- 10^floor(log10(x))

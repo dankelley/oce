@@ -7,12 +7,12 @@
 \arguments{
 \item{x}{a \code{oce} object.}
 \item{item}{if supplied, a character string naming an item in the
-  object's metadata (see Details)}
-\item{value}{new value for item, if both supplied}
-\item{action}{if supplied, a character string containing R code to carry
-  out some action on the object}
-\item{reason}{the reason for the change}
-\item{person}{name of person making the change}
+  object's metadata (see \dQuote{Details}).}
+\item{value}{new value for item, if both supplied.}
+\item{action}{optional character string containing R code to carry
+  out some action on the object.}
+\item{reason}{character string giving the reason for the change.}
+\item{person}{character string giving the name of person making the change.}
 }
 
 \details{There are two ways to use this function.
