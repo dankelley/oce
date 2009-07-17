@@ -650,7 +650,7 @@ matlab2POSIXt <- function(t, tz="UTC")
     ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
 }
 
-formatci <- function(ci, style=c("+-", "parentheses"), model)
+formatci <- function(ci, style=c("+/-", "parentheses"), model)
 {
     formatci.one <- function(ci, style)
     {
@@ -667,11 +667,11 @@ formatci <- function(ci, style=c("+-", "parentheses"), model)
         }
         sign <- sign(x)
         x <- abs(x)
-        if (style == "+-") {
+        if (style == "+/-") {
             pm <- abs(diff(ci)/2)
             paste(sign * x, "+/-", pm, sep="")
         } else {
-            pm <- abs(diff(ci)/4)           # NOTE half the +-
+            pm <- abs(diff(ci)/2)
             scale <- 10^floor(log10(pm))
             pmr <- round(pm / scale)
             if (pmr == 10) {
@@ -712,6 +712,7 @@ formatci <- function(ci, style=c("+-", "parentheses"), model)
         }
         rval
     } else {
+        if (missing(ci)) stop("must give either ci or model")
         formatci.one(ci=ci, style=style)
     }
 }

@@ -3,7 +3,7 @@
 \title{Format a confidence interval in parenthetic notation}
 \description{Format a confidence interval in parenthetic notation}
 
-\usage{formatci(ci, style=c("+-", "parentheses"), model)}
+\usage{formatci(ci, style=c("+/-", "parentheses"), model)}
 
 \arguments{
   \item{ci}{optional vector of length 2 or 3.}
@@ -19,28 +19,40 @@
   and a large number of degrees of freedom (since \code{qt(0.6914619,
     100000)} is 0.5).
 
-  Alternatively, if \code{ci} is given and contains 2 elements, they are
-  taken to be the lower and upper ends of the confidence interval and
-  the central value is taken to be the mean of these values.  And if
-  \code{ci} contains 3 elements, the first and third elements are taken
-  as the range of the confidence interval, and the second element is
-  taken as the central value.
+  If \code{model} is missing, \code{ci} must be provided.  If it
+  contains 3 elements, then first and third elements are taken as the
+  range of the confidence interval (which by convention should use the
+  \code{level} stated in the previous paragraph), and the second element
+  is taken as the central value.  Alternatively, if \code{ci} has 2
+  elements, they are taken to be bounds of the confidence interval and
+  their mean is taken to be the central value.
 
-  In the \code{+-} notation, e.g. \code{12.0+/-0.2} would indicate that
-  the best estimate of value is 12.0, and that the confidence interval
-  ranges from 11.8 to 12.2.
+  In the \code{+/-} notation, e.g. \eqn{a \pm b}{a +/- b} means that the
+  true value lies between \eqn{a-b}{a-b} and \eqn{a+b}{a+b} with a high
+  degree of certainty.  Mills et al. (1993, section 4.1 on page 83)
+  suggest that \eqn{b}{b} should be set equal to 2 times the standard
+  uncertainty or standard deviation.  JCGM (2008, section 7.2.2 on pages
+  25 and 26), however, suggest that \eqn{b}{b} should be set to the
+  standard uncertainty, while also recommending that the \eqn{\pm}{+/-}
+  notation be avoided altogether.
 
-  In the \code{parentheses} notation, e.g. \code{12.0(1)} again
-  indicates that the best estimate of value is 12.0, and that the
-  confidence interval ranges from 11.5 to 12.5, i.e. \emph{twice} the
-  number in parentheses.  \emph{Note that this convention is not always
-    followed; some use the factor 2, others use 1.  For this reason, this
-    code may change, perhaps even disallowing the parentheses style
-    altogether.}
+  The \code{parentheses} notation is often called the compact notation.
+  In it, the digits in parenthese indicate the uncertainty in the
+  corresponding digits to their left, e.g. 12.34(3) means that the last
+  digit (4) has an uncertainty of 3.  However, as with the
+  \eqn{\pm}{+/-} notation, different authorities offer different advice
+  on defining this uncertainty; Mills et al. (1993, section 4.1 on page
+  83) provide an example in which the parenthetic notation has the same
+  value as the \eqn{\pm}{+/-} notation, while JCM (2008, section 7.2.2
+  on pages 25 and 26) suggest halving the number put in parentheses.
 
-  In cases where the uncertainty exceeds the value, it is not clear how
-  best to format things for the \code{parentheses} style, and so the
-  \code{+-} style is used in such cases.
+  The \code{foramtci} function is based on the JCM (2008) notation,
+  i.e. \code{formatci(ci=c(8,12), style="+/-")} yields \code{"10+-2"},
+  and \code{formatci(ci=c(8,12), style="parentheses")} yields
+  \code{"10(2)"}.
+  
+  \strong{Note:} if the confidence range exceeds the value, the
+  \code{parentheses} format reverts to \code{+/-} format.
 }
 
 \value{If \code{ci} is given, the result is a character string with the
@@ -58,13 +70,21 @@ print(formatci(model=m))
 
 \author{Dan Kelley}
 
-\references{A brief introduction to the parenthetic notation is provided
-  at \url{http://en.wikipedia.org/wiki/Uncertainty}.  A very detailed
-  treatment of uncertainty is given in \emph{Evaluation of measurement
-  data - Guide to the expression of uncertainty in measurement (JCGM
-  100:2008)}, available at
-  \url{http://www.bipm.org/utils/common/documents/jcgm/JCGM_100_2008_E.pdf};
-  see especially pages 25 and 26, for the notation.
+\references{JCGM, 2008.  \emph{Evaluation of measurement data - Guide
+    to the expression of uncertainty in measurement (JCGM 100:2008)},
+  published by the Joint Committee for Guides in Metrology.
+  [\url{http://www.bipm.org/en/publications/guides/gum.html}]
+  (See section 7.2.2 for a summary of notation, which shows equal values
+    to the right of a \code{+-} sign and in parentheses.)
+  
+  I. Mills, T. Cvitas, K. Homann, N. Kallay, and K. Kuchitsu, 1993.
+  \emph{Quantities, Units and Symbols in Physical Chemistry}, published
+  Blackwell Science for the International Union of Pure and Applied
+  Chemistry. [\url{http://old.iupac.org/publications/books/gbook/index.html}]
+  (See section 4.1, page 83, for a summary of notation, which shows that
+  a value to the right of a \code{+-} sign is to be halved if put in
+  parentheses.)
+
 }
 
 \keyword{misc}
