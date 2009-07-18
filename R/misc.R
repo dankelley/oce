@@ -650,9 +650,9 @@ matlab2POSIXt <- function(t, tz="UTC")
     ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
 }
 
-formatci <- function(ci, style=c("+/-", "parentheses"), model)
+formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 {
-    formatci.one <- function(ci, style)
+    formatci.one <- function(ci, style, digits=NULL)
     {
         debug <- FALSE
         if (missing(ci)) stop("must supply ci")
@@ -669,7 +669,10 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model)
         x <- abs(x)
         if (style == "+/-") {
             pm <- abs(diff(ci)/2)
-            paste(sign * x, "+/-", pm, sep="")
+            if (is.null(digits))
+                paste(format(sign * x, digits=getOption("digits")), "+/-", format(pm, digits=getOption("digits")), sep="")
+            else
+                paste(format(sign * x, digits=digits), "+/-", format(pm, digits=digits), sep="")
         } else {
             pm <- abs(diff(ci)/2)
             scale <- 10^floor(log10(pm))
@@ -707,12 +710,12 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model)
             rownames(rval) <- names
             colnames(rval) <- "value"
             for (row in 1:dim(ci)[1]) {
-                rval[row,1] <- formatci.one(ci=ci[row,], style=style)
+                rval[row,1] <- formatci.one(ci=ci[row,], style=style, digits=digits)
             }
         }
         rval
     } else {
         if (missing(ci)) stop("must give either ci or model")
-        formatci.one(ci=ci, style=style)
+        formatci.one(ci=ci, style=style, digits=digits)
     }
 }

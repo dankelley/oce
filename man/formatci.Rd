@@ -3,13 +3,15 @@
 \title{Format a confidence interval in parenthetic notation}
 \description{Format a confidence interval in parenthetic notation}
 
-\usage{formatci(ci, style=c("+/-", "parentheses"), model)}
+\usage{formatci(ci, style=c("+/-", "parentheses"), model, digits=NULL)}
 
 \arguments{
   \item{ci}{optional vector of length 2 or 3.}
   \item{style}{string indicating notation to be used.}
   \item{model}{optional regression model, e.g. returned by
     \code{\link{lm}} or \code{\link{nls}}.}
+  \item{digits}{optional number of digits to use; if not supplied,
+    \code{\link{getOption}("digits")} is used.}
 }
 
 \details{If a \code{model} is given, then \code{ci} is ignored, and a
@@ -63,7 +65,7 @@
 
 \examples{
 x <- seq(0, 1, length.out=300)
-y <- rnorm(n=300, mean=1, sd=2) + rnorm(n=300, mean=1, sd=1) * x
+y <- rnorm(n=300, mean=10, sd=1) * x
 m <- lm(y~x)
 print(formatci(model=m))
 }
