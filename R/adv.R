@@ -399,13 +399,13 @@ plot.adv <- function(x,
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 14) {    # temperature time-series
-            oce.plot.ts(x$data$ts$time, x$data$temperature,
+            oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                         ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 15) {    # pressure time-series
-            oce.plot.ts(x$data$ts$time, x$data$pressure,
+            oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
                         ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
