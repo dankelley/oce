@@ -8,11 +8,11 @@ match.bytes <- function(input, b1, ...)
     if (lb == 2)
         (1:n)[.C("match2bytes", as.integer(n), as.raw(input),
                  as.raw(b1), as.raw(dots[[1]]),
-                 match=logical(n), NAOK=TRUE, PACKAGE = "oce")$match]
+                 match=raw(n), NAOK=TRUE, PACKAGE = "oce")$match == 0x01]
     else if (lb == 3)
         (1:n)[.C("match3bytes", as.integer(n), as.raw(input),
                  as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]),
-                 match=logical(n), NAOK=TRUE, PACKAGE = "oce")$match]
+                 match=raw(n), NAOK=TRUE, PACKAGE = "oce")$match == 0x01]
     else stop("must provide 2 or 3 bytes")
 }
 

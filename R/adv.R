@@ -25,7 +25,9 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
     if (!missing(sampling.start)) stop("cannot handle argument \"sampling.start\"")
     if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
-    if (!missing(by)) stop("cannot handle argument \"by\"")
+
+    ##if (!missing(by)) stop("cannot handle argument \"by\"")
+    if (by < 1) stop("cannot handle argument \"by\"<1")
 
     if (is.character(file)) {
         filename <- file
@@ -40,6 +42,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
         on.exit(close(file))
     }
     type <- match.arg(type)
+    if (debug) cat("read.adv.nortek()...\n")
     if (!withHeader) stop("withHeader must be TRUE")
     header <- read.header.nortek(file)
     metadata <- list(instrument.type="vector",
@@ -94,6 +97,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
             seek(file, middle)
             buf <- readBin(file, "raw", n=bis.chunk, endian="little")
             sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1] # 3-byte code for system-data chunks
+            str(sd.start)                                     # DEBUG
             sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                                 bcd2integer(buf[sd.start+9]), # month
                                 bcd2integer(buf[sd.start+6]), # day
@@ -106,21 +110,30 @@ read.adv.nortek <- function(file, from=0, to, by=1,
             else
                 lower <- middle
             if (upper - lower < bis.chunk)
-                return(middle)
+                return(list(index=middle, time=sd.t[1]))
             if (debug) cat("bisection (for \"from\" or \"to\" time) examining indices", lower, "to", upper, " (pass", pass, "of max", passes, ")\n")
         }
-        return(middle)
+        return(list(index=middle, time=sd.t[1]))
     }
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
-    from.index <- bisect.nortek.vector.sd(file, file.size, from) # just an estimate; see below
+    from.index <- bisect.nortek.vector.sd(file, file.size, from)
     to.index <- bisect.nortek.vector.sd(file, file.size, to)
-    if (debug) cat("Bisection for \"from\" and \"to\" times yielded indices", from.index, "and",to.index,"\n")
-    start <- max(1, from.index - 1000)
-    n <- min(file.size - start - 1, 2000 + (to.index - from.index)) # FIXME: need the -1?
+    if (debug) cat("Bisection for \"from\" and \"to\" times yielded indices", from.index$index, "and",to.index$index,"\n")
+
+    if (to.index$index <= from.index$index) stop("no data in specified time range ", format(from), " to ", format(to), "; the closest times in the file are ", format(from.index$time), " and ", format(to.index$time))
+
+    start <- max(1, from.index$index - 1000)
+    n <- min(file.size - start - 1, 2000 + (to.index$index - from.index$index)) # FIXME: need the -1?
     seek(file, start)
     buf <- readBin(file, "raw", n=n)
     ## sd (system data) are interspersed in the vd sequence
+
+    cat("about to try to match bytes...\n")
+
     sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
+
+    str(sd.start)
+
     sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                         bcd2integer(buf[sd.start+9]), # month
                         bcd2integer(buf[sd.start+6]), # day
@@ -129,9 +142,15 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                         bcd2integer(buf[sd.start+5]), # sec
                         tz=getOption("oce.tz"))
     ok <- from <= sd.t & sd.t <= to     # trim to limits
+    str(ok)
+    ok <- ok[seq(1, length(ok), by=by)]
+    str(ok)
+    str(sd.start)
     sd.start <- sd.start[ok]
+    str(sd.start)
     sd.t <- sd.t[ok]
-    if (0 != diff(range(diff(sd.start)))) warning("ignoring the fact that vector data unequal burst lengths")
+
+    if (0 != diff(range(diff(sd.start)))) warning("ignoring the fact that the vector data have unequal burst lengths")
 
     sd.len <- length(sd.start)
     sd.start2 <- sort(c(sd.start, 1 + sd.start))
@@ -140,7 +159,6 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     roll <- 0.1 * readBin(buf[sd.start2 + 18], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
     temperature <- 0.01 * readBin(buf[sd.start2 + 20], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
 
-    heading.resampled <- approx(seq(0,1,length.out=sd.len), heading)
     ##
     ## vd (velocity data) -- several of these are found between each pair of sd
     vd.start <- match.bytes(buf, 0xa5, 0x10)
@@ -167,6 +185,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     c[,3] <- buf[vd.start + 21]
     coarse <- seq(0,1,length.out=sd.len)
     fine <- seq(0,1,length.out=vd.len)
+
     data <- list(ts=list(time=seq(from=from, to=to, length.out=vd.len),
                  heading=approx(coarse, heading, xout=fine)$y,
                  pitch=approx(coarse, pitch, xout=fine)$y,
@@ -199,6 +218,8 @@ read.adv.sontek <- function(file, from=0, to, by=1,
         on.exit(close(file))
     }
     type <- match.arg(type)
+    if (!missing(by)) stop("cannot handle argument 'by' in this version of Oce")
+    if (debug) cat("read.adv.sontek()...\n")
     if (withHeader) {
         stop("cannot read with header yet")
     } else {
@@ -339,7 +360,7 @@ plot.adv <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1/4),
+                     mar=c(mgp[1],mgp[1]+1,1,1),
                      margins.as.image=FALSE,
                      cex=1,
                      ylim,
