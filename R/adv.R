@@ -97,7 +97,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
             seek(file, middle)
             buf <- readBin(file, "raw", n=bis.chunk, endian="little")
             sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1] # 3-byte code for system-data chunks
-            str(sd.start)                                     # DEBUG
+            #str(sd.start)                                     # DEBUG
             sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                                 bcd2integer(buf[sd.start+9]), # month
                                 bcd2integer(buf[sd.start+6]), # day
@@ -128,11 +128,11 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     buf <- readBin(file, "raw", n=n)
     ## sd (system data) are interspersed in the vd sequence
 
-    cat("about to try to match bytes...\n")
+    if (debug) cat("about to try to match bytes... note that length(buf) is", length(buf), "\n")
 
     sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
 
-    str(sd.start)
+    if (debug) str(sd.start)
 
     sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                         bcd2integer(buf[sd.start+9]), # month
@@ -141,18 +141,30 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                         bcd2integer(buf[sd.start+4]), # min
                         bcd2integer(buf[sd.start+5]), # sec
                         tz=getOption("oce.tz"))
-    ok <- from <= sd.t & sd.t <= to     # trim to limits
-    str(ok)
-    ok <- ok[seq(1, length(ok), by=by)]
-    str(ok)
-    str(sd.start)
+    ok <- from <= sd.t & sd.t <= to     # trim to limits (probably just a few entries)
+    if (debug) {
+        cat("sd.t before trimming start and end:\n")
+        str(sd.t)
+    }
     sd.start <- sd.start[ok]
-    str(sd.start)
     sd.t <- sd.t[ok]
+    if (debug) {
+        cat("sd.t after trimming start and end:\n")
+        str(sd.t)
+    }
+    ok <- seq(1, length(ok), by=by)     # subset for "by"
+    sd.start <- sd.start[ok]
+    sd.t <- sd.t[ok]
+    gc()                                # "by" subsetting may reduce storage a lot, so clear up
+    if (debug) {
+        cat("sd.t after trimming for 'by':\n")
+        str(sd.t)
+    }
 
     if (0 != diff(range(diff(sd.start)))) warning("ignoring the fact that the vector data have unequal burst lengths")
 
     sd.len <- length(sd.start)
+
     sd.start2 <- sort(c(sd.start, 1 + sd.start))
     heading <- 0.1 * readBin(buf[sd.start2 + 14], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
     pitch <- 0.1 * readBin(buf[sd.start2 + 16], "integer", size=2, n=sd.len, signed=TRUE, endian="little")
@@ -175,17 +187,20 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     v[,1] <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
     v[,2] <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
     v[,3] <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
+
     a <- array(raw(), dim=c(vd.len, 3))
     a[,1] <- buf[vd.start + 16]
     a[,2] <- buf[vd.start + 17]
     a[,3] <- buf[vd.start + 18]
+
     c <- array(raw(), dim=c(vd.len, 3))
     c[,1] <- buf[vd.start + 19]
     c[,2] <- buf[vd.start + 20]
     c[,3] <- buf[vd.start + 21]
     coarse <- seq(0,1,length.out=sd.len)
     fine <- seq(0,1,length.out=vd.len)
-
+    rm(buf)
+    gc()
     data <- list(ts=list(time=seq(from=from, to=to, length.out=vd.len),
                  heading=approx(coarse, heading, xout=fine)$y,
                  pitch=approx(coarse, pitch, xout=fine)$y,
@@ -194,8 +209,14 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                  pressure=pressure),
                  ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
+
+    if (debug) cat("DEBUG. at 13\n")
+
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("adv", "nortek", "vector", "oce")
+
+    gc()
+
     res
 }
 
