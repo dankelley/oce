@@ -32,10 +32,12 @@ read.adv.nortek(file, from=0, to, by=1,
     time to read. (IGNORED AT PRESENT.)}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
-    profiles are skipped between each pair of profiles that is read.  If
-    this is a string representing a time interval, in colon-separated
-    format, then this interval is divided by the sampling interval, to
-    get the stride length.(IGNORED AT PRESENT.)}
+    profiles are skipped between each pair of profiles that is read.
+    This may not make much sense, if the data are not equi-spaced in
+    time.   If \code{by} is a string representing a time interval, in
+    colon-separated format, then this interval is divided by the
+    sampling interval, to get the stride length (\emph{this does not
+      work, at present}).}
   \item{type}{a character string indicating the type of file.}
   \item{withHeader}{a boolean indicating whether the file has a proper 
     header or is a partial file, chopped out into
