@@ -20,13 +20,14 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                             withHeader=TRUE, sampling.start, deltat,
                             debug=0, monitor=TRUE, log.action)
 {
+    by.is.broken <- TRUE
     if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
     if (!inherits(from, "POSIXt")) stop("\"from\" must be a POSIXt time (this limitation may be relaxed in a future version)")
     if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
     if (!missing(sampling.start)) stop("cannot handle argument \"sampling.start\"")
     if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
 
-    ##if (!missing(by)) stop("cannot handle argument \"by\"")
+    if (!missing(by) && debug == 0) stop("cannot use 'by' unless 'debug' is non-zero (even then, it fails)")
     if (by < 1) stop("cannot handle argument \"by\"<1")
 
     if (is.character(file)) {
@@ -141,23 +142,24 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                         bcd2integer(buf[sd.start+4]), # min
                         bcd2integer(buf[sd.start+5]), # sec
                         tz=getOption("oce.tz"))
-    ok <- from <= sd.t & sd.t <= to     # trim to limits (probably just a few entries)
+
+    sd.start <- subset(sd.start, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
+    sd.tt <- subset(sd.t, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
+
     if (debug) {
-        cat("sd.t before trimming start and end:\n")
-        str(sd.t)
+        cat("before doing 'by' operation, sd.start is:\n")
+        str(sd.start)
     }
-    sd.start <- sd.start[ok]
-    sd.t <- sd.t[ok]
-    if (debug) {
-        cat("sd.t after trimming start and end:\n")
-        str(sd.t)
+
+    if (by > 1) {
+        sd.start <- sd.start[seq(1, length(sd.start), by=by)]
+        sd.t <- sd.t[seq(1, length(sd.t), by=by)]
     }
-    ok <- seq(1, length(ok), by=by)     # subset for "by"
-    sd.start <- sd.start[ok]
-    sd.t <- sd.t[ok]
-    gc()                                # "by" subsetting may reduce storage a lot, so clear up
+
     if (debug) {
-        cat("sd.t after trimming for 'by':\n")
+        cat("after doing 'by' operation, sd.start is:\n")
+        str(sd.start)
+        cat("after doing 'by' operation, sd.t     is:\n")
         str(sd.t)
     }
 
@@ -177,7 +179,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     metadata$burst.length <- round(length(vd.start) / length(sd.start), 0)
 
     vd.start2 <- sort(c(vd.start, 1 + vd.start))
-    vd.len <- length(vd.start)
+    vd.len <- length(vd.start)          # FIXME: should be subsampled with 'by' ... but how???
 
     p.MSB <- as.numeric(buf[vd.start + 4])
     p.LSW <- readBin(buf[vd.start2 + 6], "integer", size=2, n=vd.len, signed=FALSE, endian="little")
@@ -209,14 +211,14 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                  pressure=pressure),
                  ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
-
-    if (debug) cat("DEBUG. at 13\n")
-
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("adv", "nortek", "vector", "oce")
-
+    if (debug) {
+        cat("sd.len=",sd.len," at return\n")
+        cat("vd.len=",vd.len," at return\n")
+        cat("check:",length(res$data$ts$time)," at return\n")
+    }
     gc()
-
     res
 }
 
