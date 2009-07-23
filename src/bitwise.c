@@ -25,13 +25,11 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
   n = LENGTH(buf);
   n_match = 0;
   for (i = 0; i < n - 1; i++) {
-    /* if (i < 10) printf("DEBUG/match2bytes:i=%d examine 0x%x 0x%x vs 0x%x 0x%x\n",i,bufp[i],bufp[i+1], *m1p, *m2p); */
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       n_match++;
       ++i;			/* skip */
     }
   }
-  /* printf("DEBUG/match2bytes: n_match=%d\n", n_match); */
   PROTECT(res = NEW_NUMERIC(n_match));
   resp = NUMERIC_POINTER(res);
   j = 0;
@@ -61,14 +59,12 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   n = LENGTH(buf);
   n_match = 0;
   for (i = 0; i < n - 2; i++) {
-    /* if (i < 10) printf("DEBUG/match2bytes:i=%d examine 0x%x 0x%x vs 0x%x 0x%x\n",i,bufp[i],bufp[i+1], *m1p, *m2p); */
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p && bufp[i + 2] == *m3p) {
       n_match++;
       ++i;			/* skip */
       ++i;			/* skip */
     }
   }
-  /* printf("DEBUG/match2bytes: n_match=%d\n", n_match); */
   PROTECT(res = NEW_NUMERIC(n_match));
   resp = NUMERIC_POINTER(res);
   j = 0;
