@@ -4,9 +4,17 @@ oce.plot.ts <- function(x,
                         xaxs="i",
                         grid=TRUE,
                         adorn=NULL,
+                        col.fill,
                         ...)
 {
-    plot(x, y, axes=FALSE, xaxs=xaxs, ...)
+    if (!missing(col.fill)) {
+        xx <- c(x[1], x, x[length(x)])
+        yy <- c(0, y, 0)
+        plot(x, y, axes=FALSE, xaxs=xaxs, ...)
+        polygon(xx,yy,col=col.fill)
+    } else {
+        plot(x, y, axes=FALSE, xaxs=xaxs, ...)
+    }
     xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
     if (grid) {
         lwd <- par("lwd")
