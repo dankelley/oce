@@ -193,6 +193,7 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
 {
     type <- match.arg(type)
     if (missing(m)) stop("must supply 'm'")
+    if (m != 2 * floor(m/2)) warning("suggestion: use an odd value of m in filter()")
     i <- seq(0, m - 1)
     if (type == "blackman-harris") {    # See Harris (1978)
         a <- c(0.35875, 0.488829, 0.14128, 0.01168)
@@ -208,8 +209,10 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
     coef / sum(coef)                # make unit sum
 }
 
-oce.filter <- function(b, a, x)
+oce.filter <- function(b, a=1, x)
 {
+    if (missing(b)) stop("must supply b")
+    if (missing(x)) stop("must supply x")
     .Call("oce_filter", b, a, x)
 }
 
