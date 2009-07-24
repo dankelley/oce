@@ -2,24 +2,30 @@
 \alias{make.filter}
 \title{Make a digital filter}
 \description{make a digital filter}
-\usage{make.filter(type=c("blackman-harris"), m)}
+\usage{make.filter(type=c("blackman-harris","rectangular", "hamming", "hann"), m)}
 \arguments{
-  \item{type}{a string indicating the type of filter.  Only one type is
-    provided so far, the Blackman-Harris filter, a modified
-    raised-cosine filter.  For a discussion
-    of this and other filters, see Harris (1978).}
-  \item{m}{sugggested length of filter.  If \code{m} is an even number,
-    the filter length is set to \code{m+1}.}
+  \item{type}{a string indicating the type of filter: \code{"blackman-harris"}
+    for the Blackman-Harris filter (a modified raised-cosine filter), 
+    \code{"rectangular"} for a flat filter, \code{"hamming"} for a Hamming
+    filter (a raised-cosine that does not taper to zero at the ends), or
+    \code{"hann"} (a raised cosine that tapers to zero at the ends).
+    Many sources define these filters; see Harris (1978) for a comparison of
+    these and other filters.}
+  \item{m}{length of filter.  This should be an odd number, for any
+    non-rectangular filter.}
 }
 
 \details{The filter is suitable for use by \code{\link{filter}} or
   \code{\link{convolve}}.  Note that \code{\link{convolve}} should be
   faster than \code{\link{filter}}, but it cannot be used if the time
-  series has missing values.  The half-power frequency is \code{1/m} cycles
-  per time unit (see \dQuote{Examples}).}
+  series has missing values.  For the Blackman-Harris filter,
+  the half-power frequency is possibly \code{1/m} cycles per time unit 
+  (see \dQuote{Examples}).  When using \code{\link{filter}} with these 
+  filters, use \code{circular=TRUE}.}
 
 \value{A list of filter coefficients, symmetric about the midpoint and
-  summing to 1.}
+  summing to 1.  These may be used with \code{\link{filter}}, which
+  should be provided with argument \code{circular=TRUE} to avoid phase offsets.}
 
 \examples{
 library(oce)

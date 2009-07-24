@@ -47,6 +47,7 @@ export(
        oce.colors.jet,
        oce.colors.two,
        oce.edit,
+       oce.filter,
        oce.plot.ts,
        oce.smooth,
        oce.write.table,

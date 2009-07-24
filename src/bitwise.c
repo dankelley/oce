@@ -3,12 +3,15 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-/* test R code:
-   buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
-   dyn.load("bitwise.so")
-   m <- .Call("match2bytes", buf, as.raw(0xa5), as.raw(0x11))
-   print(m)
- */
+/* 
+ * compile from commandline:
+ R CMD SHLIB bitwise.c
+ * test R code:
+ buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
+ dyn.load("bitwise.so")
+ m <- .Call("match2bytes", buf, as.raw(0xa5), as.raw(0x11))
+ print(m)
+*/
 
 SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
 {
@@ -76,3 +79,73 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   UNPROTECT(5);
   return(res);
 }
+
+
+SEXP oce_filter(SEXP b, SEXP a, SEXP x)
+{
+  int i, ib, ia, nb, na, nx;
+  double *bp, *ap, *xp, *yp;
+  SEXP y;
+  PROTECT(b = AS_NUMERIC(b));
+  PROTECT(a = AS_NUMERIC(a));
+  PROTECT(x = AS_NUMERIC(x));
+  bp = NUMERIC_POINTER(b);
+  ap = NUMERIC_POINTER(a);
+  xp = NUMERIC_POINTER(x);
+  nb = LENGTH(b);
+  na = LENGTH(a);
+  nx = LENGTH(x);
+  PROTECT(y = NEW_NUMERIC(nx));
+  yp = NUMERIC_POINTER(y);
+  for (i = 0; i < nx; i++) {
+    double xsum, ysum;
+    int ioffset;		/* prevent looking before start */
+    xsum = 0.0;
+    for (ib = 0; ib < nb; ib++) {
+      ioffset = i - ib;
+      if (ioffset > -1)
+	xsum += bp[ib] * xp[ioffset];
+    }
+    ysum = 0.0;
+    for (ia = 1; ia < na; ia++) {
+      ioffset = i - ia;
+      if (ioffset > -1)
+	ysum += ap[ia] * yp[ioffset];
+    }
+    yp[i] = xsum - ysum;
+  }
+  UNPROTECT(4);
+  return(y);
+}
+
+/* test for oce_filter:
+
+   b <- rep(1,5)/5
+   a <- 1
+   x <- seq(1, 4, by=0.2)
+   dyn.load("bitwise.so")
+   .Call("oce_filter", b, a, x)
+   
+   * matlab:
+   data = [1:0.2:4]';
+   windowSize = 5;
+   filter(ones(1,windowSize)/windowSize,1,data)
+   
+   ans =
+   0.2000
+   0.4400
+   0.7200
+   1.0400
+   1.4000
+   1.6000
+   1.8000
+   2.0000
+   2.2000
+   2.4000
+   2.6000
+   2.8000
+   3.0000
+   3.2000
+   3.4000
+   3.6000
+*/

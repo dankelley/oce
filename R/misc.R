@@ -189,19 +189,28 @@ gravity <- function(latitude=45, degrees=TRUE)
     9.780318*(1.0+5.3024e-3*sin(latitude)^2-5.9e-6*sin(2*latitude)^2)
 }
 
-make.filter <- function(type=c("blackman-harris"), m)
+make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m)
 {
     type <- match.arg(type)
+    if (missing(m)) stop("must supply 'm'")
+    i <- seq(0, m - 1)
     if (type == "blackman-harris") {    # See Harris (1978)
-        if (missing(m)) stop("must supply 'm'")
-        m <- floor(m)
-        if (!(m %% 2)) m <- m + 1 # now, m is an odd integer
-        n <- seq(0, m - 1)
         a <- c(0.35875, 0.488829, 0.14128, 0.01168)
-        ff <- pi * n / (m - 1)
+        ff <- pi * i / (m - 1)
         coef <- a[1] - a[2]*cos(2*ff) + a[3]*cos(4*ff) - a[4]*cos(6*ff)
-        coef / sum(coef)                # make unit sum
+    } else if (type == "rectangular") {
+        coef <- rep(1 / m, m)
+    } else if (type == "hamming") {
+        coef <- 0.54 - 0.46 * cos(2 * pi * i / (m-1))
+    } else if (type == "hann") {
+        coef <- 0.50 - 0.50 * cos(2 * pi * i / (m-1))
     }
+    coef / sum(coef)                # make unit sum
+}
+
+oce.filter <- function(b, a, x)
+{
+    .Call("oce_filter", b, a, x)
 }
 
 ## Calculation of geodetic distance on surface of earth,
