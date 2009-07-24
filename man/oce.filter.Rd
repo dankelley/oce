@@ -9,29 +9,27 @@
 \item{x}{a vector of numeric values, to be filtered as a time series.}
 }
 
-\details{The filter is defined as e.g.
-\eqn{y[i]=b[1]*x[i] + b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] - a[4]*y[i-3] - ...}{y[i]=b[1]*x[i] + b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] - a[4]*y[i-3] - ...}
+\details{The filter is defined as e.g.  \eqn{y[i]=b[1]*x[i] +
+    b[2]*x[i-1] + b[3]*x[i-2] + ... - a[2]*y[i-1] - a[3]*y[i-2] -
+    a[4]*y[i-3] - ...}{y[i]=b[1]*x[i] + b[2]*x[i-1] + b[3]*x[i-2] +
+    ... - a[2]*y[i-1] - a[3]*y[i-2] - a[4]*y[i-3] - ...}, where some of
+    the illustrated terms will be omitted if the lengths of \code{a} and
+    \code{b} are too small, and terms are dropped at the start of the
+    time series where the index on \code{x} would be less than 1.
 
-(Of course, not all terms are used if the lengths of \code{a} and
-\code{b} are too small for all the terms written above.)  Near the
-start of the time series, terms in the sums are dropped as appropriate
-to avoid looking before the start time.
+  By contrast with the \code{\link{filter}} function of R,
+  \code{oce.filter} lacks the option to do a circular filter.  As a
+  consequence, \code{oce.filter} introduces a phase lag.  One way to
+  remove this lag is to run the filter forwards and then backwards, as
+  in the \dQuote{Examples}.}
 
-Note that the first value in the \code{a} vector is ignored, and if
-\code{length(a)} equals 1, the result is a non-recursive filter.
+\note{The first value in the \code{a} vector is ignored, and if
+  \code{length(a)} equals 1, the result is a non-recursive filter.  This
+  somewhat odd convention is followed so that this will match exactly
+  the Matlab function named \code{filter}.}
 
-The filter works exactly as does Matlab's function of the same name;
-the equality of results against the Matlab example are ensured at the
-time of building the \code{oce} package.
-
-By contrast with the \code{\link{filter}} function of R,
-\code{oce.filter} lacks the option to do a circular filter.  As a consequence, 
-\code{oce.filter} introduces a phase lag.  One way to remove this lag is to 
-run the filter forwards and then backwards, as in the \dQuote{Examples}.
-}
-
-\value{A numeric vector of the filtered results, \eqn{y}{y} as denoted in \dQuote{Details}.}
-
+\value{A numeric vector of the filtered results, \eqn{y}{y} as denoted
+  in \dQuote{Details}.}
 
 \examples{
 library(oce)
