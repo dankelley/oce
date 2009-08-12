@@ -193,7 +193,7 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
 {
     type <- match.arg(type)
     if (missing(m)) stop("must supply 'm'")
-    if (m != 2 * floor(m/2)) warning("suggestion: use an odd value of m in filter()")
+    if (m == 2 * floor(m/2)) warning("suggestion: use an odd value of m in filter()")
     i <- seq(0, m - 1)
     if (type == "blackman-harris") {    # See Harris (1978)
         a <- c(0.35875, 0.488829, 0.14128, 0.01168)
