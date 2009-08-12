@@ -5,7 +5,7 @@
 
 \description{Plot a time-series, obeying the timezone and possibly drawing the range in the top-left margin}
 
-\usage{oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL, col.fill, \dots)}
+\usage{oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL, fill=FALSE, \dots)}
 
 \arguments{
 \item{x}{the times of observations.}
@@ -20,7 +20,8 @@
   properly for tic locations on the time axis.}
 \item{adorn}{optional \code{\link{expression}} to be performed immediately after
   drawing the data panel.}     
-\item{col.fill}{optional colour to be used to fill the curve to y=0.}
+\item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
+  does incorrectly if there are missing values in \code{y}).}
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
 }
 

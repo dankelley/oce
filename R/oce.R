@@ -4,14 +4,16 @@ oce.plot.ts <- function(x,
                         xaxs="i",
                         grid=TRUE,
                         adorn=NULL,
-                        col.fill,
+                        fill=FALSE,
                         ...)
 {
-    if (!missing(col.fill)) {
+    args <- list(...)
+    if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, xaxs=xaxs, ...)
-        polygon(xx,yy,col=col.fill)
+        fillcol <- if ("col" %in% names(args)) args$col else "lightgray"
+        do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
         plot(x, y, axes=FALSE, xaxs=xaxs, ...)
     }
