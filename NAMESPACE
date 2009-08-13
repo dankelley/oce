@@ -49,6 +49,7 @@ export(
        oce.edit,
        oce.filter,
        oce.plot.ts,
+       oce.plot.sticks,
        oce.smooth,
        oce.write.table,
        parse.latlon,

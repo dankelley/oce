@@ -1,3 +1,23 @@
+oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, ...)
+{
+    if (missing(x)) stop("must supply x")
+    if (missing(y)) stop("must supply y")
+    if (missing(u)) stop("must supply u")
+    if (missing(v)) stop("must supply v")
+    n <- length(x)
+    if (length(y) != n) stop("lengths of x and y must match, but they are ", n, " and ", length(y))
+    if (length(u) != n) stop("lengths of x and u must match, but they are ", n, " and ", length(u))
+    if (length(v) != n) stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
+    if (!add)
+        plot(x, y, type='n')
+    usr <- par("usr")
+    yr.by.xr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
+    arrows(as.numeric(x), y,
+           (as.numeric(x) + u / yscale / yr.by.xr),
+           (y + v / yscale), ...)
+}
+
+
 oce.plot.ts <- function(x,
                         y,
                         draw.time.range=TRUE,
