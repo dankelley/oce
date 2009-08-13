@@ -1,4 +1,4 @@
-oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, ...)
+oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20, ...)
 {
     if (missing(x)) stop("must supply x")
     if (missing(y)) stop("must supply y")
@@ -14,7 +14,7 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, ...)
     yr.by.xr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
     arrows(as.numeric(x), y,
            (as.numeric(x) + u / yscale / yr.by.xr),
-           (y + v / yscale), ...)
+           (y + v / yscale), length=length, ...)
 }
 
 

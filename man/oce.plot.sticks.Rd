@@ -5,7 +5,7 @@
 
 \description{Draw a stick-plot diagram}
 
-\usage{oce.plot.sticks(x, y, u, v, yscale=1, add=FALSE, \dots)}
+\usage{oce.plot.sticks(x, y, u, v, yscale=1, add=FALSE, length=1/20, \dots)}
 
 \arguments{
 \item{x}{x coordinates of stick origins.}
@@ -14,6 +14,9 @@
 \item{v}{y coordinates of stick lengths.}
 \item{yscale}{scale from u and v to y (see \dQuote{Details}).}
 \item{add}{boolean, set \code{TRUE} to add to an existing plot.}
+\item{length}{value to be provided to \code{\link{arrows}}; here, we set
+  a default that is smaller than normally used, because these plots tend
+  to be crowded in oceanographic applications.}
 \item{\dots}{graphical parameters passed down to \code{\link{arrows}}.
   It is common, for example, to use smaller arrow heads than
   \code{\link{arrows}} uses; see \dQuote{Examples}.}
@@ -35,10 +38,9 @@
 library(oce)
 data(air.hal)
 attach(air.hal)
-oce.plot.ts(t, temperature, type='l', ylim=c(-5,25), ylab=resizable.label("T"))
-yscale <- 1
-oce.plot.sticks(t, rep(5, length(u)), u, v, yscale=yscale, add=TRUE, length=1/20)
-legend("bottomright", legend=sprintf("Velocity scale: %g m/s per degC", yscale))
+oce.plot.ts(t, temperature, type='l', ylim=c(0,25), ylab=resizable.label("T"))
+oce.plot.sticks(t, rep(5, length(u)), u, v, yscale=2, add=TRUE)
+legend("bottomright", legend="Velocity scale: 2 m/s per degC")
 detach(air.hal)
 }
 
