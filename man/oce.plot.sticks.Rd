@@ -35,8 +35,10 @@
 library(oce)
 data(air.hal)
 attach(air.hal)
-oce.plot.ts(t, temperature, type='l', ylim=c(-5,25))
-oce.plot.sticks(t, rep(5, length(u)), u, v, yscale=1, add=TRUE, length=1/20)
+oce.plot.ts(t, temperature, type='l', ylim=c(-5,25), ylab=resizable.label("T"))
+yscale <- 1
+oce.plot.sticks(t, rep(5, length(u)), u, v, yscale=yscale, add=TRUE, length=1/20)
+legend("bottomright", legend=sprintf("Velocity scale: %g m/s per degC", yscale))
 detach(air.hal)
 }
 
