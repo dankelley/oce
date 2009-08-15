@@ -376,12 +376,12 @@ oce.colors.palette <- function(n, which=1)
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, ...)
 {
+    debug <- !TRUE
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
-    ## time zone in the data.  (Version 2.9.0 does, but not in all cases.)
+    ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     ## FIXME: remove the stuff near the first, which came from axis.POSIXt,
     ## FIXME: and which relies on time manipulation by "sc" (a scale factor)
     ## FIXME: which seems less sensible than using trunc().
-    debug <- !TRUE
     mat <- missing(at) || is.null(at)
     if (!mat) x <- as.POSIXct(at) else x <- as.POSIXct(x)
     range <- par("usr")[if (side%%2) 1:2 else 3:4]
@@ -422,7 +422,59 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             format <- "%a"
     }
 
-    if (d < 60 * 60 * 6) {        # under 6 hours
+    if (d < 60) {                  # under 1 min
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        t.start <- trunc(rr[1]-30, "mins")
+        t.end <- trunc(rr[2]+30, "mins")
+        z <- seq(t.start, t.end, by="min")
+        if (debug) {
+            cat("z=")
+            str(z)
+        }
+        format <- "%H:%M:%S"
+    } else if (d < 60 * 30) {                  # under 30min
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        t.start <- trunc(rr[1]-30, "mins")
+        t.end <- trunc(rr[2]+30, "mins")
+        z <- seq(t.start, t.end, by="min")
+        if (debug) {
+            cat("(under 30 minutes) z=")
+            str(z)
+        }
+        format <- "%H:%M"
+    } else if (d < 60 * 60) {                  # under 1 hour
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        t.start <- trunc(rr[1]-30, "mins")
+        t.end <- trunc(rr[2]+30, "mins")
+        z <- seq(t.start, t.end, by="10 min")
+        if (debug) {
+            cat("(under an hour) z=")
+            str(z)
+        }
+        format <- "%H:%M"
+    } else if (d < 60 * 60 * 2) {       # under 2 hours
+        rr <- range
+        class(rr) <- c("POSIXt", "POSIXct")
+        attr(rr, "tzone") <- attr(x, "tzone")
+        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        t.start <- trunc(rr[1]-30, "mins")
+        t.end <- trunc(rr[2]+30, "mins")
+        z <- seq(t.start, t.end, by="10 min")
+        if (debug) {
+            cat("(under an hour) z=")
+            str(z)
+        }
+        format <- "%H:%M"
+    } else if (d < 60 * 60 * 6) {       # under 6 hours, use HM
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
@@ -430,7 +482,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
         format <- "%H:%M"
-        if (debug) cat("labels at", format(z), "\n")
+        if (debug) {
+            cat("(under 6 hours) z=")
+            str(z)
+        }
     } else if (d < 60 * 60 * 24) {        # under a day
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
