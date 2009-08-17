@@ -379,50 +379,49 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     debug <- !TRUE
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
-    ## FIXME: remove the stuff near the first, which came from axis.POSIXt,
-    ## FIXME: and which relies on time manipulation by "sc" (a scale factor)
-    ## FIXME: which seems less sensible than using trunc().
     mat <- missing(at) || is.null(at)
     if (!mat) x <- as.POSIXct(at) else x <- as.POSIXct(x)
     range <- par("usr")[if (side%%2) 1:2 else 3:4]
-    d <- range[2] - range[1]
+    d <- range[2] - range[1]            # time span, in seconds
     z <- c(range, x[is.finite(x)])
-    attr(z, "tzone") <- attr(x, "tzone")
-    if (d < 1.1 * 60) {                 # under about a minute
-        sc <- 1
-        if (missing(format))
-            format <- "%S"
-    } else if (d < 1.1 * 60 * 60) {       # under about an hour
-        sc <- 60
-        if (missing(format))
-            format <- "%M:%S"
-    } else if (d < 1.1 * 60 * 60 * 24) {  # under about a day
-        sc <- 60 * 60
-        if (missing(format))
-            format <- "%H:%M"
-    } else if (d < 2 * 60 * 60 * 24) {    # under 2 days
-        sc <- 60 * 60
-        if (missing(format))
-            format <- "%a %H:%M"
-    } else if (d < 7 * 60 * 60 * 24) {    # under a week
-        sc <- 60 * 60 * 24
-        if (missing(format))
-            format <- "%a"
-    } else if (d < 3 * 7 * 60 * 60 * 24) {    # under 3 weeks
-        sc <- 60 * 60 * 24
-        if (missing(format))
-            format <- "%b %d"
-    } else if (d < 32 * 60 * 60 * 24) {    # under  a month
-        sc <- 60 * 60 * 24 * 7
-        if (missing(format))
-            format <- "%a"
-    } else {
-        sc <- 60 * 60 * 24
-        if (missing(format))
-            format <- "%a"
+    attr(z, "tzone") <- attr(x, "tzone") # need this because c() makes it local time zone (!)
+    if (FALSE) {                         # will remove after testing
+        if (d < 1.1 * 60) {              # under about a minute
+            sc <- 1
+            if (missing(format))
+                format <- "%S"
+        } else if (d < 1.1 * 60 * 60) { # under about an hour
+            sc <- 60
+            if (missing(format))
+                format <- "%M:%S"
+        } else if (d < 1.1 * 60 * 60 * 24) { # under about a day
+            sc <- 60 * 60
+            if (missing(format))
+                format <- "%H:%M"
+        } else if (d < 2 * 60 * 60 * 24) { # under 2 days
+            sc <- 60 * 60
+            if (missing(format))
+                format <- "%a %H:%M"
+        } else if (d < 7 * 60 * 60 * 24) { # under a week
+            sc <- 60 * 60 * 24
+            if (missing(format))
+                format <- "%a"
+        } else if (d < 3 * 7 * 60 * 60 * 24) { # under 3 weeks
+            sc <- 60 * 60 * 24
+            if (missing(format))
+                format <- "%b %d"
+        } else if (d < 32 * 60 * 60 * 24) { # under  a month
+            sc <- 60 * 60 * 24 * 7
+            if (missing(format))
+                format <- "%a"
+        } else {
+            sc <- 60 * 60 * 24
+            if (missing(format))
+                format <- "%a"
+        }
     }
 
-    if (d < 60) {                  # under 1 min
+    if (d < 60) {                       # under 1 min
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
@@ -434,7 +433,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             cat("z=")
             str(z)
         }
-        format <- "%H:%M:%S"
+        if (missing(format)) format <- "%H:%M:%S"
     } else if (d < 60 * 30) {                  # under 30min
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -447,7 +446,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             cat("(under 30 minutes) z=")
             str(z)
         }
-        format <- "%H:%M"
+        if (missing(format)) format <- "%H:%M"
     } else if (d < 60 * 60) {                  # under 1 hour
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -460,7 +459,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             cat("(under an hour) z=")
             str(z)
         }
-        format <- "%H:%M"
+        if (missing(format)) format <- "%H:%M"
     } else if (d < 60 * 60 * 2) {       # under 2 hours
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -473,7 +472,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             cat("(under an hour) z=")
             str(z)
         }
-        format <- "%H:%M"
+        if (missing(format)) format <- "%H:%M"
     } else if (d < 60 * 60 * 6) {       # under 6 hours, use HM
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -481,7 +480,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
-        format <- "%H:%M"
+        if (missing(format)) format <- "%H:%M"
         if (debug) {
             cat("(under 6 hours) z=")
             str(z)
@@ -493,8 +492,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="hour")
- #       if (missing(format))
-            format <- "%H:%M"
+        if (missing(format)) format <- "%H:%M"
         if (debug) cat("labels at", format(z), "\n")
     } else if (d < 60 * 60 * 24 * 2) {        # under 2 days
         rr <- range
@@ -503,8 +501,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 86400, "hour")
         z <- seq(t.start, t.end, by="hour")
- #       if (missing(format))
-            format <- "%H"
+        if (missing(format)) format <- "%H"
         if (debug) cat("labels at", format(z), "\n")
     } else if (d < 60 * 60 * 24 * 32) {        # under 2 weeks
         rr <- range
@@ -513,8 +510,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
- #       if (missing(format))
-            format <- "%b %d"
+        if (missing(format)) format <- "%b %d"
         if (debug) cat("labels at", format(z), "\n")
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
         rr <- range
@@ -523,8 +519,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="month")
- #       if (missing(format))
-            format <- "%b %d"
+        if (missing(format)) format <- "%b %d"
         if (debug) cat("labels at", format(z), "\n")
     } else { # FIXME: do this as above.  Then remove the junk near the top.
         class(z) <- c("POSIXt", "POSIXct")
@@ -539,9 +534,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         class(zz) <- c("POSIXt", "POSIXlt")
         z <- as.POSIXct(zz)
         attr(z, "tzone") <- attr(x, "tzone")
-        if (missing(format))
-            format <- "%Y"
-        if (debug) cat("z=",z,"\n")
+        if (missing(format)) format <- "%Y"
+        if (debug) cat("labels at", format(z), "\n")
     }
     if (!mat)
         z <- x[is.finite(x)]
