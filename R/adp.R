@@ -469,6 +469,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      number.of.samples=profiles.in.file,
+                     coordinate.system=c("beam", "xyz", "enu", "other")[coordinate.system+1], # FIXME: check this
                      oce.coordinate=c("beam", "xyz", "enu", "other")[coordinate.system+1], # FIXME: check this
                      number.of.beams=number.of.beams,
                      oce.beam.attenuated=FALSE,
