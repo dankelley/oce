@@ -472,6 +472,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
                      coordinate.system=c("beam", "xyz", "enu", "other")[coordinate.system+1], # FIXME: check this
                      oce.coordinate=c("beam", "xyz", "enu", "other")[coordinate.system+1], # FIXME: check this
                      number.of.beams=number.of.beams,
+                     beam.angle=25,     # FIXME: should be from the file
                      oce.beam.attenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -946,7 +947,7 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     processing.log.append(res, log.action)
 }
 
-adp.beam2xyz <- function(x)
+adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
@@ -974,6 +975,25 @@ adp.beam2xyz <- function(x)
             stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
         np <- dim(x$data$ma$v)[1]
         nc <- dim(x$data$ma$v)[2]
+        transformed <- array(unlist(lapply(1:np, function(p) tr.mat %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+        res$data$ma$v[,,1] <- t(transformed[1,,])
+        res$data$ma$v[,,2] <- t(transformed[2,,])
+        res$data$ma$v[,,3] <- t(transformed[3,,])
+    } else if (inherits(x, "sontek")) {
+        ## http://www.shipops.oregonstate.edu/martech/dswensen/info/uhdas_wecoma/programs/matlab/rawadcp/utils/beam_xyz.m
+        res <- x
+        C <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
+        S <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
+        tr.mat <- matrix(c(S,   0, -S,
+                           0,   S,  0,
+                           -C, -C, -C), nrow=3, byrow=TRUE)
+        np <- dim(x$data$ma$v)[1]
+        nc <- dim(x$data$ma$v)[2]
+        if (debug > 0) {
+            cat("adp.beam2xyz for sontek file:\nnp=",np,"nc=",nc,"dim(v)=",dim(x$data$ma$v), "dim(tr.mat)=",dim(tr.mat),"\n")
+            cat("rotation matrix:\n")
+            print(tr.mat)
+        }
         transformed <- array(unlist(lapply(1:np, function(p) tr.mat %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
         res$data$ma$v[,,1] <- t(transformed[1,,])
         res$data$ma$v[,,2] <- t(transformed[2,,])

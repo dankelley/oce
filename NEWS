@@ -1,5 +1,6 @@
 0.1-77
 - improve labels for oce.axis.POSIXct()
+- add debug=getOption("oce.debug") as an argument some functions
 - plot.profile(): add argument ytype; change 'type' to 'xtype'
 - add sw.z()
 - add oce.smooth()
