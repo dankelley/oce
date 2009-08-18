@@ -980,13 +980,16 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         res$data$ma$v[,,2] <- t(transformed[2,,])
         res$data$ma$v[,,3] <- t(transformed[3,,])
     } else if (inherits(x, "sontek")) {
-        ## http://www.shipops.oregonstate.edu/martech/dswensen/info/uhdas_wecoma/programs/matlab/rawadcp/utils/beam_xyz.m
         res <- x
-        C <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
-        S <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
-        tr.mat <- matrix(c(S,   0, -S,
-                           0,   S,  0,
-                           -C, -C, -C), nrow=3, byrow=TRUE)
+        if (abs(x$metadata$beam.angle - 25) > 2) {
+            warning("beam angle is not near 25 degrees -- setting to 25 degrees")
+            x$metadata$beam.angle <- 25
+        }
+        S <- 1 / (3 * sin(25 * pi / 180))   # .789
+        C <- 1 / (3 * cos(25 * pi / 180))   # .367
+        tr.mat <- matrix(c(1.577, -S, -S,
+                           0, -1.366, 1.366,
+                           C,      C,  C), nrow=3, byrow=TRUE) # RC [pers comm 20090818]
         np <- dim(x$data$ma$v)[1]
         nc <- dim(x$data$ma$v)[2]
         if (debug > 0) {
