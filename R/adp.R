@@ -478,7 +478,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adp", "sontek", "oce")
+    class(res) <- c("sontek", "adp", "oce")
     res
 }
 
@@ -599,7 +599,7 @@ read.adp.rdi <- function(file, from=0, to, by=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adp", "rdi", "oce")
+    class(res) <- c("rdi", "adp", "oce")
     res
 }
 
@@ -1488,6 +1488,6 @@ read.adp.nortek <- function(file, from=0, to, by=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adp", "nortek", "oce")
+    class(res) <- c("nortek", "adp", "oce")
     res
 }                                       # read.adp.nortek()

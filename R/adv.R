@@ -212,7 +212,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                  ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adv", "nortek", "vector", "oce")
+    class(res) <- c("nortek", "adv", "oce")
     if (debug) {
         cat("sd.len=",sd.len," at return\n")
         cat("vd.len=",vd.len," at return\n")
@@ -309,7 +309,7 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("adv", "sontek", "oce")
+    class(res) <- c("sontek", "adv", "oce")
     res
 }
 
