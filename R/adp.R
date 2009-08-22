@@ -952,7 +952,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
     if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
     if (inherits(x, "rdi")) {
-        vprime <- array(dim=dim(x$data$ma$v))
+        vprime <- array(dim=dim(x$data$ma$v)) # FIXME: no need to create this array
         c <- if(x$metadata$beam.pattern == "convex") 1 else -1;
         a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
         b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
@@ -985,39 +985,23 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             warning("beam angle is not near 25 degrees -- setting to 25 degrees")
             x$metadata$beam.angle <- 25
         }
-        ## Transformation matrices from the instrument's software:
-        ## 3-beam adp (25 degree beam angle):
+        ## Transformation matrix from the (3-beam, 25deg angle) instrument's software:
         ## T = 1.577   -0.789  -0.789
         ##     0.000   -1.366   1.366
         ##     0.368    0.368   0.368
-        ## It might be nice to get more digits from geometry, e.g. noting
-        ##   S <- 1 / (3 * sin(25 * pi / 180)) # 0.7887339
-        ##   C <- 1 / (3 * cos(25 * pi / 180)) # 0.3677926
-        ## so the matrix is
-        ##        2*S      -S     -S
-        ##          0       ?      ?
-        ##          C       C      C
-        ## which makes some sense ... but for now, stick to digits provided
-        ## by sontek.
-        ##
+        ## but, here, using formulae to get more precision:
+        SS <- 2 / (3 * sin(25 * pi / 180))             # 1.577468
+        S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
+        CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
+        C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
+        res$data$ma$v[,,1] <-  S * (2 * x$data$ma$v[,,1] - x$data$ma$v[,,2] - x$data$ma$v[,,3])
+        res$data$ma$v[,,2] <- CS * (                     - x$data$ma$v[,,2] + x$data$ma$v[,,3])
+        res$data$ma$v[,,3] <-  C * (    x$data$ma$v[,,1] + x$data$ma$v[,,2] + x$data$ma$v[,,3])
         ## For later use, RC says that the PC-ADP uses
         ## T =  2.576  -1.288  -1.288
         ##      0.000  -2.230   2.230
         ##      0.345   0.345   0.345
-        tr.mat <- matrix(c(1.577, -0.789, -0.789,
-                           0.000, -1.366,  1.366,
-                           0.368,  0.368,  0.368), nrow=3, byrow=TRUE)
-        np <- dim(x$data$ma$v)[1]
-        nc <- dim(x$data$ma$v)[2]
-        if (debug > 0) {
-            cat("adp.beam2xyz for sontek file:\nnp=",np,"nc=",nc,"dim(v)=",dim(x$data$ma$v), "dim(tr.mat)=",dim(tr.mat),"\n")
-            cat("rotation matrix:\n")
-            print(tr.mat)
-        }
-        transformed <- array(unlist(lapply(1:np, function(p) tr.mat %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
-        res$data$ma$v[,,1] <- t(transformed[1,,])
-        res$data$ma$v[,,2] <- t(transformed[2,,])
-        res$data$ma$v[,,3] <- t(transformed[3,,])
+        ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\"")
     }
