@@ -1,5 +1,6 @@
 matrix.smooth <- function(m)
 {
+    if (missing(m)) stop("must provide matrix 'm'")
     storage.mode(m) <- "double"
     .Call("matrix_smooth", m)
 }
