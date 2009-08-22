@@ -475,6 +475,15 @@ read.adp.sontek <- function(file, from=0, to, by=1,
                      beam.angle=25,     # FIXME: should be from the file
                      oce.beam.attenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
+    if (number.of.beams == 3) {
+        S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
+        CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
+        C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
+        metadata$transformation.matrix <- matrix(c(2*S,  -S,  -S,
+                                                   0  , -CS,  CS,
+                                                   C  ,   C,   C),
+                                                 nrow=3, byrow=TRUE)
+    }
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -582,6 +591,17 @@ read.adp.rdi <- function(file, from=0, to, by=1,
             seek(file, bytes.per.profile * (by - 1), origin="current")
         }
     }
+    ## Transformation matrix
+    c <- if (metadata$beam.pattern == "convex") 1 else -1;
+    a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
+    b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
+    d <- a / sqrt(2)
+    ## FIXME Dal people use 'a' in last row of matrix, and RDI has two definitions!
+    metadata$transformation.matrix <- matrix(c(-c*a, c*a,    0,   0,
+                                               0   ,   0, -c*a, c*a,
+                                               -b  ,   -b,   -b,  -b,
+                                               d   ,    d,   -d, -d),
+                                             nrow=4, byrow=TRUE)
     if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")
@@ -675,6 +695,7 @@ summary.adp <- function(object, ...)
                 oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                 beam.angle=object$metadata$beam.angle,
                 beam.config=object$metadata$beam.config,
+                transformation.matrix=object$metadata$transformation.matrix,
                 orientation=object$metadata$orientation,
                 coordinate.system=object$metadata$coordinate.system,
                 oce.coordinate=object$metadata$oce.coordinate,
@@ -697,6 +718,13 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Beams:                      ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n")
     cat("  Orientation:                ", x$orientation, "\n")
     cat("  Beam angle:                 ", x$metadata$beam.angle, "\n")
+    if (!is.null(x$transformation.matrix)) {
+        cat("  Transformation matrix:      ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n")
+        cat("                              ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n")
+        cat("                              ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n")
+        if (x$number.of.beams > 3)
+            cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
+    }
     cat("  Number of cells:            ", x$number.of.cells, "\n")
     ##cat("  Cell size:                  ", x$cell.size, "m\n")
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
@@ -985,23 +1013,23 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             warning("beam angle is not near 25 degrees -- setting to 25 degrees")
             x$metadata$beam.angle <- 25
         }
-        ## Transformation matrix from the (3-beam, 25deg angle) instrument's software:
-        ## T = 1.577   -0.789  -0.789
-        ##     0.000   -1.366   1.366
-        ##     0.368    0.368   0.368
-        ## but, here, using formulae to get more precision:
-        SS <- 2 / (3 * sin(25 * pi / 180))             # 1.577468
-        S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
-        CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
-        C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
-        res$data$ma$v[,,1] <-  S * (2 * x$data$ma$v[,,1] - x$data$ma$v[,,2] - x$data$ma$v[,,3])
-        res$data$ma$v[,,2] <- CS * (                     - x$data$ma$v[,,2] + x$data$ma$v[,,3])
-        res$data$ma$v[,,3] <-  C * (    x$data$ma$v[,,1] + x$data$ma$v[,,2] + x$data$ma$v[,,3])
-        ## For later use, RC says that the PC-ADP uses
-        ## T =  2.576  -1.288  -1.288
-        ##      0.000  -2.230   2.230
-        ##      0.345   0.345   0.345
-        ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
+        if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from sontek")
+        if (!is.null(x$metadata$transformation.matrix)) {
+            tm <- x$metadata$transformation.matrix
+            res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
+            res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
+            res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
+        } else {
+            ## legacy code for old objects without the metadata; note that a beam angle of 25 deg is assumed here.
+            res$data$ma$v[,,1] <-    1.577 * x$data$ma$v[,,1] -   0.789 * x$data$ma$v[,,2] -   0.789 * x$data$ma$v[,,3]
+            res$data$ma$v[,,2] <-                             -   1.366 * x$data$ma$v[,,2] +   1.366 * x$data$ma$v[,,3]
+            res$data$ma$v[,,3] <-    0.368 * x$data$ma$v[,,1] +   0.368 * x$data$ma$v[,,2] +   0.368 * x$data$ma$v[,,3]
+            ## For later use, RC says that the PC-ADP uses
+            ## T =  2.576  -1.288  -1.288
+            ##      0.000  -2.230   2.230
+            ##      0.345   0.345   0.345
+            ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
+        }
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\"")
     }
