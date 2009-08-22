@@ -1,3 +1,9 @@
+matrix.smooth <- function(m)
+{
+    storage.mode(m) <- "double"
+    .Call("matrix_smooth", m)
+}
+
 match.bytes <- function(input, b1, ...)
 {
     if (missing(input)) stop("must provide \"input\"")
