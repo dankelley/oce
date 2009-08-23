@@ -557,6 +557,7 @@ read.adp.rdi <- function(file, from=0, to, by=1,
     a <- array(raw(), dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
     q <- array(raw(), dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
     time <- pressure <- temperature <- salinity <- depth.of.transducer <- heading <- pitch <- roll <- NULL
+
     for (i in 1:to) {
         p <- read.profile.rdi(file,debug=debug)
         for (beam in 1:p$header$number.of.beams) {
@@ -592,15 +593,15 @@ read.adp.rdi <- function(file, from=0, to, by=1,
         }
     }
     ## Transformation matrix
-    c <- if (metadata$beam.pattern == "convex") 1 else -1;
-    a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
-    b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
-    d <- a / sqrt(2)
+    tm.c <- if (metadata$beam.pattern == "convex") 1 else -1;
+    tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
+    tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
+    tm.d <- tm.a / sqrt(2)
     ## FIXME Dal people use 'a' in last row of matrix, and RDI has two definitions!
-    metadata$transformation.matrix <- matrix(c(-c*a, c*a,    0,   0,
-                                               0   ,   0, -c*a, c*a,
-                                               -b  ,   -b,   -b,  -b,
-                                               d   ,    d,   -d, -d),
+    metadata$transformation.matrix <- matrix(c(-tm.c * tm.a, tm.c * tm.a,            0,           0,
+                                               0           ,           0, -tm.c * tm.a, tm.c * tm.a,
+                                               -tm.b       ,       -tm.b,        -tm.b,       -tm.b,
+                                               tm.d        ,        tm.d,        -tm.d,       -tm.d),
                                              nrow=4, byrow=TRUE)
     if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
@@ -652,7 +653,7 @@ summary.adp <- function(object, ...)
     } else if (inherits(object, "sontek")) {
         res.specific <- NULL
     } else if (inherits(object, "nortek")) {
-        res.specific <- list(beam.to.xyz=object$metadata$beam.to.xzy)
+        res.specific <- NULL
     } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
@@ -748,8 +749,6 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("    Internal code version:       ", x$metadata$internal.code.version, "\n")
         cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n")
         cat("    Head serial number:          ", x$metadata$head.serial.number, "\n")
-        cat("    Beam-to-xyz matrix:\n")
-        print(x$metadata$beam.to.xyz)
     }
     cat("\nStatistics:\n")
     print(x$fives)
@@ -994,7 +993,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         res$data$ma$v <- vprime
     } else if (inherits(x, "nortek")) {
         res <- x
-        tr.mat <- x$metadata$beam.to.xyz
+        tr.mat <- x$metadata$transformation.matrix
         if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
             ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
             tr.mat[2,] <- -tr.mat[2,]
@@ -1258,13 +1257,13 @@ read.header.nortek <- function(file, debug=FALSE)
             head$head.serial.number <- gsub(" *$", "", paste(readBin(buf[11:22], "character", n=12, size=1), collapse=""))
             if (debug) cat("  head$head.serial.number=", head$head.serial.number, "\n")
             ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 199;
-            ## the inference of beam.angles and beam.to.xyz is drawn from other code.
+            ## the inference of beam.angles and transformation.matrix is drawn from other code.
             head$beam.angles <- readBin(buf[23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
             if (debug) cat("  head$beam.angles=", head$beam.angles, "(rad)\n")
             ## Transformation matrix (before division by 4096)
             ## FIXME: should we change the sign of rows 2 and 3 if pointed down??
-            head$beam.to.xyz <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
-            if (debug) {cat("  head$beam.to.xyz\n");print(head$beam.to.xyz);}
+            head$transformation.matrix <- matrix(readBin(buf[31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
+            if (debug) {cat("  head$transformation.matrix\n");print(head$transformation.matrix);}
             head$number.of.beams <- readBin(buf[221:222], "integer", n=1, size=2, endian="little")
             if (debug) cat("  head$number.of.beams=", head$number.of.beams, "\n")
         } else if (two.bytes[2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
@@ -1489,7 +1488,7 @@ read.adp.nortek <- function(file, from=0, to, by=1,
                      bin1.distance=header$user$blanking.distance, # FIXME: is this right?
                      blanking.distance=header$user$blanking.distance,
                      measurement.interval=header$user$measurement.interval,
-                     beam.to.xyz=header$head$beam.to.xyz,
+                     transformation.matrix=header$head$transformation.matrix,
                      deployment.name=header$user$deployment.name,
                      cell.size=header$user$cell.size,
                      velocity.scale=header$user$velocity.scale,

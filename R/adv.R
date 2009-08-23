@@ -70,7 +70,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                      bin1.distance=header$user$blanking.distance, # FIXME: is this right?
                      blanking.distance=header$user$blanking.distance,
                      measurement.interval=header$user$measurement.interval,
-                     beam.to.xyz=header$head$beam.to.xyz,
+                     transformation.matrix=header$transformation.matrix,
                      deployment.name=header$user$deployment.name,
                      cell.size=header$user$cell.size,
                      velocity.scale=header$user$velocity.scale,
@@ -338,7 +338,7 @@ summary.adv <- function(object, ...)
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
-                beam.to.xyz=object$metadata$beam.to.xyz,
+                transformation.matrix=object$metadata$transformation.matrix,
                 sampling.start=min(object$data$ts$time, na.rm=TRUE),
                 sampling.end=max(object$data$ts$time, na.rm=TRUE),
                 deltat=object$metadata$deltat,
@@ -473,15 +473,15 @@ adv.beam2xyz <- function(x)
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    if (is.null(x$metadata$beam.to.xyz)) stop("can't convert coordinates because object metadata$beam.to.xyz is NULL")
-    beam.to.xyz <- x$metadata$beam.to.xyz
-    print(beam.to.xyz)
+    if (is.null(x$metadata$transformation.matrix)) stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
+    transformation.matrix <- x$metadata$transformation.matrix
+    ##print(transformation.matrix)
     if (x$metadata$orientation == "downward") {
-        beam.to.xyz[2,] <- -beam.to.xyz[2,]
-        beam.to.xyz[3,] <- -beam.to.xyz[3,]
+        transformation.matrix[2,] <- -transformation.matrix[2,]
+        transformation.matrix[3,] <- -transformation.matrix[3,]
     }
-    print(beam.to.xyz)
-    enu <- beam.to.xyz %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
+    ##print(transformation.matrix)
+    enu <- transformation.matrix %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
     res$data$ma$v[,1] <- enu[1,]
     res$data$ma$v[,2] <- enu[2,]
     res$data$ma$v[,3] <- enu[3,]
