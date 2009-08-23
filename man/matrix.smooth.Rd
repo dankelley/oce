@@ -12,6 +12,9 @@
 \item{m}{a matrix to be smoothed.}
 }
 
+\details{The values on the edge of the matrix are unaltered.  For interior points, the result is defined in terms in terms of the original as follows.
+\eqn{r_{i,j} = (2 m_{i,j} + m_{i-1,j} + m_{i+1,j} + m_{i,j-1} + m_{i,j+1})/6}{r_[i,j] = (2 m_[i,j] + m_[i-1,j] + m_[i+1,j] + m_[i,j-1] + m_[i,j+1])/6}.}
+
 \value{A smoothed matrix.}
 
 \examples{
