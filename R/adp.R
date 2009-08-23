@@ -483,6 +483,11 @@ read.adp.sontek <- function(file, from=0, to, by=1,
                                                    0  , -CS,  CS,
                                                    C  ,   C,   C),
                                                  nrow=3, byrow=TRUE)
+        ## For later use, RC says that the PC-ADP uses
+        ## T =  2.576  -1.288  -1.288
+        ##      0.000  -2.230   2.230
+        ##      0.345   0.345   0.345
+        ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
     }
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -979,56 +984,54 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
     if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
     if (inherits(x, "rdi")) {
-        vprime <- array(dim=dim(x$data$ma$v)) # FIXME: no need to create this array
-        c <- if(x$metadata$beam.pattern == "convex") 1 else -1;
-        a <- 1 / (2 * sin(x$metadata$beam.angle * pi / 180))
-        b <- 1 / (4 * cos(x$metadata$beam.angle * pi / 180))
-        d <- a / sqrt(2)
-        vprime[,,1] <- -c * a * (x$data$ma$v[,,1] - x$data$ma$v[,,2])
-        vprime[,,2] <-  c * a * (x$data$ma$v[,,4] - x$data$ma$v[,,3])
-        vprime[,,3] <- -b * (x$data$ma$v[,,1] + x$data$ma$v[,,2] + x$data$ma$v[,,3] + x$data$ma$v[,,4])
-        ## FIXME Dal people use 'a' in e, and RDI has two definitions!
-        vprime[,,4] <-  d * (x$data$ma$v[,,1] + x$data$ma$v[,,2] - x$data$ma$v[,,3] - x$data$ma$v[,,4])
+        if (x$metadata$number.of.beams != 4) stop("can only handle 4-beam ADP units from RDI")
         res <- x
-        res$data$ma$v <- vprime
-    } else if (inherits(x, "nortek")) {
-        res <- x
-        tr.mat <- x$metadata$transformation.matrix
-        if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
-            ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
-            tr.mat[2,] <- -tr.mat[2,]
-            tr.mat[3,] <- -tr.mat[3,]
-        } else if (x$metadata$orientation != "upward")
-            stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
-        np <- dim(x$data$ma$v)[1]
-        nc <- dim(x$data$ma$v)[2]
-        transformed <- array(unlist(lapply(1:np, function(p) tr.mat %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
-        res$data$ma$v[,,1] <- t(transformed[1,,])
-        res$data$ma$v[,,2] <- t(transformed[2,,])
-        res$data$ma$v[,,3] <- t(transformed[3,,])
-    } else if (inherits(x, "sontek")) {
-        res <- x
-        if (abs(x$metadata$beam.angle - 25) > 2) {
-            warning("beam angle is not near 25 degrees -- setting to 25 degrees")
-            x$metadata$beam.angle <- 25
-        }
-        if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from sontek")
         if (!is.null(x$metadata$transformation.matrix)) {
             tm <- x$metadata$transformation.matrix
+        } else {
+            tm <- matrix(c(-1.9318517,  1.9318517,  0.0000000,  0.0000000,
+                           0.0000000 ,  0.0000000, -1.9318517,  1.9318517,
+                           -0.2588190, -0.2588190, -0.2588190, -0.2588190,
+                           1.3660254 ,  1.3660254, -1.3660254, -1.3660254), nrow=4, byrow=TRUE)
+            warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
+            print(tm)
+        }
+        res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
+        res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
+        res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
+        res$data$ma$v[,,4] <-  tm[4,1] * x$data$ma$v[,,1] + tm[4,2] * x$data$ma$v[,,2] + tm[4,3] * x$data$ma$v[,,3] + tm[4,4] * x$data$ma$v[,,4]
+    } else if (inherits(x, "nortek")) {
+        if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from nortek")
+        res <- x
+        if (!is.null(x$metadata$transformation.matrix)) {
+            tm <- x$metadata$transformation.matrix
+            if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
+                ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
+                tm[2,] <- -tm[2,]       # FIXME: shouldn't this be done in read.adp.nortek() ?
+                tm[3,] <- -tm[3,]
+            } else if (x$metadata$orientation != "upward")
+                stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
             res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
             res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
             res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
         } else {
-            ## legacy code for old objects without the metadata; note that a beam angle of 25 deg is assumed here.
-            res$data$ma$v[,,1] <-    1.577 * x$data$ma$v[,,1] -   0.789 * x$data$ma$v[,,2] -   0.789 * x$data$ma$v[,,3]
-            res$data$ma$v[,,2] <-                             -   1.366 * x$data$ma$v[,,2] +   1.366 * x$data$ma$v[,,3]
-            res$data$ma$v[,,3] <-    0.368 * x$data$ma$v[,,1] +   0.368 * x$data$ma$v[,,2] +   0.368 * x$data$ma$v[,,3]
-            ## For later use, RC says that the PC-ADP uses
-            ## T =  2.576  -1.288  -1.288
-            ##      0.000  -2.230   2.230
-            ##      0.345   0.345   0.345
-            ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
+            stop("adp.beam2xyz() needs metadata$transformation.matrix")
         }
+    } else if (inherits(x, "sontek")) {
+        if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from sontek")
+        res <- x
+        if (!is.null(x$metadata$transformation.matrix)) {
+            tm <- x$metadata$transformation.matrix
+        } else {
+            tm <- matrix(c(1.577, -0.789, -0.789,
+                           0.000, -1.366, 1.366,
+                           0.368, 0.368, 0.368), nrow=4, byrow=TRUE)
+            warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
+            print(tm)
+        }
+        res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
+        res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
+        res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\"")
     }
