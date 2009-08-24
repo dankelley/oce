@@ -488,7 +488,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
         ##      0.000  -2.230   2.230
         ##      0.345   0.345   0.345
         ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
-    }
+    } else stop("can only handle 3-beam devices")
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -1024,8 +1024,8 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             tm <- x$metadata$transformation.matrix
         } else {
             tm <- matrix(c(1.577, -0.789, -0.789,
-                           0.000, -1.366, 1.366,
-                           0.368, 0.368, 0.368), nrow=4, byrow=TRUE)
+                           0.000, -1.366,  1.366,
+                           0.368,  0.368,  0.368), nrow=4, byrow=TRUE)
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm)
         }
