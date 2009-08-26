@@ -222,7 +222,7 @@ summary.oce <- function(object, ...)
     return(invisible(object))
 }
 
-magic <- function(file, debug=FALSE)
+magic <- function(file, debug=getOption("oce.debug"))
 {
     filename <- file
     if (is.character(file))
@@ -232,11 +232,16 @@ magic <- function(file, debug=FALSE)
     	open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+    if (debug > 0)
+        cat(paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=2)
+    if (debug > 0)
+        cat(paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
-    if (bytes[1] == 0x7f && bytes[2] == 0x7f)        return("adp/rdi")
+    if (bytes[1] == 0x7f && bytes[2] == 0x7f)
+        return("adp/rdi")
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
         ## NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
         ## Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
