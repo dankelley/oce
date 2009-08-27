@@ -262,6 +262,14 @@ magic <- function(file, debug=getOption("oce.debug"))
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) return("adp/nortek/aquadopp") # p33 SIG
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a) return("adp/nortek/aquadopp HR") # p38 SIG
         else stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2])
+    } else if (as.integer(bytes[1]) == 81) {
+        warning("possibly this file is a sontek ADV (first byte is 81)")
+    } else if (as.integer(bytes[1]) == 83) {
+        warning("possibly this file is a sontek ADV (first byte is 83)")
+    } else if (as.integer(bytes[1]) == 87) {
+        warning("possibly this file is a sontek ADV (first byte is 87)")
+    } else if (as.integer(bytes[1]) == 85) { # && as.integer(bytes[2]) == 41) {
+        return("adv/sontek/adv") # docs are confusing; bytes[2] should be 22 for bytes in record
     }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
@@ -287,6 +295,7 @@ read.oce <- function(file, ...)
     if (type == "adp/nortek/aquadopp")  stop("Sorry, the oce package cannot read ADP/nortek/aquadopp files yet")
     if (type == "adp/nortek/aquadopp HR")  return(read.adp.nortek(file,               ..., log.action=log.action))
     if (type == "adv/nortek/vector")       return(read.adv.nortek(file,               ..., log.action=log.action))
+    if (type == "adv/sontek/adv")          return(read.adv.sontek(file,               ..., log.action=log.action))
     if (type == "ctd/sbe/19")              return(read.ctd.sbe(file,                  ..., log.action=log.action))
     if (type == "ctd/woce/exchange")       return(read.ctd.woce(file,                 ..., log.action=log.action))
     if (type == "coastline")               return(read.coastline(file, type="mapgen", ..., log.action=log.action))

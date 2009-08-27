@@ -12,7 +12,6 @@ read.adv <- function(file, from=0, to, by=1,
         read.adv.sontek(file=file, from=from, to=to, by=by,
                         withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
                         debug=debug, monitor=monitor, log.action=log.action)
-
 }
 
 read.adv.nortek <- function(file, from=0, to, by=1,
