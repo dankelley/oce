@@ -28,14 +28,21 @@ oce.plot.ts <- function(x,
                         ...)
 {
     args <- list(...)
+    have.ylab <- "ylab" %in% names(args)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, xaxs=xaxs, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray"
-        do.call(polygon, list(x=xx, y=yy, col=fillcol))
+        if (have.ylab)
+            do.call(polygon, list(x=xx, y=yy, col=fillcol, ylab=ylab))
+        else
+            do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, ...)
+        if (have.ylab)
+            plot(x, y, axes=FALSE, xaxs=xaxs, ...)
+        else
+            plot(x, y, axes=FALSE, xaxs=xaxs, ylab=paste(deparse(substitute(y))), ...)
     }
     xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
     if (grid) {
