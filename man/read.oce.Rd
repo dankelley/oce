@@ -38,12 +38,10 @@ of the following is called:
 }
 
 \examples{
-\dontrun{
 library(oce)
-x <- read.oce("tests/ctd.cnv")
+x <- read.oce(system.file("data", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
-}
 }
 
 \author{Dan Kelley}

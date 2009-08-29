@@ -35,7 +35,7 @@ oce.plot.ts <- function(x,
         plot(x, y, axes=FALSE, xaxs=xaxs, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray"
         if (have.ylab)
-            do.call(polygon, list(x=xx, y=yy, col=fillcol, ylab=ylab))
+            do.call(polygon, list(x=xx, y=yy, col=fillcol, ylab=args$ylab))
         else
             do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
