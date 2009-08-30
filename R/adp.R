@@ -307,7 +307,7 @@ read.profile.rdi <- function(file, header, debug)
 
 read.adp <- function(file, from=0, to, by=1,
                      type=c("rdi", "nortek", "sontek"),
-                     debug=0, monitor=TRUE, log.action)
+                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
     if (monitor) cat(file, "\n")
@@ -325,7 +325,7 @@ read.adp <- function(file, from=0, to, by=1,
 read.adp.sontek <- function(file, from=0, to, by=1,
                             type=c("adp"),
                             withHeader=FALSE,
-                            debug=0, monitor=TRUE, log.action)
+                            debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -498,7 +498,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
 
 read.adp.rdi <- function(file, from=0, to, by=1,
                           type=c("workhorse"),
-                          debug=0, monitor=TRUE, log.action)
+                          debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -1334,7 +1334,7 @@ read.header.nortek <- function(file, debug=FALSE)
 
 read.adp.nortek <- function(file, from=0, to, by=1,
                              type=c("aquadopp high resolution"),
-                             debug=0, monitor=TRUE, log.action)
+                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     sync.code <- as.raw(0xa5)
     if (is.character(file)) {

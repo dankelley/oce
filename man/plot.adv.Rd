@@ -61,6 +61,9 @@
     \item \code{which=3} yields a timeseries of the z component of velocity.
     \item \code{which=14} yields a timeseries of temperature.
     \item \code{which=15} yields a timeseries of pressure.
+    \item \code{which=16} yields a timeseries of heading.
+    \item \code{which=17} yields a timeseries of pich.
+    \item \code{which=18} yields a timeseries of roll.
   }
 }
 

@@ -1,7 +1,8 @@
 \name{read.adv}
 \alias{read.adv}
-\alias{read.adv.sontek}
 \alias{read.adv.nortek}
+\alias{read.adv.sontek}
+\alias{read.adv.sontek.text}
 
 \title{Read an ADV data file}
 
@@ -9,22 +10,27 @@
 
 \usage{
 read.adv(file, from=0, to, by=1,
-        type=c("nortek", "sontek"),
+        type=c("nortek", "sontek", "sontek.text"),
         withHeader=TRUE, sampling.start, deltat,
-        debug=0, monitor=TRUE, log.action)
-read.adv.sontek(file, from=0, to, by=1,
-                type="default",
-                withHeader=TRUE, sampling.start, deltat,
-                debug=0, monitor=TRUE, log.action)
+        tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.nortek(file, from=0, to, by=1,
                 type="vector",
                 withHeader=TRUE, sampling.start, deltat,
-                debug=0, monitor=TRUE, log.action)
+                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek(file, from=0, to, by=1,
+                type="default",
+                withHeader=TRUE, sampling.start, deltat,
+                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.text(basefile, from=0, to, by=1,
+                tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
 }
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
+  \item{basefile}{character string giving the base name of files to load
+    (used only by read.adv.sontek.text). The actual filenames are constructed
+    by appending \code{".hd1"} and \code{".ts1"} to the base name.}
   \item{from}{number of profiles to skip at start, or the POSIXt time at
     which to start reading.  See \dQuote{Examples}, and make careful
     note of the use of the \code{tz} argument. (IGNORED AT PRESENT.)}
@@ -44,6 +50,7 @@ read.adv.nortek(file, from=0, to, by=1,
     smaller time chunks with a deck unit.}
   \item{sampling.start}{a POSIXct time corresponding to the first sample. 
     (This is mandatory if \code{withHeader=FALSE}.)}
+  \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{deltat}{the time between samples.
     (This is mandatory if \code{withHeader=FALSE}.)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a

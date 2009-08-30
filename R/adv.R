@@ -1,23 +1,26 @@
 read.adv <- function(file, from=0, to, by=1,
-                     type=c("nortek", "sontek"),
+                     type=c("nortek", "sontek", "sontek.text"),
                      withHeader=TRUE, sampling.start, deltat,
-                     debug=0, monitor=TRUE, log.action)
+                     tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by,
                         withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
-                        debug=debug, monitor=monitor, log.action=log.action)
+                        tz=tz, debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek")
         read.adv.sontek(file=file, from=from, to=to, by=by,
                         withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
-                        debug=debug, monitor=monitor, log.action=log.action)
+                        tz=tz, debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek.text")
+        read.adv.sontek.text(basefile=file, from=from, to=to, by=by,
+                             tz=tz, debug=debug, log.action=log.action)
 }
 
 read.adv.nortek <- function(file, from=0, to, by=1,
                             type="vector",
                             withHeader=TRUE, sampling.start, deltat,
-                            debug=0, monitor=TRUE, log.action)
+                            tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     by.is.broken <- TRUE
     if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
@@ -224,7 +227,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
 read.adv.sontek <- function(file, from=0, to, by=1,
                             type="default",
                             withHeader=TRUE, sampling.start, deltat,
-                            debug=0, monitor=TRUE, log.action)
+                            tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -312,6 +315,110 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     res
 }
 
+
+read.adv.sontek.text <- function(basefile, from=0, to, by=1,
+                                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
+{
+    ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
+    ## FIXME: two files are available to me, and they differ considerably, neither matching the
+    ## FIXME: SonTek documentation.
+    if (by != 1) stop("must have \"by\"=1, in this version of the package")
+    suffices <- c("hd1", "ts1")
+    items.per.sample <- 16
+    if (missing(basefile)) stop("need to supply a basefile, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\"")
+
+    hd <- paste(basefile, suffices[1], sep=".")
+    ts <- paste(basefile, suffices[2], sep=".")
+
+    ## The hd1 file holds per-burst information
+    hdt <-  read.table(hd)
+    number.of.bursts <- dim(hdt)[1]
+    if (debug) cat("number of bursts: ", number.of.bursts, "\n")
+    t <- ISOdatetime(year=hdt[,2], month=hdt[,3], day=hdt[,4], hour=hdt[,5], min=hdt[,6], sec=hdt[,7], tz=tz)
+    if (!missing(from) && inherits(from, "POSIXt")) {
+        ignore <- t < from
+        if (sum(ignore) == 0) stop("no data in this time interval, starting at time ", from, "\n")
+        from.burst <- which(ignore == FALSE)[1]
+        if (debug) cat("\"from\" is burst number", from.burst, "at", format(t[from.burst]), "\n")
+    }
+    if (!missing(to) && inherits(from, "POSIXt")) {
+        ignore <- t < to
+        if (sum(ignore) == 0) stop("no data in this time interval, starting at time ", to, "\n")
+        to.burst <- which(ignore == FALSE)[1] + 1 # add 1 since we'll chop later
+        to.burst <- min(to.burst, length(t))
+        if (debug) cat("\"to\" is burst number", to.burst, "at", format(t[to.burst]), "\n")
+    }
+    ##voltage <- hdt[,14]
+    heading <- hdt[,24]
+    roll <- hdt[,25]
+    pitch <- hdt[,26]
+    spb <- hdt[1,9]                      # FIXME may this change over time?
+    sr <- spb / 3600
+
+    ts.file <- file(ts, "rb")
+    on.exit(close(ts.file))
+    if (!inherits(ts.file, "connection"))
+        stop("argument `ts.file' must be a character string or connection")
+
+    ## Examine ".ts1" file to see if we can deal with it.
+    seek(ts.file, where=0, origin="end")
+    bytes.in.file <- seek(ts.file, where=0, origin="start")
+    if (debug) cat("length of \".", suffices[2], "\" file: ",bytes.in.file," bytes\n", sep="")
+    look <- min(5000, bytes.in.file)
+    b <- readBin(ts.file, "raw", n=look)
+    newlines <- which(b == 0x0a)
+    if (0 != diff(range(fivenum(diff(newlines))))) stop("need equal line lengths in ", ts)
+    ## Line length
+    bytes.in.sample <- diff(newlines)[1]
+    if (debug) cat("line length in \".", suffices[2], "\" file: ", bytes.in.sample, " bytes\n", sep="")
+    ## elements per line
+    seek(ts.file, where=newlines[1], origin="start")
+    d <- scan(ts.file, what="character", nlines=1, quiet=TRUE)
+    if (debug) cat("first line in \".", suffices[2], "\" file: ", paste(d, collapse=" "), "\n", sep="")
+    items.per.line <- length(d)
+    if (items.per.sample != length(d)) stop("file \".", suffices[2], "\" should have ", items.per.sample, " elemetns per line, but it has ", length(d))
+    if (debug) cat("elements per line in \".", suffices[2], "\" file: ", length(d), "\n", sep="")
+    lines.in.file <- bytes.in.file / bytes.in.sample
+    if (debug) cat("lines in \".", suffices[2], "\" file: ", lines.in.file, "\n", sep="")
+
+    samples.per.burst <- lines.in.file / number.of.bursts
+    if (debug) cat("samples per burst: ", samples.per.burst, "\n")
+
+    from.byte <- from.burst * samples.per.burst * bytes.in.sample
+    to.byte <- to.burst * samples.per.burst * bytes.in.sample
+    cat("seek from:", from.byte, "\n")
+    cat("seek to:", to.byte, "\n")
+    seek(ts.file, where=from.byte, origin="start")
+
+    ts <- matrix(scan(ts.file, n=items.per.sample*(to.burst - from.burst + 1)*samples.per.burst, quiet=TRUE),
+                      ncol=items.per.sample, byrow=TRUE)
+    x <- ts[,3] / 100
+    y <- ts[,4] / 100
+    z <- ts[,5] / 100
+    l <- length(x)
+    tt <- seq(t[from.burst], t[to.burst], length.out=l)
+    ## trim to the requested interval
+    ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
+    v <- cbind(x[ok], y[ok], z[ok])
+    data <- list(ts=list(time=tt[ok],
+                 heading=approx(t, heading, xout=tt)$y[ok],
+                 pitch=approx(t, pitch, xout=tt)$y[ok],
+                 roll=approx(t, roll, xout=tt)$y[ok]),
+                 ss=list(distance=0),
+                 ma=list(v=v,a=NULL,c=NULL))
+    metadata <- list(instrument.type="adv",
+                     filename=basefile,
+                     number.of.samples=length(data$x),
+                     sampling.start=data$t[1],
+                     delta.t=dt,
+                     oce.coordinate="enu")
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("sontek", "adv", "oce")
+    res
+}
+
 summary.adv <- function(object, ...)
 {
     if (!inherits(object, "adv")) stop("method is only for adv objects")
@@ -389,7 +496,7 @@ plot.adv <- function(x,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    if (!all(which %in% c(1:3,14:15))) stop("\"which\" must be in the range c(1:3,14:15)")
+    if (!all(which %in% c(1:3,14:18))) stop("\"which\" must be in the range c(1:3,14:18)")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -449,6 +556,24 @@ plot.adv <- function(x,
                         ...)
         } else if (which[w] == 15) {    # pressure time-series
             oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
+                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 16) {    # heading
+            oce.plot.ts(x$data$ts$time, x$data$ts$heading,
+                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 17) {    # pitch
+            oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
+                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 18) {    # roll
+            oce.plot.ts(x$data$ts$time, x$data$ts$roll,
                         ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
