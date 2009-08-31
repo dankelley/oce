@@ -428,9 +428,11 @@ read.adv.sontek.text <- function(basefile, from=0, to, by=1,
                      transformation.matrix=if(!missing(transformation.matrix)) transformation.matrix else NULL,
                      number.of.samples=length(data$x),
                      number.of.beams=3,
+                     orientation="upward", # FIXME: guessing on the orientation
                      deltat=as.numeric(difftime(tt[2], tt[1], unit="secs")),
                      sampling.start=data$t[1],
-                     oce.coordinate=coordinate.system)
+                     oce.coordinate=coordinate.system,
+                     coordinate.system=coordinate.system)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -470,6 +472,8 @@ summary.adv <- function(object, ...)
                 deltat=object$metadata$deltat,
                 instrument.type=object$metadata$instrument.type,
                 number.of.samples=length(object$data$ts$time),
+                coordinate.system=object$metadata$coordinate.system,
+                oce.coordinate=object$metadata$oce.coordinate,
                 fives=fives,
                 processing.log=processing.log.summary(object))
     if (inherits(object, "nortek"))
@@ -484,7 +488,7 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Instrument type:       ", x$instrument.type, "\n")
     cat("  Filename:              ", x$filename, "\n")
 ##    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
-##    cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
+    cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
     cat("  Measurements at times: ", format(x$sampling.start), attr(x$sampling.end, "tzone"),
         "to",
         format(x$sampling.end), attr(x$sampling.end, "tzone"),
