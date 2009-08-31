@@ -338,23 +338,31 @@ read.adv.sontek.text <- function(basefile, from=0, to, by=1,
     number.of.bursts <- dim(hdt)[1]
     if (debug) cat("number of bursts: ", number.of.bursts, "\n")
     t <- ISOdatetime(year=hdt[,2], month=hdt[,3], day=hdt[,4], hour=hdt[,5], min=hdt[,6], sec=hdt[,7], tz=tz)
-    if (!missing(from) && inherits(from, "POSIXt")) {
+    if (inherits(from, "POSIXt")) {
         ignore <- t < from
         if (sum(ignore) == 0) stop("no data in this time interval, starting at time ", from, "\n")
         from.burst <- which(ignore == FALSE)[1]
         if (debug) cat("\"from\" is burst number", from.burst, "at", format(t[from.burst]), "\n")
+    } else {
+        from.burst <- from + 1          # 0 means first burst
     }
-    if (!missing(to) && inherits(from, "POSIXt")) {
-        ignore <- t < to
-        if (sum(ignore) == 0) stop("no data in this time interval, starting at time ", to, "\n")
-        to.burst <- which(ignore == FALSE)[1] + 1 # add 1 since we'll chop later
-        to.burst <- min(to.burst, length(t))
-        if (debug) cat("\"to\" is burst number", to.burst, "at", format(t[to.burst]), "\n")
+    if (missing(to)) {
+        stop("must supply \"to\"")
+    } else {
+        if (inherits(from, "POSIXt")) {
+            ignore <- t < to
+            if (sum(ignore) == 0) stop("no data in this time interval, starting at time ", to, "\n")
+            to.burst <- which(ignore == FALSE)[1] + 1 # add 1 since we'll chop later
+            to.burst <- min(to.burst, length(t))
+            if (debug) cat("\"to\" is burst number", to.burst, "at", format(t[to.burst]), "\n")
+        } else {
+            to.burst <- to
+        }
     }
     ##voltage <- hdt[,14]
     heading <- hdt[,24]
-    roll <- hdt[,25]
-    pitch <- hdt[,26]
+    pitch <- hdt[,25]
+    roll <- hdt[,26]
     spb <- hdt[1,9]                      # FIXME may this change over time?
     sr <- spb / 3600
 
