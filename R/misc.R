@@ -19,7 +19,7 @@ match.bytes <- function(input, b1, ...)
     else stop("must provide 2 or 3 bytes")
 }
 
-resizable.label <- function(item=c("S", "T", "p", "z", "distance"), axis=c("x", "y"))
+resizable.label <- function(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -38,6 +38,15 @@ resizable.label <- function(item=c("S", "T", "p", "z", "distance"), axis=c("x", 
     } else if (item == "distance") {
         full <- "Distance [ m ]"
         abbreviated <- "Dist. [ m ]"
+    } else if (item == "heading") {
+        full <- "Heading [ deg ]"
+        abbreviated <- "Heading"
+    } else if (item == "pitch") {
+        full <- "Pitch [ deg ]"
+        abbreviated <- "Pitch"
+    } else if (item == "roll") {
+        full <- "Roll [ deg ]"
+        abbreviated <- "Roll"
     }
     fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
     if (fraction < 0.8) full else abbreviated

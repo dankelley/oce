@@ -317,7 +317,10 @@ read.adv.sontek <- function(file, from=0, to, by=1,
 
 
 read.adv.sontek.text <- function(basefile, from=0, to, by=1,
-                                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
+                                 coordinate.system="xyz",
+                                 transformation.matrix,
+                                 tz=getOption("oce.tz"),
+                                 debug=getOption("oce.debug"), log.action)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the
@@ -386,32 +389,48 @@ read.adv.sontek.text <- function(basefile, from=0, to, by=1,
 
     from.byte <- from.burst * samples.per.burst * bytes.in.sample
     to.byte <- to.burst * samples.per.burst * bytes.in.sample
-    cat("seek from:", from.byte, "\n")
-    cat("seek to:", to.byte, "\n")
+    if (debug) {
+        cat("seek from:", from.byte, "\n")
+        cat("seek to:", to.byte, "\n")
+    }
     seek(ts.file, where=from.byte, origin="start")
-
     ts <- matrix(scan(ts.file, n=items.per.sample*(to.burst - from.burst + 1)*samples.per.burst, quiet=TRUE),
                       ncol=items.per.sample, byrow=TRUE)
-    x <- ts[,3] / 100
-    y <- ts[,4] / 100
-    z <- ts[,5] / 100
-    l <- length(x)
-    tt <- seq(t[from.burst], t[to.burst], length.out=l)
+    len <- dim(ts)[1]
+    v <- array(numeric(), dim=c(len, 3))
+    v[,1] <- ts[,3] / 100
+    v[,2] <- ts[,4] / 100
+    v[,3] <- ts[,5] / 100
+    a <- array(raw(), dim=c(len, 3))
+    a[,1] <- as.raw(ts[,6])
+    a[,2] <- as.raw(ts[,7])
+    a[,3] <- as.raw(ts[,8])
+    c <- array(raw(), dim=c(len, 3))
+    c[,1] <- as.raw(ts[,9])
+    c[,2] <- as.raw(ts[,10])
+    c[,3] <- as.raw(ts[,11])
+    temperature <- ts[,15]
+    pressure <- ts[,16]
+    rm(ts)                              # may run tight on space
+    tt <- seq(t[from.burst], t[to.burst], length.out=len)
     ## trim to the requested interval
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
-    v <- cbind(x[ok], y[ok], z[ok])
     data <- list(ts=list(time=tt[ok],
                  heading=approx(t, heading, xout=tt)$y[ok],
                  pitch=approx(t, pitch, xout=tt)$y[ok],
-                 roll=approx(t, roll, xout=tt)$y[ok]),
+                 roll=approx(t, roll, xout=tt)$y[ok],
+                 temperature=temperature,
+                 pressure=pressure),
                  ss=list(distance=0),
-                 ma=list(v=v,a=NULL,c=NULL))
+                 ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
     metadata <- list(instrument.type="adv",
                      filename=basefile,
+                     transformation.matrix=if(!missing(transformation.matrix)) transformation.matrix else NULL,
                      number.of.samples=length(data$x),
+                     number.of.beams=3,
+                     deltat=as.numeric(difftime(tt[2], tt[1], unit="secs")),
                      sampling.start=data$t[1],
-                     delta.t=dt,
-                     oce.coordinate="enu")
+                     oce.coordinate=coordinate.system)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -444,6 +463,7 @@ summary.adv <- function(object, ...)
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
+                number.of.beams=object$metadata$number.of.beams,
                 transformation.matrix=object$metadata$transformation.matrix,
                 sampling.start=min(object$data$ts$time, na.rm=TRUE),
                 sampling.end=max(object$data$ts$time, na.rm=TRUE),
@@ -456,7 +476,7 @@ summary.adv <- function(object, ...)
         res$burst.length <- object$metadata$burst.length
     class(res) <- "summary.adv"
     res
-}                                       # summary.adv()
+}
 
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
@@ -475,6 +495,13 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
     if (x$instrument.type == "vector") {
         cat("  Burst Length:          ", x$burst.length, "\n")
+    }
+    if (!is.null(x$transformation.matrix)) {
+        cat("  Transformation matrix:      ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n")
+        cat("                              ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n")
+        cat("                              ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n")
+        if (x$number.of.beams > 3)
+            cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
     }
     cat("\nStatistics:\n")
     print(x$fives)
@@ -562,19 +589,19 @@ plot.adv <- function(x,
                         ...)
         } else if (which[w] == 16) {    # heading
             oce.plot.ts(x$data$ts$time, x$data$ts$heading,
-                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        ylab="heading", type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 17) {    # pitch
             oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
-                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        ylab="pitch", type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 18) {    # roll
             oce.plot.ts(x$data$ts$time, x$data$ts$roll,
-                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        ylab="roll", type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)

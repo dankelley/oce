@@ -875,17 +875,17 @@ plot.adp <- function(x,
             }
         } else if (which[w] %in% timeseries) { # time-series types
             par(mgp=mgp, mar=mar, cex=cex)
-            if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab="S [psu]",       type='l',
+            if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab=resizable.label("S"),       type='l',
                      draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 14) oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l',
                      draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab="p [dbar]",       type='l',
+            if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab=resizable.label("p"),       type='l',
                      draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab="heading", type='l',
+            if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab=resizable.label("heading"), type='l',
                      draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab="pitch",   type='l',
+            if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab=resizable.label("pitch"),   type='l',
                      draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab="roll",    type='l',
+            if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab=resizable.label("roll"),    type='l',
                      draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 19) {
                 if (x$metadata$number.of.beams > 0)

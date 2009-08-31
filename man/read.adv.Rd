@@ -22,7 +22,9 @@ read.adv.sontek(file, from=0, to, by=1,
                 withHeader=TRUE, sampling.start, deltat,
                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.text(basefile, from=0, to, by=1,
-                tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
+                     coordinate.system="xyz",
+                     transformation.matrix,
+                     tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
 }
 
 \arguments{
@@ -50,6 +52,11 @@ read.adv.sontek.text(basefile, from=0, to, by=1,
     smaller time chunks with a deck unit.}
   \item{sampling.start}{a POSIXct time corresponding to the first sample. 
     (This is mandatory if \code{withHeader=FALSE}.)}
+  \item{coordinate.system}{character string indicating coordinate system, one
+    of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.}
+  \item{transformation.matrix}{transformation matrix to use, over-riding
+    anything in the data file e.g. \code{rbind(c(2.710, -1.409, -1.299), c(0.071, 2.372, -2.442), c(0.344, 0.344, 0.344))}.
+    This is only relevant if the coordinate system is \code{"beam"}.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{deltat}{the time between samples.
     (This is mandatory if \code{withHeader=FALSE}.)}

@@ -7,7 +7,7 @@
 \description{Provide axis names in adjustable sizes, e.g. using T
   instead of Temperature.}
 
-\usage{resizable.label(item=c("S", "T", "p", "z", "distance"), axis=c("x", "y"))}
+\usage{resizable.label(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))}
 
 \arguments{
   \item{item}{code for the label.}
