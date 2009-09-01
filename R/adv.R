@@ -1,5 +1,5 @@
 read.adv <- function(file, from=0, to, by=1,
-                     type=c("nortek", "sontek", "sontek.text"),
+                     type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      withHeader=TRUE, sampling.start, deltat,
                      tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
@@ -12,6 +12,9 @@ read.adv <- function(file, from=0, to, by=1,
         read.adv.sontek(file=file, from=from, to=to, by=by,
                         withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
                         tz=tz, debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek.adr")
+        read.adv.sontek.adr(file=file, from=from, to=to, by=by,
+                            tz=tz, debug=debug, log.action=log.action)
     else if (type == "sontek.text")
         read.adv.sontek.text(basefile=file, from=from, to=to, by=by,
                              tz=tz, debug=debug, log.action=log.action)
@@ -308,6 +311,221 @@ read.adv.sontek <- function(file, from=0, to, by=1,
                      orientation="downward", # FIXME: a total guess
                      oce.coordinate="beam" # FIXME: we don't actually know this, if there is no header
                      )
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("sontek", "adv", "oce")
+    res
+}
+
+read.adv.sontek.adr <- function(file, from=0, to, by=1,
+                                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+{
+    if (is.character(file)) {
+        filename <- file
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    hardware.configuration.length <- 24
+    probe.configuration.length <- 164
+    deployment.parameters.length <- 253
+    burst.header.length <- 60
+    checksum.length <- 2
+    data.length <- 22                   # FIXME: this should be determined based on the headers
+
+    seek(file, 0, "end", rw="read")
+    filesize <- seek(file, 0, origin="start", rw="read")
+    ## All details of the binary format come from Appendix 3 of the Sontek ADV
+    ## operation Manual - Firmware Version 4.0 (Oct 1997).
+    hardware.configuration <- readBin(file, "raw", n=hardware.configuration.length) # 24 total
+    probe.configuration <- readBin(file, "raw", n=probe.configuration.length) # 188 total
+    deployment.parameters <- readBin(file, "raw", n=deployment.parameters.length) # 441 total
+    ## Done reading file for a while; now study the information in these headers ...
+    ## Orientation
+    orientation.code <- as.integer(hardware.configuration[4])
+    if (orientation.code == 0) orientation <- "downward"
+    else if (orientation.code == 1) orientation <- "upward"
+    else if (orientation.code == 2) orientation <- "sideward"
+    else stop("sensor orientation code should be 0 (downward), 1 (upward) or 2 (sideward), but got ", orientation.code)
+    ## Is a compass installed (need later, to parse data chunks)?
+    compass.code <- as.integer(hardware.configuration[5])
+    if (compass.code == 0) compass.installed <- FALSE
+    else if (compass.code == 1) compass.installed <- TRUE
+    else stop("compass-installed code should be 0 (no) or 1 (yes), but got ", compass.code)
+    if (debug) cat(if (compass.installed) "have a compass in this device\n" else "no compass installed\n")
+    ## Is a thermometer installed (need later, to parse data chunks)?
+    thermometer.code <- as.integer(hardware.configuration[7])
+    if (thermometer.code == 0) thermometer.installed <- FALSE
+    else if (thermometer.code == 1) thermometer.installed <- TRUE
+    else stop("thermometer-installed code should be 0 (no) or 1 (yes), but got ", thermometer.code)
+    if (debug) cat(if (thermometer.installed) "have a thermometer in this device\n" else "no thermometer installed\n")
+    ## Is a pressure gauge installed (need later, to parse data chunks)?
+    pressure.code <- as.integer(hardware.configuration[8])
+    if (pressure.code == 0) pressure.installed <- FALSE
+    else if (pressure.code == 1) pressure.installed <- TRUE
+    else stop("pressure-installed code should be 0 (no) or 1 (yes), but got ", pressure.code)
+    if (debug) cat(if (pressure.installed) "have a pressure gauge in this device\n" else "no pressure installed\n")
+    ## FIXME: in the above, ignoring "RecorderInstalled" on p105 of docs -- what is that??
+
+    ## m3 (MUN ADV) data, as a test: 22 bytes in data chunks
+    cpu.software.ver.num <- as.integer(hardware.configuration[1])/10 # 8.5
+    dsp.software.ver.num <- as.integer(hardware.configuration[2])/10 # 4.1
+    serialnum <- paste(integer2ascii(as.integer(probe.configuration[10+1:5])), collapse="")  # "B373H"
+    if (deployment.parameters[1]!=0x12) stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
+    if (deployment.parameters[2]!=0x01) stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
+    coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
+    if (coordinate.system.code == 0)
+        coordinate.system <- "beam"
+    else if (coordinate.system.code == 1)
+        coordinate.system <- "xyz"
+    else if (coordinate.system.code == 2)
+        coordinate.system <- "enu"
+    else {
+        warning("cannot understand coordinate system code of ", coordinate.system.code, "so assuming \"xyz\" coordinates")
+        coordinate.system <- "xyz"
+    }
+    if (coordinate.system == "beam") stop("cannot deal with beam coordinates in this version of the package, because the SonTek documentation (Appendix 3 of ADV Operation Manual) does not say how the transformation matrix is stored in the file header")
+
+    ## bug: docs say sampling rate in 0.1Hz, but the SLEIWEX-2008-m3 data file shows 0.01Hz
+    sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE) # 600 0 0
+    if (sampling.rate[2] !=0 || sampling.rate[3] != 0) stop("due to a limitation in the package, the sampling rate must be a number and then two zeros, not ", paste(sampling.rate, collapse=" "))
+    if (sampling.rate[1] < 0) stop("sampling rate must be a positive integer, but got ", sampling.rate)
+    burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE) # 3600 0 0
+    if (burst.interval[2] !=0 || burst.interval[3] != 0) stop("due to a limitation in the package, the burst interval must be a number and then two zeros, not ", paste(burst.interval, collapse=" "))
+
+    samples.per.burst <- readBin(deployment.parameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE) # 21540     0     0
+    if (samples.per.burst[2] !=0 || samples.per.burst[3] != 0) stop("due to a limitation in the package, samples/burst must be a number and then two zeros, not ", paste(samples.per.burst, collapse=" "))
+
+    if (samples.per.burst[1] < 0) stop("samples/burst must be a positive integer, but got ", samples.per.burst)
+
+    deployment.name <- paste(integer2ascii(as.integer(deployment.parameters[49:57])), collapse="") # "SLW08"
+    comments1 <- paste(integer2ascii(as.integer(deployment.parameters[66:125])), collapse="")
+    comments2 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
+    comments3 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
+    ## Run through to get bursts.  These files are so large that I don't trust a match against codes
+    ## to get the burst headers (plus, the burst header in my data file does not match the docs!),
+    ## so the algorithm is to go through the file burst by burst, skipping the data portions.  If
+    ## bursts have a lot of data, this won't slow things down terribly.
+    burst.number <- burst.location <- burst.time <- samples.per.burst <- NULL
+    file.pointer <- seek(file, origin="start", rw="read")          # see where we are now
+    while (file.pointer < filesize) {
+        ## BurstHeader
+        burst.location <- c(burst.location, file.pointer) # burst location in file
+        burst.header <- readBin(file, "raw", burst.header.length)
+        if (debug > 1) cat("burst header:", paste(burst.header, collapse=" "), "\n")
+        if (burst.header[1] != 0xa5) stop("expecting first byte after header to be 0xa5, but got 0x", burst.header[1])
+        ## 0x10 is from manual, but we have 0x11 in the SLEIWEX-2008/m3 device, so permit that also
+        if (burst.header[2] != 0x10 && burst.header[2] != 0x11) stop("expecting second byte after header to be 0x10 or 0x11, but got 0x", burst.header[2])
+        burst.number <- c(burst.number, readBin(burst.header[15:18], "integer", size=4, signed=FALSE, endian="little"))
+        ## NOTE: in next line, factor 0.01 disagrees with documentation on page 107, but matches data SLEIWEX-2008/m3
+        burst.sampling.rate <- 0.01*readBin(burst.header[29:30], "integer", size=2, n=1, endian="little", signed=FALSE)
+        this.samples.per.burst <- readBin(burst.header[31:32], "integer", size=2, n=1, endian="little", signed=FALSE)
+        if (debug) cat("samples in burst:", this.samples.per.burst, "\n")
+        samples.per.burst <- c(samples.per.burst, this.samples.per.burst)
+        ## burst.header[34] is meant to indicate what is recorded, but values in SLEIWEX2008/m3 do not match docs
+        ## print(byte2binary(burst.header[34], endian="little"))
+        year <- readBin(burst.header[19:20], "integer", size=2, n=1, signed=FALSE, endian="little")
+        day <- as.integer(burst.header[21])
+        month <- as.integer(burst.header[22])
+        minute <- as.integer(burst.header[23])
+        hour <- as.integer(burst.header[24])
+        sec100 <- as.integer(burst.header[25])
+        sec <- as.integer(burst.header[26])
+        if (debug) cat("burst time:  year=",year, "day=",day, "month=",month, "hour=",hour, "minute=",minute, "sec=",sec, "sec100=",sec100,"\n")
+        time <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz)
+        burst.time <- c(burst.time, time)
+        if (debug) cat("  i.e. ", format(time), "\n")
+        file.pointer <- file.pointer + (burst.header.length + checksum.length + data.length * this.samples.per.burst)
+        if (debug) cat("seeking to byte ", file.pointer, " to get next burst\n")
+        seek(file, where=file.pointer, origin="start", rw="read")
+    }
+    class(burst.time) <- c("POSIXt", "POSIXct")
+    attr(burst.time, "tzone") <- tz
+    ## Now, determine relevant bursts, using the parameters: from, to, and by.
+    if (!missing(by)) stop("cannot handle argument 'by' in this version of Oce")
+    ok <- (from - 3600) <= burst.time & burst.time <= (to + 3600) # add an hour as a grace period
+    if (sum(ok) < 1) stop("no data in the stated time interval")
+    burst.number <- burst.number[ok]
+    burst.time <- burst.time[ok]
+
+    samples.per.burst <- samples.per.burst[ok]
+    burst.location <- burst.location[ok]
+    if (debug) print(data.frame(number=burst.number,
+                                time=burst.time,
+                                start.byte=burst.location,
+                                data.start.byte=burst.location+burst.header.length,
+                                samples=samples.per.burst))
+    bursts <- length(burst.location)
+    ntotal <- sum(samples.per.burst)
+    if (debug) cat("NTOTAL:", ntotal,"***\n")
+    v <- array(numeric(), dim=c(ntotal, 3))
+    heading <- array(numeric(), dim=c(ntotal, 1))
+    pitch <- array(numeric(), dim=c(ntotal, 1))
+    roll <- array(numeric(), dim=c(ntotal, 1))
+    temperature <- array(numeric(), dim=c(ntotal, 1))
+    pressure <- array(numeric(), dim=c(ntotal, 1))
+    a <- array(raw(), dim=c(ntotal, 3))
+    c <- array(raw(), dim=c(ntotal, 3))
+    row.offset <- 0
+    for (burst in 1:bursts) {
+        n <- samples.per.burst[burst]
+        if (debug) cat("burst", burst.number[burst], "at", format(burst.time[burst]), "data start at byte", burst.location[burst]+burst.header.length, "n=",n,"\n")
+        seek(file, burst.location[burst]+burst.header.length, origin="start", rw="read")
+        b <- readBin(file, "raw", n=data.length*n, endian="little")
+        m <- matrix(b, ncol=data.length, byrow=TRUE)
+        if (n != dim(m)[1]) stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", data.length)
+        ## FIXME possibly this as.raw() and t() business is slow ... not sure how else to do it!
+        r <- row.offset + 1:n
+        v[r,1] <- 1e-4 * readBin(as.raw(t(m[,1:2])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        v[r,2] <- 1e-4 * readBin(as.raw(t(m[,3:4])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        v[r,3] <- 1e-4 * readBin(as.raw(t(m[,5:6])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        a[r,1] <- m[,7]
+        a[r,2] <- m[,8]
+        a[r,3] <- m[,9]
+        c[r,1] <- m[,10]
+        c[r,2] <- m[,11]
+        c[r,3] <- m[,12]
+        heading[r] <- 0.1 * readBin(as.raw(t(m[,13:14])), "integer", n=n, size=2, signed=TRUE, endian="little")
+        pitch[r] <- 0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
+        roll[r] <- 0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
+        temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        pressure[r] <- 0.00304366*readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little") # FIXME
+        row.offset <- row.offset + n
+    }
+    rm(b, m)                            # save a bit of space
+    time <- seq(from=burst.time[1], by=1/burst.sampling.rate, length.out=ntotal)
+    ok <- (from - 1) <= time & time <= (to+1) # final trim
+    metadata <- list(filename=filename,
+                     filesize=filesize,
+                     instrument.type="sontek",
+                     number.of.samples=ntotal, # FIXME
+                     deltat=1/sampling.rate[1], #CHECK
+                     sampling.start=0,       #FIXME
+                     orientation=orientation,
+                     cpu.software.ver.num=cpu.software.ver.num,
+                     dsp.software.ver.num=dsp.software.ver.num,
+                     serialnum=serialnum,
+                     coordinate.system=coordinate.system,
+                     oce.coordinate=coordinate.system,
+                     ## sampling.rate=sampling.rate, # not used
+                     samples.per.burst=samples.per.burst[1],
+                     burst.interval=burst.interval[1],
+                     deployment.name=deployment.name,
+                     comments1=comments1,
+                     comments2=comments2,
+                     comments3=comments3)
+    data <- list(ts=list(time=time[ok],
+                 heading=heading[ok], pitch=pitch[ok], roll=roll[ok], temperature=temperature[ok], pressure=pressure[ok]),
+                 ss=list(distance=0),
+                 ma=list(v=v[ok,], a=a[ok,], c=c[ok,]))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)

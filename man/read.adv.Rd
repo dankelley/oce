@@ -2,6 +2,7 @@
 \alias{read.adv}
 \alias{read.adv.nortek}
 \alias{read.adv.sontek}
+\alias{read.adv.sontek.adr}
 \alias{read.adv.sontek.text}
 
 \title{Read an ADV data file}
@@ -10,7 +11,7 @@
 
 \usage{
 read.adv(file, from=0, to, by=1,
-        type=c("nortek", "sontek", "sontek.text"),
+        type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
         withHeader=TRUE, sampling.start, deltat,
         tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.nortek(file, from=0, to, by=1,
@@ -20,6 +21,8 @@ read.adv.nortek(file, from=0, to, by=1,
 read.adv.sontek(file, from=0, to, by=1,
                 type="default",
                 withHeader=TRUE, sampling.start, deltat,
+                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.adr(file, from=0, to, by=1,
                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.text(basefile, from=0, to, by=1,
                      coordinate.system="xyz",
@@ -79,7 +82,25 @@ read.adv.sontek.text(basefile, from=0, to, by=1,
   \code{metadata$deltat=1},
   \code{metadata$orientation="downward"} and
   \code{metadata$oce.coordinate="beam"}.  It is up to the user to
-  modify these values if they are wrong.}
+  modify these values if they are wrong.
+
+  Special notes:
+  
+  Nortek adr files: the file format assumed here is not the same as in the 
+  documentation that I have available.  The documentation is for Firmware 
+  Version 4.0 (October 1997), but this does not match a data file used for testing.
+  The following are the differences: (a) The second byte of the burst header is
+  0x11, but the documentation says it should be 0x10; the code takes either.  (b) The
+  data length is assumed to be 22, no matter it is.  This is done to match the files
+  being used by the author.  The documentation suggests that the number of bytes 
+  can be inferred from the header, but this is difficult because the information
+  stored in the header \code{RecordedData} byte does not agree with the docs (bit 0
+  is 0 in the file, but we *do* have amplitude and correlation data).  (c) The
+  sampling rate is taken to be in units of 0.01Hz, not 0.1Hz as documented.
+  BUG: Also, the pressure scale factor 
+  is taken as 0.00304366, but it should be read from the data format.
+
+}
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
   contains measurements made with an ADV device.  For information on
