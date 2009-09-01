@@ -346,6 +346,8 @@ read.adv.sontek.adr <- function(file, from=0, to, by=1,
     ## All details of the binary format come from Appendix 3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
     hardware.configuration <- readBin(file, "raw", n=hardware.configuration.length) # 24 total
+    pressure.scale <- 1e-9 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little")
+    if (debug) cat("pressure.scale=", pressure.scale,"\n")
     probe.configuration <- readBin(file, "raw", n=probe.configuration.length) # 188 total
     deployment.parameters <- readBin(file, "raw", n=deployment.parameters.length) # 441 total
     ## Done reading file for a while; now study the information in these headers ...
@@ -497,7 +499,7 @@ read.adv.sontek.adr <- function(file, from=0, to, by=1,
         pitch[r] <- 0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
         roll[r] <- 0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
         temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", size=2, n=n, signed=TRUE, endian="little")
-        pressure[r] <- 0.00304366*readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little") # FIXME
+        pressure[r] <- pressure.scale*readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little")
         row.offset <- row.offset + n
     }
     rm(b, m)                            # save a bit of space

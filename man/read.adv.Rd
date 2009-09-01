@@ -89,17 +89,17 @@ read.adv.sontek.text(basefile, from=0, to, by=1,
   Nortek adr files: the file format assumed here is not the same as in the 
   documentation that I have available.  The documentation is for Firmware 
   Version 4.0 (October 1997), but this does not match a data file used for testing.
-  The following are the differences: (a) The second byte of the burst header is
-  0x11, but the documentation says it should be 0x10; the code takes either.  (b) The
-  data length is assumed to be 22, no matter it is.  This is done to match the files
+  The following are the differences:
+  \enumerate{
+  \item The second byte of the burst header is
+  0x11, but the documentation says it should be 0x10; the code takes either.
+  \item The data length is assumed to be 22, no matter it is.  This is done to match the files
   being used by the author.  The documentation suggests that the number of bytes 
   can be inferred from the header, but this is difficult because the information
   stored in the header \code{RecordedData} byte does not agree with the docs (bit 0
-  is 0 in the file, but we *do* have amplitude and correlation data).  (c) The
-  sampling rate is taken to be in units of 0.01Hz, not 0.1Hz as documented.
-  BUG: Also, the pressure scale factor 
-  is taken as 0.00304366, but it should be read from the data format.
-
+  is 0 in the file, but we *do* have amplitude and correlation data).  
+  \item The sampling rate is taken to be in units of 0.01Hz, not 0.1Hz as documented.
+  }
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
