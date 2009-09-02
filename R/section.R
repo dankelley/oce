@@ -248,7 +248,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
 
     if (!inherits(x, "section")) stop("method is only for section objects")
     opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
+    if (length(which) > 1) on.exit(par(opar))
 
     if (any(!which %in% 1:4)) stop("which must be between 1 and 4")
 
