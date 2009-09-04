@@ -10,10 +10,10 @@ as.windrose <- function(x, y, dtheta = 15)
     fivenum <- matrix(0, nt, 5)
     for (i in 1:nt) {
         theta[i] <- i * dt
-        if (theta[i] < pi)
-            inside <- (angle < (theta[i] + dt2)) & (angle > (theta[i] - dt2))
+        if (theta[i] <= pi)
+            inside <- (angle < (theta[i] + dt2)) & ((theta[i] - dt2) <= angle)
         else {
-            inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((2*pi+angle) > (theta[i] - dt2))
+            inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((theta[i] - dt2) <= (2*pi+angle))
         }
         count[i] <- sum(inside)
         mean[i] <- mean(R[inside], na.rm=TRUE)
