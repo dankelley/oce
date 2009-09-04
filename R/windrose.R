@@ -37,7 +37,7 @@ plot.windrose <- function(x,
     if (!inherits(x, "windrose")) stop("method is only for wind-rose objects")
     type <- match.arg(type)
     nt <- length(x$data$theta)
-    t <- x$data$theta * pi / 180            # in radians
+    t <- x$data$theta * pi / 180        # in radians
     dt <- t[2] - t[1]
     dt2 <- dt / 2
                                         # Plot setup
