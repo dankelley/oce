@@ -16,6 +16,7 @@
      margins.as.image=FALSE,
      cex=1,
      ylim,
+     debug=getOption("oce.debug"),
      \dots)}
 
 \arguments{
@@ -29,12 +30,9 @@
     placed in the right hand side of the top margin.  For timeseries,
     these strings are ignored.
     If this is provided, its length must equal that of \code{which}.}
-  \item{adorn}{list of expressions to be executed for the panels in
-    turn, e.g. to adorn the plots.  If the number matches the number of
-    panels, then the strings are applied to the appropriate panels, 
-    as they are drawn from top-left to bottom-right.   If only a single
-    expression is provided, it is used for all panels.  (See
-    \dQuote{Examples}.)}
+  \item{adorn}{optional list of \code{\link{expression}}s to be performed
+    immediately after drawing the panels. (See \code{\link{plot.adp}} for
+    an example.)}
   \item{draw.time.range}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
@@ -49,6 +47,8 @@
   \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
   \item{ylim}{optional 2-element list for \code{ylim}, or 2-column matrix (in which case
     the rows are used, in order, for the panels of the graph.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

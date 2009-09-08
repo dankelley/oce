@@ -774,6 +774,7 @@ plot.adp <- function(x,
                      mar=c(mgp[1],mgp[1]+1,1,1/4),
                      margins.as.image=FALSE,
                      cex=1,
+                     debug=getOption("oce.debug"),
                      ...)
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")

@@ -18,8 +18,9 @@
 \item{grid}{boolean, set to \code{TRUE} to get a grid on the plot.  (Note that
   \code{\link{grid}} does work correctly because it does not account
   properly for tic locations on the time axis.}
-\item{adorn}{optional \code{\link{expression}} to be performed immediately after
-  drawing the data panel.}     
+\item{adorn}{optional \code{\link{expression}} to be performed
+  immediately after drawing the panel. (See \code{\link{plot.adp}} for
+  an example.)}
 \item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
   does incorrectly if there are missing values in \code{y}).}
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}

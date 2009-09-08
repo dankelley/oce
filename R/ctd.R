@@ -493,7 +493,7 @@ plot.ctd.scan <- function(x,
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, log.action)
+read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL, station=NULL, log.action)
 {
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     filename <- NULL
@@ -519,12 +519,12 @@ read.ctd <- function(file, type=NULL, debug=FALSE, columns=NULL, station=NULL, l
         else stop("type must be SBE19 or WOCE, not ", type)
     }                                   # FIXME: should just use magic() here
     switch(type,
-           SBE19 = read.ctd.sbe(file, debug, columns, station=station, log.action=log.action),
-           WOCE  = read.ctd.woce(file, debug, columns, station=station, missing.value=-999, log.action=log.action)
+           SBE19 = read.ctd.sbe(file, debug=debug, columns, station=station, log.action=log.action),
+           WOCE  = read.ctd.woce(file, debug=debug, columns, station=station, missing.value=-999, log.action=log.action)
            )
 }
 
-read.ctd.woce <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.value=-999, log.action)
+read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value=-999, log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -666,7 +666,7 @@ read.ctd.woce <- function(file, debug=FALSE, columns=NULL, station=NULL, missing
     res
 }
 
-parse.latlon <- function(line, debug=FALSE)
+parse.latlon <- function(line, debug=getOption("oce.debug"))
 {
     ## The following formats are understood (for, e.g. latitude)
     ## * NMEA Latitude = 47 54.760 N
@@ -702,7 +702,7 @@ parse.latlon <- function(line, debug=FALSE)
     x
 }
 
-read.ctd.sbe <- function(file, debug=FALSE, columns=NULL, station=NULL, missing.value, log.action)
+read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value, log.action)
 {
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.

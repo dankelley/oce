@@ -752,6 +752,7 @@ plot.adv <- function(x,
                      margins.as.image=FALSE,
                      cex=1,
                      ylim,
+                     debug=getOption("oce.debug"),
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
@@ -780,6 +781,10 @@ plot.adv <- function(x,
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
         adorn.length <- lw
+    }
+    if (debug) {
+        cat("adorn:\n")
+        print(adorn)
     }
     if (margins.as.image) {
         w <- 1.5

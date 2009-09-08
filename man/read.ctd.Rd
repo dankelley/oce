@@ -9,11 +9,11 @@
 \description{Read a CTD data file, producing an object of type \code{ctd}.}
 
 \usage{
-read.ctd(file, type=NULL, debug=FALSE,
+read.ctd(file, type=NULL, debug=getOption("oce.debug"),
  	columns=NULL, station=NULL, log.action)
-read.ctd.sbe(file, debug=FALSE,
+read.ctd.sbe(file, debug=getOption("oce.debug"),
  	columns=NULL, station=NULL, missing.value, log.action)
-read.ctd.woce(file, debug=FALSE,
+read.ctd.woce(file, debug=getOption("oce.debug"),
  	columns=NULL, station=NULL, missing.value=-999, log.action)
 }
 
@@ -24,7 +24,8 @@ read.ctd.woce(file, debug=FALSE,
     file type.  If \code{type="SBE19"}, then a \emph{Seabird 19} (or similar) CTD
     format is assumed. If \code{type="WOCE"} then a 
     WOCE-exchange file is assumed.}
-  \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
   \item{columns}{if \code{NULL}, then \code{read.ctd} tries to infer column names from the
     header.  If a list, then it will be taken to be the list
     of columns.  The list must include \code{"pressure"}, \code{"temperature"}
