@@ -2,7 +2,7 @@
 - refactor adp code wrt transformation matrices
 - add matrix.smooth()
 - improve labels for oce.axis.POSIXct()
-- add debug=getOption("oce.debug") as an argument some functions
+- set default for 'debug' argument to getOption("oce.debug") in all functions
 - plot.profile(): add argument ytype; change 'type' to 'xtype'
 - add sw.z()
 - add oce.smooth()

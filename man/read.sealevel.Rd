@@ -7,7 +7,7 @@
 \description{Read a data file holding sea level data.  BUG: the time
   vector assumes GMT, regardless of the GMT.offset value.} 
 
-\usage{read.sealevel(file, tz=getOption("oce.tz"), log.action, debug=FALSE)}
+\usage{read.sealevel(file, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the

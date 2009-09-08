@@ -6,7 +6,7 @@
 
 \description{Read a coastline file in mapgen, matlab, or Splus format}
 
-\usage{read.coastline(file,type=c("R","S","mapgen"),debug=FALSE, log.action)}
+\usage{read.coastline(file,type=c("R","S","mapgen"),debug=getOption("oce.debug"), log.action)}
 
 \arguments{
   \item{file}{name of file containing coastline data.}

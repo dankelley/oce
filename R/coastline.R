@@ -74,7 +74,7 @@ plot.coastline <- function (x,
     }
 }
 
-read.coastline <- function(file,type=c("R","S","mapgen"),debug=FALSE,log.action)
+read.coastline <- function(file,type=c("R","S","mapgen"),debug=getOption("oce.debug"),log.action)
 {
     type <- match.arg(type)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")

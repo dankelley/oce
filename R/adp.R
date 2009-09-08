@@ -1203,7 +1203,7 @@ display.bytes <- function(b, label="")
     print(b)
 }
 
-read.header.nortek <- function(file, debug=FALSE)
+read.header.nortek <- function(file, debug=getOption("oce.debug"))
 {
     sync.code <- as.raw(0xa5)
     id.hardware.configuration <- as.raw(0x05)

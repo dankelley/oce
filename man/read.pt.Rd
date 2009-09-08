@@ -6,7 +6,7 @@
 
 \description{Read an pT temperature-depth recorder file, producing an object of type \code{pt}.}
 
-\usage{read.pt(file, tz=getOption("oce.tz"), log.action, debug=FALSE)}
+\usage{read.pt(file, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the

@@ -208,7 +208,7 @@ plot.sealevel <- function(x, which=1:4,
 
 
 read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
-                          debug=FALSE)
+                          debug=getOption("oce.debug"))
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- file

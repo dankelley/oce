@@ -340,7 +340,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
     }
 }
 
-read.section <- function(file, section.id="", debug=FALSE, log.action)
+read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.action)
 {
     if (is.character(file)) {
         filename <- file

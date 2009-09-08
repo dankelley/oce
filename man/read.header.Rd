@@ -5,7 +5,7 @@
 
 \description{Read an instrument header}
 
-\usage{read.header.nortek(file, debug=FALSE)}
+\usage{read.header.nortek(file, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
