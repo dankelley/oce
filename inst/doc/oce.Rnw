@@ -111,16 +111,17 @@ produces different sorts of plots for different sorts of \verb@x@ objects.
 \index{seawater properties, calculations of}
 
 The \verb@oce@ package provides many functions for dealing with seawater
-properties. Probably the most used is \verb@sw.rho(S,T,p)@, which computes
-seawater density $\rho$ as a function of salinity $S$ (PSU), in-situ temperature
-$T$ ($^\circ$C) and pressure $p$ (decibar). (Note that this and similar
-functions starts with the letters \verb@sw.@ to designate that they relate to
-seawater properties.  Future versions of \verb@oce@ may include the properties
-of air, so the prefix is an example of planning, rather than necessity.) The
-result is a number in the order of $1000$\,kg/m$^3$.  For many purposes,
-Oceanographers prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$,
-provided with \verb@sw.sigma(S,t,p)@, or its adiabatic cousin $\sigma_\theta$,
-provided with \verb@sw.sigma.theta(S,t,p)@.
+properties. Perhaps the most used is \verb@sw.rho(S,T,p)@, which computes
+seawater density $\rho=\rho(S, T, p)$, where $S$ (PSU) is salinity, $T$
+($^\circ$C) is \emph{in-situ} temperature, and $p$ (dbar) is seawater pressure,
+expressed as an increment over standard atmospheric pressure.  (This
+  and similar functions starts with the letters \verb@sw.@ to designate that
+  they relate to seawater properties; a future version of \verb@oce@ may  provide
+  air properties, with functions names starting with \verb@air.@) The result is a
+number in the order of $1000$\,kg/m$^3$.  For many purposes, Oceanographers
+prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$, provided with
+\verb@sw.sigma(S,t,p)@, or its adiabatic cousin $\sigma_\theta$, provided with
+\verb@sw.sigma.theta(S,t,p)@.
 
 \looseness=1
 \index{dynamic height}
@@ -128,8 +129,8 @@ Most of the functions use the UNESCO formulations of seawater properties, but ne
 may be added as they come into use in the literature.
 A partial list of seawater functions is as follows:
 \verb@sw.dynamic.height@ (dynamic height),
-\verb@sw.N2@ (buoyancy freqency),
-\verb@sw.S.C.T.p@ (salinity $S$ from $C$, $T$ and $p$),
+\verb@sw.N2@ (buoyancy frequency),
+\verb@sw.S.C.T.p@ (salinity $S$ from conductivity $C$, $T$ and $p$),
 \verb@sw.S.T.rho@ ($S$ from $T$ and $\rho$),
 \verb@sw.T.S.rho@ ($T$ from $S$ and $\rho$),
 \verb@sw.T.freeze@ (freezing temperature),
@@ -143,10 +144,10 @@ A partial list of seawater functions is as follows:
 \verb@sw.sigma@ ($\rho-1000$\,kg/m$^3$),
 \verb@sw.sigma.t@ ($\sigma$ with $p$ set to zero and temperature unaltered),
 \verb@sw.sigma.theta@ ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
-\verb@sw.sound.speed@ (speed of sound in m/s),
-\verb@sw.specific.heat@ (specific heat in J/kg/$^\circ$C),
+\verb@sw.sound.speed@ (speed of sound),
+\verb@sw.specific.heat@ (specific heat),
 \verb@sw.spice@ (a quantity used in double-diffusive research),
-\verb@sw.theta@ (potential temperature in $^\circ$C),
+\verb@sw.theta@ (potential temperature $\theta$),
 and
 \verb@sw.viscosity@ (viscosity).
 Details and examples are provided in the documentation of these functions.
