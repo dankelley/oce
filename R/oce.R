@@ -233,8 +233,12 @@ magic <- function(file, debug=getOption("oce.debug"))
 {
     filename <- file
     if (is.character(file)) {
-        if (length(grep(".adr$", file)))
+        if (debug) cat("checking filename to see if it ends in .adr ...")
+        if (length(grep(".adr$", file))) {
+            if (debug) cat(" yes, so this is adv/sontek/adr.\n")
             return("adv/sontek/adr")
+        }
+        if (debug) cat(" no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
@@ -242,16 +246,16 @@ magic <- function(file, debug=getOption("oce.debug"))
     	open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    if (debug > 0)
-        cat(paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    if (debug > 0) cat(paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=2)
-    if (debug > 0)
-        cat(paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    if (debug > 0) cat(paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
-    if (bytes[1] == 0x7f && bytes[2] == 0x7f)
+    if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
+        if (debug) cat("this is adp/rdi\n")
         return("adp/rdi")
+    }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
         ## NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
         ## Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
@@ -268,10 +272,19 @@ magic <- function(file, debug=getOption("oce.debug"))
         if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
         next.two.bytes <- readBin(file, what="raw", n=2)
         if (debug) cat("  next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
-        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x12) return("adv/nortek/vector")
-        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) return("adp/nortek/aquadopp") # p33 SIG
-        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a) return("adp/nortek/aquadoppHR") # p38 SIG
-        else stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2])
+        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x12) {
+            if (debug) cat("this is adv/nortek/vector\n")
+            return("adv/nortek/vector")
+        }
+        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) {
+            if (debug) cat("this is adp/nortek/aqudopp\n")
+            return("adp/nortek/aquadopp") # p33 SIG
+        }
+        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
+            if (debug) cat("this is adp/nortek/aqudoppHR\n")
+            return("adp/nortek/aquadoppHR") # p38 SIG
+        } else
+        stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
     } else if (as.integer(bytes[1]) == 81) {
         warning("possibly this file is a sontek ADV (first byte is 81)")
     } else if (as.integer(bytes[1]) == 83) {
@@ -281,17 +294,43 @@ magic <- function(file, debug=getOption("oce.debug"))
     }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
-    if (substr(line, 1, 3) == "CTD")                 return("ctd/woce/exchange")
-    if ("* Sea-Bird" == substr(line, 1, 10))         return("ctd/sbe/19")
-    if ("# -b" == substr(line, 1, 4))                return("coastline")
-    if ("# Station_Name," == substr(line, 1, 15))    return("sealevel")
-    if ("Station_Name," == substr(line, 1, 13))      return("sealevel")
-    if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) return("sealevel")
-    ##275A Halifax            Canada              1920 44400N 063350W 0000 3 00000R MM
-    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line))  return("topo")
-    if ("RBR TDR" == substr(line, 1, 7))             return("pt")
-    if ("BOTTLE"  == substr(line, 1, 6))             return("section")
-
+    if (substr(line, 1, 3) == "CTD") {
+        if (debug) cat("this is ctd/woce/exchange\n")
+        return("ctd/woce/exchange")
+    }
+    if ("* Sea-Bird" == substr(line, 1, 10))  {
+        if (debug) cat("this is ctd/sbe/19\n")
+        return("ctd/sbe/19")
+    }
+    if ("# -b" == substr(line, 1, 4)) {
+        if (debug) cat("this is coastline\n")
+        return("coastline")
+    }
+    if ("# Station_Name," == substr(line, 1, 15)) {
+        if (debug) cat("this is sealevel\n")
+        return("sealevel")
+    }
+    if ("Station_Name," == substr(line, 1, 13)) {
+        if (debug) cat("this is sealevel\n")
+        return("sealevel")
+    }
+    if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) {
+        if (debug) cat("this is sealevel\n")
+        return("sealevel")
+    }
+    if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line)) {
+        if (debug) cat("this is topo\n")
+        return("topo")
+    }
+    if ("RBR TDR" == substr(line, 1, 7))  {
+        if (debug) cat("this is pt\n")
+        return("pt")
+    }
+    if ("BOTTLE"  == substr(line, 1, 6))  {
+        if (debug) cat("this is section\n")
+        return("section")
+    }
+    if (debug) cat("this is unknown\n")
     return("unknown")
 }
 
