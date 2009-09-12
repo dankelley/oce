@@ -12,6 +12,8 @@ imagep <- function(x, y, z,
                    yaxs="i",
                    cex=par("cex"),
                    adorn,
+                   axes=TRUE,
+                   debug=getOption("oce.debug"),
                    ...)
 {
     if (missing(x)) stop("must supply x")
@@ -73,9 +75,11 @@ imagep <- function(x, y, z,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         }
-        oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex)
         box()
-        axis(2, cex.axis=cex, cex.lab=cex)
+        if (axes) {
+            oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex)
+            axis(2, cex.axis=cex, cex.lab=cex)
+        }
     } else {
         if (missing(breaks)) {
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, col=col,
@@ -90,9 +94,11 @@ imagep <- function(x, y, z,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim,
                   ...)
         }
-        axis(1, cex.axis=cex, cex.lab=cex)
         box()
-        axis(2, cex.axis=cex, cex.lab=cex)
+        if (axes) {
+            axis(1, cex.axis=cex, cex.lab=cex)
+            axis(2, cex.axis=cex, cex.lab=cex)
+        }
     }
     if (draw.time.range && x.is.time) {
         time.range <- par("usr")[1:2]
@@ -107,6 +113,7 @@ imagep <- function(x, y, z,
         t <- try(eval.parent(adorn), silent=!TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn='", adorn, "'\n")
     }
+    if (debug) cat("axes=",axes,"\n")
 
     ## 2. plot palette
     par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
