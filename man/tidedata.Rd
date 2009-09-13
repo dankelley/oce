@@ -10,7 +10,7 @@
   information that is use by \code{\link{tidem}} to fit tidal models.
   \code{tidedata} is a list containing
   \describe{
-    \item{\code{const}}{a list containing vectors
+    \item{const}{a list containing vectors
       \describe{
 	\item{\code{name}}{a string with constituent name}
 	\item{\code{freq}}{the frequency, in cycles per hour}
@@ -30,21 +30,21 @@
 	\item{\code{doodsonamp}}{(fill in some info later)}
 	\item{\code{doodsonspecies}}{(fill in some info later)}
       }
-      \item{\code{sat}}{a list containing vectors
-	\describe{
-	  \item{\code{deldood}}{(fill in some info later)}
-	  \item{\code{phcorr}}{(fill in some info later)}
-	  \item{\code{amprat}}{(fill in some info later)}
-	  \item{\code{ilatfac}}{(fill in some info later)}
-	  \item{\code{iconst}}{(fill in some info later)}
-	}
+    }
+    \item{\code{sat}}{a list containing vectors
+      \describe{
+	\item{\code{deldood}}{(fill in some info later)}
+	\item{\code{phcorr}}{(fill in some info later)}
+	\item{\code{amprat}}{(fill in some info later)}
+	\item{\code{ilatfac}}{(fill in some info later)}
+	\item{\code{iconst}}{(fill in some info later)}
       }
-      \item{\code{shallow}}{a list containing vectors
-	\describe{
-	  \item{\code{iconst}}{(fill in some info later)}
-	  \item{\code{coef}}{(fill in some info later)}
-	  \item{\code{iname}}{(fill in some info later)}
-	}
+    }
+    \item{\code{shallow}}{a list containing vectors
+      \describe{
+	\item{\code{iconst}}{(fill in some info later)}
+	\item{\code{coef}}{(fill in some info later)}
+	\item{\code{iname}}{(fill in some info later)}
       }
     }
   }

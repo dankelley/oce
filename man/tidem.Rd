@@ -50,12 +50,13 @@
   then the (optional) rest of the elements of \code{constituents} are
   examined, in order.  Each of these constituents is based on the name
   of a tidal constituent in the Foreman (1977) notation.  (To get the
-  list, do \code{data(tide.constituents);cat(tide.constituents$name)}.)
-  Each named constituent is added to the existing list, if it is not
-  already there.  But, if the constituent is preceeded by a minus sign,
-  then it is removed from the list (if it is already there).  Thus, for
-  example, \code{constituents=c("standard", "-M2", "ST32")} would remove
-  the M2 constituent and add the ST32 constituent.}
+  list, execute \code{data(tide.constituents)} and then
+  execute \code{cat(tide.constituents$name)}.)  Each named constituent is
+  added to the existing list, if it is not already there.  But, if the
+  constituent is preceeded by a minus sign, then it is removed from the
+  list (if it is already there).  Thus, for example,
+  \code{constituents=c("standard", "-M2", "ST32")} would remove the M2
+  constituent and add the ST32 constituent.}
 
   \item{Case 3.}{If the first item is not \code{"standard"}, then the
   list of constituents is processed as in Case 2, but without starting
