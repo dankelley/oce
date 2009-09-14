@@ -9,7 +9,7 @@
 \usage{tidem.vuf(t, j, lat=NULL)}
 
 \arguments{
-  \item{t}{time in \code{\link[base]{POSIXct}} format.  (It is
+  \item{t}{time in \code{POSIXct} format.  (It is
     \strong{very} important to use \code{tz="GMT"} in constructing
     \code{t}.)}
   \item{j}{indices of tidal constituents to use}
