@@ -18,4 +18,10 @@
   interpolation with application to oceanographic data. Deep-Sea
   Research, 15, 185:193.}
 
+\examples{
+data(RRprofile)
+ctd <- as.ctd(RRprofile$salinity, RRprofile$temperature, RRprofile$depth)
+plot(ctd)
+}
+
 \keyword{misc}
