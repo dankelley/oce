@@ -1060,7 +1060,7 @@ plot.TS <- function (x,
     lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
 }
 
-draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd, lty)
+draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     usr <- par("usr")
     S.axis.min <- usr[1]
