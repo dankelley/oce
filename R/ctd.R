@@ -1030,6 +1030,7 @@ plot.TS <- function (x,
                      Slim, Tlim,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1]+5/4,mgp[1]+1,mgp[1],mgp[1]),
+                     lwd.rho=par("lwd"), lty.rho=par("lty"),
                      ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -1053,13 +1054,13 @@ plot.TS <- function (x,
 
     ## grid, isopycnals, then freezing-point line
     if (grid) grid(col=col.grid, lty=lty.grid)
-    draw.isopycnals(rho.levels=rho.levels, rotate.rho.labels=rotate.rho.labels, rho1000=rho1000, cex=cex.rho, col=col.rho)
+    draw.isopycnals(rho.levels=rho.levels, rotate.rho.labels=rotate.rho.labels, rho1000=rho1000, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
 }
 
-draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray")
+draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd, lty)
 {
     usr <- par("usr")
     S.axis.min <- usr[1]
@@ -1089,7 +1090,7 @@ draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE,
         ok <- !is.na(s.line) # crazy T can give crazy S
         s.ok <- s.line[ok]
         t.ok <- t.line[ok]
-        lines(s.ok, t.ok, col = col)
+        lines(s.ok, t.ok, col = col, lwd=lwd, lty=lty)
         if (s.ok[length(s.ok)] > S.axis.max) { # to right of box
             i <- match(TRUE, s.ok > S.axis.max)
             if (rotate.rho.labels)
