@@ -285,12 +285,12 @@ magic <- function(file, debug=getOption("oce.debug"))
             return("adp/nortek/aquadoppHR") # p38 SIG
         } else
         stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
-    } else if (as.integer(bytes[1]) == 81) {
-        warning("possibly this file is a sontek ADV (first byte is 81)")
-    } else if (as.integer(bytes[1]) == 83) {
-        warning("possibly this file is a sontek ADV (first byte is 83)")
-    } else if (as.integer(bytes[1]) == 87) {
-        warning("possibly this file is a sontek ADV (first byte is 87)")
+    ##} else if (as.integer(bytes[1]) == 81) {
+    ##    warning("possibly this file is a sontek ADV (first byte is 81)")
+    ##} else if (as.integer(bytes[1]) == 83) {
+    ##    warning("possibly this file is a sontek ADV (first byte is 83)")
+    ##} else if (as.integer(bytes[1]) == 87) {
+    ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
