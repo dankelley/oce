@@ -1,4 +1,5 @@
 0.1-78
+- fix issue 47 [cannot read new MEDS sealevel format]
 - add data(RRprofile)
 - to plot.TS(), add arguments lwd.rho and lty.rho
 0.1-77
