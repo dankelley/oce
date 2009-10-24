@@ -3,6 +3,8 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                             mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
                             ...)
 {
+    pin <- par("pin")
+    page.ratio <- pin[2]/pin[1]
     if (missing(x)) stop("must supply x")
     if (missing(y)) stop("must supply y")
     if (missing(u)) stop("must supply u")
@@ -21,7 +23,7 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 	ok <- !is.na(u) & !is.na(v) & (u^2+v^2) > 0
     arrows(as.numeric(x[ok]),
 	       y[ok],
-           (as.numeric(x[ok]) + u[ok] / yscale / yr.by.xr),
+           (as.numeric(x[ok]) + u[ok] / yscale / yr.by.xr * page.ratio),
            (y[ok] + v[ok] / yscale),
            length=length, ...)
 	options(warn=warn)
