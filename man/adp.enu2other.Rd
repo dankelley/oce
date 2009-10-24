@@ -2,7 +2,7 @@
 
 \alias{adp.enu2other}
 
-\title{Convert ADP currents from enu coordinates to other coordinates}
+\title{Convert ADP from east-north-up coordinates to other coordinates}
 
 \description{Convert ADP velocity components from an enu-based
   coordinate system to another system, perhaps to align axes with the

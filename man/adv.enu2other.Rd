@@ -2,10 +2,11 @@
 
 \alias{adv.enu2other}
 
-\title{Convert ADV from beam coordinates to enu coordinates}
+\title{Convert ADV from east-north-up coordinates to other coordinates}
 
-\description{Convert ADV velocity components from a beam-based
-  coordinate system to an enu-based coordinate system.}
+\description{Convert ADV velocity components from an enu-based
+  coordinate system to another system, perhaps to align axes with the
+  coastline.}
 
 \usage{adv.enu2other(x, heading=0, pitch=0, roll=0)}
 

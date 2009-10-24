@@ -5,8 +5,11 @@
 
 \description{Draw a stick-plot diagram}
 
-\usage{oce.plot.sticks(x, y, u, v, yscale=1, add=FALSE, length=1/20, \dots)}
-
+\usage{
+oce.plot.sticks(x, y, u, v, yscale=1, add=FALSE, length=1/20,
+                mgp=getOption("oce.mgp"),
+                mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
+                \dots)}
 \arguments{
 \item{x}{x coordinates of stick origins.}
 \item{y}{y coordinates of stick origins.}
@@ -17,6 +20,11 @@
 \item{length}{value to be provided to \code{\link{arrows}}; here, we set
   a default that is smaller than normally used, because these plots tend
   to be crowded in oceanographic applications.}
+\item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+  also for \code{par(mar)}, computed from this.  The default is
+  tighter than the R default, in order to use more space for the data
+  and less for the axes.}
+\item{mar}{value to be used with \code{\link{par}("mar")}.}
 \item{\dots}{graphical parameters passed down to \code{\link{arrows}}.
   It is common, for example, to use smaller arrow heads than
   \code{\link{arrows}} uses; see \dQuote{Examples}.}

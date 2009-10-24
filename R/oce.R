@@ -1,4 +1,7 @@
-oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20, ...)
+oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
+                            mgp=getOption("oce.mgp"),
+                            mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
+                            ...)
 {
     if (missing(x)) stop("must supply x")
     if (missing(y)) stop("must supply y")
@@ -8,8 +11,9 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20, ...)
     if (length(y) != n) stop("lengths of x and y must match, but they are ", n, " and ", length(y))
     if (length(u) != n) stop("lengths of x and u must match, but they are ", n, " and ", length(u))
     if (length(v) != n) stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
+    par(mar=mar, mgp=mgp)
     if (!add)
-        plot(x, y, type='n')
+        plot(x, y, type='n', ...)
     usr <- par("usr")
     yr.by.xr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
     arrows(as.numeric(x), y,
