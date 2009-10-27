@@ -1,3 +1,5 @@
+0.1-80
+- fix issue 49 [demo(TS) broken]
 0.1-79
 - fix issue 48 [oce.plot.sticks() ignored page ratio]
 - fix issue 47 [cannot read new MEDS sealevel format]
