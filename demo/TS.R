@@ -7,9 +7,10 @@ for (i in 1:124) {
  	x <- (-8 - profile$metadata$longitude) / (74 - 8)
 	col <- hsv(2*x/3) # red to blue
     if (i == 1) {
-		plot.TS(profile, xlim=c(34,37), ylim=c(2,25), col=col)
+		plot.TS(profile, Slim=c(34,37), Tlim=c(2,25), col=col)
  	} else {
 		points(profile$data$salinity, profile$data$temperature,pch=20,col=col)
   	}
 }
-title("North Atlantic along 36N from America (blue) to Europe (red)")
+legend("bottomright", pch=rep(20,2), col=c("blue","red"),
+       legend=c("West","East"), bg="white")
