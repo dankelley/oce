@@ -98,6 +98,7 @@ export(
        section.smooth,
        subset.oce,
        stickplot,
+       sun.angle,
        sw.alpha,
        sw.alpha.over.beta,
        sw.sound.speed,
