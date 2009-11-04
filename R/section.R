@@ -64,23 +64,28 @@ make.section <- function(item, ...)
     res
 }
 
-plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
-                          grid = FALSE,
-                          contour.levels=NULL,
-                          contour.labels=NULL,
-                          station.indices,
-                          coastline=NULL,
-                          map.xlim=NULL,
-                          xtype="distance",
-                          ytype="depth",
-                          legend.loc="bottomright",
-                          adorn=NULL,
-                          mgp=getOption("oce.mgp"),
-                          mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]),
-                          ...)
+plot.section <- function(x,
+                         which=1:4,
+                         at=NULL,
+                         labels=TRUE,
+                         grid = FALSE,
+                         contour.levels=NULL,
+                         contour.labels=NULL,
+                         station.indices,
+                         coastline=NULL,
+                         ylim=NULL,
+                         map.xlim=NULL,
+                         xtype="distance",
+                         ytype="depth",
+                         legend.loc="bottomright",
+                         adorn=NULL,
+                         mgp=getOption("oce.mgp"),
+                         mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]),
+                         ...)
 {
     plot.subsection <- function(variable="temperature", title="Temperature",
                                 indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL,
+                                ylim=NULL,
                                 ...)
     {
         if (variable == "map") {
@@ -124,7 +129,6 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
         } else {                        # not a map
             if (!(variable %in% names(x$data$station[[1]]$data)))
                 stop("this section does not contain a variable named '", variable, "'")
-
             ## FIXME: contours don't get to plot edges
             xxrange <- range(xx, na.rm=TRUE)
             yyrange <- range(yy, na.rm=TRUE)
@@ -137,16 +141,15 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                 zz <- zz[ox,]
                 message("NOTE: plot.section() reordered the stations to make x monotonic\n")
             }
-
+            ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
             par(xaxs="i", yaxs="i")
-
             ylab <- if ("ylab" %in% names(list(...)))
                 list(...)$ylab
             else { if (which.ytype==1) resizable.label("p") else "Depth [ m ]" }
             if (is.null(at)) {
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i",
-                     ylim=yyrange,
+                     ylim=ylim,
                      col="white",
                      xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
                      ylab=ylab,
@@ -158,7 +161,7 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i",
 ##                     ylim=rev(yyrange),
-                     ylim=yyrange,
+                     ylim=ylim,
                      col="white",
                      xlab="", ylab=ylab, axes=FALSE)
                 axis(1, at=at, labels=labels)
@@ -170,20 +173,24 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
             usr <- par("usr")
             graph.bottom <- usr[3]
             water.depth <- NULL
+
             for (i in 1:num.stations) {
                 zz[i,] <- rev(x$data$station[[station.indices[i]]]$data[[variable]])
                 if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
-
                 temp <- x$data$station[[station.indices[i]]]$data$temperature
                 len <- length(temp)
-                wd <- NA
-                if (is.na(temp[len])) {
-                    ##cat("bottom temperature is missing\n")
-                    ##print(data.frame(p=x$data$station[[station.indices[[i]]]]$data$pressure, temp=temp))
-                    wdi <- len - which(!is.na(rev(temp)))[1] + 1
-                    ##cat("BOTTOM T:");print(temp[wdi])
-                    ##cat("BOTTOM p:");print(x$data$station[[station.indices[i]]]$data$pressure[wdi])
-                    wd <- x$data$station[[station.indices[i]]]$data$pressure[wdi]
+                if (is.finite(x$data$station[[station.indices[i]]]$metadata$water.depth)) {
+                    wd <- x$data$station[[station.indices[i]]]$metadata$water.depth
+                } else {
+                    wd <- NA
+                    if (is.na(temp[len])) {
+                        ##cat("bottom temperature is missing\n")
+                        ##print(data.frame(p=x$data$station[[station.indices[[i]]]]$data$pressure, temp=temp))
+                        wdi <- len - which(!is.na(rev(temp)))[1] + 1
+                        ##cat("BOTTOM T:");print(temp[wdi])
+                        ##cat("BOTTOM p:");print(x$data$station[[station.indices[i]]]$data$pressure[wdi])
+                        wd <- x$data$station[[station.indices[i]]]$data$pressure[wdi]
+                    }
                 }
                 in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature[-3])) # skip first 3 points
                 ##cat("check==\n")
@@ -237,7 +244,6 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
                             ...)
                 }
             }
-
             if (length(bottom.x) == length(bottom.y))
                 polygon(bottom.x, bottom.y, col="gray")
             box()
@@ -324,13 +330,13 @@ plot.section <- function (x, which=1:4, at=NULL, labels=TRUE,
 
     for (w in 1:length(which)) {
         if (!missing(contour.levels)) {
-            if (which[w] == 1) plot.subsection("temperature", "T", nlevels=contour.levels, ...)
-            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, ...)
-            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), nlevels=contour.levels, ...)
+            if (which[w] == 1) plot.subsection("temperature", "T", nlevels=contour.levels, ylim=ylim, ...)
+            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, ylim=ylim, ...)
+            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), nlevels=contour.levels, ylim=ylim, ...)
         } else {
-            if (which[w] == 1) plot.subsection("temperature", "T", ...)
-            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="",...)
-            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), ...)
+            if (which[w] == 1) plot.subsection("temperature", "T", ylim=ylim, ...)
+            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", ylim=ylim, ...)
+            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), ylim=ylim, ...)
         }
         if (which[w] == 4) plot.subsection("map", indicate.stations=FALSE)
         if (w <= adorn.length) {
@@ -553,7 +559,7 @@ summary.section <- function(object, ...)
         stn.sum[i, 2] <- stn$metadata$longitude
         stn.sum[i, 3] <- length(stn$data$pressure)
         if (is.finite(stn$metadata$water.depth)) {
-            stn.sum[i, 3] <- stn$metadata$water.depth
+            stn.sum[i, 4] <- stn$metadata$water.depth
         } else {
             temp <- stn$data$temperature
             wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1

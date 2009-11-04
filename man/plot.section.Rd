@@ -15,6 +15,7 @@
      contour.labels=NULL,
      station.indices,
      coastline=NULL,
+     ylim=NULL,
      map.xlim=NULL,
      xtype="distance",
      ytype="depth",
@@ -53,6 +54,7 @@
     focus on the first four stations, use \code{station.numbers=c(1,4)}.}
   \item{coastline}{optional \code{coastline} to be used in a station
     map}
+  \item{ylim}{optional limit for y axis (only in sections, not map)}
   \item{map.xlim}{optional xlim for station location, which can be
     helpful in ensuring that a recognizable coastline can be seen}
   \item{xtype}{type of x axis, for contour plots, either
