@@ -1,9 +1,12 @@
+0.1-81
+- reformulate sun.angle in R
+- fix issue 53 [interp.barnes() gives poor error msg for mismatched x and y]
+- fix issue 52 [plot.section() draws incorrect bottom shape]
 0.1-80
-- add sun.angle [not tested yet; will be reformulated in R from up-to-date formulae]
+- add sun.angle [not tested yet; needs R reformulation]
 - fix issue 51 [summary.section() does not report water depth]
 - fix issue 50 [non-bug relating to sun elevation]
 - fix issue 49 [demo(TS) broken]
-
 0.1-79
 - fix issue 48 [oce.plot.sticks() ignored page ratio]
 - fix issue 47 [cannot read new MEDS sealevel format]

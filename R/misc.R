@@ -351,8 +351,8 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
                           xr=NULL, yr=NULL, gamma=0.5, iterations=2)
 {
     n <- length(x)
-    if (length(y) != n) stop("lengths of x and y disagree; they are %s and %s", n, length(y))
-    if (length(z) != n) stop("lengths of x and z disagree; they are %s and %s", n, length(z))
+    if (length(y) != n) stop("lengths of x and y disagree; they are ", n, " and ", length(y))
+    if (length(z) != n) stop("lengths of x and z disagree; they are ", n, " and ", length(z))
     if (is.null(w)) {
         w <- rep(1.0, length(x))
         cat("interp.barnes assuming equal weights on all data\n")
