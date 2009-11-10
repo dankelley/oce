@@ -2,7 +2,6 @@ make.section <- function(item, ...)
 {
     if (inherits(item, "ctd")) {
         extra.args <- list(...)
-        ##if (length(extra.args) < 1) stop("cannot make a section from one station")
         num.stations <- 1 + length(extra.args)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
@@ -18,11 +17,9 @@ make.section <- function(item, ...)
                 lat[i] <- extra.args[[i-1]]$metadata$latitude
                 lon[i] <- extra.args[[i-1]]$metadata$longitude
                 station[[i]] <- extra.args[[i-1]]
-                ##summary(extra.args[i-1])
             }
     } else if (inherits(item, "list")) {
         num.stations <- length(item)
-        ##if (num.stations < 2) stop("cannot make a section from one station")
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
@@ -556,7 +553,7 @@ summary.section <- function(object, ...)
     for (i in 1:num.stations) {
         stn <- object$data$station[[i]]
         stn.sum[i, 1] <- stn$metadata$longitude
-        stn.sum[i, 2] <- stn$metadata$longitude
+        stn.sum[i, 2] <- stn$metadata$latitude
         stn.sum[i, 3] <- length(stn$data$pressure)
         if (is.finite(stn$metadata$water.depth)) {
             stn.sum[i, 4] <- stn$metadata$water.depth
