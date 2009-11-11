@@ -775,3 +775,4 @@ integer2ascii <- function(i)
       "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
       "\xfe", "\xff")[i+1]
 }
+
