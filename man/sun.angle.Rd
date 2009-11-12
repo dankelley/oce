@@ -24,20 +24,25 @@
 \item{solar.distance}{distance to sun, in astronomical units}}
 
 \examples{
-t0 <- as.POSIXct("2008-11-11 00:00:00", tz="UTC")
-t <- seq(from=t0, to=t0+86400, length.out=1440+1)
-lat <- 44+39/60
-lon <- -(63+34/60)
-a <- sun.angle(t, lat, lon)
-day <- a$elevation > 0
-a$azimuth[!day] <- NA
-plot(a$azimuth, a$elevation, type='l', xlab="Azimuth", ylab="Elevation",
-    ylim=c(0, max(a$elevation)))
-h <- which(trunc(t,"hours")==t)
-points(a$azimuth[h], a$elevation[h])
-hour <- as.POSIXlt(t[h])$hour
-text(a$azimuth[h], a$elevation[h], paste(hour,"h",sep=""), pos=1, offset=1)
-title("Halifax, Nova Scotia [Remembrance Day 2009]")
+dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60), location="Halifax, Nova Scotia", add=FALSE)
+{
+    t0 <- as.POSIXct(paste(day, "00:00:00"), tz="UTC")
+    t <- seq(from=t0, to=t0+86400, length.out=1440+1)
+    a <- sun.angle(t, lat, lon)
+    day <- a$elevation > 0
+    a$azimuth[!day] <- NA
+    if (add) {
+        lines(a$azimuth, a$elevation)
+    } else {
+        plot(a$azimuth, a$elevation, type='l', xlab='Azimuth', ylab='Elevation', ylim=c(0, 90), main=location)
+    }
+    h <- which(trunc(t,"hours")==t)
+    points(a$azimuth[h], a$elevation[h])
+    hour <- as.POSIXlt(t[h])$hour
+    text(a$azimuth[h], a$elevation[h], paste(hour,"h",sep=""), pos=1, offset=1)
+}
+dayplot("2009-06-22")
+dayplot("2009-12-22", add=TRUE)
 }
 
 \references{Based on Fortran code retrieved from
