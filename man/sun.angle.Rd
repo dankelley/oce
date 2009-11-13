@@ -27,19 +27,21 @@
 dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60), location="Halifax, Nova Scotia", add=FALSE)
 {
     t0 <- as.POSIXct(paste(day, "00:00:00"), tz="UTC")
-    t <- seq(from=t0, to=t0+86400, length.out=1440+1)
+    t <- seq(from=t0, to=t0+86400, length.out=24*60/15+1) # 15-min spacing
     a <- sun.angle(t, lat, lon)
     day <- a$elevation > 0
     a$azimuth[!day] <- NA
     if (add) {
-        lines(a$azimuth, a$elevation)
+        points(a$azimuth, a$elevation, cex=0.5*par("cex"))
     } else {
-        plot(a$azimuth, a$elevation, type='l', xlab='Azimuth', ylab='Elevation', ylim=c(0, 90), main=location)
+        plot(a$azimuth, a$elevation, type='p', xlab='Azimuth',
+             ylab='Elevation', ylim=c(0, 90), main=location, cex=0.5*par("cex"))
     }
     h <- which(trunc(t,"hours")==t)
-    points(a$azimuth[h], a$elevation[h])
+    points(a$azimuth[h], a$elevation[h], pch=16)
     hour <- as.POSIXlt(t[h])$hour
-    text(a$azimuth[h], a$elevation[h], paste(hour,"h",sep=""), pos=1, offset=1)
+    text(a$azimuth[h], a$elevation[h], paste(hour,"h",sep=""), pos=1,
+         offset=0.7, cex=0.7*par("cex"))
 }
 dayplot("2009-06-22")
 dayplot("2009-12-22", add=TRUE)
