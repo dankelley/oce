@@ -60,8 +60,11 @@ SEXP interp_barnes(SEXP x, SEXP y, SEXP z, SEXP w, /* z at (x,y), weighted by w 
 	SEXP ans;
 	
 	nx = length(x); ny = length(y);	nz = length(z);
-	if (nx != ny) error(sprintf("lengths of x and y must agree, but they are %d and %d", nx, ny));
-	if (nx != nz) error(sprintf("lengths of x and z must agree, but they are %d and %d", nx, nz));
+	/* Note: R has already checked that nx=ny, in interp.barnes(), so remove the check, because
+         * it started making compiler warnings in Nov 2009.
+         *** if (nx != ny) error(sprintf("lengths of x and y must agree, but they are %d and %d", nx, ny));
+         *** if (nx != nz) error(sprintf("lengths of x and z must agree, but they are %d and %d", nx, nz));
+         */
 	rx = REAL(x); ry = REAL(y); rz = REAL(z); rw = REAL(w);
 	
 	nxg = length(xg);
