@@ -15,7 +15,7 @@ plot.topo <- function(x,
 {
     if (!inherits(x, "topo")) stop("method is only for topo objects")
     opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
+#    on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
     if (missing(asp)) {
