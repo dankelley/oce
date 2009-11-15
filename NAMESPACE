@@ -6,6 +6,7 @@ export(
        as.coastline,
        as.ctd,
        as.sealevel,
+       as.topo,
        as.windrose,
        draw.isopycnals,
        adp.beam2xyz,

@@ -122,16 +122,30 @@ read.topo <- function(file, log.action)
     lat.ll <- as.numeric(strsplit(header[4],"[ ]+",perl=TRUE)[[1]][2])
     cellsize <- as.numeric(strsplit(header[5],"[ ]+",perl=TRUE)[[1]][2])
     zz <- as.matrix(read.table(file, header=FALSE, skip=nh),byrow=TRUE)
-    z <- t(zz[dim(zz)[1]:1,])
     longitude <- lon.ll + cellsize * seq(0, ncols-1)
     latitude <- lat.ll + cellsize * seq(0, nrows-1)
-    data <- list(longitude=longitude, latitude=latitude, z=z)
-    metadata <- list(filename=file, cellsize=cellsize, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
+    z <- t(zz[dim(zz)[1]:1,])
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("topo", "oce")
-    res
+    as.topo(longitude, latitude, z, filename=file, log.action=log.item)
+}
+
+as.topo <- function(longitude, latitude, z, filename="", log.action)
+{
+    ncols <- length(longitude)
+    nrows <- length(latitude)
+    lon.ll <- min(longitude, na.rm=TRUE)
+    lat.ll <- min(latitude, na.rm=TRUE)
+    dim <- dim(z)
+    if (dim[1] != ncols) stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
+    if (dim[2] != nrows) stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
+    data <- list(longitude=longitude, latitude=latitude, z=z)
+    metadata <- list(filename=file, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    rval <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(rval) <- c("topo", "oce")
+    rval
 }
 
 summary.topo <- function(object, ...)
