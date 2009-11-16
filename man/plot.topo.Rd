@@ -19,6 +19,7 @@
      asp,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1],mgp[1],0.5,0.5),
+     debug=FALSE,
      \dots)}
 
 \arguments{
@@ -51,6 +52,8 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{boolean value, set to \code{TRUE} to get some debugging
+    information.}
   \item{\dots}{additional arguments passed on to plotting functions}
 }
 

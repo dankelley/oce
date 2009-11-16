@@ -11,6 +11,7 @@ plot.topo <- function(x,
                       asp,
                       mgp=getOption("oce.mgp"),
                       mar=c(mgp[1],mgp[1],0.5,0.5),
+                      debug=FALSE,
                       ...)
 {
     if (!inherits(x, "topo")) stop("method is only for topo objects")
@@ -34,8 +35,43 @@ plot.topo <- function(x,
     } else {
         zr <- range(x$data$z, na.rm=TRUE)
     }
-    plot(range(x$data$longitude, na.rm=TRUE), range(x$data$latitude, na.rm=TRUE),
-         asp=asp, xaxs="i", yaxs="i", type="n", xlab="", ylab="", ...)
+
+    ## kludge to prevent whitespace above/below or to the left/right
+    ## of plots, and also to prevent going past the poles
+    lat.range <- range(x$data$latitude, na.rm=TRUE)
+    lon.range <- range(x$data$longitude, na.rm=TRUE)
+    plot(lon.range, lat.range, asp=asp, xaxs="i", yaxs="i", type="n", xlab="", ylab="", axes=FALSE, ...)
+
+    ## Kludge to prevent latitudes beyond poles
+    usr <- par("usr")
+    print(usr)
+    if (usr[3] < -90) usr[3] <- -90
+    if (usr[4] > 90) usr[4] <- 90
+    if (usr[3] < lat.range[1]) usr[3] <- lat.range[1]
+    if (usr[4] > lat.range[2]) usr[4] <- lat.range[2]
+    if (usr[1] < lon.range[1]) usr[1] <- lon.range[1]
+    if (usr[2] > lon.range[2]) usr[2] <- lon.range[2]
+
+    lines(usr[1:2], rep(usr[3],2))
+    lines(usr[1:2], rep(usr[4],2))
+    lines(rep(usr[1],2), usr[3:4])
+    lines(rep(usr[2],2), usr[3:4])
+
+    xlab <- pretty(usr[1:2])
+    if (debug) cat("xlab=",xlab,"\n")
+    if (debug) cat("lon.range=",lon.range,"\n")
+    xlab[xlab > lon.range[2]] <- NA
+    xlab[xlab < lon.range[1]] <- NA
+    if (debug) cat("xlab=",xlab,"after trimming\n")
+    axis(1, at=xlab, pos=usr[3])
+    axis(3, at=xlab, pos=usr[4], labels=FALSE)
+
+    ylab <- pretty(usr[3:4])
+    ylab[abs(ylab) > 90] <- NA
+    ylab[ylab > lat.range[2]] <- NA
+    ylab[ylab < lat.range[1]] <- NA
+    axis(2, at=ylab, pos=usr[1])
+    axis(4, at=ylab, pos=usr[1], labels=FALSE)
 
     contour(x$data$longitude, x$data$latitude, x$data$z,
             levels=0, drawlabels=FALSE, add=TRUE,
