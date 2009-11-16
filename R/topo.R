@@ -71,7 +71,7 @@ plot.topo <- function(x,
     ylab[ylab > lat.range[2]] <- NA
     ylab[ylab < lat.range[1]] <- NA
     axis(2, at=ylab, pos=usr[1])
-    axis(4, at=ylab, pos=usr[1], labels=FALSE)
+    axis(4, at=ylab, pos=usr[2], labels=FALSE)
 
     contour(x$data$longitude, x$data$latitude, x$data$z,
             levels=0, drawlabels=FALSE, add=TRUE,
