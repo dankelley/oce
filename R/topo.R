@@ -44,7 +44,6 @@ plot.topo <- function(x,
 
     ## Kludge to prevent latitudes beyond poles
     usr <- par("usr")
-    print(usr)
     if (usr[3] < -90) usr[3] <- -90
     if (usr[4] > 90) usr[4] <- 90
     if (usr[3] < lat.range[1]) usr[3] <- lat.range[1]

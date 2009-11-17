@@ -17,9 +17,9 @@
 \parskip=1.5ex plus 1.5ex minus 1.25ex
 
 \titleformat{\section}[block]{\normalfont\large\bfseries}{\thesection}{1em}{}
-\titlespacing{\section}{0em}{2em plus 3em minus 0.5em}{0.15em plus 0.15em minus 0.125em}
+\titlespacing{\section}{0em}{2em plus 0.5em minus 2em}{0.15em plus 0.15em minus 0.125em}
 \titleformat{\subsection}[block]{\normalfont\itshape}{\thesubsection}{1em}{}
-\titlespacing{\subsection}{0em}{1em plus 2em minus 0.5em}{-0.15em plus 0.15em minus 0.125em}
+\titlespacing{\subsection}{0em}{1em plus 0.25em minus 1em}{-0.15em plus 0.15em minus 0.125em}
 
 \newcommand{\workedexercise}[2]{
 	\vspace{2ex plus 2ex minus 1ex}
@@ -183,15 +183,11 @@ summary(ctd)
 
 The object used to hold CTD data stores not just the data, but also the raw
 header sequence, and whatever has been discovered about the dataset by parsing
-the header; use
+the header, use
 <<ctdnames,eval=false>>=
 names(ctd)
 @
-to learn about the data use
-<<ctdnames2,eval=false>>=
-names(ctd$data)
-@
-to find out what sensors were attached to the instrument, thus providing data columns.
+etc.
 
 Of course, you may apply any \verb@R@ techniques to the data in \verb@oce@
 objects, e.g. \verb@hist(ctd$data$temperature)@ would produce a histogram of
@@ -221,7 +217,7 @@ trimmed to the downcast; see the text and Figure~\ref{fig:ctdraw}.)}
 \label{fig:ctd}
 \end{figure}
 
-\workedexercise{2}{Plot a profile of $\sigma_\theta$ and $N^2$, for just the data in the pycnocline.  Do this with both \texttt{ctd.trim} and \texttt{subset}.}
+\workedexercise{2}{Plot a profile of $\sigma_\theta$ and $N^2$, for the data in the pycnocline.}
 
 \subsection{Example with raw data}
 
@@ -433,8 +429,7 @@ and \verb@plot@ on the resulting object will produce a simple coastline map.
 The only real advantage over plotting things yourself is that latitude and
 longitude are scaled to give natural shapes near the centre of the plot.
 
-Bathymetric charts, or more generally topographic maps, can be produced easily.
-A sample data set is provided, so that
+Bathymetric charts, or more generally topographic maps, can be produced easily, e.g. (Figure~\ref{fig:topo})
 <<label=topoplot,eval=FALSE>>=
 library(oce)
 data(topo.maritimes)
@@ -442,11 +437,9 @@ plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50),
      water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
      water.lwd=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
 @
-will produce a chart of the waters embraced by the Maritime Provinces of Canada
-(Figure~\ref{fig:topo}).
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.7\textwidth}
+\setkeys{Gin}{width=0.5\textwidth}
 <<label=topofig,fig=TRUE,width=7, height=5, echo=FALSE>>=
 <<topoplot>>
 @
@@ -479,7 +472,7 @@ narrow-banded constituents quite visible.
 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=\textwidth}
+\setkeys{Gin}{width=0.8\textwidth}
 <<label=sealevelfig,fig=TRUE,width=7,height=5,echo=FALSE>>=
 <<sealevelplot>>
 @
@@ -564,7 +557,7 @@ part of a worked example.
 
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=\textwidth}
+\setkeys{Gin}{width=0.66\textwidth}
 <<label=ptfig ,fig=TRUE, width=7, height=5, echo=FALSE>>=
 <<ptplot>>
 @
@@ -592,15 +585,14 @@ data(adp)
 e <- adp.xyz2enu(adp.beam2xyz(adp))
 plot(e, which=1:2,
      adorn=expression({
-       lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green')
-     }))
+       lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green') }))
 @
 produce a plot (Figure~\ref{fig:adp}) of ADP measurements made
 during St Lawrence Estuary Internal Wave Experiment.
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=\textwidth}
-<<label=adpfig ,fig=TRUE, width=7, height=7, echo=FALSE>>=
+\setkeys{Gin}{width=0.8\textwidth}
+<<label=adpfig ,fig=TRUE, width=9, height=5, echo=FALSE>>=
 <<adpplot>>
 @
 \end{center}
@@ -664,10 +656,8 @@ to check, build, or install the package.
 %\newpage
 
 
-\goodbreak
-
+\vspace{2cm plus 2cm minus 2cm}
 \section*{Answers to exercises}
-
 \workedanswer{1}{Seawater properties}
 <<>>=
 library(oce)
