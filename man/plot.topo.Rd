@@ -32,7 +32,8 @@
   \item{water.lty}{line type(s) for water contours}
   \item{water.lwd}{line width(s) for water contours}
   \item{land.z}{depths at which to plot land contours.  If not provided,
-    these are inferred from the data.} 
+    these are inferred from the data.  If set to \code{NULL}, no land
+    contours will be plotted.}
   \item{land.col}{colors corresponding to \code{land.z} values.  If
     not provided, these will be \code{"fill"} colors from
     \code{\link{oce.colors.gebco}}.}

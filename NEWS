@@ -1,6 +1,7 @@
 0.1-81
 - reformulate sun.angle in R
 - add topo.world dataset
+- fix issue 56 [plot.topo() should accept land.z=NULL]
 - fix issue 55 [plot.topo() could go past poles]
 - fix issue 54 [plot.topo() was resetting par() on exit]
 - fix issue 53 [interp.barnes() gives poor error msg for mismatched x and y]

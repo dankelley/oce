@@ -122,23 +122,25 @@ plot.topo <- function(x,
             }
         }
         nz <- length(land.z)
-        if (missing(land.col))
-            land.col <- oce.colors.gebco(nz, "land", "line")
-        if (missing(land.lty))
-            land.lty <- rep(par("lty"), nz)
-        else if (length(land.lty) == 1)
-            land.lty <- rep(land.lty, nz)
-        if (missing(land.lwd))
-            land.lwd <- rep(par("lwd"), nz)
-        else if (length(land.lwd) == 1)
-            land.lwd <- rep(land.lwd, nz)
-        legend <- c(legend, land.z)
-        lwd    <- c(lwd,    land.lwd)
-        lty    <- c(lty,    land.lty)
-        col    <- c(col,    land.col)
-        contour(x$data$longitude, x$data$latitude, x$data$z,
-                levels=land.z, lwd=land.lwd, lty=land.lty, col=land.col,
-                drawlabels=FALSE, add=TRUE, ...)
+        if (nz > 0) {
+            if (missing(land.col))
+                land.col <- oce.colors.gebco(nz, "land", "line")
+            if (missing(land.lty))
+                land.lty <- rep(par("lty"), nz)
+            else if (length(land.lty) == 1)
+                land.lty <- rep(land.lty, nz)
+            if (missing(land.lwd))
+                land.lwd <- rep(par("lwd"), nz)
+            else if (length(land.lwd) == 1)
+                land.lwd <- rep(land.lwd, nz)
+            legend <- c(legend, land.z)
+            lwd    <- c(lwd,    land.lwd)
+            lty    <- c(lty,    land.lty)
+            col    <- c(col,    land.col)
+            contour(x$data$longitude, x$data$latitude, x$data$z,
+                    levels=land.z, lwd=land.lwd, lty=land.lty, col=land.col,
+                    drawlabels=FALSE, add=TRUE, ...)
+        }
     }
     if (!is.null(legend.loc)) {
         o <- rev(order(legend))
