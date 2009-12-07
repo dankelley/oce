@@ -92,6 +92,7 @@ plot.section <- function(x,
                 lat[i] <- x$data$station[[station.indices[i]]]$metadata$latitude
                 lon[i] <- x$data$station[[station.indices[i]]]$metadata$longitude
             }
+            lon[lon<0] <- lon[lon<0] + 360
             asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
             latm <- mean(lat, na.rm=TRUE)
             lonm <- mean(lon, na.rm=TRUE)
@@ -102,11 +103,8 @@ plot.section <- function(x,
             else
                 plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
             if (!is.null(coastline)) {
-                if (mean(lon, na.rm=TRUE) > 0) {
-                    lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
-                } else {
-                    lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
-                }
+                lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
+                lines(coastline$data$longitude + 360, coastline$data$latitude, col="darkgray")
             }
             lines(lon, lat, col="lightgray")
             points(lon, lat, pch=20)
