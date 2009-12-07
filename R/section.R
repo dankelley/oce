@@ -70,7 +70,7 @@ plot.section <- function(x,
                          contour.labels=NULL,
                          station.indices,
                          coastline=NULL,
-                         ylim=NULL,
+                         xlim=NULL, ylim=NULL,
                          map.xlim=NULL,
                          xtype="distance",
                          ytype="depth",
@@ -82,6 +82,7 @@ plot.section <- function(x,
 {
     plot.subsection <- function(variable="temperature", title="Temperature",
                                 indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL,
+                                xlim=NULL,
                                 ylim=NULL,
                                 ...)
     {
@@ -144,6 +145,7 @@ plot.section <- function(x,
             if (is.null(at)) {
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i",
+                     xlim=xlim,
                      ylim=ylim,
                      col="white",
                      xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
@@ -156,7 +158,7 @@ plot.section <- function(x,
                 plot(xxrange, yyrange,
                      xaxs="i", yaxs="i",
 ##                     ylim=rev(yyrange),
-                     ylim=ylim,
+                     xlim=xlim, ylim=ylim,
                      col="white",
                      xlab="", ylab=ylab, axes=FALSE)
                 axis(1, at=at, labels=labels)
@@ -325,13 +327,13 @@ plot.section <- function(x,
 
     for (w in 1:length(which)) {
         if (!missing(contour.levels)) {
-            if (which[w] == 1) plot.subsection("temperature", "T", nlevels=contour.levels, ylim=ylim, ...)
-            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, ylim=ylim, ...)
-            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), nlevels=contour.levels, ylim=ylim, ...)
+            if (which[w] == 1) plot.subsection("temperature", "T", nlevels=contour.levels, xlim=xlim, ylim=ylim, ...)
+            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, xlim=xlim, ylim=ylim, ...)
+            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), nlevels=contour.levels, xlim=xlim, ylim=ylim, ...)
         } else {
-            if (which[w] == 1) plot.subsection("temperature", "T", ylim=ylim, ...)
-            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", ylim=ylim, ...)
-            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), ylim=ylim, ...)
+            if (which[w] == 1) plot.subsection("temperature", "T", xlim=xlim, ylim=ylim, ...)
+            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, ...)
+            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), xlim=xlim, ylim=ylim, ...)
         }
         if (which[w] == 4) plot.subsection("map", indicate.stations=FALSE)
         if (w <= adorn.length) {
