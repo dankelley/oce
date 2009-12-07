@@ -23,7 +23,7 @@
      legend.loc="bottomright",
      adorn=NULL,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]),
+     mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
      \dots)
 }
 
