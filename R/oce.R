@@ -18,15 +18,15 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
         plot(range(x), range(y), type='n', ...)
     usr <- par("usr")
     yr.by.xr <- (usr[4] - usr[3]) / (usr[2] - usr[1])
-	warn <- options("warn")$warn # FIXME: fails to quieten arrows()
-	options(warn=0)
-	ok <- !is.na(u) & !is.na(v) & (u^2+v^2) > 0
+    warn <- options("warn")$warn # FIXME: fails to quieten arrows()
+    options(warn=0)
+    ok <- !is.na(u) & !is.na(v) & (u^2+v^2) > 0
     arrows(as.numeric(x[ok]),
-	       y[ok],
+           y[ok],
            (as.numeric(x[ok]) + u[ok] / yscale / yr.by.xr * page.ratio),
            (y[ok] + v[ok] / yscale),
            length=length, ...)
-	options(warn=warn)
+    options(warn=warn)
 }
 
 
