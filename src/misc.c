@@ -1,6 +1,36 @@
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
+
+/*
+
+In shell:
+R CMD SHLIB misc.c
+
+In R:
+dyn.load("misc.so");x<-1:3;y<-x*3;xout<-1:10;.Call("oce_approx",x,y,xout,1,2)
+*/
+SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
+{
+  int x_len = length(x);
+  int  y_len = length(y);
+  int xout_len = length(xout);
+  double *xp, *yp, *xoutp, *ansp;
+  SEXP ans;
+  if (x_len != y_len) error("lengths of x (%d) and y (%d) disagree", x_len, y_len);
+  xp = REAL(x);
+  xoutp = REAL(xout);
+  yp = REAL(y);
+  PROTECT(ans = allocVector(REALSXP, xout_len));
+  ansp = REAL(ans);
+  int i;
+  for (i = 0; i < xout_len; i++) {
+    *(ansp + i) = *(xoutp + i);
+  }
+  UNPROTECT(1);
+  return(ans);
+}
+
 /* 
 ** compile from commandline:
 R CMD SHLIB test.c

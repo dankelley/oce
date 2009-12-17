@@ -1,6 +1,7 @@
 0.1-81
-- reformulate sun.angle in R
+- add oce.approx()
 - add topo.world dataset
+- reformulate sun.angle in R
 - fix issue 56 [plot.topo() should accept land.z=NULL]
 - fix issue 55 [plot.topo() could go past poles]
 - fix issue 54 [plot.topo() was resetting par() on exit]
