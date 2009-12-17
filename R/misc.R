@@ -7,11 +7,12 @@ oce.approx <- function(x, y, xout, n=1, m=1) # FIXME: make n and m match ref
     if (lx != ly) stop("length of x (", lx, ") and y (", ly, ") must agree")
     if (any(is.na(x))) stop("must not have any NA values in x")
     if (any(is.na(y))) stop("must not have any NA values in y")
+    o <- order(x)
     if (missing(xout))
         xout <- seq(min(x), max(x), length.out=lx)
     else
         if (any(is.na(xout))) stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x, y=y, xout=xout, n=n, m=m);
+    .Call("oce_approx", x=x[o], y=y[o], xout=xout, n=n, m=m);
 }
 
 matrix.smooth <- function(m)
