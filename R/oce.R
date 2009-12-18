@@ -1,3 +1,22 @@
+oce.approx <- function(x, y, xout, method=c("reiniger-ross"))
+{
+    method <- match.arg(method)
+    if (method != "reiniger-ross") stop("only available method is \"reiniger-ross\"")
+    if (missing(x)) stop("must supply x")
+    if (missing(y)) stop("must supply y")
+    lx <- length(x)
+    ly <- length(y)
+    if (lx != ly) stop("length of x (", lx, ") and y (", ly, ") must agree")
+    if (any(is.na(x))) stop("must not have any NA values in x")
+    if (any(is.na(y))) stop("must not have any NA values in y")
+    o <- order(x)
+    if (missing(xout))
+        xout <- seq(min(x), max(x), length.out=lx)
+    else
+        if (any(is.na(xout))) stop("must not have any NA values in xout")
+    .Call("oce_approx", x=x[o], y=y[o], xout=xout);
+}
+
 oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
                             mgp=getOption("oce.mgp"),
                             mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),

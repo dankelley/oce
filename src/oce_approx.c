@@ -126,16 +126,28 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
     int found;
     found = 0;
     //Rprintf("x[%d]=%.1f...", j, *(xp + j));
-    for (j = 1; j < (x_len - 2); j++) {
+    for (j = 0; j < x_len - 1; j++) {
+      double xx = *(xoutp + i);
       //Rprintf("%.1f", *(xp + j));
       // Look for neighbors (BUG: what about hitting directly?)
-      if (*(xp + j) <= *(xoutp + i) && *(xoutp + i) < *(xp + j + 1)) {
-        val = phi_z(j, *(xoutp + i), xp, yp, x_len);
+      if (xx == *(xp + j)) {
+        val = *(yp + j);
+        found = 1;
+      } else if (xx == *(xp + j + 1)) {
+        val = *(yp + j + 1);
+        found = 1;
+      } else if (*(xp + j) < xx && xx < *(xp + j + 1)) {
+        if (j == 0) {           /* catch exact match (just in case there is a problem with such) */
+          val = *yp + (xx - *xp) * (*(yp + 1) - *(yp)) / (*(xp + 1) - *xp);
+          //Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n", xx, val, *xp, *(xp+1), *yp,*(yp+1));
+        } else if (j == x_len - 1) {
+          val = *(yp + j - 1) + (xx - *(xp + j - 1)) * (*(yp + j) - *(yp + j - 1)) / (*(xp + j) - *(xp + j - 1));
+        } else {
+          val = phi_z(j, xx, xp, yp, x_len);
+        }
         //Rprintf("Y j=%d VAL=%f\n", j, val);
         found = 1;
         break;
-      } else {
-        //Rprintf("N ");
       }
     }
     if (found) 
