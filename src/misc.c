@@ -14,9 +14,10 @@ dyn.load("misc.so");x<-1:3;y<-x*3;xout<-1:10;.Call("oce_approx",x,y,xout,1,2)
 
 dyn.load("misc.so");x<-1:10;y<-x*3;xout<-seq(2,9,0.1);p<-.Call("oce_approx",x,y,xout,1,2);plot(x,y);lines(xout,p)
 
+In shell:
+R CMD SHLIB misc.c
 # must be a bug, still, since getting odd wiggles in some places.
 # suspect either typo or problem in inequalities (check matlab for latter)
-
 par(mar=c(2,2,1,1))
 library(oce)
 data(RRprofile)
@@ -57,9 +58,9 @@ static double phi_P2(int i0, double z0, double *z, double *phi, int len) /* Rein
 {
   if (1 < i0 && i0 < (len - 2))
     return 
-      gamma_ijk(i0-1, i0+1, i0+2, z0, z, len) * phi[i0-2] + 
-      gamma_ijk(i0+1, i0+2, i0-1, z0, z, len) * phi[i0-1] +
-      gamma_ijk(i0+2, i0-1, i0+1, z0, z, len) * phi[i0+1];
+      gamma_ijk(i0-1, i0+1, i0+2, z0, z, len) * phi[i0-1] +
+      gamma_ijk(i0+1, i0+2, i0-1, z0, z, len) * phi[i0+1] +
+      gamma_ijk(i0+2, i0-1, i0+1, z0, z, len) * phi[i0+2];
   else
     error("phi_P2 given bad i0=%d", i0);
 }
