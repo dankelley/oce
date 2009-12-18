@@ -1120,7 +1120,6 @@ plot.profile <- function (x,
                           lwd=par("lwd"),
                           xaxs="r",
                           yaxs="r",
-
                           mgp=getOption("oce.mgp"),
                           mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
                           ...)
