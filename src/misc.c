@@ -14,7 +14,17 @@ dyn.load("misc.so");x<-1:3;y<-x*3;xout<-1:10;.Call("oce_approx",x,y,xout,1,2)
 
 dyn.load("misc.so");x<-1:10;y<-x*3;xout<-seq(2,9,0.1);p<-.Call("oce_approx",x,y,xout,1,2);plot(x,y);lines(xout,p)
 
-dyn.load("misc.so");zz<-seq(0,2000,100);TT<-.Call("oce_approx",RRprofile$depth,RRprofile$temperature,zz,1,2);plot(RRprofile$temperature,RRprofile$depth);lines(TT,zz,col='red')
+# must be a bug, still, since getting odd wiggles in some places.
+# suspect either typo or problem in inequalities (check matlab for latter)
+
+par(mar=c(2,2,1,1))
+library(oce)
+data(RRprofile)
+zz<-seq(0,2000,100)
+dyn.load("misc.so")
+TT<-.Call("oce_approx",RRprofile$depth,RRprofile$temperature,zz,1,2)
+plot(RRprofile$temperature,RRprofile$depth)
+lines(TT,zz,col='red')
 
 */
 static double gamma_ijk(int i, int j, int k, double z0, double *z, int len) /* Reiniger & Ross (1968, eqn 3c) */
@@ -125,7 +135,8 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
     //Rprintf("x[%d]=%.1f...", j, *(xp + j));
     for (j = 2; j < (x_len - 2); j++) {
       //Rprintf("%.1f", *(xp + j));
-      if (*(xp + j) <= *(xoutp + i) && *(xoutp + i) <= *(xp + j + 1)) { /* FIXME: what about inequalities? */
+      // Look for neighbors (BUG: what about hitting directly?)
+      if (*(xp + j) <= *(xoutp + i) && *(xoutp + i) < *(xp + j + 1)) {
         val = phi_z(j, *(xoutp + i), xp, yp, x_len);
         //Rprintf("Y j=%d VAL=%f\n", j, val);
         found = 1;
