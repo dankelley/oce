@@ -9,8 +9,8 @@
   \item{y}{the dependent variable.}
   \item{xout}{the values of the independent variable at which
     interpolation is to be done.}
-  \item{n}{as in Reiniger and Ross (1968).}
-  \item{m}{as in Reiniger and Ross (1968).}
+  \item{n}{NOT USED; eventually, will be as in Reiniger and Ross (1968).}
+  \item{m}{NOT USED; eventually, will be as in Reiniger and Ross (1968).}
 }
 
 \details{FILL IN.}
