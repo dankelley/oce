@@ -14,7 +14,7 @@ oce.approx <- function(x, y, xout, method=c("reiniger-ross"))
         xout <- seq(min(x), max(x), length.out=lx)
     else
         if (any(is.na(xout))) stop("must not have any NA values in xout")
-    .Call("oce_approx", x=x[o], y=y[o], xout=xout);
+    .Call("oce_approx", x=x[o], y=y[o], xout=xout)
 }
 
 oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,

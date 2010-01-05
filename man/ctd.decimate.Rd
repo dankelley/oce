@@ -1,10 +1,9 @@
 \name{ctd.decimate}
 \alias{ctd.decimate}
 \title{Decimate a CTD profile}
-\description{
-Smooth and decimate a CTD profile.  
-}
-\usage{ctd.decimate(x, p, method=c("approx","boxcar","lm"), e=1.5)}
+\description{Interpolate a CTD profile to specified pressure values.}
+\usage{ctd.decimate(x, p, method=c("approx","boxcar","lm","reiniger-ross"),
+             e=1.5, debug=getOption("oce.debug"))}
 \arguments{
   \item{x}{a \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{p}{an optional pressure increment, or list of pressures. If
@@ -21,7 +20,9 @@ Smooth and decimate a CTD profile.
     between neighbouring points. The \code{"boxcar"} method is based on
     the mean of local data , while the \code{"lm"} method is based on a
     local linear regression model. (The \code{e} parameter sets the
-    locality, as explained in the next item.)}
+    locality, as explained in the next item.)  The
+    \code{"reiniger-ross"} method uses \code{\link{oce.approx}} to use
+    the weighted-parabola method developed by Reiniger and Ross (1968).}
   \item{e}{is an expansion coefficient used to calculate the local
     neighbourhoods for the \code{"boxcar"} and \code{"lm"} methods.  If
     \code{e=1}, then the neighbourhood for the i-th pressure extends from
@@ -31,6 +32,7 @@ Smooth and decimate a CTD profile.
     neighbourhood is expanded linearly in each direction.  If the
     \code{"lm"} method produces warnings about "prediction from a
     rank-deficient fit", a larger value of \code{"e"} should be used.}
+  \item{debug}{a Boolean, set to \code{TRUE} to debug the reading process.}
 }
 
 \details{The \code{"approx"} method is best for bottle data, in which
@@ -59,9 +61,16 @@ xd$data$sigma.theta <- sw.sigma.theta(xd$data$salinity, xd$data$temperature, xd$
 
 \examples{
 library(oce)
-data(ctd.raw) 
-ctd.clean <- ctd.decimate(ctd.trim(ctd.raw))
-summary(ctd.clean)
+data(RRprofile)
+ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
+plot.profile(ctd, "T", Tlim=c(2,9))
+ctd2 <- ctd.decimate(ctd,p=seq(0,2000,1),method="reiniger-ross")
+lines(ctd2$data$temperature, ctd2$data$pressure, col="blue")
 }
+
+\references{R.F. Reiniger and C.K. Ross, 1968.  A method of
+interpolation with application to oceanographic data.  \emph{Deep Sea
+Research}, \bold{15}, 185-193.}
+
 \author{Dan Kelley}
 \keyword{misc}

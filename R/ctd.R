@@ -64,8 +64,8 @@ ctd.add.column <- function (x, column, name, label, debug = FALSE)
     processing.log.append(result, log.action)
 }
 
-ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
-    ## SHOULD ADD: BIO method; spline; supsmu; ...
+ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"), e=1.5, debug=getOption("oce.debug"))
+    ## SHOULD ADD: spline; supsmu; ...
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     res <- x
@@ -75,8 +75,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
         return(res)
     }
                                         # Figure out pressure targets, pt
-    if (missing(p)) {
-                                        # autoscale
+    if (missing(p)) { # autoscale
         dp.exact <- median(abs(diff(x$data$pressure)))
         dp <- pretty(3 * dp.exact)[2] # try for 3 data at least
         pt <- seq(0, dp * floor(max(x$data$pressure) / dp), dp)
@@ -88,8 +87,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
         }
     }
     npt <- length(pt)
-                                        # Step through each variable.
-    data.names <- names(x$data)
+    data.names <- names(x$data)         # Step through each variable.
     data.new <- as.data.frame(array(NA, dim=c(npt, dim(x$data)[2])))
     names(data.new) <- data.names
     method <- match.arg(method)
@@ -99,6 +97,16 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
             if (datum.name != "pressure") {
                 data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt, rule=2)$y
                 data.new[[datum.name]][too.deep] <- NA
+            }
+        }
+    } else if ("reiniger-ross" == method) {
+        if (debug > 1) cat("Reiniger-Ross method\n")
+        xvar <- x$data[["pressure"]]
+        for (datum.name in data.names) {
+            if (datum.name != "pressure") {
+                yvar <- x$data[[datum.name]]
+                pred <- oce.approx(xvar, yvar, pt)
+                data.new[[datum.name]] <- pred
             }
         }
     } else {
@@ -112,14 +120,14 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm"), e=1.5)
             }
             ##cat("i=",i,"pt[i]=",pt[i],"\n")
             if (sum(focus, na.rm=TRUE) > 0) {
-                if (method == "boxcar") {
+                if ("boxcar" == method) {
                     for (datum.name in data.names) {
                         if (datum.name != "pressure") {
                             ##cat("i=",i,"datum=",datum.name,"avg=",mean(x$data[[datum.name]][focus]),"\n")
                             data.new[[datum.name]][i] <- mean(x$data[[datum.name]][focus],na.rm=TRUE)
                         }
                     }
-                } else if (method == "lm") { # FIXME: this is far too slow
+                } else if ("lm" == method) { # FIXME: this is far too slow
                     xvar <- x$data[["pressure"]][focus]
                     for (datum.name in data.names) {
                         if (datum.name != "pressure") {
