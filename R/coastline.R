@@ -32,6 +32,7 @@ plot.coastline <- function (x,
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
     xr <- range(x$data$longitude, na.rm=TRUE)
     yr <- range(x$data$latitude, na.rm=TRUE)
+    if (debug) cat("par('pin') is", par("pin"), "\n")
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
     if (debug) cat("asp.page=", asp.page, "\n")
     gamma <- asp / asp.page

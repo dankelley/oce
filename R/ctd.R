@@ -414,10 +414,16 @@ plot.ctd <- function (x, which = 1:4,
         }
         if (which[w] == 5) {
             if (missing(coastline)) stop("need a coastline file to draw a map")
+
             if (!missing(lonlim) && !missing(latlim))
                 plot(coastline, xlim=lonlim, ylim=latlim)
-            else
-                plot(coastline)
+            else {
+                lonlim <- x$metadata$longitude + c(-1, 1) *
+                    min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
+                latlim <- x$metadata$latitude + c(-1, 1) *
+                    min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
+                plot(coastline, xlim=lonlim, ylim=latlim)
+            }
             points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
             if (!is.na(x$metadata$station))
                 title(paste("Station", x$metadata$station),font.main=par("font"))

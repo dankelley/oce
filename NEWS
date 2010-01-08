@@ -2,6 +2,7 @@
 - add "reiniger-ross" method to ctd.decimate()
 - add oce.approx()
 - add topo.world dataset
+- plot.ctd(): by default, make coastlines extend to box boundaries
 - reformulate sun.angle in R
 - fix issue 56 [plot.topo() should accept land.z=NULL]
 - fix issue 55 [plot.topo() could go past poles]

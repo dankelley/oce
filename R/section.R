@@ -108,8 +108,11 @@ plot.section <- function(x,
                 lines(coastline$data$longitude + 360, coastline$data$latitude, col="darkgray")
             }
             lines(lon, lat, col="lightgray")
+            ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
             points(lon, lat, pch=20)
+            points(lon - 360, lat, pch=20)
             points(lon[1], lat[1], pch=22, cex=2*par("cex"))
+            points(lon[1] - 360, lat[1], pch=22, cex=2*par("cex"))
             if (indicate.stations) {
                 dx <- 5 * mean(diff(sort(x$metadata$longitude)),na.rm=TRUE)
                 dy <- 5 * mean(diff(sort(x$metadata$latitude)),na.rm=TRUE)
