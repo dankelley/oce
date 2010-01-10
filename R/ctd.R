@@ -306,6 +306,7 @@ plot.ctd <- function (x, which = 1:4,
                       adorn=NULL,
                       mgp=getOption("oce.mgp"),
                       mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]),
+                      debug=getOption("oce.debug"),
                       ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -413,20 +414,30 @@ plot.ctd <- function (x, which = 1:4,
             }
         }
         if (which[w] == 5) {
-            if (missing(coastline)) stop("need a coastline file to draw a map")
-
-            if (!missing(lonlim) && !missing(latlim))
-                plot(coastline, xlim=lonlim, ylim=latlim)
-            else {
-                lonlim <- x$metadata$longitude + c(-1, 1) *
-                    min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
-                latlim <- x$metadata$latitude + c(-1, 1) *
-                    min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
-                plot(coastline, xlim=lonlim, ylim=latlim)
+            if (missing(coastline)) stop("need a coastline to draw a map")
+            if (missing(lonlim)) {
+                lonlim.c <- x$metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
+                if (missing(latlim)) {
+                    latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
+                    plot(coastline, xlim=lonlim.c, ylim=latlim.c, debug=debug)
+                    if (debug) cat("CASE 1 (neither lonlim nor latlim given)\n")
+                } else {
+                    plot(coastline, xlim=lonlim.c, ylim=latlim, debug=debug)
+                    if (debug) cat("CASE 2 (should infer xlim from ylim)\n")
+                }
+            } else {
+                if (missing(latlim)) {
+                    latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
+                    plot(coastline, xlim=lonlim, ylim=latlim.c, debug=debug)
+                    if (debug) cat("CASE 3 (should infer lonlim from latlim)\n")
+                } else {
+                    plot(coastline, xlim=lonlim, ylim=latlim, debug=debug)
+                    if (debug) cat("CASE 4 (using provided lonlim and latlim)\n")
+                }
             }
             points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
             if (!is.na(x$metadata$station))
-                title(paste("Station", x$metadata$station),font.main=par("font"))
+                mtext(paste("Station", x$metadata$station), side=3, cex=par("cex"))
         }
         if (w <= adorn.length && nchar(adorn[w]) > 0) {
             t <- try(eval(adorn[w]), silent=TRUE)

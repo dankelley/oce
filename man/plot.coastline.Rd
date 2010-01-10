@@ -12,6 +12,7 @@
      mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
      bg,
      axes=TRUE,
+     debug=getOption("oce.debug"),
      \dots)}
 
 \arguments{
@@ -34,6 +35,7 @@
   \item{bg}{optional colour to be used for the background of the map.
     This comes in handy for drawing insets (see \dQuote{details}).}
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
+  \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For
     example, set \code{yaxp=c(-90,90,4)} for a plot extending from pole to
     pole.}

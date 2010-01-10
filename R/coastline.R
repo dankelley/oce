@@ -15,12 +15,12 @@ plot.coastline <- function (x,
                             mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
                             bg,
                             axes=TRUE,
+                            debug=getOption("oce.debug"),
                             ...)
 {
     if (!inherits(x, "coastline")) stop("method is only for coastline objects")
     par(mgp=mgp, mar=mar)
     dots <- list(...)
-    debug <- FALSE
     if (missing(asp)) {
         if ("ylim" %in% names(dots))
             asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
@@ -68,10 +68,8 @@ plot.coastline <- function (x,
     	lines(x$data$longitude, x$data$latitude, asp=asp, yaxs="i", xaxs="i", xlab="", ylab="", ...)
     }
     if (debug) {
-        cat("par(pin)",par("pin"),"\n")
         cat("lon lim:");print(range(x$data$longitude,na.rm=TRUE))
         cat("lat lim:");print(range(x$data$latitude,na.rm=TRUE))
-        cat("par:");print(par())
     }
 }
 

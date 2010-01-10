@@ -28,6 +28,7 @@
      adorn=NULL,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]),
+     debug=getOption("oce.debug"),
      \dots)
 }
 \arguments{
@@ -76,6 +77,7 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{sw.N2} calculations.} 
 }
