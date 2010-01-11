@@ -13,7 +13,7 @@ which uses decimation to reduce file size.
 
 \usage{data(pt)}
 
-\source{The \acronym{sleiwex} experiment.}
+\source{The \acronym{SLEIWEX} experiment.}
 
 \references{\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}}
 
