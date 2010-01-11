@@ -11,7 +11,7 @@
 
 \usage{data(ctd)}
 
-\source{Peter Galbraith acquired these data during the 2002 SLEIWEX
+\source{Peter Galbraith acquired these data during the \acronym{sleiwex}
 field program, part of a Dalhousie/IML cooperative study of
 internal-wave mixing in the St Lawrence estuary.}
 
