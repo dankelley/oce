@@ -7,8 +7,7 @@
 \preformatted{
 pt <- decimate(read.oce("sl08_011855.dat"), by=600)
 save(pt, file="oce/data/pt.rda")
-}
-which uses decimation to reduce file size.
+} (which uses a file not supplied with this package).
 }
 
 \usage{data(pt)}

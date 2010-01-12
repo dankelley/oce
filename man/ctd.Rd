@@ -7,7 +7,10 @@
 \title{Seawater CTD profile}
 
 \description{This is sample CTD profile provided for testing, created by
-  \code{ctd <- read.oce(system.file("data", "ctd.cnv", package="oce"))}.}
+\preformatted{
+ctd <- read.oce(system.file("data", "ctd.cnv", package="oce"))
+} (which uses a CNV file not supplied with this package).
+}
 
 \usage{data(ctd)}
 
