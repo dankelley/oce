@@ -148,9 +148,8 @@
     estimate, for other coordinates.  (This is ignored for 3-beam
     data.)
 
-    \item \code{which=23} yields a progressive-vector diagram in the
-    horizontal plane.  (This only makes sense in \code{enu} or
-    \code{other} coordinate systems.)
+    \item \code{which=23} yields a depth-averaged progressive-vector
+    diagram in the horizontal plane.  (The graph will have \code{asp=1}.)
 
     \item \code{which=24} yields a time-averaged profile of the first
     component of velocity (see \code{which=19} for the meaning
@@ -224,6 +223,3 @@ plot(e, which=1:2,
 
 \author{Dan Kelley}
 \keyword{misc}
-
-
-

@@ -500,6 +500,8 @@ read.adp.rdi <- function(file, from=0, to, by=1,
                           type=c("workhorse"),
                           debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    from.keep <- from
+    to.keep <- to
     if (is.character(file)) {
         filename <- file
         file <- file(file, "rb")
@@ -550,7 +552,7 @@ read.adp.rdi <- function(file, from=0, to, by=1,
 
     if (!missing(to) && inherits(to, "POSIXt")) {
         to <- 1 + (as.numeric(difftime(to, t1, units="sec")) / dt - from) / by
-        if (to < 0) stop("cannot have to < 0")
+        if (to < 0) stop("cannot have fewer than zero points.  You gave from = ", from.keep, " and to = ", to.keep)
     }
 
     seek(file, bytes.per.profile * from, origin="start")
@@ -849,7 +851,7 @@ plot.adp <- function(x,
                 else
                     rep(TRUE, length(x$data$ss$distance))
                 zlim <- range(as.numeric(x$data$ma$a[,y.look,]), na.rm=TRUE)
-                zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]))[which[w]-4]
+                zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
             } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation
                 z <- as.numeric(x$data$ma$q[,,which[w]-8])
                 dim(z) <- dim(x$data$ma$q)[1:2]
@@ -997,6 +999,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm)
         }
+        ## FIXME: tm should be modified, according to the up/down orientation.  OR ... is that done in read?
         res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
@@ -1337,6 +1340,8 @@ read.adp.nortek <- function(file, from=0, to, by=1,
                              type=c("aquadopp high resolution"),
                              debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    from.keep <- from
+    to.keep <- to
     sync.code <- as.raw(0xa5)
     if (is.character(file)) {
         filename <- file
@@ -1409,8 +1414,7 @@ read.adp.nortek <- function(file, from=0, to, by=1,
     }
     if (!missing(from) && inherits(to, "POSIXt")) {
         to <- 1 + (as.numeric(difftime(to, t1, units="sec")) / dt - from) / by
-        if (to < 0) stop("cannot have to < 0")
-        if (debug) cat("to=",to,"\n")
+        if (to < 0) stop("cannot have fewer than zero points.  You gave from = ", from.keep, " and to = ", to.keep)
     }
 
     if (from > 0)
