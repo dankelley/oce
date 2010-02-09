@@ -332,9 +332,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-
+    if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -507,9 +505,7 @@ read.adp.rdi <- function(file, from=0, to, by=1,
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-
+    if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -605,11 +601,43 @@ read.adp.rdi <- function(file, from=0, to, by=1,
     tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
     tm.d <- tm.a / sqrt(2)
     ## FIXME Dal people use 'a' in last row of matrix, and RDI has two definitions!
-    metadata$transformation.matrix <- matrix(c(-tm.c * tm.a, tm.c * tm.a,            0,           0,
-                                               0           ,           0, -tm.c * tm.a, tm.c * tm.a,
-                                               -tm.b       ,       -tm.b,        -tm.b,       -tm.b,
-                                               tm.d        ,        tm.d,        -tm.d,       -tm.d),
+    ##
+    ## Notes on coordinate transformation matrix.
+    ## From figure 3 on page 12 of ACT (adcp coordinate transformation.pdf)
+    ## we have
+    ##
+    ##    x defined to run from beam 1 to beam 2
+    ##    y defined to run from beam 4 to beam 3
+    ##    z right-handed from these.
+    ##
+    ## and the upward-looking orientation (viewed from above) is
+    ##
+    ##        B3
+    ##    B2      B1
+    ##        B4
+    ##
+    ## so we have coords
+    ##
+    ##            y
+    ##            ^
+    ##            |
+    ##            |
+    ##    x <-----*   (z into page, or downward)
+    ##
+    ## Thus, for the upwards-mounted orientation, we must transform
+    ## x to -x and z to -z.  The matrix below is from page 13 (section 5.30
+    ## of the ACT.  So, if the orientation is upwards, we need to
+    ## change the signs of rows 1 and 3.
+    metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
+                                               0        ,          0, -tm.c*tm.a, tm.c*tm.a,
+                                               tm.b     ,       tm.b,       tm.b,      tm.b,
+                                               tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                              nrow=4, byrow=TRUE)
+    if (metadata$orientation == "upward") {
+        metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
+        metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
+    } else if (metadata$orientation == "downward") {
+    } else warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
     if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
     class(time) <- c("POSIXt", "POSIXct")

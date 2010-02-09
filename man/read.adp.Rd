@@ -36,7 +36,7 @@ read.adp.sontek(file, from=0, to, by=1,
     through the file.  If this is an integer, then \code{by-1}
     profiles are skipped between each pair of profiles that is read.  If
     this is a string representing a time interval, in colon-separated
-    format, then this interval is divided by the sampling interval, to
+    format (MM:SS), then this interval is divided by the sampling interval, to
     get the stride length.}
   \item{type}{a character string indicating th type of file.}
   \item{withHeader}{a boolean indicating whether the file has a proper 
