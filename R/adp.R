@@ -961,7 +961,7 @@ plot.adp <- function(x,
         } else if (which[w] %in% spatial) {                   # various spatial types
             if (which[w] == 23) {                             # progressive-vector
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                dt <- as.numeric(diff(x$data$ts$time[1:2],units="sec"))
+                dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec"))
                 m.per.km <- 1000
                 x.dist <- cumsum(apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)) * dt / m.per.km
                 y.dist <- cumsum(apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)) * dt / m.per.km
