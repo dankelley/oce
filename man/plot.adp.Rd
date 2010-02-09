@@ -16,6 +16,7 @@
      mar=c(mgp[1],mgp[1]+1,1,1/4),
      margins.as.image=FALSE,
      cex=1,
+     control,
      debug=getOption("oce.debug"),
      \dots)}
 
@@ -70,6 +71,7 @@
     right of time-series plots, even if there are no images in the \code{which}
     list.  (The margin is made wide if there are some images in the sequence.)}
   \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
+  \item{control}{optional list of parameters that may be used for different plot types;}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
@@ -148,8 +150,12 @@
     estimate, for other coordinates.  (This is ignored for 3-beam
     data.)
 
-    \item \code{which=23} yields a depth-averaged progressive-vector
-    diagram in the horizontal plane.  (The graph will have \code{asp=1}.)
+    \item \code{which=23} yields a progressive-vector diagram in the
+    horizontal plane, plotted with \code{asp=1}.  Normally, the
+    depth-averaged velocity components are used, but if the
+    \code{control} list contains an item named \code{bin}, then the
+    depth bin will be used (with an error resulting if the bin is out
+    of range).
 
     \item \code{which=24} yields a time-averaged profile of the first
     component of velocity (see \code{which=19} for the meaning
