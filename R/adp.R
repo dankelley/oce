@@ -963,8 +963,13 @@ plot.adp <- function(x,
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec"))
                 m.per.km <- 1000
-                x.dist <- cumsum(apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)) * dt / m.per.km
-                y.dist <- cumsum(apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)) * dt / m.per.km
+                ## use 0 for Na or NaN
+                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
+                u[is.na(u)] <- 0
+                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+                v[is.na(v)] <- 0
+                x.dist <- cumsum(u) * dt / m.per.km
+                y.dist <- cumsum(v) * dt / m.per.km
                 plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
             } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
