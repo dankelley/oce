@@ -102,8 +102,8 @@ read.header.rdi <- function(file, debug)
     else if (bits == "01") coordinate.system <- "instrument"
     else if (bits == "10") coordinate.system <- "xyz"
     else if (bits == "11") coordinate.system <- "enu"
-    heading.alignment <- readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
-    heading.bias <- readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
+    heading.alignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
+    heading.bias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
     sensors.available <- readBin(FLD[32], "integer", n=1, size=1)
     bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
@@ -808,7 +808,6 @@ plot.adp <- function(x,
                      ...)
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
-    ##opar <- par(mgp, mar, cex)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
@@ -857,7 +856,9 @@ plot.adp <- function(x,
         w <- 1.5
         lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
     } else {
-        lay <- layout(cbind(1:lw))
+        if (lw != 1 || which != 23) {
+            lay <- layout(cbind(1:lw))
+        }
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
@@ -1032,7 +1033,6 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm)
         }
-        ## FIXME: tm should be modified, according to the up/down orientation.  OR ... is that done in read?
         res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
