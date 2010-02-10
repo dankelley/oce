@@ -13,7 +13,7 @@
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1]+1,1,1/4),
+     mar=c(mgp[1],mgp[1]+1,1,1),
      margins.as.image=FALSE,
      cex=1,
      control,

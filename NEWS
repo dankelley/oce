@@ -1,4 +1,5 @@
 0.1-81
+- fix issue 57 [read.adp.rdi() read the heading incorrectly]
 - add "reiniger-ross" method to ctd.decimate()
 - add oce.approx()
 - add topo.world dataset

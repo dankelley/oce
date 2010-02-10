@@ -166,7 +166,7 @@ read.header.rdi <- function(file, debug)
     if (speed.of.sound < 1400 || speed.of.sound > 1600) warning("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
     depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
     if (debug > 2) cat("depth of transducer:", depth.of.transducer, "\n")
-    heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little") * 0.01
+    heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
     if (debug > 2) cat("heading:", heading, "\n")
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
     if (debug > 2) cat("pitch:", pitch, "\n")
@@ -801,7 +801,7 @@ plot.adp <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1/4),
+                     mar=c(mgp[1],mgp[1]+1,1,1),
                      margins.as.image=FALSE,
                      cex=1,
                      control,
