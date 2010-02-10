@@ -167,6 +167,7 @@ read.header.rdi <- function(file, debug)
     depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
     if (debug > 2) cat("depth of transducer:", depth.of.transducer, "\n")
     heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
+    if (heading < 0 || heading > 360) warning("heading ", heading, " should be between 0 and 360 degrees, inclusive")
     if (debug > 2) cat("heading:", heading, "\n")
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
     if (debug > 2) cat("pitch:", pitch, "\n")
