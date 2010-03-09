@@ -27,6 +27,7 @@ values in the range being declared "definitative".}
 
 \examples{
 library(oce)
+print(magnetic.declination(44+55/60,-(69+46/60),2008)) # -16.80410
 }
 
 \references{
