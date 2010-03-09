@@ -778,32 +778,37 @@ integer2ascii <- function(i)
 
 magnetic.declination <- function(lat, lon, date)
 {
-    if (missing(lat)) stop("must provide latitude")
-    if (missing(lon)) stop("must provide longitude")
-    if (missing(date)) stop("must provide date")
-    if (length(lat) != 1) stop("length(lat) must be 1 [for now]")
-    if (length(lon) != 1) stop("length(lon) must be 1 [for now]")
-    if (length(date) != 1) stop("length(date) must be 1 [for now]")
+    if (missing(lat) || missing(lon) || missing(date)) stop("must provide lat, lon, and date")
+    dim <- dim(lat)
+    nlat <- length(lat)
+    nlon <- length(lon)
+    ndate <- length(date)
+    if (nlat != nlon) stop("lengths of lat and lon must agree, but they are ", nlat, " and ", nlon, ", respectively")
+    if (nlat != ndate) stop("lengths of lat and date must agree, but they are ", nlat, " and ", ndate, ", respectively")
     isv <- 0
-    date <- 2008.0
     itype <- 1                          # geodetic
     alt <- 0.0                          # altitude in km
     colat <- 90 - lat
-    if (lon < 0)
-        elong <- 360 + lon                        # BUG: must put positive
-    else
-        elong <- lon
-    r <- .Fortran("igrf11syn",
-                  as.integer(isv),
-                  as.double(date),
-                  as.integer(itype),
-                  as.double(alt),
-                  as.double(colat),
-                  as.double(elong),
-                  x=double(1),
-                  y=double(1),
-                  z=double(1),
-                  f=double(1))
-    dec <- 180 / pi * atan2(r$y, r$x)
-    dec
+    elong <- ifelse(lon < 0, 360 + lon, lon)
+    for (i in 1:nlat) {
+    	r <- .Fortran("igrf11syn",
+                      as.integer(isv),
+                      as.double(date[i]),
+                      as.integer(itype),
+                      as.double(alt),
+                      as.double(colat[i]),
+                      as.double(elong[i]),
+                      x=double(1),
+                      y=double(1),
+                      z=double(1),
+                      f=double(1), PACKAGE = "oce")
+        dec <- 180 / pi * atan2(r$y, r$x)
+        ##cat("i=",i," colat=",colat[i]," elong=",elong[i], " dec=",dec,"\n")
+    	if (i == 1)
+            rval <- dec
+        else
+            rval <- c(rval, dec)
+    }
+    dim(rval) <- dim
+    rval
 }

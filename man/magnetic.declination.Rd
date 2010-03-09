@@ -8,9 +8,9 @@
 \usage{magnetic.declination(lat, lon, date)}
 
 \arguments{
-  \item{lat}{latitude in degrees north.}
-  \item{lon}{longiitude in degrees east.}
-  \item{date}{decimal year}
+  \item{lat}{latitude in degrees north (may be a number, vector, or matrix).}
+  \item{lon}{longiitude in degrees east (dimensions must conform to lat).}
+  \item{date}{decimal year (dimensions must conform to lat.)}
 }
 
 \details{Implements the International geomagnetic reference field,
