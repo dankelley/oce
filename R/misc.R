@@ -775,4 +775,10 @@ integer2ascii <- function(i)
       "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
       "\xfe", "\xff")[i+1]
 }
-
+magnetic.declination <- function(lat, lon, year)
+{
+    if (missing(lat)) stop("must provide latitude")
+    if (missing(lon)) stop("must provide longitude")
+    if (missing(year)) stop("must provide year")
+    rep(0.0, length.out=length(lat))
+}
