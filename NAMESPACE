@@ -38,6 +38,7 @@ export(
        latlon.format,
        lon.format,
        magic,
+       magnetic.declination,
        make.filter,
        make.section,
        matlab2POSIXt,

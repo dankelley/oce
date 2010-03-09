@@ -775,10 +775,35 @@ integer2ascii <- function(i)
       "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
       "\xfe", "\xff")[i+1]
 }
-magnetic.declination <- function(lat, lon, year)
+
+magnetic.declination <- function(lat, lon, date)
 {
     if (missing(lat)) stop("must provide latitude")
     if (missing(lon)) stop("must provide longitude")
-    if (missing(year)) stop("must provide year")
-    rep(0.0, length.out=length(lat))
+    if (missing(date)) stop("must provide date")
+    if (length(lat) != 1) stop("length(lat) must be 1 [for now]")
+    if (length(lon) != 1) stop("length(lon) must be 1 [for now]")
+    if (length(date) != 1) stop("length(date) must be 1 [for now]")
+    isv <- 0
+    date <- 2008.0
+    itype <- 1                          # geodetic
+    alt <- 0.0                          # altitude in km
+    colat <- 90 - lat
+    if (lon < 0)
+        elong <- 360 + lon                        # BUG: must put positive
+    else
+        elong <- lon
+    r <- .Fortran("igrf11syn",
+                  as.integer(isv),
+                  as.double(date),
+                  as.integer(itype),
+                  as.double(alt),
+                  as.double(colat),
+                  as.double(elong),
+                  x=double(1),
+                  y=double(1),
+                  z=double(1),
+                  f=double(1))
+    dec <- 180 / pi * atan2(r$y, r$x)
+    dec
 }

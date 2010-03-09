@@ -5,12 +5,12 @@
 
 \description{Earth magnetic declination}
 
-\usage{magnetic.declination(lat, lon, year)}
+\usage{magnetic.declination(lat, lon, date)}
 
 \arguments{
   \item{lat}{latitude in degrees north.}
   \item{lon}{longiitude in degrees east.}
-  \item{year}{decimal year}
+  \item{date}{decimal year}
 }
 
 \details{Implements the International geomagnetic reference field,
