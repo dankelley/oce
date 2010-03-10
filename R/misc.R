@@ -787,11 +787,8 @@ magnetic.declination <- function(lat, lon, date)
     } else {
         if (!all(dim == dim(date))) stop("dimensions of lat and date must agree")
     }
-    cat("wtf\n")
     if (!is.null(dim)) {
         dim(lat) <- n
-        cat("lat=");
-        print(lat)
         dim(lon) <- n
         dim(date) <- n
     }

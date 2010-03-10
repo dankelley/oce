@@ -15,21 +15,29 @@
     whose dimensions conform to those of lat.)}
 }
 
-\details{Implements the International geomagnetic reference field,
-based on a reworked version of a Fortran program downloaded from a
-NOAA website.  The code seems to have been written by Susan Macmillon
-of the British Geological Survey.  Comments in the code indicate that
-it employs coefficients agreed by the IAGA Working Group V-MOD in
-December 2009.  The valid time interval is stated to be 1900.0 to 2015.0,
-with values up to 2020, albeit with reduced accuracy.  Values for dates
-1945 to 2005.0 are said to be "non-definitative", with other
-values in the range being declared "definitative".}
+\details{Implements the International geomagnetic reference field, based
+on a reworked version of a Fortran program downloaded from a NOAA
+website.  The code seems to have been written by Susan Macmillon of the
+British Geological Survey.  Comments in the code indicate that it
+employs coefficients agreed to in December 2009 by the IAGA Working
+Group V-MOD.  The code also suggests that the valid time interval is
+1900.0 to 2015.0, with values up to 2020 having reduced accuracy.  And,
+finally, values for dates 1945 to 2005.0 are said to be
+"non-definitative", with other values in the range being declared
+"definitative".}
 
 \value{Magnetic declination.}
 
 \examples{
 library(oce)
-print(magnetic.declination(44+55/60,-(69+46/60),2008)) # -16.80410
+lat <- seq(47.80, 48.00, length.out=30)
+lon <- seq(-69.9, -69.6, length.out=30)
+lonm <- matrix(rep(lon,length(lat)),ncol=length(lat),byrow=TRUE)
+latm <- matrix(rep(lat,length(lon)),nrow=length(lon),byrow=FALSE)
+dec <- magnetic.declination(latm, lonm, 2008 + 7 / 12)
+data(coastline.sle)
+plot(coastline.sle, ylim=range(lat), xlim=range(lon))
+contour(x=lon, y=lat, z=dec, add=TRUE)
 }
 
 \references{
