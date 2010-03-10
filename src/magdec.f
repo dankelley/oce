@@ -9,6 +9,18 @@ c colat <- 90 - (47 + 55/60)
 c elong <- 290 + 14 / 60
 c  r <- .Fortran("igrf11syn",as.integer(isv),as.double(date),as.integer(itype),as.double(alt),as.double(colat),as.double(elong),x=double(1),y=double(1),z=double(1),f=double(1))
 c dec <- 180 / pi * atan2(r$y, r$x)
+      subroutine md_driver(colat, elong, date, md, n)
+      real colat(n), elong(n), date(n), md(n)
+      isv = 0
+      itype = 1
+      alt = 0.0
+      do i = 1, n
+         call igrf11syn(isv,date(i),itype,alt,colat(i),elong(i),x,y,z,f)
+         md(i) = 57.2957795 * atan2(y, x)
+      end do
+      return
+      end
+
       subroutine igrf11syn (isv,date,itype,alt,colat,elong,x,y,z,f)
 c
 c     This is a synthesis routine for the 11th generation IGRF as agreed 
