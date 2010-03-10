@@ -1,14 +1,3 @@
-c R CMD SHLIB magdec.f
-c
-c dyn.load("magdec.so")
-c isv<-0
-c date<-2008.0
-c itype<-1 # geodetic
-c alt<-0.0 # altitude in km
-c colat <- 90 - (47 + 55/60)
-c elong <- 290 + 14 / 60
-c  r <- .Fortran("igrf11syn",as.integer(isv),as.double(date),as.integer(itype),as.double(alt),as.double(colat),as.double(elong),x=double(1),y=double(1),z=double(1),f=double(1))
-c dec <- 180 / pi * atan2(r$y, r$x)
       subroutine md_driver(colat, elong, date, n, dev)
       implicit double precision (a-h,o-z)
       double precision colat(n), elong(n), date(n)
