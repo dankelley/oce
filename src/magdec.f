@@ -9,14 +9,18 @@ c colat <- 90 - (47 + 55/60)
 c elong <- 290 + 14 / 60
 c  r <- .Fortran("igrf11syn",as.integer(isv),as.double(date),as.integer(itype),as.double(alt),as.double(colat),as.double(elong),x=double(1),y=double(1),z=double(1),f=double(1))
 c dec <- 180 / pi * atan2(r$y, r$x)
-      subroutine md_driver(colat, elong, date, md, n)
-      real colat(n), elong(n), date(n), md(n)
+      subroutine md_driver(colat, elong, date, n, dev)
+      implicit double precision (a-h,o-z)
+      double precision colat(n), elong(n), date(n)
+      double precision dev(n)
+      double precision xx, yy, zz
       isv = 0
       itype = 1
       alt = 0.0
       do i = 1, n
-         call igrf11syn(isv,date(i),itype,alt,colat(i),elong(i),x,y,z,f)
-         md(i) = 57.2957795 * atan2(y, x)
+         call igrf11syn(isv,date(i),itype,alt,colat(i),elong(i),
+     1        xx,yy,zz,f)
+         dev(i) = 57.2957795130823 * atan2(yy, xx)
       end do
       return
       end
