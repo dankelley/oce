@@ -12,7 +12,7 @@ as.coastline <- function(latitude, longitude)
 plot.coastline <- function (x,
                             asp,
                             mgp=getOption("oce.mgp"),
-                            mar=c(mgp[1], mgp[1], par("cex"), par("cex")),
+                            mar=c(mgp[1], mgp[1], 2*par("cex"), 2*par("cex")),
                             bg,
                             axes=TRUE,
                             debug=getOption("oce.debug"),
