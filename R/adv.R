@@ -32,7 +32,6 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     if (!missing(sampling.start)) stop("cannot handle argument \"sampling.start\"")
     if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
 
-    if (!missing(by) && debug == 0) stop("cannot use 'by' unless 'debug' is non-zero (even then, it fails)")
     if (by < 1) stop("cannot handle argument \"by\"<1")
 
     if (is.character(file)) {
@@ -75,7 +74,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                      bin1.distance=header$user$blanking.distance, # FIXME: is this right?
                      blanking.distance=header$user$blanking.distance,
                      measurement.interval=header$user$measurement.interval,
-                     transformation.matrix=header$transformation.matrix,
+                     transformation.matrix=header$head$transformation.matrix,
                      deployment.name=header$user$deployment.name,
                      cell.size=header$user$cell.size,
                      velocity.scale=header$user$velocity.scale,
