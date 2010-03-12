@@ -6,11 +6,22 @@
 
 \description{Read an pT temperature-depth recorder file, producing an object of type \code{pt}.}
 
-\usage{read.pt(file, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
+\usage{read.pt(file, from, to, by=1, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
+  \item{from}{number of profiles to skip at start, or the POSIXt time at
+    which to start reading.  See \dQuote{Examples}, and make careful
+    note of the use of the \code{tz} argument.}
+  \item{to}{optional number of profiles to read, or the last POSIXt
+    time to read.}
+  \item{by}{an indication of the stride length to use while walking
+    through the file.  If this is an integer, then \code{by-1}
+    profiles are skipped between each pair of profiles that is read.  If
+    this is a string representing a time interval, in colon-separated
+    format (MM:SS), then this interval is divided by the sampling interval, to
+    get the stride length.}
   \item{tz}{time zone.  The default value, \code{oce.tz}, is set to \code{UTC} 
     at setup.}
   \item{log.action}{if provided, the action item to be stored in the

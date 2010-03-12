@@ -64,10 +64,11 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             yloc <- 10
             d.yloc <- 0.7
             text.item(title, cex=1.25)
+            text.item(paste("Filename:", x$metadata$filename), cex=1)
             text.item(paste("Serial Number: ", x$metadata$serial.number),cex=1)
             text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=1)
             text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=1)
-            text.item(paste("Sampling interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=1)
+            text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=1)
             par(mar=mar)
         } else if (which[w] == 4) {
             args <- list(x=x$data$temperature, y=x$data$pressure,
@@ -88,7 +89,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
     invisible()
 }
 
-read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))
+read.pt <- function(file, from, to, by=1,
+                    tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))
 {
     filename <- file
     if (is.character(file)) {
@@ -101,6 +103,9 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=getOption("o
         open(file, "r")
         on.exit(close(file))
     }
+    from.keep <- from
+    to.keep <- to
+    by.keep <- by
     host.time <- 0
     logger.time <- 0
     logging.start <- 0
@@ -124,7 +129,7 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=getOption("o
         header <- c(header, line)
         if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
             l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
-            logging.start <- strptime(l,"%y/%m/%d %H:%M:%S", tz=tz)
+            logging.start <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
         }
         if (0 < (r<-regexpr("Sample[ \t]*period", line))) {
             l <- sub("[ ]*Sample[ \t]*period[ ]*", "", line)
@@ -134,8 +139,31 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=getOption("o
     }
     serial.number <- strsplit(header[1],"[\t ]+")[[1]][4]
     if (debug) {
-        cat("logging.start:");print(logging.start)
-        cat("sample.period:");print(sample.period)
+        cat("logging.start =", format(logging.start), "\n")
+        cat("sample.period =", sample.period, "\n")
+    }
+
+    ## Handle time-based args 'from', 'to', and 'by'.
+    if (!missing(from.keep) && (inherits(from.keep, "POSIXt") || inherits(from.keep, "character"))) {
+        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), logging.start, units="secs")) / sample.period
+        if (debug) cat("inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+    }
+    if (!missing(to.keep) && (inherits(to.keep, "POSIXt") || inherits(to.keep, "character"))) {
+        to <- as.numeric(difftime(as.POSIXct(to.keep, tz=tz), logging.start, units="secs")) / sample.period
+        if (debug) cat("inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+    }
+    if (is.character(by)) {
+        if (length(grep(":", by)) > 0) {
+            parts <- as.numeric(strsplit(by, ":")[[1]])
+            if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
+            else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+            else stop("malformed by time", by)
+            by <- by.time / sample.period
+        } else {
+            warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
+            by <- as.numeric(by)
+        }
+        if (debug) cat("inferred   by = ", format(by, width=7), "based on   'by' arg", by.keep, "\n")
     }
 
     col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
@@ -147,10 +175,18 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=getOption("o
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
     if (debug) cat("Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
-
-    d <- scan(file, character(), quiet=TRUE)
+    if (missing(to))
+        d <- scan(file, character(), skip=from, quiet=TRUE) # whole file
+    else
+        d <- scan(file, character(), skip=from, quiet=TRUE, nlines=(to - from + 1))
+    ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
+    if (by != 1)  {
+        look <- seq(1, n, by=by)
+        d <- d[,look]
+        n <- dim(d)[2]
+    }
     if (nvar == 2) {
         if (debug) cat("2 elements per data line\n")
         time <- logging.start + seq(1:n) * sample.period
@@ -172,6 +208,7 @@ read.pt <- function(file, tz=getOption("oce.tz"), log.action, debug=getOption("o
 
     data <- data.frame(time=time, temperature=temperature, pressure=pressure)
     metadata <- list(header=header,
+                     filename=filename,
                      serial.number=serial.number,
                      logging.start=logging.start,
                      sample.period=sample.period)
