@@ -132,7 +132,7 @@ plot(adv)
 f <- "/data/archive/sleiwex/2008/moorings/m02/vector1072/sl08b01.vec"
 h <- read.header.nortek(file(f,"rb"))
 print(h$head$transformation.matrix)
-}
+}}
 
 \author{Dan Kelley}
 
