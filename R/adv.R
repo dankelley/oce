@@ -1,38 +1,37 @@
-read.adv <- function(file, from=0, to, by=1,
+read.adv <- function(file, from=1, to, by=1,
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      withHeader=TRUE, sampling.start, deltat,
                      tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
-    if (type == "nortek")
-        read.adv.nortek(file=file, from=from, to=to, by=by,
-                        withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
-                        tz=tz, debug=debug, monitor=monitor, log.action=log.action)
-    else if (type == "sontek")
-        read.adv.sontek(file=file, from=from, to=to, by=by,
-                        withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
-                        tz=tz, debug=debug, monitor=monitor, log.action=log.action)
-    else if (type == "sontek.adr")
-        read.adv.sontek.adr(file=file, from=from, to=to, by=by,
-                            tz=tz, debug=debug, log.action=log.action)
-    else if (type == "sontek.text")
-        read.adv.sontek.text(basefile=file, from=from, to=to, by=by,
-                             tz=tz, debug=debug, log.action=log.action)
+    if (type == "nortek") read.adv.nortek(file=file, from=from, to=to, by=by,
+        withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
+        tz=tz, debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek") read.adv.sontek(file=file, from=from, to=to, by=by,
+             withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
+             tz=tz, debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek.adr") read.adv.sontek.adr(file=file, from=from, to=to, by=by,
+             tz=tz, debug=debug, log.action=log.action)
+    else if (type == "sontek.text") read.adv.sontek.text(basefile=file, from=from, to=to, by=by,
+             tz=tz, debug=debug, log.action=log.action)
 }
 
-read.adv.nortek <- function(file, from=0, to, by=1,
+read.adv.nortek <- function(file, from=1, to, by=1,
                             type="vector",
                             withHeader=TRUE, sampling.start, deltat,
                             tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    if (debug) cat("read.adv.nortek(...,type=\"", type, "\", ...)\n", sep="")
     by.is.broken <- TRUE
-    if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
-    if (!inherits(from, "POSIXt")) stop("\"from\" must be a POSIXt time (this limitation may be relaxed in a future version)")
-    if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
+    if (is.numeric(by)   && by   < 1) stop("argument \"by\" must be 1 or larger")
+    if (is.numeric(from) && from < 1) stop("argument \"from\" must be 1 or larger")
+    if (is.numeric(to)   && to   < 1) stop("argument \"to\" must be 1 or larger")
+
+    ## if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
+    ## if (!inherits(from, "POSIXt")) stop("\"from\" must be a POSIXt time (this limitation may be relaxed in a future version)")
+    ## if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
     if (!missing(sampling.start)) stop("cannot handle argument \"sampling.start\"")
     if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
-
-    if (by < 1) stop("cannot handle argument \"by\"<1")
 
     if (is.character(file)) {
         filename <- file
@@ -47,9 +46,10 @@ read.adv.nortek <- function(file, from=0, to, by=1,
         on.exit(close(file))
     }
     type <- match.arg(type)
-    if (debug) cat("read.adv.nortek()...\n")
     if (!withHeader) stop("withHeader must be TRUE")
-    header <- read.header.nortek(file)
+    if (debug) cat("  read.adv.nortek() about to read header\n")
+    header <- read.header.nortek(file, debug=debug-1)
+    if (debug) cat("  read.adv.nortek() finished reading header\n")
     metadata <- list(instrument.type="vector",
                      filename=filename,
                      sampling.start=if (missing(sampling.start)) NA else sampling.start,
@@ -80,19 +80,19 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                      velocity.scale=header$user$velocity.scale,
                      coordinate.system=header$user$coordinate.system,
                      oce.coordinate=header$user$coordinate.system,
-                     oce.beam.attenuated=FALSE
-                     )
+                     oce.beam.attenuated=FALSE)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
 
     # find file length
     seek(file, 0, "end")
     file.size <- seek(file, 0, "start")
-    if (debug) cat("file.size=", file.size, "\n")
+    if (debug) cat("  file.size=", file.size, "\n")
 
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
-    bisect.nortek.vector.sd <- function(file, file.size, value)
+    bisect.nortek.vector.sd <- function(file, file.size, value, what="time-index mapping")
     {
+        if (debug) cat("  bisect.nortek.vector.sd(...,value=", value, ", what=\"", what, "\")\n", sep="")
         lower <- 0
         upper <- file.size
         passes <- floor(3 + log(file.size, 2)) # won't need this many; only do this to catch coding errors
@@ -116,28 +116,28 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                 lower <- middle
             if (upper - lower < bis.chunk)
                 return(list(index=middle, time=sd.t[1]))
-            if (debug) cat("bisection (for \"from\" or \"to\" time) examining indices", lower, "to", upper, " (pass", pass, "of max", passes, ")\n")
+            if (debug) cat("  bisection (for \"", what, "\" time) examining indices ", lower, " to ", upper, " (pass", pass, " of max ", passes, ")\n", sep="")
         }
-        return(list(index=middle, time=sd.t[1]))
+        index=middle
     }
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
-    from.index <- bisect.nortek.vector.sd(file, file.size, from)
-    to.index <- bisect.nortek.vector.sd(file, file.size, to)
-    if (debug) cat("Bisection for \"from\" and \"to\" times yielded indices", from.index$index, "and",to.index$index,"\n")
+    from.index <- if (inherits(from, "POSIXt")) bisect.nortek.vector.sd(file, file.size, from, "from") else from
+    to.index <- if (inherits(to, "POSIXt")) bisect.nortek.vector.sd(file, file.size, to, "to") else to
+    if (debug) cat("  The \"from\" and \"to\" times yielded indices", from.index, "and",to.index,"\n")
 
-    if (to.index$index <= from.index$index) stop("no data in specified time range ", format(from), " to ", format(to), "; the closest times in the file are ", format(from.index$time), " and ", format(to.index$time))
+    if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
 
-    start <- max(1, from.index$index - 1000)
-    n <- min(file.size - start - 1, 2000 + (to.index$index - from.index$index)) # FIXME: need the -1?
+    start <- max(1, from.index - 1000)
+    n <- min(file.size - start - 1, 2000 + (to.index - from.index)) # FIXME: need the -1?
     seek(file, start)
     buf <- readBin(file, "raw", n=n)
     ## sd (system data) are interspersed in the vd sequence
 
-    if (debug) cat("about to try to match bytes... note that length(buf) is", length(buf), "\n")
+    if (debug) cat("  about to try to match bytes... note that length(buf) is", length(buf), "\n")
 
     sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
 
-    if (debug) str(sd.start)
+    if (debug) cat("  sd.start=", format(sd.start), "\n")
 
     sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                         bcd2integer(buf[sd.start+9]), # month
@@ -146,13 +146,13 @@ read.adv.nortek <- function(file, from=0, to, by=1,
                         bcd2integer(buf[sd.start+4]), # min
                         bcd2integer(buf[sd.start+5]), # sec
                         tz=getOption("oce.tz"))
-
     sd.start <- subset(sd.start, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
     sd.tt <- subset(sd.t, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
 
     if (debug) {
-        cat("before doing 'by' operation, sd.start is:\n")
-        str(sd.start)
+        cat("  before doing 'by' operation, sd.t     is:", format(sd.t), "\n")
+        cat("  before doing 'by' operation, sd.start is:", format(sd.start), "\n")
+        cat("  before doing 'by' operation, sd.tt    is:", format(sd.tt), "\n")
     }
 
     if (by > 1) {
@@ -161,10 +161,8 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     }
 
     if (debug) {
-        cat("after doing 'by' operation, sd.start is:\n")
-        str(sd.start)
-        cat("after doing 'by' operation, sd.t     is:\n")
-        str(sd.t)
+        cat("  after  doing 'by' operation, sd.start is:", format(sd.start), "\n")
+        cat("  after  doing 'by' operation, sd.t     is:", format(sd.t), "\n")
     }
 
     if (0 != diff(range(diff(sd.start)))) warning("ignoring the fact that the vector data have unequal burst lengths")
@@ -207,6 +205,8 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     fine <- seq(0,1,length.out=vd.len)
     rm(buf)
     gc()
+    cat("  creating data.\n")
+    cat("'time' will be", seq(from=from,to=to,length.out=vd.len), "\n")
     data <- list(ts=list(time=seq(from=from, to=to, length.out=vd.len),
                  heading=approx(coarse, heading, xout=fine)$y,
                  pitch=approx(coarse, pitch, xout=fine)$y,
@@ -226,7 +226,7 @@ read.adv.nortek <- function(file, from=0, to, by=1,
     res
 }
 
-read.adv.sontek <- function(file, from=0, to, by=1,
+read.adv.sontek <- function(file, from=1, to, by=1,
                             type="default",
                             withHeader=TRUE, sampling.start, deltat,
                             tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
@@ -317,7 +317,7 @@ read.adv.sontek <- function(file, from=0, to, by=1,
     res
 }
 
-read.adv.sontek.adr <- function(file, from=0, to, by=1,
+read.adv.sontek.adr <- function(file, from=1, to, by=1,
                                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
@@ -535,7 +535,7 @@ read.adv.sontek.adr <- function(file, from=0, to, by=1,
 }
 
 
-read.adv.sontek.text <- function(basefile, from=0, to, by=1,
+read.adv.sontek.text <- function(basefile, from=1, to, by=1,
                                  coordinate.system="xyz",
                                  transformation.matrix,
                                  tz=getOption("oce.tz"),
