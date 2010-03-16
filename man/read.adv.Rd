@@ -122,11 +122,16 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
 \examples{
 \dontrun{
 library(oce)
+# Typical usage
 adv <- read.adv("/data/archive/sleiwex/2008/moorings/m06/autopod/day183/SL08A183.015",
        sampling.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
 summary(adv)
 plot(adv)
-}
+
+# Detailed examination of a file (e.g. transformation matrix)
+f <- "/data/archive/sleiwex/2008/moorings/m02/vector1072/sl08b01.vec"
+h <- read.header.nortek(file(f,"rb"))
+print(h$head$transformation.matrix)
 }
 
 \author{Dan Kelley}
