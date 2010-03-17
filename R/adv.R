@@ -123,15 +123,15 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
         from.index <- bisect.nortek.vector.sd(file, file.size, from, "from")$index
         to.index <- bisect.nortek.vector.sd(file, file.size, to, "to")$index
-        if (debug) cat("  from=", str(from.keep), " yields index", from.index, "\n")
-        if (debug) cat("  to  =", str(to.keep),   " yields index", to.index,   "\n")
+        if (debug) cat("  from=", str(from), " yields index", from.index, "\n")
+        if (debug) cat("  to  =", str(to),   " yields index", to.index,   "\n")
     } else {
         from.index <- from
         to.index <- to
         ## The value 24+28 is the max chunk size, from vector-velocity-data [24b] plus vector-system-data [28b]
         limit <- min(file.size, (to - from + 1) * (24 + 28))
-        buf <<- readBin(file, "raw", n=limit)
-        vvd.start <<- match.bytes(buf, 0xa5, 0x10)
+        buf <- readBin(file, "raw", n=limit)
+        vvd.start <- match.bytes(buf, 0xa5, 0x10)
         stop()
     }
 

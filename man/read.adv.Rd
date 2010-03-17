@@ -89,9 +89,37 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
   \code{metadata$oce.coordinate="beam"}.  It is up to the user to
   modify these values if they are wrong.
 
-  \emph{Special notes:}
+
+
+  \strong{Notes on Nortek Vector ADV files.}
+
+  \enumerate{
+
+    \item The binary data are read into a buffer by
+    \preformatted{buf <- readBin(filename,what="raw",endian="little",n=n)}
+    with a suitable value for \code{n}.
+
+    \item Velocity chunks are located within the buffer by using
+    \preformatted{vc <- match.bytes(buf, 0xa5, 0x10)}
+    which yields a vector of indices within \code{buf},
+    at which the velocity chunks start.  \emph{BUG:} the checksum
+    provided in bytes 23 and 24 of these chunks should be examined
+    to discard matches that occur randomly (with probability 1:65025)
+    but this is not done in the present version of oce.
+
+    \item System chunks are recognized by using
+    \preformatted{sc <- match.bytes(buf, 0xa5, 0x11, 0x0e)}
+    and it is these chunks that contain the times of observation, along
+    with the orientation of the device.
+
+    \item Times from the system chunks are coordinated with velocities
+    in the velocity chunks by ... \emph{BUG:} fill in the method.
+
+  }
+
+  \emph{Notes on Nortek (possibly incorrect).}
   
-  Nortek adr files: the file format assumed here is not the same as in the 
+  Nortek adv files: the file format assumed here is not the same as in the 
   documentation that I have available.  The documentation is for Firmware 
   Version 4.0 (October 1997), but this does not match a data file used for testing.
   The following are the differences:
