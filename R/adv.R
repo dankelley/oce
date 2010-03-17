@@ -102,7 +102,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
             seek(file, middle)
             buf <- readBin(file, "raw", n=bis.chunk, endian="little")
             sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1] # 3-byte code for system-data chunks
-            #str(sd.start)                                     # DEBUG
+            if (debug) cat("  pass=",pass,"sd.start=", str(sd.start), "\n")
             sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                                 bcd2integer(buf[sd.start+9]), # month
                                 bcd2integer(buf[sd.start+6]), # day
@@ -115,20 +115,21 @@ read.adv.nortek <- function(file, from=1, to, by=1,
             else
                 lower <- middle
             if (upper - lower < bis.chunk)
-                return(list(index=middle, time=sd.t[1]))
+                return(list(index=middle, time=sd.t))
             if (debug) cat("  bisection (for \"", what, "\" time) examining indices ", lower, " to ", upper, " (pass", pass, " of max ", passes, ")\n", sep="")
         }
-        index=middle
+        list(index=middle, time=sd.t)
     }
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
-    from.index <- if (inherits(from, "POSIXt")) bisect.nortek.vector.sd(file, file.size, from, "from") else from
-    to.index <- if (inherits(to, "POSIXt")) bisect.nortek.vector.sd(file, file.size, to, "to") else to
-    if (debug) cat("  The \"from\" and \"to\" times yielded indices", from.index, "and",to.index,"\n")
+    from.index <- if (inherits(from, "POSIXt")) bisect.nortek.vector.sd(file, file.size, from, "from")$index else from
+    to.index <- if (inherits(to, "POSIXt")) bisect.nortek.vector.sd(file, file.size, to, "to")$index else to
+    if (debug && inherits(from, "POSIXt")) cat("  from=", str(from.keep), " yields index", from.index, "\n")
+    if (debug && inherits(to,   "POSIXt")) cat("  to  =", str(to.keep),   " yields index", to.index,   "\n")
 
     if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
 
-    start <- max(1, from.index - 1000)
-    n <- min(file.size - start - 1, 2000 + (to.index - from.index)) # FIXME: need the -1?
+    start <- max(1, from.index - 1000)  # FIXME: confusing code; should rewrite entirely
+    n <- min(file.size - start - 1, 2000 + 220*(to.index - from.index))
     seek(file, start)
     buf <- readBin(file, "raw", n=n)
     ## sd (system data) are interspersed in the vd sequence
@@ -137,7 +138,8 @@ read.adv.nortek <- function(file, from=1, to, by=1,
 
     sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
 
-    if (debug) cat("  sd.start=", format(sd.start), "\n")
+    if (debug) cat("  sd.start=", sd.start, "\n")
+    if (debug) cat("  diff(sd.start)=", diff(sd.start), "\n")
 
     sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                         bcd2integer(buf[sd.start+9]), # month
@@ -150,9 +152,10 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     sd.tt <- subset(sd.t, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
 
     if (debug) {
-        cat("  before doing 'by' operation, sd.t     is:", format(sd.t), "\n")
-        cat("  before doing 'by' operation, sd.start is:", format(sd.start), "\n")
-        cat("  before doing 'by' operation, sd.tt    is:", format(sd.tt), "\n")
+        cat("  before doing 'by' operation, sd.t       is:", format(sd.t), "\n")
+        cat("  before doing 'by' operation, diff(sd.t) is:", format(diff(sd.t)), "\n")
+        cat("  before doing 'by' operation, sd.start   is:", format(sd.start), "\n")
+        cat("  before doing 'by' operation, sd.tt      is:", format(sd.tt), "\n")
     }
 
     if (by > 1) {
@@ -186,27 +189,44 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     p.MSB <- as.numeric(buf[vd.start + 4])
     p.LSW <- readBin(buf[vd.start2 + 6], "integer", size=2, n=vd.len, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
-
+    if (debug) {
+        cat("pressure begins...\n")
+        print(as.matrix(pressure[1:min(10,length(pressure))], ncol=1))
+    }
     v <- array(dim=c(vd.len, 3))
     v[,1] <- readBin(buf[vd.start2 + 10], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
     v[,2] <- readBin(buf[vd.start2 + 12], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
     v[,3] <- readBin(buf[vd.start2 + 14], "integer", size=2, n=vd.len, signed=TRUE, endian="little") / 1000
-
+    if (debug) {
+        cat("v begins...\n")
+        print(v[1:min(10,vd.len),])
+    }
     a <- array(raw(), dim=c(vd.len, 3))
     a[,1] <- buf[vd.start + 16]
     a[,2] <- buf[vd.start + 17]
     a[,3] <- buf[vd.start + 18]
-
+    if (debug) {
+        cat("a begins...\n")
+        print(matrix(as.numeric(a[1:min(10,vd.len),]), ncol=3))
+    }
     c <- array(raw(), dim=c(vd.len, 3))
     c[,1] <- buf[vd.start + 19]
     c[,2] <- buf[vd.start + 20]
     c[,3] <- buf[vd.start + 21]
+    if (debug) {
+        cat("c begins...\n")
+        print(matrix(as.numeric(c[1:min(10,vd.len),]), ncol=3))
+    }
     coarse <- seq(0,1,length.out=sd.len)
     fine <- seq(0,1,length.out=vd.len)
     rm(buf)
     gc()
     cat("  creating data.\n")
     cat("'time' will be", seq(from=from,to=to,length.out=vd.len), "\n")
+    print(coarse)
+    print(heading)
+    print(sd.len)
+
     data <- list(ts=list(time=seq(from=from, to=to, length.out=vd.len),
                  heading=approx(coarse, heading, xout=fine)$y,
                  pitch=approx(coarse, pitch, xout=fine)$y,
