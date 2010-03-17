@@ -100,8 +100,10 @@ read.adv.nortek <- function(file, from=1, to, by=1,
             middle <- floor((upper + lower) / 2)
             bis.chunk <- 1000           # only need about 1/4 of this
             seek(file, middle)
-            buf <- readBin(file, "raw", n=bis.chunk, endian="little")
-            sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1] # 3-byte code for system-data chunks
+            buf <- readBin(file, what="raw", n=bis.chunk, endian="little")
+            ## Three-byte code for vector-system-data.  NB. 28 bytes is 14 words, or 0x0e
+            ## for the third value in the triplet.  See p36 of system-integrator-guide.pdf.
+            sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1]
             if (debug) cat("  pass=",pass,"sd.start=", str(sd.start), "\n")
             sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
                                 bcd2integer(buf[sd.start+9]), # month
@@ -110,23 +112,32 @@ read.adv.nortek <- function(file, from=1, to, by=1,
                                 bcd2integer(buf[sd.start+4]), # min
                                 bcd2integer(buf[sd.start+5]), # sec
                                 tz=getOption("oce.tz"))
-            if (value < sd.t)
-                upper <- middle
-            else
-                lower <- middle
-            if (upper - lower < bis.chunk)
-                return(list(index=middle, time=sd.t))
+            if (value < sd.t) upper <- middle else lower <- middle
+            if (upper - lower < bis.chunk) return(list(index=middle, time=sd.t))
             if (debug) cat("  bisection (for \"", what, "\" time) examining indices ", lower, " to ", upper, " (pass", pass, " of max ", passes, ")\n", sep="")
         }
         list(index=middle, time=sd.t)
     }
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
-    from.index <- if (inherits(from, "POSIXt")) bisect.nortek.vector.sd(file, file.size, from, "from")$index else from
-    to.index <- if (inherits(to, "POSIXt")) bisect.nortek.vector.sd(file, file.size, to, "to")$index else to
-    if (debug && inherits(from, "POSIXt")) cat("  from=", str(from.keep), " yields index", from.index, "\n")
-    if (debug && inherits(to,   "POSIXt")) cat("  to  =", str(to.keep),   " yields index", to.index,   "\n")
+    if (inherits(from, "POSIXt")) {
+        if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+        from.index <- bisect.nortek.vector.sd(file, file.size, from, "from")$index
+        to.index <- bisect.nortek.vector.sd(file, file.size, to, "to")$index
+        if (debug) cat("  from=", str(from.keep), " yields index", from.index, "\n")
+        if (debug) cat("  to  =", str(to.keep),   " yields index", to.index,   "\n")
+    } else {
+        from.index <- from
+        to.index <- to
+        ## The value 24+28 is the max chunk size, from vector-velocity-data [24b] plus vector-system-data [28b]
+        limit <- min(file.size, (to - from + 1) * (24 + 28))
+        buf <<- readBin(file, "raw", n=limit)
+        vvd.start <<- match.bytes(buf, 0xa5, 0x10)
+        stop()
+    }
 
     if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
+
+    warning("THIS CODE NEEDS MAJOR WORK.  If indices are given, how to figure out times?  May have to match.bytes in whole file")
 
     start <- max(1, from.index - 1000)  # FIXME: confusing code; should rewrite entirely
     n <- min(file.size - start - 1, 2000 + 220*(to.index - from.index))
@@ -148,8 +159,11 @@ read.adv.nortek <- function(file, from=1, to, by=1,
                         bcd2integer(buf[sd.start+4]), # min
                         bcd2integer(buf[sd.start+5]), # sec
                         tz=getOption("oce.tz"))
-    sd.start <- subset(sd.start, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
-    sd.tt <- subset(sd.t, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
+    sd.tt <- sd.t
+    if (inherits(from, "POSIXt") && inherits(to, "POSIXt")) {
+        sd.start <- subset(sd.start, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
+        sd.tt <- subset(sd.t, from <= sd.t & sd.t <= to) # trim before/after (typically a few remnants)
+    }
 
     if (debug) {
         cat("  before doing 'by' operation, sd.t       is:", format(sd.t), "\n")
@@ -219,6 +233,10 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     }
     coarse <- seq(0,1,length.out=sd.len)
     fine <- seq(0,1,length.out=vd.len)
+    if (debug) {
+        cat("  coarse=",coarse[1:min(10, length(coarse))],"\n")
+        cat("  fine  =", fine[1:min(10, length(fine))],"\n")
+    }
     rm(buf)
     gc()
     cat("  creating data.\n")
