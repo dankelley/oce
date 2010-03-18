@@ -3,14 +3,56 @@
 #include <Rinternals.h>
 
 /* 
- * compile from commandline:
+ * 1. compile from commandline:
+
  R CMD SHLIB bitwise.c
- * test R code:
+   
+ * 2. test R code:
+   
  buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
  dyn.load("bitwise.so")
  m <- .Call("match2bytes", buf, as.raw(0xa5), as.raw(0x11))
  print(m)
+
 */
+
+SEXP nortek_checksum(SEXP buf, SEXP key)
+{
+  /* http://www.nortek-as.com/en/knowledge-center/forum/current-profilers-and-current-meters/367698326 */
+  /* 
+     R CMD SHLIB bitwise.c 
+     dyn.load("~/src/R-kelley/oce/src/bitwise.so");.Call("nortek_checksum",buf[vvd.start[1]+0:23], c(0xb5, 0x8c))
+  */
+  int i, n;
+  short check_value;
+  double *resp;
+  /*short *bufp;*/
+  unsigned char *bufp, *keyp;
+  SEXP res;
+  PROTECT(key = AS_RAW(key));
+  PROTECT(buf = AS_RAW(buf));
+  bufp = (unsigned char*)RAW_POINTER(buf);
+  keyp = (unsigned char*)RAW_POINTER(key);
+  Rprintf("buf[0]=0x%02x\n",bufp[0]);
+  Rprintf("buf[1]=0x%02x\n",bufp[1]);
+  Rprintf("buf[2]=0x%02x\n",bufp[2]);
+  Rprintf("key[0]=0x%02x\n", keyp[0]);
+  Rprintf("key[1]=0x%02x\n", keyp[1]);
+  check_value = (((short)keyp[0]) << 8) | (short)keyp[1]; /* FIXME: should be -19060 Q: how to make a signed short from two hexes? */
+  Rprintf("key[0]=0x%02x (shifted 1)\n", keyp[0]<<1);
+  Rprintf("key[0]=0x%02x (shifted 8)\n", keyp[0]<<8);
+  Rprintf("key[0]=0x%02x\n", keyp[0]);
+  Rprintf("check_value= %d\n", check_value);
+  n = LENGTH(buf);
+  for (i = 0; i < n - 2; i++) {
+    check_value += bufp[i];
+  }
+  *resp = 0.0;                    /* FIXME: should be logical */
+  PROTECT(res = NEW_NUMERIC(1));
+  resp = NUMERIC_POINTER(res);
+  UNPROTECT(3);
+  return(res);
+}
 
 SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
 {

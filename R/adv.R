@@ -103,20 +103,20 @@ read.adv.nortek <- function(file, from=1, to, by=1,
             buf <- readBin(file, what="raw", n=bis.chunk, endian="little")
             ## Three-byte code for vector-system-data.  NB. 28 bytes is 14 words, or 0x0e
             ## for the third value in the triplet.  See p36 of system-integrator-guide.pdf.
-            sd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1]
+            vsd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1] # vsd=vector system data [p36 of system-integrator-guide.pdf]
             if (debug) cat("  pass=",pass,"sd.start=", str(sd.start), "\n")
-            sd.t <- ISOdatetime(2000 + bcd2integer(buf[sd.start+8]),  # year
-                                bcd2integer(buf[sd.start+9]), # month
-                                bcd2integer(buf[sd.start+6]), # day
-                                bcd2integer(buf[sd.start+7]), # hour
-                                bcd2integer(buf[sd.start+4]), # min
-                                bcd2integer(buf[sd.start+5]), # sec
-                                tz=getOption("oce.tz"))
-            if (value < sd.t) upper <- middle else lower <- middle
-            if (upper - lower < bis.chunk) return(list(index=middle, time=sd.t))
+            vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
+                                 bcd2integer(buf[vsd.start+9]), # month
+                                 bcd2integer(buf[vsd.start+6]), # day
+                                 bcd2integer(buf[vsd.start+7]), # hour
+                                 bcd2integer(buf[vsd.start+4]), # min
+                                 bcd2integer(buf[vsd.start+5]), # sec
+                                 tz=getOption("oce.tz"))
+            if (value < vsd.t) upper <- middle else lower <- middle
+            if (upper - lower < bis.chunk) return(list(index=middle, time=vsd.t))
             if (debug) cat("  bisection (for \"", what, "\" time) examining indices ", lower, " to ", upper, " (pass", pass, " of max ", passes, ")\n", sep="")
         }
-        list(index=middle, time=sd.t)
+        list(index=middle, time=vsd.t)
     }
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
