@@ -1,0 +1,544 @@
+plot.tidem <- function(x,
+                       label.if=NULL,
+                       plot.type=c("staircase", "spikes"),
+                       log="",
+                       mgp=getOption("oce.mgp"),
+                       mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
+                       ...)
+{
+    draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
+    {
+        abline(v=frequency, col=col, lty="dotted")
+        if (is.null(adj))
+            mtext(name, side=side, at=frequency, col=col, cex=0.8)
+        else
+            mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
+    }
+    draw.constituents <- function(type="standard", label.if=NULL, col="blue")
+    {
+        if (type == "standard") {
+            draw.constituent("SA", 0.0001140741, side=3)
+            draw.constituent("O1", 0.0387306544, side=3, adj=1)
+            draw.constituent("K1", 0.0417807462, side=1, adj=0)
+            draw.constituent("M2", 0.0805114007, side=3, adj=1)
+            draw.constituent("S2", 0.0833333333, side=1, adj=0)
+            draw.constituent("M4", 0.1610228013, side=3)
+        } else {
+            if (is.null(label.if)) label.if <- amplitude[order(amplitude, decreasing=TRUE)[3]]
+            for (i in 1:nc) {
+                if (amplitude[i] >= label.if) {
+                    abline(v=frequency[i], col=col, lty="dotted")
+                    mtext(name[i], side=3, at=frequency[i], col=col)
+                }
+            }
+        }
+    }
+    if (!inherits(x, "tidem")) stop("method is only for tidal analysis objects")
+    opar <- par(no.readonly = TRUE)
+    on.exit(par(opar))
+    par(mgp=mgp, mar=mar)
+    frequency <- x$freq[-1] # trim z0
+    amplitude <- x$amplitude[-1]
+    name      <- x$name[-1]
+    nc <- length(frequency)
+    plot.type <- match.arg(plot.type)
+    if (plot.type == "spikes") {
+    	plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
+        segments(frequency, 0, frequency, amplitude)
+        draw.constituents()
+    } else if (plot.type == "staircase") {
+        plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
+        draw.constituents()
+    } else {
+        stop("unknown plot.type ", plot.type)
+    }
+    mtext(x$call, side=4, adj=1, cex=2/3)
+    mtext(paste("start time:", x$start.time), side=4, adj=0, cex=2/3)
+    if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
+}
+
+
+tidem.vuf <- function(t, j, lat=NULL)
+{
+    debug <- 0
+    data("tidedata")
+    tidedata   <- get("tidedata",   pos=globalenv())
+    a <- tidem.astron(t)
+
+    if (debug > 0) print(a)
+
+    doodson <- cbind(tidedata$const$d1,
+                     tidedata$const$d2,
+                     tidedata$const$d3,
+                     tidedata$const$d4,
+                     tidedata$const$d5,
+                     tidedata$const$d6)
+
+    ##v=rem( const.doodson*astro+const.semi, 1);
+    if (debug > 0) {
+        cat("doodson[1,]=",doodson[1,],"\n")
+        cat("doodson[2,]=",doodson[2,],"\n")
+        cat("doodson[3,]=",doodson[3,],"\n")
+    }
+
+    v <- doodson %*% a$astro + tidedata$const$semi
+    if (debug > 0) cat("tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
+    v <- v - trunc(v)
+    if (debug > 0) cat("v[1:3]=",v[1:3],"\n")
+    if (!is.null(lat) && !is.na(lat)) {
+        if (abs(lat) < 5) lat <- sign(lat) * 5
+        slat <- sin(pi * lat / 180)
+        k <- which(tidedata$sat$ilatfac == 1)
+        rr    <- tidedata$sat$amprat
+        rr[k] <- rr[k] * 0.36309 * (1.0 - 5.0 * slat * slat) / slat
+        k     <- which(tidedata$sat$ilatfac == 2)
+        rr[k] <- rr[k] * 2.59808 * slat
+
+        uu <- tidedata$sat$deldood %*% a$astro[4:6] + tidedata$sat$phcorr
+        uu <- uu - trunc(uu)
+
+        if (debug > 1) {cat("uu[1:3]=");print(uu[1:3])}
+
+        nsat <- length(tidedata$sat$iconst)
+        nfreq <- length(tidedata$const$numsat)
+                                        # loop, rather than make a big matrix
+        if (debug > 2) {
+            cat("tidedata$sat$iconst=", tidedata$sat$iconst, "\n")
+            cat("length(sat$iconst)=", length(tidedata$sat$iconst),"\n")
+        }
+        fsum.vec <- vector("numeric", nsat)
+        u.vec <- vector("numeric", nsat)
+        for (isat in 1:nsat) {
+            if (debug > 3) cat("isat=",isat,"\n")
+            use <- tidedata$sat$iconst == isat
+            fsum.vec[isat] <- 1 + sum(rr[use] * exp(1i * 2 * pi * uu[use]))
+            u.vec[isat] <- Arg(fsum.vec[isat]) / 2 / pi
+            if (isat==8 && debug > 0) {
+                cat("TEST at isat=8:\n")
+                cat("fsum.vec[",isat,"]=",fsum.vec[isat]," (EXPECT  1.18531604917590 - 0.08028013402313i)\n")
+                cat("u.vec[   ",isat,"]=",u.vec[isat],"       (EXPECT -0.01076294959868)\n")
+            }
+        }
+        if (debug > 0) {
+            cat("uvec[",j,"]=", u.vec[j], "\n")
+            cat("fsum.vec[",j,"]=", fsum.vec[j],"\n")
+        }
+
+        f <- abs(fsum.vec)
+        u <- Arg(fsum.vec)/2/pi
+        if (debug>3) cat("f=",f,"\n") # correct
+        if (debug>3) cat("u=",u,"\n") # correct
+
+        for (k in which(!is.na(tidedata$const$ishallow))) {
+            ik <- tidedata$const$ishallow[k] + 0:(tidedata$const$nshallow[k] - 1)
+            f[k] <- prod(f[tidedata$shallow$iname[ik]]^abs(tidedata$shallow$coef[ik]))
+            u[k] <- sum(u[tidedata$shallow$iname[ik]]*tidedata$shallow$coef[ik])
+            v[k] <- sum(v[tidedata$shallow$iname[ik]]*tidedata$shallow$coef[ik])
+            if (debug>0 && k < 28) cat("k=",k,"f[k]=",f[k]," u[k]=",u[k],"v[k]=",v[k],"\n")
+        }
+        u <- u[j]
+        v <- v[j]
+        f <- f[j]
+    }
+    else {
+        v <- v[j]
+        u <- rep(0, length(j))
+        f <- rep(1, length(j))
+    }
+    if (length(v) < length(u)) {
+        warning("trimming u and f to get same length as v -- this is a bug")
+        u <- u[1:length(v)]
+        f <- f[1:length(v)]
+    }
+    list(v=v, u=u, f=f)
+}
+
+#function [v,u,f]=t_vuf(ctime,ju,lat);
+#% T_VUF Computes nodal modulation corrections.
+#% [V,U,F]=T_VUF(DATE,JU,LAT) returns the astronomical phase V, the
+#% nodal phase modulation U, and the nodal amplitude correction F at
+#% a decimal date DATE for the components specified by index JU (into
+#% the CONST structure returned by T_GETCONSTS) at a latitude LAT.
+#%
+#% If LAT is not specified, then the Greenwich phase V is computed with
+#% U=0 and F=1.
+#%
+#% Note that V and U are in 'cycles', not degrees or radians (i.e.,
+#% multiply by 360 to get degrees).
+#%
+#% If LAT is set to NaN, then the nodal corrections are computed for all
+#% satellites that do *not* have a "latitude-dependent" correction
+#% factor. This is for compatibility with the ways things are done in
+#% the xtide package. (The latitude-dependent corrections were zeroed
+#% out there partly because it was convenient, but this was rationalized
+#% by saying that since the forcing of tides can occur at latitudes
+#% other than where they are observed, the idea that observations have
+#% the equilibrium latitude-dependence is possibly bogus anyway).
+#
+#% R. Pawlowicz 11/8/99
+#%               1/5/00 - Changed to allow for no LAT setting.
+#%              11/8/00 - Added the LAT=NaN option.
+#% Version 1.0
+#
+#% Get all the info about constituents.
+#
+#[const,sat,shallow]=t_getconsts(ctime);
+#
+#% Calculate astronomical arguments at mid-point of data time series.
+#[astro,ader]=t_astron(ctime);
+#
+#
+#% Phase relative to Greenwich (in units of cycles, presumeably).
+#% (This only returns values when we have doodson#s, i.e., not for the
+#% shallow water components, but these will be computed later.)
+#v=rem( const.doodson*astro+const.semi, 1);
+#
+#if nargin==3, % If we have a latitude, get nodal corrections.
+#
+#  % Apparently the second-order terms in the tidal potential go to zero
+#  % at the equator, but the third-order terms do not. Hence when trying
+#  % to infer the third-order terms from the second-order terms, the
+#  % nodal correction factors blow up. In order to prevent this, it is
+#  % assumed that the equatorial forcing is due to second-order forcing
+#  % OFF the equator, from about the 5 degree location. Latitudes are
+#  % hence (somewhat arbitrarily) forced to be no closer than 5 deg to
+#  % the equator.
+#
+#  if finite(lat) & (abs(lat)<5); lat=sign(lat).*5; end
+#
+#  slat=sin(pi.*lat./180);
+#  % Satellite amplitude ratio adjustment for latitude.
+#
+#  rr=sat.amprat;           % no amplitude correction
+#
+#  if finite(lat),
+#    j=find(sat.ilatfac==1); % latitude correction for diurnal constituents
+#    rr(j)=rr(j).*0.36309.*(1.0-5.0.*slat.*slat)./slat;
+#
+#    j=find(sat.ilatfac==2); % latitude correction for semi-diurnal constituents
+#    rr(j)=rr(j).*2.59808.*slat;
+#  else
+#    rr(sat.ilatfac>0)=0;
+#  end;
+#
+#  % Calculate nodal amplitude and phase corrections.
+#
+#  uu=rem( sat.deldood*astro(4:6)+sat.phcorr, 1);
+#
+#  %%uu=uudbl-round(uudbl);  <_ I think this was wrong. The original
+#  %                         FORTRAN code is:  IUU=UUDBL
+#  %                                           UU=UUDBL-IUU
+#  %                         which is truncation.
+#
+#
+#  % Sum up all of the satellite factors for all satellites.
+#
+#  nsat=length(sat.iconst);
+#  nfreq=length(const.isat);
+#
+#  fsum=1+sum(sparse([1:nsat],sat.iconst,rr.*exp(i*2*pi*uu),nsat,nfreq)).';
+#
+#  f=abs(fsum);
+#  u=angle(fsum)./(2.*pi);
+#
+#  % Compute amplitude and phase corrections for shallow water constituents.
+#
+#  for k=find(finite(const.ishallow))',
+#    ik=const.ishallow(k)+[0:const.nshallow(k)-1];
+#    f(k)=prod(f(shallow.iname(ik)).^abs(shallow.coef(ik)));
+#    u(k)=sum( u(shallow.iname(ik)).*shallow.coef(ik) );
+#    v(k)=sum( v(shallow.iname(ik)).*shallow.coef(ik) );
+#  end;
+#
+#  f=f(ju);
+#  u=u(ju);
+#  v=v(ju);
+#
+#else % Astronomical arguments only.
+#
+#  % Compute for shallow water constituents.
+#  for k=find(finite(const.ishallow))',
+#    ik=const.ishallow(k)+[0:const.nshallow(k)-1];
+#    v(k)=sum( v(shallow.iname(ik)).*shallow.coef(ik) );
+#  end;
+#  v=v(ju);
+#  f=ones(size(v));
+#  u=zeros(size(v));
+#end;
+
+
+tidem.astron <- function(t)
+{
+                                        # Code mimics t_astron in t_tide
+    debug <- FALSE
+    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT"),
+                             units="days"))
+    D <- d / 10000
+    a <- matrix(c(1, d, D^2, D^3), 4, 1)
+
+    if (debug) cat("d=",formatC(d,digits=10),"D=",D,"a=", a, "\n")
+
+    sc.hc.pc.np.pp <-
+        matrix(c(270.434164, 13.1763965268,-0.0000850, 0.000000039,
+                 279.696678,  0.9856473354, 0.00002267,0.000000000,
+                 334.329556,  0.1114040803,-0.0007739,-0.00000026 ,
+                 -259.183275, 0.0529539222,-0.0001557,-0.000000050,
+                 281.220844,  0.0000470684, 0.0000339, 0.000000070),
+               nrow=5, ncol=4, byrow=TRUE)
+    astro <- ((sc.hc.pc.np.pp %*% a) / 360) %% 1
+
+    if (debug) cat("astro=",astro,"\n")
+
+    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="GMT", units="days")
+
+    if (debug) cat("rem2=",rem,"\n")
+
+    tau <- rem + astro[2,1] - astro[1,1]
+    astro <- c(tau, astro)
+    da <- matrix(c(0, 1, 2e-4*D, 3e-4*D^2), 4, 1)
+    ader <- (sc.hc.pc.np.pp %*% da) / 360
+    dtau <- 1 + ader[2,1] - ader[1,1]
+    ader <- c(dtau, ader)
+    data.frame(astro=astro, ader=ader)
+}
+
+tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet = TRUE)
+{
+    if (!inherits(sl, "sealevel")) {
+        if (inherits(sl, "numeric"))
+            sl <- as.sealevel(sl)
+        else stop("cannot deal with 'sl' of class ", class(sl)[1])
+    }
+    if (missing(start.time)) start.time <- sl$data$t[which(!is.na(sl$data$t))][1]
+
+    if (!quiet) {
+        cat("start.time=")
+        print(start.time)
+        cat("\n")
+    }
+    cl <- match.call()
+
+    data("tidedata")
+    td <- get("tidedata", pos=globalenv())
+    tc <- td$const
+    ntc <- length(tc$name)
+
+    if (!quiet) print(tc)
+
+    name <- freq <- kmpr <- NULL
+    indices <- NULL
+    standard <- tc$ikmpr > 0
+    if (missing(constituents)) {
+        name <- tc$name[standard][-1]
+        freq <- tc$freq[standard][-1]
+        kmpr <- tc$kmpr[standard][-1]
+        indices <- c(indices, seq(1:ntc)[standard])
+        if (!quiet) print(name);
+    }
+    else {
+        nconst <- length(constituents)
+        for (i in 1:nconst) {
+            if (!quiet) cat("[", constituents[i], "]\n",sep="")
+            if (constituents[i] == "standard") { # must be first!
+                if (i != 1) stop("\"standard\" must occur first in constituents list")
+                name <- tc$name[standard][-1]
+                freq <- tc$freq[standard][-1]
+                kmpr <- tc$kmpr[standard][-1]
+                indices <- c(indices, seq(1:ntc)[tc$standard])
+            }
+            else {
+                if (substr(constituents[i], 1, 1) == "-") {
+                    cc <- substr(constituents[i], 2, nchar(constituents[i]))
+                    delete <- which(tc$name == cc)
+                    if (length(delete) == 1) indices <- indices[indices != delete]
+                    else stop("cannot delete constituent '", cc, "' from the list because it is not there")
+                }
+                else {
+                    add <- which(tc$name == constituents[i])
+                    if (length(add) == 1) {
+                        if (0 == sum(indices == add)) indices <- c(indices, add) # avoid duplicates
+                    }
+                    else
+                        stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tideconst")
+                }
+            }
+            if (!quiet) cat("<<", tc$name[indices], ">>\n")
+        }
+    }
+    indices <- indices[order(indices)]
+    tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
+
+    iZ0 <- which(tc2$name == "Z0")      # Remove Z0
+    name <- tc2$name
+    if (!quiet) print(name)
+    if (length(iZ0)) name <- name[-iZ0]
+    nc <- length(name)
+    index <- vector("numeric", nc)
+    freq <- vector("numeric", nc)
+    kmpr <- vector("numeric", nc)
+
+    for (i in 1:nc) {                   # Build up based on constituent names
+        ic <- which(tc$name == name[i])
+        if (!length(ic)) stop("there is no tidal constituent named \"", name[i], "\"")
+        index[i] <- ic
+        freq[i] <- tc$freq[ic]
+        kmpr[i] <- tc$kmpr[ic]
+    }
+    nc <- length(freq)
+    ## Check Rayleigh criterion
+    interval <- as.numeric(difftime(max(sl$data$time,na.rm=TRUE),
+                                    min(sl$data$time,na.rm=TRUE),
+                                    units="hours"))
+    drop.term <- NULL
+    for (i in 1:nc) {
+        cc <- which(tc2$name == kmpr[i])
+        if (length(cc)) {
+            cannot.fit <- (interval * abs(freq[i]-tc2$freq[cc])) < rc
+            ##cat("compare name=", name[i], "with", kmpr[i],":", cannot.fit,"\n")
+            if (cannot.fit)	drop.term <- c(drop.term, i)
+        }
+    }
+    if (length(drop.term) > 0) {
+        if (!quiet) cat("Record is too short to fit for constituents:", name[drop.term],"\n")
+        index <- index[-drop.term]
+        name <- name[-drop.term]
+        freq <- freq[-drop.term]
+        kmpr <- kmpr[-drop.term]
+    }
+
+    nc <- length(freq)
+    nt <- length(sl$data$elevation)
+    x <- array(dim=c(nt, 2 * nc))
+    x[,1] <- rep(1, nt)
+
+    hour <- unclass(as.POSIXct(sl$data$time, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
+
+    centralindex <- floor(length(sl$data$t) / 2)
+
+##    hour.wrt.centre <- unclass(hour - hour[centralindex])
+##    hour2pi <- 2 * pi * hour.wrt.centre
+
+    hour.offset <- unclass(hour - unclass(as.POSIXct(start.time, tz="GMT"))/3600)
+    hour2pi <- 2 * pi * hour.offset
+
+##    cat(sprintf("hour[1] %.3f\n",hour[1]))
+##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
+
+    for (i in 1:nc) {
+        omega.t <- freq[i] * hour2pi
+        x[,2*i-1] <- sin(omega.t)
+        x[,2*i  ] <- cos(omega.t)
+    }
+    name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
+    dim(name2) <- c(2 * length(name), 1)
+    colnames(x) <- name2
+    elevation <- sl$data$elevation
+    model <- lm(elevation ~ x, na.action=na.exclude)
+    coef  <- model$coefficients
+    p.all <- summary(model)$coefficients[,4]
+    amplitude <- phase <- p <-vector("numeric", length=1+nc)
+    ## FIXME: should do offset/trend removal explicitly
+    amplitude[1] <- coef[1]
+    phase[1] <- 0
+    p[1] <- p.all[1]
+    for (i in seq(2,nc+1)) {
+        is <- 2 * (i - 1)
+        ic <- 2 * (i - 1) + 1
+        s <- coef[is]                   # coefficient on sin(t)
+        c <- coef[ic]                   # coefficient on cos(t)
+        if (!quiet) cat(name[i-1], "gives s=",s,"and c=",c,"\n")
+        amplitude[i] <- sqrt(s^2 + c^2)
+                                        # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
+                                        #                == s * sin(t) + c * cos(t)
+                                        # thus tan(phase) is -c/s
+        phase[i]     <- -atan2(-c, s)   # atan2(y,x)
+                                        # FIXME: is the sign right?
+        p[i]         <- 0.5 * (p.all[is] + p.all[ic])
+    }
+    if (!quiet) cat("coef:", coef, "\n")
+    phase <- phase * 180 / pi
+
+    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="GMT")
+    if (!quiet) {
+        cat("centraltime=")
+        print(centraltime)
+        cat("\n")
+        cat("L199 index:",index,"(length=",length(index),")\n")
+    }
+
+    if (is.null(latitude)) latitude <- sl$metadata$latitude
+    vuf <- tidem.vuf(centraltime, c(0, index), latitude)
+    vu <- c(0, (vuf$v + vuf$u) * 360)
+    phase2 <- phase - vu                # FIXME: plus or minus??
+    negate <- phase2 < 0
+    phase2[negate] <- 360 + phase2[negate]
+#    phase <- phase2
+
+    if (!quiet) cat("vu=",vu,"\n")
+
+    rval <- list(model=model,
+                 call=cl,
+                 start.time=as.POSIXct(start.time),
+                 const=c(1,   index),
+                 name=c("Z0", name),
+                 freq=c(0,    freq),
+                 amplitude=amplitude,
+                 phase=phase,
+                 phase2=phase2,         # FIXME: remove later
+                 p=p)
+    class(rval) <- "tidem"
+    rval
+}
+
+summary.tidem <- function(object, p, constituent, ...)
+{
+    n <- length(object$p)
+    if (!missing(p)) ok <- (object$p <= p) else ok = seq(1, n)
+    if (missing(constituent)) {
+        fit <- data.frame(Const=object$const[ok],
+                          Name=object$name[ok],
+                          Freq=object$freq[ok],
+                          Amplitude=object$amplitude[ok],
+                          Phase=object$phase[ok],
+                          p=object$p[ok])
+    }
+    else {
+        i <- which(object$name==constituent)
+        if (length(i) == 0) stop("there is no such constituent '", constituent, "'")
+        fit <- data.frame(Const=object$const[i],
+                          Name=object$name[i],
+                          Freq=object$freq[i],
+                          Amplitude=object$amplitude[i],
+                          Phase=object$phase[i],
+                          p=p)
+    }
+    misfit <- sqrt(var(object$model$residuals))
+    rval <- list(fit=fit, start.time=as.POSIXct(object$start.time), call=object$call,
+                 misfit=misfit)
+    class(rval) <- c("summary.tidem")
+    rval
+}
+
+print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
+                                signif.stars= getOption("show.signif.stars"),
+                                ...)
+{
+    cat("\nCall:\n")
+    cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n", sep="")
+    cat("\nStart time: ",
+        paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
+    cat("RMS misfit to data: ", x$misfit, "\n")
+    cat("\nFitted model:\n")
+    f <- x$fit[3:6]
+    rownames(f) <- as.character(x$fit[,2])
+    printCoefmat(f, digits=digits,
+                 signif.stars=signif.stars, signif.legend=TRUE,
+                 P.values=TRUE, has.Pvalue=TRUE, ...)
+    invisible(x)
+}
+
+predict.tidem <- function(object, ...)
+{
+    ## FIXME: should construct a matrix of sine and cosine, then pass to predict
+    predict(object$model, ...)
+}
