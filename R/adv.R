@@ -90,8 +90,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     if (debug) cat("  file.size=", file.size, "\n")
 
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
-    bisect.nortek.vector.sd <- function(file, file.size, value, what="time-index mapping")
-    {
+    bisect.nortek.vector.sd <- function(file, file.size, value, what="time-index mapping") {
         if (debug) cat("  bisect.nortek.vector.sd(...,value=", value, ", what=\"", what, "\")\n", sep="")
         lower <- 0
         upper <- file.size
