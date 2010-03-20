@@ -176,8 +176,11 @@ print(vvd.start)
     if (i > (lbuf - lsequence))
       break;
   }
+  SET_LENGTH(res, ires);
+#if 0
   while (ires < lres)
     pres[ires++] = NA_INTEGER;
+#endif
   UNPROTECT(5);
   return(res);
 }
