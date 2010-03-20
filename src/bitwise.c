@@ -31,7 +31,6 @@ ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- 
   int i, n;
   short check_value;
   int *resp;
-  /*short *bufp;*/
   unsigned char *bufp, *keyp;
   SEXP res;
   PROTECT(key = AS_RAW(key));
@@ -62,7 +61,7 @@ ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- 
 #endif
   }
   short checksum;
-  checksum = (((short)bufp[n-1]) << 8) | (short)bufp[n-2]; /* FIXME: should be -19060 Q: how to make a signed short from two hexes? */
+  checksum = (((short)bufp[n-1]) << 8) | (short)bufp[n-2];
 #ifdef DEBUG
   Rprintf("CHECK AGAINST 0x%02x 0x%02x\n", bufp[n-2], bufp[n-1]);
   Rprintf("CHECK AGAINST %d\n", checksum);
@@ -121,6 +120,7 @@ SEXP matchcheck2bytes(SEXP buf, SEXP match, SEXP len, SEXP key)
   Rprintf("len=%d\n",*plen);
   int lmatch = LENGTH(match);
   int lbuf = LENGTH(buf);
+  int lkey = LENGTH(key);
   int lres = 0;
   /* Count matches, so we can allocate the right length */
   for (int i = 0; i < lbuf - 1; i++) {
@@ -134,7 +134,19 @@ SEXP matchcheck2bytes(SEXP buf, SEXP match, SEXP len, SEXP key)
     if (found == lmatch) {
       lres++;
       short *check = (short*)(pbuf+i);
-      Rprintf("%d 0x%02x 0x%02x\n", i, pbuf[i], pbuf[i+1]);
+      short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
+      if (lkey != 2) 
+        error("key must be of length 2");
+      Rprintf(" %d", check_value);
+      for (int cc = 0; cc < (*plen) / 2 - 1; cc++) {
+        check_value += *check++;
+        Rprintf(" %d", check_value);
+      }
+      Rprintf("last 2 bytes: %02x %02x\n", pbuf[i+*plen-1], pbuf[i+*plen-2]);
+      short check_sum = (((short)pbuf[i+*plen-1]) << 8) | (short)pbuf[i+*plen-2];
+      Rprintf("\n");for (int d=0;d<*plen;d++)Rprintf("%02x ", pbuf[i+d]);Rprintf("\n");
+      Rprintf("\ncheck_value=%d vs check_sum %d\n", check_value, check_sum);
+      if (check_value == check_sum) Rprintf("GOOD %d\n", i + 1);
       i += lmatch - 1;           /* skip over matched bytes */
     }
   }
