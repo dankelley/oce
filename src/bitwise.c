@@ -163,23 +163,25 @@ print(vvd.start)
         break;
     }
     if (found == lmatch) {
+      /* FIXME: should bit-twiddle this to work on all endian types */
       short *check = (short*)(pbuf+i);
       /*Rprintf(" %d", check_value);*/
       for (int cc = 0; cc < lsequence2 - 1; cc++) { /* last 2-byte chunk is the test value */
-        check_value += *check++; /* FIXME: should bit-twiddle this to work on all endian types */
+        check_value += *check++;
         /*Rprintf(" %d", check_value);*/
       }
       short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
 #ifdef DEBUG
       Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
 #endif
-      if (check_value == check_sum) {
-        if (ires < lres)
-          pres[ires++] = i + 1;
+      if (check_value == check_sum && ires < lres) {
+        pres[ires++] = i + 1;
+        i += lsequence - lmatch; /* no need to check within sequence */
       }
     }
     i += lmatch - 1;           /* skip over matched bytes */
-    if (i > (lbuf - lsequence)) break; /* FIXME: can this ever happen? */
+    if (i > (lbuf - lsequence)) 
+      break; /* FIXME: can this ever happen? */
   }
   SET_LENGTH(res, ires);
   UNPROTECT(5);
