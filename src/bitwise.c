@@ -128,19 +128,22 @@ print(vvd.start)
   pbuf = RAW_POINTER(buf);
   pmatch = RAW_POINTER(match);
   pkey = RAW_POINTER(key);
-  int *plen = INTEGER_POINTER(len);
+  int lsequence = *INTEGER_POINTER(len);
+  Rprintf("lsequence=%d\n",lsequence);
   int lmatch = LENGTH(match);
   int lbuf = LENGTH(buf);
   int lkey = LENGTH(key);
+  if (lkey != 2) error("key length must be 2");
   /* get space at start, with some extra slots that will be made NA */
-  int ires = 0, lres = (int)(lbuf / *plen + 3); /* get some extra space; fill some with NA */
+  int ires = 0, lres = (int)(lbuf / lsequence + 3); /* get some extra space; fill some with NA */
   SEXP res;
-  Rprintf("len=%d\n",*plen);
-  Rprintf("lres=%d\n",lres);
+  Rprintf("lsequence=%d, lres=%d\n",lsequence,lres);
   PROTECT(res = NEW_INTEGER(lres));
   int *pres = INTEGER_POINTER(res);
   /* Count matches, so we can allocate the right length */
-  for (int i = 0; i < lbuf - 1; i++) {
+  short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
+  short lsequence2 = lsequence / 2;
+  for (int i = 0; i < lbuf - lsequence; i++) {
     int found = 0;
     for (int m = 0; m < lmatch; m++) {
       if (pbuf[i+m] == pmatch[m]) 
@@ -149,31 +152,25 @@ print(vvd.start)
         break;
     }
     if (found == lmatch) {
-      lres++;
       short *check = (short*)(pbuf+i);
-      short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
-      if (lkey != 2) 
-        error("key must be of length 2");
-      Rprintf(" %d", check_value);
-      for (int cc = 0; cc < (*plen) / 2 - 1; cc++) {
+      /*Rprintf(" %d", check_value);*/
+      for (int cc = 0; cc < lsequence2 - 1; cc++) { /* last 2-byte chunk is the test value */
         check_value += *check++;
-        Rprintf(" %d", check_value);
+        /*Rprintf(" %d", check_value);*/
       }
-      Rprintf("last 2 bytes: %02x %02x\n", pbuf[i+*plen-1], pbuf[i+*plen-2]);
-      short check_sum = (((short)pbuf[i+*plen-1]) << 8) | (short)pbuf[i+*plen-2];
-      Rprintf("\n");for (int d=0;d<*plen;d++)Rprintf("%02x ", pbuf[i+d]);Rprintf("\n");
-      Rprintf("\ncheck_value=%d vs check_sum %d\n", check_value, check_sum);
+      short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
+      Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
       if (check_value == check_sum) {
-        Rprintf("GOOD %d\n", i + 1);
         if (ires < lres)
           pres[ires++] = i + 1;
       }
       i += lmatch - 1;           /* skip over matched bytes */
+      if (i > (lbuf - lsequence))
+        break;
     }
   }
-  if (ires < lres)
-    for (;ires < lres; ires++)
-      pres[ires] = NA_INTEGER;
+  while (ires < lres)
+    pres[ires++] = NA_INTEGER;
   UNPROTECT(5);
   return(res);
 }
