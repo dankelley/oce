@@ -106,6 +106,14 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
 
 SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key)
 {
+  /*
+   * locate_byte_sequences() = function to be used for e.g. nortek adp / adv files
+   * buf = buffer to be scanned
+   * match = set of bytes that mark start of sequences
+   * len = length of sequence
+   * key = key added to checksum, and to be checked against last 2 bytes of sequence
+   */
+
   /* 
 R CMD SHLIB bitwise.c 
   */
