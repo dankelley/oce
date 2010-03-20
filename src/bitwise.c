@@ -2,7 +2,6 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-
 /* 
  * 1. compile from commandline:
 
@@ -11,8 +10,7 @@
  * 2. test R code:
    
  buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
- dyn.load("bitwise.so")
- m <- .Call("match2bytes", buf, as.raw(0xa5), as.raw(0x11))
+ dyn.load("bitwise.so"); m <- .Call("matchcheck2bytes", buf, c(as.raw(0xa5), as.raw(0x11)), 22, c(as.raw(0xb5), as.raw(0x8c)))
  print(m)
 
 */
@@ -24,16 +22,14 @@ SEXP nortek_checksum(SEXP buf, SEXP key)
   /* 
      R CMD SHLIB bitwise.c 
      library(oce)
-     f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
-     buf <- readBin(f, what="raw", n=1e6)
-     vvd.start <- match.bytes(buf, 0xa5, 0x10)
-     dyn.load("~/src/R-kelley/oce/src/bitwise.so")
-     for(i in 1:200) {cat(.Call("nortek_checksum",buf[vvd.start[i]+0:23], c(0xb5, 0x8c)),"\n")}
+f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
+buf <- readBin(f, what="raw", n=1e4)
+vvd.start <- match.bytes(buf, 0xa5, 0x10)
+ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- c(ok, .Call("nortek_checksum",buf[vvd.start[i]+0:23], c(0xb5, 0x8c)))}
   */
   int i, n;
   short check_value;
   int *resp;
-  /*short *bufp;*/
   unsigned char *bufp, *keyp;
   SEXP res;
   PROTECT(key = AS_RAW(key));
@@ -64,7 +60,7 @@ SEXP nortek_checksum(SEXP buf, SEXP key)
 #endif
   }
   short checksum;
-  checksum = (((short)bufp[n-1]) << 8) | (short)bufp[n-2]; /* FIXME: should be -19060 Q: how to make a signed short from two hexes? */
+  checksum = (((short)bufp[n-1]) << 8) | (short)bufp[n-2];
 #ifdef DEBUG
   Rprintf("CHECK AGAINST 0x%02x 0x%02x\n", bufp[n-2], bufp[n-1]);
   Rprintf("CHECK AGAINST %d\n", checksum);
@@ -105,6 +101,84 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
     }
   }
   UNPROTECT(4);
+  return(res);
+}
+
+SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key)
+{
+  /* 
+R CMD SHLIB bitwise.c 
+  */
+  /*
+library(oce)
+f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
+buf <- readBin(f, what="raw", n=1e6)
+vvd.start <- match.bytes(buf, 0xa5, 0x10)
+dyn.load("~/src/R-kelley/oce/src/bitwise.so"); s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
+s <- s[!is.na(s)]
+print(s)
+print(vvd.start)
+  */
+  unsigned char *pbuf, *pmatch, *pkey;
+  PROTECT(buf = AS_RAW(buf));
+  PROTECT(match = AS_RAW(match));
+  PROTECT(len = AS_INTEGER(len));
+  PROTECT(key = AS_RAW(key));
+  /* FIXME: check lengths of match and key */
+  pbuf = RAW_POINTER(buf);
+  pmatch = RAW_POINTER(match);
+  pkey = RAW_POINTER(key);
+  int lsequence = *INTEGER_POINTER(len);
+#ifdef DEBUG
+  Rprintf("lsequence=%d\n",lsequence);
+#endif
+  int lmatch = LENGTH(match);
+  int lbuf = LENGTH(buf);
+  int lkey = LENGTH(key);
+  if (lkey != 2) error("key length must be 2");
+  /* get space at start, with some extra slots that will be made NA */
+  int ires = 0, lres = (int)(lbuf / lsequence + 3); /* get some extra space; fill some with NA */
+  SEXP res;
+#if DEBUG
+  Rprintf("lsequence=%d, lres=%d\n",lsequence,lres);
+#endif
+  PROTECT(res = NEW_INTEGER(lres));
+  int *pres = INTEGER_POINTER(res);
+  /* Count matches, so we can allocate the right length */
+  short lsequence2 = lsequence / 2;
+  int found;
+  for (int i = 0; i < lbuf - lsequence; i++) {
+    short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
+    found = 0;
+    for (int m = 0; m < lmatch; m++) {
+      if (pbuf[i+m] == pmatch[m]) 
+        found++;
+      else
+        break;
+    }
+    if (found == lmatch) {
+      short *check = (short*)(pbuf+i);
+      /*Rprintf(" %d", check_value);*/
+      for (int cc = 0; cc < lsequence2 - 1; cc++) { /* last 2-byte chunk is the test value */
+        check_value += *check++;
+        /*Rprintf(" %d", check_value);*/
+      }
+      short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
+#ifdef DEBUG
+      Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
+#endif
+      if (check_value == check_sum) {
+        if (ires < lres)
+          pres[ires++] = i + 1;
+      }
+    }
+    i += lmatch - 1;           /* skip over matched bytes */
+    if (i > (lbuf - lsequence))
+      break;
+  }
+  while (ires < lres)
+    pres[ires++] = NA_INTEGER;
+  UNPROTECT(5);
   return(res);
 }
 
