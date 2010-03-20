@@ -12,6 +12,6 @@ Description: Supports the analysis of Oceanographic data,
  temperature and density, as well as derived properties such as buoyancy
  frequency and dynamic height.
 License: GPL (>= 2)
-URL: http://github.com/dankelley/oce
+URL: http://dankelley.github.com/oce/
 LazyLoad: yes
 Packaged: Dan Kelley
