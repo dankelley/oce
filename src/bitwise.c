@@ -44,7 +44,7 @@ ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- 
   Rprintf("key[1]=0x%02x\n", keyp[1]);
 #endif
   n = LENGTH(buf);
-  check_value = (((short)keyp[0]) << 8) | (short)keyp[1]; /* FIXME: should be -19060 Q: how to make a signed short from two hexes? */
+  check_value = (((short)keyp[0]) << 8) | (short)keyp[1]; 
 #ifdef DEBUG
   Rprintf("check_value= %d\n", check_value);
   Rprintf("n=%d\n", n);
@@ -144,7 +144,6 @@ print(vvd.start)
   int lbuf = LENGTH(buf);
   int lkey = LENGTH(key);
   if (lkey != 2) error("key length must be 2");
-  /* get space at start, with some extra slots that will be made NA */
   int ires = 0, lres = (int)(lbuf / lsequence + 3); /* get some extra space; fill some with NA */
   SEXP res;
 #if DEBUG
@@ -154,10 +153,9 @@ print(vvd.start)
   int *pres = INTEGER_POINTER(res);
   /* Count matches, so we can allocate the right length */
   short lsequence2 = lsequence / 2;
-  int found;
   for (int i = 0; i < lbuf - lsequence; i++) {
     short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
-    found = 0;
+    int found = 0;
     for (int m = 0; m < lmatch; m++) {
       if (pbuf[i+m] == pmatch[m]) 
         found++;
@@ -168,7 +166,7 @@ print(vvd.start)
       short *check = (short*)(pbuf+i);
       /*Rprintf(" %d", check_value);*/
       for (int cc = 0; cc < lsequence2 - 1; cc++) { /* last 2-byte chunk is the test value */
-        check_value += *check++;
+        check_value += *check++; /* FIXME: should bit-twiddle this to work on all endian types */
         /*Rprintf(" %d", check_value);*/
       }
       short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
@@ -181,14 +179,9 @@ print(vvd.start)
       }
     }
     i += lmatch - 1;           /* skip over matched bytes */
-    if (i > (lbuf - lsequence))
-      break;
+    if (i > (lbuf - lsequence)) break; /* FIXME: can this ever happen? */
   }
   SET_LENGTH(res, ires);
-#if 0
-  while (ires < lres)
-    pres[ires++] = NA_INTEGER;
-#endif
   UNPROTECT(5);
   return(res);
 }
