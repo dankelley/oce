@@ -129,7 +129,9 @@ print(vvd.start)
   pmatch = RAW_POINTER(match);
   pkey = RAW_POINTER(key);
   int lsequence = *INTEGER_POINTER(len);
+#ifdef DEBUG
   Rprintf("lsequence=%d\n",lsequence);
+#endif
   int lmatch = LENGTH(match);
   int lbuf = LENGTH(buf);
   int lkey = LENGTH(key);
@@ -137,14 +139,17 @@ print(vvd.start)
   /* get space at start, with some extra slots that will be made NA */
   int ires = 0, lres = (int)(lbuf / lsequence + 3); /* get some extra space; fill some with NA */
   SEXP res;
+#if DEBUG
   Rprintf("lsequence=%d, lres=%d\n",lsequence,lres);
+#endif
   PROTECT(res = NEW_INTEGER(lres));
   int *pres = INTEGER_POINTER(res);
   /* Count matches, so we can allocate the right length */
-  short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
   short lsequence2 = lsequence / 2;
+  int found;
   for (int i = 0; i < lbuf - lsequence; i++) {
-    int found = 0;
+    short check_value = (((short)pkey[0]) << 8) | (short)pkey[1];
+    found = 0;
     for (int m = 0; m < lmatch; m++) {
       if (pbuf[i+m] == pmatch[m]) 
         found++;
@@ -159,15 +164,17 @@ print(vvd.start)
         /*Rprintf(" %d", check_value);*/
       }
       short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
+#ifdef DEBUG
       Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
+#endif
       if (check_value == check_sum) {
         if (ires < lres)
           pres[ires++] = i + 1;
       }
-      i += lmatch - 1;           /* skip over matched bytes */
-      if (i > (lbuf - lsequence))
-        break;
     }
+    i += lmatch - 1;           /* skip over matched bytes */
+    if (i > (lbuf - lsequence))
+      break;
   }
   while (ires < lres)
     pres[ires++] = NA_INTEGER;
