@@ -2,7 +2,6 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-
 /* 
  * 1. compile from commandline:
 
