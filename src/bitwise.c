@@ -23,9 +23,9 @@ SEXP nortek_checksum(SEXP buf, SEXP key)
   /* 
      R CMD SHLIB bitwise.c 
      library(oce)
-     f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
-     buf <- readBin(f, what="raw", n=1e4)
-     vvd.start <- match.bytes(buf, 0xa5, 0x10)
+f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
+buf <- readBin(f, what="raw", n=1e4)
+vvd.start <- match.bytes(buf, 0xa5, 0x10)
 ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- c(ok, .Call("nortek_checksum",buf[vvd.start[i]+0:23], c(0xb5, 0x8c)))}
   */
   int i, n;
@@ -105,8 +105,21 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
   return(res);
 }
 
-SEXP matchcheck2bytes(SEXP buf, SEXP match, SEXP len, SEXP key)
+SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key)
 {
+  /* 
+R CMD SHLIB bitwise.c 
+  */
+  /*
+library(oce)
+f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
+buf <- readBin(f, what="raw", n=1e6)
+vvd.start <- match.bytes(buf, 0xa5, 0x10)
+dyn.load("~/src/R-kelley/oce/src/bitwise.so"); s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
+s <- s[!is.na(s)]
+print(s)
+print(vvd.start)
+  */
   unsigned char *pbuf, *pmatch, *pkey;
   PROTECT(buf = AS_RAW(buf));
   PROTECT(match = AS_RAW(match));
@@ -117,11 +130,16 @@ SEXP matchcheck2bytes(SEXP buf, SEXP match, SEXP len, SEXP key)
   pmatch = RAW_POINTER(match);
   pkey = RAW_POINTER(key);
   int *plen = INTEGER_POINTER(len);
-  Rprintf("len=%d\n",*plen);
   int lmatch = LENGTH(match);
   int lbuf = LENGTH(buf);
   int lkey = LENGTH(key);
-  int lres = 0;
+  /* get space at start, with some extra slots that will be made NA */
+  int ires = 0, lres = (int)(lbuf / *plen + 3); /* get some extra space; fill some with NA */
+  SEXP res;
+  Rprintf("len=%d\n",*plen);
+  Rprintf("lres=%d\n",lres);
+  PROTECT(res = NEW_INTEGER(lres));
+  int *pres = INTEGER_POINTER(res);
   /* Count matches, so we can allocate the right length */
   for (int i = 0; i < lbuf - 1; i++) {
     int found = 0;
@@ -146,21 +164,17 @@ SEXP matchcheck2bytes(SEXP buf, SEXP match, SEXP len, SEXP key)
       short check_sum = (((short)pbuf[i+*plen-1]) << 8) | (short)pbuf[i+*plen-2];
       Rprintf("\n");for (int d=0;d<*plen;d++)Rprintf("%02x ", pbuf[i+d]);Rprintf("\n");
       Rprintf("\ncheck_value=%d vs check_sum %d\n", check_value, check_sum);
-      if (check_value == check_sum) Rprintf("GOOD %d\n", i + 1);
+      if (check_value == check_sum) {
+        Rprintf("GOOD %d\n", i + 1);
+        if (ires < lres)
+          pres[ires++] = i + 1;
+      }
       i += lmatch - 1;           /* skip over matched bytes */
     }
   }
-  /* BUG: should be checking the checksum above and below */
-  /* load up the return vector */
-  SEXP res;
-  PROTECT(res = NEW_INTEGER(lres));
-  int *pres = INTEGER_POINTER(res);
-  int j = 0;
-  for (int i = 0; i < lbuf - 1; i++) {
-    if (j <= lres && pbuf[i] == pmatch[0] && pbuf[i + 1] == pmatch[1]) {
-      pres[j++] = i + 1;	/* add 1 for origin of R vectors */
-    }
-  }
+  if (ires < lres)
+    for (;ires < lres; ires++)
+      pres[ires] = NA_INTEGER;
   UNPROTECT(5);
   return(res);
 }
