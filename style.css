@@ -9,6 +9,7 @@ pre,code{
   margin-left: 2em;
   font:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
   font-size:100%;
+  background-color:#FFE;
 }
 
 body *{line-height:1.4em;}
