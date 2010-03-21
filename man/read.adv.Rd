@@ -158,7 +158,7 @@ summary(adv)
 plot(adv)
 
 # Detailed examination of a file (e.g. transformation matrix)
-f <- "/data/archive/sleiwex/2008/moorings/m02/vector1072/sl08b01.vec"
+f <- "~/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec"
 h <- read.header.nortek(file(f,"rb"))
 print(h$head$transformation.matrix)
 }}

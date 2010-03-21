@@ -1261,7 +1261,7 @@ read.header.nortek <- function(file, debug=getOption("oce.debug"))
     for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
         two.bytes <- peek.ahead(file)
         if (two.bytes[1] != sync.code)
-            stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", buf[1], " instead (while reading header #", header, ")")
+            stop("expecting sync code 0x", sync.code, " at byte ", seek(file), " but got 0x", two.bytes[1], " instead (while reading header #", header, ")")
         if (two.bytes[2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
             if (debug) cat("** scanning Hardware Configuration **\n")
             buf <- readBin(file, "raw", header.length.hardware)
