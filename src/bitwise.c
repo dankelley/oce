@@ -104,6 +104,7 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
   return(res);
 }
 
+/*#define DEBUG 1*/
 SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key)
 {
   /*
@@ -122,8 +123,8 @@ library(oce)
 f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
 buf <- readBin(f, what="raw", n=1e6)
 vvd.start <- match.bytes(buf, 0xa5, 0x10)
-dyn.load("~/src/R-kelley/oce/src/bitwise.so"); s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
-s <- s[!is.na(s)]
+dyn.load("~/src/R-kelley/oce/src/bitwise.so")
+s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
 print(s)
 print(vvd.start)
   */
