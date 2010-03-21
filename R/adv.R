@@ -128,10 +128,14 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         from.index <- from
         to.index <- to
         ## The value 24+28 is the max chunk size, from vector-velocity-data [24b] plus vector-system-data [28b]
-        limit <- min(file.size, (to - from + 1) * (24 + 28)+3000) # 3000 just crazy offset for headers
+        limit <- min(file.size, to * (24 + 28) + 3000) # 3000 just crazy offset for headers
         buf <- readBin(file, "raw", n=limit)
-        vvd.start <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
-        if (debug > 0) {
+        vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
+        if (length(vvd.start) < to) stop("BUG: must increase buffer size in read.adv.nortek")
+        vvd.start <- vvd.start[seq(from=from, to=to, by=by)]
+        if (debug > -100) {
+            cat("from=",from," to=", to, " by=", by, "\n")
+            cat("sub sample squence=", seq(from=from, to=to, by=by), "\n")
             cat("    vvd.start=", vvd.start, "\n")
             old.vvd.start <- match.bytes(buf, 0xa5, 0x10)
             cat("old.vvd.start=", old.vvd.start, "\n")
@@ -197,6 +201,8 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     pitch <-   0.1 * readBin(buf[vsd.start2 + 16], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
     roll <-    0.1 * readBin(buf[vsd.start2 + 18], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
     temperature <- 0.01 * readBin(buf[vsd.start2 + 20], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
+
+    warning("BUG: throwing away the already-determined vvd.start.  Why?")
 
     ##
     ## vd (velocity data) -- several of these are found between each pair of sd
