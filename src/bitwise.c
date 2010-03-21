@@ -104,7 +104,7 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
   return(res);
 }
 
-#define DEBUG 1
+/*#define DEBUG 1*/
 SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key)
 {
   /*
