@@ -13,3 +13,25 @@ pre,code{
 }
 
 body *{line-height:1.4em;}
+table.gallery {
+  text-align: center;
+}
+
+table.galleryitem, table.galleryitembottom a{
+  text-align: center;
+  float: bottom;
+  background:#cc9;
+}
+div.center {
+  text-align:center;
+}
+div.center a {
+  font-weight: normal;
+}
+h1 {
+  font-size: 110%;
+  font-weight: bold;
+  padding: 0em 0em 0em 0em;
+  top-bottom: -0.5em;
+  margin-bottom: -1.0em;
+}
