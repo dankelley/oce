@@ -105,7 +105,7 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
 }
 
 /*#define DEBUG 1*/
-SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key)
+SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max)
 {
   /*
    * locate_byte_sequences() = function to be used for e.g. nortek adp / adv files
@@ -113,6 +113,7 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key)
    * match = set of bytes that mark start of sequences
    * len = length of sequence
    * key = key added to checksum, and to be checked against last 2 bytes of sequence
+   * max = 0 to use whole buffer, positive integer to limit to that many matches
    */
 
   /* 
@@ -133,11 +134,13 @@ print(vvd.start)
   PROTECT(match = AS_RAW(match));
   PROTECT(len = AS_INTEGER(len));
   PROTECT(key = AS_RAW(key));
+  PROTECT(max = AS_INTEGER(max));
   /* FIXME: check lengths of match and key */
   pbuf = RAW_POINTER(buf);
   pmatch = RAW_POINTER(match);
   pkey = RAW_POINTER(key);
   int lsequence = *INTEGER_POINTER(len);
+  int max_lres = *INTEGER_POINTER(max);
 #ifdef DEBUG
   Rprintf("lsequence=%d\n",lsequence);
 #endif
@@ -150,6 +153,9 @@ print(vvd.start)
 #if DEBUG
   Rprintf("lsequence=%d, lres=%d\n",lsequence,lres);
 #endif
+  Rprintf("max_lres=%d\n", max_lres);
+  if (max_lres > 0)
+    lres = max_lres;
   PROTECT(res = NEW_INTEGER(lres));
   int *pres = INTEGER_POINTER(res);
   /* Count matches, so we can allocate the right length */
@@ -175,17 +181,19 @@ print(vvd.start)
 #ifdef DEBUG
       Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
 #endif
-      if (check_value == check_sum && ires < lres) {
+      if (check_value == check_sum) {
         pres[ires++] = i + 1;
         i += lsequence - lmatch; /* no need to check within sequence */
       }
+      if (ires >= lres - 1)
+        break;
     }
     i += lmatch - 1;           /* skip over matched bytes */
     if (i > (lbuf - lsequence)) 
       break; /* FIXME: can this ever happen? */
   }
   SET_LENGTH(res, ires);
-  UNPROTECT(5);
+  UNPROTECT(6);
   return(res);
 }
 
