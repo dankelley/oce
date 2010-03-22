@@ -144,7 +144,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
 
     if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
 
-    warning("THIS CODE NEEDS MAJOR WORK.  If indices are given, how to figure out times?  May have to match.bytes in whole file")
+    warning("THIS CODE NEEDS WORK.  If indices are given, how to figure out times?  May have to match.bytes in whole file")
 
     start <- max(0, from.index - 1000)  # FIXME: confusing code; should rewrite entirely
     n <- min(file.size - start - 1, 2000 + 220*(to.index - from.index))
