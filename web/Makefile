@@ -7,6 +7,7 @@ all: force
 	convert -geometry '200x200' Rplots.pdf oce-demo-2-thumbmail.jpg
 	convert  -density '200x200' Rplots.pdf oce-demo-2.jpg
 	pygmentize -f html -O full -o oce-demo-2.html oce-demo-2.R
+	make clean
 
 force:
 clean:
