@@ -1,6 +1,6 @@
 plot.tidem <- function(x,
+                       which=1,
                        label.if=NULL,
-                       plot.type=c("staircase", "spikes"),
                        log="",
                        mgp=getOption("oce.mgp"),
                        mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
@@ -35,22 +35,24 @@ plot.tidem <- function(x,
     }
     if (!inherits(x, "tidem")) stop("method is only for tidal analysis objects")
     opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
+    lw <- length(which)
+    if (lw > 1) on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     frequency <- x$freq[-1] # trim z0
     amplitude <- x$amplitude[-1]
     name      <- x$name[-1]
     nc <- length(frequency)
-    plot.type <- match.arg(plot.type)
-    if (plot.type == "spikes") {
-    	plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
-        segments(frequency, 0, frequency, amplitude)
-        draw.constituents()
-    } else if (plot.type == "staircase") {
-        plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-        draw.constituents()
-    } else {
-        stop("unknown plot.type ", plot.type)
+    for (w in 1:lw) {
+        if (which[w] == 2) {
+            plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
+            segments(frequency, 0, frequency, amplitude)
+            draw.constituents()
+        } else if (which[w] == 1) {
+            plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
+            draw.constituents()
+        } else {
+            stop("unknown value of which ", which, "; should be 1 or 2")
+        }
     }
     mtext(x$call, side=4, adj=1, cex=2/3)
     mtext(paste("start time:", x$start.time), side=4, adj=0, cex=2/3)

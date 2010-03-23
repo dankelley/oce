@@ -1,4 +1,5 @@
 0.1-81
+- plot.tidem(): remove argument 'plot.type', using more standard 'which' instead
 - read.pt(): add arguments from, by, and to
 - fix issue 57 [read.adp.rdi() read the heading incorrectly]
 - add "reiniger-ross" method to ctd.decimate()

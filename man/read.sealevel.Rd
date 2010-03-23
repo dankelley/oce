@@ -81,16 +81,19 @@
   A \code{"sealevel"} object can also be constructed with
   \code{\link{as.sealevel}} (and, in fact, \code{read.sealevel} uses
   this routine to actually create the \code{"sealevel"} object.)
+
+  Tidal models may be fitted to \code{"sealevel"} objects with
+  \code{\link{tidem}}.
 }
 
 \examples{
-\dontrun{
 library(oce)
 # sealevel.hal
-h <- read.oce("490-01-jan-2003_slev.csv")
-summary(h)
-plot(h)
-}
+sl <- read.oce(system.file("data", "h275a96.dat", package="oce"))
+summary(sl)
+plot(sl)
+m <- tidem(sl)
+plot(m)
 }
 
 \references{The Hawaii archive site at \url{http://ilikai.soest.hawaii.edu/uhslc/datai.html}
