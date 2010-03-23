@@ -7,7 +7,7 @@ body{
 
 pre,code{
   margin-left: 2em;
-  font:Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+  font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
   font-size:100%;
   background-color:#FFE;
 }
@@ -19,7 +19,6 @@ table.gallery {
 
 table.galleryitem, table.galleryitembottom a{
   text-align: center;
-  float: bottom;
   background:#cc9;
 }
 div.center {
@@ -32,6 +31,6 @@ h1 {
   font-size: 110%;
   font-weight: bold;
   padding: 0em 0em 0em 0em;
-  top-bottom: -0.5em;
+  margin-top: -0.5em;
   margin-bottom: -1.0em;
 }
