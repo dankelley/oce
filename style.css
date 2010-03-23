@@ -1,8 +1,8 @@
 html,body{height:100%;color:black;}
 body{
   background-color:white;
-  font:helvetica,arial,freesans,clean,sans-serif;
-  *font-size:small;
+  font-family: helvetica,arial,freesans,clean,sans-serif;
+  font-size:small;
 }
 
 pre,code{
