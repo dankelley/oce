@@ -130,7 +130,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         ## The value 24+28 is the max chunk size, from vector-velocity-data [24b] plus vector-system-data [28b]
         limit <- min(file.size, to * (24 + 28) + 3000) # 3000 just crazy offset for headers
         buf <- readBin(file, "raw", n=limit)
-        vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
+        vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
         if (length(vvd.start) < to) stop("BUG: must increase buffer size in read.adv.nortek")
         vvd.start <- vvd.start[seq(from=from, to=to, by=by)]
         if (debug > -100) {
@@ -144,7 +144,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
 
     if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
 
-    warning("THIS CODE NEEDS MAJOR WORK.  If indices are given, how to figure out times?  May have to match.bytes in whole file")
+    warning("THIS CODE NEEDS WORK.  If indices are given, how to figure out times?  May have to match.bytes in whole file")
 
     start <- max(0, from.index - 1000)  # FIXME: confusing code; should rewrite entirely
     n <- min(file.size - start - 1, 2000 + 220*(to.index - from.index))
@@ -154,7 +154,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
 
     if (debug > 0) cat("  about to try to match bytes... note that length(buf) is", length(buf), "\n")
 
-    vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c))
+    vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
     if (debug > 0) {
         old.vsd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
         cat("old.vsd.start", old.vsd.start, "\n")
