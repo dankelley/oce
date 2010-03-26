@@ -121,11 +121,11 @@ R CMD SHLIB bitwise.c
   */
   /*
 library(oce)
-f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
+f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
 buf <- readBin(f, what="raw", n=1e6)
 vvd.start <- match.bytes(buf, 0xa5, 0x10)
 dyn.load("~/src/R-kelley/oce/src/bitwise.so")
-s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c))
+s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
 print(s)
 print(vvd.start)
   */
@@ -153,7 +153,7 @@ print(vvd.start)
 #if DEBUG
   Rprintf("lsequence=%d, lres=%d\n",lsequence,lres);
 #endif
-  Rprintf("max_lres=%d\n", max_lres);
+  /* Rprintf("max_lres=%d\n", max_lres); */
   if (max_lres > 0)
     lres = max_lres;
   PROTECT(res = NEW_INTEGER(lres));
@@ -185,7 +185,7 @@ print(vvd.start)
         pres[ires++] = i + 1;
         i += lsequence - lmatch; /* no need to check within sequence */
       }
-      if (ires >= lres - 1)
+      if (ires >= lres)
         break;
     }
     i += lmatch - 1;           /* skip over matched bytes */

@@ -89,8 +89,10 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     file.size <- seek(file, 0, "start")
     if (debug > 0) cat("  file.size=", file.size, "\n")
 
+    buf <- readBin(file, "raw", file.size)
+
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
-    bisect.nortek.vector.sd <- function(file, file.size, value, what="time-index mapping", debug=0) {
+    bisect.nortek.vector.sd <- function(file, file.size, value, what="time-index mapping", debug=0) { # FIXME: should index, not read, the buffer
         if (debug > 0) cat("  bisect.nortek.vector.sd(...,value=", value, ", what=\"", what, "\")\n", sep="")
         lower <- 0
         upper <- file.size
@@ -117,9 +119,15 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         }
         list(index=middle, time=vsd.t)
     }
+
+    ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
+    vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
+    vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+        stop("FIX ME : make read.adv.nortek() handle POSIXt values for 'from' and 'to'")
         from.index <- bisect.nortek.vector.sd(file, file.size, from, "from", debug-1)$index
         to.index <- bisect.nortek.vector.sd(file, file.size, to, "to", debug-1)$index
         if (debug > 0) cat("  from=", str(from), " yields index", from.index, "\n")
@@ -127,39 +135,15 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     } else {
         from.index <- from
         to.index <- to
-        ## The value 24+28 is the max chunk size, from vector-velocity-data [24b] plus vector-system-data [28b]
-        limit <- min(file.size, to * (24 + 28) + 3000) # 3000 just crazy offset for headers
-        buf <- readBin(file, "raw", n=limit)
-        vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
-        if (length(vvd.start) < to) stop("BUG: must increase buffer size in read.adv.nortek")
+        ##cat("step 1 vvd.start:\n"); str(vvd.start)
         vvd.start <- vvd.start[seq(from=from, to=to, by=by)]
-        if (debug > -100) {
-            cat("from=",from," to=", to, " by=", by, "\n")
-            cat("sub sample squence=", seq(from=from, to=to, by=by), "\n")
-            cat("    vvd.start=", vvd.start, "\n")
-            old.vvd.start <- match.bytes(buf, 0xa5, 0x10)
-            cat("old.vvd.start=", old.vvd.start, "\n")
-        }
+        ##cat("step 2 vvd.start:\n"); str(vvd.start)
+        ##cat("step 1 vsd.start:\n"); str(vsd.start)
+        vsd.start <- vsd.start[vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)]]
+        ##cat("step 2 vsd.start:\n"); str(vsd.start)
     }
-
     if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
-
-    warning("THIS CODE NEEDS WORK.  If indices are given, how to figure out times?  May have to match.bytes in whole file")
-
-    start <- max(0, from.index - 1000)  # FIXME: confusing code; should rewrite entirely
-    n <- min(file.size - start - 1, 2000 + 220*(to.index - from.index))
-    seek(file, start)
-    buf <- readBin(file, "raw", n=n)    #FIXME: the 'n' is certainly wrong
-    ## sd (system data) are interspersed in the vd sequence
-
-    if (debug > 0) cat("  about to try to match bytes... note that length(buf) is", length(buf), "\n")
-
-    vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
-    if (debug > 0) {
-        old.vsd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)
-        cat("old.vsd.start", old.vsd.start, "\n")
-        cat("    vsd.start", vsd.start, "\n")
-    }
+    ## we make the times *after* trimming, because this is a slow operation
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
                          bcd2integer(buf[vsd.start+9]), # month
                          bcd2integer(buf[vsd.start+6]), # day
@@ -167,64 +151,37 @@ read.adv.nortek <- function(file, from=1, to, by=1,
                          bcd2integer(buf[vsd.start+4]), # min
                          bcd2integer(buf[vsd.start+5]), # sec
                          tz=getOption("oce.tz"))
-    vsd.tt <- vsd.t
-    if (inherits(from, "POSIXt") && inherits(to, "POSIXt")) {
-        ## trim before/after (typically a few remnants)
-        vsd.start <- subset(vsd.start, from <= vsd.t & vsd.t <= to)
-        ## trim before/after (typically a few remnants)
-        vsd.tt <- subset(vsd.t, from <= vsd.t & vsd.t <= to)
-    }
-
-    if (debug > 0) {
-        cat("  before doing 'by' operation, vsd.t       is:", format(vsd.t), "\n")
-        cat("  before doing 'by' operation, diff(vsd.t) is:", format(diff(vsd.t)), "\n")
-        cat("  before doing 'by' operation, vsd.start   is:", format(vsd.start), "\n")
-        cat("  before doing 'by' operation, vsd.tt      is:", format(vsd.tt), "\n")
-    }
-
-    if (by > 1) {
-        vsd.start <- vsd.start[seq(1, length(vsd.start), by=by)]
-        vsd.t <- vsd.t[seq(1, length(vsd.t), by=by)]
-    }
-
-    if (debug > 0) {
-        cat("  after  doing 'by' operation, vsd.start is:", format(vsd.start), "\n")
-        cat("  after  doing 'by' operation, vsd.t     is:", format(vsd.t), "\n")
-    }
-
-    if (0 != diff(range(diff(vsd.start)))) warning("ignoring the fact that the vector data have unequal burst lengths")
-
+    ##str(vsd.t)
     vsd.len <- length(vsd.start)
-
     vsd.start2 <- sort(c(vsd.start, 1 + vsd.start))
     heading <- 0.1 * readBin(buf[vsd.start2 + 14], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
     pitch <-   0.1 * readBin(buf[vsd.start2 + 16], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
     roll <-    0.1 * readBin(buf[vsd.start2 + 18], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
     temperature <- 0.01 * readBin(buf[vsd.start2 + 20], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-
-    warning("BUG: throwing away the already-determined vvd.start.  Why?")
-
-    ##
-    ## vd (velocity data) -- several of these are found between each pair of sd
-    vvd.start <- match.bytes(buf, 0xa5, 0x10) # FIXME: .Call("locate_byte_sequences"...)
+    if (debug > 0) {
+        cat("vvd.start (velocity chunks):\n"); str(vvd.start)
+        cat("vsd.start (header chunks):\n"); str(vsd.start)
+        cat("vsd time:\n"); str(vsd.t)
+        cat("vsd heading:\n"); str(heading)
+        cat("vsd pitch:\n"); str(pitch)
+        cat("vsd roll:\n"); str(roll)
+        cat("vsd temperature:\n"); str(temperature)
+    }
     metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0)
-
     vvd.start2 <- sort(c(vvd.start, 1 + vvd.start))
     vvd.len <- length(vvd.start)          # FIXME: should be subsampled with 'by' ... but how???
-
     p.MSB <- as.numeric(buf[vvd.start + 4])
     p.LSW <- readBin(buf[vvd.start2 + 6], "integer", size=2, n=vvd.len, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
     if (debug > 0) {
-        cat("pressure begins...\n")
-        print(as.matrix(pressure[1:min(10,length(pressure))], ncol=1))
+        cat("pressure:\n"); str(pressure)
     }
     v <- array(dim=c(vvd.len, 3))
     v[,1] <- readBin(buf[vvd.start2 + 10], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
     v[,2] <- readBin(buf[vvd.start2 + 12], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
     v[,3] <- readBin(buf[vvd.start2 + 14], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
     if (debug > 0) {
-        cat("v begins...\n")
+        cat("v[", dim(v), "] begins...\n")
         print(v[1:min(10,vvd.len),])
     }
     a <- array(raw(), dim=c(vvd.len, 3))
@@ -232,7 +189,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     a[,2] <- buf[vvd.start + 17]
     a[,3] <- buf[vvd.start + 18]
     if (debug > 0) {
-        cat("a begins...\n")
+        cat("a[", dim(a), "] begins...\n")
         print(matrix(as.numeric(a[1:min(10,vvd.len),]), ncol=3))
     }
     c <- array(raw(), dim=c(vvd.len, 3))
@@ -240,17 +197,25 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     c[,2] <- buf[vvd.start + 20]
     c[,3] <- buf[vvd.start + 21]
     if (debug > 0) {
-        cat("c begins...\n")
+        cat("c[", dim(c), "] begins...\n")
         print(matrix(as.numeric(c[1:min(10,vvd.len),]), ncol=3))
     }
-    coarse <- seq(0,1,length.out=vsd.len)
-    fine <- seq(0,1,length.out=vvd.len)
-    vvd.t <- vsd.t[1] + (approx(x=vsd.start, y=vsd.t, xout=vvd.start, rule=2)$y - as.numeric(vsd.t[1]))
-    if (debug > 0)
-        cat("length(fine)=",length(fine),"; length(vvd.t)=", length(vvd.t), "\n")
+
+    warning("*** BUG: need to look before and after the from and to, so we can interpolate ***")
+
+    coarse <- vsd.start
+    fine <- vvd.start
+
+    sec <- as.numeric(vsd.t - vsd.t[1])
+    vvd.t <- approx(x=vsd.start, y=sec, xout=vvd.start, rule=2)$y
+
+    if (debug > 0) {
+        cat("vvd.t:\n");print(vvd.t)
+    }
+
     rm(buf)
     gc()
-    data <- list(ts=list(time=vvd.t,
+    data <- list(ts=list(time=vvd.t + vsd.t[1],
                  heading=approx(coarse, heading, xout=fine)$y,
                  pitch=approx(coarse, pitch, xout=fine)$y,
                  roll=approx(coarse, roll, xout=fine)$y,
