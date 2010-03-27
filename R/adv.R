@@ -200,6 +200,9 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         cat("step 2 vsd.start:\n")
         str(vsd.start)
     }
+
+    stop('ok')
+
     if (to.index <= from.index) stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
