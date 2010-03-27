@@ -6,10 +6,10 @@
 
 \description{Interpret a character string as a time interval}
 
-\usage{ctime.to.seconds(time)}
+\usage{ctime.to.seconds(ctime)}
 
 \arguments{
-  \item{time}{a character string (see \sQuote{Details}.}
+  \item{ctime}{a character string (see \sQuote{Details}.}
 }
 
 \details{Strings are }

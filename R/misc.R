@@ -808,7 +808,7 @@ magnetic.declination <- function(lat, lon, date)
 ctime.to.seconds <- function(ctime)
 {
     if (length(grep(":", ctime)) > 0) {
-        parts <- as.numeric(strsplit(time, ":")[[1]])
+        parts <- as.numeric(strsplit(ctime, ":")[[1]])
         l <- length(parts)
         if (l == 1) s <- as.numeric(ctime)
         else if (l == 2) s <- parts[1] * 60 + parts[2]
