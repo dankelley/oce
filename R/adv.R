@@ -141,25 +141,10 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         from <- from.index <- from.pair$index
         to.pair <- bisect.nortek.vector.sd(to, 1, debug-1)
         to <- to.index <- to.pair$index
-
-        if (debug > 0) cat("  from=", format(from.pair$t), " yields vsd.start[", from.index, "]\n", sep="")
-        if (debug > 0) cat("  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n", sep="")
-        if (is.character(by)) {
-            if (debug > 0) cat("by = '", by, "'\n", sep="")
-            if (length(grep(":", by)) > 0) {
-                parts <- as.numeric(strsplit(by, ":")[[1]])
-                if (debug > 0) str(parts)
-                if (length(parts) == 1) by.time <- as.numeric(by)
-                else if (length(parts) == 2) by.time <- parts[1] * 60 + parts[2]
-                else if (length(parts) == 3) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
-                else stop("cannot interpret \"by\" as POSIX time", by, " because it has more than 2 colons")
-            } else {
-                by.time <- as.numeric(by)
-            }
-        } else {
-            by.time <- by
-        }
+        by.time <- ctime.to.seconds(by)
         if (debug > 0) {
+            cat("  from=", format(from.pair$t), " yields vsd.start[", from.index, "]\n", sep="")
+            cat("  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n", sep="")
             cat("  by=", by, "by.time=", by.time, "s\n")
             cat("vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n")
             cat("vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
@@ -190,9 +175,24 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     } else {
         from.index <- from
         to.index <- to
-        if (debug > 0) cat('numeric values for args from=',from,'to=',to,'\n')
-        ## chop vsd.start accordingly, adding one check value at each end
-        ## chop vvd.start to lie within vsd.start [Q: maybe put this below since it is general]
+        if (to.index < 1 + from.index) stop("need more separation between from and to")
+        if (debug > 0) {
+            cat('numeric values for args from=',from,'to=',to,'\n')
+            cat("vvd.start BEFORE\n")
+            str(vvd.start)
+            cat("vvd.start AFTER\n")
+            str(vvd.start)
+        }
+        vvd.start <- vvd.start[from.index:to.index]
+        if (debug > 0) {
+            cat("vsd.start BEFORE\n")
+            str(vsd.start)
+        }
+        vsd.start <- subset(vsd.start, vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)])
+        if (debug > 0) {
+            cat("vsd.start AFTER\n")
+            str(vsd.start)
+        }
     }
     if (debug > 0) {
         cat("step 1 vsd.start:\n")
@@ -203,8 +203,6 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         cat("step 2 vsd.start:\n")
         str(vsd.start)
     }
-
-    stop('early')
 
     if (to.index <= from.index) stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
