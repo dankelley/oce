@@ -271,10 +271,10 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     rm(buf)
     gc()
     data <- list(ts=list(time=vvd.t + vsd.t[1],
-                 heading=approx(vsd.start, heading, xout=vvd.start)$y,
-                 pitch=approx(vsd.start, pitch, xout=vvd.start)$y,
-                 roll=approx(vsd.start, roll, xout=vvd.start)$y,
-                 temperature=approx(vsd.start, temperature, xout=vvd.start)$y,
+                 heading=approx(vsd.start, heading, xout=vvd.start, rule=2)$y,
+                 pitch=approx(vsd.start, pitch, xout=vvd.start, rule=2)$y,
+                 roll=approx(vsd.start, roll, xout=vvd.start, rule=2)$y,
+                 temperature=approx(vsd.start, temperature, xout=vvd.start, rule=2)$y,
                  pressure=pressure),
                  ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
@@ -701,9 +701,9 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1,
     ## trim to the requested interval
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
     data <- list(ts=list(time=tt[ok],
-                 heading=approx(t, heading, xout=tt)$y[ok],
-                 pitch=approx(t, pitch, xout=tt)$y[ok],
-                 roll=approx(t, roll, xout=tt)$y[ok],
+                 heading=approx(t, heading, xout=tt, rule=2)$y[ok],
+                 pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
+                 roll=approx(t, roll, xout=tt, rule=2)$y[ok],
                  temperature=temperature,
                  pressure=pressure),
                  ss=list(distance=0),

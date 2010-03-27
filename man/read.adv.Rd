@@ -163,6 +163,13 @@ to <- as.POSIXct("2008-06-27 00:00:00", tz="UTC")
 by <- "00:30:00"
 adv2 <- read.adv.nortek(vec, from=from, to=to, by=by)
 plot(adv2, which=c(1:3,15))      # beams plus pressure
+# Progressive vector
+enu <- adv.xyz2enu(adv.beam2xyz(adv2))
+u <- enu$data$ma$v[,1]
+v <- enu$data$ma$v[,2]
+dt <- 30 * 60
+plot(cumsum(u) * dt / 1e3, cumsum(v) * dt / 1e3, xlab="East [km]",
+ylab="North [km]", asp=1, type='l')
 
 ## Nortek file, chopped into pieces with a data logger
 adv <- read.adv("~/data/archive/sleiwex/2008/moorings/m06/adv/autopod/day183/SL08A183.015",
