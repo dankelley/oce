@@ -151,23 +151,24 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
 \examples{
 \dontrun{
 library(oce)
+## Nortek binary file
+# First few samples (which are in the air, before deployment)
+vec <- "~/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
+adv1 <- read.adv(vec, from=1, to=100, by=1)
+summary(adv1)
+plot(adv1)
+# Second day of deployment, half-hourly sub-sampling
+from <- as.POSIXct("2008-06-26 00:00:00", tz="UTC")
+to <- as.POSIXct("2008-06-27 00:00:00", tz="UTC")
+by <- "00:30:00"
+adv2 <- read.adv.nortek(vec, from=from, to=to, by=by)
+plot(adv2, which=c(1:3,15))      # beams plus pressure
 
-## Use with Nortek file
-f <- "~/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec"
-adv <- read.adv(f, from=1, to=100, by=1)
-summary(adv)
-plot(adv)
-
-## Use with chopped-up Nortek file produced by a data logger
-adv <- read.adv("/data/archive/sleiwex/2008/moorings/m06/autopod/day183/SL08A183.015",
+## Nortek file, chopped into pieces with a data logger
+adv <- read.adv("~/data/archive/sleiwex/2008/moorings/m06/adv/autopod/day183/SL08A183.015",
        sampling.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
 summary(adv)
 plot(adv)
-
-## Detailed examination of a file (e.g. transformation matrix)
-f <- "~/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec"
-h <- read.header.nortek(file(f,"rb"))
-print(h$head$transformation.matrix)
 }
 }
 
