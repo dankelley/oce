@@ -123,11 +123,50 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
-        from <- from.index <- bisect.nortek.vector.sd(from, debug-1)$index
-        to <- to.index <- bisect.nortek.vector.sd(to, debug-1)$index
+        from.pair <- bisect.nortek.vector.sd(from, debug-1)
+        from <- from.index <- from.pair$index
+        to.pair <- bisect.nortek.vector.sd(to, debug-1)
+        to <- to.index <- to.pair$index
         if (debug > 0) cat("  from=", str(from), " yields index", from.index, "\n")
         if (debug > 0) cat("  to  =", str(to),   " yields index", to.index,   "\n")
-        by <- 1                         # FIXME: should interpret, as adv
+        if (is.character(by)) {
+            if (length(grep(":", by)) > 0) {
+                parts <- as.numeric(strsplit(by, ":")[[1]])
+                if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
+                else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+                else stop("cannot interpret \"by\" as POSIX time", by)
+                cat("vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n")
+                cat("vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
+                two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
+                                         bcd2integer(buf[vsd.start[1:2]+9]), # month
+                                         bcd2integer(buf[vsd.start[1:2]+6]), # day
+                                         bcd2integer(buf[vsd.start[1:2]+7]), # hour
+                                         bcd2integer(buf[vsd.start[1:2]+4]), # min
+                                         bcd2integer(buf[vsd.start[1:2]+5]), # sec
+                                         tz=getOption("oce.tz"))
+                cat("vsd.start:\n");str(vsd.start)
+                cat("vvd.start:\n");str(vvd.start)
+                ##dan <- vvd.start[vsd.start[from.index] < vvd.start]
+                ##cat("dan1:\n");str(dan)
+                ##dan <- vvd.start[vvd.start < vsd.start[to.index]]
+                ##cat("dan2:\n");str(dan)
+                dan <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
+                cat("dan:\n");str(dan)
+                vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], "secs"))
+                cat('vsd.dt=',vsd.dt,'\n')
+                vvd.dt <- vsd.dt * (to.index - from.index) / length(dan)
+                cat('vvd.dt=',vvd.dt,'\n')
+                if (debug > 0) cat("by '", by, "' translated to by=", sep="")
+                dt <- 1
+                by <- by.time / vvd.dt
+                if (debug > 0) cat(by, "\n")
+                warning("*** BUG [the dt value makes no sense; it should be i.t.o. vvd not vsd] BUG ***")
+                ## count the vvd.start that are between the two times?
+            } else {
+                warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
+                by <- as.numeric(by)
+            }
+        }
     } else {
         from.index <- from
         to.index <- to
