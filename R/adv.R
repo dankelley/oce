@@ -190,6 +190,9 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     } else {
         from.index <- from
         to.index <- to
+        if (debug > 0) cat('numeric values for args from=',from,'to=',to,'\n')
+        ## chop vsd.start accordingly, adding one check value at each end
+        ## chop vvd.start to lie within vsd.start [Q: maybe put this below since it is general]
     }
     if (debug > 0) {
         cat("step 1 vsd.start:\n")
@@ -201,7 +204,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         str(vsd.start)
     }
 
-    stop('ok')
+    stop('early')
 
     if (to.index <= from.index) stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
