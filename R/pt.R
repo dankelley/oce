@@ -232,13 +232,12 @@ summary.pt <- function(object, ...)
                 start.time=time.range[1],
                 end.time=time.range[2],
                 fives=fives,
-                processing.log="?")
+                processing.log=processing.log.summary(object))
     fives[1,] <- fivenum(object$data$temperature, na.rm=TRUE)
     fives[2,] <- fivenum(object$data$pressure, na.rm=TRUE)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     rownames(fives) <- c("Temperature", "Pressure")
     res$fives <- fives
-    res$processing.log <- processing.log.summary(object)
     class(res) <- "summary.pt"
     res
 }

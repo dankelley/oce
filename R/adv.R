@@ -92,15 +92,15 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     buf <- readBin(file, "raw", file.size)
 
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
-    bisect.nortek.vector.sd <- function(t.find, debug=0) { # FIXME: should index, not read, the buffer
-        if (debug > 0) cat("  bisect.nortek.vector.sd(t.find=", format(t.find), ", debug=", debug, ")\n")
+    bisect.nortek.vector.sd <- function(t.find, add=0, debug=0) { # t.find=time add=offset debug=debug
+        if (debug > 0) cat("  bisect.nortek.vector.sd(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         vsd.len <- length(vsd.start)
-        lower <- 0
+        lower <- 1
         upper <- vsd.len
-        passes <- floor(3 + log(vsd.len, 2)) # won't need this many; only do this to catch coding errors
+        passes <- floor(10 + log(vsd.len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            if (debug > 0) cat("  pass=",pass,"middle=", middle, "\n")
+            ##if (debug > 0) cat("  pass=",pass,"middle=", middle, "\n")
             t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[middle]+8]),  # year
                              bcd2integer(buf[vsd.start[middle]+9]), # month
                              bcd2integer(buf[vsd.start[middle]+6]), # day
@@ -108,12 +108,26 @@ read.adv.nortek <- function(file, from=1, to, by=1,
                              bcd2integer(buf[vsd.start[middle]+4]), # min
                              bcd2integer(buf[vsd.start[middle]+5]), # sec
                              tz=getOption("oce.tz"))
-            if (debug > 0) cat("t=", format(t), "\n")
-            if (t.find < t) upper <- middle else lower <- middle
-            if (upper - lower < 2) return(list(index=middle, time=t))
-            if (debug > 0) cat("  bisection for t ", format(t.find), "examining indices ", lower, " to ", upper, " (pass", pass, " of max ", passes, ")\n", sep="")
+            if (t.find < t)
+                upper <- middle
+            else
+                lower <- middle
+            if (upper - lower < 2)
+                break
+            if (debug > 0) cat("        examine: t=", format(t), " middle=", middle, " lower=", lower, " upper=", upper, " pass=", pass, " of max=", passes, "\n", sep="")
         }
-        list(index=middle, time=t)
+        middle <- middle + add
+        if (middle < 1) middle <- 1
+        if (middle > vsd.len) middle <- vsd.len
+        t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[middle]+8]),  # year
+                         bcd2integer(buf[vsd.start[middle]+9]), # month
+                         bcd2integer(buf[vsd.start[middle]+6]), # day
+                         bcd2integer(buf[vsd.start[middle]+7]), # hour
+                         bcd2integer(buf[vsd.start[middle]+4]), # min
+                         bcd2integer(buf[vsd.start[middle]+5]), # sec
+                         tz=getOption("oce.tz"))
+        if (debug > 0) cat("    result: t=", format(t), " at vsd.start[", middle, "]=", vsd.start[middle], "\n", sep="")
+        return(list(index=middle, time=t)) # index is within vsd
     }
 
     ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
@@ -123,62 +137,70 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
-        from.pair <- bisect.nortek.vector.sd(from, debug-1)
+        from.pair <- bisect.nortek.vector.sd(from, -1, debug-1)
         from <- from.index <- from.pair$index
-        to.pair <- bisect.nortek.vector.sd(to, debug-1)
+        to.pair <- bisect.nortek.vector.sd(to, 1, debug-1)
         to <- to.index <- to.pair$index
-        if (debug > 0) cat("  from=", str(from), " yields index", from.index, "\n")
-        if (debug > 0) cat("  to  =", str(to),   " yields index", to.index,   "\n")
+
+        if (debug > 0) cat("  from=", format(from.pair$t), " yields vsd.start[", from.index, "]\n", sep="")
+        if (debug > 0) cat("  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n", sep="")
         if (is.character(by)) {
+            if (debug > 0) cat("by = '", by, "'\n", sep="")
             if (length(grep(":", by)) > 0) {
                 parts <- as.numeric(strsplit(by, ":")[[1]])
-                if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
-                else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
-                else stop("cannot interpret \"by\" as POSIX time", by)
-                cat("vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n")
-                cat("vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
-                two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
-                                         bcd2integer(buf[vsd.start[1:2]+9]), # month
-                                         bcd2integer(buf[vsd.start[1:2]+6]), # day
-                                         bcd2integer(buf[vsd.start[1:2]+7]), # hour
-                                         bcd2integer(buf[vsd.start[1:2]+4]), # min
-                                         bcd2integer(buf[vsd.start[1:2]+5]), # sec
-                                         tz=getOption("oce.tz"))
-                cat("vsd.start:\n");str(vsd.start)
-                cat("vvd.start:\n");str(vvd.start)
-                ##dan <- vvd.start[vsd.start[from.index] < vvd.start]
-                ##cat("dan1:\n");str(dan)
-                ##dan <- vvd.start[vvd.start < vsd.start[to.index]]
-                ##cat("dan2:\n");str(dan)
-                dan <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
-                cat("dan:\n");str(dan)
-                vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], "secs"))
-                cat('vsd.dt=',vsd.dt,'\n')
-                vvd.dt <- vsd.dt * (to.index - from.index) / length(dan)
-                cat('vvd.dt=',vvd.dt,'\n')
-                if (debug > 0) cat("by '", by, "' translated to by=", sep="")
-                dt <- 1
-                by <- by.time / vvd.dt
-                if (debug > 0) cat(by, "\n")
-                warning("*** BUG [the dt value makes no sense; it should be i.t.o. vvd not vsd] BUG ***")
-                ## count the vvd.start that are between the two times?
+                if (debug > 0) str(parts)
+                if (length(parts) == 1) by.time <- as.numeric(by)
+                else if (length(parts) == 2) by.time <- parts[1] * 60 + parts[2]
+                else if (length(parts) == 3) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+                else stop("cannot interpret \"by\" as POSIX time", by, " because it has more than 2 colons")
             } else {
-                warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
-                by <- as.numeric(by)
+                by.time <- as.numeric(by)
             }
+        } else {
+            by.time <- by
         }
+        if (debug > 0) {
+            cat("  by=", by, "by.time=", by.time, "s\n")
+            cat("vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n")
+            cat("vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
+            cat("vsd.start:\n");str(vsd.start)
+            cat("vvd.start:\n");str(vvd.start)
+        }
+        two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
+                                 bcd2integer(buf[vsd.start[1:2]+9]), # month
+                                 bcd2integer(buf[vsd.start[1:2]+6]), # day
+                                 bcd2integer(buf[vsd.start[1:2]+7]), # hour
+                                 bcd2integer(buf[vsd.start[1:2]+4]), # min
+                                 bcd2integer(buf[vsd.start[1:2]+5]), # sec
+                                 tz=getOption("oce.tz"))
+        vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], "secs"))
+        vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
+        vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
+        by <- by.time / vvd.dt
+        vvd.start <- vvd.start[seq(1, length(vvd.start), by=by)]
+        if (debug > 0) {
+            cat('vvd.dt=',vvd.dt,'\n')
+            cat('by=',by, "1/by=",1/by,"\n")
+            cat("vvd.start after indexing:\n")
+            str(vvd.start)
+        }
+        ## find vvd region that lies inside the vsd [from, to] region.
+        vvd.start.from <- max(1, vvd.start[vvd.start < from.pair$index])
+        vvd.start.to   <- min(length(vvd.start), vvd.start[vvd.start > to.pair$index])
     } else {
         from.index <- from
         to.index <- to
     }
-    ##cat("step 1 vvd.start:\n"); str(vvd.start)
-    vvd.start <- vvd.start[seq(from=from, to=to, by=by)]
-    ##cat("step 2 vvd.start:\n"); str(vvd.start)
-    ##cat("step 1 vsd.start:\n"); str(vsd.start)
-    vsd.start <- vsd.start[vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)]]
-    ##cat("step 2 vsd.start:\n"); str(vsd.start)
-
-    if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
+    if (debug > 0) {
+        cat("step 1 vsd.start:\n")
+        str(vsd.start)
+    }
+    vsd.start <- vsd.start[vvd.start[1] < vsd.start & vsd.start < vvd.start[length(vvd.start)]]
+    if (debug > 0) {
+        cat("step 2 vsd.start:\n")
+        str(vsd.start)
+    }
+    if (to.index <= from.index) stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
                          bcd2integer(buf[vsd.start+9]), # month
@@ -210,7 +232,8 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     p.LSW <- readBin(buf[vvd.start2 + 6], "integer", size=2, n=vvd.len, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
     if (debug > 0) {
-        cat("pressure:\n"); str(pressure)
+        cat("pressure:\n")
+        str(pressure)
     }
     v <- array(dim=c(vvd.len, 3))
     v[,1] <- readBin(buf[vvd.start2 + 10], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
@@ -236,26 +259,18 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         cat("c[", dim(c), "] begins...\n")
         print(matrix(as.numeric(c[1:min(10,vvd.len),]), ncol=3))
     }
-
-    warning("*** BUG: need to look before and after the from and to, so we can interpolate ***")
-
-    coarse <- vsd.start
-    fine <- vvd.start
-
     sec <- as.numeric(vsd.t - vsd.t[1])
     vvd.t <- approx(x=vsd.start, y=sec, xout=vvd.start, rule=2)$y
-
     if (debug > 0) {
         cat("vvd.t:\n");print(vvd.t)
     }
-
     rm(buf)
     gc()
     data <- list(ts=list(time=vvd.t + vsd.t[1],
-                 heading=approx(coarse, heading, xout=fine)$y,
-                 pitch=approx(coarse, pitch, xout=fine)$y,
-                 roll=approx(coarse, roll, xout=fine)$y,
-                 temperature=approx(coarse, temperature, xout=fine)$y,
+                 heading=approx(vsd.start, heading, xout=vvd.start)$y,
+                 pitch=approx(vsd.start, pitch, xout=vvd.start)$y,
+                 roll=approx(vsd.start, roll, xout=vvd.start)$y,
+                 temperature=approx(vsd.start, temperature, xout=vvd.start)$y,
                  pressure=pressure),
                  ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
@@ -774,9 +789,10 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
     }
     cat("\nStatistics:\n")
-    print(x$fives)
+    print(x$fives, digits=digits)
     cat("\n")
     print(x$processing.log)
+    cat("\n")
     invisible(x)
 }
 
@@ -786,7 +802,7 @@ plot.adv <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1),
+                     mar=c(mgp[1],mgp[1]+1,1,1.5),
                      margins.as.image=FALSE,
                      cex=1,
                      ylim,
@@ -852,13 +868,13 @@ plot.adv <- function(x,
                         ...)
         } else if (which[w] == 14) {    # temperature time-series
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
-                        ylab=resizable.label("T"), type='l', draw.time.range=draw.time.range,
+                        ylab=resizable.label("T", "y"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 15) {    # pressure time-series
             oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
-                        ylab=resizable.label("p"), type='l', draw.time.range=draw.time.range,
+                        ylab=resizable.label("p", "y"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
