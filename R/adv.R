@@ -92,32 +92,28 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     buf <- readBin(file, "raw", file.size)
 
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
-    bisect.nortek.vector.sd <- function(file, file.size, value, what="time-index mapping", debug=0) { # FIXME: should index, not read, the buffer
-        if (debug > 0) cat("  bisect.nortek.vector.sd(...,value=", value, ", what=\"", what, "\")\n", sep="")
+    bisect.nortek.vector.sd <- function(t.find, debug=0) { # FIXME: should index, not read, the buffer
+        if (debug > 0) cat("  bisect.nortek.vector.sd(t.find=", format(t.find), ", debug=", debug, ")\n")
+        vsd.len <- length(vsd.start)
         lower <- 0
-        upper <- file.size
-        passes <- floor(3 + log(file.size, 2)) # won't need this many; only do this to catch coding errors
+        upper <- vsd.len
+        passes <- floor(3 + log(vsd.len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            bis.chunk <- 1000           # only need about 1/4 of this
-            seek(file, middle)
-            buf <- readBin(file, what="raw", n=bis.chunk, endian="little")
-            ## Three-byte code for vector-system-data.  NB. 28 bytes is 14 words, or 0x0e
-            ## for the third value in the triplet.  See p36 of system-integrator-guide.pdf.
-            vsd.start <- match.bytes(buf, 0xa5, 0x11, 0x0e)[1] # vsd=vector system data [p36 of system-integrator-guide.pdf]
-            if (debug > 0) cat("  pass=",pass,"sd.start=", str(vsd.start), "\n")
-            vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
-                                 bcd2integer(buf[vsd.start+9]), # month
-                                 bcd2integer(buf[vsd.start+6]), # day
-                                 bcd2integer(buf[vsd.start+7]), # hour
-                                 bcd2integer(buf[vsd.start+4]), # min
-                                 bcd2integer(buf[vsd.start+5]), # sec
-                                 tz=getOption("oce.tz"))
-            if (value < vsd.t) upper <- middle else lower <- middle
-            if (upper - lower < bis.chunk) return(list(index=middle, time=vsd.t))
-            if (debug > 0) cat("  bisection (for \"", what, "\" time) examining indices ", lower, " to ", upper, " (pass", pass, " of max ", passes, ")\n", sep="")
+            if (debug > 0) cat("  pass=",pass,"middle=", middle, "\n")
+            t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[middle]+8]),  # year
+                             bcd2integer(buf[vsd.start[middle]+9]), # month
+                             bcd2integer(buf[vsd.start[middle]+6]), # day
+                             bcd2integer(buf[vsd.start[middle]+7]), # hour
+                             bcd2integer(buf[vsd.start[middle]+4]), # min
+                             bcd2integer(buf[vsd.start[middle]+5]), # sec
+                             tz=getOption("oce.tz"))
+            if (debug > 0) cat("t=", format(t), "\n")
+            if (t.find < t) upper <- middle else lower <- middle
+            if (upper - lower < 2) return(list(index=middle, time=t))
+            if (debug > 0) cat("  bisection for t ", format(t.find), "examining indices ", lower, " to ", upper, " (pass", pass, " of max ", passes, ")\n", sep="")
         }
-        list(index=middle, time=vsd.t)
+        list(index=middle, time=t)
     }
 
     ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
@@ -127,21 +123,22 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
-        stop("FIX ME : make read.adv.nortek() handle POSIXt values for 'from' and 'to'")
-        from.index <- bisect.nortek.vector.sd(file, file.size, from, "from", debug-1)$index
-        to.index <- bisect.nortek.vector.sd(file, file.size, to, "to", debug-1)$index
+        from <- from.index <- bisect.nortek.vector.sd(from, debug-1)$index
+        to <- to.index <- bisect.nortek.vector.sd(to, debug-1)$index
         if (debug > 0) cat("  from=", str(from), " yields index", from.index, "\n")
         if (debug > 0) cat("  to  =", str(to),   " yields index", to.index,   "\n")
+        by <- 1                         # FIXME: should interpret, as adv
     } else {
         from.index <- from
         to.index <- to
-        ##cat("step 1 vvd.start:\n"); str(vvd.start)
-        vvd.start <- vvd.start[seq(from=from, to=to, by=by)]
-        ##cat("step 2 vvd.start:\n"); str(vvd.start)
-        ##cat("step 1 vsd.start:\n"); str(vsd.start)
-        vsd.start <- vsd.start[vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)]]
-        ##cat("step 2 vsd.start:\n"); str(vsd.start)
     }
+    ##cat("step 1 vvd.start:\n"); str(vvd.start)
+    vvd.start <- vvd.start[seq(from=from, to=to, by=by)]
+    ##cat("step 2 vvd.start:\n"); str(vvd.start)
+    ##cat("step 1 vsd.start:\n"); str(vsd.start)
+    vsd.start <- vsd.start[vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)]]
+    ##cat("step 2 vsd.start:\n"); str(vsd.start)
+
     if (to.index <= from.index) stop("no data in specified time range ", format(from), " to ", format(to))
     ## we make the times *after* trimming, because this is a slow operation
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
