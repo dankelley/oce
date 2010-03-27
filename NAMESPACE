@@ -127,6 +127,7 @@ export(
        tidem,
        tidem.astron,
        tidem.vuf,
+       ctime.to.seconds,
        undrift.time,
        write.ctd
        )

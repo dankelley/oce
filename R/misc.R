@@ -804,3 +804,18 @@ magnetic.declination <- function(lat, lon, date)
         dim(rval) <- dim
     rval
 }
+
+ctime.to.seconds <- function(ctime)
+{
+    if (length(grep(":", ctime)) > 0) {
+        parts <- as.numeric(strsplit(time, ":")[[1]])
+        l <- length(parts)
+        if (l == 1) s <- as.numeric(ctime)
+        else if (l == 2) s <- parts[1] * 60 + parts[2]
+        else if (l == 3) s <- parts[1] * 3600 + parts[2] * 60 + parts[3]
+        else stop("cannot interpret \"time\"=", ctime, "as a time interval because it has more than 2 colons")
+    } else {
+        s <- as.numeric(ctime)
+    }
+    s
+}
