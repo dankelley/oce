@@ -9,6 +9,11 @@ body{
   font-size:small;
 }
 
+tt{
+  font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+  font-size:90%;
+  background-color:#FFE;
+}
 pre,code{
   margin-top: -1em;
   margin-bottom: -1em;
