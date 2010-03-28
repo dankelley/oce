@@ -531,22 +531,10 @@ read.adp.rdi <- function(file, from=0, to, by=1,
     t1 <- p1$header$time[1]
     t2 <- p2$header$time[1]
     dt <- as.numeric(difftime(t2, t1, units="sec"))
-    if (!missing(from) && inherits(from, "POSIXt")) {
+    if (!missing(from) && inherits(from, "POSIXt"))
         from <- max(as.numeric(difftime(from, t1, units="sec")) / dt, 0)
-    }
-    if (!missing(by) && is.character(by)) {
-        if (length(grep(":", by)) > 0) {
-            parts <- as.numeric(strsplit(by, ":")[[1]])
-            if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
-            else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
-            else stop("cannot interpret \"by\" as POSIX time", by)
-            by <- by.time / dt
-        } else {
-            warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
-            by <- as.numeric(by)
-        }
-    }
-
+    if (!missing(by))
+        by <- ctime.to.seconds(by)
     if (!missing(to) && inherits(to, "POSIXt")) {
         to <- 1 + (as.numeric(difftime(to, t1, units="sec")) / dt - from) / by
         if (to < 0) stop("cannot have fewer than zero points.  You gave from = ", from.keep, " and to = ", to.keep)
