@@ -749,12 +749,13 @@ summary.adv <- function(object, ...)
     }
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    len <- length(object$data$ts$time)
     res <- list(filename=object$metadata$filename,
                 number.of.beams=object$metadata$number.of.beams,
                 transformation.matrix=object$metadata$transformation.matrix,
                 sampling.start=min(object$data$ts$time, na.rm=TRUE),
                 sampling.end=max(object$data$ts$time, na.rm=TRUE),
-                deltat=object$metadata$deltat,
+                delta.time=difftime(object$data$ts$time[len], object$data$ts$time[1], units="secs")/len,
                 instrument.type=object$metadata$instrument.type,
                 number.of.samples=length(object$data$ts$time),
                 coordinate.system=object$metadata$coordinate.system,
@@ -774,10 +775,10 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Filename:              ", x$filename, "\n")
 ##    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
     cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Measurements at times: ", format(x$sampling.start), attr(x$sampling.end, "tzone"),
+    cat("  Data times from:       ", format(x$sampling.start), attr(x$sampling.end, "tzone"),
         "to",
         format(x$sampling.end), attr(x$sampling.end, "tzone"),
-        "at interval", x$deltat, "s\n")
+        "at interval", x$delta.time, "s\n")
 ##    cat("  Orientation:          ", x$orientation, "\n")
 ##    cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
     cat("  Number of samples:     ", x$number.of.samples, "\n")
