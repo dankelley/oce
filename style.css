@@ -6,7 +6,9 @@ body{
 }
 
 pre,code{
-  margin-left: 2em;
+  margin-top: -1em;
+  margin-bottom: -1em;
+  margin-left: 1em;
   font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
   font-size:90%;
   background-color:#FFE;

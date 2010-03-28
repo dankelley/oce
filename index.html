@@ -7,30 +7,26 @@
   <body>
     <h1>About Oce</h1>
     <p>
-      Oce is a package in
-      the <a href="http://www.r-project.org/">R statistical
-        language</a> that is designed to help Oceanographers do their
-      work. Prior to 2010-03-19, oce was hosted on google-code,
-      where it was
-      called <a href="http://code.google.com/p/r-oce/">r-oce</a>.
+      Oce is a package in the <a href="http://www.r-project.org/">R
+      statistical language</a> that helps Oceanographers do their
+      work. The stable version is provided on the R archives, and is
+      normally installed from within R.  Adventurous users may install
+      the cutting-edge version by typing
     </p>
-    <h1>Using oce</h1>
-    <p>The package is normally installed from within R.  To report
-      errors in oce, or to suggest
-      features, <a href="http://github.com/dankelley/oce/issues">open
-      an issue</a>.
-    </p>
-    <h1>Developers</h1>
-    <p> To browse the source,
-      visit <a href="http://github.com/dankelley/oce">
-        http://github.com/dankelley/oce</a>.  To get a local copy of
-      the source, type
-    </p>
-    <pre>git clone git@github.com:dankelley/oce.git</pre>
+    <pre>
+git clone git@github.com:dankelley/oce.git  # later, just do 'git pull'
+R CMD build oce
+R CMD install oce_0.1-81.tar.gz # change version number as appropriate</pre>
     <p>
-      in a unix-like shell.
+      in a unix console.  The author is keen to hear about errors, and
+      suggestions for features; to help with that, please
+      <a href="http://github.com/dankelley/oce/issues">opening an
+      issue</a>.
     </p>
     <h1>Gallery</h1>
+    <p>
+      The gallery below gives a taste of Oce. 
+    </p>
     <table class="gallery">
       <tr>
         <td>
@@ -73,5 +69,12 @@
           </table>
         </td>
     </table>
+    <hr>
+    <h1>History</h1>
+    <p>
+      Prior to 2010-03-19, oce was hosted on google-code,
+      where it was
+      called <a href="http://code.google.com/p/r-oce/">r-oce</a>.
+    </p>
   </body>
 </html>
