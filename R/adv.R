@@ -272,8 +272,8 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     vvd.i <- 1:length(vvd.start)
     vvd.t <- approx(x=vsd.i, y=sec, xout=vvd.i, rule=2)$y
     if (debug > 0) {
-	cat("vvd.t:\n")
-	print(vvd.t)
+        cat("vvd.t:\n")
+        print(vvd.t)
     }
     rm(buf)
     gc()
