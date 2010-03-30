@@ -204,6 +204,9 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         str(vsd.start)
     }
 
+    if (2 > length(vsd.start)) stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
+
+
     if (to.index <= from.index) stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
@@ -264,7 +267,11 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         print(matrix(as.numeric(c[1:min(10,vvd.len),]), ncol=3))
     }
     sec <- as.numeric(vsd.t - vsd.t[1])
-    vvd.t <- approx(x=vsd.start, y=sec, xout=vvd.start, rule=2)$y
+    print(diff(sec))
+    if (0 != var(diff(sec))) warning("the times in the file are not equi-spaced, but they are taken to be so")
+    vsd.i <- 1:length(vsd.start)
+    vvd.i <- 1:length(vvd.start)
+    vvd.t <- approx(x=vsd.i, y=sec, xout=vvd.i, rule=2)$y
     if (debug > 0) {
         cat("vvd.t:\n");print(vvd.t)
     }
