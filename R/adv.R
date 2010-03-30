@@ -913,15 +913,15 @@ plot.adv <- function(x,
         } else if (which[w] == 19) {    # beam 1 corrleation-amplutide diagnostic plot
             a <- as.integer(x$data$ma$a[,1])
             c <- as.integer(x$data$ma$c[,1])
-            plot(jitter(a), jitter(c), xlab="Amplitude", ylab="Correlation", ylim=c(0,100), main=ad.beam.name(x, 1), ...)
+            smoothScatter(a, c, nbin=32)
         } else if (which[w] == 20) {    # beam 2 corrleation-amplutide diagnostic plot
             a <- as.integer(x$data$ma$a[,2])
             c <- as.integer(x$data$ma$c[,2])
-            plot(jitter(a), jitter(c), xlab="Amplitude", ylab="Correlation", ylim=c(0,100), main=ad.beam.name(x, 2), ...)
+            smoothScatter(a, c)
         } else if (which[w] == 21) {    # beam 3 corrleation-amplutide diagnostic plot
             a <- as.integer(x$data$ma$a[,3])
             c <- as.integer(x$data$ma$c[,3])
-            plot(jitter(a), jitter(c), xlab="Amplitude", ylab="Correlation", ylim=c(0,100), main=ad.beam.name(x, 3), ...)
+            smoothScatter(a, c)
         } else {
             stop("unknown value of \"which\":", which)
         }
