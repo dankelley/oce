@@ -814,7 +814,7 @@ plot.adv <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1.5),
+                     mar=c(mgp[1]+1,mgp[1]+1,1,1.5),
                      margins.as.image=FALSE,
                      cex=1,
                      ylim,
@@ -822,7 +822,7 @@ plot.adv <- function(x,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    if (!all(which %in% c(1:3,14:18))) stop("\"which\" must be in the range c(1:3,14:18)")
+    if (!all(which %in% c(1:3,14:21))) stop("\"which\" must be in the range c(1:3,14:21)")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -852,11 +852,13 @@ plot.adv <- function(x,
         cat("adorn:\n")
         print(adorn)
     }
-    if (margins.as.image) {
-        w <- 1.5
-        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-    } else {
-        lay <- layout(cbind(1:lw))
+    if (lw > 1) {
+        if (margins.as.image) {
+            w <- 1.5
+            lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+        } else {
+            lay <- layout(cbind(1:lw))
+        }
     }
     for (w in 1:lw) {
         par(mgp=mgp, mar=mar, cex=cex)
@@ -908,6 +910,18 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
+        } else if (which[w] == 19) {    # beam 1 corrleation-amplutide diagnostic plot
+            a <- as.integer(x$data$ma$a[,1])
+            c <- as.integer(x$data$ma$c[,1])
+            plot(jitter(a), jitter(c), xlab="Amplitude", ylab="Correlation", ylim=c(0,100), main=ad.beam.name(x, 1), ...)
+        } else if (which[w] == 20) {    # beam 2 corrleation-amplutide diagnostic plot
+            a <- as.integer(x$data$ma$a[,2])
+            c <- as.integer(x$data$ma$c[,2])
+            plot(jitter(a), jitter(c), xlab="Amplitude", ylab="Correlation", ylim=c(0,100), main=ad.beam.name(x, 2), ...)
+        } else if (which[w] == 21) {    # beam 3 corrleation-amplutide diagnostic plot
+            a <- as.integer(x$data$ma$a[,3])
+            c <- as.integer(x$data$ma$c[,3])
+            plot(jitter(a), jitter(c), xlab="Amplitude", ylab="Correlation", ylim=c(0,100), main=ad.beam.name(x, 3), ...)
         } else {
             stop("unknown value of \"which\":", which)
         }

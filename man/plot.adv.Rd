@@ -12,7 +12,7 @@
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1]+1,1,1.5),
+     mar=c(mgp[1]+1,mgp[1]+1,1,1.5),
      margins.as.image=FALSE,
      cex=1,
      ylim,
@@ -64,6 +64,10 @@
     \item \code{which=16} yields a timeseries of heading.
     \item \code{which=17} yields a timeseries of pich.
     \item \code{which=18} yields a timeseries of roll.
+    \item \code{which=19} yields a scatterplot of beam 1 correlation vs
+      amplitude.  \code{\link{jitter}} is used to avoid confusion from overplotting.
+    \item \code{which=20} as for \code{which=19} but for beam 2.
+    \item \code{which=21} as for \code{which=19} but for beam 3.
   }
 }
 
