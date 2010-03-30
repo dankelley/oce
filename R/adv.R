@@ -267,13 +267,13 @@ read.adv.nortek <- function(file, from=1, to, by=1,
         print(matrix(as.numeric(c[1:min(10,vvd.len),]), ncol=3))
     }
     sec <- as.numeric(vsd.t - vsd.t[1])
-    print(diff(sec))
     if (0 != var(diff(sec))) warning("the times in the file are not equi-spaced, but they are taken to be so")
     vsd.i <- 1:length(vsd.start)
     vvd.i <- 1:length(vvd.start)
     vvd.t <- approx(x=vsd.i, y=sec, xout=vvd.i, rule=2)$y
     if (debug > 0) {
-        cat("vvd.t:\n");print(vvd.t)
+	cat("vvd.t:\n")
+	print(vvd.t)
     }
     rm(buf)
     gc()
