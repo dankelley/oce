@@ -206,7 +206,6 @@ read.adv.nortek <- function(file, from=1, to, by=1,
 
     if (2 > length(vsd.start)) stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
 
-
     if (to.index <= from.index) stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
@@ -444,7 +443,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1,
     ## m3 (MUN ADV) data, as a test: 22 bytes in data chunks
     cpu.software.ver.num <- as.integer(hardware.configuration[1])/10 # 8.5
     dsp.software.ver.num <- as.integer(hardware.configuration[2])/10 # 4.1
-    serialnum <- paste(integer2ascii(as.integer(probe.configuration[10+1:5])), collapse="")  # "B373H"
+    serial.number <- paste(integer2ascii(as.integer(probe.configuration[10+1:5])), collapse="")  # "B373H"
     if (deployment.parameters[1]!=0x12) stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
     if (deployment.parameters[2]!=0x01) stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
     coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
@@ -578,7 +577,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1,
                      orientation=orientation,
                      cpu.software.ver.num=cpu.software.ver.num,
                      dsp.software.ver.num=dsp.software.ver.num,
-                     serialnum=serialnum,
+                     serial.number=serial.number,
                      coordinate.system=coordinate.system,
                      oce.coordinate=coordinate.system,
                      ## sampling.rate=sampling.rate, # not used
@@ -764,6 +763,7 @@ summary.adv <- function(object, ...)
                 sampling.end=max(object$data$ts$time, na.rm=TRUE),
                 delta.time=difftime(object$data$ts$time[len], object$data$ts$time[1], units="secs")/len,
                 instrument.type=object$metadata$instrument.type,
+                serial.number=object$metadata$serial.number,
                 number.of.samples=length(object$data$ts$time),
                 coordinate.system=object$metadata$coordinate.system,
                 oce.coordinate=object$metadata$oce.coordinate,
@@ -778,7 +778,7 @@ summary.adv <- function(object, ...)
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADV summary\n")
-    cat("  Instrument type:       ", x$instrument.type, "\n")
+    cat("  Instrument type:       ", x$instrument.type, "; serial number:", x$serial.number, "\n")
     cat("  Filename:              ", x$filename, "\n")
 ##    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
     cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
@@ -814,10 +814,10 @@ plot.adv <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1]+1,mgp[1]+1,1,1.5),
+                     mar=c(mgp[1]+1,mgp[1]+1,2,1.5),
                      margins.as.image=FALSE,
                      cex=1,
-                     ylim,
+                     xlim, ylim,
                      debug=getOption("oce.debug"),
                      ...)
 {
@@ -831,16 +831,30 @@ plot.adv <- function(x,
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
 
-    ## user may specify a matrix for ylim
+    ## user may specify a matrix for xlim and ylim
     gave.ylim <- !missing(ylim)
     if (gave.ylim) {
         if (is.matrix(ylim)) {
             if (dim(ylim)[2] != lw) {
-                ylim <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+                ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
             }
-        } else if (is.vector(ylim)) {
-            ylim <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
-        } else stop("cannot understand ylim; should be 2-element vector, or 2-column matrix")
+        } else {
+            ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+        }
+        class(ylim2) <- class(ylim)
+        ylim <- ylim2
+    }
+    gave.xlim <- !missing(xlim)
+    if (gave.xlim) {
+        if (is.matrix(xlim)) {
+            if (dim(xlim)[2] != lw) {
+                xlim2 <- matrix(xlim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            }
+        } else {
+            xlim2 <- matrix(xlim, ncol=2, nrow=lw) # FIXME: is this what I want?
+        }
+        class(xlim2) <- class(xlim)
+        xlim <- xlim2
     }
 
     adorn.length <- length(adorn)
@@ -910,20 +924,23 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
-        } else if (which[w] == 19) {    # beam 1 corrleation-amplutide diagnostic plot
+        } else if (which[w] == 19) {    # beam 1 corrleation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,1])
             c <- as.integer(x$data$ma$c[,1])
-            smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation")
+            smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 1))
-        } else if (which[w] == 20) {    # beam 2 corrleation-amplutide diagnostic plot
+        } else if (which[w] == 20) {    # beam 2 corrleation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,2])
             c <- as.integer(x$data$ma$c[,2])
-            smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation")
+            smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 2))
-        } else if (which[w] == 21) {    # beam 3 corrleation-amplutide diagnostic plot
+        } else if (which[w] == 21) {    # beam 3 corrleation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,3])
             c <- as.integer(x$data$ma$c[,3])
-            smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation")
+            smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
+                          xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 3))
         } else {
             stop("unknown value of \"which\":", which)
