@@ -67,8 +67,8 @@
     \item \code{which=16} yields a timeseries of heading.
     \item \code{which=17} yields a timeseries of pich.
     \item \code{which=18} yields a timeseries of roll.
-    \item \code{which=19} yields a scatterplot of beam 1 correlation vs
-      amplitude.  \code{\link{jitter}} is used to avoid confusion from overplotting.
+    \item \code{which=19} yields a plot of beam 1 correlation vs
+    amplitude, using \code{\link{smoothScatter}}.
     \item \code{which=20} as for \code{which=19} but for beam 2.
     \item \code{which=21} as for \code{which=19} but for beam 3.
   }
