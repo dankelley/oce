@@ -1,6 +1,0 @@
-library(oce)
-data(a03)
-Gulf.Stream <- subset(a03, indices=124:102)
-Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 2000, 10))
-data(coastline.world)
-plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
