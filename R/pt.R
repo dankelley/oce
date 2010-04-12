@@ -92,6 +92,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
 read.pt <- function(file, from, to, by=1,
                     tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))
 {
+    file <- full.filename(file)
     filename <- file
     if (is.character(file)) {
         file <- file(file, "r")

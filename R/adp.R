@@ -310,7 +310,7 @@ read.adp <- function(file, from=0, to, by=1,
                      type=c("rdi", "nortek", "sontek"),
                      debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
-    type = match.arg(type)
+    type <- match.arg(type)
     if (monitor) cat(file, "\n")
     if (type == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by,
@@ -329,7 +329,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -502,7 +502,7 @@ read.adp.rdi <- function(file, from=0, to, by=1,
     from.keep <- from
     to.keep <- to
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -753,7 +753,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Number of cells:            ", x$number.of.cells, "\n")
     ##cat("  Cell size:                  ", x$cell.size, "m\n")
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
-    cat("  Number of profiles :        ", x$number.of.profiles, "\n")
+    cat("  Number of profiles:         ", x$number.of.profiles, "\n")
     cat("  Distances within profiles:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
     cat("  Profile times:              ", as.character(x$start.time), attr(x$start.time,"tzone"),
         "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n")
@@ -1374,7 +1374,7 @@ read.adp.nortek <- function(file, from=0, to, by=1,
     to.keep <- to
     sync.code <- as.raw(0xa5)
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }

@@ -211,7 +211,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action,
                           debug=getOption("oce.debug"))
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
-    filename <- file
+    filename <- full.filename(file)
     if (is.character(file)) {
         file <- file(file, "r")
         on.exit(close(file))

@@ -524,7 +524,7 @@ read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL
     filename <- NULL
     if (is.null(type)) {
         if (is.character(file)) {
-            filename <- file
+            filename <- full.filename(file)
             file <- file(file, "r")
             on.exit(close(file))
         }
@@ -552,7 +552,7 @@ read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL
 read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value=-999, log.action)
 {
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "r")
         on.exit(close(file))
     }
@@ -732,7 +732,7 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "r")
         on.exit(close(file))
     }

@@ -75,6 +75,7 @@ plot.coastline <- function (x,
 
 read.coastline <- function(file,type=c("R","S","mapgen"),debug=getOption("oce.debug"),log.action)
 {
+    file <- full.filename(file)
     type <- match.arg(type)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -83,7 +84,7 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=getOption("oce.de
         ## e.g. data from http://rimmer.ngdc.noaa.gov/coast/
         ## e.g. "~/data/Coastline/wcl_1_5000000.dat")
         if (is.character(file)) {
-            file <- file(file, "r")
+            file <- full.filename(file)
             on.exit(close(file))
         }
         if (!inherits(file, "connection")) stop("'file' must be a character string or connection")
