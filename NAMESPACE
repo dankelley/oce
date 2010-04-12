@@ -25,6 +25,7 @@ export(
        ctd.update.header,
        decimate,
        fill.gap,
+       full.filename,
        formatci,
        geod.dist,
        geod.xy,

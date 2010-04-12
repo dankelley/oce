@@ -34,7 +34,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
 
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -296,7 +296,7 @@ read.adv.sontek <- function(file, from=1, to, by=1,
                             tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -385,7 +385,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1,
                                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
-        filename <- file
+        filename <- full.filename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }

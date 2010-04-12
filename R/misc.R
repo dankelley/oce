@@ -1,3 +1,10 @@
+full.filename <- function(filename)
+{
+    first.char <- substr(filename, 1, 1)
+    if (first.char == '/')
+        return(filename)
+    return(paste(getwd(), filename, sep="/"))
+}
 matrix.smooth <- function(m)
 {
     if (missing(m)) stop("must provide matrix 'm'")
