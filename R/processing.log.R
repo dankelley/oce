@@ -28,10 +28,10 @@ processing.log.summary <- function(object)
     res
 }
 
-print.processing.log.summary <- function(x)
+print.processing.log.summary <- function(x, ...)
 {
     n <- length(x)
-    cat("Processing Log:\n")
-    if (n > 0) for (i in 1:n) cat(x[i]) else cat("  (none)\n")
+    cat("Processing Log:\n", ...)
+    if (n > 0) for (i in 1:n) cat(x[i]) else cat("  (none)\n", ...)
 }
 

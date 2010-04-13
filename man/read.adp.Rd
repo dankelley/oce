@@ -11,17 +11,17 @@
 \usage{
 read.adp(file, from=0, to, by=1,
           type=c("rdi", "nortek", "sontek"),
-          debug=getOption("oce.debug"), monitor=TRUE, log.action)
+          debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
 read.adp.rdi(file, from=0, to, by=1,
               type=c("workhorse"),
-              debug=getOption("oce.debug"), monitor=TRUE, log.action)
+              debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
 read.adp.nortek(file, from=0, to, by=1,
                 type=c("aquadopp high resolution"),
-                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
 read.adp.sontek(file, from=0, to, by=1,
                 type=c("adp"),
                 withHeader=FALSE,
-                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
 }
 
 \arguments{
@@ -49,6 +49,7 @@ read.adp.sontek(file, from=0, to, by=1,
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
+  \item{\dots}{additional arguments, passed to called routines.}
 }
 
 \details{Reads a binary-format ADP file.  Two types can be handled at

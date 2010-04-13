@@ -140,18 +140,18 @@ read.pt <- function(file, from, to, by=1,
     }
     serial.number <- strsplit(header[1],"[\t ]+")[[1]][4]
     if (debug) {
-        cat("logging.start =", format(logging.start), "\n")
-        cat("sample.period =", sample.period, "\n")
+        cat("logging.start =", format(logging.start), "\n", ...)
+        cat("sample.period =", sample.period, "\n", ...)
     }
 
     ## Handle time-based args 'from', 'to', and 'by'.
     if (!missing(from.keep) && (inherits(from.keep, "POSIXt") || inherits(from.keep, "character"))) {
         from <- as.numeric(difftime(as.POSIXct(from, tz=tz), logging.start, units="secs")) / sample.period
-        if (debug) cat("inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+        if (debug) cat("inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n", ...)
     }
     if (!missing(to.keep) && (inherits(to.keep, "POSIXt") || inherits(to.keep, "character"))) {
         to <- as.numeric(difftime(as.POSIXct(to.keep, tz=tz), logging.start, units="secs")) / sample.period
-        if (debug) cat("inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+        if (debug) cat("inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n", ...)
     }
     if (is.character(by)) {
         if (length(grep(":", by)) > 0) {
@@ -164,7 +164,7 @@ read.pt <- function(file, from, to, by=1,
             warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
             by <- as.numeric(by)
         }
-        if (debug) cat("inferred   by = ", format(by, width=7), "based on   'by' arg", by.keep, "\n")
+        if (debug) cat("inferred   by = ", format(by, width=7), "based on   'by' arg", by.keep, "\n", ...)
     }
 
     col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
@@ -175,7 +175,7 @@ read.pt <- function(file, from, to, by=1,
     line <- gsub("[ ]+$", "", gsub("^[ ]+","", line))
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
-    if (debug) cat("Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
+    if (debug) cat("Data line '", line, "' reveals ", nvar, " data per line\n", sep="", ...)
     if (missing(to))
         d <- scan(file, character(), skip=from, quiet=TRUE) # whole file
     else
@@ -189,18 +189,18 @@ read.pt <- function(file, from, to, by=1,
         n <- dim(d)[2]
     }
     if (nvar == 2) {
-        if (debug) cat("2 elements per data line\n")
+        if (debug) cat("2 elements per data line\n", ...)
         time <- logging.start + seq(1:n) * sample.period
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
-        if (debug) cat("4 elements per data line\n")
+        if (debug) cat("4 elements per data line\n", ...)
         time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
-        if (debug) cat("5 elements per data line\n")
+        if (debug) cat("5 elements per data line\n", ...)
         time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
@@ -226,7 +226,8 @@ summary.pt <- function(object, ...)
     if (!inherits(object, "pt")) stop("method is only for pt objects")
     time.range <- range(object$data$time, na.rm=TRUE)
     fives <- matrix(nrow=2, ncol=5)
-    res <- list(serial.number=object$metadata$serial.number,
+    res <- list(filename=object$metadata$filename,
+                serial.number=object$metadata$serial.number,
                 samples=length(object$data$temperature),
                 logging.start=object$metadata$logging.start,
                 sample.period=object$metadata$sample.period,
@@ -234,7 +235,7 @@ summary.pt <- function(object, ...)
                 end.time=time.range[2],
                 fives=fives,
                 processing.log=processing.log.summary(object))
-    fives[1,] <- fivenum(object$data$temperature, na.rm=TRUE)
+    fives[1,] <- fivenum(object$data$temperature, na.rm=TRUE, ...)
     fives[2,] <- fivenum(object$data$pressure, na.rm=TRUE)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     rownames(fives) <- c("Temperature", "Pressure")
@@ -245,16 +246,16 @@ summary.pt <- function(object, ...)
 
 print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("\nPT record\n")
-    cat("Instrument Serial No. ", x$serial.number,  "\n")
-    cat("No. of samples:      ", x$samples,  "\n")
-    cat(sprintf("Logging start: %s (as reported in header)\n", as.character(x$logging.start)))
-    cat(sprintf("Sample period: %s (as reported in header)\n", as.character(x$sample.period)))
-    cat(sprintf("Time range: %s to %s\n", as.character(x$start.time), as.character(x$end.time)))
-    cat("Statistics of data:\n")
-    print(x$fives, digits=digits)
-    print(x$processing.log)
-    cat("\n")
+    cat("PT record\n", ...)
+    cat("  Filename:             ", x$filename, "\n", ...)
+    cat("  Instrument Serial No. ", x$serial.number,  "\n", ...)
+    cat("  No. of samples:       ", x$samples,  "\n", ...)
+    cat(sprintf("  Logging start:         %s (as reported in header)\n", as.character(x$logging.start)), ...)
+    cat(sprintf("  Sample period:         %s (as reported in header)\n", as.character(x$sample.period)), ...)
+    cat(sprintf("  Time range:            %s to %s\n", as.character(x$start.time), as.character(x$end.time)), ...)
+    cat("  Statistics of data:\n", ...)
+    write.table(x$fives, quote=FALSE, ...)
+    cat("\n", ...)
     invisible(x)
 }
 

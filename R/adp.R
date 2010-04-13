@@ -11,48 +11,48 @@ ad.beam.name <- function(x, which)
     else " "
 }
 
-read.header.rdi <- function(file, debug)
+read.header.rdi <- function(file, debug, ...)
 {
     ##
     ## header, of length 6 + 2 * number.of.data.types bytes
     ##
     header.part1 <- readBin(file, "raw", n=6, size=1)
     if (debug > 0)
-        cat("First 6 bytes of header:", paste(header.part1, sep=' '), "\n")
+        cat("First 6 bytes of header:", paste(header.part1, sep=' '), "\n", ...)
     header <- header.part1
     if (header.part1[1] != 0x7f) stop("first byte in file must be 0x7f, but it was 0x", header.part1[1])
     if (header.part1[2] != 0x7f) stop("second byte in file must be 0x7f but it was 0x", header.part1[2])
     num.bytes.in.ensemble <- readBin(header.part1[3:4], "integer", n=1, size=2, endian="little")
-    if (debug > 0) cat("num.bytes.in.ensemble=", num.bytes.in.ensemble,"\n")
+    if (debug > 0) cat("num.bytes.in.ensemble=", num.bytes.in.ensemble,"\n", ...)
     ## header.part1[5] spare
     number.of.data.types <- readBin(header.part1[6], "integer", n=1, size=1)
     if (number.of.data.types < 1) stop("cannot have ", number.of.data.types, " data types, as header indicates")
-    if (debug > 0) cat("number.of.data.types=", number.of.data.types, "\n")
+    if (debug > 0) cat("number.of.data.types=", number.of.data.types, "\n", ...)
     ## part 2 of header is these data offsets
     header.part2 <- readBin(file, "raw", n=2*number.of.data.types, size=1)
 
-    ##cat("after reading header, seek(file)=", seek(file), "\n")
+    ##cat("after reading header, seek(file)=", seek(file), "\n", ...)
 
     header <- c(header, header.part2)
     data.offset <- readBin(header.part2, "integer", n=number.of.data.types, size=2, endian="little")
-    if (debug > 0) cat("data.offset=", paste(data.offset, sep=" "), "\n")
+    if (debug > 0) cat("data.offset=", paste(data.offset, sep=" "), "\n", ...)
     ##
     ## FLD (fixed leader data) 59 bytes
     ## OLD: FLD <- readBin(file, "raw", n=59, size=1) # binary fixed leader data (Figure D-5)
     FLD <- readBin(file, "raw", n=data.offset[2]-data.offset[1], size=1)
-    ##cat("after reading FLD, ftell=", seek(file), "\n")
+    ##cat("after reading FLD, ftell=", seek(file), "\n", ...)
 
     header <- c(header, FLD)
     if (debug > 1) {
-        cat("fixed leader data (59 bytes):\n")
-        print(FLD)
+        cat("fixed leader data (59 bytes):\n", ...)
+        print(FLD, ...)
     }
     if (FLD[1] != 0x00) stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
     if (FLD[2] != 0x00) stop("second byte of fixed leader header must be 0x00 but it was ", FLD[2])
     fv <- readBin(FLD[3], "integer", n=1, size=1)
     fr <- readBin(FLD[4], "integer", n=1, size=1)
     ##program.version <- paste(fv, fr, sep=".") # don't want to rely on number of digits
-    ##if (debug > 0) cat("program version=", program.version, "\n")
+    ##if (debug > 0) cat("program version=", program.version, "\n", ...)
     system.configuration <- paste(byte2binary(FLD[5]),
                                   byte2binary(FLD[6]),sep="-")
     bits <- substr(system.configuration, 6, 8)
@@ -70,7 +70,7 @@ read.header.rdi <- function(file, debug)
     bits <- substr(system.configuration, 5, 5)
     if (bits == "0") beam.pattern <- "concave"
     else beam.pattern <- "convex"
-    ##cat("BITS='",bits,"'\n",sep="")
+    ##cat("BITS='",bits,"'\n",sep="", ...)
     beam.config <- "?"
     bits <- substr(system.configuration, 10, 13)
     if (bits == "0100") beam.config <- "janus"
@@ -79,7 +79,7 @@ read.header.rdi <- function(file, debug)
     bits <- substr(system.configuration, 1, 1)
     if (bits == "1") orientation <- "upward"
     else orientation <- "downward"
-    ##cat("beam.config=", beam.config, "\n")
+    ##cat("beam.config=", beam.config, "\n", ...)
     real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     lag.length <- readBin(FLD[8], "integer", n=1, size=1)
     number.of.beams <- readBin(FLD[9], "integer", n=1, size=1)
@@ -107,9 +107,9 @@ read.header.rdi <- function(file, debug)
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
     sensors.available <- readBin(FLD[32], "integer", n=1, size=1)
     bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
-    ##cat("bin1.distance being inferred from 0x", FLD[33:34], " as ", bin1.distance, "\n", sep="")
+    ##cat("bin1.distance being inferred from 0x", FLD[33:34], " as ", bin1.distance, "\n", sep="", ...)
     xmit.pulse.length <- readBin(FLD[35:36], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
-    ##cat("xmit.pulse.length being inferred from 0x", FLD[35:36], " as ", xmit.pulse.length, "\n", sep="")
+    ##cat("xmit.pulse.length being inferred from 0x", FLD[35:36], " as ", xmit.pulse.length, "\n", sep="", ...)
     wp.ref.layer.average <- readBin(FLD[37:38], "integer", n=1, size=2, endian="little")
     false.target.thresh <- readBin(FLD[39], "integer", n=1, size=1)
     ## FLD[40] spare
@@ -122,28 +122,28 @@ read.header.rdi <- function(file, debug)
                                  readBin(FLD[48], "integer", n=1, size=1, signed=FALSE),
                                  readBin(FLD[49], "integer", n=1, size=1, signed=FALSE),
                                  readBin(FLD[50], "integer", n=1, size=1, signed=FALSE))
-    if (debug > 0) cat("CPU.BOARD.SERIAL.NUMBER = '", FLD[43:50], "'\n", sep="")
-    if (debug > 0) cat("CPU.BOARD.SERIAL.NUMBER = '", cpu.board.serial.number, "'\n", sep="")
+    if (debug > 0) cat("CPU.BOARD.SERIAL.NUMBER = '", FLD[43:50], "'\n", sep="", ...)
+    if (debug > 0) cat("CPU.BOARD.SERIAL.NUMBER = '", cpu.board.serial.number, "'\n", sep="", ...)
     system.bandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
     system.power <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
     serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
-    if (debug > 0) cat("SERIAL NUMBER", serial.number, "\n")
-    if (debug > 0) cat("SERIAL NUMBER", FLD[55:58], "\n")
+    if (debug > 0) cat("SERIAL NUMBER", serial.number, "\n", ...)
+    if (debug > 0) cat("SERIAL NUMBER", FLD[55:58], "\n", ...)
     if (serial.number == 0) serial.number <- c(cpu.board.serial.number, "(CPU board)") # FIXME: where is serial #?
 
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
-    ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n")
+    ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n", ...)
 
     ##
     ## VLD (variable leader data) 65 bytes
     ##
     VLD <- readBin(file, "raw", n=65, size=1)
     header <- c(header, VLD)
-    ##cat("position in file=", seek(file, NA), "after reading VLD\n")
+    ##cat("position in file=", seek(file, NA), "after reading VLD\n", ...)
     if (debug > 1) {
-        cat("variable leader data (65 bytes):\n")
-        print(VLD)
+        cat("variable leader data (65 bytes):\n", ...)
+        print(VLD, ...)
     }
     ## ensure that header is not ill-formed
     if (VLD[1] != 0x80) stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
@@ -158,21 +158,21 @@ read.header.rdi <- function(file, debug)
     RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
     RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
     time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "UTC") # not sure on TZ
-    if (debug > 2) cat("time:", format(time), "\n")
+    if (debug > 2) cat("time:", format(time), "\n", ...)
 
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
     if (speed.of.sound < 1400 || speed.of.sound > 1600) warning("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
     depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
-    if (debug > 2) cat("depth of transducer:", depth.of.transducer, "\n")
+    if (debug > 2) cat("depth of transducer:", depth.of.transducer, "\n", ...)
     heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
     if (heading < 0 || heading > 360) warning("heading ", heading, " should be between 0 and 360 degrees, inclusive")
-    if (debug > 2) cat("heading:", heading, "\n")
+    if (debug > 2) cat("heading:", heading, "\n", ...)
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
-    if (debug > 2) cat("pitch:", pitch, "\n")
+    if (debug > 2) cat("pitch:", pitch, "\n", ...)
     roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
-    if (debug > 2) cat("roll:", roll, "\n")
+    if (debug > 2) cat("roll:", roll, "\n", ...)
     salinity <- readBin(VLD[25:26], "integer", n=1, size=2, endian="little")
     if (salinity < 0 || salinity > 40) warning("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
     temperature <- readBin(VLD[27:28], "integer", n=1, size=2, endian="little") * 0.01
@@ -182,17 +182,17 @@ read.header.rdi <- function(file, debug)
     pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
 
     if (0) {#debug) {
-        cat("PRESSURE: ", VLD[49:52], "\n")
-        cat(" little/signed   ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=TRUE),"\n")
-        cat(" little/unsigned ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE),"\n")
-        cat(" big/signed      ", readBin(VLD[49:52], "integer", n=1, size=4, endian="big",    signed=TRUE),"\n")
-        cat(" big/unsigned    ", readBin(VLD[49:52], "integer", n=1, size=4, endian="big",    signed=FALSE),"\n")
-        cat("\nbyte by byte:")
-        cat(readBin(VLD[49], "integer", n=1, size=1, signed=FALSE), " ")
-        cat(readBin(VLD[50], "integer", n=1, size=1, signed=FALSE), " ")
-        cat(readBin(VLD[51], "integer", n=1, size=1, signed=FALSE), " ")
-        cat(readBin(VLD[52], "integer", n=1, size=1, signed=FALSE), " ")
-        cat("\n")
+        cat("PRESSURE: ", VLD[49:52], "\n", ...)
+        cat(" little/signed   ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=TRUE),"\n", ...)
+        cat(" little/unsigned ", readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE),"\n", ...)
+        cat(" big/signed      ", readBin(VLD[49:52], "integer", n=1, size=4, endian="big",    signed=TRUE),"\n", ...)
+        cat(" big/unsigned    ", readBin(VLD[49:52], "integer", n=1, size=4, endian="big",    signed=FALSE),"\n", ...)
+        cat("\nbyte by byte:", ...)
+        cat(readBin(VLD[49], "integer", n=1, size=1, signed=FALSE), " ", ...)
+        cat(readBin(VLD[50], "integer", n=1, size=1, signed=FALSE), " ", ...)
+        cat(readBin(VLD[51], "integer", n=1, size=1, signed=FALSE), " ", ...)
+        cat(readBin(VLD[52], "integer", n=1, size=1, signed=FALSE), " ", ...)
+        cat("\n", ...)
     }
 
     list(instrument.type="rdi",
@@ -308,25 +308,25 @@ read.profile.rdi <- function(file, header, debug)
 
 read.adp <- function(file, from=0, to, by=1,
                      type=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                     debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     type <- match.arg(type)
-    if (monitor) cat(file, "\n")
+    if (monitor) cat(file, "\n", ...)
     if (type == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by,
-                     debug=debug, monitor=monitor, log.action=log.action)
+                     debug=debug, monitor=monitor, log.action=log.action, ...)
     else if (type == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by,
-                        debug=debug, monitor=monitor, log.action=log.action)
+                        debug=debug, monitor=monitor, log.action=log.action, ...)
     else if (type == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by,
-                        debug=debug, monitor=monitor, log.action=log.action)
+                        debug=debug, monitor=monitor, log.action=log.action, ...)
 }
 
 read.adp.sontek <- function(file, from=0, to, by=1,
                             type=c("adp"),
                             withHeader=FALSE,
-                            debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                            debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -345,7 +345,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     } else {
         seek(file, 0, "end")
         file.size <- seek(file, 0, "start")
-        if (debug > 0) cat("file", filename, "has", file.size, "bytes\n")
+        if (debug > 0) cat("file", filename, "has", file.size, "bytes\n", ...)
         buf <- readBin(file, "raw", n=file.size, endian="little")
         flag1 <- as.raw(0xa5)           # id
         flag2 <- as.raw(0x10)           # number of bytes (22 in decimal)
@@ -353,41 +353,41 @@ read.adp.sontek <- function(file, from=0, to, by=1,
         profile.start <- match.flag1[buf[match.flag1 + 1] == flag2]
         profile.start <- profile.start[1:(-1 + length(profile.start))] # last may be partial
         if (debug > 0) {
-            cat("first 100 bytes of first profile:\n")
-            print(buf[profile.start[1]:(99+profile.start[1])])
+            cat("first 100 bytes of first profile:\n", ...)
+            print(buf[profile.start[1]:(99+profile.start[1])], ...)
         }
     }
     header.length <- 80                 # FIXME: should this really be hard-wired??
     s <- profile.start[1]
     ## Only read (important) things that don't change profile-by-profile
     number.of.beams <- as.integer(buf[s+26])
-    if (debug > 0) cat("number.of.beams=", number.of.beams, "\n")
+    if (debug > 0) cat("number.of.beams=", number.of.beams, "\n", ...)
     if (number.of.beams != 3) stop("there should be 3 beams, but the file indicates ", number.of.beams)
 
     orientation <- as.integer(buf[s+27])
 
     temp.mode <- as.integer(buf[s+28])
-    if (debug > 0) cat("temp.mode=", temp.mode, "\n")
+    if (debug > 0) cat("temp.mode=", temp.mode, "\n", ...)
 
     coordinate.system <- as.integer(buf[s+29])
-    if (debug > 0) cat("coordinate.system=", coordinate.system, "\n")
+    if (debug > 0) cat("coordinate.system=", coordinate.system, "\n", ...)
 
     number.of.cells <- readBin(buf[s+30:31], "integer", n=1, size=2, endian="little", signed=FALSE)
-    if (debug > 0) cat("number.of.cells=", number.of.cells, "\n")
+    if (debug > 0) cat("number.of.cells=", number.of.cells, "\n", ...)
 
     cell.size <- readBin(buf[s+32:33], "integer", n=1, size=2, endian="little", signed=FALSE) / 100 # metres
-    if (debug > 0) cat("cell.size=", cell.size, "m\n")
+    if (debug > 0) cat("cell.size=", cell.size, "m\n", ...)
 
     blanking.distance <- readBin(buf[s+34:35], "integer", n=1, size=2, endian="little", signed=FALSE) / 100 # metres
-    if (debug > 0) cat("blanking.distance=", blanking.distance, "m\n")
+    if (debug > 0) cat("blanking.distance=", blanking.distance, "m\n", ...)
 
     sound.speed <- readBin(buf[s+60:61], "integer", n=1, size=2, endian="little", signed=FALSE) / 10
-    if (debug > 0) cat("sound.speed=", sound.speed, "m/s\n")
+    if (debug > 0) cat("sound.speed=", sound.speed, "m/s\n", ...)
 
     profiles.in.file <- length(profile.start)
     id <- buf[profile.start]
     bytes.per.profile <- diff(profile.start[1:2])
-    if (debug > 0) cat("bytes.per.profile=", bytes.per.profile, "\n")
+    if (debug > 0) cat("bytes.per.profile=", bytes.per.profile, "\n", ...)
 
     ## number.of.bytes <- buf[sample.start + 1]
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
@@ -415,8 +415,8 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     q <- array(dim=c(to, number.of.cells, number.of.beams))
     nd <- number.of.cells * number.of.beams
     if (debug > 0) {
-        cat("nd=",nd,"\n")
-        cat("header.length=",header.length,"\n")
+        cat("nd=",nd,"\n", ...)
+        cat("header.length=",header.length,"\n", ...)
     }
     if (to > 0) {
         for (i in 1:to) {
@@ -449,11 +449,11 @@ read.adp.sontek <- function(file, from=0, to, by=1,
             }
 
             if (monitor) {
-                cat(".")
-                if (!(i %% 50)) cat(i, "\n")
+                cat(".", ...)
+                if (!(i %% 50)) cat(i, "\n", ...)
             }
         }
-        if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
+        if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
         ma <- list(v=v, a=a, q=q)
     } else {
         ma <- NULL
@@ -497,7 +497,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
 
 read.adp.rdi <- function(file, from=0, to, by=1,
                           type=c("workhorse"),
-                          debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                          debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     from.keep <- from
     to.keep <- to
@@ -541,8 +541,8 @@ read.adp.rdi <- function(file, from=0, to, by=1,
     }
 
     seek(file, bytes.per.profile * from, origin="start")
-    ##cat("bytes.per.profile=", bytes.per.profile," bytes.in.file=", bytes.in.file, "\n")
-    ##cat("profiles in file:", profiles.in.file, "\n")
+    ##cat("bytes.per.profile=", bytes.per.profile," bytes.in.file=", bytes.in.file, "\n", ...)
+    ##cat("profiles in file:", profiles.in.file, "\n", ...)
     if (to < 1) stop("cannot read fewer than one profile")
 
     v <- array(dim=c(to, p1$header$number.of.cells, p1$header$number.of.beams))
@@ -577,8 +577,8 @@ read.adp.rdi <- function(file, from=0, to, by=1,
             metadata$number.of.beams <- p1$header$number.of.beams
         }
         if (monitor) {
-            cat(".")
-            if (!(i %% 50)) cat(i, "\n")
+            cat(".", ...)
+            if (!(i %% 50)) cat(i, "\n", ...)
         }
         if (by > 1) {
             seek(file, bytes.per.profile * (by - 1), origin="current")
@@ -627,8 +627,8 @@ read.adp.rdi <- function(file, from=0, to, by=1,
         metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
     } else if (metadata$orientation == "downward") {
     } else warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
-    if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n")
-    ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE))
+    if (monitor) cat("\nRead", to,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
+    ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(p$header$time, "tzone")
     data <- list(ma=list(v=v, a=a, q=q),
@@ -736,46 +736,46 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Filename:                   ", x$filename, "\n", ...)
     cat("  Instrument serial number:   ", x$metadata$serial.number, "\n", ...)
     cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n", ...)
-    ##cat("  Number of data types:       ", x$number.of.data.types, "\n")
+    ##cat("  Number of data types:       ", x$number.of.data.types, "\n", ...)
     cat("  Frequency:                  ", x$frequency, "kHz\n", ...)
     cat("  Beams:                      ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n", ...)
-    cat("  Orientation:                ", x$orientation, "\n")
-    cat("  Beam angle:                 ", x$metadata$beam.angle, "\n")
+    cat("  Orientation:                ", x$orientation, "\n", ...)
+    cat("  Beam angle:                 ", x$metadata$beam.angle, "\n", ...)
     if (!is.null(x$transformation.matrix)) {
-        cat("  Transformation matrix:      ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n")
-        cat("                              ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n")
-        cat("                              ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n")
+        cat("  Transformation matrix:      ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n", ...)
+        cat("                              ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n", ...)
+        cat("                              ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n", ...)
         if (x$number.of.beams > 3)
-            cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
+            cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n", ...)
     }
-    cat("  Number of cells:            ", x$number.of.cells, "\n")
-    ##cat("  Cell size:                  ", x$cell.size, "m\n")
-    ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n")
-    cat("  Number of profiles:         ", x$number.of.profiles, "\n")
-    cat("  Distances within profiles:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n")
+    cat("  Number of cells:            ", x$number.of.cells, "\n", ...)
+    ##cat("  Cell size:                  ", x$cell.size, "m\n", ...)
+    ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n", ...)
+    cat("  Number of profiles:         ", x$number.of.profiles, "\n", ...)
+    cat("  Distances within profiles:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n", ...)
     cat("  Profile times:              ", as.character(x$start.time), attr(x$start.time,"tzone"),
-        "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n")
+        "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n", ...)
 
     if (x$instrument.type == "rdi") {
-        cat("  RDI-specific\n")
-        cat("    Transducer depth:           ", x$metadata$depth.of.transducer, "m\n")
-        cat("    System configuration:       ", x$metadata$system.configuration, "\n")
-        cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n")
-        cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n")
-        cat("    Xmit pulse length:          ", x$metadata$xmit.pulse.length,"m\n")
-        cat("    Beam pattern:               ", x$metadata$beam.pattern, "\n")
-        cat("    Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n")
+        cat("  RDI-specific\n", ...)
+        cat("    Transducer depth:           ", x$metadata$depth.of.transducer, "m\n", ...)
+        cat("    System configuration:       ", x$metadata$system.configuration, "\n", ...)
+        cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
+        cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)
+        cat("    Xmit pulse length:          ", x$metadata$xmit.pulse.length,"m\n", ...)
+        cat("    Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
+        cat("    Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
     }
     if (x$instrument.type == "aquadopp high resolution") {
-        cat("  Aquadopp-specific:\n")
-        cat("    Internal code version:       ", x$metadata$internal.code.version, "\n")
-        cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n")
-        cat("    Head serial number:          ", x$metadata$head.serial.number, "\n")
+        cat("  Aquadopp-specific:\n", ...)
+        cat("    Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
+        cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n", ...)
+        cat("    Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
     }
-    cat("\nStatistics:\n")
-    print(x$fives)
-    cat("\n")
-    print(x$processing.log)
+    cat("\nStatistics:\n", ...)
+    print(x$fives, ...)
+    cat("\n", ...)
+    print(x$processing.log, ...)
     invisible(x)
 }
 
@@ -1011,7 +1011,7 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     processing.log.append(res, log.action)
 }
 
-adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
+adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
 {
     if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
@@ -1026,7 +1026,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
                            -0.2588190, -0.2588190, -0.2588190, -0.2588190,
                            1.3660254 ,  1.3660254, -1.3660254, -1.3660254), nrow=4, byrow=TRUE)
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
-            print(tm)
+            print(tm, ...)
         }
         res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
@@ -1059,7 +1059,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
                            0.000, -1.366,  1.366,
                            0.368,  0.368,  0.368), nrow=4, byrow=TRUE)
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
-            print(tm)
+            print(tm, ...)
         }
         res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
         res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
@@ -1227,14 +1227,14 @@ sontek.time <- function(t, tz="UTC")
     ISOdatetime(year, month, day, hour, minute, second+milliseconds/1000, tz=tz)
 }
 
-display.bytes <- function(b, label="")
+display.bytes <- function(b, label="", ...)
 {
     n <- length(b)
-    cat("\n", label, " (", n, "bytes)\n", sep="")
-    print(b)
+    cat("\n", label, " (", n, "bytes)\n", sep="", ...)
+    print(b, ...)
 }
 
-read.header.nortek <- function(file, debug=getOption("oce.debug"))
+read.header.nortek <- function(file, debug=getOption("oce.debug"), ...)
 {
     sync.code <- as.raw(0xa5)
     id.hardware.configuration <- as.raw(0x05)
@@ -1366,7 +1366,7 @@ read.header.nortek <- function(file, debug=getOption("oce.debug"))
 
 read.adp.nortek <- function(file, from=0, to, by=1,
                              type=c("aquadopp high resolution"),
-                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                             debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     from.keep <- from
     to.keep <- to
