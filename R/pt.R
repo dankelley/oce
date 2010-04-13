@@ -246,9 +246,10 @@ summary.pt <- function(object, ...)
 
 print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("PT record\n", ...)
-    cat("  Filename:             ", x$filename, "\n", ...)
-    cat("  Instrument Serial No. ", x$serial.number,  "\n", ...)
+    cat("PT summary\n", ...)
+    cat("  Instrument type:              RBR\n", ...)
+    cat("  Filename:                   ", x$filename, "\n", ...)
+    cat("  Instrument serial number:   ", x$serial.number,  "\n", ...)
     cat("  No. of samples:       ", x$samples,  "\n", ...)
     cat(sprintf("  Logging start:         %s (as reported in header)\n", as.character(x$logging.start)), ...)
     cat(sprintf("  Sample period:         %s (as reported in header)\n", as.character(x$sample.period)), ...)
