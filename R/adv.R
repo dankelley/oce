@@ -761,7 +761,7 @@ summary.adv <- function(object, ...)
                 transformation.matrix=object$metadata$transformation.matrix,
                 sampling.start=min(object$data$ts$time, na.rm=TRUE),
                 sampling.end=max(object$data$ts$time, na.rm=TRUE),
-                delta.time=difftime(object$data$ts$time[len], object$data$ts$time[1], units="secs")/len,
+                delta.time=as.numeric(difftime(object$data$ts$time[len], object$data$ts$time[1], units="secs")/len),
                 instrument.type=object$metadata$instrument.type,
                 serial.number=object$metadata$serial.number,
                 number.of.samples=length(object$data$ts$time),

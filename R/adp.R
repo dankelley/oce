@@ -695,15 +695,13 @@ summary.adp <- function(object, ...)
     }
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-
     v.dim <- dim(object$data$ma$v)
-
     res <- list(res.specific,
                 filename=object$metadata$filename,
                 instrument.type=object$metadata$instrument.type,
                 serial.number=object$metadata$serial.number,
                 start.time=object$data$ts$time[1],
-                delta.time=difftime(object$data$ts$time[2], object$data$ts$time[1], units="secs"),
+                delta.time=as.numeric(difftime(object$data$ts$time[2], object$data$ts$time[1], units="secs")),
                 end.time=object$data$ts$time[length(object$data$ts$time)],
                 sampling.start=object$metadata$sampling.start,
                 sampling.end=object$metadata$sampling.end,
