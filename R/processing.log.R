@@ -34,4 +34,3 @@ print.processing.log.summary <- function(x, ...)
     cat("Processing Log:\n", ...)
     if (n > 0) for (i in 1:n) cat(x[i]) else cat("  (none)\n", ...)
 }
-
