@@ -436,6 +436,8 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     colnames(x) <- name2
     elevation <- sl$data$elevation
     model <- lm(elevation ~ x, na.action=na.exclude)
+    if (!quiet)
+        print(summary(model))
     coef  <- model$coefficients
     p.all <- summary(model)$coefficients[,4]
     amplitude <- phase <- p <-vector("numeric", length=1+nc)
