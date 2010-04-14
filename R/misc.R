@@ -826,3 +826,26 @@ ctime.to.seconds <- function(ctime)
     }
     s
 }
+
+show.fives <- function(x, indent="    ")
+{
+    if (!("fives" %in% names(x))) stop("'x' has no item named 'fives'")
+    rownames <- rownames(x$fives)
+    colnames <- colnames(x$fives)
+    data.width <- max(nchar(colnames)) + 3
+    name.width <- max(nchar(rownames(x$fives))) + 1 # space for left-hand column
+    ncol <- length(colnames)
+    nrow <- length(rownames)
+    res <- indent
+    res <- paste(res, format(" ", width=name.width), collapse="")
+    res <- paste(res, paste(format(colnames, width=data.width, justify="right"), collapse=""))
+    res <- paste(res, "\n", sep="")
+    for (irow in 1L:nrow) {
+        res <- paste(res, indent, format(rownames[irow], width=name.width), "  ", sep="") # FIXME: should not need the "  "
+        for (icol in 1L:ncol) {
+            res <- paste(res, format(x$fives[irow,icol], width=data.width, justify="right"), sep="")
+        }
+        res <- paste(res, "\n", sep="")
+    }
+    res
+}

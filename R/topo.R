@@ -149,7 +149,7 @@ plot.topo <- function(x,
     }
 }
 
-read.topo <- function(file, log.action)
+read.topo <- function(file, log.action, ...)
 {
     nh <- 6
     header <- readLines(file, n=nh)

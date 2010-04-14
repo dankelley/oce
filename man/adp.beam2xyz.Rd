@@ -7,11 +7,12 @@
 \description{Convert ADP velocity components from a beam-based
   coordinate system to a xyz-based coordinate system.}
 
-\usage{adp.beam2xyz(x, debug=getOption("oce.debug"))}
+\usage{adp.beam2xyz(x, debug=getOption("oce.debug"), \dots)}
 
 \arguments{
-\item{x}{an object of class \code{"adp"}.}
-\item{debug}{a debugging flag, 0 for no debugging, and higher values for more and more debugging.}
+  \item{x}{an object of class \code{"adp"}.}
+  \item{debug}{a debugging flag, 0 for no debugging, and higher values for more and more debugging.}
+  \item{\dots}{additional arguments, passed to called routines.}
 }
 
 \details{The action depends on the type of object.

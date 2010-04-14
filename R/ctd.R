@@ -518,7 +518,7 @@ plot.ctd.scan <- function(x,
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL, station=NULL, log.action)
+read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL, station=NULL, log.action, ...)
 {
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     filename <- NULL
@@ -544,12 +544,12 @@ read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL
         else stop("type must be SBE19 or WOCE, not ", type)
     }                                   # FIXME: should just use magic() here
     switch(type,
-           SBE19 = read.ctd.sbe(file, debug=debug, columns, station=station, log.action=log.action),
-           WOCE  = read.ctd.woce(file, debug=debug, columns, station=station, missing.value=-999, log.action=log.action)
+           SBE19 = read.ctd.sbe(file, debug=debug, columns, station=station, log.action=log.action, ...),
+           WOCE  = read.ctd.woce(file, debug=debug, columns, station=station, missing.value=-999, log.action=log.action, ...)
            )
 }
 
-read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value=-999, log.action)
+read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value=-999, log.action, ...)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -727,7 +727,7 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
     x
 }
 
-read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value, log.action)
+read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value, log.action, ...)
 {
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -1017,23 +1017,23 @@ summary.ctd <- function(object, ...)
 
 print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("CTD Profile\n")
-    cat("  Raw file:           \"",     x$filename, "\"\n",sep="")
-    cat(paste("  System upload time: ", x$system.upload.time, "\n"))
-    cat(paste("  Date:               ", x$date, "\n"))
-    cat("  Institute:          ",       x$institute, "\n")
-    cat("  Scientist:          ",       x$scientist, "\n")
-    cat("  Ship:               ",       x$ship, "\n")
-    cat("  Cruise:             ",       x$cruise, "\n")
-    cat("  Location:           ",       latlon.format(x$latitude, x$longitude, digits=digits), "\n")
-    cat("  Station:            ",       x$station, "\n")
-    cat(paste("  Start time:         ", if (!is.null(x$start.time)) as.POSIXct(x$start.time) else "?", "\n"))
-    cat(paste("  Deployed:           ", x$date, "\n"))
-    cat(paste("  Recovered:          ", x$recovery, "\n"))
-    cat("  Water depth:        ",       x$water.depth, "\n")
-    cat("  No. of levels:      ",       x$levels,  "\n")
-    print(x$fives, digits=digits)
-    print(x$processing.log)
+    cat("CTD Profile\n", ...)
+    cat("  Raw file:           \"",     x$filename, "\"\n",sep="", ...)
+    cat(paste("  System upload time: ", x$system.upload.time, "\n"), ...)
+    cat(paste("  Date:               ", x$date, "\n"), ...)
+    cat("  Institute:          ",       x$institute, "\n", ...)
+    cat("  Scientist:          ",       x$scientist, "\n", ...)
+    cat("  Ship:               ",       x$ship, "\n", ...)
+    cat("  Cruise:             ",       x$cruise, "\n", ...)
+    cat("  Location:           ",       latlon.format(x$latitude, x$longitude, digits=digits), "\n", ...)
+    cat("  Station:            ",       x$station, "\n", ...)
+    cat(paste("  Start time:         ", if (!is.null(x$start.time)) as.POSIXct(x$start.time) else "?", "\n"), ...)
+    cat(paste("  Deployed:           ", x$date, "\n"), ...)
+    cat(paste("  Recovered:          ", x$recovery, "\n"), ...)
+    cat("  Water depth:        ",       x$water.depth, "\n", ...)
+    cat("  No. of levels:      ",       x$levels,  "\n", ...)
+    print(x$fives, digits=digits, ...)
+    print(x$processing.log, ...)
     invisible(x)
 }
 

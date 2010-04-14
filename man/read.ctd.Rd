@@ -10,11 +10,11 @@
 
 \usage{
 read.ctd(file, type=NULL, debug=getOption("oce.debug"),
- 	columns=NULL, station=NULL, log.action)
+ 	columns=NULL, station=NULL, log.action, \dots)
 read.ctd.sbe(file, debug=getOption("oce.debug"),
- 	columns=NULL, station=NULL, missing.value, log.action)
+ 	columns=NULL, station=NULL, missing.value, log.action, \dots)
 read.ctd.woce(file, debug=getOption("oce.debug"),
- 	columns=NULL, station=NULL, missing.value=-999, log.action)
+ 	columns=NULL, station=NULL, missing.value=-999, log.action, \dots)
 }
 
 \arguments{
@@ -39,6 +39,7 @@ read.ctd.woce(file, debug=getOption("oce.debug"),
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
+  \item{\dots}{additional arguments, passed to called routines.}
 }
 
 \details{Oceanographers use CTD (conductivity-temperature-depth)
