@@ -394,9 +394,9 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat(paste("  series start time:   ", x$start.time, "\n"), ...)
     cat(paste("     \"     end time:   ",x$end.time, "\n"), ...)
     cat(paste("  GMT offset:          ", x$gmt.offset, "\n"), ...)
-    cat("Statistics:\n", ...)
-    print(x$fives, digits=digits, ...)
-    print(x$processing.log, ...)
+    cat("\nStatistics:\n", ...)
+    cat(show.fives(x), ...)
+    cat("Processing Log:\n", ...)
     cat("\n", ...)
     invisible(x)
 }

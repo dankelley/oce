@@ -141,7 +141,9 @@ print.summary.windrose <- function(x, digits=max(6, getOption("digits") - 1), ..
 {
     cat("\nWindrose data\n")
     cat("Have n=", x$n, "angles, separated by dtheta=", x$dtheta,"\n")
-    print(x$fives, digits=digits)
-    print(x$processing.log)
+    cat(show.fives(x), ...)
+    cat("\n", ...)
+    cat("Processing Log:\n", ...)
+    cat(x$processing.log, ...)
     invisible(x)
 }

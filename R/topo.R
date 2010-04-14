@@ -205,6 +205,7 @@ print.summary.topo <- function(x, digits=max(6, getOption("digits") - 1), ...)
         " to ", format(x$lon.range[2], digits), "\n")
     cat("elevation range:", format(x$z.range[1], digits=digits),
         " to ", format(x$z.range[2], digits), "\n")
-    print(x$processing.log)
+    cat("Processing Log:\n", ...)
+    cat(x$processing.log, ...)
     invisible(x)
 }

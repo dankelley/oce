@@ -773,9 +773,10 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("    Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
     }
     cat("\nStatistics:\n", ...)
-    print(x$fives, ...)
+    cat(show.fives(x), ...)
     cat("\n", ...)
-    print(x$processing.log, ...)
+    cat("Processing Log:\n", ...)
+    cat(x$processing.log, ...)
     invisible(x)
 }
 

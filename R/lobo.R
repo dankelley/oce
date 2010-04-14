@@ -192,8 +192,9 @@ print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("Time range:", as.character(x$time.range[1]), " to ",
         as.character(x$time.range[2]), "\n")
     cat("Statistics:\n")
-    print(x$fives, digits)
-    print(x$processing.log)
-    cat("\n")
+    cat(show.fives(x), ...)
+    cat("\n", ...)
+    cat("Processing Log:\n", ...)
+    cat(x$processing.log, ...)
     invisible(x)
 }

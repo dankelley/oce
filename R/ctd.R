@@ -1032,8 +1032,11 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(paste("  Recovered:          ", x$recovery, "\n"), ...)
     cat("  Water depth:        ",       x$water.depth, "\n", ...)
     cat("  No. of levels:      ",       x$levels,  "\n", ...)
-    print(x$fives, digits=digits, ...)
-    print(x$processing.log, ...)
+    cat("  Statistics of subsamples:\n", ...)
+    cat(show.fives(x), ...)
+    cat("\n", ...)
+    cat("Processing Log:\n", ...)
+    cat(x$processing.log, ...)
     invisible(x)
 }
 

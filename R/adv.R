@@ -800,11 +800,11 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
         if (x$number.of.beams > 3)
             cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
     }
-    cat("\nStatistics:\n")
-    print(x$fives, digits=digits)
-    cat("\n")
-    print(x$processing.log)
-    cat("\n")
+    cat("  Statistics of subsamples:\n", ...)
+    cat(show.fives(x), ...)
+    cat("\n", ...)
+    cat("Processing Log:\n", ...)
+    cat(x$processing.log, ...)
     invisible(x)
 }
 
