@@ -23,6 +23,7 @@ export(
        ctd.decimate,
        ctd.trim,
        ctd.update.header,
+       ctime.to.seconds,
        decimate,
        fill.gap,
        full.filename,
@@ -97,6 +98,7 @@ export(
        read.pt,
        read.sealevel,
        read.section,
+       seconds.to.ctime,
        resizable.label,
        section.grid,
        section.smooth,
@@ -129,7 +131,6 @@ export(
        tidem,
        tidem.astron,
        tidem.vuf,
-       ctime.to.seconds,
        undrift.time,
        write.ctd
        )

@@ -95,8 +95,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
     invisible()
 }
 
-read.pt <- function(file, from=0, to, by=1,
-                    tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))
+read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.action,debug=getOption("oce.debug"))
 {
     file <- full.filename(file)
     filename <- file
@@ -112,8 +111,10 @@ read.pt <- function(file, from=0, to, by=1,
     }
     if (debug > 0) cat("from=", from, "\n")
     from.keep <- from
+    if (is.numeric(from) && from < 0)
+        stop("from cannot be an integer less than 1")
     if (is.character(from) && from == "start")
-        from <- 0
+        from <- 1
     ##from.keep <- from
     to.keep <- to
     by.keep <- by
@@ -184,9 +185,9 @@ read.pt <- function(file, from=0, to, by=1,
 
     if (debug > 0) cat("Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
     if (missing(to) || to == "end")
-        d <- scan(file, character(), skip=from, quiet=TRUE) # whole file
+        d <- scan(file, character(), skip=from-1, quiet=TRUE) # whole file
     else
-        d <- scan(file, character(), skip=from, quiet=TRUE, nlines=(to - from + 1))
+        d <- scan(file, character(), skip=from-1, quiet=TRUE, nlines=(to - from))
     ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
@@ -222,6 +223,8 @@ read.pt <- function(file, from=0, to, by=1,
                      file.delta.t=file.delta.t,
                      subsample.delta.t=as.numeric(difftime(time[2], time[1], units="secs")))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    print(match.call())
+    print(log.action)
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("pt", "oce")
@@ -257,13 +260,13 @@ summary.pt <- function(object, ...)
 print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("PT summary\n", ...)
-    cat("  Instrument type:             RBR\n", ...)
-    cat("  Filename:                   ", x$filename, "\n", ...)
-    cat("  Instrument serial number:   ", x$serial.number,  "\n", ...)
-    cat(sprintf("  Measurements:                %s  to  %s  by  %s s\n", as.character(x$logging.start), format(x$logging.end), as.character(x$file.delta.t)), ...)
-    cat(sprintf("  Subsamples:                  %s  to  %s  by  %s s\n", as.character(x$start.time), format(x$end.time), as.character(x$subsample.delta.t)), ...)
-    cat("  Statistics of subsamples:\n", ...)
-    cat(show.fives(x), ...)
+    cat("  Instrument:   RBR serial number", x$serial.number, "\n", ...)
+    cat("  Source:      ", x$filename, "\n", ...)
+    cat(sprintf("  Measurements: %s  to  %s  by  %s\n", as.character(x$logging.start), format(x$logging.end), seconds.to.ctime(x$file.delta.t)), ...)
+    cat(sprintf("  Subsamples:   %s  to  %s  by  %s\n", as.character(x$start.time), format(x$end.time), seconds.to.ctime(x$subsample.delta.t)), ...)
+    cat('\n', ...)
+    ##    cat("  Statistics of subsamples:\n", ...)
+    cat(show.fives(x, indent='  '), ...)
     cat("\n", ...)
     cat("Processing Log:\n", ...)
     cat(x$processing.log, ...)

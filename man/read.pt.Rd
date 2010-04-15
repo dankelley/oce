@@ -6,22 +6,26 @@
 
 \description{Read an pT temperature-depth recorder file, producing an object of type \code{pt}.}
 
-\usage{read.pt(file, from, to, by=1, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
+\usage{read.pt(file, from="start", to="end", by=1, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{from}{number of profiles to skip at start, or the POSIXt time at
-    which to start reading.  See \dQuote{Examples}, and make careful
-    note of the use of the \code{tz} argument.}
-  \item{to}{optional number of profiles to read, or the last POSIXt
-    time to read.}
+  \item{from}{indication of the first datum to read.  This can be the
+    word \code{"start"}, for the first datum in the file, or positive
+    integer giving the sequence number (1 thus being equivalent to
+    \code{"start"}), or the POSIX time of the first datum, or a
+    character string that can be converted to a POSIX time.  (For POSIX
+    times, be careful about the \code{tz} argument.)}
+  \item{to}{an indication of the last datum to be read.  The string
+    \code{"end"} means to read to the end of the file; otherwise, the
+    indication is of the same format as for \code{from}.}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
     profiles are skipped between each pair of profiles that is read.  If
     this is a string representing a time interval, in colon-separated
-    format (MM:SS), then this interval is divided by the sampling interval, to
-    get the stride length.}
+    format (HH:MM:SS or MM:SS), then this interval is divided by the
+    sampling interval, to get the stride length.}
   \item{tz}{time zone.  The default value, \code{oce.tz}, is set to \code{UTC} 
     at setup.}
   \item{log.action}{if provided, the action item to be stored in the
@@ -70,23 +74,10 @@
   constant (see Examples).}
 
 \examples{
-library(oce)
-data(pt)
-# trim automatically
-pt.trim.auto <- pt.trim(pt)
-# trim manually
-plot(pt, which=2)
-# try a few times near start of record (15:00:00 seems good)
-abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
-abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
-abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
-# try a few times near end of record (15:00:00 seems ok)
-abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
-abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
-abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-pt.trim.manual <- subset(pt, as.POSIXct("2008-06-25 15:00:00") <= time &
-                          time <= as.POSIXct("2008-07-04 12:00:00"))
-plot(pt.trim.manual)
+\dontrun{
+pt <- read.pt("sl08_011855.dat", by=600)
+save(pt, file="oce/data/pt.rda")
+}
 }
 
 \author{Dan Kelley}

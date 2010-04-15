@@ -306,9 +306,7 @@ read.profile.rdi <- function(file, header, debug)
     list(header=header, v=v, a=a, q=q, pg=pg, bt=bt)
 }
 
-read.adp <- function(file, from=0, to, by=1,
-                     type=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp <- function(file, from=0, to, by=1, type=c("rdi", "nortek", "sontek"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     type <- match.arg(type)
     if (monitor) cat(file, "\n", ...)
@@ -323,10 +321,7 @@ read.adp <- function(file, from=0, to, by=1,
                         debug=debug, monitor=monitor, log.action=log.action, ...)
 }
 
-read.adp.sontek <- function(file, from=0, to, by=1,
-                            type=c("adp"),
-                            withHeader=FALSE,
-                            debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.sontek <- function(file, from=0, to, by=1, type=c("adp"), withHeader=FALSE, debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -495,9 +490,7 @@ read.adp.sontek <- function(file, from=0, to, by=1,
     res
 }
 
-read.adp.rdi <- function(file, from=0, to, by=1,
-                          type=c("workhorse"),
-                          debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     from.keep <- from
     to.keep <- to
@@ -1365,9 +1358,7 @@ read.header.nortek <- function(file, debug=getOption("oce.debug"), ...)
     list(hardware=hardware, head=head, user=user)
 }
 
-read.adp.nortek <- function(file, from=0, to, by=1,
-                             type=c("aquadopp high resolution"),
-                             debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolution"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     from.keep <- from
     to.keep <- to

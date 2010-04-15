@@ -27,7 +27,8 @@ read.adp.sontek(file, from=0, to, by=1,
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{from}{number of profiles to skip at start, or the POSIXt time at
+  \item{from}{indication of the first profile to read.  This can be an integer, 
+  the value number of profiles to skip at start, or the POSIXt time at
     which to start reading.  See \dQuote{Examples}, and make careful
     note of the use of the \code{tz} argument.}
   \item{to}{optional number of profiles to read, or the last POSIXt

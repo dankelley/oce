@@ -1,7 +1,7 @@
 full.filename <- function(filename)
 {
     first.char <- substr(filename, 1, 1)
-    if (first.char == '/')
+    if (first.char == '/' || first.char == '~')
         return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
@@ -810,6 +810,22 @@ magnetic.declination <- function(lat, lon, date)
     if (!is.null(dim))
         dim(rval) <- dim
     rval
+}
+
+seconds.to.ctime <- function(sec)
+{
+    if (sec < 60)
+        return(sprintf("00:00:%02d", sec))
+    if (sec < 3600) {
+        min <- floor(sec / 60)
+        sec <- sec - 60 * min
+        return(sprintf("00:%02d:%02d", min, sec))
+    }
+    hour <- floor(sec / 3600)
+    sec <- sec - 3600 * hour
+    min <- floor(sec / 60)
+    sec <- sec - 60 * min
+    return(sprintf("%02d:%02d:%02d", hour, min, sec))
 }
 
 ctime.to.seconds <- function(ctime)

@@ -1,7 +1,4 @@
-read.adv <- function(file, from=1, to, by=1,
-                     type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
-                     withHeader=TRUE, sampling.start, deltat,
-                     tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv <- function(file, from=1, to, by=1, type=c("nortek", "sontek", "sontek.adr", "sontek.text"), withHeader=TRUE, sampling.start, deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
     if (type == "nortek") read.adv.nortek(file=file, from=from, to=to, by=by,
@@ -16,10 +13,7 @@ read.adv <- function(file, from=1, to, by=1,
              tz=tz, debug=debug, log.action=log.action)
 }
 
-read.adv.nortek <- function(file, from=1, to, by=1,
-                            type="vector",
-                            withHeader=TRUE, sampling.start, deltat,
-                            tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TRUE, sampling.start, deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (debug > 0) cat("read.adv.nortek(...,type=\"", type, "\", ...)\n", sep="")
     by.is.broken <- TRUE
@@ -290,10 +284,7 @@ read.adv.nortek <- function(file, from=1, to, by=1,
     res
 }
 
-read.adv.sontek <- function(file, from=1, to, by=1,
-                            type="default",
-                            withHeader=TRUE, sampling.start, deltat,
-                            tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, sampling.start, deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -381,8 +372,7 @@ read.adv.sontek <- function(file, from=1, to, by=1,
     res
 }
 
-read.adv.sontek.adr <- function(file, from=1, to, by=1,
-                                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -599,11 +589,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1,
 }
 
 
-read.adv.sontek.text <- function(basefile, from=1, to, by=1,
-                                 coordinate.system="xyz",
-                                 transformation.matrix,
-                                 tz=getOption("oce.tz"),
-                                 debug=getOption("oce.debug"), log.action)
+read.adv.sontek.text <- function(basefile, from=1, to, by=1, coordinate.system="xyz", transformation.matrix, tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the

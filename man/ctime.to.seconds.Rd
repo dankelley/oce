@@ -12,16 +12,18 @@
   \item{ctime}{a character string (see \sQuote{Details}.}
 }
 
-\details{Strings are }
+\details{Strings are of the form MM:SS or HH:MM:SS.}
 
 \value{A numeric value, the number of seconds represented by the string.}
 
 \examples{
 library(oce)
-cat("Ten seconds = ", ctime.to.seconds("10"), "s\n", sep="")
-cat("Sixty-four seconds = ", ctime.to.seconds("01:04"), "s\n", sep="")
-cat("Thirty-six hundred seconds = ", ctime.to.seconds("1:00:00"), "s\n", sep="")
+cat("10      = ", ctime.to.seconds("10"), "s\n", sep="")
+cat("01:04   = ", ctime.to.seconds("01:04"), "s\n", sep="")
+cat("1:00:00 = ", ctime.to.seconds("1:00:00"), "s\n", sep="")
 }
+
+\seealso{See \code{\link{seconds.to.ctime}}, the inverse of this.}
 
 \author{Dan Kelley}
 
