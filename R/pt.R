@@ -36,7 +36,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             oce.axis.POSIXct(1, x=x$data$time, draw.time.range=draw.time.range)
             draw.time.range <- FALSE
             axis(2)
-        } else if (which[w] == 3) {
+        } else if (which[w] == 3) {     # pressure timeseries
             plot(x$data$time, x$data$pressure,
                  xlab=if (missing(xlab)) "" else xlab,
                  ylab=if (missing(ylab)) resizable.label("p", "y") else ylab,
@@ -70,12 +70,12 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=1)
             text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=1)
             par(mar=mar)
-        } else if (which[w] == 4) {
+        } else if (which[w] == 4) {     # temperature 'profile'
             args <- list(x=x$data$temperature, y=x$data$pressure,
                          xlab=resizable.label("T"),
                          ylab=resizable.label("p"),
                          xlim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
-                         ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
+                         ylim=if (missing(plim)) rev(range(x$data$pressure, na.rm=TRUE)) else plim,
                          ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
