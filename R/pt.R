@@ -68,7 +68,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             text.item(title, cex=1.25*cex)
             if (!is.null(x$metadata$filename))
                 text.item(x$metadata$filename, cex=cex)
-            text.item(paste("Serial Number: ", x$metadata$serial.number),cex=cex)
+            if (!is.null(x$metadata$serial.number))
+                text.item(paste("Serial Number: ", x$metadata$serial.number),cex=cex)
             if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
                 text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=cex)
                 text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=cex)
@@ -94,7 +95,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
     invisible()
 }
 
-read.pt <- function(file, from, to, by=1,
+read.pt <- function(file, from=0, to, by=1,
                     tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))
 {
     file <- full.filename(file)
@@ -109,7 +110,11 @@ read.pt <- function(file, from, to, by=1,
         open(file, "r")
         on.exit(close(file))
     }
+    if (debug > 0) cat("from=", from, "\n")
     from.keep <- from
+    if (is.character(from) && from == "start")
+        from <- 0
+    ##from.keep <- from
     to.keep <- to
     by.keep <- by
     host.time <- 0
@@ -148,34 +153,27 @@ read.pt <- function(file, from, to, by=1,
         }
     }
     serial.number <- strsplit(header[1],"[\t ]+")[[1]][4]
-    if (debug) {
+    if (debug > 0) {
         cat("logging.start =", format(logging.start), "\n")
         cat("file.delta.t  =", file.delta.t, "\n")
     }
+    ## Now that we know the logging times, we can work with 'from 'and 'to'
+    if (inherits(from, "POSIXt") || inherits(from, "character")) {
+        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), logging.start, units="secs")) / file.delta.t
+        if (debug > 0) cat("inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+    }
+    if (!missing(to)) {
+        if (inherits(to, "POSIXt") || length(grep(":", to))) {
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), logging.start, units="secs")) / file.delta.t
+            if (debug > 0) cat("inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+        }
+    }
+    if (!missing(by)) {
+        by <- ctime.to.seconds(by)
+    }
+    if (debug > 0) cat("by inferred to be", by, "s\n")
 
     ## Handle time-based args 'from', 'to', and 'by'.
-    if (!missing(from.keep) && (inherits(from.keep, "POSIXt") || inherits(from.keep, "character"))) {
-        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), logging.start, units="secs")) / file.delta.t
-        if (debug) cat("inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
-    }
-    if (!missing(to.keep) && (inherits(to.keep, "POSIXt") || inherits(to.keep, "character"))) {
-        to <- as.numeric(difftime(as.POSIXct(to.keep, tz=tz), logging.start, units="secs")) / file.delta.t
-        if (debug) cat("inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
-    }
-    if (is.character(by)) {
-        if (length(grep(":", by)) > 0) {
-            parts <- as.numeric(strsplit(by, ":")[[1]])
-            if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
-            else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
-            else stop("malformed by time", by)
-            by <- by.time / file.delta.t
-        } else {
-            warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
-            by <- as.numeric(by)
-        }
-        if (debug) cat("inferred   by = ", format(by, width=7), "based on   'by' arg", by.keep, "\n")
-    }
-
     col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
 
     ## Read a line to determine if there is a pair of columns for time
@@ -184,8 +182,8 @@ read.pt <- function(file, from, to, by=1,
     line <- gsub("[ ]+$", "", gsub("^[ ]+","", line))
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
-    if (debug) cat("Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
-    if (missing(to))
+    if (debug > 0) cat("Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
+    if (missing(to) || to == "end")
         d <- scan(file, character(), skip=from, quiet=TRUE) # whole file
     else
         d <- scan(file, character(), skip=from, quiet=TRUE, nlines=(to - from + 1))
@@ -193,23 +191,23 @@ read.pt <- function(file, from, to, by=1,
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
     if (by != 1)  {
-        look <- seq(1, n, by=by)
+        look <- seq(from=1, to=n, by=by)
         d <- d[,look]
         n <- dim(d)[2]
     }
     if (nvar == 2) {
-        if (debug) cat("2 elements per data line\n")
-        time <- logging.start + seq(1:n) * file.delta.t
+        if (debug > 0) cat("2 elements per data line\n")
+        time <- logging.start + seq(from=1, to=n) * by * file.delta.t
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
-        if (debug) cat("4 elements per data line\n")
+        if (debug > 0) cat("4 elements per data line\n")
         time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
-        if (debug) cat("5 elements per data line\n")
+        if (debug > 0) cat("5 elements per data line\n")
         time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
