@@ -471,6 +471,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     debug <- !TRUE
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
+    if (missing(x))
+        stop("must supply x")
     mat <- missing(at) || is.null(at)
     if (!mat) x <- as.POSIXct(at) else x <- as.POSIXct(x)
     range <- par("usr")[if (side%%2) 1:2 else 3:4]
@@ -643,7 +645,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         time.range <- par("usr")[1:2]
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")
-        delta.t <- as.numeric(difftime(x[2], x[1], "secs"))
+        delta.t <- as.numeric(difftime(x[2], x[1], units="secs"))
         mtext(paste(format(time.range[1]), attr(time.range, "tzone"),
                     " to ", format(time.range[2]), attr(time.range, "tzone"),
                     "by", delta.t, "s"),

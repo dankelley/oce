@@ -73,7 +73,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
                 text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=cex)
                 text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=cex)
-                text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=cex)
+                text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="secs"), "s"),cex=cex)
             }
             par(mar=mar)
         } else if (which[w] == 4) {     # temperature 'profile'
