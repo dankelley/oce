@@ -223,8 +223,6 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
                      file.delta.t=file.delta.t,
                      subsample.delta.t=as.numeric(difftime(time[2], time[1], units="secs")))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    print(match.call())
-    print(log.action)
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("pt", "oce")
