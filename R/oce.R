@@ -643,7 +643,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         time.range <- par("usr")[1:2]
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")
-        mtext(paste(paste(format(time.range), collapse=" to "), attr(time.range, "tzone")),
+        delta.t <- as.numeric(difftime(x[2], x[1], "secs"))
+        mtext(paste(format(time.range[1]), attr(time.range, "tzone"),
+                    " to ", format(time.range[2]), attr(time.range, "tzone"),
+                    "by", delta.t, "s"),
               side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
     }
     axis(side, at = z, labels = labels, ...)

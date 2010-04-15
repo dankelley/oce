@@ -49,7 +49,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             draw.time.range <- FALSE
             axis(2)
         } else if (which[w] == 2) {
-            text.item <- function(item, cex=1.25) {
+            text.item <- function(item, cex=4/5*par("cex")) {
                 if (!is.null(item) && !is.na(item)) {
                     text(xloc, yloc, item, adj = c(0, 0), cex=cex);
                     yloc <<- yloc - d.yloc;
@@ -59,16 +59,21 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             yfake <- seq(0:10)
             mar <- par("mar")
             par(mar=c(0,0,0,0))
+
             plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
             xloc <- 1
             yloc <- 10
             d.yloc <- 0.7
-            text.item(title, cex=1.25)
-            text.item(paste("Filename:", x$metadata$filename), cex=1)
-            text.item(paste("Serial Number: ", x$metadata$serial.number),cex=1)
-            text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=1)
-            text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=1)
-            text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=1)
+            cex <- par("cex")
+            text.item(title, cex=1.25*cex)
+            if (!is.null(x$metadata$filename))
+                text.item(x$metadata$filename, cex=cex)
+            text.item(paste("Serial Number: ", x$metadata$serial.number),cex=cex)
+            if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
+                text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=cex)
+                text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=cex)
+                text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="s"), "s"),cex=cex)
+            }
             par(mar=mar)
         } else if (which[w] == 4) {     # temperature 'profile'
             args <- list(x=x$data$temperature, y=x$data$pressure,
