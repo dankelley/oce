@@ -865,3 +865,11 @@ show.fives <- function(x, indent="    ")
     }
     res
 }
+
+oce.debug <- function(debug=0, ...)
+{
+    debug <- if (debug > 4) 4 else floor(debug + 0.5)
+    if (debug > 0) {
+        cat(paste(rep("  ", 5 - debug), collapse=""), ...)
+    }
+}

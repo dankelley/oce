@@ -53,6 +53,7 @@ export(
        oce.colors.palette,
        oce.colors.jet,
        oce.colors.two,
+       oce.debug,
        oce.edit,
        oce.filter,
        oce.plot.ts,
