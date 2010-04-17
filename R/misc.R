@@ -721,10 +721,7 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
                 fmt <- paste("%.", abs(digits), "f", sep="")
             else
                 fmt <- "%.f"
-            if (debug) {
-                cat("pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n")
-                cat(" x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
-            }
+            oce.debug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
             paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
         }
     }

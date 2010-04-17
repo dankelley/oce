@@ -146,6 +146,9 @@ read.header.rdi <- function(file, debug, ...)
     if (VLD[2] != 0x00) stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
     ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
     ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
+
+    ## FIXME: probably would save time to read all elements at once.  Instrument to check
+
     RTC.year <- readBin(VLD[5], "integer", n=1, size=1)
     oce.debug(debug, "RTC.year:", RTC.year, "\n")
     if (RTC.year < 1800) RTC.year <- RTC.year + 2000 # fix Y2K problem
@@ -164,39 +167,27 @@ read.header.rdi <- function(file, debug, ...)
     time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz = "UTC") # not sure on TZ
     oce.debug(debug, "time:", format(time), "\n")
 
-
-    if (TRUE) {
-        second.RTC.century <- readBin(VLD[58], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second.RTC.century:", second.RTC.century, "\n")
-
-        second.RTC.year <- readBin(VLD[59], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second.RTC.year:", second.RTC.year, "\n")
-
-        second.RTC.month <- readBin(VLD[60], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second.RTC.month:", second.RTC.month, "\n")
-
-        second.RTC.day <- readBin(VLD[61], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second.RTC.day:", second.RTC.day, "\n")
-
-        second.RTC.hour <- readBin(VLD[62], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second.RTC.hour:", second.RTC.hour, "\n")
-        second.RTC.minute <- readBin(VLD[63], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second.RTC.minute:", second.RTC.minute, "\n")
-        second.RTC.second <- readBin(VLD[64], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second=", VLD[64], "(as raw)", "or", as.integer(VLD[64]), "(as integer)\n")
-        oce.debug(debug, "second.RTC.second:", second.RTC.second, "\n")
-        second.RTC.hundredths <- readBin(VLD[65], "integer", n=1, size=1, signed=FALSE)
-        oce.debug(debug, "second.RTC.hundredths:", second.RTC.hundredths, "\n")
-
-        second.time <- ISOdatetime(second.RTC.year, second.RTC.month, second.RTC.day, second.RTC.hour, second.RTC.minute, second.RTC.second + second.RTC.hundredths / 100, tz = "UTC") # not sure on TZ
-        oce.debug(debug, "secondtime:", format(second.time), "\n")
-    }
-
-    ## Times.... see Rich Pawlowicz's code 17/09/99
-    ## L519      ens.rtc(:,k)          =fread(fd,7,'uint8');
-    ## L131 dats=datenum(century+ens.rtc(1,:),ens.rtc(2,:),ens.rtc(3,:),ens.rtc(4,:),ens.rtc(5,:),ens.rtc(6,:)+ens.rtc(7,:)/100);
-
-
+    ##if (TRUE) { # read the second time indication (my tests shows the values are the same)
+    ##    second.RTC.century <- readBin(VLD[58], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second.RTC.century:", second.RTC.century, "\n")
+    ##    second.RTC.year <- readBin(VLD[59], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second.RTC.year:", second.RTC.year, "\n")
+    ##    second.RTC.month <- readBin(VLD[60], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second.RTC.month:", second.RTC.month, "\n")
+    ##    second.RTC.day <- readBin(VLD[61], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second.RTC.day:", second.RTC.day, "\n")
+    ##    second.RTC.hour <- readBin(VLD[62], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second.RTC.hour:", second.RTC.hour, "\n")
+    ##    second.RTC.minute <- readBin(VLD[63], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second.RTC.minute:", second.RTC.minute, "\n")
+    ##    second.RTC.second <- readBin(VLD[64], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second=", VLD[64], "(as raw)", "or", as.integer(VLD[64]), "(as integer)\n")
+    ##    oce.debug(debug, "second.RTC.second:", second.RTC.second, "\n")
+    ##    second.RTC.hundredths <- readBin(VLD[65], "integer", n=1, size=1, signed=FALSE)
+    ##    oce.debug(debug, "second.RTC.hundredths:", second.RTC.hundredths, "\n")
+    ##    second.time <- ISOdatetime(second.RTC.year, second.RTC.month, second.RTC.day, second.RTC.hour, second.RTC.minute, second.RTC.second + second.RTC.hundredths / 100, tz = "UTC") # not sure on TZ
+    ##    oce.debug(debug, "secondtime:", format(second.time), "\n")
+    ##}
 
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")

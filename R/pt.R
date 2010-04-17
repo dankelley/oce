@@ -109,7 +109,7 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
         open(file, "r")
         on.exit(close(file))
     }
-    if (debug > 0) cat("from=", from, "\n")
+    oce.debug(debug, "from=", from, "\n")
     from.keep <- from
     if (is.numeric(from) && from < 0)
         stop("from cannot be an integer less than 1")
@@ -154,25 +154,23 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
         }
     }
     serial.number <- strsplit(header[1],"[\t ]+")[[1]][4]
-    if (debug > 0) {
-        cat("logging.start =", format(logging.start), "\n")
-        cat("file.delta.t  =", file.delta.t, "\n")
-    }
+    oce.debug(debug, "logging.start =", format(logging.start), "\n")
+    oce.debug(debug, "file.delta.t  =", file.delta.t, "\n")
     ## Now that we know the logging times, we can work with 'from 'and 'to'
     if (inherits(from, "POSIXt") || inherits(from, "character")) {
         from <- as.numeric(difftime(as.POSIXct(from, tz=tz), logging.start, units="secs")) / file.delta.t
-        if (debug > 0) cat("inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+        oce.debug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
     }
     if (!missing(to)) {
         if (inherits(to, "POSIXt") || length(grep(":", to))) {
             to <- as.numeric(difftime(as.POSIXct(to, tz=tz), logging.start, units="secs")) / file.delta.t
-            if (debug > 0) cat("inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+            oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
         }
     }
     if (!missing(by)) {
         by <- ctime.to.seconds(by)
     }
-    if (debug > 0) cat("by inferred to be", by, "s\n")
+    oce.debug(debug, "by inferred to be", by, "s\n")
 
     ## Handle time-based args 'from', 'to', and 'by'.
     col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
@@ -183,7 +181,7 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
     line <- gsub("[ ]+$", "", gsub("^[ ]+","", line))
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
-    if (debug > 0) cat("Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
+    oce.debug(debug, "Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
     if (missing(to) || to == "end")
         d <- scan(file, character(), skip=from-1, quiet=TRUE) # whole file
     else
@@ -197,18 +195,18 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
         n <- dim(d)[2]
     }
     if (nvar == 2) {
-        if (debug > 0) cat("2 elements per data line\n")
+        oce.debug(debug, "2 elements per data line\n")
         time <- logging.start + seq(from=1, to=n) * by * file.delta.t
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
-        if (debug > 0) cat("4 elements per data line\n")
+        oce.debug(debug, "4 elements per data line\n")
         time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
-        if (debug > 0) cat("5 elements per data line\n")
+        oce.debug(debug, "5 elements per data line\n")
         time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])

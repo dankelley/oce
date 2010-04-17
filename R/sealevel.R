@@ -237,7 +237,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
     reference.offset <- NA
     reference.code <- NA
     if (substr(first.line, 1, 12) == "Station_Name") { # type 2
-        if (debug > 0) cat("File is of format 1 (e.g. as in MEDS archives)\n")
+        oce.debug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
                                         # Station_Name,HALIFAX
                                         # Station_Number,490
                                         # Latitude_Decimal_Degrees,44.666667
@@ -257,18 +257,16 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
         GMT.offset     <- GMT.offset.from.tz(tz)
         x <- read.csv(file, header=FALSE)
         if (length(grep("[0-9]{4}/", x$V1[1])) > 0) {
-            if (debug > 0) cat("Date format is year/month/day hour:min with hour in range 1:24\n")
+            oce.debug(debug, "Date format is year/month/day hour:min with hour in range 1:24\n")
             time <- strptime(as.character(x$V1), "%Y/%m/%d %H:%M", "UTC") + 3600 * GMT.offset
         } else {
-            if (debug > 0) cat("Date format is day/month/year hour:min AMPM with hour in range 1:12 and AMPM indicating whether day or night\n")
+            oce.debug(debug, "Date format is day/month/year hour:min AMPM with hour in range 1:12 and AMPM indicating whether day or night\n")
             time <- strptime(as.character(x$V1), "%d/%m/%Y %I:%M %p", "UTC") + 3600 * GMT.offset
         }
         elevation <- as.numeric(x$V2)
-        if (debug) {
-            cat("tz=", tz, "so GMT.offset=", GMT.offset,"\n")
-            cat("first pass has time string:", as.character(x$V1)[1], "\n")
-            cat("first pass has time start:", format(time[1]), " ", attr(time[1], "tzone"), "\n")
-        }
+        oce.debug(debug, "tz=", tz, "so GMT.offset=", GMT.offset,"\n",
+                  "first pass has time string:", as.character(x$V1)[1], "\n",
+                  "first pass has time start:", format(time[1]), " ", attr(time[1], "tzone"), "\n")
     } else { # type 1
         if(debug) cat("File is of type 2 (e.g. as in the Hawaii archives)\n")
         d <- readLines(file)
@@ -288,7 +286,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
         longitude <- as.numeric(substr(longitude.str, 1, 3)) + (as.numeric(substr(longitude.str, 4, 6)))/600
         if (tolower(substr(longitude.str, 7, 7)) == "w") longitude <- -longitude
         GMT.offset        <- substr(header, 65, 68) #hours,tenths (East is +ve)
-        if (debug) cat("GMT.offset:", GMT.offset, "\n")
+        oce.debug(debug, "GMT.offset=", GMT.offset, "\n")
         decimation.method <- substr(header, 70, 70) #1=filtered 2=average 3=spot readings 4=other
         reference.offset  <- substr(header, 72, 76) # add to values
         reference.code    <- substr(header, 77, 77) # add to values

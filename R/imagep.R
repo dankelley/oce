@@ -113,7 +113,7 @@ imagep <- function(x, y, z,
         t <- try(eval.parent(adorn), silent=!TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn='", adorn, "'\n")
     }
-    if (debug) cat("axes=",axes,"\n")
+    oce.debug(debug, "axes=", axes, "\n")
 
     ## 2. plot palette
     par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))

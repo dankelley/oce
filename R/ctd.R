@@ -100,7 +100,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
             }
         }
     } else if ("reiniger-ross" == method) {
-        if (debug > 1) cat("Reiniger-Ross method\n")
+        oce.debug(debug, "Reiniger-Ross method\n")
         xvar <- x$data[["pressure"]]
         for (datum.name in data.names) {
             if (datum.name != "pressure") {
@@ -420,19 +420,19 @@ plot.ctd <- function (x, which = 1:4,
                 if (missing(latlim)) {
                     latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
                     plot(coastline, xlim=lonlim.c, ylim=latlim.c, debug=debug)
-                    if (debug) cat("CASE 1 (neither lonlim nor latlim given)\n")
+                    oce.debug(debug, "CASE 1 (neither lonlim nor latlim given)\n")
                 } else {
                     plot(coastline, xlim=lonlim.c, ylim=latlim, debug=debug)
-                    if (debug) cat("CASE 2 (should infer xlim from ylim)\n")
+                    oce.debug(debug, "CASE 2 (should infer xlim from ylim)\n")
                 }
             } else {
                 if (missing(latlim)) {
                     latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
                     plot(coastline, xlim=lonlim, ylim=latlim.c, debug=debug)
-                    if (debug) cat("CASE 3 (should infer lonlim from latlim)\n")
+                    oce.debug(debug, "CASE 3 (should infer lonlim from latlim)\n")
                 } else {
                     plot(coastline, xlim=lonlim, ylim=latlim, debug=debug)
-                    if (debug) cat("CASE 4 (using provided lonlim and latlim)\n")
+                    oce.debug(debug, "CASE 4 (using provided lonlim and latlim)\n")
                 }
             }
             points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
@@ -698,23 +698,23 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
     ## ** Latitude:      47 53.27 N
     x <- line
     positive <- TRUE
-    if (debug) cat("parse.latlon() processing stages\n0. [", x, "]\n", sep="")
+    oce.debug(debug, paste("parse.latlon() processing stages\n0. [", x, "]\n", sep=""))
     x <- sub("(.*)latitude", "", ignore.case=TRUE, x);
     x <- sub("(.*)longitude", "", ignore.case=TRUE, x);
     x <- sub("[:=]", "", ignore.case=TRUE, x);
-    if (debug) cat("1. [", x, "]\n", sep="")
+    oce.debug(debug, paste("1. [", x, "]\n", sep=""))
     if (0 < (r <- regexpr("[NnEe]", x)))
         x <- sub("[NnEe]", "", ignore.case=TRUE, x)
-    if (debug) cat("2. [", x, "]\n", sep="")
+    oce.debug(debug, paste("2. [", x, "]\n", sep=""))
     if (0 < (r <- regexpr("[SsWw]", x))) {
         positive <- FALSE
         x <- sub("[SsWw]", "", ignore.case=TRUE, x)
     }
-    if (debug) cat("3. [", x, "]\n", sep="")
+    oce.debug(debug, paste("3. [", x, "]\n", sep=""))
     x <- sub("^[ \t]*", "", ignore.case=TRUE, x)
-    if (debug) cat("4. [", x, "]\n", sep="")
+    oce.debug(debug, paste("4. [", x, "]\n", sep=""))
     x <- sub("[ \t]*$", "", ignore.case=TRUE, x)
-    if (debug) cat("5. [", x, "]\n", sep="")
+    oce.debug(debug, paste("5. [", x, "]\n", sep=""))
     x <- strsplit(x, " ")
     if (length(x[[1]]) == 2) {
         x <- as.double(x[[1]][1]) + as.double(x[[1]][2]) / 60
@@ -723,7 +723,7 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
     } else {
         warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
     }
-    if (debug) cat(sprintf("6. x = %f\n", x))
+    oce.debug(debug, sprintf("6. x = %f\n", x))
     x
 }
 
@@ -764,10 +764,10 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
         lline <- tolower(aline);
         ## BUG: discovery of column names is brittle to format changes
         if (0 < (r <- regexpr("# name ", lline))) {
-            if (debug) cat("lline: '",lline,"'\n",sep="")
+            oce.debug(debug, "lline: '",lline,"'\n",sep="")
             tokens <- strsplit(line, split=" ")
             name <- tokens[[1]][6]
-            if (debug) cat("  name: '",name,"'\n",sep="")
+            oce.debug(debug, "  name: '",name,"'\n",sep="")
             if (0 < regexpr("scan", lline)) {
                 name <- "scan"
                 found.scan <- TRUE
@@ -906,8 +906,8 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
             }
         }
     }
-    if (debug) cat("Finished reading header\n")
-    if (debug) {
+    oce.debug(debug, "Finished reading header\n")
+    if (debug > 0) {
         if (is.nan(sample.interval)) warning("'* sample rate =' not found in header");
         if (is.nan(latitude))        warning("'** Latitude:' not found in header");
         if (is.nan(longitude))       warning("'** Longitude:' not found in header");
@@ -922,7 +922,7 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigma.theta.unused","depth","flag");
     col.names.inferred <- tolower(col.names.inferred)
-    if (debug) cat("About to read these names:", col.names.inferred,"\n");
+    oce.debug(debug, "About to read these names:", col.names.inferred,"\n");
     data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
     names <- names(data)
     labels <- names

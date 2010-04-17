@@ -32,16 +32,16 @@ plot.coastline <- function (x,
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
     xr <- range(x$data$longitude, na.rm=TRUE)
     yr <- range(x$data$latitude, na.rm=TRUE)
-    if (debug) cat("par('pin') is", par("pin"), "\n")
+    oce.debug(debug, "par('pin') is", par("pin"), "\n")
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
-    if (debug) cat("asp.page=", asp.page, "\n")
+    oce.debug(debug, "asp.page=", asp.page, "\n")
     gamma <- asp / asp.page
-    if (debug) cat("asp/asp.page=", asp / asp.page, "\n")
+    oce.debug(debug, "asp/asp.page=", asp / asp.page, "\n")
     if ((asp / asp.page) < 1) {
-        if (debug) cat("type 1\n")
+        oce.debug(debug, "type 1\n")
         xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
     } else {
-        if (debug) cat("type 2\n")
+        oce.debug(debug, "type 2\n")
         yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
     }
     if (!missing(bg)) {
@@ -52,25 +52,26 @@ plot.coastline <- function (x,
     }
     plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i",
          axes=axes, ...)
-    if (debug) points(xr, yr, col="blue", pch=20)
-    if (debug)     abline(v=xr, col="red")
+    if (debug > 0) {
+        points(xr, yr, col="blue", pch=20)
+        abline(v=xr, col="red")
+    }
     yaxp <- par("yaxp")
-    if (debug) cat("par(pin)",par("pin"),"\n")
+    oce.debug(debug, "par(pin)",par("pin"),"\n")
     if (yaxp[1] < -90 | yaxp[2] > 90) {
         opin <- par("pin")
-        if (debug) cat("inside pin=", par("pin"), " yaxp=",yaxp,"\n")
+        oce.debug(debug, "inside pin=", par("pin"), " yaxp=",yaxp,"\n")
         yscale <- 180 / (yaxp[2] - yaxp[1])
-        if (debug) cat("yscale",yscale," new opin[2]", yscale*opin[2],"\n")
+        oce.debug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
         par(pin=c(opin[1], yscale*opin[2]))
     	lines(x$data$longitude, x$data$latitude, asp=asp, yaxp=c(-90,90,6), yaxs="i", xlab="", ylab="", ...)
         par("pin"=opin)
     } else {
     	lines(x$data$longitude, x$data$latitude, asp=asp, yaxs="i", xaxs="i", xlab="", ylab="", ...)
     }
-    if (debug) {
-        cat("lon lim:");print(range(x$data$longitude,na.rm=TRUE))
-        cat("lat lim:");print(range(x$data$latitude,na.rm=TRUE))
-    }
+    oce.debug(debug,
+        "lon lim:", range(x$data$longitude,na.rm=TRUE),
+        "lat lim:", range(x$data$latitude,na.rm=TRUE))
 }
 
 read.coastline <- function(file,type=c("R","S","mapgen"),debug=getOption("oce.debug"),log.action)
@@ -96,11 +97,7 @@ read.coastline <- function(file,type=c("R","S","mapgen"),debug=getOption("oce.de
         res <- list(data=data, metadata=NULL, processing.log=log.item)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE);
-        if (debug) {
-            cat("method is mapgen\n")
-            cat("header ")
-            cat(header)
-        }
+        oce.debug(debug, "method is mapgen\nheader:", header, "\n")
         separator <- NULL
                                         # mapgen    # -b
                                         # matlab	nan nan

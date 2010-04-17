@@ -77,16 +77,14 @@ tidem.vuf <- function(t, j, lat=NULL)
                      tidedata$const$d6)
 
     ##v=rem( const.doodson*astro+const.semi, 1);
-    if (debug > 0) {
-        cat("doodson[1,]=",doodson[1,],"\n")
-        cat("doodson[2,]=",doodson[2,],"\n")
-        cat("doodson[3,]=",doodson[3,],"\n")
-    }
-
+    oce.debug(debug,
+              "doodson[1,]=",doodson[1,],"\n",
+              "doodson[2,]=",doodson[2,],"\n",
+              "doodson[3,]=",doodson[3,],"\n")
     v <- doodson %*% a$astro + tidedata$const$semi
-    if (debug > 0) cat("tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
+    oce.debug(debug, "tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
     v <- v - trunc(v)
-    if (debug > 0) cat("v[1:3]=",v[1:3],"\n")
+    oce.debug(debug, "v[1:3]=",v[1:3],"\n")
     if (!is.null(lat) && !is.na(lat)) {
         if (abs(lat) < 5) lat <- sign(lat) * 5
         slat <- sin(pi * lat / 180)
@@ -99,19 +97,18 @@ tidem.vuf <- function(t, j, lat=NULL)
         uu <- tidedata$sat$deldood %*% a$astro[4:6] + tidedata$sat$phcorr
         uu <- uu - trunc(uu)
 
-        if (debug > 1) {cat("uu[1:3]=");print(uu[1:3])}
+        oce.debug(debug, "uu[1:3]=",uu[1:3], "\n")
 
         nsat <- length(tidedata$sat$iconst)
         nfreq <- length(tidedata$const$numsat)
                                         # loop, rather than make a big matrix
-        if (debug > 2) {
-            cat("tidedata$sat$iconst=", tidedata$sat$iconst, "\n")
-            cat("length(sat$iconst)=", length(tidedata$sat$iconst),"\n")
-        }
+        oce.debug(debug,
+                  "tidedata$sat$iconst=", tidedata$sat$iconst, "\n",
+                  "length(sat$iconst)=", length(tidedata$sat$iconst),"\n")
         fsum.vec <- vector("numeric", nsat)
         u.vec <- vector("numeric", nsat)
         for (isat in 1:nsat) {
-            if (debug > 3) cat("isat=",isat,"\n")
+            oce.debug(debug, "isat=",isat,"\n")
             use <- tidedata$sat$iconst == isat
             fsum.vec[isat] <- 1 + sum(rr[use] * exp(1i * 2 * pi * uu[use]))
             u.vec[isat] <- Arg(fsum.vec[isat]) / 2 / pi
@@ -121,15 +118,13 @@ tidem.vuf <- function(t, j, lat=NULL)
                 cat("u.vec[   ",isat,"]=",u.vec[isat],"       (EXPECT -0.01076294959868)\n")
             }
         }
-        if (debug > 0) {
-            cat("uvec[",j,"]=", u.vec[j], "\n")
-            cat("fsum.vec[",j,"]=", fsum.vec[j],"\n")
-        }
-
+        oce.debug(debug,
+                  "uvec[",j,"]=", u.vec[j], "\n",
+                  "fsum.vec[",j,"]=", fsum.vec[j],"\n")
         f <- abs(fsum.vec)
         u <- Arg(fsum.vec)/2/pi
-        if (debug>3) cat("f=",f,"\n") # correct
-        if (debug>3) cat("u=",u,"\n") # correct
+        oce.debug(debug, "f=",f,"\n") # FIXME
+        oce.debug(debug, "u=",u,"\n") # FIXME
 
         for (k in which(!is.na(tidedata$const$ishallow))) {
             ik <- tidedata$const$ishallow[k] + 0:(tidedata$const$nshallow[k] - 1)
@@ -278,7 +273,7 @@ tidem.astron <- function(t)
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
 
-    if (debug) cat("d=",formatC(d,digits=10),"D=",D,"a=", a, "\n")
+    oce.debug(debug, "d=",formatC(d,digits=10),"D=",D,"a=", a, "\n")
 
     sc.hc.pc.np.pp <-
         matrix(c(270.434164, 13.1763965268,-0.0000850, 0.000000039,
@@ -289,11 +284,11 @@ tidem.astron <- function(t)
                nrow=5, ncol=4, byrow=TRUE)
     astro <- ((sc.hc.pc.np.pp %*% a) / 360) %% 1
 
-    if (debug) cat("astro=",astro,"\n")
+    oce.debug(debug, "astro=",astro,"\n")
 
     rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="GMT", units="days")
 
-    if (debug) cat("rem2=",rem,"\n")
+    oce.debug(debug, "rem2=",rem,"\n")
 
     tau <- rem + astro[2,1] - astro[1,1]
     astro <- c(tau, astro)

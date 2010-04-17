@@ -7,12 +7,11 @@
 \title{Seawater CTD profile}
 
 \description{This is sample CTD profile provided for testing, created by
-\preformatted{
-ctd <- read.oce(system.file("data", "ctd.cnv", package="oce"))
-} (which uses a CNV file not supplied with this package).
-}
+  the code given in \dQuote{Examples}.}
 
 \usage{data(ctd)}
+
+\examples{ctd <- read.oce(system.file("data", "ctd.cnv", package="oce"))}
 
 \source{Peter Galbraith acquired these data during the \acronym{SLEIWEX}
 field program, part of a Dalhousie/IML cooperative study of

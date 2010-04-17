@@ -369,7 +369,7 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
     n <- length(lines)
     header <- lines[1]
     for (l in (2:n)) {
-        if (debug) cat(lines[l],"\n")
+        oce.debug(debug, lines[l], "\n")
         if ("#" != substr(lines[l], 1, 1)) {
             header <- c(header, lines[l])
             break
@@ -411,7 +411,7 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
     lon <- vector("numeric", num.stations)
     lat <- vector("numeric", num.stations)
     for (i in 1:num.stations) {
-        if (debug) cat("procession station ",i,"\n")
+        oce.debug(debug, "procession station ", i, "\n")
         select <- which(station.id == station.list[i])
         stn[i] <- sub("^ *", "", station.id[select[1]])
         lat[i] <- latitude[select[1]]
@@ -423,7 +423,7 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
                                cruise=stn.section.id[select[1]],
                                station=stn[i],
                                water.depth=water.depth[select[1]])
-        if (debug) cat("station at ", lat[i], "N and ", lon[i], "W\n")
+        oce.debug(debug, "station at ", lat[i], "N and ", lon[i], "W\n")
         station[[i]] <- this.station
     }
     data <- list(station=station)

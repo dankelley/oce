@@ -57,11 +57,11 @@ plot.topo <- function(x,
     lines(rep(usr[2],2), usr[3:4])
 
     xlab <- pretty(usr[1:2])
-    if (debug) cat("xlab=",xlab,"\n")
-    if (debug) cat("lon.range=",lon.range,"\n")
+    oce.debug(debug, "xlab=", xlab, "\n")
+    oce.debug(debug, "lon.range=", lon.range, "\n")
     xlab[xlab > lon.range[2]] <- NA
     xlab[xlab < lon.range[1]] <- NA
-    if (debug) cat("xlab=",xlab,"after trimming\n")
+    oce.debug(debug, "xlab=", xlab, "after trimming\n")
     axis(1, at=xlab, pos=usr[3])
     axis(3, at=xlab, pos=usr[4], labels=FALSE)
 

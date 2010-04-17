@@ -264,12 +264,12 @@ magic <- function(file, debug=getOption("oce.debug"))
 {
     filename <- file
     if (is.character(file)) {
-        if (debug) cat("checking filename to see if it ends in .adr ...")
+        oce.debug(debug, "checking filename to see if it ends in .adr ...\n")
         if (length(grep(".adr$", file))) {
-            if (debug) cat(" yes, so this is adv/sontek/adr.\n")
+            oce.debug(debug, "yes, so this is adv/sontek/adr.\n")
             return("adv/sontek/adr")
         }
-        if (debug) cat(" no, so not adv/sontek/adr.\n")
+        oce.debug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
@@ -277,42 +277,42 @@ magic <- function(file, debug=getOption("oce.debug"))
     	open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    if (debug > 0) cat(paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=2)
-    if (debug > 0) cat(paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        if (debug) cat("this is adp/rdi\n")
+        oce.debug(debug, "this is adp/rdi\n")
         return("adp/rdi")
     }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
         ## NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
         ## Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
         seek(file, 0)
-        if (debug) cat("This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
+        oce.debug(debug, "This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
         hardware.configuration <- readBin(file, what="raw", n=48) # FIXME: this hard-wiring is repeated elsewhere
         if (hardware.configuration[1] != 0xa5 || hardware.configuration[2] != 0x05) return("unknown")
-        if (debug) cat("  hardware.configuration[1:2]", hardware.configuration[1:2], "(expect 0xa5 0x05)\n")
+        oce.debug(debug, "hardware.configuration[1:2]", hardware.configuration[1:2], "(expect 0xa5 0x05)\n")
         head.configuration <- readBin(file, what="raw", n=224)
-        if (debug) cat("  head.configuration[1:2]", head.configuration[1:2], "(expect 0xa5 0x04)\n")
+        oce.debug(debug, "head.configuration[1:2]", head.configuration[1:2], "(expect 0xa5 0x04)\n")
         if (head.configuration[1] != 0xa5 || head.configuration[2] != 0x04) return("unknown")
         user.configuration <- readBin(file, what="raw", n=512)
-        if (debug) cat("  user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
+        oce.debug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
         if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
         next.two.bytes <- readBin(file, what="raw", n=2)
-        if (debug) cat("  next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
+        oce.debug(debug, "next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x12) {
-            if (debug) cat("this is adv/nortek/vector\n")
+            oce.debug(debug, "this is adv/nortek/vector\n")
             return("adv/nortek/vector")
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) {
-            if (debug) cat("this is adp/nortek/aqudopp\n")
+            oce.debug(debug, "this is adp/nortek/aqudopp\n")
             return("adp/nortek/aquadopp") # p33 SIG
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
-            if (debug) cat("this is adp/nortek/aqudoppHR\n")
+            oce.debug(debug, "this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
         } else
         stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
@@ -326,42 +326,42 @@ magic <- function(file, debug=getOption("oce.debug"))
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
     if (substr(line, 1, 3) == "CTD") {
-        if (debug) cat("this is ctd/woce/exchange\n")
+        oce.debug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
     if ("* Sea-Bird" == substr(line, 1, 10))  {
-        if (debug) cat("this is ctd/sbe/19\n")
+        oce.debug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
     }
     if ("# -b" == substr(line, 1, 4)) {
-        if (debug) cat("this is coastline\n")
+        oce.debug(debug, "this is coastline\n")
         return("coastline")
     }
     if ("# Station_Name," == substr(line, 1, 15)) {
-        if (debug) cat("this is sealevel\n")
+        oce.debug(debug, "this is sealevel\n")
         return("sealevel")
     }
     if ("Station_Name," == substr(line, 1, 13)) {
-        if (debug) cat("this is sealevel\n")
+        oce.debug(debug, "this is sealevel\n")
         return("sealevel")
     }
     if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) {
-        if (debug) cat("this is sealevel\n")
+        oce.debug(debug, "this is sealevel\n")
         return("sealevel")
     }
     if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line)) {
-        if (debug) cat("this is topo\n")
+        oce.debug(debug, "this is topo\n")
         return("topo")
     }
     if ("RBR TDR" == substr(line, 1, 7))  {
-        if (debug) cat("this is pt\n")
+        oce.debug(debug, "this is pt\n")
         return("pt")
     }
     if ("BOTTLE"  == substr(line, 1, 6))  {
-        if (debug) cat("this is section\n")
+        oce.debug(debug, "this is section\n")
         return("section")
     }
-    if (debug) cat("this is unknown\n")
+    oce.debug(debug, "this is unknown\n")
     return("unknown")
 }
 
@@ -519,53 +519,41 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
-        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        oce.debug(debug, "range=", paste(format(rr), collapse=" to "), "\n")
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="min")
-        if (debug) {
-            cat("z=")
-            str(z)
-        }
+        oce.debug(debug, "z=", str(z), "\n")
         if (missing(format)) format <- "%H:%M:%S"
     } else if (d < 60 * 30) {                  # under 30min
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
-        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        oce.debug(debug, "range=", paste(format(rr), collapse=" to "), "\n")
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="min")
-        if (debug) {
-            cat("(under 30 minutes) z=")
-            str(z)
-        }
+        oce.debug(debug, "under 30 minutes) z=", str(z), "\n")
         if (missing(format)) format <- "%H:%M"
     } else if (d < 60 * 60) {                  # under 1 hour
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
-        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        oce.debug(debug, "range=", paste(format(rr), collapse=" to "), "\n")
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
-        if (debug) {
-            cat("(under an hour) z=")
-            str(z)
-        }
+        oce.debug(debug, "(under an hour) z=", str(z), "\n")
         if (missing(format)) format <- "%H:%M"
     } else if (d < 60 * 60 * 2) {       # under 2 hours
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
         attr(rr, "tzone") <- attr(x, "tzone")
-        if (debug) cat("range=", paste(format(rr), collapse=" to "), "\n")
+        oce.debug(debug, "range=", paste(format(rr), collapse=" to "), "\n")
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
-        if (debug) {
-            cat("(under an hour) z=")
-            str(z)
-        }
+        oce.debug(debug, "(under an hour) z=", str(z), "\n")
         if (missing(format)) format <- "%H:%M"
     } else if (d < 60 * 60 * 6) {       # under 6 hours, use HM
         rr <- range
@@ -575,10 +563,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
         if (missing(format)) format <- "%H:%M"
-        if (debug) {
-            cat("(under 6 hours) z=")
-            str(z)
-        }
+        oce.debug(debug, "(under 6 hours) z=", str(z), "\n")
     } else if (d < 60 * 60 * 24) {        # under a day
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -587,7 +572,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="hour")
         if (missing(format)) format <- "%H:%M"
-        if (debug) cat("labels at", format(z), "\n")
+        oce.debug(debug, "labels at", format(z), "\n")
     } else if (d < 60 * 60 * 24 * 2) {        # under 2 days
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -596,7 +581,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 86400, "hour")
         z <- seq(t.start, t.end, by="hour")
         if (missing(format)) format <- "%H"
-        if (debug) cat("labels at", format(z), "\n")
+        oce.debug(debug, "labels at", format(z), "\n")
     } else if (d < 60 * 60 * 24 * 32) {        # under 2 weeks
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -605,7 +590,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         if (missing(format)) format <- "%b %d"
-        if (debug) cat("labels at", format(z), "\n")
+        oce.debug(debug, "labels at", format(z), "\n")
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
         rr <- range
         class(rr) <- c("POSIXt", "POSIXct")
@@ -614,7 +599,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="month")
         if (missing(format)) format <- "%b %d"
-        if (debug) cat("labels at", format(z), "\n")
+        oce.debug(debug, "labels at", format(z), "\n")
     } else { # FIXME: do this as above.  Then remove the junk near the top.
         class(z) <- c("POSIXt", "POSIXct")
         attr(z, "tzone") <- attr(x, "tzone")
@@ -629,7 +614,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         z <- as.POSIXct(zz)
         attr(z, "tzone") <- attr(x, "tzone")
         if (missing(format)) format <- "%Y"
-        if (debug) cat("labels at", format(z), "\n")
+        oce.debug(debug, "labels at", format(z), "\n")
     }
     if (!mat)
         z <- x[is.finite(x)]
