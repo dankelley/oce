@@ -268,8 +268,7 @@ tidem.astron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
     debug <- FALSE
-    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT"),
-                             units="days"))
+    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT", units="days"))
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
 
@@ -383,9 +382,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     }
     nc <- length(freq)
     ## Check Rayleigh criterion
-    interval <- as.numeric(difftime(max(sl$data$time,na.rm=TRUE),
-                                    min(sl$data$time,na.rm=TRUE),
-                                    units="hours"))
+    interval <- as.numeric(difftime(max(sl$data$time,na.rm=TRUE), min(sl$data$time,na.rm=TRUE), units="hours"))
     drop.term <- NULL
     for (i in 1:nc) {
         cc <- which(tc2$name == kmpr[i])

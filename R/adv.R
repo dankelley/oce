@@ -151,7 +151,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
                                  bcd2integer(buf[vsd.start[1:2]+4]), # min
                                  bcd2integer(buf[vsd.start[1:2]+5]), # sec
                                  tz=getOption("oce.tz"))
-        vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], "secs"))
+        vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], units="secs"))
         vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
         vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
         by <- by.time / vvd.dt
@@ -678,7 +678,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, coordinate.system="
                      number.of.samples=length(data$x),
                      number.of.beams=3,
                      orientation="upward", # FIXME: guessing on the orientation
-                     deltat=as.numeric(difftime(tt[2], tt[1], unit="secs")),
+                     deltat=as.numeric(difftime(tt[2], tt[1], units="secs")),
                      sampling.start=data$t[1],
                      oce.coordinate=coordinate.system,
                      coordinate.system=coordinate.system)

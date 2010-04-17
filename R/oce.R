@@ -283,6 +283,14 @@ magic <- function(file, debug=getOption("oce.debug"))
     bytes <- readBin(file, what="raw", n=2)
     oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
+    if (bytes[1] == 0x10 && bytes[2] == 0x02) {
+        ## 'ADPManual v710.pdf' p83
+        if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
+            oce.debug(debug, "this is adp/sontek (4 byte match)\n")
+        else
+            oce.debug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
+        return("adp/sontek")
+    }
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
         oce.debug(debug, "this is adp/rdi\n")
         return("adp/rdi")
@@ -633,7 +641,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         delta.t <- as.numeric(difftime(x[2], x[1], units="secs"))
         mtext(paste(format(time.range[1]), attr(time.range, "tzone"),
                     " to ", format(time.range[2]), attr(time.range, "tzone"),
-                    "by", delta.t, "s"),
+                    "by", format(delta.t, digits=3), "s"),
               side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
     }
     axis(side, at = z, labels = labels, ...)
