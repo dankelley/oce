@@ -635,13 +635,26 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     else if (identical(labels, FALSE))
         labels <- rep("", length(z))
     if (draw.time.range) {
-        time.range <- par("usr")[1:2]
+        time.range <- par("usr")[1:2]   # axis, not data
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")
+        time.range <-  as.POSIXlt(time.range)
+        tr1 <- format(time.range[1])
+        tr2 <- format(time.range[2])
+        ## abbreviate second time
+        if (time.range[1]$year == time.range[2]$year) {
+            tr2 <- substr(tr2, 6, nchar(tr2)) # remove the "YYYY-"
+            if (time.range[1]$mon == time.range[2]$mon) {
+                tr2 <- substr(tr2, 4, nchar(tr2)) # remove the "MM-"
+                if (time.range[1]$mday == time.range[2]$mday) {
+                    tr2 <- substr(tr2, 4, nchar(tr2)) # remove the "DD-"
+                }
+            }
+        }
         delta.t <- mean(diff(as.numeric(x)))
-        mtext(paste(format(time.range[1]), attr(time.range, "tzone"),
-                    " to ", format(time.range[2]), attr(time.range, "tzone"),
-                    "by", format(delta.t, digits=3), "s"),
+        ##mtext(paste(attr(time.range, "tzone"), tr1, "to", tr2,  "by", format(delta.t, digits=3), "s", sep=" "),
+        ##      side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
+        mtext(paste(tr1, "to", tr2,  "by", format(delta.t, digits=3), "s", sep=" "),
               side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
     }
     axis(side, at = z, labels = labels, ...)

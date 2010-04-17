@@ -825,14 +825,14 @@ summary.adp <- function(object, ...)
                              number.of.data.types=object$metadata$number.of.data.types,
                              beam.config=object$metadata$beam.config)
     } else if (inherits(object, "sontek")) {
-        res.specific <- NULL
+        res.specific <- list(cpu.software.ver.num=object$metadata$cpu.software.ver.num,
+                             dsp.software.ver.num=object$metadata$dsp.software.ver.num,
+                             board.rev=object$metadata$board.rev,
+                             adp.type=object$metadata$adp.type,
+                             slant.angle=object$metadata$slant.angle,
+                             sensor.orientation=object$metadata$sensor.orientation)
     } else if (inherits(object, "nortek")) {
-        res.specific <- list(cpu.software.ver.num=cpu.software.ver.num,
-                             dsp.software.ver.num=dsp.software.ver.num,
-                             board.rev=board.rev,
-                             adp.type=adp.type,
-                             slant.angle=slant.angle,
-                             sensor.orientation)
+        res.specific <- NULL
     } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
@@ -856,7 +856,7 @@ summary.adp <- function(object, ...)
                 instrument.type=object$metadata$instrument.type,
                 serial.number=object$metadata$serial.number,
                 start.time=object$data$ts$time[1],
-                delta.time=as.numeric(difftime(object$data$ts$time[2], object$data$ts$time[1], units="secs")),
+                delta.time=mean(diff(as.numeric(object$data$ts$time))),
                 end.time=object$data$ts$time[length(object$data$ts$time)],
                 sampling.start=object$metadata$sampling.start,
                 sampling.end=object$metadata$sampling.end,
@@ -1006,6 +1006,7 @@ plot.adp <- function(x,
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
+        oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         ##cat("which[w]=", which[w], "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
@@ -1032,6 +1033,7 @@ plot.adp <- function(x,
                 zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
             } else skip <- TRUE
             if (!skip) {
+                oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, " (just about to plot)\n")
                 imagep(x=tt, y=x$data$ss$distance, z=z,
                        zlim=zlim,
                        flip.y=flip.y,
@@ -1046,23 +1048,30 @@ plot.adp <- function(x,
                        mgp=mgp,
                        mar=mar,
                        cex=1,
+                       debug=debug-1,
                        ...)
-                draw.time.range <- TRUE
+                draw.time.range <- FALSE
             }
         } else if (which[w] %in% timeseries) { # time-series types
             par(mgp=mgp, mar=mar, cex=cex)
-            if (which[w] == 13) oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab=resizable.label("S"),       type='l',
-                     draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 14) oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l',
-                     draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 15) oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab=resizable.label("p"),       type='l',
-                     draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 16) oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab=resizable.label("heading"), type='l',
-                     draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 17) oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab=resizable.label("pitch"),   type='l',
-                     draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 18) oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab=resizable.label("roll"),    type='l',
-                     draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 13)
+                oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab=resizable.label("S"),       type='l',
+                            draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 14)
+                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l',
+                            draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 15)
+                oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab=resizable.label("p"),       type='l',
+                            draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 16)
+                oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab=resizable.label("heading"), type='l',
+                            draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 17)
+                oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab=resizable.label("pitch"),   type='l',
+                            draw.time.range=draw.time.range, adorn=adorn[w])
+            if (which[w] == 18)
+                oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab=resizable.label("roll"),    type='l',
+                            draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 19) {
                 if (x$metadata$number.of.beams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),

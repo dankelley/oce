@@ -77,7 +77,7 @@ imagep <- function(x, y, z,
         }
         box()
         if (axes) {
-            oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex)
+            oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex, draw.time.range=draw.time.range)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
     } else {
@@ -99,11 +99,6 @@ imagep <- function(x, y, z,
             axis(1, cex.axis=cex, cex.lab=cex)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
-    }
-    if (draw.time.range && x.is.time) {
-        time.range <- par("usr")[1:2]
-        class(time.range) <- c("POSIXt", "POSIXct")
-        attr(time.range, "tzone") <- attr(x, "tzone")
     }
     if (draw.contours && !missing(breaks))
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
