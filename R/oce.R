@@ -638,7 +638,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         time.range <- par("usr")[1:2]
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")
-        delta.t <- as.numeric(difftime(x[2], x[1], units="secs"))
+        delta.t <- mean(diff(as.numeric(x)))
         mtext(paste(format(time.range[1]), attr(time.range, "tzone"),
                     " to ", format(time.range[2]), attr(time.range, "tzone"),
                     "by", format(delta.t, digits=3), "s"),
