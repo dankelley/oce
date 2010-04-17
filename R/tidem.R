@@ -268,7 +268,7 @@ tidem.astron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
     debug <- FALSE
-    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT", units="days"))
+    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT"), units="days"))
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
 

@@ -351,7 +351,7 @@ read.adp <- function(file, from=0, to, by=1, type=c("rdi", "nortek", "sontek"), 
         read.adp.sontek(file=file, from=from, to=to, by=by, debug=debug-1, monitor=monitor, log.action=log.action, ...)
 }
 
-read.adp.sontek <- function(file, from=0, to, by=1, type=c("adp"), withHeader=FALSE, debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.sontek <- function(file, from=0, to, by=1, type=c("adp"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
 
@@ -404,7 +404,7 @@ read.adp.sontek <- function(file, from=0, to, by=1, type=c("adp"), withHeader=FA
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
         return(list(index=middle, time=t)) # index is within vsd
     }
-    oce.debug(debug, "read.adp.sontek(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,"withHeader=",withHeader,",...)\n")
+    oce.debug(debug, "read.adp.sontek(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,"...)\n")
     parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.header.length=80)
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -418,9 +418,6 @@ read.adp.sontek <- function(file, from=0, to, by=1, type=c("adp"), withHeader=FA
         on.exit(close(file))
     }
     type <- match.arg(type)
-    if (withHeader) {
-        stop("cannot read with header yet")
-    }
     seek(file, 0, "end")
     file.size <- seek(file, 0, "start")
     oce.debug(debug, "file", filename, "has", file.size, "bytes\n")
