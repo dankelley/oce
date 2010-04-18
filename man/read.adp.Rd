@@ -120,9 +120,8 @@ read.adp.sontek(file, from=0, to, by=1,
   \code{\link{adp.enu2other}} is provided, to convert from enu
   coordinates to another coordinate system. 
 
- Another convenience
-  function is \code{\link{adp.beam.attenuate}}, which performs a
-  correction for \eqn{r^2}{r^2} beam spreading.}
+ Another convenience function is \code{\link{adp.beam.attenuate}},
+which performs a correction for \eqn{r^2}{r^2} beam spreading.}
 
 \examples{
 \dontrun{
@@ -137,12 +136,23 @@ plot(d)
 }
 }
 
-\references{Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
-    format.} P/N 957-6156-00 (November 2007).
+\references{1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
+    format.} P/N 957-6156-00 (November 2007).  
+(Section 5.3 h details the binary format, e.g.
+the file should start with the byte \code{0x7f} repeated twice, 
+and each profile starts with the bytes
+\code{0x80}, followed by \code{0x00}, followed by the
+sequence number of the profile, represented as a little-endian
+two-byte short integer.  \code{read.adp.rdi()} uses
+these sequences to interpret data files.)
 
-Information on the Nortek profiler is available at
+2. Information on Nortek profiler is available at
 \url{http://www.nortekusa.com/}.  (One must join the site to see the
-manuals, so no citation is provided here.)}
+manuals.)
+
+3. Information about Sontek profilers is available at
+\url{http://www.sontek.com}.
+}
 
 \author{Dan Kelley}
 
