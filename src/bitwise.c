@@ -72,35 +72,81 @@ ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- 
   return(res);
 }
 
-SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2)
+SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
 {
-  int i, j, n, n_match;
+  int i, j, n, n_match, ds;
   double *resp;
   unsigned char *bufp, *m1p, *m2p;
   SEXP res;
   PROTECT(buf = AS_RAW(buf));
   PROTECT(m1 = AS_RAW(m1));
   PROTECT(m2 = AS_RAW(m2));
+  PROTECT(demand_sequential = AS_INTEGER(demand_sequential));
   bufp = RAW_POINTER(buf);
   m1p = RAW_POINTER(m1);
   m2p = RAW_POINTER(m2);
+  ds = *INTEGER(demand_sequential);
   n = LENGTH(buf);
   n_match = 0;
+  unsigned short seq_last=0, seq_this;
+  // Rprintf("demand_sequential=%d\n",ds);
+  // int nnn=10;
+
+  /* FIXME: the two passes repeat too much code, and should be done as a subroutine */
+
+  /*
+   * Pass 1: allocate vector
+   */
   for (i = 0; i < n - 1; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
-      n_match++;
-      ++i;			/* skip */
+      if (ds) {
+        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+        // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* Q: is second needed, given short type */
+          n_match++;
+          ++i;			/* skip */
+          seq_last = seq_this;
+          // if (nnn > 0) Rprintf("KEEP\n");
+        } else {
+           // if (nnn > 0) Rprintf("DISCARD\n");
+        }
+        //nnn--;
+      } else {
+        n_match++;
+        ++i;			/* skip */
+      }
     }
   }
   PROTECT(res = NEW_NUMERIC(n_match));
   resp = NUMERIC_POINTER(res);
   j = 0;
+  seq_last = 0;
+  /* 
+   * Pass 2: fill in the vector 
+   */
+  //nnn = 10;
+  // Rprintf("PASS 2\n");
   for (i = 0; i < n - 1; i++) {
-    if (j <= n_match && bufp[i] == *m1p && bufp[i + 1] == *m2p) {
-      resp[j++] = i + 1;	/* the 1 is to offset from C to R */
+    if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
+      if (ds) {
+        seq_this = (((short)bufp[i + 3]) << 8) | (short)bufp[i + 2];
+        // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+        if (seq_this == (seq_last + 1)) {
+          resp[j++] = i + 1;	/* the 1 is to offset from C to R */
+          ++i;			/* skip */
+          seq_last = seq_this;
+          // if (nnn > 0) Rprintf("KEEP\n");
+        } else {
+          // if (nnn > 0) Rprintf("DISCARD\n");
+        }
+        //nnn--;
+      } else {
+        resp[j++] = i + 1;	/* the 1 is to offset from C to R */
+        ++i;			/* skip */
+      }
     }
   }
-  UNPROTECT(4);
+  UNPROTECT(5);
   return(res);
 }
 
