@@ -112,7 +112,7 @@ summary.adp <- function(object, ...)
 
 print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("ADP summary\n", ...)
+    cat("ADP Summary\n", ...)
     cat("  Instrument type:            ", x$instrument.type, "\n", ...)
     cat("  Filename:                   ", x$filename, "\n", ...)
     cat("  Instrument serial number:   ", x$metadata$serial.number, "\n", ...)
@@ -139,7 +139,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
     if (x$instrument.type == "rdi") {
         cat("  RDI-specific\n", ...)
-        cat("    Transducer depth:           ", x$metadata$depth.of.transducer, "m\n", ...)
+        cat(sprintf("    Transducer depth mean:       %.2f m\n", x$metadata$depth.of.transducer), ...)
         cat("    System configuration:       ", x$metadata$system.configuration, "\n", ...)
         cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
         cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)

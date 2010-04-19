@@ -378,7 +378,7 @@ summary.sealevel <- function(object, ...)
 
 print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("\nStation\n", ...)
+    cat("\nSealevel Summary\n", ...)
     cat("  number:              ", x$number, "\n", ...)
     cat("  version:             ", x$version, "\n", ...)
     cat("  name:                ", x$name, "\n", ...)

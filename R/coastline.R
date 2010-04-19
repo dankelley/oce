@@ -151,8 +151,9 @@ summary.coastline <- function(object, ...)
 
 print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),...)
 {
-    cat("\nCoastline has", x$length, "points, of which", x$missing, "are NA (e.g. separating islands).\n")
-    cat("Statistics:\n")
+    cat("\nCoastline Summary\n")
+    cat("  Number of points:", x$length, ", of which", x$missing, "are NA (e.g. separating islands).\n")
+    cat("\nStatistics:\n")
     cat(show.fives(x), ...)
     cat("\n", ...)
     cat("Processing Log:\n", ...)
