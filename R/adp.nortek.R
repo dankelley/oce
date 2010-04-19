@@ -1,3 +1,5 @@
+# TODO: insert bisect code
+
 ### AQUADOPP
 ## notes for nortek:
 ## 1. "spare" at offset 74 (page 31) now seems to be salinity
