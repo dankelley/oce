@@ -312,9 +312,7 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
         if (monitor) cat("\nRead", to, "profiles\n")
         salinity <- rep(header$user$salinity, to)     # fake a time-series
         class(time) <- c("POSIXt", "POSIXct")
-        attr(time, "tzone") <- "UTC" # BUG should let user control this
-                                        # Q: does file hold the zone?
-
+        attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
         data <- list(ma=list(v=v, a=a, q=q),
                      ss=list(distance=seq(header$user$blanking.distance,
                              by=header$user$cell.size,
@@ -325,8 +323,7 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
                      salinity=header$user$salinity,
                      heading=heading,
                      pitch=pitch,
-                     roll=roll)
-                     )
+                     roll=roll))
 
     } else {
         data <- list(ma=NULL, ss=NULL, ts=NULL)

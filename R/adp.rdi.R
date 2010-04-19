@@ -251,7 +251,7 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
          ensemble.number.MSB=ensemble.number.MSB,
          bit.result=bit.result,
          speed.of.sound=speed.of.sound,
-         depth.of.transducer=depth.of.transducer,
+         depth.of.transducer=mean(depth.of.transducer,na.rm=TRUE),
          heading=heading,
          pitch=pitch,
          roll=roll,
@@ -375,28 +375,29 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     ## 64 is length of Variable Leader Data (Table 33 of rdi manual)
     items <- number.of.beams * number.of.cells
     v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
-    a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
-    q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
+    a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
+    q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
+    g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
     for (i in 1:profiles.to.read) {
         o <- profile.start[i] + 65
         oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
         if (buf[o] != 0x00) stop("first byte of velocity segment should be 0x00 but is ", buf[o], " at file position ", o)
         if (buf[o+1] != 0x01) stop("first byte of velocity segment should be 0x01 but is ", buf[o+1], " at file position ", o+1)
-        vv <- readBin(buf[o + seq(0, 2*items-1)], "integer", n=items, size=2, endian="little", signed=TRUE)
+        vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
         vv[vv==(-32768)] <- NA       # blank out bad data
         v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
-        o <- o + items * 2 + 2          # skip over the velo data, plus a checksum; FIXME: use the checksum
+        o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
         if (buf[o] != 0x00) stop("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
         if (buf[o+1] != 0x02) stop("first byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
-        qq <- matrix(buf[o + seq(0, items-1)], ncol=number.of.beams, byrow=TRUE)
+        q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
         o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
         if (buf[o] != 0x00) stop("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
         if (buf[o+1] != 0x03) stop("first byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
-        a[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=number.of.beams, byrow=TRUE)
+        a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
         o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
         if (buf[o] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
         if (buf[o+1] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
-        q[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=number.of.beams, byrow=TRUE)
+        g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
         if (monitor) {
             cat(".", ...)
             if (!(i %% 50)) cat(i, "\n", ...)
@@ -413,10 +414,12 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     profile.start4 <- sort(c(profile.start, profile.start + 1, profile.start + 2, profile.start + 3)) # lets us index four-byte chunks
     speed.of.sound <- 0.1 * readBin(buf[profile.start2 + 14], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
     depth.of.transducer <- 0.1 * readBin(buf[profile.start2 + 16], "integer", n=profiles.to.read, size=2, endian="little")
+    ##cat('depth.of.transducer=',depth.of.transducer,'\n')
+    ##stop()
     heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
     pitch <- 0.01 * readBin(buf[profile.start2 + 20], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
     roll <- 0.01 * readBin(buf[profile.start2 + 22], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    salinity <- 0.01 * readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+    salinity <- readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
     temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
     pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
     metadata <- header
@@ -428,6 +431,7 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     metadata$oce.beam.attenuated <- FALSE
     metadata$oce.coordinate <- header$coordinate.system
     metadata$number.of.beams <- header$number.of.beams
+    metadata$depth.of.transducer <- mean(depth.of.transducer, na.rm=TRUE)
     ## Transformation matrix
     tm.c <- if (metadata$beam.pattern == "convex") 1 else -1;
     tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
@@ -475,7 +479,7 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)
     class(time) <- c("POSIXt", "POSIXct")
     attr(time, "tzone") <- attr(header$time, "tzone")
-    data <- list(ma=list(v=v, a=a, q=q),
+    data <- list(ma=list(v=v, a=a, q=q, g=g),
                  ss=list(distance=seq(bin1.distance, by=cell.size, length.out=number.of.cells)),
                  ts=list(time=time,
                  pressure=pressure,

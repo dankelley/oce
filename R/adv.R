@@ -735,7 +735,7 @@ summary.adv <- function(object, ...)
 
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("ADV summary\n")
+    cat("ADV Summary\n")
     cat("  Instrument type:       ", x$instrument.type, "; serial number:", x$serial.number, "\n")
     cat("  Filename:              ", x$filename, "\n")
 ##    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
@@ -758,7 +758,7 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
         if (x$number.of.beams > 3)
             cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
     }
-    cat("  Statistics of subsamples:\n", ...)
+    cat("\nStatistics:\n", ...)
     cat(show.fives(x), ...)
     cat("\n", ...)
     cat("Processing Log:\n", ...)
