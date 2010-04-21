@@ -228,23 +228,24 @@ decode.header.nortek <- function(debug=getOption("oce.debug"), ...)
 
 read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolution"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
-    bisect.rdi.nortek <- function(t.find, add=0, debug=0) {
-        oce.debug(debug, "bisect.rdi.nortek(t.find=", format(t.find), ", add=", add, "\n")
+    bisect.adp.nortek <- function(t.find, add=0, debug=0) {
+        oce.debug(debug, "bisect.adp.nortek(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profile.start)
         lower <- 1
         upper <- len
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
-            middle <- floor((upper + lower) / 2)
-            year   <- 2000 + readBin(buf[profile.start[middle] +  4], what="integer", n=1, size=1, signed=FALSE)
-            month  <-        readBin(buf[profile.start[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
-            day    <-        readBin(buf[profile.start[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
-            hour   <-        readBin(buf[profile.start[middle] +  7], what="integer", n=1, size=1, signed=FALSE)
-            minute <-        readBin(buf[profile.start[middle] +  8], what="integer", n=1, size=1, signed=FALSE)
-            second <-        readBin(buf[profile.start[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
-            sec100 <-        readBin(buf[profile.start[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
-            t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=getOption("oce.tz")) # not sure on TZ
-            oce.debug(debug, "t=", format(t), "| y=", year, " m=", month, " d=", format(day, width=2), " h=", format(hour, width=2), " m=", format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass", format(pass, width=2), "/", passes, "| middle=", middle, "(", middle/upper*100, "%)\n")
+            middle  <- floor((upper + lower) / 2)
+            minute  <- bcd2integer(buf[profile.start[middle] + 4])
+            second  <- bcd2integer(buf[profile.start[middle] + 5])
+            day     <- bcd2integer(buf[profile.start[middle] + 6])
+            hour    <- bcd2integer(buf[profile.start[middle] + 7])
+            year    <- bcd2integer(buf[profile.start[middle] + 8])
+            year    <- year + ifelse(year >= 90, 1900, 2000)
+            month   <- bcd2integer(buf[profile.start[middle] + 9])
+            sec1000 <- bcd2integer(buf[profile.start[middle] + 10])
+            t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=getOption("oce.tz"))
+            oce.debug(debug, "t=", format(t), "| (from data", sprintf("%4d-%02d-%02d", year, month, day), sprintf("%02d:%02d:%02d.%03d", hour, minute, second, sec1000), ") | pass", format(pass, width=2), "/", passes, " | middle=", middle, "(", middle/upper*100, "%)\n")
             if (t.find < t)
                 upper <- middle
             else
@@ -255,13 +256,15 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
         middle <- middle + add          # may use add to extend before and after window
         if (middle < 1) middle <- 1
         if (middle > len) middle <- len
-        t <- ISOdatetime(2000+readBin(buf[profile.start[middle]+4],"integer",size=1,signed=FALSE,endian="little"),  # year
-                         as.integer(buf[profile.start[middle]+5]), # month
-                         as.integer(buf[profile.start[middle]+6]), # day
-                         as.integer(buf[profile.start[middle]+7]), # hour
-                         as.integer(buf[profile.start[middle]+8]), # min
-                         as.integer(buf[profile.start[middle]+9]), # sec FIXME: should use sec100 too
-                         tz=getOption("oce.tz")) # FIXME check on tz
+        minute  <- bcd2integer(buf[profile.start[middle] + 4])
+        second  <- bcd2integer(buf[profile.start[middle] + 5])
+        day     <- bcd2integer(buf[profile.start[middle] + 6])
+        hour    <- bcd2integer(buf[profile.start[middle] + 7])
+        year    <- bcd2integer(buf[profile.start[middle] + 8])
+        year    <- year + ifelse(year >= 90, 1900, 2000)
+        month   <- bcd2integer(buf[profile.start[middle] + 9])
+        sec1000 <- bcd2integer(buf[profile.start[middle] + 10])
+        t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=getOption("oce.tz"))
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
         return(list(index=middle, time=t))
     }
@@ -300,25 +303,59 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     oce.debug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oce.debug(debug, "profile.size=", profile.size, "\n")
 
+    profile.start <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
+    profile.start2 <- sort(c(profile.start, profile.start + 1))
 
-    profile.start <<- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
-    profile.start2 <<- sort(c(profile.start, profile.start + 1))
-
-    profile.start <- profile.start[1:100]
-
-    minute <- bcd2integer(buf[profile.start + 4])
-    second <- bcd2integer(buf[profile.start + 5])
-    day <- bcd2integer(buf[profile.start + 6])
-    hour <- bcd2integer(buf[profile.start + 7])
-    year <- bcd2integer(buf[profile.start + 8])
-    year <- year + ifelse(year >= 90, 1900, 2000)
-    month <- bcd2integer(buf[profile.start + 9])
-    sec1000 <- bcd2integer(buf[profile.start + 10])
-    dan.t <<- ISOdatetime(dan.year, dan.month, dan.day, dan.hour, dan.minute, dan.second + dan.sec1000/1000, tz=getOption("oce.tz"))
+    print(bisect.adp.nortek(as.POSIXct("2008-06-29 12:00:00", tz="UTC"), 0, debug - 1))
 
 
-    stop("testing")
+    if (inherits(from, "POSIXt")) {
+        if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+        from.pair <- bisect.adp.nortek(from, -1, debug-1)
+        from <- from.index <- from.pair$index
+        to.pair <- bisect.adp.nortek(to, 1, debug-1)
+        to <- to.index <- to.pair$index
+        oce.debug(debug, "  from=", format(from.pair$t), " yields profile.start[", from.index, "]\n",
+                  "  to  =", format(to.pair$t),   " yields profile.start[", to.index, "]\n",
+                  "  by=", by, "s\n",
+                  "profile.start[1:10]=", profile.start[1:10],"\n",
+                  "profile.start[",from.pair$index, "]=", profile.start[from.pair$index], "at time", format(from.pair$t), "\n",
+                  "profile.start[",  to.pair$index, "]=", profile.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
+        time1 <- ISOdatetime(2000+bcd2integer(buf[profile.start[1]+8]), # year FIXME: have to check if before 1990
+                             bcd2integer(buf[profile.start[1]+9]), # month
+                             bcd2integer(buf[profile.start[1]+6]), # day
+                             bcd2integer(buf[profile.start[1]+7]), # hour
+                             bcd2integer(buf[profile.start[1]+4]), # min
+                             bcd2integer(buf[profile.start[1]+5]), # sec
+                             tz=getOption("oce.tz"))
+        time2 <- ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
+                             bcd2integer(buf[profile.start[2]+9]), # month
+                             bcd2integer(buf[profile.start[2]+6]), # day
+                             bcd2integer(buf[profile.start[2]+7]), # hour
+                             bcd2integer(buf[profile.start[2]+4]), # min
+                             bcd2integer(buf[profile.start[2]+5]), # sec
+                             tz=getOption("oce.tz"))
+        dt <- as.numeric(difftime(time2, time1, units="secs"))
+        oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"(not interpreted yet)\n")
+        profile.start <- profile.start[profile.start[from.index] < profile.start & profile.start < profile.start[to.index]]
+        if (is.character(by))
+            by <- floor(0.5 + ctime.to.seconds(by) / dt)
+        oce.debug(debug, "by=",by,"profiles (after change)\n")
+        profile.start <- profile.start[seq(1, length(profile.start), by=by)]
+        oce.debug(debug, 'dt=',dt,'\n', 'by=',by, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
+    } else {
+        from.index <- from
+        to.index <- to
+        if (to.index < 1 + from.index) stop("need more separation between from and to")
+        if (is.character(by)) stop("cannot have string for 'by' if 'from' and 'to' are integers")
+        profile.start <- profile.start[seq(from=from, to=to, by=by)]
+        oce.debug(debug, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
+    }
+    profiles.to.read <- length(profile.start)
+    oce.debug(debug, "profiles.to.read=",profiles.to.read,"\n")
+    profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
 
+    stop("beatles")
 
     ## codes
     ## data
