@@ -1,4 +1,13 @@
-# TODO: insert bisect code here in adp.nortek.R
+peek.ahead <- function(file, bytes=2, debug=!TRUE)
+{
+    pos <- seek(file)
+    res <- readBin(file, "raw", n=bytes, size=1)
+    if (debug > 0) cat("peeked at", paste("0x", paste(res, sep=" "), sep=""), "\n")
+    seek(file, pos)
+    res
+}
+
+## TODO: insert bisect code here in adp.nortek.R
 
 ### AQUADOPP
 ## notes for nortek:
@@ -66,6 +75,151 @@ read.profile.aquadopp <- function(file, debug=getOption("oce.debug"))
          time=time, temperature=temperature, pressure=pressure)
 }
 
+decode.header <- function(debug=getOption("oce.debug"), ...)
+{
+    ## hardware [a5 05 X1 X2]  48 bytes, 2*(short word made from X1 and X2)
+    ## head     [a5 04 X1 X2] 224 bytes, 2*(short word made from X1 and X2)
+    ## user     [a5 00 X1 X2] 512 bytes, 2*(short word made from X1 and X2)
+    oce.debug(debug, "decode.header() entry; buf[1:20]=",buf[1:20],"\n")
+    sync.code <- as.raw(0xa5)
+    id.hardware.configuration <- as.raw(0x05)
+    id.head.configuration <- as.raw(0x04)
+    id.user.configuration <- as.raw(0x00)
+    header.length.hardware <- 48
+    header.length.head <- 224
+    header.length.user <- 512
+    hardware <- head <- user <- list()
+    o <- 0                              # offset
+    for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
+        if (buf[o+1] != sync.code)
+            stop("expecting sync code 0x", sync.code, " at byte ", seek(file), " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
+        oce.debug(debug, "buf[o+2]=", buf[o+2], "\n")
+        if (buf[o+2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
+            oce.debug(debug, "** scanning Hardware Configuration **\n")
+            hardware$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2, endian="little")
+            if (hardware$size != 24) stop("size of hardware header expected to be 24 two-byte words, but got ", hardware$size)
+            if (2 * hardware$size != header.length.hardware)
+                stop("size of hardware header expected to be ", header.length.hardware, "but got ", hardware$size)
+            oce.debug(debug, "  hardware$size=", hardware$size, "\n")
+            hardware$serial.number <- gsub(" *$", "", paste(readBin(buf[o+5:18], "character", n=14, size=1), collapse=""))
+            oce.debug(debug, "  hardware$serial.number", hardware$serial.number, "\n")
+            hardware$config <- readBin(buf[o+19:20], "raw", n=2, size=1)
+            oce.debug(debug, "  hardware$config:", hardware$config, "\n")
+            hardware$frequency <- readBin(buf[o+21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
+            oce.debug(debug, "  hardware$frequency:", hardware$frequency, "\n")
+            hardware$pic.version <- readBin(buf[o+23:24], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  hardware$pic.version=", hardware$pic.version, "\n")
+            hardware$hw.revision <- readBin(buf[o+25:26], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  hardware$hw.revision=", hardware$hw.revision, "\n")
+            hardware$rec.size <- readBin(buf[o+27:28], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  hardware$rec.size=", hardware$rec.size, "\n")
+            hardware$velocity.range <- readBin(buf[o+29:30], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  hardware$velocity.range=", hardware$velocity.range, "\n")
+            hardware$fw.version <- as.numeric(paste(readBin(buf[o+43:46], "character", n=4, size=1), collapse=""))
+            oce.debug(debug, "  hardware$fw.version=", hardware$fw.version, "\n")
+            o <- o + 2 * hardware$size
+        } else if (buf[o+2] == id.head.configuration) {     # see page 30 of System Integrator Guide
+            oce.debug(debug, "** scanning Head Configuration **\n")
+            ##buf <- readBin(file, "raw", header.length.head)
+            head$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2)
+            if (2 * head$size != header.length.head)
+                stop("size of head header expected to be ", header.length.head, "but got ", head$size)
+            oce.debug(debug, "  head$size=", head$size, "\n")
+            head$config <- byte2binary(buf[o+5:6], endian="little")
+            oce.debug(debug, "  head$config=", head$config, "\n")
+            head$config.pressure.sensor <- substr(head$config[1], 1, 1) == "1"
+            oce.debug(debug, "  head$config.pressure.sensor=", head$config.pressure.sensor,"\n")
+            head$config.magnetometer.sensor <- substr(head$config[1], 2, 2) == "1"
+            oce.debug(debug, "  head$config.magnetometer.sensor=", head$config.magnetometer.sensor,"\n")
+            head$config.tilt.sensor <- substr(head$config[1], 3, 3) == "1"
+            oce.debug(debug, "  head$config.tilt.sensor=", head$config.tilt.sensor,"\n")
+            head$orientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
+            oce.debug(debug, "  head$orientation=", head$orientation, "\n")
+            head$frequency <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oce.debug(debug, "  head$frequency=", head$frequency, "kHz\n")
+            head$head.type <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  head$head.type=", head$head.type, "\n")
+            head$head.serial.number <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
+            oce.debug(debug, "  head$head.serial.number=", head$head.serial.number, "\n")
+            ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 199;
+            ## the inference of beam.angles and transformation.matrix is drawn from other code.
+            head$beam.angles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
+            oce.debug(debug, "  head$beam.angles=", head$beam.angles, "(rad)\n")
+            ## Transformation matrix (before division by 4096)
+            ## FIXME: should we change the sign of rows 2 and 3 if pointed down??
+            head$transformation.matrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
+            if (debug > 0) {
+                oce.debug(debug, "head$transformation.matrix\n")
+                print(head$transformation.matrix);
+            }
+            head$number.of.beams <- readBin(buf[o+221:222], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  head$number.of.beams=", head$number.of.beams, "\n")
+            o <- o + 2*head$size
+        } else if (buf[o+2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
+            oce.debug(debug, "** scanning User Configuration **\n")
+            user$size <- readBin(buf[o+3:4], what="integer", n=1, size=2, endian="little")
+            if (2 * user$size != header.length.user)
+                stop("size of user header expected to be ", header.length.user, "but got ", user$size)
+            ##buf <- readBin(file, "raw", header.length.user)
+            user$blanking.distance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oce.debug(debug, "  user$blanking.distance=", user$blanking.distance, "??? expect 0.05 m\n")
+            user$measurement.interval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  user$measurement.interval=", user$measurement.interval, "\n")
+            user$T1 <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little")
+            user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little")
+            user$T3 <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
+            user$T4 <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little")
+            user$T5 <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little")
+            user$NPings <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little")
+            user$AvgInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
+            user$number.of.beams <- readBin(buf[o+19:20], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "\n user$T1=",user$T1,"user$T2=",user$T2,"user$T5=",user$T5,"user$NPings=",user$NPings,"user$AvgInterval=",user$AvgInterval,"user$number.of.beams=",user$number.of.beams,"\n")
+            user$mode <- byte2binary(buf[o+59:60], endian="little")
+            oce.debug(debug, "  user$mode: ", user$mode, "\n")
+            user$velocity.scale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.00001
+            oce.debug(debug, "  user$velocity.scale: ", user$velocity.scale, "\n")
+            tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
+            if (tmp.cs == 0) user$coordinate.system <- "enu" # page 31 of System Integrator Guide
+            else if (tmp.cs == 1) user$coordinate.system <- "xyz"
+            else if (tmp.cs == 2) user$coordinate.system <- "beam"
+            else stop("unknown coordinate system ", tmp.cs)
+            oce.debug(debug, "  user$coordinate.system: ", user$coordinate.system, "\n")
+            user$number.of.cells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "  user$number.of.cells: ", user$number.of.cells, "\n")
+            user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
+            if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
+                user$cell.size <- cos(25*pi/180) * user$hBinLength * 0.000052734375
+            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) { # FIXME: use head$frequency or hardware$frequency?
+                ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
+                user$cell.size <- cos(25*pi/180) * user$hBinLength *0.0000263671875
+            } else {
+                user$cell.size <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
+            }
+            oce.debug(debug, "cell.size=", user$cell.size, "m\n")
+            user$measurement.interval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
+            if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.0135*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                user$blanking.distance <- cos(25*pi/180) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.00675*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
+                user$blanking.distance <- cos(25*pi/180) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+            } else {
+                user$blanking.distance <- 0
+            }
+            oce.debug(debug, "blanking.distance=", user$blanking.distance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
+            oce.debug(debug, "measurement.interval=", user$measurement.interval, "\n")
+            user$deployment.name <- readBin(buf[o+41:46], "character")
+            user$sw.version <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "sw.version=", user$sw.version,"\n")
+            user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1
+            oce.debug(debug, "salinity=", user$salinity,"\n")
+        } else {
+            stop("cannot understand byte 0x", two.bytes[2], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
+        }
+    }
+    list(hardware=hardware, head=head, user=user)
+}
 read.header.nortek <- function(file, debug=getOption("oce.debug"), ...)
 {
     sync.code <- as.raw(0xa5)
@@ -201,6 +355,44 @@ read.header.nortek <- function(file, debug=getOption("oce.debug"), ...)
 
 read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolution"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
+    bisect.rdi.nortek <- function(t.find, add=0, debug=0) {
+        oce.debug(debug, "bisect.rdi.nortek(t.find=", format(t.find), ", add=", add, "\n")
+        len <- length(profile.start)
+        lower <- 1
+        upper <- len
+        passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
+        for (pass in 1:passes) {
+            middle <- floor((upper + lower) / 2)
+            year   <- 2000 + readBin(buf[profile.start[middle] +  4], what="integer", n=1, size=1, signed=FALSE)
+            month  <-        readBin(buf[profile.start[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
+            day    <-        readBin(buf[profile.start[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
+            hour   <-        readBin(buf[profile.start[middle] +  7], what="integer", n=1, size=1, signed=FALSE)
+            minute <-        readBin(buf[profile.start[middle] +  8], what="integer", n=1, size=1, signed=FALSE)
+            second <-        readBin(buf[profile.start[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
+            sec100 <-        readBin(buf[profile.start[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
+            t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=getOption("oce.tz")) # not sure on TZ
+            oce.debug(debug, "t=", format(t), "| y=", year, " m=", month, " d=", format(day, width=2), " h=", format(hour, width=2), " m=", format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass", format(pass, width=2), "/", passes, "| middle=", middle, "(", middle/upper*100, "%)\n")
+            if (t.find < t)
+                upper <- middle
+            else
+                lower <- middle
+            if (upper - lower < 2)
+                break
+        }
+        middle <- middle + add          # may use add to extend before and after window
+        if (middle < 1) middle <- 1
+        if (middle > len) middle <- len
+        t <- ISOdatetime(2000+readBin(buf[profile.start[middle]+4],"integer",size=1,signed=FALSE,endian="little"),  # year
+                         as.integer(buf[profile.start[middle]+5]), # month
+                         as.integer(buf[profile.start[middle]+6]), # day
+                         as.integer(buf[profile.start[middle]+7]), # hour
+                         as.integer(buf[profile.start[middle]+8]), # min
+                         as.integer(buf[profile.start[middle]+9]), # sec FIXME: should use sec100 too
+                         tz=getOption("oce.tz")) # FIXME check on tz
+        oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
+        return(list(index=middle, time=t))
+    }
+    oce.debug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
     from.keep <- from
     to.keep <- to
     sync.code <- as.raw(0xa5)
@@ -217,7 +409,28 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
         on.exit(close(file))
     }
     type <- match.arg(type)
-    header <- read.header.nortek(file)
+    ##header <- read.header.nortek(file)
+    seek(file, 0, "start")
+    header <- read.header.nortek(file, debug=debug-1)
+    header.old <<- header
+    seek(file, 0, "start")
+    number.of.beams <- header$number.of.beams
+    number.of.cells <- header$number.of.cells
+    bin1.distance <- header$bin1.distance
+    xmit.pulse.length <- header$xmit.pulse.length
+    cell.size <- header$cell.size
+    ## go to the end, so the next seek (to get to the data) reveals file length
+    seek(file, where=0, origin="end")
+    file.size <- seek(file, where=0)
+    oce.debug(debug, "file.size=", file.size, "\n")
+    buf <<- readBin(file, what="raw", n=file.size, size=1)
+    header.new <<- decode.header(debug=debug-1)
+    stop("testing")
+
+
+
+
+
 
     ## codes
     ## data
