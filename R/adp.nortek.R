@@ -81,7 +81,7 @@ read.profile.aquadopp <- function(file, debug=getOption("oce.debug"))
          time=time, temperature=temperature, pressure=pressure)
 }
 
-decode.header.nortek <- function(debug=getOption("oce.debug"), ...)
+decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "decode.header.nortek() entry; buf[1:20]=",buf[1:20],"\n")
     sync.code <- as.raw(0xa5)
@@ -292,7 +292,8 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     file.size <- seek(file, where=0)
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, size=1)
-    header <- decode.header.nortek(debug=debug-1)
+    dan.buf <<- buf
+    header <- decode.header.nortek(buf, debug=debug-1)
     number.of.beams <- header$number.of.beams
     number.of.cells <- header$number.of.cells
     bin1.distance <- header$bin1.distance
@@ -302,12 +303,11 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     profile.size <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oce.debug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oce.debug(debug, "profile.size=", profile.size, "\n")
-
     profile.start <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
-    profile.start2 <- sort(c(profile.start, profile.start + 1))
+
+    dan.profile.start <<- profile.start
 
     print(bisect.adp.nortek(as.POSIXct("2008-06-29 12:00:00", tz="UTC"), 0, debug - 1))
-
 
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
@@ -354,124 +354,57 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     profiles.to.read <- length(profile.start)
     oce.debug(debug, "profiles.to.read=",profiles.to.read,"\n")
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
-
-    stop("beatles")
-
-    ## codes
-    ## data
-    two.bytes <- peek.ahead(file, 2)
-    if (two.bytes[1] != sync.code)
-        stop("expecting sync code 0x", sync.code, " at byte ", seek(file)-1, " but got 0x", two.bytes[1], " instead (while looking for the start of a profile)")
-
-    id.profiler.data <- as.raw(0x21) # page 37 of System Integrator Guide
-    id.high.resolution.aquadopp.profile.data <- as.raw(0x2a) # page 38 of System Integrator Guide
-
-    if (two.bytes[2] == id.profiler.data) {
-        stop("cannot yet read 'Aquadopp Profiler Velocity Data")
-    } else if (two.bytes[2] == id.high.resolution.aquadopp.profile.data) {
-        ;
-    } else {
-        stop("id code: 0x", two.bytes[2], " ... not understood by this version of read.aquadopp()\n")
-    }
-
-    ## read profiles
-    header.length.hardware <- 48
-    header.length.head <- 224
-    header.length.user <- 512
-
-    data.start <- header.length.hardware + header.length.head + header.length.user
-    bytes.per.profile <- 54 + header$user$number.of.cells * header$head$number.of.beams * (2+1+1) + 2
-
-    ## Measure file length to determine number of profiles, using floor() in case there is extra stuff at end
-    seek(file, where=0, origin="end")
-    file.size <- seek(file)
-    profiles.in.file <- floor((file.size - data.start) / bytes.per.profile)
-    ## Possibly interpret from and to as starting and ending times.
-    seek(file, where=data.start, origin="start")
-    t1 <- read.profile.aquadopp(file,debug=debug)$time
-    t2 <- read.profile.aquadopp(file,debug=debug)$time
-    dt <- as.numeric(difftime(t2, t1, units="sec"))
-    sampling.start <- t1
-    sampling.end <- sampling.start + profiles.in.file * as.numeric(difftime(t2, t1, units="sec"))
-
-    if (!missing(from) && inherits(from, "POSIXt")) {
-        from <- max(as.numeric(difftime(from, t1, units="sec")) / dt, 0)
-        if (from < 0) warning("\"from\"=", format(from), " ignored, since it predates the first datum at ", format(t1))
-        oce.debug(debug, "from=",from,"\n")
-    }
-    if (!missing(by) && is.character(by)) {
-        if (length(grep(":", by)) > 0) {
-            parts <- as.numeric(strsplit(by, ":")[[1]])
-            if (length(parts == 2)) by.time <- parts[1] * 60 + parts[2]
-            else if (length(parts == 3)) by.time <- parts[1] * 3600 + parts[2] * 60 + parts[3]
-            else stop("malformed by time", by)
-            by <- by.time / dt
-        } else {
-            warning("converting \"by\" from string to numeric.  (Use e.g. \"00:10\" to indicate 10s)")
-            by <- as.numeric(by)
+    number.of.cells <- header$user$number.of.cells
+    number.of.beams <- header$head$number.of.beams
+    v <- array(double(), dim=c(profiles.to.read, number.of.cells,  number.of.beams))
+    a <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # echo amplitude
+    q <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # correlation
+    oce.debug(debug, "number.of.cells=", number.of.cells,"\n")
+    oce.debug(debug, "number.of.beams=", number.of.beams,"\n")
+    items <-  number.of.cells *  number.of.beams
+    for (i in 1:profiles.to.read) {
+        o <- profile.start[i] + 1
+        oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
+        vv <- readBin(buf[o + 4 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
+        v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
+        ##o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
+        ##if (buf[o] != 0x00) stop("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
+        ##if (buf[o+1] != 0x02) stop("first byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+        ##q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
+        ##o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+        ##if (buf[o] != 0x00) stop("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
+        ##if (buf[o+1] != 0x03) stop("first byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
+        ##a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
+        ##o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+        ##if (buf[o] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
+        ##if (buf[o+1] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
+        ##g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
+        if (monitor) {
+            cat(".", ...)
+            if (!(i %% 50)) cat(i, "\n", ...)
         }
     }
-    if (!missing(from) && inherits(to, "POSIXt")) {
-        to <- 1 + (as.numeric(difftime(to, t1, units="sec")) / dt - from) / by
-        if (to < 0) stop("cannot have fewer than zero points.  You gave from = ", from.keep, " and to = ", to.keep)
-    }
 
-    if (from > 0)
-        seek(file, data.start + from * bytes.per.profile)
-    else
-        seek(file, data.start)
-    time <- pressure <- temperature <- heading <- pitch <- roll <- NULL
-    if (by < 1) stop("the value of \"by\" must be an integer of 1 or larger")
-    if (missing(to)) {
-        to <- profiles.in.file
-    }
-    if (to > 0) {
-        v <- array(dim=c(to, header$user$number.of.cells, header$head$number.of.beams))
-        a <- array(dim=c(to, header$user$number.of.cells, header$head$number.of.beams))
-        q <- array(dim=c(to, header$user$number.of.cells, header$head$number.of.beams))
-        for (i in 1:to) {
-            seek(file, data.start + (from + by*(i-1)) * bytes.per.profile)
-            p <- read.profile.aquadopp(file,debug=debug)
-            oce.debug(debug, "successfully read profile", i, "at time ", format(p$time), "\n")
-            for (beam in 1:header$head$number.of.beams) {
-                v[i,,beam] <- p$v[,beam]
-                a[i,,beam] <- p$a[,beam]
-                q[i,,beam] <- p$q[,beam]
-            }
-            time <- c(time, p$time)
-            temperature <- c(temperature, p$temperature)
-            pressure <- c(pressure, p$pressure)
-            heading <- c(heading, p$heading)
-            pitch <- c(pitch, p$pitch)
-            roll <- c(roll, p$roll)
-            if (monitor) {
-                cat(".")
-                if (!(i %% 50)) cat(i, "\n")
-            }
-        }
-        if (monitor) cat("\nRead", to, "profiles\n")
-        salinity <- rep(header$user$salinity, to)     # fake a time-series
-        class(time) <- c("POSIXt", "POSIXct")
-        attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
-        data <- list(ma=list(v=v, a=a, q=q),
-                     ss=list(distance=seq(header$user$blanking.distance,
-                             by=header$user$cell.size,
-                             length.out=header$user$number.of.cells)),
-                     ts=list(time=time,
-                     pressure=pressure,
-                     temperature=temperature,
-                     salinity=header$user$salinity,
-                     heading=heading,
-                     pitch=pitch,
-                     roll=roll))
+    dan.v <<- v
 
-    } else {
-        data <- list(ma=NULL, ss=NULL, ts=NULL)
-    }
+    salinity <- rep(header$user$salinity, to)     # fake a time-series
+    class(time) <- c("POSIXt", "POSIXct")
+    attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
+    data <- list(ma=list(v=v, a=a, q=q),
+                 ss=list(distance=seq(header$user$blanking.distance,
+                         by=header$user$cell.size,
+                         length.out=header$user$number.of.cells)),
+                 ts=list(time=time,
+                 pressure=0,            #FIXME
+                 temperature=0,         #FIXME
+                 salinity=0,            #FIXME
+                 heading=0,             #FIXME
+                 pitch=0,               #FIXME
+                 roll=0))               #FIXME
     metadata <- list(instrument.type="aquadopp high resolution",
                      filename=filename,
-                     sampling.start=sampling.start,
-                     sampling.end=sampling.end,
+                     sampling.start=0,  #FIXME
+                     sampling.end=0,    #FIXME
                      size=header$head$size,
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
                      serial.number=header$hardware$serial.number,
