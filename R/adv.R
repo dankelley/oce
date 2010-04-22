@@ -42,8 +42,15 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
     type <- match.arg(type)
     if (!withHeader) stop("withHeader must be TRUE")
     oce.debug(debug, "  read.adv.nortek() about to read header\n")
-    header <- read.header.nortek(file, debug=debug-1)
     oce.debug(debug, "  read.adv.nortek() finished reading header\n")
+    # find file length
+    seek(file, 0, "end")
+    file.size <- seek(file, 0, "start")
+    oce.debug(debug, "  file.size=", file.size, "\n")
+    buf <- readBin(file, "raw", file.size)
+
+    header <- decode.header.nortek(buf, debug=debug-1)
+
     metadata <- list(instrument.type="vector",
                      filename=filename,
                      sampling.start=if (missing(sampling.start)) NA else sampling.start,
@@ -78,12 +85,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
 
-    # find file length
-    seek(file, 0, "end")
-    file.size <- seek(file, 0, "start")
-    oce.debug(debug, "  file.size=", file.size, "\n")
-
-    buf <- readBin(file, "raw", file.size)
 
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
     bisect.nortek.vector.sd <- function(t.find, add=0, debug=0) { # t.find=time add=offset debug=debug

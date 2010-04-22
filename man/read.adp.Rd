@@ -100,6 +100,18 @@ read.adp.sontek(file, from=0, to, by=1,
   used in other steps in processing.  For information on data stored in
   the object, see \dQuote{Details}.}
 
+\section{Implementation notes}{
+  \itemize{
+
+    \item \strong{Nortek Aquadopp-HR files.} Page 38 of the Nortek
+    System Integrator Guide says to offset 53 bytes in profile records
+    to get the first velocity, but experiments on files drived from a
+    Dalhousie University profiler require an offset of 54 to recover
+    data that match the manufacturer's (*.v1, *.v2, *.v3) files.  Also,
+    the beam angle is hard-wired in the code, since it does not seem
+    to be in the documented parts of the headers.
+  }
+}
 
 \seealso{The generic function \code{\link{read.oce}} provides an
   alternative to this. An \code{adp} object may be summarized with
