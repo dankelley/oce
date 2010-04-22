@@ -92,7 +92,6 @@ export(
        read.ctd,
        read.ctd.sbe,
        read.ctd.woce,
-       read.header.nortek,
        read.lobo,
        read.topo,
        read.oce,

@@ -233,7 +233,6 @@ plot.adp <- function(x,
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
-        ##cat("which[w]=", which[w], "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
             if (which[w] %in% 1:(0+x$metadata$number.of.beams)) {    #velocity

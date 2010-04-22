@@ -3,17 +3,9 @@
 ## head     [a5 04 X1 X2] 224 bytes, 2*(short word made from X1 and X2)
 ## user     [a5 00 X1 X2] 512 bytes, 2*(short word made from X1 and X2)
 ## profiles, each starting with a5 2a [aquadoppHR] or ?? [other]
-
-peek.ahead <- function(file, bytes=2, debug=!TRUE)
-{
-    pos <- seek(file)
-    res <- readBin(file, "raw", n=bytes, size=1)
-    if (debug > 0) cat("peeked at", paste("0x", paste(res, sep=" "), sep=""), "\n")
-    seek(file, pos)
-    res
-}
-
-## TODO: insert bisect code here in adp.nortek.R
+## DOCUMENTATION BUGS
+## 1. p38 System Integrator Guide says to offset 53 bytes for velocity, but I have to offset 54 to recover data
+#     that match the manufacturer's (*.v1, *.v2, *.v3) files.
 
 ### AQUADOPP
 ## notes for nortek:
@@ -26,60 +18,6 @@ peek.ahead <- function(file, bytes=2, debug=!TRUE)
 ##    the beam angles in the 'head' configuration section.
 ## 7. the C code suggests the velocity scale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
-
-read.profile.aquadopp <- function(file, debug=getOption("oce.debug"))
-{
-    sync.code <- as.raw(0xa5)
-    id.high.resolution.aquadopp.profile.data <- as.raw(0x2a) # page 38 of System Integrator Guide
-    start <- readBin(file, "raw", 54) # see page 38 of System Integrator Guide (was 54 until 2009-07-01)
-    oce.debug(debug, "first 4 bytes of AquaDopp profile data:", paste(start[1:4], collapse=" "), "\n")
-    time <- sontek.time(start[5:12])
-    oce.debug(debug, "time=", format(time), "\n")
-    sound.speed <-  readBin(start[17:18], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.1
-    oce.debug(debug, "sound.speed=",sound.speed,"\n")
-    heading <-  readBin(start[19:20], "integer", n=1, size=2, endian="little") * 0.1
-    oce.debug(debug, "heading=",heading,"\n")
-    pitch <-  readBin(start[21:22], "integer", n=1, size=2, endian="little") * 0.1
-    oce.debug(debug, "pitch=",pitch,"\n")
-    roll <-  readBin(start[23:24], "integer", n=1, size=2, endian="little") * 0.1
-    oce.debug(debug, "roll=",roll,"\n")
-    pressureMSB <-  start[25]
-    pressureLSW <-  readBin(start[27:28], "integer", n=1, size=2, endian="little")
-    pressure <- (as.integer(pressureMSB)*65536 + pressureLSW) * 0.001
-    oce.debug(debug, "pressure=",pressure,"\n")
-    temperature <-  readBin(start[29:30], "integer", n=1, size=2, endian="little") * 0.01
-    oce.debug(debug, "temperature=", temperature, "\n")
-    beams <-  as.integer(start[35])
-    oce.debug(debug, "beams=", beams, "\n")
-    cells <-  as.integer(start[36])
-    oce.debug(debug, "cells=", cells, "\n")
-
-    ##fill <- if (cells %% 2) 1 else 0
-    data.bytes <- beams * cells * (2 + 1 + 1) + 2
-
-    ## The System Integrator Guide is contradictory on the matter of a fill byte.  On page 38
-    ## it says it is needed.  But on page 57, the data declaration for cFill is commented out.
-    ## I find that if I retain this skipping of a byte, then I cannot read one
-    ## of the SLEIWEX files (sl08AQ01.prf), so I am hiding this in a FALSE block.
-    if (FALSE)
-        if (fill) readBin(file, "raw", n=1)
-
-    ## bug: should perhaps be using velocity.scale instead of /1000
-    v <- matrix(readBin(file, "integer", n=beams*cells, size=2, endian="little"), ncol=beams, byrow=FALSE) / 1000
-    a <- matrix(readBin(file, "integer", n=beams*cells, size=1, signed=FALSE), ncol=beams, byrow=FALSE)
-    q <- matrix(readBin(file, "integer", n=beams*cells, size=1, signed=FALSE), ncol=beams, byrow=FALSE)
-
-    checksum <- readBin(file, "raw", n=2, size=1)
-
-    two.bytes <- peek.ahead(file, 2)
-    if (two.bytes[1] != sync.code) stop("expecting sync code 0x", sync.code, " but got 0x", two.bytes[1], " and 0x", two.bytes[2])
-    if (two.bytes[2] != id.high.resolution.aquadopp.profile.data) stop("expecting id code 0x", id.high.resolution.aquadopp.profile.data, " but got 0x", two.bytes[2], " (while checking for next profile)")
-
-    ### ready for another profile
-    list(v=v, a=a, q=q,
-         heading=heading, pitch=pitch, roll=roll,
-         time=time, temperature=temperature, pressure=pressure)
-}
 
 decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
 {
@@ -145,13 +83,15 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             oce.debug(debug, "head$head.type=", head$head.type, "\n")
             head$head.serial.number <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
             oce.debug(debug, "head$head.serial.number=", head$head.serial.number, "\n")
-            ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 199;
+            ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 119;
             ## the inference of beam.angles and transformation.matrix is drawn from other code.
+            ## Since I don't trust any of this, I hard-wire beam angle in at the end.
             head$beam.angles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
-            oce.debug(debug, "head$beam.angles=", head$beam.angles, "(rad)\n")
+            oce.debug(debug, "head$beam.angles=", head$beam.angles*180/pi, "(deg)\n")
             ## Transformation matrix (before division by 4096)
             ## FIXME: should we change the sign of rows 2 and 3 if pointed down??
-            head$transformation.matrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little") , nrow=3, byrow=TRUE) / 4096
+            head$transformation.matrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little") ,
+                                                 nrow=3, byrow=TRUE) / 4096
             oce.debug(debug, "head$transformation.matrix\n")
             oce.debug(debug, format(head$transformation.matrix[1,], width=15), "\n")
             oce.debug(debug, format(head$transformation.matrix[2,], width=15), "\n")
@@ -220,7 +160,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             oce.debug(debug, "salinity=", user$salinity,"\n")
             o <- o + 2 * user$size
         } else {
-            stop("cannot understand byte 0x", two.bytes[2], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
+            stop("cannot understand byte 0x", buf[o+1], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
         }
     }
     list(hardware=hardware, head=head, user=user, offset=o+1)
@@ -292,23 +232,16 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     file.size <- seek(file, where=0)
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, size=1)
-    dan.buf <<- buf
     header <- decode.header.nortek(buf, debug=debug-1)
     number.of.beams <- header$number.of.beams
     number.of.cells <- header$number.of.cells
     bin1.distance <- header$bin1.distance
     xmit.pulse.length <- header$xmit.pulse.length
     cell.size <- header$cell.size
-
-    profile.size <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
+    profiles.in.file <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oce.debug(debug, "profile data at buf[", header$offset, "] et seq.\n")
-    oce.debug(debug, "profile.size=", profile.size, "\n")
+    oce.debug(debug, "profiles.in.file=", profiles.in.file, "\n")
     profile.start <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
-
-    dan.profile.start <<- profile.start
-
-    print(bisect.adp.nortek(as.POSIXct("2008-06-29 12:00:00", tz="UTC"), 0, debug - 1))
-
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
         from.pair <- bisect.adp.nortek(from, -1, debug-1)
@@ -356,51 +289,55 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
     number.of.cells <- header$user$number.of.cells
     number.of.beams <- header$head$number.of.beams
-    v <- array(double(), dim=c(profiles.to.read, number.of.cells,  number.of.beams))
-    a <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # echo amplitude
-    q <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # correlation
     oce.debug(debug, "number.of.cells=", number.of.cells,"\n")
     oce.debug(debug, "number.of.beams=", number.of.beams,"\n")
     items <-  number.of.cells *  number.of.beams
+    time <- ISOdatetime(2000+bcd2integer(buf[profile.start+8]), # year FIXME: have to check if before 1990
+                        bcd2integer(buf[profile.start+9]), # month
+                        bcd2integer(buf[profile.start+6]), # day
+                        bcd2integer(buf[profile.start+7]), # hour
+                        bcd2integer(buf[profile.start+4]), # min
+                        bcd2integer(buf[profile.start+5]), # sec
+                        tz=getOption("oce.tz"))
+    class(time) <- c("POSIXt", "POSIXct") # FIXME do we need this?
+    attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
+    heading <- 0.1 * readBin(buf[profile.start2 + 18], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+    pitch <- 0.1 * readBin(buf[profile.start2 + 20], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+    roll <- 0.1 * readBin(buf[profile.start2 + 22], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+    pressure.MSB <- readBin(buf[profile.start + 24], what="integer", n=profiles.to.read, size=1, endian="little", signed=FALSE)
+    oce.debug(debug, "pressure.MSB=", pressure.MSB, "\n")
+    pressure.LSW <- readBin(buf[profile.start2 + 26], what="integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
+    oce.debug(debug, "pressure.LSW=", pressure.LSW, "\n")
+    pressure <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
+    temperature <- 0.01 * readBin(buf[profile.start2 + 28], what="integer", n=profiles.to.read, size=2, endian="little")
+    v <- array(double(), dim=c(profiles.to.read, number.of.cells,  number.of.beams))
+    a <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # echo amplitude
+    q <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # correlation
     for (i in 1:profiles.to.read) {
-        o <- profile.start[i] + 1
-        oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        vv <- readBin(buf[o + 4 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
-        v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
-        ##o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
-        ##if (buf[o] != 0x00) stop("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
-        ##if (buf[o+1] != 0x02) stop("first byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
-        ##q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
-        ##o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-        ##if (buf[o] != 0x00) stop("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
-        ##if (buf[o+1] != 0x03) stop("first byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
-        ##a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
-        ##o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-        ##if (buf[o] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
-        ##if (buf[o+1] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
-        ##g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
+        o <- profile.start[i] + 54 ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
+        ##oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
+        v[i,,] <- matrix(0.001 * readBin(buf[o + seq(0, 2*items-1)], "integer", n=items, size=2, endian="little", signed=TRUE),
+                         ncol=number.of.beams, byrow=FALSE)
+        o <- o + items * 2
+        a[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=items, byrow=TRUE)
+        o <- o + items
+        q[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=items, byrow=TRUE) # FIXME: this is correlation, not quality
         if (monitor) {
             cat(".", ...)
             if (!(i %% 50)) cat(i, "\n", ...)
         }
     }
-
-    dan.v <<- v
-
-    salinity <- rep(header$user$salinity, to)     # fake a time-series
-    class(time) <- c("POSIXt", "POSIXct")
-    attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
+    if (monitor) cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n", ...)
     data <- list(ma=list(v=v, a=a, q=q),
                  ss=list(distance=seq(header$user$blanking.distance,
                          by=header$user$cell.size,
                          length.out=header$user$number.of.cells)),
                  ts=list(time=time,
-                 pressure=0,            #FIXME
-                 temperature=0,         #FIXME
-                 salinity=0,            #FIXME
-                 heading=0,             #FIXME
-                 pitch=0,               #FIXME
-                 roll=0))               #FIXME
+                 pressure=pressure,
+                 temperature=temperature,
+                 heading=heading,
+                 pitch=pitch,
+                 roll=roll))
     metadata <- list(instrument.type="aquadopp high resolution",
                      filename=filename,
                      sampling.start=0,  #FIXME
