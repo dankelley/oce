@@ -28,10 +28,8 @@ plot(adp.enu, which=13:18)
   a large file that is not provided with the package).  Note the
   use of UTC, to match how the instrument was set up.
 \preformatted{
-adp <- read.oce("~/SL08F001.000", 
-                from=as.POSIXct("2008-06-26", tz="UTC"),
-                to=as.POSIXct("2008-06-27", tz="UTC"), 
-                by="30:00")
+adp <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
+  from=as.POSIXct("2008-06-26", tz="UTC"), to=as.POSIXct("2008-06-27", tz="UTC"), by="30:00")
 }
 }
 

@@ -475,7 +475,7 @@ oce.colors.palette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, ...)
+oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, ...)
 {
     debug <- !TRUE
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
@@ -642,13 +642,14 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         time.range <-  as.POSIXlt(time.range)
         tr1 <- format(time.range[1])
         tr2 <- format(time.range[2])
-        ## abbreviate second time
-        if (time.range[1]$year == time.range[2]$year) {
-            tr2 <- substr(tr2, 6, nchar(tr2)) # remove the "YYYY-"
-            if (time.range[1]$mon == time.range[2]$mon) {
-                tr2 <- substr(tr2, 4, nchar(tr2)) # remove the "MM-"
-                if (time.range[1]$mday == time.range[2]$mday) {
-                    tr2 <- substr(tr2, 4, nchar(tr2)) # remove the "DD-"
+        if (abbreviate.time.range) {
+            if (time.range[1]$year == time.range[2]$year) {
+                tr2 <- substr(tr2, 6, nchar(tr2)) # remove the "YYYY-"
+                if (time.range[1]$mon == time.range[2]$mon) {
+                    tr2 <- substr(tr2, 4, nchar(tr2)) # remove the "MM-"
+                    if (time.range[1]$mday == time.range[2]$mday) {
+                        tr2 <- substr(tr2, 4, nchar(tr2)) # remove the "DD-"
+                    }
                 }
             }
         }

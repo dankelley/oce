@@ -6,7 +6,7 @@
 
 \description{Modified version of axis.POSIXct}
 
-\usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE, draw.time.range=TRUE, ...)}
+\usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, ...)}
 
 \arguments{
   \item{side}{as for \code{\link{axis.POSIXct}}.}
@@ -14,7 +14,11 @@
   \item{at}{as for \code{\link{axis.POSIXct}}.}
   \item{format}{as for \code{\link{axis.POSIXct}}.}
   \item{labels}{as for \code{\link{axis.POSIXct}}.}
-  \item{draw.time.range}{boolean, \code{TRUE} to draw a time range on the opposite side of the plot.}
+  \item{draw.time.range}{boolean, \code{TRUE} to draw a time range on
+    the opposite side of the plot.}
+  \item{abbreviate.time.range}{boolean, \code{TRUE} to abbreviate the
+    second number in the time range, e.g. dropping the year if it is the
+    same in the first number.}
   \item{\dots}{as for \code{\link{axis.POSIXct}}.}
 }
 

@@ -5,7 +5,7 @@
 
 \description{A sample pT file, created by 
 \preformatted{
-pt <- read.oce("sl08_011855.dat", from="start", to="end", by=600)
+pt <- read.oce("sl08_011855.dat", by=600)
 save(pt, file="oce/data/pt.rda")
 } (which uses a file not supplied with this package).
 }

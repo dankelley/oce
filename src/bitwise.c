@@ -117,13 +117,13 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
       }
     }
   }
+  /* 
+   * Pass 2: fill in the vector 
+   */
   PROTECT(res = NEW_NUMERIC(n_match));
   resp = NUMERIC_POINTER(res);
   j = 0;
   seq_last = 0;
-  /* 
-   * Pass 2: fill in the vector 
-   */
   //nnn = 10;
   // Rprintf("PASS 2\n");
   for (i = 0; i < n - 1; i++) {
@@ -131,7 +131,7 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
       if (ds) {
         seq_this = (((short)bufp[i + 3]) << 8) | (short)bufp[i + 2];
         // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-        if (seq_this == (seq_last + 1)) {
+        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* Q: is second needed, given short type */
           resp[j++] = i + 1;	/* the 1 is to offset from C to R */
           ++i;			/* skip */
           seq_last = seq_this;
