@@ -86,8 +86,9 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 119;
             ## the inference of beam.angles and transformation.matrix is drawn from other code.
             ## Since I don't trust any of this, I hard-wire beam angle in at the end.
-            head$beam.angles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE) / 32767 * pi
-            oce.debug(debug, "head$beam.angles=", head$beam.angles*180/pi, "(deg)\n")
+            head$beam.angles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE)
+
+            oce.debug(debug, "head$beam.angles=", head$beam.angles, "(deg)\n")
             ## Transformation matrix (before division by 4096)
             ## FIXME: should we change the sign of rows 2 and 3 if pointed down??
             head$transformation.matrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little") ,
@@ -238,10 +239,33 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     bin1.distance <- header$bin1.distance
     xmit.pulse.length <- header$xmit.pulse.length
     cell.size <- header$cell.size
-    profiles.in.file <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
+    ##profiles.in.file <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oce.debug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     oce.debug(debug, "profiles.in.file=", profiles.in.file, "\n")
     profile.start <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
+    profiles.in.file <- length(profile.start)
+    sampling.start <- ISOdatetime(2000+bcd2integer(buf[profile.start[1]+8]), # year FIXME: have to check if before 1990
+                                  bcd2integer(buf[profile.start[1]+9]), # month
+                                  bcd2integer(buf[profile.start[1]+6]), # day
+                                  bcd2integer(buf[profile.start[1]+7]), # hour
+                                  bcd2integer(buf[profile.start[1]+4]), # min
+                                  bcd2integer(buf[profile.start[1]+5]), # sec
+                                  tz=getOption("oce.tz"))
+    sampling.end <- ISOdatetime(2000+bcd2integer(buf[profile.start[profiles.in.file]+8]), # year FIXME: have to check if before 1990
+                                bcd2integer(buf[profile.start[profiles.in.file]+9]), # month
+                                bcd2integer(buf[profile.start[profiles.in.file]+6]), # day
+                                bcd2integer(buf[profile.start[profiles.in.file]+7]), # hour
+                                bcd2integer(buf[profile.start[profiles.in.file]+4]), # min
+                                bcd2integer(buf[profile.start[profiles.in.file]+5]), # sec
+                                tz=getOption("oce.tz"))
+    sampling.deltat <- as.numeric(
+                                  ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
+                                  bcd2integer(buf[profile.start[2]+9]), # month
+                                  bcd2integer(buf[profile.start[2]+6]), # day
+                                  bcd2integer(buf[profile.start[2]+7]), # hour
+                                  bcd2integer(buf[profile.start[2]+4]), # min
+                                  bcd2integer(buf[profile.start[2]+5]), # sec
+                                  tz=getOption("oce.tz"))) - as.numeric(sampling.start)
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
         from.pair <- bisect.adp.nortek(from, -1, debug-1)
@@ -305,9 +329,7 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
     pitch <- 0.1 * readBin(buf[profile.start2 + 20], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
     roll <- 0.1 * readBin(buf[profile.start2 + 22], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
     pressure.MSB <- readBin(buf[profile.start + 24], what="integer", n=profiles.to.read, size=1, endian="little", signed=FALSE)
-    oce.debug(debug, "pressure.MSB=", pressure.MSB, "\n")
     pressure.LSW <- readBin(buf[profile.start2 + 26], what="integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
-    oce.debug(debug, "pressure.LSW=", pressure.LSW, "\n")
     pressure <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
     temperature <- 0.01 * readBin(buf[profile.start2 + 28], what="integer", n=profiles.to.read, size=2, endian="little")
     v <- array(double(), dim=c(profiles.to.read, number.of.cells,  number.of.beams))
@@ -340,8 +362,9 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
                  roll=roll))
     metadata <- list(instrument.type="aquadopp high resolution",
                      filename=filename,
-                     sampling.start=0,  #FIXME
-                     sampling.end=0,    #FIXME
+                     sampling.start=sampling.start,
+                     sampling.deltat=sampling.deltat,
+                     sampling.end=sampling.end,
                      size=header$head$size,
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
                      serial.number=header$hardware$serial.number,
@@ -355,7 +378,7 @@ read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolu
                      config.pressure.sensor=header$head$config.pressure.sensor,
                      config.magnetometer.sensor=header$head$config.magnetometer.sensor,
                      config.tilt.sensor=header$head$config.tilt.sensor,
-                     beam.angle=25,     # FIXME: should read from file
+                     beam.angle=25,     # FIXME: may change with new devices
                      orientation=header$head$orientation,
                      frequency=header$head$frequency,
                      head.serial.number=header$head$head.serial.number,

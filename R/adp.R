@@ -86,6 +86,7 @@ summary.adp <- function(object, ...)
                 end.time=object$data$ts$time[length(object$data$ts$time)],
                 sampling.start=object$metadata$sampling.start,
                 sampling.end=object$metadata$sampling.end,
+                sampling.deltat=object$metadata$sampling.deltat,
                 distance=object$data$ss$distance,
                 metadata=object$metadata,
                 frequency=object$metadata$frequency,
@@ -113,33 +114,37 @@ summary.adp <- function(object, ...)
 print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADP Summary\n", ...)
-    cat("  Instrument type:            ", x$instrument.type, "\n", ...)
-    cat("  Filename:                   ", x$filename, "\n", ...)
-    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n", ...)
-    cat("  Coordinate system:          ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n", ...)
+    cat("  Instrument:        ", x$instrument.type, " serial number", x$metadata$serial.number, "\n", ...)
+    cat("  Source:            ", x$filename, "\n", ...)
+    cat("  Measurements:      ", format(x$sampling.start), attr(x$sampling.start, "tzone"),
+        "to", format(x$sampling.end), attr(x$sampling.end, "tzone"),
+        "at interval", x$sampling.deltat, "s\n", ...)
+    cat("  Subsamples:        ", as.character(x$start.time), attr(x$start.time,"tzone"),
+        "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n", ...)
+
+    cat("  Coordinate system: ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n", ...)
     ##cat("  Number of data types:       ", x$number.of.data.types, "\n", ...)
-    cat("  Frequency:                  ", x$frequency, "kHz\n", ...)
-    cat("  Beams:                      ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n", ...)
-    cat("  Orientation:                ", x$orientation, "\n", ...)
-    cat("  Beam angle:                 ", x$metadata$beam.angle, "\n", ...)
+    cat("  Frequency:         ", x$frequency, "kHz\n", ...)
+    cat("  Beams:             ", x$number.of.beams, if (x$oce.beam.attenuated) "(attenuated)\n" else "(not attenuated)\n", ...)
+    cat("  Orientation:       ", x$orientation, "\n", ...)
+    cat("  Beam angle:        ", x$metadata$beam.angle, "\n", ...)
     if (!is.null(x$transformation.matrix)) {
-        cat("  Transformation matrix:      ", format(x$transformation.matrix[1,], width=digits+2, digits=digits), "\n", ...)
-        cat("                              ", format(x$transformation.matrix[2,], width=digits+2, digits=digits), "\n", ...)
-        cat("                              ", format(x$transformation.matrix[3,], width=digits+2, digits=digits), "\n", ...)
+        cat("  Transformation matrix:\n",
+            "                   ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n",
+            "                   ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n",
+            "                   ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n", ...)
         if (x$number.of.beams > 3)
-            cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n", ...)
+            cat("                    ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n", ...)
     }
     cat("  Number of cells:            ", x$number.of.cells, "\n", ...)
     ##cat("  Cell size:                  ", x$cell.size, "m\n", ...)
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n", ...)
     cat("  Number of profiles:         ", x$number.of.profiles, "\n", ...)
-    cat("  Distances within profiles:  ", x$distance[1], "to", x$distance[length(x$distance)], "m at interval", diff(x$distance[1:2]), "m\n", ...)
-    cat("  Profile times:              ", as.character(x$start.time), attr(x$start.time,"tzone"),
-        "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n", ...)
-
+    cat(sprintf("  Distances within profiles:  %.3fm  to %.3fm  at interval  %.3f m\n",
+                x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
     if (x$instrument.type == "rdi") {
         cat("  RDI-specific\n", ...)
-        cat(sprintf("    Transducer depth mean:       %.2f m\n", x$metadata$depth.of.transducer), ...)
+        cat(sprintf("    Transducer depth mean:       %.3f m\n", x$metadata$depth.of.transducer), ...)
         cat("    System configuration:       ", x$metadata$system.configuration, "\n", ...)
         cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
         cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)

@@ -108,9 +108,12 @@ read.adp.sontek(file, from=0, to, by=1,
     to get the first velocity, but experiments on files drived from a
     Dalhousie University profiler require an offset of 54 to recover
     data that match the manufacturer's (*.v1, *.v2, *.v3) files.  Also,
-    the beam angle is hard-wired in the code, since it does not seem
-    to be in the documented parts of the headers.
-  }
+    the beam angle is hard-wired at 25 degrees in the code, since it
+    is not documented as being part of the headers.  (Actually,
+    the beam angle is in the header, in bytes 23 to 30 of the
+    beam-header, but it is not documented, and sample code that Nortek
+    provided to me in 2009 gives the scale incorrectly, as compared
+    with files created with a Dalhousie aquadopHR.)}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an

@@ -120,8 +120,8 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
     by.keep <- by
     host.time <- 0
     logger.time <- 0
-    logging.start <- 0
-    logging.end <- 0
+    sampling.start <- 0
+    sampling.end <- 0
     sample.period <- 0
     number.channels <- 0
     ## Q: what ends the header? a blank line?  Line 21?
@@ -134,36 +134,36 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
 
     ##header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
     header <- c()
-    logging.start <- sample.period <- NULL
+    sampling.start <- sample.period <- NULL
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) break
         header <- c(header, line)
         if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
             l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
-            logging.start <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            sampling.start <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
         }
         if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
             l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
-            logging.end <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            sampling.end <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
         }
         if (0 < (r<-regexpr("Sample[ \t]*period", line))) {
             l <- sub("[ ]*Sample[ \t]*period[ ]*", "", line)
             sp <- as.numeric(strsplit(l, ":")[[1]])
-            file.delta.t <- (sp[3] + 60*(sp[2] + 60*sp[1]))
+            sampling.deltat <- (sp[3] + 60*(sp[2] + 60*sp[1]))
         }
     }
     serial.number <- strsplit(header[1],"[\t ]+")[[1]][4]
-    oce.debug(debug, "logging.start =", format(logging.start), "\n")
-    oce.debug(debug, "file.delta.t  =", file.delta.t, "\n")
+    oce.debug(debug, "sampling.start =", format(sampling.start), "\n")
+    oce.debug(debug, "sampling.deltat  =", sampling.deltat, "\n")
     ## Now that we know the logging times, we can work with 'from 'and 'to'
     if (inherits(from, "POSIXt") || inherits(from, "character")) {
-        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), logging.start, units="secs")) / file.delta.t
+        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), sampling.start, units="secs")) / sampling.deltat
         oce.debug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
     }
     if (!missing(to)) {
         if (inherits(to, "POSIXt") || length(grep(":", to))) {
-            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), logging.start, units="secs")) / file.delta.t
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), sampling.start, units="secs")) / sampling.deltat
             oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
         }
     }
@@ -196,7 +196,7 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
     }
     if (nvar == 2) {
         oce.debug(debug, "2 elements per data line\n")
-        time <- logging.start + seq(from=1, to=n) * by * file.delta.t
+        time <- sampling.start + seq(from=1, to=n) * by * sampling.deltat
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
@@ -216,10 +216,10 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
     metadata <- list(header=header,
                      filename=filename,
                      serial.number=serial.number,
-                     logging.start=logging.start,
-                     logging.end=logging.end,
-                     file.delta.t=file.delta.t,
-                     subsample.delta.t=as.numeric(difftime(time[2], time[1], units="secs")))
+                     sampling.start=sampling.start,
+                     sampling.end=sampling.end,
+                     sampling.deltat=sampling.deltat,
+                     subsample.deltat=as.numeric(difftime(time[2], time[1], units="secs")))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -236,10 +236,10 @@ summary.pt <- function(object, ...)
     res <- list(filename=object$metadata$filename,
                 serial.number=object$metadata$serial.number,
                 samples=length(object$data$temperature),
-                logging.start=object$metadata$logging.start,
-                logging.end=object$metadata$logging.end,
-                file.delta.t=object$metadata$file.delta.t,
-                subsample.delta.t=object$metadata$subsample.delta.t,
+                sampling.start=object$metadata$sampling.start,
+                sampling.end=object$metadata$sampling.end,
+                sampling.deltat=object$metadata$sampling.deltat,
+                subsample.deltat=object$metadata$subsample.deltat,
                 start.time=time.range[1],
                 end.time=time.range[2],
                 fives=fives,
@@ -258,8 +258,8 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("PT Summary\n", ...)
     cat("  Instrument:   RBR serial number", x$serial.number, "\n", ...)
     cat("  Source:      ", x$filename, "\n", ...)
-    cat(sprintf("  Measurements: %s  to  %s  by  %s\n", as.character(x$logging.start), format(x$logging.end), seconds.to.ctime(x$file.delta.t)), ...)
-    cat(sprintf("  Subsamples:   %s  to  %s  by  %s\n", as.character(x$start.time), format(x$end.time), seconds.to.ctime(x$subsample.delta.t)), ...)
+    cat(sprintf("  Measurements: %s  to  %s  at interval  %s\n", as.character(x$sampling.start), format(x$sampling.end), seconds.to.ctime(x$sampling.deltat)), ...)
+    cat(sprintf("  Subsamples:   %s  to  %s  at interval  %s\n", as.character(x$start.time), format(x$end.time), seconds.to.ctime(x$subsample.deltat)), ...)
     cat("\nStatistics:\n", ...)
     cat(show.fives(x, indent='  '), ...)
     cat("\n", ...)
