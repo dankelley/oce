@@ -31,9 +31,9 @@
 \examples{
 \dontrun{
 library(oce)
-rbr011855 <- read.oce("rbr011855")
+rbr011855 <- read.oce("/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/raw/pt_rbr_011855.dat")
 d <- subset(rbr011855, time < as.POSIXct("2008-06-25 10:05:00"))
-x <- undrift.time(d, 1)	  # a slow instrument clock lost 1 second
+x <- undrift.time(d, 1)	  # clock lost 1 second over whole experiment
 summary(d)
 summary(x)
 }

@@ -142,10 +142,8 @@ which performs a correction for \eqn{r^2}{r^2} beam spreading.}
 \dontrun{
 library(oce)
 # A day sampled at 1/2 hour interval.  Note the timezone.
-d <- read.oce("~/SL08F001.000", 
-               from=as.POSIXct("2008-06-26", tz="UTC"),
-               to=as.POSIXct("2008-06-27", tz="UTC"), 
-               by="30:00")
+adp <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
+  from=as.POSIXct("2008-06-26", tz="UTC"), to=as.POSIXct("2008-06-27", tz="UTC"), by="30:00")
 summary(d)
 plot(d)
 }
