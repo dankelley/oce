@@ -112,7 +112,7 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
     ## FLD[54] spare
     serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
     oce.debug(debug, "SERIAL NUMBER", serial.number, "\n")
-    if (serial.number == 0) serial.number <- c(cpu.board.serial.number, "(CPU board)") # FIXME: where is serial #?
+    if (serial.number == 0) serial.number <- "unknown (0 in file)"
 
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n", ...)
@@ -148,8 +148,9 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
     if (speed.of.sound < 1400 || speed.of.sound > 1600) warning("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
-    depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
-    oce.debug(debug, "depth of transducer:", depth.of.transducer, "\n")
+    ## Comment out some things not needed here (may be wrong, too)
+    ##depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
+    ##oce.debug(debug, "depth of transducer:", depth.of.transducer, "\n")
     ##heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
     ##if (heading < 0 || heading > 360) warning("heading ", heading, " should be between 0 and 360 degrees, inclusive")
     ##pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
@@ -207,7 +208,6 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
          ensemble.number.MSB=ensemble.number.MSB,
          bit.result=bit.result,
          speed.of.sound=speed.of.sound,
-         depth.of.transducer=mean(depth.of.transducer,na.rm=TRUE), # FIXME: this seems useless
          ##heading=heading,
          ##pitch=pitch,
          ##roll=roll,
@@ -347,7 +347,7 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     for (i in 1:profiles.to.read) {
         o <- profile.start[i] + 65
         oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        if (buf[o] != 0x00) stop("first byte of velocity segment should be 0x00 but is ", buf[o], " at file position ", o)
+        if (buf[o] != 0x00) stop("first byte of velocity segment should be 0x00 but is ", buf[o], " at file position ", o, " of file ", file)
         if (buf[o+1] != 0x01) stop("first byte of velocity segment should be 0x01 but is ", buf[o+1], " at file position ", o+1)
         vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
         vv[vv==(-32768)] <- NA       # blank out bad data

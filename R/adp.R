@@ -114,7 +114,7 @@ summary.adp <- function(object, ...)
 print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADP Summary\n", ...)
-    cat("  Instrument:        ", x$instrument.type, " serial number", x$metadata$serial.number, "\n", ...)
+    cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", x$metadata$serial.number, "\n", sep=""), ...)
     cat("  Source:            ", x$filename, "\n", ...)
     cat("  Measurements:      ", format(x$sampling.start), attr(x$sampling.start, "tzone"),
         "to", format(x$sampling.end), attr(x$sampling.end, "tzone"),
@@ -136,15 +136,14 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         if (x$number.of.beams > 3)
             cat("                    ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n", ...)
     }
-    cat("  Number of cells:            ", x$number.of.cells, "\n", ...)
+    cat("  Number of cells:           ", x$number.of.cells, "\n", ...)
     ##cat("  Cell size:                  ", x$cell.size, "m\n", ...)
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n", ...)
-    cat("  Number of profiles:         ", x$number.of.profiles, "\n", ...)
+    cat("  Number of profiles:        ", x$number.of.profiles, "\n", ...)
     cat(sprintf("  Distances within profiles:  %.3fm  to %.3fm  at interval  %.3f m\n",
                 x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
     if (x$instrument.type == "rdi") {
         cat("  RDI-specific\n", ...)
-        cat(sprintf("    Transducer depth mean:       %.3f m\n", x$metadata$depth.of.transducer), ...)
         cat("    System configuration:       ", x$metadata$system.configuration, "\n", ...)
         cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
         cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)
