@@ -17,6 +17,8 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
     ## header.part1[5] spare
     number.of.data.types <- readBin(header.part1[6], "integer", n=1, size=1)
     if (number.of.data.types < 1) stop("cannot have ", number.of.data.types, " data types, as header indicates")
+    if (number.of.data.types != 6)
+        warning("expecting the number of data types to be 6, but it is ", number.of.data.types)
     oce.debug(debug, "number.of.data.types=", number.of.data.types, "\n")
     ## part 2 of header is these data offsets
     header.part2 <- readBin(file, "raw", n=2*number.of.data.types, size=1)
