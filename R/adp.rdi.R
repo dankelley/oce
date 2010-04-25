@@ -24,9 +24,9 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     oce.debug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
     if (FLD[1] != 0x00) stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
     if (FLD[2] != 0x00) stop("second byte of fixed leader header must be a0x00 but it was ", FLD[2])
-    fv <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
-    fr <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
-    program.version <- paste(fv, fr, sep=".")
+    program.version.major <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
+    program.version.minor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
+    program.version <- paste(program.version.major, program.version.minor, sep=".")
     program.version.numeric <- as.numeric(program.version)
     oce.debug(debug, "program version=", program.version, "(numerically, it is", program.version.numeric,")\n")
     if (program.version < 16.28)
@@ -103,14 +103,19 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     system.bandwidth <- readBin(FLD[51:52], "integer", n=1, size=2, endian="little")
     system.power <- readBin(FLD[53], "integer", n=1, size=1)
     ## FLD[54] spare
+    ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p130: bytes 55:58 = serial number only for REMUS, else spare
+    ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serial number
     serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
-    oce.debug(debug, "SERIAL NUMBER", serial.number, "\n")
+    oce.debug(debug, "SERIAL NUMBER", serial.number, "from bytes (", FLD[55:58], ")\n")
     if (serial.number == 0) serial.number <- "unknown (not found at expected byte locations in file)"
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n", ...)
     ##
     ## VLD (variable leader data) 65 bytes
     ##
+    ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p132: VLD length 65 bytes
+    ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p133: VLD length 65 bytes
+
     nVLD <- 65
     VLD <- buf[data.offset[2]+1:nVLD]
     oce.debug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
@@ -155,6 +160,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
 
     list(instrument.type="rdi",
+         program.version.major=program.version.major,
+         program.version.minor=program.version.minor,
          program.version=program.version,
          ##program.version.major=fv,
          ##program.version.minor=fr,
@@ -268,11 +275,14 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     file.size <- seek(file, where=0)
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
-    dan.buf <<- buf
     header <- decode.header.rdi(buf, debug=debug-1)
-    dan.header<<-header
-    cat("HEADER\n")
-    print(header)
+    ##
+    ##if (debug > 0) {
+    ##  dan.header<<-header
+    ##    dan.buf <<- buf
+    ##    cat("HEADER\n")
+    ##    print(header)
+    ##}
     number.of.beams <- header$number.of.beams
     number.of.cells <- header$number.of.cells
     bin1.distance <- header$bin1.distance
@@ -280,15 +290,15 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     cell.size <- header$cell.size
     ##profile.start <- .Call("match2bytes", buf[1:min(50000,length(buf))], 0x80, 0x00, TRUE)
     profile.start <- .Call("match2bytes", buf, 0x80, 0x00, TRUE)
-    dan.ps1<<-profile.start
-    if (0){
-    cat("a. profile.start[1:10]=", profile.start[1:10],"\n")
-    cat("a. diff(profile.start)[1:10]=", diff(profile.start)[1:10],"\n")
-    elen <- header$bytes.per.ensemble + 2
-    profile.start <- profile.start[1]+elen*seq(0,floor(file.size/elen))
-    dan.ps2<<-profile.start
-    cat("b. profile.start[1:10]=", profile.start[1:10],"\n")
-}
+    ##if (0){
+    ##    dan.ps1<<-profile.start
+    ##    cat("a. profile.start[1:10]=", profile.start[1:10],"\n")
+    ##    cat("a. diff(profile.start)[1:10]=", diff(profile.start)[1:10],"\n")
+    ##    elen <- header$bytes.per.ensemble + 2
+    ##    profile.start <- profile.start[1]+elen*seq(0,floor(file.size/elen))
+    ##    dan.ps2<<-profile.start
+    ##    cat("b. profile.start[1:10]=", profile.start[1:10],"\n")
+    ##}
     profiles.in.file <- length(profile.start)
     oce.debug(debug, "profile.start[1:10]=", profile.start[1:10], "(out of ", length(profile.start), ")\n")
     sampling.start <- ISOdatetime(2000 +readBin(buf[profile.start[1]+4],"integer",size=1,signed=FALSE,endian="little"), # year
@@ -342,41 +352,57 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     }
     profiles.to.read <- length(profile.start)
     oce.debug(debug, "number.of.beams=",header$number.of.beams,"\n")
-    dan.buf<<-buf
-    dan.profile.start<<-profile.start
-
+    ##if (debug > 0) {
+    ##    dan.buf<<-buf
+    ##    dan.profile.start<<-profile.start
+    ##}
     ## 64 is length of Variable Leader Data (Table 33 of rdi manual)
     items <- number.of.beams * number.of.cells
     v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
     a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
     q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
     g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
+    ii <- 1
     for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
         o <- profile.start[i] + 65      # are we *sure* this will be 65?
         oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        if (buf[o] != 0x00 || buf[o+1] != 0x01) {
-            cat(buf[profile.start[i]+0:(o-1)], "[", buf[o], buf[o+1], "]", buf[o+2:27], "...\n")
-            stop("did not find 00 01 (to mark a velocity segment) at file position ", o, " trying to read profile ", i)
+        if (buf[o] == 0x00 && buf[o+1] == 0x01) {
+            vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
+            vv[vv==(-32768)] <- NA       # blank out bad data
+            v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
+            o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
+            if (buf[o] != 0x00) stop("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
+            if (buf[o+1] != 0x02) stop("first byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+            q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
+            o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+            if (buf[o] != 0x00) stop("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
+            if (buf[o+1] != 0x03) stop("first byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
+            a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
+            o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+            if (buf[o] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
+            if (buf[o+1] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
+            g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
+            if (monitor) {
+                cat(".", ...)
+                if (!(i %% 50)) cat(i, "\n", ...)
+            }
+            ii <- ii + 1
+        } else {
+            if (monitor) {
+                cat("X", ...)
+                if (!(i %% 50)) cat(i, "\n", ...)
+            }
+            if (debug > 0) {
+                cat(buf[profile.start[i]+0:(o-1)], "[", buf[o], buf[o+1], "]", buf[o+2:27], "...\n")
+                cat("Warning: in the above, did not find 00 01 (to mark a velocity segment) at file position ", o, " trying to read profile ", i)
+            }
         }
-        vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
-        vv[vv==(-32768)] <- NA       # blank out bad data
-        v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
-        o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
-        if (buf[o] != 0x00) stop("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
-        if (buf[o+1] != 0x02) stop("first byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
-        q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
-        o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-        if (buf[o] != 0x00) stop("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
-        if (buf[o+1] != 0x03) stop("first byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
-        a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
-        o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-        if (buf[o] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
-        if (buf[o+1] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
-        g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
-        if (monitor) {
-            cat(".", ...)
-            if (!(i %% 50)) cat(i, "\n", ...)
-        }
+    }
+    if (ii != 1+profiles.to.read) {
+        v <- v[1:(ii-1),,]
+        a <- a[1:(ii-1),,]
+        g <- g[1:(ii-1),,]
+        cat("discarded", profiles.to.read - ii, "spurious profiles")
     }
     time <- ISOdatetime(2000+as.integer(buf[profile.start+4]), # year
                         as.integer(buf[profile.start+5]),      # month
