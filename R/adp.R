@@ -137,11 +137,11 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("                    ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n", ...)
     }
     cat("  Number of cells:           ", x$number.of.cells, "\n", ...)
+    cat(sprintf("  Distances within profiles:  %.3f m  to %.3f m  at interval  %.3f m\n",
+                x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
     ##cat("  Cell size:                  ", x$cell.size, "m\n", ...)
     ##cat("  First cell centred:         ", x$bin1.dist,"m from sensor\n", ...)
     cat("  Number of profiles:        ", x$number.of.profiles, "\n", ...)
-    cat(sprintf("  Distances within profiles:  %.3fm  to %.3fm  at interval  %.3f m\n",
-                x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
     if (x$instrument.type == "rdi") {
         cat("  RDI-specific\n", ...)
         cat("    System configuration:       ", x$metadata$system.configuration, "\n", ...)

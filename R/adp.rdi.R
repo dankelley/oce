@@ -1,45 +1,36 @@
-read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
+## byte sequences at start of items
+## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
+
+decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
 {
     ##
     ## header, of length 6 + 2 * number.of.data.types bytes
     ##
-    oce.debug(debug, "read.header.rdi() starting at file position", seek(file), "\n")
-    header.part1 <- readBin(file, "raw", n=6, size=1)
-    oce.debug(debug, paste("first 6 bytes of header:", paste(header.part1, collapse=' '), "\n"))
-    header <- header.part1
-    if (header.part1[1] != 0x7f) {
-        print(header)
-        stop("first byte in file must be 0x7f, but it was 0x", header.part1[1])
-    }
-    if (header.part1[2] != 0x7f) stop("second byte in file must be 0x7f but it was 0x", header.part1[2])
-    num.bytes.in.ensemble <- readBin(header.part1[3:4], "integer", n=1, size=2, endian="little")
-    oce.debug(debug, "num.bytes.in.ensemble=", num.bytes.in.ensemble, "\n")
-    ## header.part1[5] spare
-    number.of.data.types <- readBin(header.part1[6], "integer", n=1, size=1)
-    if (number.of.data.types < 1) stop("cannot have ", number.of.data.types, " data types, as header indicates")
-    if (number.of.data.types != 6)
-        warning("expecting the number of data types to be 6, but it is ", number.of.data.types)
+    oce.debug(debug, "read.header.rdi() entry\n")
+    if (buf[1] != 0x7f || buf[2] != 0x7f)
+        stop("first two bytes in file must be 0x7f 0x7f, but they are 0x", buf[1], " 0x", buf[2])
+    bytes.per.ensemble <- readBin(buf[3:4], "integer", n=1, size=2, endian="little", signed=FALSE)
+    oce.debug(debug, "bytes.per.ensemble=", bytes.per.ensemble, "\n")
+    ## byte5 not used
+    number.of.data.types <- readBin(buf[6], "integer", n=1, size=1)
+    if (number.of.data.types < 1 || 200 < number.of.data.types)
+        stop("cannot have ", number.of.data.types, " data types, as header indicates")
     oce.debug(debug, "number.of.data.types=", number.of.data.types, "\n")
-    ## part 2 of header is these data offsets
-    header.part2 <- readBin(file, "raw", n=2*number.of.data.types, size=1)
-    ##cat("after reading header, seek(file)=", seek(file), "\n", ...)
-    header <- c(header, header.part2)
-    data.offset <- readBin(header.part2, "integer", n=number.of.data.types, size=2, endian="little")
+    data.offset <- readBin(buf[7+0:(2*number.of.data.types)], "integer", n=number.of.data.types, size=2, endian="little")
     oce.debug(debug, "data.offset=", paste(data.offset, sep=" "), "\n")
     ##
-    ## FLD (fixed leader data) 59 bytes
-    ## OLD: FLD <- readBin(file, "raw", n=59, size=1) # binary fixed leader data (Figure D-5)
-    FLD <- readBin(file, "raw", n=data.offset[2]-data.offset[1], size=1)
-    ##cat("after reading FLD, ftell=", seek(file), "\n", ...)
-
-    header <- c(header, FLD)
-    oce.debug(debug, "fixed leader data (59 bytes):", paste(FLD, collapse=" "), "\n")
+    ## Fixed Leader Data, abbreviated FLD, pointed to by the data offset
+    FLD <- buf[data.offset[1]+1:(data.offset[2] - data.offset[1])]
+    oce.debug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
     if (FLD[1] != 0x00) stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
     if (FLD[2] != 0x00) stop("second byte of fixed leader header must be a0x00 but it was ", FLD[2])
     fv <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     fr <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
-    ##program.version <- paste(fv, fr, sep=".") # don't want to rely on number of digits
-    oce.debug(debug, "program version=", paste(fv,fr,sep="."), "\n")
+    program.version <- paste(fv, fr, sep=".")
+    program.version.numeric <- as.numeric(program.version)
+    oce.debug(debug, "program version=", program.version, "(numerically, it is", program.version.numeric,")\n")
+    if (program.version < 16.28)
+        warning("program version ", program.version, " is less than 16.28, and so read.adp.rdi() may not work properly")
     system.configuration <- paste(byte2binary(FLD[5]), byte2binary(FLD[6]),sep="-")
     bits <- substr(system.configuration, 6, 8)
     if (bits == "000") frequency <- 75        # kHz
@@ -99,7 +90,7 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
     wp.ref.layer.average <- readBin(FLD[37:38], "integer", n=1, size=2, endian="little")
     false.target.thresh <- readBin(FLD[39], "integer", n=1, size=1)
     ## FLD[40] spare
-    transmit.lag.distance <- readBin(FLD[41:42], "integer", n=1, size=2, endian="little")
+    transmit.lag.distance <- readBin(FLD[41:42], "integer", n=1, size=2, endian="little", signed=FALSE)
     cpu.board.serial.number <- c(readBin(FLD[43], "integer", n=1, size=1, signed=FALSE),
                                  readBin(FLD[44], "integer", n=1, size=1, signed=FALSE),
                                  readBin(FLD[45], "integer", n=1, size=1, signed=FALSE),
@@ -114,18 +105,15 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
     ## FLD[54] spare
     serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
     oce.debug(debug, "SERIAL NUMBER", serial.number, "\n")
-    if (serial.number == 0) serial.number <- "unknown (0 in file)"
-
+    if (serial.number == 0) serial.number <- "unknown (not found at expected byte locations in file)"
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n", ...)
-
     ##
     ## VLD (variable leader data) 65 bytes
     ##
-    VLD <- readBin(file, "raw", n=65, size=1)
-    header <- c(header, VLD)
-    ##cat("position in file=", seek(file, NA), "after reading VLD\n", ...)
-    oce.debug(debug, "variable leader data (65 bytes):", paste(VLD, collapse=" "), "\n")
+    nVLD <- 65
+    VLD <- buf[data.offset[2]+1:nVLD]
+    oce.debug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
     ## ensure that header is not ill-formed
     if (VLD[1] != 0x80) stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
     if (VLD[2] != 0x00) stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
@@ -164,12 +152,13 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
     if (temperature < -5 || temperature > 40) warning("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
 
     ## Skipping a lot ...
-    pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
+    ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
 
     list(instrument.type="rdi",
-         program.version.major=fv,
-         program.version.minor=fr,
-         ##program.version=program.version,
+         program.version=program.version,
+         ##program.version.major=fv,
+         ##program.version.minor=fr,
+         bytes.per.ensemble=bytes.per.ensemble,
          system.configuration=system.configuration,
          frequency=frequency,
          beam.angle=beam.angle,
@@ -202,18 +191,19 @@ read.header.rdi <- function(file, debug=getOption("oce.debug"), ...)
          transmit.lag.distance=transmit.lag.distance,
          cpu.board.serial.number=cpu.board.serial.number,
          system.bandwidth=system.bandwidth,
-         system.power=system.power,
-         serial.number=serial.number,
+         ##system.power=system.power,
+         serial.number=serial.number
          ## beam.angle=beam.angle,  # wrong in my tests, anyway
-         ensemble.number=ensemble.number,
+         ##ensemble.number=ensemble.number,
          ##time=time,
-         ensemble.number.MSB=ensemble.number.MSB,
-         bit.result=bit.result,
-         speed.of.sound=speed.of.sound,
+         ##ensemble.number.MSB=ensemble.number.MSB,
+         ##bit.result=bit.result,
+         ##speed.of.sound=speed.of.sound,
          ##heading=heading,
          ##pitch=pitch,
          ##roll=roll,
-         salinity=salinity)             # salinity is a constant, not measured
+         ##salinity=salinity
+         )             # salinity is a constant, not measured
 }                                       # read.header.rdi()
 
 read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
@@ -273,19 +263,32 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     }
     type <- match.arg(type)
     seek(file, 0, "start")
-    header <- read.header.rdi(file, debug=debug-1)
-    seek(file, 0, "start")
-    number.of.beams <- header$number.of.beams
-    number.of.cells <- header$number.of.cells
-    bin1.distance <- header$bin1.distance
-    xmit.pulse.length <- header$xmit.pulse.length
-    cell.size <- header$cell.size
     ## go to the end, so the next seek (to get to the data) reveals file length
     seek(file, where=0, origin="end")
     file.size <- seek(file, where=0)
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
+    dan.buf <<- buf
+    header <- decode.header.rdi(buf, debug=debug-1)
+    dan.header<<-header
+    cat("HEADER\n")
+    print(header)
+    number.of.beams <- header$number.of.beams
+    number.of.cells <- header$number.of.cells
+    bin1.distance <- header$bin1.distance
+    xmit.pulse.length <- header$xmit.pulse.length
+    cell.size <- header$cell.size
+    ##profile.start <- .Call("match2bytes", buf[1:min(50000,length(buf))], 0x80, 0x00, TRUE)
     profile.start <- .Call("match2bytes", buf, 0x80, 0x00, TRUE)
+    dan.ps1<<-profile.start
+    if (0){
+    cat("a. profile.start[1:10]=", profile.start[1:10],"\n")
+    cat("a. diff(profile.start)[1:10]=", diff(profile.start)[1:10],"\n")
+    elen <- header$bytes.per.ensemble + 2
+    profile.start <- profile.start[1]+elen*seq(0,floor(file.size/elen))
+    dan.ps2<<-profile.start
+    cat("b. profile.start[1:10]=", profile.start[1:10],"\n")
+}
     profiles.in.file <- length(profile.start)
     oce.debug(debug, "profile.start[1:10]=", profile.start[1:10], "(out of ", length(profile.start), ")\n")
     sampling.start <- ISOdatetime(2000 +readBin(buf[profile.start[1]+4],"integer",size=1,signed=FALSE,endian="little"), # year
@@ -339,6 +342,8 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     }
     profiles.to.read <- length(profile.start)
     oce.debug(debug, "number.of.beams=",header$number.of.beams,"\n")
+    dan.buf<<-buf
+    dan.profile.start<<-profile.start
 
     ## 64 is length of Variable Leader Data (Table 33 of rdi manual)
     items <- number.of.beams * number.of.cells
@@ -346,11 +351,13 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
     q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
     g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
-    for (i in 1:profiles.to.read) {
-        o <- profile.start[i] + 65
+    for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
+        o <- profile.start[i] + 65      # are we *sure* this will be 65?
         oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        if (buf[o] != 0x00) stop("first byte of velocity segment should be 0x00 but is ", buf[o], " at file position ", o, " of file ", file)
-        if (buf[o+1] != 0x01) stop("first byte of velocity segment should be 0x01 but is ", buf[o+1], " at file position ", o+1)
+        if (buf[o] != 0x00 || buf[o+1] != 0x01) {
+            cat(buf[profile.start[i]+0:(o-1)], "[", buf[o], buf[o+1], "]", buf[o+2:27], "...\n")
+            stop("did not find 00 01 (to mark a velocity segment) at file position ", o, " trying to read profile ", i)
+        }
         vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
         vv[vv==(-32768)] <- NA       # blank out bad data
         v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)

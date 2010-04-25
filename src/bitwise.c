@@ -90,21 +90,21 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   n_match = 0;
   unsigned short seq_last=0, seq_this;
   // Rprintf("demand_sequential=%d\n",ds);
-  // int nnn=10;
+  int nnn=10;
 
   /* FIXME: the two passes repeat too much code, and should be done as a subroutine */
 
-  /*
-   * Pass 1: allocate vector
-   */
+  //
+  // Pass 1: allocate vector
+  //
   for (i = 0; i < n - 1; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
         seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
         // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* Q: is second needed, given short type */
+        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
           n_match++;
-          ++i;			/* skip */
+          ++i;			// skip
           seq_last = seq_this;
           // if (nnn > 0) Rprintf("KEEP\n");
         } else {
@@ -113,33 +113,34 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
         //nnn--;
       } else {
         n_match++;
-        ++i;			/* skip */
+        ++i;			// skip
       }
     }
   }
-  /* 
-   * Pass 2: fill in the vector 
-   */
+  //
+  // Pass 2: fill in the vector 
+  //
   PROTECT(res = NEW_NUMERIC(n_match));
   resp = NUMERIC_POINTER(res);
   j = 0;
   seq_last = 0;
-  //nnn = 10;
-  // Rprintf("PASS 2\n");
+  nnn = 1000;
+  //Rprintf("PASS 2\n");
   for (i = 0; i < n - 1; i++) {
+    //    Rprintf("[%d]:", i);
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
-        seq_this = (((short)bufp[i + 3]) << 8) | (short)bufp[i + 2];
-        // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* Q: is second needed, given short type */
+        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+        //if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
           resp[j++] = i + 1;	/* the 1 is to offset from C to R */
           ++i;			/* skip */
           seq_last = seq_this;
-          // if (nnn > 0) Rprintf("KEEP\n");
+          //if (nnn > 0) Rprintf("KEEP\n");
         } else {
-          // if (nnn > 0) Rprintf("DISCARD\n");
+          //if (nnn > 0) Rprintf("DISCARD\n");
         }
-        //nnn--;
+        nnn--;
       } else {
         resp[j++] = i + 1;	/* the 1 is to offset from C to R */
         ++i;			/* skip */

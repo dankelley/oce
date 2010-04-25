@@ -103,6 +103,12 @@ read.adp.sontek(file, from=0, to, by=1,
 \section{Implementation notes}{
   \itemize{
 
+    \item \strong{Teledyne-RDI files.} \code{read.adp.rdi()} was tested
+    for firmware version 16.30.  For other versions, there may be
+    problems.  Known problems include the following: (a) The serial
+    number is not recognized properly for version 16.28, but the data
+    seem OK.  (b) The code cannot read data files with version 16.21.
+
     \item \strong{Nortek Aquadopp-HR files.} Page 38 of the Nortek
     System Integrator Guide says to offset 53 bytes in profile records
     to get the first velocity, but experiments on files drived from a
