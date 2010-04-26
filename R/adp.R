@@ -122,7 +122,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("ADP Summary\n", ...)
     cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", paste(x$metadata$serial.number, collapse=""), "\n", sep=""), ...)
     cat("  Source:            ", x$filename, "\n", ...)
-    if (x$number.of.profiles > 0) {
+    if (is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data) {
         cat("  Measurements:      ", format(x$sampling.start), attr(x$sampling.start, "tzone"),
             "to", format(x$sampling.end), attr(x$sampling.end, "tzone"),
             "at interval", x$sampling.deltat, "s\n", ...)
@@ -187,6 +187,10 @@ plot.adp <- function(x,
                      ...)
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
+    if (!(is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data)) {
+        warning("there are no profiles in this dataset")
+        return
+    }
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
