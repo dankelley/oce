@@ -114,7 +114,7 @@ summary.adp <- function(object, ...)
 print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADP Summary\n", ...)
-    cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", x$metadata$serial.number, "\n", sep=""), ...)
+    cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", paste(x$metadata$serial.number, collapse=""), "\n", sep=""), ...)
     cat("  Source:            ", x$filename, "\n", ...)
     cat("  Measurements:      ", format(x$sampling.start), attr(x$sampling.start, "tzone"),
         "to", format(x$sampling.end), attr(x$sampling.end, "tzone"),
