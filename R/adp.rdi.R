@@ -16,6 +16,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     if (number.of.data.types < 1 || 200 < number.of.data.types)
         stop("cannot have ", number.of.data.types, " data types, as header indicates")
     oce.debug(debug, "number.of.data.types=", number.of.data.types, "\n")
+    have.actual.data <- number.of.data.types > 2 # will be 2 if just have headers
     data.offset <- readBin(buf[7+0:(2*number.of.data.types)], "integer", n=number.of.data.types, size=2, endian="little")
     oce.debug(debug, "data.offset=", paste(data.offset, sep=" "), "\n")
     ##
@@ -31,6 +32,14 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     oce.debug(debug, "program version=", program.version, "(numerically, it is", program.version.numeric,")\n")
     if (program.version < 16.28)
         warning("program version ", program.version, " is less than 16.28, and so read.adp.rdi() may not work properly")
+
+    if (!have.actual.data)
+        return(list(instrument.type="rdi",
+                    program.version.major=program.version.major,
+                    program.version.minor=program.version.minor,
+                    program.version=program.version,
+                    have.actual.data=have.actual.data))
+
     system.configuration <- paste(byte2binary(FLD[5]), byte2binary(FLD[6]),sep="-")
     bits <- substr(system.configuration, 6, 8)
     if (bits == "000") frequency <- 75        # kHz
@@ -151,10 +160,10 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     ##pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
     ##roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
     ##oce.debug(debug, "heading=", heading, " pitch=", pitch, " roll=", roll, "\n")
-    salinity <- readBin(VLD[25:26], "integer", n=1, size=2, endian="little")
-    if (salinity < 0 || salinity > 40) warning("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
-    temperature <- readBin(VLD[27:28], "integer", n=1, size=2, endian="little") * 0.01
-    if (temperature < -5 || temperature > 40) warning("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
+    ##salinity <- readBin(VLD[25:26], "integer", n=1, size=2, endian="little")
+    ##if (salinity < 0 || salinity > 40) warning("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
+    ##temperature <- readBin(VLD[27:28], "integer", n=1, size=2, endian="little") * 0.01
+    ##if (temperature < -5 || temperature > 40) warning("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
 
     ## Skipping a lot ...
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
@@ -199,7 +208,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
          cpu.board.serial.number=cpu.board.serial.number,
          system.bandwidth=system.bandwidth,
          ##system.power=system.power,
-         serial.number=serial.number
+         serial.number=serial.number,
          ## beam.angle=beam.angle,  # wrong in my tests, anyway
          ##ensemble.number=ensemble.number,
          ##time=time,
@@ -210,7 +219,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
          ##pitch=pitch,
          ##roll=roll,
          ##salinity=salinity
-         )             # salinity is a constant, not measured
+         have.actual.data=have.actual.data)
 }                                       # read.header.rdi()
 
 read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
@@ -276,219 +285,225 @@ read.adp.rdi <- function(file, from=0, to, by=1, type=c("workhorse"), debug=getO
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
     header <- decode.header.rdi(buf, debug=debug-1)
-    ##
-    ##if (debug > 0) {
-    ##  dan.header<<-header
-    ##    dan.buf <<- buf
-    ##    cat("HEADER\n")
-    ##    print(header)
-    ##}
-    number.of.beams <- header$number.of.beams
-    number.of.cells <- header$number.of.cells
-    bin1.distance <- header$bin1.distance
-    xmit.pulse.length <- header$xmit.pulse.length
-    cell.size <- header$cell.size
-    ##profile.start <- .Call("match2bytes", buf[1:min(50000,length(buf))], 0x80, 0x00, TRUE)
-    profile.start <- .Call("match2bytes", buf, 0x80, 0x00, TRUE)
-    ##if (0){
-    ##    dan.ps1<<-profile.start
-    ##    cat("a. profile.start[1:10]=", profile.start[1:10],"\n")
-    ##    cat("a. diff(profile.start)[1:10]=", diff(profile.start)[1:10],"\n")
-    ##    elen <- header$bytes.per.ensemble + 2
-    ##    profile.start <- profile.start[1]+elen*seq(0,floor(file.size/elen))
-    ##    dan.ps2<<-profile.start
-    ##    cat("b. profile.start[1:10]=", profile.start[1:10],"\n")
-    ##}
-    profiles.in.file <- length(profile.start)
-    oce.debug(debug, "profile.start[1:10]=", profile.start[1:10], "(out of ", length(profile.start), ")\n")
-    sampling.start <- ISOdatetime(2000 +readBin(buf[profile.start[1]+4],"integer",size=1,signed=FALSE,endian="little"), # year
-                                  as.integer(buf[profile.start[1]+5]), # month
-                                  as.integer(buf[profile.start[1]+6]), # day
-                                  as.integer(buf[profile.start[1]+7]), # hour
-                                  as.integer(buf[profile.start[1]+8]), # min
-                                  as.integer(buf[profile.start[1]+9]), # sec
-                                  tz=getOption("oce.tz"))
-    sampling.end <- ISOdatetime(2000 +readBin(buf[profile.start[profiles.in.file]+4],"integer",size=1,signed=FALSE,endian="little"), # year
-                                  as.integer(buf[profile.start[profiles.in.file]+5]), # month
-                                  as.integer(buf[profile.start[profiles.in.file]+6]), # day
-                                  as.integer(buf[profile.start[profiles.in.file]+7]), # hour
-                                  as.integer(buf[profile.start[profiles.in.file]+8]), # min
-                                  as.integer(buf[profile.start[profiles.in.file]+9]), # sec
-                                  tz=getOption("oce.tz"))
-    sampling.deltat <- as.numeric(
-                                  ISOdatetime(2000 +readBin(buf[profile.start[2]+4],"integer",size=1,signed=FALSE,endian="little"), # year
-                                              as.integer(buf[profile.start[2]+5]), # month
-                                              as.integer(buf[profile.start[2]+6]), # day
-                                              as.integer(buf[profile.start[2]+7]), # hour
-                                              as.integer(buf[profile.start[2]+8]), # min
-                                              as.integer(buf[profile.start[2]+9]), # sec
-                                              tz=getOption("oce.tz"))) - as.numeric(sampling.start)
-    if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
-        from.pair <- bisect.rdi.adp(from, add=-1, debug=debug-1)
-        from <- from.index <- from.pair$index
-        to.pair <- bisect.rdi.adp(to, add=1, debug=debug-1)
-        to <- to.index <- to.pair$index
-        oce.debug(debug, "from=", format(from.pair$t), " yields profile.start[", from.index, "]\n",
-                  "  to  =", format(to.pair$t), "yields profile.start[", to.index, "]\n",
-                  "  by=", by, "(not yet decoded)\n",
-                  "  profile.start[1:10]=", profile.start[1:10],"\n",
-                  "  profile.start[",from.pair$index, "]=", profile.start[from.pair$index], "at time", format(from.pair$t), "\n",
-                  "  profile.start[",  to.pair$index, "]=", profile.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
-        dt <- sampling.deltat
-        oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"\n")
-        if (is.character(by))
-            by <- floor(0.5 + ctime.to.seconds(by) / dt)
-        oce.debug(debug, "by=",by,"profiles (after decoding)\n")
-        profile.start <- profile.start[profile.start[from.index] < profile.start & profile.start < profile.start[to.index]]
-        profile.start <- profile.start[seq(1, length(profile.start), by=by)]
-    } else {
-        from.index <- from
-        to.index <- to
-        if (to.index < 1 + from.index) stop("need more separation between from and to")
-        if (is.character(by)) stop("cannot have string for 'by' if 'from' and 'to' are integers")
-        profile.start <- profile.start[seq(from=from, to=to, by=by)]
-        oce.debug(debug, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
-    }
-    profiles.to.read <- length(profile.start)
-    oce.debug(debug, "number.of.beams=",header$number.of.beams,"\n")
-    ##if (debug > 0) {
-    ##    dan.buf<<-buf
-    ##    dan.profile.start<<-profile.start
-    ##}
-    ## 64 is length of Variable Leader Data (Table 33 of rdi manual)
-    items <- number.of.beams * number.of.cells
-    v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
-    a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
-    q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
-    g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
-    ii <- 1
-    for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
-        o <- profile.start[i] + 65      # are we *sure* this will be 65?
-        oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        if (buf[o] == 0x00 && buf[o+1] == 0x01) {
-            vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
-            vv[vv==(-32768)] <- NA       # blank out bad data
-            v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
-            o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
-            if (buf[o] != 0x00) stop("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
-            if (buf[o+1] != 0x02) stop("first byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
-            q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
-            o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-            if (buf[o] != 0x00) stop("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
-            if (buf[o+1] != 0x03) stop("first byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
-            a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
-            o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-            if (buf[o] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
-            if (buf[o+1] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
-            g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
-            if (monitor) {
-                cat(".", ...)
-                if (!(i %% 50)) cat(i, "\n", ...)
-            }
-            ii <- ii + 1
+    if (header$have.actual.data) {
+        ##
+        ##if (debug > 0) {
+        ##  dan.header<<-header
+        ##    dan.buf <<- buf
+        ##    cat("HEADER\n")
+        ##    print(header)
+        ##}
+        number.of.beams <- header$number.of.beams
+        number.of.cells <- header$number.of.cells
+        bin1.distance <- header$bin1.distance
+        xmit.pulse.length <- header$xmit.pulse.length
+        cell.size <- header$cell.size
+        ##profile.start <- .Call("match2bytes", buf[1:min(50000,length(buf))], 0x80, 0x00, TRUE)
+        profile.start <- .Call("match2bytes", buf, 0x80, 0x00, TRUE)
+        ##if (0){
+        ##    dan.ps1<<-profile.start
+        ##    cat("a. profile.start[1:10]=", profile.start[1:10],"\n")
+        ##    cat("a. diff(profile.start)[1:10]=", diff(profile.start)[1:10],"\n")
+        ##    elen <- header$bytes.per.ensemble + 2
+        ##    profile.start <- profile.start[1]+elen*seq(0,floor(file.size/elen))
+        ##    dan.ps2<<-profile.start
+        ##    cat("b. profile.start[1:10]=", profile.start[1:10],"\n")
+        ##}
+        profiles.in.file <- length(profile.start)
+        oce.debug(debug, "profile.start[1:10]=", profile.start[1:10], "(out of ", length(profile.start), ")\n")
+        sampling.start <- ISOdatetime(2000 +readBin(buf[profile.start[1]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+                                      as.integer(buf[profile.start[1]+5]), # month
+                                      as.integer(buf[profile.start[1]+6]), # day
+                                      as.integer(buf[profile.start[1]+7]), # hour
+                                      as.integer(buf[profile.start[1]+8]), # min
+                                      as.integer(buf[profile.start[1]+9]), # sec
+                                      tz=getOption("oce.tz"))
+        sampling.end <- ISOdatetime(2000 +readBin(buf[profile.start[profiles.in.file]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+                                    as.integer(buf[profile.start[profiles.in.file]+5]), # month
+                                    as.integer(buf[profile.start[profiles.in.file]+6]), # day
+                                    as.integer(buf[profile.start[profiles.in.file]+7]), # hour
+                                    as.integer(buf[profile.start[profiles.in.file]+8]), # min
+                                    as.integer(buf[profile.start[profiles.in.file]+9]), # sec
+                                    tz=getOption("oce.tz"))
+        sampling.deltat <- as.numeric(      # FIXME: assumes uniform time interval (ok, but document it)
+                                      ISOdatetime(2000 +readBin(buf[profile.start[2]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+                                                  as.integer(buf[profile.start[2]+5]), # month
+                                                  as.integer(buf[profile.start[2]+6]), # day
+                                                  as.integer(buf[profile.start[2]+7]), # hour
+                                                  as.integer(buf[profile.start[2]+8]), # min
+                                                  as.integer(buf[profile.start[2]+9]), # sec
+                                                  tz=getOption("oce.tz"))) - as.numeric(sampling.start)
+        if (inherits(from, "POSIXt")) {
+            if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+            from.pair <- bisect.rdi.adp(from, add=-1, debug=debug-1)
+            from <- from.index <- from.pair$index
+            to.pair <- bisect.rdi.adp(to, add=1, debug=debug-1)
+            to <- to.index <- to.pair$index
+            oce.debug(debug, "from=", format(from.pair$t), " yields profile.start[", from.index, "]\n",
+                      "  to  =", format(to.pair$t), "yields profile.start[", to.index, "]\n",
+                      "  by=", by, "(not yet decoded)\n",
+                      "  profile.start[1:10]=", profile.start[1:10],"\n",
+                      "  profile.start[",from.pair$index, "]=", profile.start[from.pair$index], "at time", format(from.pair$t), "\n",
+                      "  profile.start[",  to.pair$index, "]=", profile.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
+            dt <- sampling.deltat
+            oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"\n")
+            if (is.character(by))
+                by <- floor(0.5 + ctime.to.seconds(by) / dt)
+            oce.debug(debug, "by=",by,"profiles (after decoding)\n")
+            profile.start <- profile.start[profile.start[from.index] < profile.start & profile.start < profile.start[to.index]]
+            profile.start <- profile.start[seq(1, length(profile.start), by=by)]
         } else {
-            if (monitor) {
-                cat("X", ...)
-                if (!(i %% 50)) cat(i, "\n", ...)
-            }
-            if (debug > 0) {
-                cat(buf[profile.start[i]+0:(o-1)], "[", buf[o], buf[o+1], "]", buf[o+2:27], "...\n")
-                cat("Warning: in the above, did not find 00 01 (to mark a velocity segment) at file position ", o, " trying to read profile ", i)
+            from.index <- from
+            to.index <- to
+            if (to.index < 1 + from.index) stop("need more separation between from and to")
+            if (is.character(by)) stop("cannot have string for 'by' if 'from' and 'to' are integers")
+            profile.start <- profile.start[seq(from=from, to=to, by=by)]
+            oce.debug(debug, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
+        }
+        profiles.to.read <- length(profile.start)
+        oce.debug(debug, "number.of.beams=",header$number.of.beams,"\n")
+        ##if (debug > 0) {
+        ##    dan.buf<<-buf
+        ##    dan.profile.start<<-profile.start
+        ##}
+        ## 64 is length of Variable Leader Data (Table 33 of rdi manual)
+        items <- number.of.beams * number.of.cells
+        v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
+        a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
+        q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
+        g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
+        ii <- 1
+        for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
+            o <- profile.start[i] + 65      # are we *sure* this will be 65?
+            oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
+            if (buf[o] == 0x00 && buf[o+1] == 0x01) {
+                vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
+                vv[vv==(-32768)] <- NA       # blank out bad data
+                v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
+                o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
+                if (buf[o] != 0x00) stop("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
+                if (buf[o+1] != 0x02) stop("first byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+                q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
+                o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+                if (buf[o] != 0x00) stop("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
+                if (buf[o+1] != 0x03) stop("first byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
+                a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
+                o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+                if (buf[o] != 0x00) stop("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
+                if (buf[o+1] != 0x04) stop("first byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
+                g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
+                if (monitor) {
+                    cat(".", ...)
+                    if (!(i %% 50)) cat(i, "\n", ...)
+                }
+                ii <- ii + 1
+            } else {
+                if (monitor) {
+                    cat("X", ...)
+                    if (!(i %% 50)) cat(i, "\n", ...)
+                }
+                if (debug > 0) {
+                    cat(buf[profile.start[i]+0:(o-1)], "[", buf[o], buf[o+1], "]", buf[o+2:27], "...\n")
+                    cat("Warning: in the above, did not find 00 01 (to mark a velocity segment) at file position ", o, " trying to read profile ", i)
+                }
             }
         }
+        if (ii != 1+profiles.to.read) {
+            v <- v[1:(ii-1),,]
+            a <- a[1:(ii-1),,]
+            g <- g[1:(ii-1),,]
+            cat("discarded", profiles.to.read - ii, "spurious profiles")
+        }
+        time <- ISOdatetime(2000+as.integer(buf[profile.start+4]), # year
+                            as.integer(buf[profile.start+5]),      # month
+                            as.integer(buf[profile.start+6]),      # day
+                            as.integer(buf[profile.start+7]),      # hour
+                            as.integer(buf[profile.start+8]),      # minute
+                            as.integer(buf[profile.start+9]),      # second
+                            tz=getOption("oce.tz")) # FIXME: check on tzo
+        profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
+        profile.start4 <- sort(c(profile.start, profile.start + 1, profile.start + 2, profile.start + 3)) # lets us index four-byte chunks
+        speed.of.sound <- 0.1 * readBin(buf[profile.start2 + 14], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
+        depth.of.transducer <- 0.1 * readBin(buf[profile.start2 + 16], "integer", n=profiles.to.read, size=2, endian="little")
+        heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+        pitch <- 0.01 * readBin(buf[profile.start2 + 20], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+        roll <- 0.01 * readBin(buf[profile.start2 + 22], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+        salinity <- readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+        temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+        pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
+        metadata <- header
+        metadata$bin1.distance <- bin1.distance
+        metadata$xmit.pulse.length <- xmit.pulse.length
+        metadata$sampling.start <- sampling.start
+        metadata$sampling.end <- sampling.end
+        metadata$sampling.deltat <- sampling.deltat
+        metadata$filename <- filename
+        metadata$oce.beam.attenuated <- FALSE
+        metadata$oce.coordinate <- header$coordinate.system
+        metadata$number.of.beams <- header$number.of.beams
+        metadata$depth.of.transducer <- mean(depth.of.transducer, na.rm=TRUE)
+        ## Transformation matrix
+        tm.c <- if (metadata$beam.pattern == "convex") 1 else -1;
+        tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
+        tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
+        tm.d <- tm.a / sqrt(2)
+        ## FIXME Dal people use 'a' in last row of matrix, and RDI has two definitions!
+        ##
+        ## Notes on coordinate transformation matrix.
+        ## From figure 3 on page 12 of ACT (adcp coordinate transformation.pdf)
+        ## we have
+        ##
+        ##    x defined to run from beam 1 to beam 2
+        ##    y defined to run from beam 4 to beam 3
+        ##    z right-handed from these.
+        ##
+        ## and the upward-looking orientation (viewed from above) is
+        ##
+        ##        B3
+        ##    B2      B1
+        ##        B4
+        ##
+        ## so we have coords
+        ##
+        ##            y
+        ##            ^
+        ##            |
+        ##            |
+        ##    x <-----*   (z into page, or downward)
+        ##
+        ## Thus, for the upwards-mounted orientation, we must transform
+        ## x to -x and z to -z.  The matrix below is from page 13 (section 5.30
+        ## of the ACT.  So, if the orientation is upwards, we need to
+        ## change the signs of rows 1 and 3.
+        metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
+                                                   0        ,          0, -tm.c*tm.a, tm.c*tm.a,
+                                                   tm.b     ,       tm.b,       tm.b,      tm.b,
+                                                   tm.d     ,       tm.d,      -tm.d,     -tm.d),
+                                                 nrow=4, byrow=TRUE)
+        if (metadata$orientation == "upward") {
+            metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
+            metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
+        } else if (metadata$orientation == "downward") {
+        } else warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
+        if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
+        ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)
+        class(time) <- c("POSIXt", "POSIXct")
+        attr(time, "tzone") <- getOption("oce.tz")
+        data <- list(ma=list(v=v, a=a, q=q, g=g),
+                     ss=list(distance=seq(bin1.distance, by=cell.size, length.out=number.of.cells)),
+                     ts=list(time=time,
+                     pressure=pressure,
+                     temperature=temperature,
+                     salinity=salinity,
+                     depth.of.transducer=depth.of.transducer,
+                     heading=heading,
+                     pitch=pitch,
+                     roll=roll))
+    } else {
+        metadata <- header
+        metadata$filename <- filename
+        data <- NULL
     }
-    if (ii != 1+profiles.to.read) {
-        v <- v[1:(ii-1),,]
-        a <- a[1:(ii-1),,]
-        g <- g[1:(ii-1),,]
-        cat("discarded", profiles.to.read - ii, "spurious profiles")
-    }
-    time <- ISOdatetime(2000+as.integer(buf[profile.start+4]), # year
-                        as.integer(buf[profile.start+5]),      # month
-                        as.integer(buf[profile.start+6]),      # day
-                        as.integer(buf[profile.start+7]),      # hour
-                        as.integer(buf[profile.start+8]),      # minute
-                        as.integer(buf[profile.start+9]),      # second
-                        tz=getOption("oce.tz")) # FIXME: check on tzo
-    profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
-    profile.start4 <- sort(c(profile.start, profile.start + 1, profile.start + 2, profile.start + 3)) # lets us index four-byte chunks
-    speed.of.sound <- 0.1 * readBin(buf[profile.start2 + 14], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
-    depth.of.transducer <- 0.1 * readBin(buf[profile.start2 + 16], "integer", n=profiles.to.read, size=2, endian="little")
-    heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    pitch <- 0.01 * readBin(buf[profile.start2 + 20], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    roll <- 0.01 * readBin(buf[profile.start2 + 22], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    salinity <- readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
-    metadata <- header
-    metadata$bin1.distance <- bin1.distance
-    metadata$xmit.pulse.length <- xmit.pulse.length
-    metadata$sampling.start <- sampling.start
-    metadata$sampling.end <- sampling.end
-    metadata$sampling.deltat <- sampling.deltat
-    metadata$filename <- filename
-    metadata$oce.beam.attenuated <- FALSE
-    metadata$oce.coordinate <- header$coordinate.system
-    metadata$number.of.beams <- header$number.of.beams
-    metadata$depth.of.transducer <- mean(depth.of.transducer, na.rm=TRUE)
-    ## Transformation matrix
-    tm.c <- if (metadata$beam.pattern == "convex") 1 else -1;
-    tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
-    tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
-    tm.d <- tm.a / sqrt(2)
-    ## FIXME Dal people use 'a' in last row of matrix, and RDI has two definitions!
-    ##
-    ## Notes on coordinate transformation matrix.
-    ## From figure 3 on page 12 of ACT (adcp coordinate transformation.pdf)
-    ## we have
-    ##
-    ##    x defined to run from beam 1 to beam 2
-    ##    y defined to run from beam 4 to beam 3
-    ##    z right-handed from these.
-    ##
-    ## and the upward-looking orientation (viewed from above) is
-    ##
-    ##        B3
-    ##    B2      B1
-    ##        B4
-    ##
-    ## so we have coords
-    ##
-    ##            y
-    ##            ^
-    ##            |
-    ##            |
-    ##    x <-----*   (z into page, or downward)
-    ##
-    ## Thus, for the upwards-mounted orientation, we must transform
-    ## x to -x and z to -z.  The matrix below is from page 13 (section 5.30
-    ## of the ACT.  So, if the orientation is upwards, we need to
-    ## change the signs of rows 1 and 3.
-    metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
-                                               0        ,          0, -tm.c*tm.a, tm.c*tm.a,
-                                               tm.b     ,       tm.b,       tm.b,      tm.b,
-                                               tm.d     ,       tm.d,      -tm.d,     -tm.d),
-                                             nrow=4, byrow=TRUE)
-    if (metadata$orientation == "upward") {
-        metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
-        metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
-    } else if (metadata$orientation == "downward") {
-    } else warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
-    if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
-    ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)
-    class(time) <- c("POSIXt", "POSIXct")
-    attr(time, "tzone") <- getOption("oce.tz")
-    data <- list(ma=list(v=v, a=a, q=q, g=g),
-                 ss=list(distance=seq(bin1.distance, by=cell.size, length.out=number.of.cells)),
-                 ts=list(time=time,
-                 pressure=pressure,
-                 temperature=temperature,
-                 salinity=salinity,
-                 depth.of.transducer=depth.of.transducer,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)

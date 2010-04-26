@@ -49,12 +49,11 @@ read.adp.sontek(file, from=0, to, by=1,
   \item{\dots}{additional arguments, passed to called routines.}
 }
 
-\details{Reads a binary-format ADP file.  Two types can be handled at
-  the moment: the Teledyne-RDI (2007) Workhorse instrument using
-  firmware version 16.28, and the NorTek Aquadopp High Resolution
-  profiler.  \code{read.adp} may also work on other  RDI
-  units, but this has not been tested.  It definitely does not work on
-  other NorTek units, because the binary format is different for each.
+\details{Reads a binary-format ADP file.  Three types can be handled at
+  the moment: the Teledyne-RDI Workhorse instrument using
+  firmware version 16.30 (and, to some extent, also firmware 16.28 and 16.21),
+  the NorTek Aquadopp High Resolution profiler, and SonTek PCADP.
+  \code{read.adp} may also work on other units, but this has not been tested.
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
