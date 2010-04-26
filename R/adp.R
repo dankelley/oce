@@ -27,7 +27,7 @@ read.adp <- function(file, from=0, to, by=1, type=c("rdi", "nortek", "sontek"), 
 summary.adp <- function(object, ...)
 {
     if (!inherits(object, "adp")) stop("method is only for adp objects")
-    if (object$metadata$have.actual.data) {
+    if (is.null(object$metadata$have.actual.data) || object$metadata$have.actual.data) {
         if (inherits(object, "aquadopp")) {
             res.specific <- list(internal.code.version=object$metadata$internal.code.version,
                                  hardware.revision=object$metadata$hardware.revision,
@@ -111,7 +111,7 @@ summary.adp <- function(object, ...)
         res <- list(instrument.type=object$metadata$instrument.type,
                     filename=object$metadata$filename,
                     serial.number="unknown",
-                    number.of.profiles=0)
+                    have.actual.data=FALSE)
     }
     class(res) <- "summary.adp"
     res
@@ -122,7 +122,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("ADP Summary\n", ...)
     cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", paste(x$metadata$serial.number, collapse=""), "\n", sep=""), ...)
     cat("  Source:            ", x$filename, "\n", ...)
-    if (is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data) {
+    if (is.null(x$have.actual.data) || x$have.actual.data) {
         cat("  Measurements:      ", format(x$sampling.start), attr(x$sampling.start, "tzone"),
             "to", format(x$sampling.end), attr(x$sampling.end, "tzone"),
             "at interval", x$sampling.deltat, "s\n", ...)
