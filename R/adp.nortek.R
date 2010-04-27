@@ -241,9 +241,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
     cell.size <- header$cell.size
     ##profiles.in.file <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oce.debug(debug, "profile data at buf[", header$offset, "] et seq.\n")
-    oce.debug(debug, "profiles.in.file=", profiles.in.file, "\n")
     profile.start <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
     profiles.in.file <- length(profile.start)
+    oce.debug(debug, "profiles.in.file=", profiles.in.file, "\n")
     sampling.start <- ISOdatetime(2000+bcd2integer(buf[profile.start[1]+8]), # year FIXME: have to check if before 1990
                                   bcd2integer(buf[profile.start[1]+9]), # month
                                   bcd2integer(buf[profile.start[1]+6]), # day
