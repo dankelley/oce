@@ -6,20 +6,18 @@
 
 \description{Read an pT temperature-depth recorder file, producing an object of type \code{pt}.}
 
-\usage{read.pt(file, from="start", to="end", by=1, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
+\usage{read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{from}{indication of the first datum to read.  This can be the
-    word \code{"start"}, for the first datum in the file, or positive
-    integer giving the sequence number (1 thus being equivalent to
-    \code{"start"}), or the POSIX time of the first datum, or a
-    character string that can be converted to a POSIX time.  (For POSIX
-    times, be careful about the \code{tz} argument.)}
-  \item{to}{an indication of the last datum to be read.  The string
-    \code{"end"} means to read to the end of the file; otherwise, the
-    indication is of the same format as for \code{from}.}
+  \item{from}{indication of the first datum to read.  This can a
+    positive integer to indicate sequence number, the POSIX time of the
+    first datum, or a character string that can be converted to a POSIX
+    time.  (For POSIX times, be careful about the \code{tz} argument.)}
+  \item{to}{an indication of the last datum to be read, in the same
+    format as \code{from}.  If \code{to} is missing, data will be read
+    to the end of the file.}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
     profiles are skipped between each pair of profiles that is read.  If

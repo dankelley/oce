@@ -39,8 +39,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
   \item{from}{index number of first profile to be read, or the
     (POSIXt) time of that first profile.  See \dQuote{Examples}, and
     make careful note of the use of the \code{tz} argument.}
-  \item{to}{optional number of profiles to read, or the last POSIXt
-    time to read.}
+  \item{to}{indication of the last profiel to read, in a format matching
+    that of \code{from}.}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
     profiles are skipped between each pair of profiles that is read.

@@ -95,8 +95,9 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
     invisible()
 }
 
-read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.action,debug=getOption("oce.debug"))
+read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=getOption("oce.debug"))
 {
+    oce.debug(debug, 'to=', to, '\n')
     file <- full.filename(file)
     filename <- file
     if (is.character(file)) {
@@ -111,10 +112,9 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
     }
     oce.debug(debug, "from=", from, "\n")
     from.keep <- from
-    if (is.numeric(from) && from < 0)
+    sampling.deltat <- 0
+    if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
-    if (is.character(from) && from == "start")
-        from <- 1
     ##from.keep <- from
     to.keep <- to
     by.keep <- by
@@ -169,6 +169,7 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
     }
     if (!missing(by)) {
         by <- ctime.to.seconds(by)
+        sampling.deltat <- by
     }
     oce.debug(debug, "by inferred to be", by, "s\n")
 
@@ -182,18 +183,16 @@ read.pt <- function(file,from="start",to="end",by=1,tz=getOption("oce.tz"),log.a
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
     oce.debug(debug, "Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
-    if (missing(to) || to == "end")
+    if (missing(to))
         d <- scan(file, character(), skip=from-1, quiet=TRUE) # whole file
     else
-        d <- scan(file, character(), skip=from-1, quiet=TRUE, nlines=(to - from))
+        d <- scan(file, character(), skip=from-1, quiet=TRUE, nlines=(to - from + 1))
     ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
-    if (by != 1)  {
-        look <- seq(from=1, to=n, by=by)
-        d <- d[,look]
-        n <- dim(d)[2]
-    }
+    look <- seq(from=1, to=n, by=by)
+    d <- d[,look]
+    n <- dim(d)[2]
     if (nvar == 2) {
         oce.debug(debug, "2 elements per data line\n")
         time <- sampling.start + seq(from=1, to=n) * by * sampling.deltat
@@ -258,8 +257,8 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("PT Summary\n", ...)
     cat("  Instrument:   RBR serial number", x$serial.number, "\n", ...)
     cat("  Source:      ", x$filename, "\n", ...)
-    cat(sprintf("  Measurements: %s  to  %s  at interval  %d s\n", format(x$sampling.start), format(x$sampling.end), x$sampling.deltat), ...)
-    cat(sprintf("  Subsamples:   %s  to  %s  at interval  %d s\n", format(x$start.time), format(x$end.time), x$subsample.deltat), ...)
+    cat(sprintf("  Measurements: %s  to  %s  at interval  %.2f s\n", format(x$sampling.start), format(x$sampling.end), x$sampling.deltat), ...)
+    cat(sprintf("  Subsamples:   %s  to  %s  at interval  %.2f s\n", format(x$start.time), format(x$end.time), x$subsample.deltat), ...)
     cat("\nStatistics:\n", ...)
     cat(show.fives(x, indent='  '), ...)
     cat("\n", ...)

@@ -9,16 +9,16 @@
 \description{Read an ADP data file, producing an object of type \code{adp}.}
 
 \usage{
-read.adp(file, from=0, to, by=1,
+read.adp(file, from=1, to, by=1,
           type=c("rdi", "nortek", "sontek"),
           debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
-read.adp.rdi(file, from=0, to, by=1,
+read.adp.rdi(file, from=1, to, by=1,
               type=c("workhorse"),
               debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
-read.adp.nortek(file, from=0, to, by=1,
+read.adp.nortek(file, from=1, to, by=1,
                 type=c("aquadopp high resolution"),
                 debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
-read.adp.sontek(file, from=0, to, by=1,
+read.adp.sontek(file, from=1, to, by=1,
                 type=c("adp"),
                 debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
 }
@@ -26,12 +26,14 @@ read.adp.sontek(file, from=0, to, by=1,
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
-  \item{from}{indication of the first profile to read.  This can be an integer, 
-  the value number of profiles to skip at start, or the POSIXt time at
-    which to start reading.  See \dQuote{Examples}, and make careful
-    note of the use of the \code{tz} argument.}
-  \item{to}{optional number of profiles to read, or the last POSIXt
-    time to read.}
+  \item{from}{indication of the first profile to read.  This can be an
+    integer, the sequence number of the first profile to read, or a
+    POSIXt time before which profiles should be skipped, or a character
+    string that converts to a POSIXt time (assuming UTC timezone).  See
+    \dQuote{Examples}, and make careful note of the use of the \code{tz}
+    argument.}
+  \item{to}{indication of the last profiel to read, in a format matching
+    that of \code{from}.}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
     profiles are skipped between each pair of profiles that is read.  If

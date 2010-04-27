@@ -11,7 +11,7 @@ ad.beam.name <- function(x, which)
     else " "
 }
 
-read.adp <- function(file, from=0, to, by=1, type=c("rdi", "nortek", "sontek"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp <- function(file, from=1, to, by=1, type=c("rdi", "nortek", "sontek"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     oce.debug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)

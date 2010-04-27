@@ -167,7 +167,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
-read.adp.nortek <- function(file, from=0, to, by=1, type=c("aquadopp high resolution"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolution"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     bisect.adp.nortek <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.adp.nortek(t.find=", format(t.find), ", add=", add, "\n")

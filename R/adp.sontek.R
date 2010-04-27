@@ -1,4 +1,4 @@
-read.adp.sontek <- function(file, from=0, to, by=1, type=c("adp"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
 
