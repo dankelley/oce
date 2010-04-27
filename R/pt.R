@@ -257,8 +257,14 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("PT Summary\n", ...)
     cat("  Instrument:   RBR serial number", x$serial.number, "\n", ...)
     cat("  Source:      ", x$filename, "\n", ...)
-    cat(sprintf("  Measurements: %s  to  %s  at interval  %.2f s\n", format(x$sampling.start), format(x$sampling.end), x$sampling.deltat), ...)
-    cat(sprintf("  Subsamples:   %s  to  %s  at interval  %.2f s\n", format(x$start.time), format(x$end.time), x$subsample.deltat), ...)
+    cat(sprintf("  Measurements: %s %s to %s %s at interval %.2f s\n",
+                format(x$sampling.start), attr(x$sampling.start, "tzone"),
+                format(x$sampling.end), attr(x$sampling.end, "tzone"),
+                x$sampling.deltat), ...)
+    cat(sprintf("  Subsamples:   %s %s to %s %s at interval %.2f s\n",
+                format(x$start.time), attr(x$start.start, "tzone"),
+                format(x$end.time),  attr(x$end.time, "tzone"),
+                x$subsample.deltat), ...)
     cat("\nStatistics:\n", ...)
     cat(show.fives(x, indent='  '), ...)
     cat("\n", ...)
