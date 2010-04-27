@@ -82,11 +82,11 @@ summary.adp <- function(object, ...)
                     instrument.type=object$metadata$instrument.type,
                     serial.number=object$metadata$serial.number,
                     start.time=object$data$ts$time[1],
-                    delta.time=mean(diff(as.numeric(object$data$ts$time))),
                     end.time=object$data$ts$time[length(object$data$ts$time)],
+                    sampling.deltat=object$metadata$sampling.deltat,
                     sampling.start=object$metadata$sampling.start,
                     sampling.end=object$metadata$sampling.end,
-                    sampling.deltat=object$metadata$sampling.deltat,
+                    subsample.deltat=mean(diff(as.numeric(object$data$ts$time))),
                     distance=object$data$ss$distance,
                     metadata=object$metadata,
                     frequency=object$metadata$frequency,
@@ -123,11 +123,14 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", paste(x$metadata$serial.number, collapse=""), "\n", sep=""), ...)
     cat("  Source:            ", x$filename, "\n", ...)
     if (is.null(x$have.actual.data) || x$have.actual.data) {
-        cat("  Measurements:      ", format(x$sampling.start), attr(x$sampling.start, "tzone"),
-            "to", format(x$sampling.end), attr(x$sampling.end, "tzone"),
-            "at interval", x$sampling.deltat, "s\n", ...)
-        cat("  Subsamples:        ", as.character(x$start.time), attr(x$start.time,"tzone"),
-            "to", as.character(x$end.time), attr(x$end.time, "tzone"), "at interval", x$delta.time, "s\n", ...)
+        cat(sprintf("  Measurements: %s %s to %s %s at interval %.2f s\n",
+                    format(x$sampling.start), attr(x$sampling.start, "tzone"),
+                    format(x$sampling.end), attr(x$sampling.end, "tzone"),
+                    x$sampling.deltat), ...)
+        cat(sprintf("  Subsamples:   %s %s to %s %s at interval %.2f s\n",
+                    format(x$start.time), attr(x$start.start, "tzone"),
+                    format(x$end.time),  attr(x$end.time, "tzone"),
+                    x$subsample.deltat), ...)
         ##cat("  Number of profiles:", x$number.of.profiles, "\n", ...)
         cat(sprintf("  Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                     x$number.of.cells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
