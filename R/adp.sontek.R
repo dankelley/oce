@@ -126,6 +126,33 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
     id <- buf[profile.start]
     bytes.per.profile <- diff(profile.start[1:2])
     oce.debug(debug, "bytes.per.profile=", bytes.per.profile, "\n")
+
+    ## File time range and deltat
+    sampling.start <- ISOdatetime(readBin(buf[profile.start[1]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
+                                  as.integer(buf[profile.start[1]+21]), # month
+                                  as.integer(buf[profile.start[1]+20]), # day
+                                  as.integer(buf[profile.start[1]+23]), # hour
+                                  as.integer(buf[profile.start[1]+22]), # min
+                                  as.integer(buf[profile.start[1]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
+                                  tz=getOption("oce.tz"))
+    oce.debug(debug, "sampling.start=", format(sampling.start), "\n")
+    sampling.end <- ISOdatetime(readBin(buf[profile.start[profiles.in.file]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
+                             as.integer(buf[profile.start[profiles.in.file]+21]), # month
+                             as.integer(buf[profile.start[profiles.in.file]+20]), # day
+                             as.integer(buf[profile.start[profiles.in.file]+23]), # hour
+                             as.integer(buf[profile.start[profiles.in.file]+22]), # min
+                             as.integer(buf[profile.start[profiles.in.file]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
+                             tz=getOption("oce.tz"))
+    oce.debug(debug, "sampling.end=", format(sampling.end), "\n")
+    sampling.deltat <- as.numeric(ISOdatetime(readBin(buf[profile.start[2]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
+                                              as.integer(buf[profile.start[2]+21]), # month
+                                              as.integer(buf[profile.start[2]+20]), # day
+                                              as.integer(buf[profile.start[2]+23]), # hour
+                                              as.integer(buf[profile.start[2]+22]), # min
+                                              as.integer(buf[profile.start[2]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec
+                                              tz=getOption("oce.tz"))) - as.numeric(sampling.start)
+    oce.debug(debug, "sampling.deltat=", format(sampling.deltat), "\n")
+
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
@@ -139,12 +166,13 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
                   "profile.start[1:10]=", profile.start[1:10],"\n",
                   "profile.start[",from.pair$index, "]=", profile.start[from.pair$index], "at time", format(from.pair$t), "\n",
                   "profile.start[",  to.pair$index, "]=", profile.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
+        ## FIXME next line reads year incorrectly
         two.times <- ISOdatetime(readBin(buf[profile.start[1:2]+18:19],"integer",size=2,signed=FALSE,endian="little"),  # year
                                  as.integer(buf[profile.start[1:2]+21]), # month
                                  as.integer(buf[profile.start[1:2]+20]), # day
                                  as.integer(buf[profile.start[1:2]+23]), # hour
                                  as.integer(buf[profile.start[1:2]+22]), # min
-                                 as.integer(buf[profile.start[1:2]+25]), # sec
+                                 as.integer(buf[profile.start[1:2]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec
                                  tz=getOption("oce.tz"))
         dt <- as.numeric(difftime(two.times[2], two.times[1], units="secs"))
         oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"(not interpreted yet)\n")
@@ -233,6 +261,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      serial.number=serial.number,
+                     sampling.start=sampling.start,
+                     sampling.end=sampling.end,
+                     sampling.deltat=sampling.deltat,
                      frequency=frequency,
                      cpu.software.ver.num=cpu.software.ver.num,
                      dsp.software.ver.num=dsp.software.ver.num,
