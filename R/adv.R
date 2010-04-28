@@ -48,14 +48,11 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
     file.size <- seek(file, 0, "start")
     oce.debug(debug, "  file.size=", file.size, "\n")
     buf <- readBin(file, "raw", file.size)
-
     header <- decode.header.nortek(buf, debug=debug-1)
-
     metadata <- list(instrument.type="vector",
                      filename=filename,
                      sampling.start=if (missing(sampling.start)) NA else sampling.start,
                      sampling.end=NA,   # FIXME
-                     ##size=header$head$size, # FIXME: does this get used?
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
                      serial.number=header$hardware$serial.number,
                      frequency=header$head$frequency,
@@ -350,6 +347,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
 
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    oce.debug(debug, "read.adv.sontek.adr() ENTRY\n")
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "rb")
@@ -372,6 +370,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
 
     seek(file, 0, "end", rw="read")
     filesize <- seek(file, 0, origin="start", rw="read")
+    oce.debug(debug, "filesize=",filesize,"\n")
     ## All details of the binary format come from Appendix 3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
     hardware.configuration <- readBin(file, "raw", n=hardware.configuration.length) # 24 total
@@ -410,6 +409,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     cpu.software.ver.num <- as.integer(hardware.configuration[1])/10 # 8.5
     dsp.software.ver.num <- as.integer(hardware.configuration[2])/10 # 4.1
     serial.number <- paste(integer2ascii(as.integer(probe.configuration[10+1:5])), collapse="")  # "B373H"
+    oce.debug(debug, "serial.number=",serial.number,"\n")
     if (deployment.parameters[1]!=0x12) stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
     if (deployment.parameters[2]!=0x01) stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
     coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
@@ -424,6 +424,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
         coordinate.system <- "xyz"
     }
     if (coordinate.system == "beam") stop("cannot deal with beam coordinates in this version of the package, because the SonTek documentation (Appendix 3 of ADV Operation Manual) does not say how the transformation matrix is stored in the file header")
+
+    oce.debug(debug, "coordinate.system=", coordinate.system, "\n")
 
     ## bug: docs say sampling rate in 0.1Hz, but the SLEIWEX-2008-m3 data file shows 0.01Hz
     sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE) # 600 0 0
@@ -496,7 +498,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                                 samples=samples.per.burst))
     bursts <- length(burst.location)
     ntotal <- sum(samples.per.burst)
-    oce.debug(debug, "NTOTAL:", ntotal,"***\n")
+    oce.debug(debug, "ntotal:", ntotal,"***\n")
     v <- array(numeric(), dim=c(ntotal, 3))
     heading <- array(numeric(), dim=c(ntotal, 1))
     pitch <- array(numeric(), dim=c(ntotal, 1))
@@ -718,9 +720,9 @@ summary.adv <- function(object, ...)
     res <- list(filename=object$metadata$filename,
                 number.of.beams=object$metadata$number.of.beams,
                 transformation.matrix=object$metadata$transformation.matrix,
-                sampling.start=min(object$data$ts$time, na.rm=TRUE),
-                sampling.end=max(object$data$ts$time, na.rm=TRUE),
-                delta.time=as.numeric(difftime(object$data$ts$time[len], object$data$ts$time[1], units="secs")/len),
+                subsample.start=min(object$data$ts$time, na.rm=TRUE),
+                subsample.end=max(object$data$ts$time, na.rm=TRUE),
+                subsample.deltat=as.numeric(difftime(object$data$ts$time[len], object$data$ts$time[1], units="secs")/len), # BUG: wrong
                 instrument.type=object$metadata$instrument.type,
                 serial.number=object$metadata$serial.number,
                 number.of.samples=length(object$data$ts$time),
@@ -736,19 +738,17 @@ summary.adv <- function(object, ...)
 
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("ADV Summary\n")
-    cat("  Instrument type:       ", x$instrument.type, "; serial number:", x$serial.number, "\n")
-    cat("  Filename:              ", x$filename, "\n")
-##    cat("  Instrument serial number:   ", x$metadata$serial.number, "\n")
-    cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Data times from:       ", format(x$sampling.start), attr(x$sampling.end, "tzone"),
-        "to",
-        format(x$sampling.end), attr(x$sampling.end, "tzone"),
-        "at interval", x$delta.time, "s\n")
-##    cat("  Orientation:          ", x$orientation, "\n")
-##    cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
+    cat("ADV Summary\n", ...)
+    cat("  Instrument:            ", x$instrument.type, "; serial number:", x$serial.number, "\n")
+    cat("  Source:                ", x$filename, "\n")
+    cat(sprintf("  Subsamples:         %s %s to %s %s at interval %.2f s\n",
+                format(x$subsample.start), attr(x$subsample.start, "tzone"),
+                format(x$subsample.end),  attr(x$subsample.end, "tzone"),
+                x$subsample.deltat), ...)
+    ## cat("  Orientation:          ", x$orientation, "\n")
+    ## cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
     cat("  Number of samples:     ", x$number.of.samples, "\n")
-
+    cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
     if (x$instrument.type == "vector") {
         cat("  Burst Length:          ", x$burst.length, "\n")
     }
