@@ -78,7 +78,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
         ## FIXME "/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/DEF003.ADP" has adp.type=3 but the ctl file says 1500kHz
         oce.debug(debug, "adp.type=",adp.type,"\n")
         frequency <- switch(adp.type+1, 3000, 1500, 750, 500, 250)
-        oce.debug(debug, "frequency=",frequency," (BUG: wrong on a test case)\n")
+        oce.debug(debug, "frequency=",frequency,"\n")
         nbeams <- as.integer(buf[27])
         oce.debug(debug, "nbeams=", nbeams, "\n")
         beam.geometry <- as.integer(buf[28])
