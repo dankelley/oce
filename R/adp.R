@@ -81,11 +81,11 @@ summary.adp <- function(object, ...)
                     filename=object$metadata$filename,
                     instrument.type=object$metadata$instrument.type,
                     serial.number=object$metadata$serial.number,
-                    start.time=object$data$ts$time[1],
-                    end.time=object$data$ts$time[length(object$data$ts$time)],
-                    sampling.deltat=object$metadata$sampling.deltat,
                     sampling.start=object$metadata$sampling.start,
                     sampling.end=object$metadata$sampling.end,
+                    sampling.deltat=object$metadata$sampling.deltat,
+                    subsample.start=object$data$ts$time[1],
+                    subsample.end.time=object$data$ts$time[length(object$data$ts$time)],
                     subsample.deltat=mean(diff(as.numeric(object$data$ts$time))),
                     distance=object$data$ss$distance,
                     metadata=object$metadata,
@@ -127,9 +127,9 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
                     format(x$sampling.start), attr(x$sampling.start, "tzone"),
                     format(x$sampling.end), attr(x$sampling.end, "tzone"),
                     x$sampling.deltat), ...)
-        cat(sprintf("  Subsamples:   %s %s to %s %s at interval %.2f s\n",
-                    format(x$start.time), attr(x$start.start, "tzone"),
-                    format(x$end.time),  attr(x$end.time, "tzone"),
+        cat(sprintf("  Subsamples:         %s %s to %s %s at interval %.2f s\n",
+                    format(x$subsample.start), attr(x$subsample.start, "tzone"),
+                    format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                     x$subsample.deltat), ...)
         ##cat("  Number of profiles:", x$number.of.profiles, "\n", ...)
         cat(sprintf("  Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",

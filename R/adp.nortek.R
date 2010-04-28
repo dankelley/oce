@@ -365,6 +365,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
                      sampling.start=sampling.start,
                      sampling.deltat=sampling.deltat,
                      sampling.end=sampling.end,
+                     subsample.start=time[1],
+                     subsample.end=time[length(time)],
+                     subsample.deltat=as.numeric(time[2]) - as.numeric(time[1]),
                      size=header$head$size,
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
                      serial.number=header$hardware$serial.number,
