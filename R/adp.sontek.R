@@ -74,8 +74,6 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
         serial.number <- readBin(buf[16:25], "character")
         oce.debug(debug, "serial.number=", serial.number, "\n")
         adp.type <- readBin(buf[26], what="integer", n=1, size=1) # 0-3; 1=1.5; 2-750; 3-500 [p83]
-        warning("known error: may interpret adp.type (frequency) incorrectly")
-        ## FIXME "/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/DEF003.ADP" has adp.type=3 but the ctl file says 1500kHz
         oce.debug(debug, "adp.type=",adp.type,"\n")
         frequency <- switch(adp.type+1, 3000, 1500, 750, 500, 250)
         oce.debug(debug, "frequency=",frequency,"\n")
