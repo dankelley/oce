@@ -1,7 +1,6 @@
 read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
-
     bisect.sontek.adp <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.sontek.adv(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         len <- length(profile.start)
@@ -72,14 +71,16 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
         cpu.software.ver.num <- as.integer(buf[13]) / 10 # CPUSoftwareVerNum [p83]
         dsp.software.ver.num <- as.integer(buf[14]) / 10 # DSPSoftwareVerNum [p83]
         board.rev <- readBin(buf[15],"character",n=1,size=1,signed=TRUE) # BoardRev [p83]
-        serial.number <- readBin(buf[16:26], "character")
-        adp.type <- as.integer(buf[27]) # 0-3; 1=1.5; 2-750; 3-500 [p83]
+        serial.number <- readBin(buf[16:25], "character")
+        oce.debug(debug, "serial.number=", serial.number, "\n")
+        adp.type <- readBin(buf[26], what="integer", n=1, size=1) # 0-3; 1=1.5; 2-750; 3-500 [p83]
         warning("known error: may interpret adp.type (frequency) incorrectly")
         ## FIXME "/data/archive/sleiwex/2008/moorings/m07/adp/sontek_h53/raw/DEF003.ADP" has adp.type=3 but the ctl file says 1500kHz
         oce.debug(debug, "adp.type=",adp.type,"\n")
-        frequency <- switch(adp.type+1, 3000, 1500, 750, 500)
-        oce.debug(debug, "frequency=",frequency," (BUG: wrong on m07/adp/sontek_h53)\n")
-        nbeams <- as.integer(buf[28])
+        frequency <- switch(adp.type+1, 3000, 1500, 750, 500, 250)
+        oce.debug(debug, "frequency=",frequency," (BUG: wrong on a test case)\n")
+        nbeams <- as.integer(buf[27])
+        oce.debug(debug, "nbeams=", nbeams, "\n")
         beam.geometry <- as.integer(buf[28])
         oce.debug(debug, "beam.geometry=", beam.geometry, "; 0 means 2 beams; 1 means 3 beams, 2 means 4 beams with 1 verticl; 3 means 4 beams, Janus\n")
         slant.angle <- readBin(buf[29:30], "integer", n=1, size=2, signed=FALSE) / 10
