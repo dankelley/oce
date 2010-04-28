@@ -97,7 +97,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
 
 read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=getOption("oce.debug"))
 {
-    oce.debug(debug, 'to=', to, '\n')
+    if (!missing(to))
+        oce.debug(debug, 'to=', to, '\n')
     file <- full.filename(file)
     filename <- file
     if (is.character(file)) {
@@ -112,17 +113,18 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     }
     oce.debug(debug, "from=", from, "\n")
     from.keep <- from
-    sampling.deltat <- 0
+    measurement.deltat <- 0
     if (is.numeric(from) && from < 1)
         stop("from cannot be an integer less than 1")
     ##from.keep <- from
-    to.keep <- to
+    if (!missing(to))
+        to.keep <- to
     by.keep <- by
     host.time <- 0
     logger.time <- 0
-    sampling.start <- 0
-    sampling.end <- 0
-    sample.period <- 0
+    subsample.start <- 0
+    subsample.end <- 0
+    subsample.period <- 0
     number.channels <- 0
     ## Q: what ends the header? a blank line?  Line 21?
     ## calibration 1
@@ -131,45 +133,46 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     ## memory type
     ## Timestamp
     ## columns time, Temperature, p
-
     ##header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
     header <- c()
-    sampling.start <- sample.period <- NULL
+    measurement.start <-measurement.end <- measurement.deltat <- NULL
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) break
         header <- c(header, line)
         if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
             l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
-            sampling.start <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            measurement.start <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
         }
         if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
             l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
-            sampling.end <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            measurement.end <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
         }
         if (0 < (r<-regexpr("Sample[ \t]*period", line))) {
             l <- sub("[ ]*Sample[ \t]*period[ ]*", "", line)
             sp <- as.numeric(strsplit(l, ":")[[1]])
-            sampling.deltat <- (sp[3] + 60*(sp[2] + 60*sp[1]))
+            measurement.deltat <- (sp[3] + 60*(sp[2] + 60*sp[1]))
         }
     }
+    oce.debug(debug, "measurement.start =", format(measurement.start), "\n")
+    oce.debug(debug, "measurement.end =", format(measurement.end), "\n")
+    oce.debug(debug, "measurement.deltat  =", measurement.deltat, "\n")
     serial.number <- strsplit(header[1],"[\t ]+")[[1]][4]
-    oce.debug(debug, "sampling.start =", format(sampling.start), "\n")
-    oce.debug(debug, "sampling.deltat  =", sampling.deltat, "\n")
+    oce.debug(debug, "serial.number=", serial.number,"\n")
     ## Now that we know the logging times, we can work with 'from 'and 'to'
     if (inherits(from, "POSIXt") || inherits(from, "character")) {
-        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), sampling.start, units="secs")) / sampling.deltat
+        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), subsample.start, units="secs")) / measurement.deltat
         oce.debug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
     }
     if (!missing(to)) {
         if (inherits(to, "POSIXt") || length(grep(":", to))) {
-            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), sampling.start, units="secs")) / sampling.deltat
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), subsampl.start, units="secs")) / subsample.deltat
             oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
         }
     }
     if (!missing(by)) {
         by <- ctime.to.seconds(by)
-        sampling.deltat <- by
+        subsample.deltat <- by
     }
     oce.debug(debug, "by inferred to be", by, "s\n")
 
@@ -190,35 +193,37 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
-    look <- seq(from=1, to=n, by=by)
+    if (is.numeric(from) && from != 1)
+        warning("ignoring value of 'from'")
+    look <- seq(from=1, to=n, by=by)    # BUG: why not using proper 'from'?
     d <- d[,look]
     n <- dim(d)[2]
+    subsample.start <- measurement.start
     if (nvar == 2) {
-        oce.debug(debug, "2 elements per data line\n")
-        time <- sampling.start + seq(from=1, to=n) * by * sampling.deltat
+        time <- subsample.start + seq(from=1, to=n) * subsample.deltat # BUG: 'from' seems wrong
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
-        oce.debug(debug, "4 elements per data line\n")
         time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
-        oce.debug(debug, "5 elements per data line\n")
         time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
         ## ignore column 5
     } else stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)
     data <- data.frame(time=time, temperature=temperature, pressure=pressure)
-    metadata <- list(header=header,
-                     filename=filename,
+    metadata <- list(filename=filename,
+                     instrument.type="rbr",
                      serial.number=serial.number,
-                     sampling.start=sampling.start,
-                     sampling.end=sampling.end,
-                     sampling.deltat=sampling.deltat,
-                     subsample.deltat=as.numeric(difftime(time[2], time[1], units="secs")))
+                     measurement.start=measurement.start,
+                     measurement.end=measurement.end,
+                     measurement.deltat=measurement.deltat,
+                     subsample.start=time[1],
+                     subsample.end=time[length(time)],
+                     subsample.deltat=as.numeric(time[2])-as.numeric(time[1]))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -234,13 +239,13 @@ summary.pt <- function(object, ...)
     fives <- matrix(nrow=2, ncol=5)
     res <- list(filename=object$metadata$filename,
                 serial.number=object$metadata$serial.number,
-                samples=length(object$data$temperature),
-                sampling.start=object$metadata$sampling.start,
-                sampling.end=object$metadata$sampling.end,
-                sampling.deltat=object$metadata$sampling.deltat,
+                measurement.start=object$metadata$measurement.start,
+                measurement.end=object$metadata$measurement.end,
+                measurement.deltat=object$metadata$measurement.deltat,
+                subsample.start=object$metadata$subsample.start,
+                subsample.end=object$metadata$subsample.end,
                 subsample.deltat=object$metadata$subsample.deltat,
-                start.time=time.range[1],
-                end.time=time.range[2],
+                samples=length(object$data$temperature), # FIXME: do we need this?
                 fives=fives,
                 processing.log=processing.log.summary(object))
     fives[1,] <- fivenum(object$data$temperature, na.rm=TRUE, ...)
@@ -258,12 +263,12 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Instrument:   RBR serial number", x$serial.number, "\n", ...)
     cat("  Source:      ", x$filename, "\n", ...)
     cat(sprintf("  Measurements: %s %s to %s %s at interval %.2f s\n",
-                format(x$sampling.start), attr(x$sampling.start, "tzone"),
-                format(x$sampling.end), attr(x$sampling.end, "tzone"),
-                x$sampling.deltat), ...)
+                format(x$measurement.start), attr(x$measurement.start, "tzone"),
+                format(x$measurement.end), attr(x$measurement.end, "tzone"),
+                x$measurement.deltat), ...)
     cat(sprintf("  Subsamples:   %s %s to %s %s at interval %.2f s\n",
-                format(x$start.time), attr(x$start.start, "tzone"),
-                format(x$end.time),  attr(x$end.time, "tzone"),
+                format(x$subsample.start), attr(x$subsample.start, "tzone"),
+                format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 x$subsample.deltat), ...)
     cat("\nStatistics:\n", ...)
     cat(show.fives(x, indent='  '), ...)

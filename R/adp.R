@@ -123,7 +123,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", paste(x$metadata$serial.number, collapse=""), "\n", sep=""), ...)
     cat("  Source:            ", x$filename, "\n", ...)
     if (is.null(x$have.actual.data) || x$have.actual.data) {
-        cat(sprintf("  Measurements: %s %s to %s %s at interval %.2f s\n",
+        cat(sprintf("  Measurements:       %s %s to %s %s at interval %.2f s\n",
                     format(x$sampling.start), attr(x$sampling.start, "tzone"),
                     format(x$sampling.end), attr(x$sampling.end, "tzone"),
                     x$sampling.deltat), ...)
@@ -160,6 +160,12 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("    Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
             cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n", ...)
             cat("    Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
+        }
+        if (x$instrument.type == "sontek") {
+            cat("  Sontek-specific:\n", ...)
+            cat("    CPU software version:        ", x$metadata$cpu.software.ver.num, "\n", ...)
+            cat("    DSP software version:        ", x$metadata$dsp.software.ver.num, "\n", ...)
+            cat("    Board rev:                   ", x$metadata$board.rev, "\n", ...)
         }
         cat("\nStatistics:\n", ...)
         cat(show.fives(x), ...)
