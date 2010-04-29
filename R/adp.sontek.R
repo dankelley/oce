@@ -21,7 +21,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
             ## SIG p82 C code suggests sec100 comes before second.
             sec100 <- as.integer(buf[profile.start[middle]+24])     # FIXME: determine whether this is 1/100th second
             second <- as.integer(buf[profile.start[middle]+25])
-            t <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz="UTC")
+            t <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=getOption("oce.tz"))
             oce.debug(debug, "t=", format(t), " inferred from year=", year, " month=", month, " day=", day, " hour=", hour, " second=", second, "sec100=", sec100, "\n")
             if (t.find < t)
                 upper <- middle
@@ -207,7 +207,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
     hour   <- as.integer(buf[profile.start + 23])
     sec100 <- as.integer(buf[profile.start + 24])     # FIXME: determine whether this is 1/100th second
     second <- as.integer(buf[profile.start + 25])
-    time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz="UTC")
+    time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=getOption("oce.tz"))
     oce.debug(debug, "time[1:10]=",format(time[1:10]),"\n")
     v <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
     a <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
@@ -299,7 +299,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
     res
 }
 
-sontek.time <- function(t, tz="UTC")
+sontek.time <- function(t, tz=getOption("oce.tz"))
 {
     minute <- bcd2integer(t[1])
     second <- bcd2integer(t[2])

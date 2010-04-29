@@ -257,6 +257,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
     res
 }
 
+##  24 bytes hardware configuration
+## 164 bytes probe configuration
+## 253 bytes probe configuration
 read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
@@ -275,8 +278,96 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
     type <- match.arg(type)
     if (!missing(by)) stop("cannot handle argument 'by' in this version of Oce")
     oce.debug(debug, "read.adv.sontek()...\n")
+
+    ## load whole file
+    seek(file, 0, "start")
+    seek(file, where=0, origin="end")
+    file.size <- seek(file, where=0)
+    oce.debug(debug, "file.size=", file.size, "\n")
+    buf <- readBin(file, what="raw", n=file.size, endian="little")
+
+    dan.buf<<-buf
+
+
+    cpu.software.ver.num <- dsp.software.ver.num <- sensor.orientation <- "?"
+    compass.installed <- recorder.installed <- temp.installed <- press.installed <- TRUE
     if (withHeader) {
         warning("read.adv.sontek(withHeader=TRUE,...) is still in development")
+        ## following adr2cdf.m in hydratools
+        cpu.software.ver.num <- 0.1 * as.numeric(buf[1])
+        oce.debug(debug, "cpu.software.ver.num=", cpu.software.ver.num, "\n")
+        dsp.software.ver.num <- 0.1 * as.numeric(buf[2])
+        oce.debug(debug, "dsp.software.ver.num=",dsp.software.ver.num,"\n")
+        sensor.orientation <- c("up", "down", "side")[as.numeric(buf[4])+1]
+        oce.debug(debug, "sensor.orientation=", sensor.orientation, "\n")
+        compass.installed <- if (as.integer(buf[5]) == 1) TRUE else FALSE;
+        oce.debug(debug, "compass.installed=", compass.installed, "\n")
+        recorder.installed <- if (as.integer(buf[6]) == 1) TRUE else FALSE;
+        oce.debug(debug, "recorder.installed=", recorder.installed, "\n")
+        temp.installed <- if (as.integer(buf[7]) == 1) TRUE else FALSE;
+        oce.debug(debug, "temp.installed=", temp.installed, "\n")
+        press.installed <- if (as.integer(buf[8]) == 1) TRUE else FALSE;
+        oce.debug(debug, "press.installed=", press.installed, "\n")
+        extra.sensors.installed <- c("None","Standard","3_OBS")[1+as.integer(buf[9])]
+        extra.pressure.installed <- c("No","Paros","Druck","ParosFreq")[1+as.integer(buf[10])]
+        ctd.installed <- c("None", "MicrCat CTD", "LISST")[1 + as.integer(buf[11])]
+        serial.number <- readBin(buf[35+0:5], "character", size=1, n=6, endian="little")
+        oce.debug(debug, "serial.number=",serial.number,"\n")
+        number.of.beams = as.integer(buf[43])
+        oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
+        ##ADVProbeConfig.NomPeakPos = fread(fid,1,'int16');
+        ##ADVProbeConfig.Nsamp = fread(fid,1,'int16');
+        number.of.samples = readBin(buf[47:48], "integer", n=1, size=2, endian="little", signed=FALSE)
+        oce.debug(debug, "number.of.samples=",number.of.samples,"\n")
+        sample.interval = readBin(buf[49:50], "integer", n=1, size=2, endian="little", signed=FALSE)
+        oce.debug(debug, "sample.interval=",sample.interval,"\n")
+
+        ##ADVProbeConfig.SampInterval = fread(fid,1,'int16');
+        ##ADVProbeConfig.PulseLag = fread(fid,[5,3],'int16');
+        ##ADVProbeConfig.Nxmt = fread(fid,[5,3],'int16');
+        ##ADVProbeConfig.LagDelay = fread(fid,[5,3],'int16');
+        ##ADVProbeConfig.BeamDelay = fread(fid,1,'int16');
+        ##ADVProbeConfig.PingDelay = fread(fid,1,'int16');
+        ##ADVProbeConfig.XformMat=fread(fid,[3,3],'float32');
+        ##ADVProbeConfig.XmtRecDist=fread(fid,1,'float32');
+        ##ADVProbeConfig.CalCW=fread(fid,1,'float32');
+
+        ## Experiment start
+        year <- readBin(buf[246:247], "integer", n=1, size=2, endian="little", signed=FALSE)
+        day <- as.integer(buf[248])
+        month <- as.integer(buf[249])
+        minute <- as.integer(buf[250])
+        hour <- as.integer(buf[251])
+        ## 252 is hs (maybe 24?)
+        second <- as.integer(dan.buf[253])
+        oce.debug(debug, "hs from buf", buf[252]," (whatever that is)\n")
+        oce.debug(debug, "second from buf", buf[253],"\n")
+        oce.debug(debug, "deployment starts year=", year, "month=", month, "day=", day, "hour=", hour, "minute=", minute, "second=", second, "\n")
+        oce.debug(debug, "deployment starts time", format(ISOdatetime(year, month, day, hour, minute, second, tz=getOption("oce.tz"))), "\n")
+        ## match 3 bytes; seems to be no checksum
+        profile.start <- match.bytes(buf, 0xA5, 0x11, 0x3c) #3c=60 bytes in header
+        profile.start2 <- sort(c(profile.start, profile.start + 1))
+
+        dan.profile.start <<- profile.start
+        dan.profile.start2 <<- profile.start
+
+        burst.year <- readBin(buf[profile.start2 + 18], what="integer", n=length(profile.start), size=2, endian="little", signed=FALSE)
+        oce.debug(debug, "burst.year=", burst.year, "\n")
+        burst.day <- as.integer(buf[profile.start + 20])
+        oce.debug(debug, "burst.day=", burst.day, "\n")
+        burst.month <- as.integer(buf[profile.start + 21])
+        oce.debug(debug, "burst.month=", burst.month, "\n")
+        burst.minute <- as.integer(buf[profile.start + 22])
+        oce.debug(debug, "burst.minute=", burst.minute, "\n")
+        burst.hour <- as.integer(buf[profile.start + 23])
+        oce.debug(debug, "burst.hour=", burst.hour, "\n")
+        burst.second <- as.integer(buf[profile.start + 25])
+        oce.debug(debug, "burst.second=", burst.second, "\n")
+        burst.time <- ISOdatetime(burst.year, burst.month, burst.day, burst.hour, burst.minute, burst.second, tz=getOption("oce.tz"))
+        oce.debug(debug, "burst.time=", format(burst.time), "\n")
+
+
+        stop('testing');
     } else {
         if (missing(subsample.start)) stop("must give 'subsample.start' if withHeader is FALSE")
         if (missing(subsample.deltat)) stop("must give 'subsample.deltat' if withHeader is FALSE")
@@ -294,6 +385,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
         if (buf[subsample.start[1] + as.integer(flag2)] != flag1) stop("problem reading first subsample")
         ## FIXME: should run along the data for a while, to confirm that it's ok
     }
+
 
     n <- length(subsample.start)
     ## id <- buf[subsample.start]
