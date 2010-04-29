@@ -81,9 +81,9 @@ summary.adp <- function(object, ...)
                     filename=object$metadata$filename,
                     instrument.type=object$metadata$instrument.type,
                     serial.number=object$metadata$serial.number,
-                    sampling.start=object$metadata$sampling.start,
-                    sampling.end=object$metadata$sampling.end,
-                    sampling.deltat=object$metadata$sampling.deltat,
+                    measurement.start=object$metadata$measurement.start,
+                    measurement.end=object$metadata$measurement.end,
+                    measurement.deltat=object$metadata$measurement.deltat,
                     subsample.start=object$data$ts$time[1],
                     subsample.end.time=object$data$ts$time[length(object$data$ts$time)],
                     subsample.deltat=mean(diff(as.numeric(object$data$ts$time))),
@@ -124,10 +124,10 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Source:            ", x$filename, "\n", ...)
     if (is.null(x$have.actual.data) || x$have.actual.data) {
         cat(sprintf("  Measurements:       %s %s to %s %s at interval %.2f s\n",
-                    format(x$sampling.start), attr(x$sampling.start, "tzone"),
-                    format(x$sampling.end), attr(x$sampling.end, "tzone"),
-                    x$sampling.deltat), ...)
-        cat(sprintf("  Subsamples:         %s %s to %s %s at interval %.2f s\n",
+                    format(x$measurement.start), attr(x$measurement.start, "tzone"),
+                    format(x$measurement.end), attr(x$measurement.end, "tzone"),
+                    x$measurement.deltat), ...)
+        cat(sprintf("  Subsample:          %s %s to %s %s at interval %.2f s\n",
                     format(x$subsample.start), attr(x$subsample.start, "tzone"),
                     format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                     x$subsample.deltat), ...)
@@ -146,8 +146,8 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             if (x$number.of.beams > 3)
                 cat("                    ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n", ...)
         }
-        if (x$instrument.type == "rdi") {
-            cat("  RDI-specific\n", ...)
+        if (x$instrument.type == "teledyne rdi") {
+            cat("  Teledyne-specific\n", ...)
             cat("    System configuration:       ", x$metadata$system.configuration, "\n", ...)
             cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
             cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)
@@ -155,8 +155,8 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("    Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
             cat("    Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
         }
-        if (x$instrument.type == "aquadopp high resolution") {
-            cat("  Aquadopp-specific:\n", ...)
+        if (x$instrument.type == "nortek aquadopp high resolution") {
+            cat("  Nortek-specific:\n", ...)
             cat("    Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
             cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n", ...)
             cat("    Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
@@ -167,10 +167,10 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("    DSP software version:        ", x$metadata$dsp.software.ver.num, "\n", ...)
             cat("    Board rev:                   ", x$metadata$board.rev, "\n", ...)
         }
-        cat("\nStatistics:\n", ...)
+        cat("\nStatistics of subsample:\n", ...)
         cat(show.fives(x), ...)
         cat("\n", ...)
-        cat("Processing Log:\n", ...)
+        cat("Processing log:\n", ...)
         cat(x$processing.log, ...)
         invisible(x)
     } else {
@@ -477,7 +477,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
         res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
         res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
     } else {
-        stop("adp type must be either \"rdi\" or \"nortek\"")
+        stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oce.coordinate <- "xyz"
     log.action <- paste(deparse(match.call()), sep="", collapse="")

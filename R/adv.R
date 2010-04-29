@@ -1,11 +1,11 @@
-read.adv <- function(file, from=1, to, by=1, type=c("nortek", "sontek", "sontek.adr", "sontek.text"), withHeader=TRUE, sampling.start, deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv <- function(file, from=1, to, by=1, type=c("nortek", "sontek", "sontek.adr", "sontek.text"), withHeader=TRUE, subsampling.start, subsampling.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
     if (type == "nortek") read.adv.nortek(file=file, from=from, to=to, by=by,
-        withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
+        withHeader=withHeader, subsampling.start=sampling.start, subsampling.deltat=subsampling.deltat,
         tz=tz, debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek") read.adv.sontek(file=file, from=from, to=to, by=by,
-             withHeader=withHeader, sampling.start=sampling.start, deltat=deltat,
+             withHeader=withHeader, subsampling.start=sampling.start, subsampling.deltat=subsampling.deltat,
              tz=tz, debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek.adr") read.adv.sontek.adr(file=file, from=from, to=to, by=by,
              tz=tz, debug=debug, log.action=log.action)
@@ -13,7 +13,7 @@ read.adv <- function(file, from=1, to, by=1, type=c("nortek", "sontek", "sontek.
              tz=tz, debug=debug, log.action=log.action)
 }
 
-read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TRUE, sampling.start, deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TRUE, subsampling.start, subsampling.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, "read.adv.nortek(...,type=\"", type, "\", ...)\n")
     by.is.broken <- TRUE
@@ -24,8 +24,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
     ## if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
     ## if (!inherits(from, "POSIXt")) stop("\"from\" must be a POSIXt time (this limitation may be relaxed in a future version)")
     ## if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
-    if (!missing(sampling.start)) stop("cannot handle argument \"sampling.start\"")
-    if (!missing(deltat)) stop("cannot handle argument \"deltat\"")
+    if (!missing(subsampling.start)) stop("cannot handle argument \"subsampling.start\"")
+    if (!missing(subsampling.deltat)) stop("cannot handle argument \"subsampling.deltat\"")
 
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -51,8 +51,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
     header <- decode.header.nortek(buf, debug=debug-1)
     metadata <- list(instrument.type="vector",
                      filename=filename,
-                     sampling.start=if (missing(sampling.start)) NA else sampling.start,
-                     sampling.end=NA,   # FIXME
+                     measurement.start=if (missing(subsampling.start)) NA else subsampling.start,
+                     measurement.end=NA,   # FIXME
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
                      serial.number=header$hardware$serial.number,
                      frequency=header$head$frequency,
@@ -257,7 +257,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
     res
 }
 
-read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, sampling.start, deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, subsampling.start, subsampling.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -278,8 +278,8 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
     if (withHeader) {
         stop("cannot read with header yet")
     } else {
-        if (missing(sampling.start)) stop("must give 'sampling.start' if withHeader is FALSE")
-        if (missing(deltat)) stop("must give 'deltat' if withHeader is FALSE")
+        if (missing(subsampling.start)) stop("must give 'subsampling.start' if withHeader is FALSE")
+        if (missing(subsampling.deltat)) stop("must give 'subsampling.deltat' if withHeader is FALSE")
         seek(file, 0, "end")
         file.size <- seek(file, 0, "start")
         oce.debug(debug, "file", filename, "has", file.size, "bytes\n")
@@ -289,43 +289,43 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
         ## Technical Documentation (Sept 1, 2001)
         flag1 <- as.raw(0x85)           # id
         flag2 <- as.raw(0x16)           # number of bytes (22 in decimal)
-        sample.start <- match.bytes(buf, 0x85, 0x16)
-        sample.start <- sample.start[1:(-1 + length(sample.start))] # last may be partial
-        if (buf[sample.start[1] + as.integer(flag2)] != flag1) stop("problem reading first sample")
+        subsample.start <- match.bytes(buf, 0x85, 0x16)
+        subsample.start <- subsample.start[1:(-1 + length(subsample.start))] # last may be partial
+        if (buf[subsample.start[1] + as.integer(flag2)] != flag1) stop("problem reading first subsample")
         ## FIXME: should run along the data for a while, to confirm that it's ok
     }
 
-    n <- length(sample.start)
-    ## id <- buf[sample.start]
-    ## number.of.bytes <- buf[sample.start + 1]
-    sample.start2 <- sort(c(sample.start, sample.start+1)) # use this to subset for 2-byte reads
-    ##print((sample.start2 + 2)[1:10])
-    sample.number <- readBin(buf[sample.start2 + 2], "integer", signed=FALSE, endian="little", size=2, n=n)
+    n <- length(subsample.start)
+    ## id <- buf[subsample.start]
+    ## number.of.bytes <- buf[subsample.start + 1]
+    subsample.start2 <- sort(c(subsample.start, subsample.start+1)) # use this to subset for 2-byte reads
+    ##print((subsample.start2 + 2)[1:10])
+    subsample.number <- readBin(buf[subsample.start2 + 2], "integer", signed=FALSE, endian="little", size=2, n=n)
 
     ## in next, divide by 100 to get to cm/s, then by 100 to get to m/s
 
     v <- array(dim=c(n, 3))
-    v[,1] <- readBin(buf[sample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
-    v[,2] <- readBin(buf[sample.start2 + 6], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
-    v[,3] <- readBin(buf[sample.start2 + 8], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
+    v[,1] <- readBin(buf[subsample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
+    v[,2] <- readBin(buf[subsample.start2 + 6], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
+    v[,3] <- readBin(buf[subsample.start2 + 8], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
     a <- array(raw(), dim=c(n, 3))
-    a[,1] <- buf[sample.start + 10]
-    a[,2] <- buf[sample.start + 11]
-    a[,3] <- buf[sample.start + 12]
+    a[,1] <- buf[subsample.start + 10]
+    a[,2] <- buf[subsample.start + 11]
+    a[,3] <- buf[subsample.start + 12]
     c <- array(raw(), dim=c(n, 3))
-    c[,1] <- buf[sample.start + 13]
-    c[,2] <- buf[sample.start + 14]
-    c[,3] <- buf[sample.start + 15]
+    c[,1] <- buf[subsample.start + 13]
+    c[,2] <- buf[subsample.start + 14]
+    c[,3] <- buf[subsample.start + 15]
 
-    temperature <- readBin(buf[sample.start2 + 16], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-2
-    pressure <- readBin(buf[sample.start2 + 18], "integer", signed=FALSE, endian="little", size=2, n=n) * 1e-4 # FIXME unit?
+    temperature <- readBin(buf[subsample.start2 + 16], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-2
+    pressure <- readBin(buf[subsample.start2 + 18], "integer", signed=FALSE, endian="little", size=2, n=n) * 1e-4 # FIXME unit?
     ## offsets 20 and 21 are the checksum (filling out for 22 bytes in total)
 
-    time <- seq(from=sampling.start, by=deltat, length.out=n)
-    attr(time, "tzone") <- attr(sampling.start, "tzone")
+    time <- seq(from=subsampling.start, by=subsample.deltat, length.out=n)
+    attr(time, "tzone") <- attr(subsampling.start, "tzone")
 
     data <- list(ts=list(time=time,
-                 sample.number=sample.number,
+                 subsample.number=subsample.number,
                  temperature=temperature,
                  pressure=pressure),
                  ss=list(distance=0),
@@ -333,7 +333,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      number.of.samples=length(time),
-                     sampling.start=sampling.start,
+                     subsampling.start=subsampling.start,
                      deltat=deltat,
                      orientation="downward", # FIXME: a total guess
                      oce.coordinate="beam" # FIXME: we don't actually know this, if there is no header
@@ -759,10 +759,10 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
         if (x$number.of.beams > 3)
             cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
     }
-    cat("\nStatistics:\n", ...)
+    cat("\nStatistics of subsample:\n", ...)
     cat(show.fives(x), ...)
     cat("\n", ...)
-    cat("Processing Log:\n", ...)
+    cat("Processing log:\n", ...)
     cat(x$processing.log, ...)
     invisible(x)
 }

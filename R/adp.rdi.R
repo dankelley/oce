@@ -34,7 +34,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
         warning("program version ", program.version, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
     if (!have.actual.data)
-        return(list(instrument.type="rdi",
+        return(list(instrument.type="teledyne rdi",
                     program.version.major=program.version.major,
                     program.version.minor=program.version.minor,
                     program.version=program.version,
@@ -168,7 +168,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     ## Skipping a lot ...
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
 
-    list(instrument.type="rdi",
+    list(instrument.type="teledyne rdi",
          program.version.major=program.version.major,
          program.version.minor=program.version.minor,
          program.version=program.version,
@@ -310,28 +310,28 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), debug=getO
         ##}
         profiles.in.file <- length(profile.start)
         oce.debug(debug, "profile.start[1:10]=", profile.start[1:10], "(out of ", length(profile.start), ")\n")
-        sampling.start <- ISOdatetime(2000 +readBin(buf[profile.start[1]+4],"integer",size=1,signed=FALSE,endian="little"), # year
-                                      as.integer(buf[profile.start[1]+5]), # month
-                                      as.integer(buf[profile.start[1]+6]), # day
-                                      as.integer(buf[profile.start[1]+7]), # hour
-                                      as.integer(buf[profile.start[1]+8]), # min
-                                      as.integer(buf[profile.start[1]+9]), # sec
-                                      tz=getOption("oce.tz"))
-        sampling.end <- ISOdatetime(2000 +readBin(buf[profile.start[profiles.in.file]+4],"integer",size=1,signed=FALSE,endian="little"), # year
-                                    as.integer(buf[profile.start[profiles.in.file]+5]), # month
-                                    as.integer(buf[profile.start[profiles.in.file]+6]), # day
-                                    as.integer(buf[profile.start[profiles.in.file]+7]), # hour
-                                    as.integer(buf[profile.start[profiles.in.file]+8]), # min
-                                    as.integer(buf[profile.start[profiles.in.file]+9]), # sec
-                                    tz=getOption("oce.tz"))
-        sampling.deltat <- as.numeric(      # FIXME: assumes uniform time interval (ok, but document it)
-                                      ISOdatetime(2000 +readBin(buf[profile.start[2]+4],"integer",size=1,signed=FALSE,endian="little"), # year
-                                                  as.integer(buf[profile.start[2]+5]), # month
-                                                  as.integer(buf[profile.start[2]+6]), # day
-                                                  as.integer(buf[profile.start[2]+7]), # hour
-                                                  as.integer(buf[profile.start[2]+8]), # min
-                                                  as.integer(buf[profile.start[2]+9]), # sec
-                                                  tz=getOption("oce.tz"))) - as.numeric(sampling.start)
+        measurement.start <- ISOdatetime(2000 +readBin(buf[profile.start[1]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+                                         as.integer(buf[profile.start[1]+5]), # month
+                                         as.integer(buf[profile.start[1]+6]), # day
+                                         as.integer(buf[profile.start[1]+7]), # hour
+                                         as.integer(buf[profile.start[1]+8]), # min
+                                         as.integer(buf[profile.start[1]+9]), # sec
+                                         tz=getOption("oce.tz"))
+        measurement.end <- ISOdatetime(2000 +readBin(buf[profile.start[profiles.in.file]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+                                       as.integer(buf[profile.start[profiles.in.file]+5]), # month
+                                       as.integer(buf[profile.start[profiles.in.file]+6]), # day
+                                       as.integer(buf[profile.start[profiles.in.file]+7]), # hour
+                                       as.integer(buf[profile.start[profiles.in.file]+8]), # min
+                                       as.integer(buf[profile.start[profiles.in.file]+9]), # sec
+                                       tz=getOption("oce.tz"))
+        measurement.deltat <- as.numeric(      # FIXME: assumes uniform time interval (ok, but document it)
+                                         ISOdatetime(2000 +readBin(buf[profile.start[2]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+                                                     as.integer(buf[profile.start[2]+5]), # month
+                                                     as.integer(buf[profile.start[2]+6]), # day
+                                                     as.integer(buf[profile.start[2]+7]), # hour
+                                                     as.integer(buf[profile.start[2]+8]), # min
+                                                     as.integer(buf[profile.start[2]+9]), # sec
+                                                     tz=getOption("oce.tz"))) - as.numeric(measurement.start)
         if (inherits(from, "POSIXt")) {
             if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
             from.pair <- bisect.rdi.adp(from, add=-1, debug=debug-1)
@@ -344,7 +344,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), debug=getO
                       "  profile.start[1:10]=", profile.start[1:10],"\n",
                       "  profile.start[",from.pair$index, "]=", profile.start[from.pair$index], "at time", format(from.pair$t), "\n",
                       "  profile.start[",  to.pair$index, "]=", profile.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
-            dt <- sampling.deltat
+            dt <- measurement.deltat
             oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"\n")
             if (is.character(by))
                 by <- floor(0.5 + ctime.to.seconds(by) / dt)
@@ -433,9 +433,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), debug=getO
         metadata <- header
         metadata$bin1.distance <- bin1.distance
         metadata$xmit.pulse.length <- xmit.pulse.length
-        metadata$sampling.start <- sampling.start
-        metadata$sampling.end <- sampling.end
-        metadata$sampling.deltat <- sampling.deltat
+        metadata$measurement.start <- measurement.start
+        metadata$measurement.end <- measurement.end
+        metadata$measurement.deltat <- measurement.deltat
         metadata$filename <- filename
         metadata$oce.beam.attenuated <- FALSE
         metadata$oce.coordinate <- header$coordinate.system

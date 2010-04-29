@@ -127,30 +127,30 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
     oce.debug(debug, "bytes.per.profile=", bytes.per.profile, "\n")
 
     ## File time range and deltat
-    sampling.start <- ISOdatetime(readBin(buf[profile.start[1]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
+    measurement.start <- ISOdatetime(readBin(buf[profile.start[1]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
                                   as.integer(buf[profile.start[1]+21]), # month
                                   as.integer(buf[profile.start[1]+20]), # day
                                   as.integer(buf[profile.start[1]+23]), # hour
                                   as.integer(buf[profile.start[1]+22]), # min
                                   as.integer(buf[profile.start[1]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
                                   tz=getOption("oce.tz"))
-    oce.debug(debug, "sampling.start=", format(sampling.start), "\n")
-    sampling.end <- ISOdatetime(readBin(buf[profile.start[profiles.in.file]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
-                             as.integer(buf[profile.start[profiles.in.file]+21]), # month
-                             as.integer(buf[profile.start[profiles.in.file]+20]), # day
-                             as.integer(buf[profile.start[profiles.in.file]+23]), # hour
-                             as.integer(buf[profile.start[profiles.in.file]+22]), # min
-                             as.integer(buf[profile.start[profiles.in.file]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
-                             tz=getOption("oce.tz"))
-    oce.debug(debug, "sampling.end=", format(sampling.end), "\n")
-    sampling.deltat <- as.numeric(ISOdatetime(readBin(buf[profile.start[2]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
-                                              as.integer(buf[profile.start[2]+21]), # month
-                                              as.integer(buf[profile.start[2]+20]), # day
-                                              as.integer(buf[profile.start[2]+23]), # hour
-                                              as.integer(buf[profile.start[2]+22]), # min
-                                              as.integer(buf[profile.start[2]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec
-                                              tz=getOption("oce.tz"))) - as.numeric(sampling.start)
-    oce.debug(debug, "sampling.deltat=", format(sampling.deltat), "\n")
+    oce.debug(debug, "measurement.start=", format(measurement.start), "\n")
+    measurement.end <- ISOdatetime(readBin(buf[profile.start[profiles.in.file]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
+                                   as.integer(buf[profile.start[profiles.in.file]+21]), # month
+                                   as.integer(buf[profile.start[profiles.in.file]+20]), # day
+                                   as.integer(buf[profile.start[profiles.in.file]+23]), # hour
+                                   as.integer(buf[profile.start[profiles.in.file]+22]), # min
+                                   as.integer(buf[profile.start[profiles.in.file]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
+                                   tz=getOption("oce.tz"))
+    oce.debug(debug, "sampling.end=", format(measurement.end), "\n")
+    measurement.deltat <- as.numeric(ISOdatetime(readBin(buf[profile.start[2]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
+                                                 as.integer(buf[profile.start[2]+21]), # month
+                                                 as.integer(buf[profile.start[2]+20]), # day
+                                                 as.integer(buf[profile.start[2]+23]), # hour
+                                                 as.integer(buf[profile.start[2]+22]), # min
+                                                 as.integer(buf[profile.start[2]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec
+                                                 tz=getOption("oce.tz"))) - as.numeric(measurement.start)
+    oce.debug(debug, "sampling.deltat=", format(measurement.deltat), "\n")
 
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
@@ -260,9 +260,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
     metadata <- list(filename=filename,
                      instrument.type="sontek",
                      serial.number=serial.number,
-                     sampling.start=sampling.start,
-                     sampling.end=sampling.end,
-                     sampling.deltat=sampling.deltat,
+                     measurement.start=measurement.start,
+                     measurement.end=measurement.end,
+                     measurement.deltat=measurement.deltat,
                      frequency=frequency,
                      cpu.software.ver.num=cpu.software.ver.num,
                      dsp.software.ver.num=dsp.software.ver.num,

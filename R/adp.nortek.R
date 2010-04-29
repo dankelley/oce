@@ -244,28 +244,28 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
     profile.start <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
     profiles.in.file <- length(profile.start)
     oce.debug(debug, "profiles.in.file=", profiles.in.file, "\n")
-    sampling.start <- ISOdatetime(2000+bcd2integer(buf[profile.start[1]+8]), # year FIXME: have to check if before 1990
+    measurement.start <- ISOdatetime(2000+bcd2integer(buf[profile.start[1]+8]), # year FIXME: have to check if before 1990
                                   bcd2integer(buf[profile.start[1]+9]), # month
                                   bcd2integer(buf[profile.start[1]+6]), # day
                                   bcd2integer(buf[profile.start[1]+7]), # hour
                                   bcd2integer(buf[profile.start[1]+4]), # min
                                   bcd2integer(buf[profile.start[1]+5]), # sec
                                   tz=getOption("oce.tz"))
-    sampling.end <- ISOdatetime(2000+bcd2integer(buf[profile.start[profiles.in.file]+8]), # year FIXME: have to check if before 1990
+    measurement.end <- ISOdatetime(2000+bcd2integer(buf[profile.start[profiles.in.file]+8]), # year FIXME: have to check if before 1990
                                 bcd2integer(buf[profile.start[profiles.in.file]+9]), # month
                                 bcd2integer(buf[profile.start[profiles.in.file]+6]), # day
                                 bcd2integer(buf[profile.start[profiles.in.file]+7]), # hour
                                 bcd2integer(buf[profile.start[profiles.in.file]+4]), # min
                                 bcd2integer(buf[profile.start[profiles.in.file]+5]), # sec
                                 tz=getOption("oce.tz"))
-    sampling.deltat <- as.numeric(
-                                  ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
-                                  bcd2integer(buf[profile.start[2]+9]), # month
-                                  bcd2integer(buf[profile.start[2]+6]), # day
-                                  bcd2integer(buf[profile.start[2]+7]), # hour
-                                  bcd2integer(buf[profile.start[2]+4]), # min
-                                  bcd2integer(buf[profile.start[2]+5]), # sec
-                                  tz=getOption("oce.tz"))) - as.numeric(sampling.start)
+    measurement.deltat <- as.numeric(
+                                     ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
+                                                 bcd2integer(buf[profile.start[2]+9]), # month
+                                                 bcd2integer(buf[profile.start[2]+6]), # day
+                                                 bcd2integer(buf[profile.start[2]+7]), # hour
+                                                 bcd2integer(buf[profile.start[2]+4]), # min
+                                                 bcd2integer(buf[profile.start[2]+5]), # sec
+                                                 tz=getOption("oce.tz"))) - as.numeric(measurement.start)
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
         from.pair <- bisect.adp.nortek(from, -1, debug-1)
@@ -360,11 +360,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
                  heading=heading,
                  pitch=pitch,
                  roll=roll))
-    metadata <- list(instrument.type="aquadopp high resolution",
+    metadata <- list(instrument.type="nortek aquadopp high resolution",
                      filename=filename,
-                     sampling.start=sampling.start,
-                     sampling.deltat=sampling.deltat,
-                     sampling.end=sampling.end,
+                     measurement.start=measurement.start,
+                     measurement.end=measurement.end,
+                     measurement.deltat=measurement.deltat,
                      subsample.start=time[1],
                      subsample.end=time[length(time)],
                      subsample.deltat=as.numeric(time[2]) - as.numeric(time[1]),
