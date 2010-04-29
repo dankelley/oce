@@ -12,15 +12,15 @@
 \usage{
 read.adv(file, from=1, to, by=1,
         type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
-        withHeader=TRUE, sampling.start, deltat,
+        withHeader=TRUE, subsample.start, subsample.deltat,
         tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.nortek(file, from=1, to, by=1,
                 type="vector",
-                withHeader=TRUE, sampling.start, deltat,
+                withHeader=TRUE, subsample.start, subsample.deltat,
                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek(file, from=1, to, by=1,
                 type="default",
-                withHeader=TRUE, sampling.start, deltat,
+                withHeader=TRUE, subsample.start, subsample.deltat,
                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.adr(file, from=1, to, by=1,
                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
@@ -53,7 +53,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
   \item{withHeader}{a boolean indicating whether the file has a proper
     header or is a partial file, chopped out into smaller time chunks
     with a deck unit.}
-  \item{sampling.start}{a POSIXct time corresponding to the first sample. 
+  \item{subsample.start}{a POSIXct time corresponding to the first sample. 
     (This is mandatory if \code{withHeader=FALSE}.)}
   \item{coordinate.system}{character string indicating coordinate system, one
     of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.}
@@ -63,7 +63,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
     0.344))}.  This is only relevant if the coordinate system is
     \code{"beam"}.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
-  \item{deltat}{the time between samples. (This is mandatory if
+  \item{subsample.deltat}{the time between samples. (This is mandatory if
     \code{withHeader=FALSE}.)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.  Note
@@ -173,7 +173,7 @@ ylab="North [km]", asp=1, type='l')
 
 ## Nortek file, chopped into pieces with a data logger
 adv <- read.adv("~/data/archive/sleiwex/2008/moorings/m06/adv/autopod/day183/SL08A183.015",
-       sampling.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
+       sample.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
 summary(adv)
 plot(adv)
 }

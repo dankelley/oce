@@ -166,7 +166,7 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     }
     if (!missing(to)) {
         if (inherits(to, "POSIXt") || length(grep(":", to))) {
-            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), subsampl.start, units="secs")) / subsample.deltat
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), subsample.start, units="secs")) / subsample.deltat
             oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
         }
     }
