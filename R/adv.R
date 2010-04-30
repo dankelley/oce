@@ -342,7 +342,7 @@ dood.read.adv.sontek.adr <- function(file, from=1, to, by=1, type="default", wit
     minute <- as.integer(buf[250])
     hour <- as.integer(buf[251])
     ## 252 is hs (maybe 24?)
-    second <- as.integer(dan.buf[253])
+    second <- as.integer(buf[253])
     oce.debug(debug, "hs from buf", buf[252]," (whatever that is)\n")
     oce.debug(debug, "second from buf", buf[253],"\n")
     oce.debug(debug, "deployment starts year=", year, "month=", month, "day=", day, "hour=", hour, "minute=", minute, "second=", second, "\n")
@@ -513,12 +513,13 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     if (deployment.parameters[2]!=0x01) stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
     coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
     metadata$coordinate.system <- c("beam", "xyz", "enu")[1+coordinate.system.code]
+    metadata$oce.coordiante <- metadata$coordinate.system
     oce.debug(debug, "coordinate.system=", metadata$coordinate.system, "\n")
     if (metadata$coordinate.system == "beam") stop("cannot deal with beam coordinates in this version of the package, because the SonTek documentation (Appendix 3 of ADV Operation Manual) does not say how the transformation matrix is stored in the file header")
 
     ## bug: docs say sampling rate in 0.1Hz, but the SLEIWEX-2008-m3 data file shows 0.01Hz
     metadata$sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE) # 600 0 0
-    if (metadata$sampling.rate[2] !=0 || metadata$sampling.rate[3] != 0) stop("due to a limitation in the package, the sampling rate must be a number and then two zeros, not ", paste(sampling.rate, collapse=" "))
+    if (metadata$sampling.rate[2] !=0 || metadata$sampling.rate[3] != 0) stop("due to a limitation in the package, the sampling rate must be a number and then two zeros, not ", paste(metadata$sampling.rate, collapse=" "))
     if (metadata$sampling.rate[1] < 0) stop("sampling rate must be a positive integer, but got ", metadata$sampling.rate)
     metadata$burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE) # 3600 0 0
     if (metadata$burst.interval[2] !=0 || metadata$burst.interval[3] != 0) stop("due to a limitation in the package, the burst interval must be a number and then two zeros, not ", paste(metadata$burst.interval, collapse=" "))
@@ -638,21 +639,21 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                      ##filesize=filesize,
                      instrument.type="sontek",
                      number.of.samples=ntotal, # FIXME
-                     deltat=1/sampling.rate[1], #CHECK
+                     deltat=1/metadata$sampling.rate[1], #CHECK
                      subsample.start=0,       #FIXME
-                     orientation=orientation,
-                     cpu.software.ver.num=cpu.software.ver.num,
-                     dsp.software.ver.num=dsp.software.ver.num,
-                     serial.number=serial.number,
-                     coordinate.system=coordinate.system,
-                     oce.coordinate=coordinate.system,
+                     orientation=metadata$orientation,
+                     cpu.software.ver.num=metadata$cpu.software.ver.num,
+                     dsp.software.ver.num=metadata$dsp.software.ver.num,
+                     serial.number=metadata$serial.number,
+                     coordinate.system=metadata$coordinate.system,
+                     oce.coordinate=metadata$coordinate.system,
                      ## sampling.rate=sampling.rate, # not used
                      samples.per.burst=samples.per.burst[1],
-                     burst.interval=burst.interval[1],
-                     deployment.name=deployment.name,
-                     comments1=comments1,
-                     comments2=comments2,
-                     comments3=comments3)
+                     burst.interval=metadata$burst.interval[1],
+                     deployment.name=metadata$deployment.name,
+                     comments1=metadata$comments1,
+                     comments2=metadata$comments2,
+                     comments3=metadata$comments3)
     data <- list(ts=list(time=time[ok],
                  heading=heading[ok], pitch=pitch[ok], roll=roll[ok], temperature=temperature[ok], pressure=pressure[ok]),
                  ss=list(distance=0),
