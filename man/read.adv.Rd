@@ -117,25 +117,20 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
 
   }
 
-  \emph{Notes on Nortek (possibly incorrect).}
-  
-  Nortek adv files: the file format assumed here is not the same as in the 
-  documentation that I have available.  The documentation is for Firmware 
-  Version 4.0 (October 1997), but this does not match a data file used for testing.
-  The following are the differences:
-  \enumerate{
-    \item The second byte of the burst header is 0x11, but the
-    documentation says it should be 0x10; the code takes either.
-    \item The data length is assumed to be 22, no matter what its value
-    actually is.  This is done to match the files being used by the
-    author.  The documentation suggests that the number of bytes can be
-    inferred from the header, but this is difficult because the
-    information stored in the header \code{RecordedData} byte does not
-    agree with the docs (bit 0 is 0 in the file, but we *do* have
-    amplitude and correlation data).
-    \item The sampling rate is taken to be in units of 0.01Hz, not 0.1Hz
-    as documented.
-  }
+  \emph{Notes on SonTek ADR files.}
+    The binary format is inferred from Appendix 2.2.3 of the Sontek ADV
+    operation Manual - Firmware Version 4.0 (Oct 1997), with the following
+    exceptions.
+    \enumerate{
+
+    \item The documentation says sampling rate is in 0.1Hz, but a test file indicates
+    that it is in 0.01 Hz.
+
+    \item The documentations says that burst sequences
+    start with c(0xa5, 0x10), but a test file indicates that they start with
+    c(0xa5, 0x11), so the code accepts either alternative for the second
+    byte.
+   }
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which

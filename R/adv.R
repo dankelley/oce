@@ -262,6 +262,15 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
 ## 253 bytes probe configuration
 read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
+    ## Technical Documentation (Sept 1, 2001)
+    ##subsample.start <- match.bytes(buf, 0x85, 0x16)
+    ##subsample.start <- subsample.start[1:(-1 + length(subsample.start))] # last may be partial
+    stop('read.adv.sontek() disabled for the moment')
+}
+
+dood.read.adv.sontek.adr <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+{
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "rb")
@@ -286,105 +295,91 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
 
-    dan.buf<<-buf
+    cpu.software.ver.num <- 0.1 * as.numeric(buf[1])
+    oce.debug(debug, "cpu.software.ver.num=", cpu.software.ver.num, "\n")
+    dsp.software.ver.num <- 0.1 * as.numeric(buf[2])
+    oce.debug(debug, "dsp.software.ver.num=",dsp.software.ver.num,"\n")
+    sensor.orientation <- c("up", "down", "side")[as.numeric(buf[4])+1]
+    oce.debug(debug, "sensor.orientation=", sensor.orientation, "\n")
+    compass.installed <- if (as.integer(buf[5]) == 1) TRUE else FALSE;
+    oce.debug(debug, "compass.installed=", compass.installed, "\n")
+    recorder.installed <- if (as.integer(buf[6]) == 1) TRUE else FALSE;
+    oce.debug(debug, "recorder.installed=", recorder.installed, "\n")
+    temp.installed <- if (as.integer(buf[7]) == 1) TRUE else FALSE;
+    oce.debug(debug, "temp.installed=", temp.installed, "\n")
+    press.installed <- if (as.integer(buf[8]) == 1) TRUE else FALSE;
+    oce.debug(debug, "press.installed=", press.installed, "\n")
+    extra.sensors.installed <- c("None","Standard","3_OBS")[1+as.integer(buf[9])]
+    extra.pressure.installed <- c("No","Paros","Druck","ParosFreq")[1+as.integer(buf[10])]
+    ctd.installed <- c("None", "MicrCat CTD", "LISST")[1 + as.integer(buf[11])]
+    serial.number <- paste(readBin(buf[35+0:5], "character", size=1, n=6, endian="little"), collapse="")
+    oce.debug(debug, "serial.number=",serial.number,"\n")
+    number.of.beams = as.integer(buf[43])
+    if (number.of.beams != 3)
+        stop("number of beams should be 3, but it is ", number.of.beams, " according to byte 43 of the file")
+    oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
+    ##ADVProbeConfig.NomPeakPos = fread(fid,1,'int16');
+    ##ADVProbeConfig.Nsamp = fread(fid,1,'int16');
+    number.of.samples = readBin(buf[47:48], "integer", n=1, size=2, endian="little", signed=FALSE)
+    oce.debug(debug, "number.of.samples=",number.of.samples,"\n")
+    sample.interval = readBin(buf[49:50], "integer", n=1, size=2, endian="little", signed=FALSE)
+    oce.debug(debug, "sample.interval=",sample.interval,"\n")
 
+    ##ADVProbeConfig.SampInterval = fread(fid,1,'int16');
+    ##ADVProbeConfig.PulseLag = fread(fid,[5,3],'int16');
+    ##ADVProbeConfig.Nxmt = fread(fid,[5,3],'int16');
+    ##ADVProbeConfig.LagDelay = fread(fid,[5,3],'int16');
+    ##ADVProbeConfig.BeamDelay = fread(fid,1,'int16');
+    ##ADVProbeConfig.PingDelay = fread(fid,1,'int16');
+    ##ADVProbeConfig.XformMat=fread(fid,[3,3],'float32');
+    ##ADVProbeConfig.XmtRecDist=fread(fid,1,'float32');
+    ##ADVProbeConfig.CalCW=fread(fid,1,'float32');
 
-    cpu.software.ver.num <- dsp.software.ver.num <- sensor.orientation <- "?"
-    compass.installed <- recorder.installed <- temp.installed <- press.installed <- TRUE
-    if (withHeader) {
-        warning("read.adv.sontek(withHeader=TRUE,...) is still in development")
-        ## following adr2cdf.m in hydratools
-        cpu.software.ver.num <- 0.1 * as.numeric(buf[1])
-        oce.debug(debug, "cpu.software.ver.num=", cpu.software.ver.num, "\n")
-        dsp.software.ver.num <- 0.1 * as.numeric(buf[2])
-        oce.debug(debug, "dsp.software.ver.num=",dsp.software.ver.num,"\n")
-        sensor.orientation <- c("up", "down", "side")[as.numeric(buf[4])+1]
-        oce.debug(debug, "sensor.orientation=", sensor.orientation, "\n")
-        compass.installed <- if (as.integer(buf[5]) == 1) TRUE else FALSE;
-        oce.debug(debug, "compass.installed=", compass.installed, "\n")
-        recorder.installed <- if (as.integer(buf[6]) == 1) TRUE else FALSE;
-        oce.debug(debug, "recorder.installed=", recorder.installed, "\n")
-        temp.installed <- if (as.integer(buf[7]) == 1) TRUE else FALSE;
-        oce.debug(debug, "temp.installed=", temp.installed, "\n")
-        press.installed <- if (as.integer(buf[8]) == 1) TRUE else FALSE;
-        oce.debug(debug, "press.installed=", press.installed, "\n")
-        extra.sensors.installed <- c("None","Standard","3_OBS")[1+as.integer(buf[9])]
-        extra.pressure.installed <- c("No","Paros","Druck","ParosFreq")[1+as.integer(buf[10])]
-        ctd.installed <- c("None", "MicrCat CTD", "LISST")[1 + as.integer(buf[11])]
-        serial.number <- readBin(buf[35+0:5], "character", size=1, n=6, endian="little")
-        oce.debug(debug, "serial.number=",serial.number,"\n")
-        number.of.beams = as.integer(buf[43])
-        oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
-        ##ADVProbeConfig.NomPeakPos = fread(fid,1,'int16');
-        ##ADVProbeConfig.Nsamp = fread(fid,1,'int16');
-        number.of.samples = readBin(buf[47:48], "integer", n=1, size=2, endian="little", signed=FALSE)
-        oce.debug(debug, "number.of.samples=",number.of.samples,"\n")
-        sample.interval = readBin(buf[49:50], "integer", n=1, size=2, endian="little", signed=FALSE)
-        oce.debug(debug, "sample.interval=",sample.interval,"\n")
-
-        ##ADVProbeConfig.SampInterval = fread(fid,1,'int16');
-        ##ADVProbeConfig.PulseLag = fread(fid,[5,3],'int16');
-        ##ADVProbeConfig.Nxmt = fread(fid,[5,3],'int16');
-        ##ADVProbeConfig.LagDelay = fread(fid,[5,3],'int16');
-        ##ADVProbeConfig.BeamDelay = fread(fid,1,'int16');
-        ##ADVProbeConfig.PingDelay = fread(fid,1,'int16');
-        ##ADVProbeConfig.XformMat=fread(fid,[3,3],'float32');
-        ##ADVProbeConfig.XmtRecDist=fread(fid,1,'float32');
-        ##ADVProbeConfig.CalCW=fread(fid,1,'float32');
-
-        ## Experiment start
-        year <- readBin(buf[246:247], "integer", n=1, size=2, endian="little", signed=FALSE)
-        day <- as.integer(buf[248])
-        month <- as.integer(buf[249])
-        minute <- as.integer(buf[250])
-        hour <- as.integer(buf[251])
-        ## 252 is hs (maybe 24?)
-        second <- as.integer(dan.buf[253])
-        oce.debug(debug, "hs from buf", buf[252]," (whatever that is)\n")
-        oce.debug(debug, "second from buf", buf[253],"\n")
-        oce.debug(debug, "deployment starts year=", year, "month=", month, "day=", day, "hour=", hour, "minute=", minute, "second=", second, "\n")
-        oce.debug(debug, "deployment starts time", format(ISOdatetime(year, month, day, hour, minute, second, tz=getOption("oce.tz"))), "\n")
-        ## match 3 bytes; seems to be no checksum
-        profile.start <- match.bytes(buf, 0xA5, 0x11, 0x3c) #3c=60 bytes in header
-        profile.start2 <- sort(c(profile.start, profile.start + 1))
-
-        dan.profile.start <<- profile.start
-        dan.profile.start2 <<- profile.start
-
-        burst.year <- readBin(buf[profile.start2 + 18], what="integer", n=length(profile.start), size=2, endian="little", signed=FALSE)
-        oce.debug(debug, "burst.year=", burst.year, "\n")
-        burst.day <- as.integer(buf[profile.start + 20])
-        oce.debug(debug, "burst.day=", burst.day, "\n")
-        burst.month <- as.integer(buf[profile.start + 21])
-        oce.debug(debug, "burst.month=", burst.month, "\n")
-        burst.minute <- as.integer(buf[profile.start + 22])
-        oce.debug(debug, "burst.minute=", burst.minute, "\n")
-        burst.hour <- as.integer(buf[profile.start + 23])
-        oce.debug(debug, "burst.hour=", burst.hour, "\n")
-        burst.second <- as.integer(buf[profile.start + 25])
-        oce.debug(debug, "burst.second=", burst.second, "\n")
-        burst.time <- ISOdatetime(burst.year, burst.month, burst.day, burst.hour, burst.minute, burst.second, tz=getOption("oce.tz"))
-        oce.debug(debug, "burst.time=", format(burst.time), "\n")
-
-
-        stop('testing');
-    } else {
-        if (missing(subsample.start)) stop("must give 'subsample.start' if withHeader is FALSE")
-        if (missing(subsample.deltat)) stop("must give 'subsample.deltat' if withHeader is FALSE")
-        seek(file, 0, "end")
-        file.size <- seek(file, 0, "start")
-        oce.debug(debug, "file", filename, "has", file.size, "bytes\n")
-        buf <- readBin(file, "raw", n=file.size, endian="little")
-
-        ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
-        ## Technical Documentation (Sept 1, 2001)
-        flag1 <- as.raw(0x85)           # id
-        flag2 <- as.raw(0x16)           # number of bytes (22 in decimal)
-        subsample.start <- match.bytes(buf, 0x85, 0x16)
-        subsample.start <- subsample.start[1:(-1 + length(subsample.start))] # last may be partial
-        if (buf[subsample.start[1] + as.integer(flag2)] != flag1) stop("problem reading first subsample")
-        ## FIXME: should run along the data for a while, to confirm that it's ok
-    }
+    ## Experiment start
+    year <- readBin(buf[246:247], "integer", n=1, size=2, endian="little", signed=FALSE)
+    day <- as.integer(buf[248])
+    month <- as.integer(buf[249])
+    minute <- as.integer(buf[250])
+    hour <- as.integer(buf[251])
+    ## 252 is hs (maybe 24?)
+    second <- as.integer(dan.buf[253])
+    oce.debug(debug, "hs from buf", buf[252]," (whatever that is)\n")
+    oce.debug(debug, "second from buf", buf[253],"\n")
+    oce.debug(debug, "deployment starts year=", year, "month=", month, "day=", day, "hour=", hour, "minute=", minute, "second=", second, "\n")
+    oce.debug(debug, "deployment starts time", format(ISOdatetime(year, month, day, hour, minute, second, tz=getOption("oce.tz"))), "\n")
+    ## match 3 bytes; seems to be no checksum
+    burst.start <- match.bytes(buf, 0xA5, 0x11, 0x3c) #3c=60 bytes in header
+    number.of.bursts <- length(burst.start)
+    oce.debug(debug, "number.of.bursts=", number.of.bursts, "\n")
+    burst.start2 <- sort(c(burst.start, burst.start + 1))
+    burst.year <- readBin(buf[burst.start2 + 18], what="integer", n=length(burst.start), size=2, endian="little", signed=FALSE)
+    oce.debug(debug, "burst.year=", burst.year, "\n")
+    burst.day <- as.integer(buf[burst.start + 20])
+    oce.debug(debug, "burst.day=", burst.day, "\n")
+    burst.month <- as.integer(buf[burst.start + 21])
+    oce.debug(debug, "burst.month=", burst.month, "\n")
+    burst.minute <- as.integer(buf[burst.start + 22])
+    oce.debug(debug, "burst.minute=", burst.minute, "\n")
+    burst.hour <- as.integer(buf[burst.start + 23])
+    oce.debug(debug, "burst.hour=", burst.hour, "\n")
+    burst.second <- as.integer(buf[burst.start + 25])
+    oce.debug(debug, "burst.second=", burst.second, "\n")
+    burst.time <- ISOdatetime(burst.year, burst.month, burst.day, burst.hour, burst.minute, burst.second, tz=getOption("oce.tz"))
+    oce.debug(debug, "burst.time=", format(burst.time), "\n")
+    metadata <- list(filename=filename,
+                     instrument.type="adv sontek (adr)",
+                     serial.number=serial.number,
+                     coordinate.system="?",
+                     oce.coordinate="?",
+                     number.of.beams=number.of.beams,
+                     number.of.bursts=number.of.bursts,
+                     transformation.matrix=matrix(c(2.710, -1.409, -1.299, 0.071, 2.372, -2.442, 0.344, 0.344, 0.344), nrow=3, byrow=TRUE),
+                     measurement.start=NULL,
+                     measurement.end=NULL,
+                     measurement.deltat=NULL
+                     )
+    if (debug > 0)
+        print(metadata)
 
 
     n <- length(subsample.start)
@@ -439,6 +434,8 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
 
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    ## All details of the binary format come from Appendix 2.2.3 of the Sontek ADV
+    ## operation Manual - Firmware Version 4.0 (Oct 1997).
     oce.debug(debug, "read.adv.sontek.adr() ENTRY\n")
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -459,104 +456,113 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     burst.header.length <- 60
     checksum.length <- 2
     data.length <- 22                   # FIXME: this should be determined based on the headers
-
     seek(file, 0, "end", rw="read")
-    filesize <- seek(file, 0, origin="start", rw="read")
-    oce.debug(debug, "filesize=",filesize,"\n")
-    ## All details of the binary format come from Appendix 3 of the Sontek ADV
-    ## operation Manual - Firmware Version 4.0 (Oct 1997).
-    hardware.configuration <- readBin(file, "raw", n=hardware.configuration.length) # 24 total
-    pressure.scale <- 1e-9 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little")
-    oce.debug(debug, "pressure.scale=", pressure.scale,"\n")
-    probe.configuration <- readBin(file, "raw", n=probe.configuration.length) # 188 total
-    deployment.parameters <- readBin(file, "raw", n=deployment.parameters.length) # 441 total
-    ## Done reading file for a while; now study the information in these headers ...
-    ## Orientation
+    file.size <- seek(file, 0, origin="start", rw="read")
+    oce.debug(debug, "filesize=",file.size,"\n")
+    buf <- readBin(file, what="raw", n=file.size, endian="little")
+    metadata <- list(filename=filename, instrument.type="adv sontek (adr)")
+    ##hardware.configuration <- readBin(file, "raw", n=hardware.configuration.length) # 24 total
+    hardware.configuration <- buf[1:hardware.configuration.length]
+    probe.configuration <- buf[hardware.configuration.length + 1:probe.configuration.length]
+    deployment.parameters <- buf[hardware.configuration.length+probe.configuration.length+1:deployment.parameters.length]
+    metadata$cpu.software.ver.num <- 0.1 * as.numeric(hardware.configuration[1])
+    oce.debug(debug, "cpu.software.ver.num=", metadata$cpu.software.ver.num, "\n")
+    metadata$dsp.software.ver.num <- 0.1 * as.numeric(hardware.configuration[2])
+    oce.debug(debug, "dsp.software.ver.num=", metadata$dsp.software.ver.num, "\n")
+    metadata$sensor.orientation <- c("up", "down", "side")[as.numeric(hardware.configuration[4])+1]
+    oce.debug(debug, "sensor.orientation=", metadata$sensor.orientation, "\n")
+    metadata$compass.installed <- if (as.integer(hardware.configuration[5]) == 1) TRUE else FALSE;
+    oce.debug(debug, "compass.installed=", metadata$compass.installed, "\n")
+    metadata$recorder.installed <- if (as.integer(hardware.configuration[6]) == 1) TRUE else FALSE;
+    oce.debug(debug, "recorder.installed=", metadata$recorder.installed, "\n")
+    metadata$temp.installed <- if (as.integer(hardware.configuration[7]) == 1) TRUE else FALSE;
+    oce.debug(debug, "temp.installed=", metadata$temp.installed, "\n")
+    metadata$press.installed <- if (as.integer(hardware.configuration[8]) == 1) TRUE else FALSE;
+    oce.debug(debug, "press.installed=", metadata$press.installed, "\n")
+    metadata$pressure.scale <- 1e-9 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little")
+    oce.debug(debug, "pressure.scale=", metadata$pressure.scale,"\n")
+    metadata$pressure.offset <- 1e-5 * readBin(hardware.configuration[13:16], "integer", size=4, n=1, endian="little")
+    oce.debug(debug, "pressure.offset=", metadata$pressure.offset,"\n")
     orientation.code <- as.integer(hardware.configuration[4])
-    if (orientation.code == 0) orientation <- "downward"
-    else if (orientation.code == 1) orientation <- "upward"
-    else if (orientation.code == 2) orientation <- "sideward"
+    if (orientation.code == 0) metadata$orientation <- "downward"
+    else if (orientation.code == 1) metadata$orientation <- "upward"
+    else if (orientation.code == 2) metadata$orientation <- "sideward"
     else stop("sensor orientation code should be 0 (downward), 1 (upward) or 2 (sideward), but got ", orientation.code)
     ## Is a compass installed (need later, to parse data chunks)?
     compass.code <- as.integer(hardware.configuration[5])
-    if (compass.code == 0) compass.installed <- FALSE
-    else if (compass.code == 1) compass.installed <- TRUE
+    if (compass.code == 0) metadata$compass.installed <- FALSE
+    else if (compass.code == 1) metadata$compass.installed <- TRUE
     else stop("compass-installed code should be 0 (no) or 1 (yes), but got ", compass.code)
-    oce.debug(debug, if (compass.installed) "have a compass in this device\n" else "no compass installed\n")
+    oce.debug(debug, if (metadata$compass.installed) "have a compass in this device\n" else "no compass installed\n")
     ## Is a thermometer installed (need later, to parse data chunks)?
     thermometer.code <- as.integer(hardware.configuration[7])
-    if (thermometer.code == 0) thermometer.installed <- FALSE
-    else if (thermometer.code == 1) thermometer.installed <- TRUE
+    if (thermometer.code == 0) metadata$thermometer.installed <- FALSE
+    else if (thermometer.code == 1) metadata$thermometer.installed <- TRUE
     else stop("thermometer-installed code should be 0 (no) or 1 (yes), but got ", thermometer.code)
-    oce.debug(debug, if (thermometer.installed) "have a thermometer in this device\n" else "no thermometer installed\n")
+    oce.debug(debug, if (metadata$thermometer.installed) "have a thermometer in this device\n" else "no thermometer installed\n")
     ## Is a pressure gauge installed (need later, to parse data chunks)?
     pressure.code <- as.integer(hardware.configuration[8])
-    if (pressure.code == 0) pressure.installed <- FALSE
-    else if (pressure.code == 1) pressure.installed <- TRUE
+    if (pressure.code == 0) metadata$pressure.installed <- FALSE
+    else if (pressure.code == 1) metadata$pressure.installed <- TRUE
     else stop("pressure-installed code should be 0 (no) or 1 (yes), but got ", pressure.code)
-    oce.debug(debug, if (pressure.installed) "have a pressure gauge in this device\n" else "no pressure installed\n")
+    oce.debug(debug, if (metadata$pressure.installed) "have a pressure gauge in this device\n" else "no pressure installed\n")
     ## FIXME: in the above, ignoring "RecorderInstalled" on p105 of docs -- what is that??
-
-    ## m3 (MUN ADV) data, as a test: 22 bytes in data chunks
-    cpu.software.ver.num <- as.integer(hardware.configuration[1])/10 # 8.5
-    dsp.software.ver.num <- as.integer(hardware.configuration[2])/10 # 4.1
-    serial.number <- paste(integer2ascii(as.integer(probe.configuration[10+1:5])), collapse="")  # "B373H"
-    oce.debug(debug, "serial.number=",serial.number,"\n")
+    metadata$serial.number <- paste(readBin(probe.configuration[10+1:5],"character",n=5,size=1), collapse="")  # "B373H"
+    oce.debug(debug, "serial.number=",metadata$serial.number,"\n")
     if (deployment.parameters[1]!=0x12) stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
     if (deployment.parameters[2]!=0x01) stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
     coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
-    if (coordinate.system.code == 0)
-        coordinate.system <- "beam"
-    else if (coordinate.system.code == 1)
-        coordinate.system <- "xyz"
-    else if (coordinate.system.code == 2)
-        coordinate.system <- "enu"
-    else {
-        warning("cannot understand coordinate system code of ", coordinate.system.code, "so assuming \"xyz\" coordinates")
-        coordinate.system <- "xyz"
-    }
-    if (coordinate.system == "beam") stop("cannot deal with beam coordinates in this version of the package, because the SonTek documentation (Appendix 3 of ADV Operation Manual) does not say how the transformation matrix is stored in the file header")
-
-    oce.debug(debug, "coordinate.system=", coordinate.system, "\n")
+    metadata$coordinate.system <- c("beam", "xyz", "enu")[1+coordinate.system.code]
+    oce.debug(debug, "coordinate.system=", metadata$coordinate.system, "\n")
+    if (metadata$coordinate.system == "beam") stop("cannot deal with beam coordinates in this version of the package, because the SonTek documentation (Appendix 3 of ADV Operation Manual) does not say how the transformation matrix is stored in the file header")
 
     ## bug: docs say sampling rate in 0.1Hz, but the SLEIWEX-2008-m3 data file shows 0.01Hz
-    sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE) # 600 0 0
-    if (sampling.rate[2] !=0 || sampling.rate[3] != 0) stop("due to a limitation in the package, the sampling rate must be a number and then two zeros, not ", paste(sampling.rate, collapse=" "))
-    if (sampling.rate[1] < 0) stop("sampling rate must be a positive integer, but got ", sampling.rate)
-    burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE) # 3600 0 0
-    if (burst.interval[2] !=0 || burst.interval[3] != 0) stop("due to a limitation in the package, the burst interval must be a number and then two zeros, not ", paste(burst.interval, collapse=" "))
+    metadata$sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE) # 600 0 0
+    if (metadata$sampling.rate[2] !=0 || metadata$sampling.rate[3] != 0) stop("due to a limitation in the package, the sampling rate must be a number and then two zeros, not ", paste(sampling.rate, collapse=" "))
+    if (metadata$sampling.rate[1] < 0) stop("sampling rate must be a positive integer, but got ", metadata$sampling.rate)
+    metadata$burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE) # 3600 0 0
+    if (metadata$burst.interval[2] !=0 || metadata$burst.interval[3] != 0) stop("due to a limitation in the package, the burst interval must be a number and then two zeros, not ", paste(metadata$burst.interval, collapse=" "))
 
-    samples.per.burst <- readBin(deployment.parameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE) # 21540     0     0
-    if (samples.per.burst[2] !=0 || samples.per.burst[3] != 0) stop("due to a limitation in the package, samples/burst must be a number and then two zeros, not ", paste(samples.per.burst, collapse=" "))
-
-    if (samples.per.burst[1] < 0) stop("samples/burst must be a positive integer, but got ", samples.per.burst)
-
-    deployment.name <- paste(integer2ascii(as.integer(deployment.parameters[49:57])), collapse="") # "SLW08"
-    comments1 <- paste(integer2ascii(as.integer(deployment.parameters[66:125])), collapse="")
-    comments2 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
-    comments3 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
-    ## Run through to get bursts.  These files are so large that I don't trust a match against codes
-    ## to get the burst headers (plus, the burst header in my data file does not match the docs!),
-    ## so the algorithm is to go through the file burst by burst, skipping the data portions.  If
-    ## bursts have a lot of data, this won't slow things down terribly.
+    metadata$samples.per.burst <- readBin(deployment.parameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE) # 21540     0     0
+    if (metadata$samples.per.burst[2] !=0 || metadata$samples.per.burst[3] != 0) stop("due to a limitation in the package, samples/burst must be a number and then two zeros, not ", paste(samples.per.burst, collapse=" "))
+    if (metadata$samples.per.burst[1] < 0) stop("samples/burst must be a positive integer, but got ", metadata$samples.per.burst)
+    metadata$deployment.name <- paste(integer2ascii(as.integer(deployment.parameters[49:57])), collapse="") # "SLW08"
+    metadata$comments1 <- paste(integer2ascii(as.integer(deployment.parameters[66:125])), collapse="")
+    metadata$comments2 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
+    metadata$comments3 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
+    burst.start <- match.bytes(buf, 0xA5, 0x11, 0x3c) #3c=60 bytes in header
+    nbursts <- length(burst.start)
+    metadata$number.of.bursts <- nbursts
+    if (debug) {
+        cat("metadata:\n")
+        print(metadata)
+    }
+    burst.start2 <- sort(c(burst.start, 1 + burst.start))
+    burst.start4 <- sort(c(burst.start2, 3 + burst.start, 4 + burst.start))
+    year <- readBin(buf[burst.start2 + 18], "integer", n=nbursts, size=2, endian="little", signed=FALSE)
+    day <- as.integer(buf[burst.start+20])
+    month <- as.integer(buf[burst.start+21])
+    minute <- as.integer(buf[burst.start+22])
+    hour <- as.integer(buf[burst.start+23])
+    sec100 <- as.integer(buf[burst.start+24])
+    sec <- as.integer(buf[burst.start+25])
+    burst.time <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz)
+    samples.per.burst <- readBin(buf[burst.start2 + 30], "integer", size=2, n=nbursts, endian="little", signed=FALSE)
+    print(data.frame(burst.time,samples.per.burst))
+    stop('early')
+    ## FIXME: read burst info as as old, but subtract 1 form indexing used in burst.header
     burst.number <- burst.location <- burst.time <- samples.per.burst <- NULL
     file.pointer <- seek(file, origin="start", rw="read")          # see where we are now
-    while (file.pointer < filesize) {
+    while (file.pointer < file.size) {
         ## BurstHeader
         burst.location <- c(burst.location, file.pointer) # burst location in file
         burst.header <- readBin(file, "raw", burst.header.length)
-        oce.debug(debug, "burst header:", paste(burst.header, collapse=" "), "\n")
         if (burst.header[1] != 0xa5) stop("expecting first byte after header to be 0xa5, but got 0x", burst.header[1])
-        ## 0x10 is from manual, but we have 0x11 in the SLEIWEX-2008/m3 device, so permit that also
         if (burst.header[2] != 0x10 && burst.header[2] != 0x11) stop("expecting second byte after header to be 0x10 or 0x11, but got 0x", burst.header[2])
         burst.number <- c(burst.number, readBin(burst.header[15:18], "integer", size=4, signed=FALSE, endian="little"))
-        ## NOTE: in next line, factor 0.01 disagrees with documentation on page 107, but matches data SLEIWEX-2008/m3
         burst.sampling.rate <- 0.01*readBin(burst.header[29:30], "integer", size=2, n=1, endian="little", signed=FALSE)
         this.samples.per.burst <- readBin(burst.header[31:32], "integer", size=2, n=1, endian="little", signed=FALSE)
-        oce.debug(debug, "samples in burst:", this.samples.per.burst, "\n")
         samples.per.burst <- c(samples.per.burst, this.samples.per.burst)
-        ## burst.header[34] is meant to indicate what is recorded, but values in SLEIWEX2008/m3 do not match docs
-        ## print(byte2binary(burst.header[34], endian="little"))
         year <- readBin(burst.header[19:20], "integer", size=2, n=1, signed=FALSE, endian="little")
         day <- as.integer(burst.header[21])
         month <- as.integer(burst.header[22])
@@ -564,16 +570,16 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
         hour <- as.integer(burst.header[24])
         sec100 <- as.integer(burst.header[25])
         sec <- as.integer(burst.header[26])
-        oce.debug(debug, "burst time:  year=",year, "day=",day, "month=",month, "hour=",hour, "minute=",minute, "sec=",sec, "sec100=",sec100,"\n")
         time <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz)
         burst.time <- c(burst.time, time)
-        oce.debug(debug, "  i.e. ", format(time), "\n")
         file.pointer <- file.pointer + (burst.header.length + checksum.length + data.length * this.samples.per.burst)
-        oce.debug(debug, "seeking to byte ", file.pointer, " to get next burst\n")
         seek(file, where=file.pointer, origin="start", rw="read")
     }
-    class(burst.time) <- c("POSIXt", "POSIXct")
-    attr(burst.time, "tzone") <- tz
+
+    cat("from=",from,"\n")
+    cat("to=",to,"\n")
+    cat("by=",by,"\n")
+
     ## Now, determine relevant bursts, using the parameters: from, to, and by.
     if (!missing(by)) stop("cannot handle argument 'by' in this version of Oce")
     ok <- (from - 3600) <= burst.time & burst.time <= (to + 3600) # add an hour as a grace period
@@ -622,14 +628,14 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
         pitch[r] <- 0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
         roll[r] <- 0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
         temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", size=2, n=n, signed=TRUE, endian="little")
-        pressure[r] <- pressure.scale*readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        pressure[r] <- metadata$pressure.scale*readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little")
         row.offset <- row.offset + n
     }
     rm(b, m)                            # save a bit of space
     time <- seq(from=burst.time[1], by=1/burst.sampling.rate, length.out=ntotal)
     ok <- (from - 1) <= time & time <= (to+1) # final trim
-    metadata <- list(filename=filename,
-                     filesize=filesize,
+    old.metadata <- list(filename=filename,
+                     ##filesize=filesize,
                      instrument.type="sontek",
                      number.of.samples=ntotal, # FIXME
                      deltat=1/sampling.rate[1], #CHECK
