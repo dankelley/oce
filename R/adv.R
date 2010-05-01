@@ -269,7 +269,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
     stop('read.adv.sontek() disabled for the moment')
 }
 
-dood.read.adv.sontek.adr <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+dood.read.adv.sontek.adr <- function(file, from=1, to, by=1, type="", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -432,7 +432,8 @@ dood.read.adv.sontek.adr <- function(file, from=1, to, by=1, type="default", wit
     res
 }
 
-read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), type="",
+                                debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     ## All details of the binary format come from Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).

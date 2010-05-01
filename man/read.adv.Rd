@@ -22,8 +22,8 @@ read.adv.sontek(file, from=1, to, by=1,
                 type="default",
                 withHeader=TRUE, subsample.start, subsample.deltat,
                 tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek.adr(file, from=1, to, by=1,
-                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"), type="",
+                    debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.text(basefile, from=1, to, by=1,
                      coordinate.system="xyz",
                      transformation.matrix,
@@ -49,7 +49,6 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
     colon-separated format, then this interval is divided by the
     sampling interval, to get the stride length. \emph{BUG:} if the
     data are not equi-spaced, then odd results will occur.}
-  \item{type}{a character string indicating the type of file.}
   \item{withHeader}{a boolean indicating whether the file has a proper
     header or is a partial file, chopped out into smaller time chunks
     with a deck unit.}
@@ -62,6 +61,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
     -1.409, -1.299), c(0.071, 2.372, -2.442), c(0.344, 0.344,
     0.344))}.  This is only relevant if the coordinate system is
     \code{"beam"}.}
+  \item{type}{character string indicating type of file (ignored at present).}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{subsample.deltat}{the time between samples. (This is mandatory if
     \code{withHeader=FALSE}.)}
@@ -89,23 +89,18 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
   \code{metadata$oce.coordinate="beam"}.  It is up to the user to
   modify these values if they are wrong.
 
-
-
-  \strong{Notes on Nortek Vector ADV files.}
+  \emph{Notes on NorTek files.}
 
   \enumerate{
 
-    \item The binary data are read into a buffer by
-    \preformatted{buf <- readBin(filename,what="raw",endian="little",n=n)}
-    with a suitable value for \code{n}.
-
-    \item Velocity chunks are located within the buffer by using
-    \preformatted{vc <- match.bytes(buf, 0xa5, 0x10)}
-    which yields a vector of indices within \code{buf},
-    at which the velocity chunks start.  \emph{BUG:} the checksum
-    provided in bytes 23 and 24 of these chunks should be examined
-    to discard matches that occur randomly (with probability 1:65025)
-    but this is not done in the present version of oce.
+    \item The full file is first read into a buffer. Velocity chunks are
+    located within the buffer by using \preformatted{vc <-
+      match.bytes(buf, 0xa5, 0x10)} which yields a vector of indices
+    within \code{buf}, at which the velocity chunks start.  \emph{BUG:}
+    the checksum provided in bytes 23 and 24 of these chunks should be
+    examined to discard matches that occur randomly (with probability
+    1:65025) but this is not done in the present version of oce. (FIXME:
+    check this ... I think the code reads the checksum now.)
 
     \item System chunks are recognized by using
     \preformatted{sc <- match.bytes(buf, 0xa5, 0x11, 0x0e)}
@@ -121,6 +116,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
     The binary format is inferred from Appendix 2.2.3 of the Sontek ADV
     operation Manual - Firmware Version 4.0 (Oct 1997), with the following
     exceptions.
+
     \enumerate{
 
     \item The documentation says sampling rate is in 0.1Hz, but a test file indicates
@@ -148,7 +144,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
 library(oce)
 ## Nortek binary file
 # First few samples (which are in the air, before deployment)
-vec <- "~/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
+vec <- "/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
 adv1 <- read.adv(vec, from=1, to=100, by=1)
 summary(adv1)
 plot(adv1)
@@ -167,7 +163,7 @@ plot(cumsum(u) * dt / 1e3, cumsum(v) * dt / 1e3, xlab="East [km]",
 ylab="North [km]", asp=1, type='l')
 
 ## Nortek file, chopped into pieces with a data logger
-adv <- read.adv("~/data/archive/sleiwex/2008/moorings/m06/adv/autopod/day183/SL08A183.015",
+adv <- read.adv("/data/archive/sleiwex/2008/moorings/m06/adv/autopod/day183/SL08A183.015",
        sample.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
 summary(adv)
 plot(adv)

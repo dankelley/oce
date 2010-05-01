@@ -12,9 +12,8 @@
 read.adp(file, from=1, to, by=1,
           type=c("rdi", "nortek", "sontek"),
           debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
-read.adp.rdi(file, from=1, to, by=1,
-              type=c("workhorse"),
-              debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
+read.adp.rdi(file, from=1, to, by=1, type=c("workhorse"), tz=getOption("oce.tz"),
+             debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
 read.adp.nortek(file, from=1, to, by=1,
                 type=c("aquadopp high resolution"),
                 debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
@@ -41,6 +40,7 @@ read.adp.sontek(file, from=1, to, by=1,
     format (MM:SS), then this interval is divided by the sampling interval, to
     get the stride length.}
   \item{type}{a character string indicating th type of file.}
+  \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication

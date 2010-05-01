@@ -222,7 +222,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
          have.actual.data=have.actual.data)
 }                                       # read.header.rdi()
 
-read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), tz=getOption("oce.tz"),
+                         debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     bisect.rdi.adp <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.rdi.adv(t.find=", format(t.find), ", add=", add, "\n")
