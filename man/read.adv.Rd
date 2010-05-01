@@ -53,9 +53,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     colon-separated format, then this interval is divided by the
     sampling interval, to get the stride length. \emph{BUG:} if the
     data are not equi-spaced, then odd results will occur.}
-  \item{header}{a boolean indicating whether the file has a proper
-    header or is a partial file, chopped out into smaller time chunks
-    with a deck unit.}
+  \item{header}{a boolean indicating whether the file contains a 
+    header at the start.  (This will not be the case for files
+    that are created by data loggers that chop the raw data up into a
+  series of sub-files, e.g. once per hour.)}
   \item{subsample.start}{a POSIXct time corresponding to the first sample. 
     (This is mandatory if \code{header=FALSE}.)}
   \item{coordinate.system}{character string indicating coordinate system, one
@@ -76,7 +77,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     \code{read.header.nortek()}, so you should set \code{debug=2} to get
     debugging to "reach" down to the level of reading the header.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
-    (with numbers and dots) of every profile read.}
+    of every data burst read.}
   \item{log.action}{if provided, the action item to be stored in the
     log.  This parameter is typically only provided for internal
     calls; the default that it provides is better for normal calls by
@@ -84,7 +85,6 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 }
 
 \details{Reads a binary-format ADV file.
-
   It is crucial to pay careful attention if \code{header} is
   \code{FALSE}, since that condition forces \code{read.adv} to make
   guesses about important things.  In particular, it will set
