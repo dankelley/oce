@@ -9,15 +9,16 @@
 \description{Read an ADP data file, producing an object of type \code{adp}.}
 
 \usage{
-read.adp(file, from=1, to, by=1,
+read.adp(file, from=1, to, by=1, tz=getOption("oce.tz"),
           type=c("rdi", "nortek", "sontek"),
           debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
-read.adp.rdi(file, from=1, to, by=1, type=c("workhorse"), tz=getOption("oce.tz"),
+read.adp.rdi(file, from=1, to, by=1, tz=getOption("oce.tz"),
+             type=c("workhorse"),
              debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
-read.adp.nortek(file, from=1, to, by=1,
+read.adp.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 type=c("aquadopp high resolution"),
                 debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
-read.adp.sontek(file, from=1, to, by=1,
+read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 type=c("adp"),
                 debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
 }

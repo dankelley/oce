@@ -1,7 +1,7 @@
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
-decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
+decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("oce.tz"), ...)
 {
     ##
     ## header, of length 6 + 2 * number.of.data.types bytes
@@ -144,7 +144,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
     RTC.minute <- readBin(VLD[9], "integer", n=1, size=1)
     RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
     RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
-    time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=getOption("oce.tz")) # not sure on tz
+    time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
     oce.debug(debug, "profile time=", format(time), "inferred from RTC.year=", RTC.year,
               "RTC.month=", RTC.month, "RTC.day-", RTC.day, "RTC.hour=", RTC.hour,
               "RTC.minute=", RTC.minute, "RTC.second=", RTC.second, "RTC.hundreds=", RTC.hundredths, "\n")
@@ -222,7 +222,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), ...)
          have.actual.data=have.actual.data)
 }                                       # read.header.rdi()
 
-read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), tz=getOption("oce.tz"),
+read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                         type=c("workhorse"),
                          debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     bisect.rdi.adp <- function(t.find, add=0, debug=0) {
@@ -240,7 +241,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), tz=getOpti
             minute <-        readBin(buf[profile.start[middle] +  8], what="integer", n=1, size=1, signed=FALSE)
             second <-        readBin(buf[profile.start[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
             sec100 <-        readBin(buf[profile.start[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
-            t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=getOption("oce.tz")) # not sure on TZ
+            t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=tz)
             oce.debug(debug, "t=", format(t), "| y=", year, " m=", month, " d=", format(day, width=2), " h=", format(hour, width=2), " m=", format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass", format(pass, width=2), "/", passes, "| middle=", middle, "(", middle/upper*100, "%)\n")
             if (t.find < t)
                 upper <- middle
@@ -258,7 +259,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), tz=getOpti
                          as.integer(buf[profile.start[middle]+7]), # hour
                          as.integer(buf[profile.start[middle]+8]), # min
                          as.integer(buf[profile.start[middle]+9]), # sec FIXME: should use sec100 too
-                         tz=getOption("oce.tz")) # FIXME check on tz
+                         tz=tz)
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
         return(list(index=middle, time=t))
     }
@@ -317,14 +318,14 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), tz=getOpti
                                          as.integer(buf[profile.start[1]+7]), # hour
                                          as.integer(buf[profile.start[1]+8]), # min
                                          as.integer(buf[profile.start[1]+9]), # sec
-                                         tz=getOption("oce.tz"))
+                                         tz=tz)
         measurement.end <- ISOdatetime(2000 +readBin(buf[profile.start[profiles.in.file]+4],"integer",size=1,signed=FALSE,endian="little"), # year
                                        as.integer(buf[profile.start[profiles.in.file]+5]), # month
                                        as.integer(buf[profile.start[profiles.in.file]+6]), # day
                                        as.integer(buf[profile.start[profiles.in.file]+7]), # hour
                                        as.integer(buf[profile.start[profiles.in.file]+8]), # min
                                        as.integer(buf[profile.start[profiles.in.file]+9]), # sec
-                                       tz=getOption("oce.tz"))
+                                       tz=tz)
         measurement.deltat <- as.numeric(      # FIXME: assumes uniform time interval (ok, but document it)
                                          ISOdatetime(2000 +readBin(buf[profile.start[2]+4],"integer",size=1,signed=FALSE,endian="little"), # year
                                                      as.integer(buf[profile.start[2]+5]), # month
@@ -332,7 +333,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), tz=getOpti
                                                      as.integer(buf[profile.start[2]+7]), # hour
                                                      as.integer(buf[profile.start[2]+8]), # min
                                                      as.integer(buf[profile.start[2]+9]), # sec
-                                                     tz=getOption("oce.tz"))) - as.numeric(measurement.start)
+                                                     tz=tz)) - as.numeric(measurement.start)
         if (inherits(from, "POSIXt")) {
             if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
             from.pair <- bisect.rdi.adp(from, add=-1, debug=debug-1)
@@ -420,7 +421,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, type=c("workhorse"), tz=getOpti
                             as.integer(buf[profile.start+7]),      # hour
                             as.integer(buf[profile.start+8]),      # minute
                             as.integer(buf[profile.start+9]),      # second
-                            tz=getOption("oce.tz")) # FIXME: check on tzo
+                            tz=tz)
         profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
         profile.start4 <- sort(c(profile.start, profile.start + 1, profile.start + 2, profile.start + 3)) # lets us index four-byte chunks
         speed.of.sound <- 0.1 * readBin(buf[profile.start2 + 14], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)

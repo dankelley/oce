@@ -167,7 +167,9 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
-read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolution"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                            type=c("aquadopp high resolution"),
+                            debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     bisect.adp.nortek <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.adp.nortek(t.find=", format(t.find), ", add=", add, "\n")
@@ -185,7 +187,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
             year    <- year + ifelse(year >= 90, 1900, 2000)
             month   <- bcd2integer(buf[profile.start[middle] + 9])
             sec1000 <- bcd2integer(buf[profile.start[middle] + 10])
-            t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=getOption("oce.tz"))
+            t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=tz)
             oce.debug(debug, "t=", format(t), "| (from data", sprintf("%4d-%02d-%02d", year, month, day), sprintf("%02d:%02d:%02d.%03d", hour, minute, second, sec1000), ") | pass", format(pass, width=2), "/", passes, " | middle=", middle, "(", middle/upper*100, "%)\n")
             if (t.find < t)
                 upper <- middle
@@ -205,7 +207,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
         year    <- year + ifelse(year >= 90, 1900, 2000)
         month   <- bcd2integer(buf[profile.start[middle] + 9])
         sec1000 <- bcd2integer(buf[profile.start[middle] + 10])
-        t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=getOption("oce.tz"))
+        t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=tz)
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
         return(list(index=middle, time=t))
     }
@@ -250,14 +252,14 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
                                   bcd2integer(buf[profile.start[1]+7]), # hour
                                   bcd2integer(buf[profile.start[1]+4]), # min
                                   bcd2integer(buf[profile.start[1]+5]), # sec
-                                  tz=getOption("oce.tz"))
+                                  tz=tz)
     measurement.end <- ISOdatetime(2000+bcd2integer(buf[profile.start[profiles.in.file]+8]), # year FIXME: have to check if before 1990
                                 bcd2integer(buf[profile.start[profiles.in.file]+9]), # month
                                 bcd2integer(buf[profile.start[profiles.in.file]+6]), # day
                                 bcd2integer(buf[profile.start[profiles.in.file]+7]), # hour
                                 bcd2integer(buf[profile.start[profiles.in.file]+4]), # min
                                 bcd2integer(buf[profile.start[profiles.in.file]+5]), # sec
-                                tz=getOption("oce.tz"))
+                                tz=tz)
     measurement.deltat <- as.numeric(
                                      ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
                                                  bcd2integer(buf[profile.start[2]+9]), # month
@@ -265,7 +267,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
                                                  bcd2integer(buf[profile.start[2]+7]), # hour
                                                  bcd2integer(buf[profile.start[2]+4]), # min
                                                  bcd2integer(buf[profile.start[2]+5]), # sec
-                                                 tz=getOption("oce.tz"))) - as.numeric(measurement.start)
+                                                 tz=tz)) - as.numeric(measurement.start)
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
         from.pair <- bisect.adp.nortek(from, -1, debug-1)
@@ -284,14 +286,14 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
                              bcd2integer(buf[profile.start[1]+7]), # hour
                              bcd2integer(buf[profile.start[1]+4]), # min
                              bcd2integer(buf[profile.start[1]+5]), # sec
-                             tz=getOption("oce.tz"))
+                             tz=tz)
         time2 <- ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
                              bcd2integer(buf[profile.start[2]+9]), # month
                              bcd2integer(buf[profile.start[2]+6]), # day
                              bcd2integer(buf[profile.start[2]+7]), # hour
                              bcd2integer(buf[profile.start[2]+4]), # min
                              bcd2integer(buf[profile.start[2]+5]), # sec
-                             tz=getOption("oce.tz"))
+                             tz=tz)
         dt <- as.numeric(difftime(time2, time1, units="secs"))
         oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"(not interpreted yet)\n")
         profile.start <- profile.start[profile.start[from.index] < profile.start & profile.start < profile.start[to.index]]
@@ -322,7 +324,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, type=c("aquadopp high resolu
                         bcd2integer(buf[profile.start+7]), # hour
                         bcd2integer(buf[profile.start+4]), # min
                         bcd2integer(buf[profile.start+5]), # sec
-                        tz=getOption("oce.tz"))
+                        tz=tz)
     class(time) <- c("POSIXt", "POSIXct") # FIXME do we need this?
     attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
     heading <- 0.1 * readBin(buf[profile.start2 + 18], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)

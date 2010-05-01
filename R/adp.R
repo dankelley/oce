@@ -11,17 +11,18 @@ ad.beam.name <- function(x, which)
     else " "
 }
 
-read.adp <- function(file, from=1, to, by=1, type=c("rdi", "nortek", "sontek"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                     type=c("rdi", "nortek", "sontek"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     oce.debug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)
     if (monitor) cat(file, "\n", ...)
     if (type == "rdi")
-        read.adp.rdi(file=file, from=from, to=to, by=by, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
     else if (type == "nortek")
-        read.adp.nortek(file=file, from=from, to=to, by=by, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
     else if (type == "sontek")
-        read.adp.sontek(file=file, from=from, to=to, by=by, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
 }
 
 summary.adp <- function(object, ...)

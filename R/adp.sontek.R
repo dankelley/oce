@@ -1,4 +1,6 @@
-read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                            type=c("adp"),
+                            debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     bisect.sontek.adp <- function(t.find, add=0, debug=0) {
@@ -21,7 +23,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
             ## SIG p82 C code suggests sec100 comes before second.
             sec100 <- as.integer(buf[profile.start[middle]+24])     # FIXME: determine whether this is 1/100th second
             second <- as.integer(buf[profile.start[middle]+25])
-            t <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=getOption("oce.tz"))
+            t <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
             oce.debug(debug, "t=", format(t), " inferred from year=", year, " month=", month, " day=", day, " hour=", hour, " second=", second, "sec100=", sec100, "\n")
             if (t.find < t)
                 upper <- middle
@@ -40,7 +42,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
                          as.integer(buf[profile.start[middle]+23]), # hour
                          as.integer(buf[profile.start[middle]+22]), # min
                          as.integer(buf[profile.start[middle]+25]), # sec
-                         tz=getOption("oce.tz"))
+                         tz=tz)
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
         return(list(index=middle, time=t)) # index is within vsd
     }
@@ -133,7 +135,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
                                   as.integer(buf[profile.start[1]+23]), # hour
                                   as.integer(buf[profile.start[1]+22]), # min
                                   as.integer(buf[profile.start[1]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
-                                  tz=getOption("oce.tz"))
+                                  tz=tz)
     oce.debug(debug, "measurement.start=", format(measurement.start), "\n")
     measurement.end <- ISOdatetime(readBin(buf[profile.start[profiles.in.file]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
                                    as.integer(buf[profile.start[profiles.in.file]+21]), # month
@@ -141,7 +143,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
                                    as.integer(buf[profile.start[profiles.in.file]+23]), # hour
                                    as.integer(buf[profile.start[profiles.in.file]+22]), # min
                                    as.integer(buf[profile.start[profiles.in.file]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
-                                   tz=getOption("oce.tz"))
+                                   tz=tz)
     oce.debug(debug, "sampling.end=", format(measurement.end), "\n")
     measurement.deltat <- as.numeric(ISOdatetime(readBin(buf[profile.start[2]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
                                                  as.integer(buf[profile.start[2]+21]), # month
@@ -149,7 +151,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
                                                  as.integer(buf[profile.start[2]+23]), # hour
                                                  as.integer(buf[profile.start[2]+22]), # min
                                                  as.integer(buf[profile.start[2]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec
-                                                 tz=getOption("oce.tz"))) - as.numeric(measurement.start)
+                                                 tz=tz)) - as.numeric(measurement.start)
     oce.debug(debug, "sampling.deltat=", format(measurement.deltat), "\n")
 
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
@@ -172,7 +174,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
                                  as.integer(buf[profile.start[1:2]+23]), # hour
                                  as.integer(buf[profile.start[1:2]+22]), # min
                                  as.integer(buf[profile.start[1:2]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec
-                                 tz=getOption("oce.tz"))
+                                 tz=tz)
         dt <- as.numeric(difftime(two.times[2], two.times[1], units="secs"))
         oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"(not interpreted yet)\n")
         profile.start <- profile.start[profile.start[from.index] < profile.start & profile.start < profile.start[to.index]]
@@ -207,7 +209,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, type=c("adp"), debug=getOpti
     hour   <- as.integer(buf[profile.start + 23])
     sec100 <- as.integer(buf[profile.start + 24])     # FIXME: determine whether this is 1/100th second
     second <- as.integer(buf[profile.start + 25])
-    time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=getOption("oce.tz"))
+    time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
     oce.debug(debug, "time[1:10]=",format(time[1:10]),"\n")
     v <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
     a <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))

@@ -1,19 +1,29 @@
-read.adv <- function(file, from=1, to, by=1, type=c("nortek", "sontek", "sontek.adr", "sontek.text"), withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                     type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
+                     header=TRUE,
+                     subsample.start, subsample.deltat, # FIXME: use from and by for these
+                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
-    if (type == "nortek") read.adv.nortek(file=file, from=from, to=to, by=by,
-        withHeader=withHeader, subsample.start=subsample.start, subsample.deltat=subsample.deltat,
-        tz=tz, debug=debug, monitor=monitor, log.action=log.action)
-    else if (type == "sontek") read.adv.sontek(file=file, from=from, to=to, by=by,
-             withHeader=withHeader, subsample.start=subsample.start, subsample.deltat=subsample.deltat,
-             tz=tz, debug=debug, monitor=monitor, log.action=log.action)
-    else if (type == "sontek.adr") read.adv.sontek.adr(file=file, from=from, to=to, by=by,
-             tz=tz, debug=debug, log.action=log.action)
-    else if (type == "sontek.text") read.adv.sontek.text(basefile=file, from=from, to=to, by=by,
-             tz=tz, debug=debug, log.action=log.action)
+    if (type == "nortek") read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
+        header=header,
+        subsample.start=subsample.start, subsample.deltat=subsample.deltat,
+        debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek") read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
+             header=header,
+             subsample.start=subsample.start, subsample.deltat=subsample.deltat,
+             debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek.adr") read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
+             debug=debug, log.action=log.action)
+    else if (type == "sontek.text") read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
+             debug=debug, log.action=log.action)
 }
 
-read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                            type="vector",
+                            header=TRUE,
+                            subsample.start, subsample.deltat, # FIXME: use from and by for these
+                            debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, "read.adv.nortek(...,type=\"", type, "\", ...)\n")
     by.is.broken <- TRUE
@@ -40,7 +50,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
         on.exit(close(file))
     }
     type <- match.arg(type)
-    if (!withHeader) stop("withHeader must be TRUE")
+    if (!header) stop("header must be TRUE")
     oce.debug(debug, "  read.adv.nortek() about to read header\n")
     oce.debug(debug, "  read.adv.nortek() finished reading header\n")
     # find file length
@@ -260,7 +270,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, type="vector", withHeader=TR
 ##  24 bytes hardware configuration
 ## 164 bytes probe configuration
 ## 253 bytes probe configuration
-read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                            type="default", header=TRUE,
+                            subsample.start, subsample.deltat, # FIXME: use from and by for these
+                            debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
     ## Technical Documentation (Sept 1, 2001)
@@ -269,170 +282,8 @@ read.adv.sontek <- function(file, from=1, to, by=1, type="default", withHeader=T
     stop('read.adv.sontek() disabled for the moment')
 }
 
-dood.read.adv.sontek.adr <- function(file, from=1, to, by=1, type="", withHeader=TRUE, subsample.start, subsample.deltat, tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
-{
-    if (is.character(file)) {
-        filename <- full.filename(file)
-        file <- file(file, "rb")
-        on.exit(close(file))
-    }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-
-    if (!isOpen(file)) {
-        filename <- "(connection)"
-        open(file, "rb")
-        on.exit(close(file))
-    }
-    type <- match.arg(type)
-    if (!missing(by)) stop("cannot handle argument 'by' in this version of Oce")
-    oce.debug(debug, "read.adv.sontek()...\n")
-
-    ## load whole file
-    seek(file, 0, "start")
-    seek(file, where=0, origin="end")
-    file.size <- seek(file, where=0)
-    oce.debug(debug, "file.size=", file.size, "\n")
-    buf <- readBin(file, what="raw", n=file.size, endian="little")
-
-    cpu.software.ver.num <- 0.1 * as.numeric(buf[1])
-    oce.debug(debug, "cpu.software.ver.num=", cpu.software.ver.num, "\n")
-    dsp.software.ver.num <- 0.1 * as.numeric(buf[2])
-    oce.debug(debug, "dsp.software.ver.num=",dsp.software.ver.num,"\n")
-    sensor.orientation <- c("up", "down", "side")[as.numeric(buf[4])+1]
-    oce.debug(debug, "sensor.orientation=", sensor.orientation, "\n")
-    compass.installed <- if (as.integer(buf[5]) == 1) TRUE else FALSE;
-    oce.debug(debug, "compass.installed=", compass.installed, "\n")
-    recorder.installed <- if (as.integer(buf[6]) == 1) TRUE else FALSE;
-    oce.debug(debug, "recorder.installed=", recorder.installed, "\n")
-    temp.installed <- if (as.integer(buf[7]) == 1) TRUE else FALSE;
-    oce.debug(debug, "temp.installed=", temp.installed, "\n")
-    press.installed <- if (as.integer(buf[8]) == 1) TRUE else FALSE;
-    oce.debug(debug, "press.installed=", press.installed, "\n")
-    extra.sensors.installed <- c("None","Standard","3_OBS")[1+as.integer(buf[9])]
-    extra.pressure.installed <- c("No","Paros","Druck","ParosFreq")[1+as.integer(buf[10])]
-    ctd.installed <- c("None", "MicrCat CTD", "LISST")[1 + as.integer(buf[11])]
-    serial.number <- paste(readBin(buf[35+0:5], "character", size=1, n=6, endian="little"), collapse="")
-    oce.debug(debug, "serial.number=",serial.number,"\n")
-    number.of.beams = as.integer(buf[43])
-    if (number.of.beams != 3)
-        stop("number of beams should be 3, but it is ", number.of.beams, " according to byte 43 of the file")
-    oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
-    ##ADVProbeConfig.NomPeakPos = fread(fid,1,'int16');
-    ##ADVProbeConfig.Nsamp = fread(fid,1,'int16');
-    number.of.samples = readBin(buf[47:48], "integer", n=1, size=2, endian="little", signed=FALSE)
-    oce.debug(debug, "number.of.samples=",number.of.samples,"\n")
-    sample.interval = readBin(buf[49:50], "integer", n=1, size=2, endian="little", signed=FALSE)
-    oce.debug(debug, "sample.interval=",sample.interval,"\n")
-
-    ##ADVProbeConfig.SampInterval = fread(fid,1,'int16');
-    ##ADVProbeConfig.PulseLag = fread(fid,[5,3],'int16');
-    ##ADVProbeConfig.Nxmt = fread(fid,[5,3],'int16');
-    ##ADVProbeConfig.LagDelay = fread(fid,[5,3],'int16');
-    ##ADVProbeConfig.BeamDelay = fread(fid,1,'int16');
-    ##ADVProbeConfig.PingDelay = fread(fid,1,'int16');
-    ##ADVProbeConfig.XformMat=fread(fid,[3,3],'float32');
-    ##ADVProbeConfig.XmtRecDist=fread(fid,1,'float32');
-    ##ADVProbeConfig.CalCW=fread(fid,1,'float32');
-
-    ## Experiment start
-    year <- readBin(buf[246:247], "integer", n=1, size=2, endian="little", signed=FALSE)
-    day <- as.integer(buf[248])
-    month <- as.integer(buf[249])
-    minute <- as.integer(buf[250])
-    hour <- as.integer(buf[251])
-    ## 252 is hs (maybe 24?)
-    second <- as.integer(buf[253])
-    oce.debug(debug, "hs from buf", buf[252]," (whatever that is)\n")
-    oce.debug(debug, "second from buf", buf[253],"\n")
-    oce.debug(debug, "deployment starts year=", year, "month=", month, "day=", day, "hour=", hour, "minute=", minute, "second=", second, "\n")
-    oce.debug(debug, "deployment starts time", format(ISOdatetime(year, month, day, hour, minute, second, tz=getOption("oce.tz"))), "\n")
-    ## match 3 bytes; seems to be no checksum
-    burst.start <- match.bytes(buf, 0xA5, 0x11, 0x3c) #3c=60 bytes in header
-    number.of.bursts <- length(burst.start)
-    oce.debug(debug, "number.of.bursts=", number.of.bursts, "\n")
-    burst.start2 <- sort(c(burst.start, burst.start + 1))
-    burst.year <- readBin(buf[burst.start2 + 18], what="integer", n=length(burst.start), size=2, endian="little", signed=FALSE)
-    oce.debug(debug, "burst.year=", burst.year, "\n")
-    burst.day <- as.integer(buf[burst.start + 20])
-    oce.debug(debug, "burst.day=", burst.day, "\n")
-    burst.month <- as.integer(buf[burst.start + 21])
-    oce.debug(debug, "burst.month=", burst.month, "\n")
-    burst.minute <- as.integer(buf[burst.start + 22])
-    oce.debug(debug, "burst.minute=", burst.minute, "\n")
-    burst.hour <- as.integer(buf[burst.start + 23])
-    oce.debug(debug, "burst.hour=", burst.hour, "\n")
-    burst.second <- as.integer(buf[burst.start + 25])
-    oce.debug(debug, "burst.second=", burst.second, "\n")
-    burst.time <- ISOdatetime(burst.year, burst.month, burst.day, burst.hour, burst.minute, burst.second, tz=getOption("oce.tz"))
-    oce.debug(debug, "burst.time=", format(burst.time), "\n")
-    metadata <- list(filename=filename,
-                     instrument.type="adv sontek (adr)",
-                     serial.number=serial.number,
-                     coordinate.system="?",
-                     oce.coordinate="?",
-                     number.of.beams=number.of.beams,
-                     number.of.bursts=number.of.bursts,
-                     transformation.matrix=matrix(c(2.710, -1.409, -1.299, 0.071, 2.372, -2.442, 0.344, 0.344, 0.344), nrow=3, byrow=TRUE),
-                     measurement.start=NULL,
-                     measurement.end=NULL,
-                     measurement.deltat=NULL
-                     )
-    if (debug > 0)
-        print(metadata)
-
-
-    n <- length(subsample.start)
-    ## id <- buf[subsample.start]
-    ## number.of.bytes <- buf[subsample.start + 1]
-    subsample.start2 <- sort(c(subsample.start, subsample.start+1)) # use this to subset for 2-byte reads
-    ##print((subsample.start2 + 2)[1:10])
-    subsample.number <- readBin(buf[subsample.start2 + 2], "integer", signed=FALSE, endian="little", size=2, n=n)
-
-    ## in next, divide by 100 to get to cm/s, then by 100 to get to m/s
-
-    v <- array(dim=c(n, 3))
-    v[,1] <- readBin(buf[subsample.start2 + 4], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
-    v[,2] <- readBin(buf[subsample.start2 + 6], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
-    v[,3] <- readBin(buf[subsample.start2 + 8], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-4
-    a <- array(raw(), dim=c(n, 3))
-    a[,1] <- buf[subsample.start + 10]
-    a[,2] <- buf[subsample.start + 11]
-    a[,3] <- buf[subsample.start + 12]
-    c <- array(raw(), dim=c(n, 3))
-    c[,1] <- buf[subsample.start + 13]
-    c[,2] <- buf[subsample.start + 14]
-    c[,3] <- buf[subsample.start + 15]
-
-    temperature <- readBin(buf[subsample.start2 + 16], "integer", signed=TRUE, endian="little", size=2, n=n) * 1e-2
-    pressure <- readBin(buf[subsample.start2 + 18], "integer", signed=FALSE, endian="little", size=2, n=n) * 1e-4 # FIXME unit?
-    ## offsets 20 and 21 are the checksum (filling out for 22 bytes in total)
-
-    time <- seq(from=subsample.start, by=subsample.deltat, length.out=n)
-    attr(time, "tzone") <- attr(subsample.start, "tzone")
-
-    data <- list(ts=list(time=time,
-                 subsample.number=subsample.number,
-                 temperature=temperature,
-                 pressure=pressure),
-                 ss=list(distance=0),
-                 ma=list(v=v, a=a, c=c))
-    metadata <- list(filename=filename,
-                     instrument.type="sontek",
-                     number.of.samples=length(time),
-                     subsample.start=subsample.start,
-                     deltat=deltat,
-                     orientation="downward", # FIXME: a total guess
-                     oce.coordinate="beam" # FIXME: we don't actually know this, if there is no header
-                     )
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(res) <- c("sontek", "adv", "oce")
-    res
-}
-
-read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), type="",
+read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                                header=TRUE, type="",
                                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     ## All details of the binary format come from Appendix 2.2.3 of the Sontek ADV
@@ -550,55 +401,38 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     sec <- as.integer(buf[burst.start+25])
     burst.time <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz)
     samples.per.burst <- readBin(buf[burst.start2 + 30], "integer", size=2, n=nbursts, endian="little", signed=FALSE)
-    print(data.frame(burst.time,samples.per.burst))
-    stop('early')
-    ## FIXME: read burst info as as old, but subtract 1 form indexing used in burst.header
-    burst.number <- burst.location <- burst.time <- samples.per.burst <- NULL
-    file.pointer <- seek(file, origin="start", rw="read")          # see where we are now
-    while (file.pointer < file.size) {
-        ## BurstHeader
-        burst.location <- c(burst.location, file.pointer) # burst location in file
-        burst.header <- readBin(file, "raw", burst.header.length)
-        if (burst.header[1] != 0xa5) stop("expecting first byte after header to be 0xa5, but got 0x", burst.header[1])
-        if (burst.header[2] != 0x10 && burst.header[2] != 0x11) stop("expecting second byte after header to be 0x10 or 0x11, but got 0x", burst.header[2])
-        burst.number <- c(burst.number, readBin(burst.header[15:18], "integer", size=4, signed=FALSE, endian="little"))
-        burst.sampling.rate <- 0.01*readBin(burst.header[29:30], "integer", size=2, n=1, endian="little", signed=FALSE)
-        this.samples.per.burst <- readBin(burst.header[31:32], "integer", size=2, n=1, endian="little", signed=FALSE)
-        samples.per.burst <- c(samples.per.burst, this.samples.per.burst)
-        year <- readBin(burst.header[19:20], "integer", size=2, n=1, signed=FALSE, endian="little")
-        day <- as.integer(burst.header[21])
-        month <- as.integer(burst.header[22])
-        minute <- as.integer(burst.header[23])
-        hour <- as.integer(burst.header[24])
-        sec100 <- as.integer(burst.header[25])
-        sec <- as.integer(burst.header[26])
-        time <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz)
-        burst.time <- c(burst.time, time)
-        file.pointer <- file.pointer + (burst.header.length + checksum.length + data.length * this.samples.per.burst)
-        seek(file, where=file.pointer, origin="start", rw="read")
-    }
+    burst.sample <- c(1, cumsum(samples.per.burst[-length(samples.per.burst)]))
+    ## Map from sample number to burst number
+    burst <- 1:nbursts
+    ##print(data.frame(burst, burst.time, burst.sample))
 
-    cat("from=",from,"\n")
-    cat("to=",to,"\n")
-    cat("by=",by,"\n")
+    if (inherits(from, "POSIXt")) stop("cannot accept 'from' as a POSIXt")
+    if (inherits(to, "POSIXt")) stop("cannot accept 'to' as a POSIXt")
+    if (is.character(from) || is.character(to) || is.character(by)) stop("cannot accept character from, to, or by")
 
-    ## Now, determine relevant bursts, using the parameters: from, to, and by.
-    if (!missing(by)) stop("cannot handle argument 'by' in this version of Oce")
-    ok <- (from - 3600) <= burst.time & burst.time <= (to + 3600) # add an hour as a grace period
-    if (sum(ok) < 1) stop("no data in the stated time interval")
-    burst.number <- burst.number[ok]
-    burst.time <- burst.time[ok]
+    from.burst <- floor(approx(burst.sample, burst, from)$y)
+    to.burst <- floor(approx(burst.sample, burst, to)$y)
+    cat("from=",from,"is in burst ", from.burst, "\n")
+    cat("to=",to,"is in burst ", to.burst, "\n")
 
-    samples.per.burst <- samples.per.burst[ok]
-    burst.location <- burst.location[ok]
-    if (debug > 0) print(data.frame(number=burst.number,
-                                time=burst.time,
-                                start.byte=burst.location,
-                                data.start.byte=burst.location+burst.header.length,
-                                samples=samples.per.burst))
-    bursts <- length(burst.location)
+    if (is.na(from.burst)) stop("from=", from, " not in file")
+    if (is.na(to.burst)) stop("to=", to, " not in file")
+
+    burst.look <- unique(seq(from.burst, to.burst))
+    burst <- burst[burst.look]
+    nbursts <- length(burst)
+    burst.start <- burst.start[burst.look]
+    burst.time <- burst.time[burst.look]
+    burst.sample <- burst.sample[burst.look]
+    samples.per.burst <- samples.per.burst[burst.look]
+
+    if (debug > 0)
+        print(data.frame(burst, burst.time, burst.sample, samples.per.burst))
+
+    ## set up to read everything in every relevant burst (trim later)
+
     ntotal <- sum(samples.per.burst)
-    oce.debug(debug, "ntotal:", ntotal,"***\n")
+    oce.debug(debug, "ntotal=", ntotal, "\n")
     v <- array(numeric(), dim=c(ntotal, 3))
     heading <- array(numeric(), dim=c(ntotal, 1))
     pitch <- array(numeric(), dim=c(ntotal, 1))
@@ -608,18 +442,21 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     a <- array(raw(), dim=c(ntotal, 3))
     c <- array(raw(), dim=c(ntotal, 3))
     row.offset <- 0
-    for (burst in 1:bursts) {
-        n <- samples.per.burst[burst]
-        oce.debug(debug, "burst", burst.number[burst], "at", format(burst.time[burst]), "data start at byte", burst.location[burst]+burst.header.length, "n=",n,"\n")
-        seek(file, burst.location[burst]+burst.header.length, origin="start", rw="read")
-        b <- readBin(file, "raw", n=data.length*n, endian="little")
-        m <- matrix(b, ncol=data.length, byrow=TRUE)
+
+    oce.debug(debug, "data.length=", data.length, "\n")
+    oce.debug(debug, "burst.header.length=",burst.header.length,"\n")
+
+    for (b in 1:nbursts) {
+        n <- samples.per.burst[b]
+        oce.debug(debug, "burst", b, "at", format(burst.time[b]), "data start at byte", burst.start[b]+burst.header.length, "n=",n,"\n")
+        buf.subset <- buf[burst.start[b]+burst.header.length+0:(-1+data.length*n)]
+        m <- matrix(buf.subset, ncol=data.length, byrow=TRUE)
         if (n != dim(m)[1]) stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", data.length)
         ## FIXME possibly this as.raw() and t() business is slow ... not sure how else to do it!
         r <- row.offset + 1:n
-        v[r,1] <- 1e-4 * readBin(as.raw(t(m[,1:2])), "integer", size=2, n=n, signed=TRUE, endian="little")
-        v[r,2] <- 1e-4 * readBin(as.raw(t(m[,3:4])), "integer", size=2, n=n, signed=TRUE, endian="little")
-        v[r,3] <- 1e-4 * readBin(as.raw(t(m[,5:6])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        v[r,1] <- 1e-4 * readBin(t(m[,1:2]), "integer", size=2, n=n, signed=TRUE, endian="little")
+        v[r,2] <- 1e-4 * readBin(t(m[,3:4]), "integer", size=2, n=n, signed=TRUE, endian="little")
+        v[r,3] <- 1e-4 * readBin(t(m[,5:6]), "integer", size=2, n=n, signed=TRUE, endian="little")
         a[r,1] <- m[,7]
         a[r,2] <- m[,8]
         a[r,3] <- m[,9]
@@ -634,6 +471,14 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
         row.offset <- row.offset + n
     }
     rm(b, m)                            # save a bit of space
+dan.v<<-v
+dan.a<<-a
+dan.c<<-c
+dan.temperature<<-temperature
+dan.heading<<-heading
+dan.pitch<<-pitch
+dan.pressure<<-pressure
+    stop('glee')
     time <- seq(from=burst.time[1], by=1/burst.sampling.rate, length.out=ntotal)
     ok <- (from - 1) <= time & time <= (to+1) # final trim
     old.metadata <- list(filename=filename,
@@ -667,7 +512,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
 }
 
 
-read.adv.sontek.text <- function(basefile, from=1, to, by=1, coordinate.system="xyz", transformation.matrix, tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
+read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
+                                 coordinate.system="xyz", transformation.matrix,
+                                 debug=getOption("oce.debug"), log.action)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the

@@ -10,24 +10,28 @@
 \description{Read an ADV data file, producing an object of type \code{adv}.}
 
 \usage{
-read.adv(file, from=1, to, by=1,
+read.adv(file, from=1, to, by=1, tz=getOption("oce.tz"),
         type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
-        withHeader=TRUE, subsample.start, subsample.deltat,
-        tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.nortek(file, from=1, to, by=1,
+        header=TRUE,
+        subsample.start, subsample.deltat,
+        debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                 type="vector",
-                withHeader=TRUE, subsample.start, subsample.deltat,
-                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek(file, from=1, to, by=1,
+                header=TRUE,
+                subsample.start, subsample.deltat,
+                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 type="default",
-                withHeader=TRUE, subsample.start, subsample.deltat,
-                tz=getOption("oce.tz"), debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"), type="",
+                header=TRUE,
+                subsample.start, subsample.deltat,
+                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                    header=TRUE, type="",
                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek.text(basefile, from=1, to, by=1,
+read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
                      coordinate.system="xyz",
                      transformation.matrix,
-                     tz=getOption("oce.tz"), debug=getOption("oce.debug"), log.action)
+                     debug=getOption("oce.debug"), log.action)
 }
 
 \arguments{
@@ -49,11 +53,11 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
     colon-separated format, then this interval is divided by the
     sampling interval, to get the stride length. \emph{BUG:} if the
     data are not equi-spaced, then odd results will occur.}
-  \item{withHeader}{a boolean indicating whether the file has a proper
+  \item{header}{a boolean indicating whether the file has a proper
     header or is a partial file, chopped out into smaller time chunks
     with a deck unit.}
   \item{subsample.start}{a POSIXct time corresponding to the first sample. 
-    (This is mandatory if \code{withHeader=FALSE}.)}
+    (This is mandatory if \code{header=FALSE}.)}
   \item{coordinate.system}{character string indicating coordinate system, one
     of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.}
   \item{transformation.matrix}{transformation matrix to use,
@@ -64,7 +68,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
   \item{type}{character string indicating type of file (ignored at present).}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{subsample.deltat}{the time between samples. (This is mandatory if
-    \code{withHeader=FALSE}.)}
+    \code{header=FALSE}.)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.  Note
     that \code{debug} is reduced by 1 for every depth in the function
@@ -81,7 +85,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1,
 
 \details{Reads a binary-format ADV file.
 
-  It is crucial to pay careful attention if \code{withHeader} is
+  It is crucial to pay careful attention if \code{header} is
   \code{FALSE}, since that condition forces \code{read.adv} to make
   guesses about important things.  In particular, it will set
   \code{metadata$deltat=1},
