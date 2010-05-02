@@ -286,7 +286,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                 header=TRUE, type="",
                                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
-    ## All details of the binary format come from Appendix 2.2.3 of the Sontek ADV
+    ## The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
     oce.debug(debug, "read.adv.sontek.adr() ENTRY\n")
     if (is.character(file)) {
@@ -296,7 +296,6 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
-
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -527,7 +526,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     focus.from <- from.burst.offset
     focus.to <- to.burst.offset + sum(samples.per.burst.focus[-length(samples.per.burst.focus)])
     oce.debug(debug, "focus.from=",focus.from, "focus.to=", focus.to,"\n")
-    iii <- seq(focus.from, focus.to)    # FIXME should use by
+    iii <- seq(focus.from, focus.to, by=by)
     oce.debug(debug, "iii=", iii[1], iii[2], "...", iii[-1+length(iii)], iii[length(iii)], "\n")
     if (any(iii < 0))
         stop("got negative numbers in iii, which indicates a coding problem; range(iii)=",paste(range(iii), collapse=" to "))
