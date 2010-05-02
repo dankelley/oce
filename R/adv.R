@@ -302,6 +302,13 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         open(file, "rb")
         on.exit(close(file))
     }
+
+    ## FIXME: accept wider variety of types for 'from', 'to' and 'by'
+    if (inherits(from, "POSIXt")) stop("cannot accept 'from' as a POSIXt")
+    if (inherits(to, "POSIXt")) stop("cannot accept 'to' as a POSIXt")
+    if (is.character(from) || is.character(to) || is.character(by)) stop("cannot accept character from, to, or by")
+
+    ## Read header, or create a nominal default one.
     hardware.configuration.length <- 24
     probe.configuration.length <- 164
     deployment.parameters.length <- 253
@@ -337,104 +344,130 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         metadata$pressure.offset <- 1e-5 * readBin(hardware.configuration[13:16], "integer", size=4, n=1, endian="little")
         oce.debug(debug, "pressure.offset=", metadata$pressure.offset,"\n")
         orientation.code <- as.integer(hardware.configuration[4])
-        if (orientation.code == 0) metadata$orientation <- "downward"
-        else if (orientation.code == 1) metadata$orientation <- "upward"
-        else if (orientation.code == 2) metadata$orientation <- "sideward"
-        else stop("sensor orientation code should be 0 (downward), 1 (upward) or 2 (sideward), but got ", orientation.code)
-        ## Is a compass installed (need later, to parse data chunks)?
-        compass.code <- as.integer(hardware.configuration[5])
-        if (compass.code == 0) metadata$compass.installed <- FALSE
-        else if (compass.code == 1) metadata$compass.installed <- TRUE
-        else stop("compass-installed code should be 0 (no) or 1 (yes), but got ", compass.code)
-        oce.debug(debug, if (metadata$compass.installed) "have a compass in this device\n" else "no compass installed\n")
-        ## Is a thermometer installed (need later, to parse data chunks)?
-        thermometer.code <- as.integer(hardware.configuration[7])
-        if (thermometer.code == 0) metadata$thermometer.installed <- FALSE
-        else if (thermometer.code == 1) metadata$thermometer.installed <- TRUE
-        else stop("thermometer-installed code should be 0 (no) or 1 (yes), but got ", thermometer.code)
-        oce.debug(debug, if (metadata$thermometer.installed) "have a thermometer in this device\n" else "no thermometer installed\n")
-        ## Is a pressure gauge installed (need later, to parse data chunks)?
-        pressure.code <- as.integer(hardware.configuration[8])
-        if (pressure.code == 0) metadata$pressure.installed <- FALSE
-        else if (pressure.code == 1) metadata$pressure.installed <- TRUE
-        else stop("pressure-installed code should be 0 (no) or 1 (yes), but got ", pressure.code)
-        oce.debug(debug, if (metadata$pressure.installed) "have a pressure gauge in this device\n" else "no pressure installed\n")
+        metadata$orientation <- c("downward", "upward", "sideward")[orientation.code + 1]
+        if (is.na(metadata$orientation))
+            stop("cannot understand orientation code ", orientation.code, " (should be 0=downward, 1=upward or 2=sideward")
+        metadata$compass.installed <- as.integer(hardware.configuration[5]) == 1
+        if (!metadata$compass.installed)
+            stop("cannot handle data files for ADV files that lack compass data")
+        metadata$thermometer.installed <- as.integer(hardware.configuration[7]) == 1
+        if (!metadata$thermometer.installed)
+            stop("cannot handle data files for ADV files that lack thermometer data")
+        metadata$pressure.installed <- as.integer(hardware.configuration[8]) == 1
+        if (!metadata$pressure.installed)
+            stop("cannot handle data files for ADV files that lack pressure data")
         ## FIXME: in the above, ignoring "RecorderInstalled" on p105 of docs -- what is that??
         metadata$serial.number <- paste(readBin(probe.configuration[10+1:5],"character",n=5,size=1), collapse="")  # "B373H"
         oce.debug(debug, "serial.number=",metadata$serial.number,"\n")
-        if (deployment.parameters[1]!=0x12) stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
-        if (deployment.parameters[2]!=0x01) stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
+        if (deployment.parameters[1]!=0x12)
+            stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
+        if (deployment.parameters[2]!=0x01)
+            stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
         coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
         metadata$coordinate.system <- c("beam", "xyz", "enu")[1+coordinate.system.code]
         metadata$oce.coordinate <- metadata$coordinate.system
         oce.debug(debug, "coordinate.system=", metadata$coordinate.system, "\n")
-        if (metadata$coordinate.system == "beam") stop("cannot deal with beam coordinates in this version of the package, because the SonTek documentation (Appendix 3 of ADV Operation Manual) does not say how the transformation matrix is stored in the file header")
-
+        if (metadata$coordinate.system == "beam")
+            stop("cannot handle beam coordinates")
         ## bug: docs say sampling rate in 0.1Hz, but the SLEIWEX-2008-m3 data file shows 0.01Hz
-        sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE) # 600 0 0
+        sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE)
         if (sampling.rate[2] != 0 || sampling.rate[3] != 0)
-            warning("ignoring elements 2 and 3 of sampling rate")
+            warning("ignoring non-zero items 2 and/or 3 of sampling.rate vector")
         metadata$sampling.rate <- sampling.rate[1]
-        if (metadata$sampling.rate < 0) stop("sampling rate must be a positive integer, but got ", metadata$sampling.rate)
-        metadata$burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE) # 3600 0 0
-        if (metadata$burst.interval[2] !=0 || metadata$burst.interval[3] != 0) stop("due to a limitation in the package, the burst interval must be a number and then two zeros, not ", paste(metadata$burst.interval, collapse=" "))
-
-        metadata$samples.per.burst <- readBin(deployment.parameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE) # 21540     0     0
-        if (metadata$samples.per.burst[2] !=0 || metadata$samples.per.burst[3] != 0) stop("due to a limitation in the package, samples/burst must be a number and then two zeros, not ", paste(samples.per.burst, collapse=" "))
-        if (metadata$samples.per.burst[1] < 0) stop("samples/burst must be a positive integer, but got ", metadata$samples.per.burst)
-        metadata$deployment.name <- paste(integer2ascii(as.integer(deployment.parameters[49:57])), collapse="") # "SLW08"
+        if (metadata$sampling.rate < 0)
+            stop("sampling rate must be a positive integer, but got ", metadata$sampling.rate)
+        metadata$burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE)
+        if (metadata$burst.interval[2] !=0 || metadata$burst.interval[3] != 0)
+            warning("ignoring non-zero items 2 and/or 3 in burst.interval vector")
+        metadata$burst.interval <- metadata$burst.interval[1]
+        metadata$samples.per.burst <- readBin(deployment.parameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE)
+        if (metadata$samples.per.burst[2] !=0 || metadata$samples.per.burst[3] != 0)
+            warning("ignoring non-zero items 2 and/or 3 in samples.per.burst vector")
+        metadata$samples.per.burst <- metadata$samples.per.burst[1]
+        if (metadata$samples.per.burst < 0)
+            stop("samples.per.burst must be a positive integer, but got ", metadata$samples.per.burst)
+        metadata$deployment.name <- paste(integer2ascii(as.integer(deployment.parameters[49:57])), collapse="")
         metadata$comments1 <- paste(integer2ascii(as.integer(deployment.parameters[66:125])), collapse="")
         metadata$comments2 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
         metadata$comments3 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
-    }
-    burst.start <- match.bytes(buf, 0xA5, 0x11, 0x3c) #3c=60 bytes in header
-    burst.start.all <- burst.start
-    nbursts <- length(burst.start)
+    }                                   # if (header)
+
+    ## Use 3-byte flag to find bursts in buf.  Then find their times, and # samples in each.
+    ## Note: checking not just on the 2 "official" bytes, but also on third (3c=60=number of bytes in header)
+    burst.bufindex <- match.bytes(buf, 0xA5, 0x11, 0x3c)
+
+    oce.debug(debug, "burst.bufindex[1:10]=", paste(burst.bufindex[1:10], collapse=" "), "\n")
+
+    nbursts <- length(burst.bufindex)
     metadata$number.of.bursts <- nbursts
-    burst.start2 <- sort(c(burst.start, 1 + burst.start))
-    burst.start4 <- sort(c(burst.start2, 3 + burst.start, 4 + burst.start))
-    year <- readBin(buf[burst.start2 + 18], "integer", n=nbursts, size=2, endian="little", signed=FALSE)
-    day <- as.integer(buf[burst.start+20])
-    month <- as.integer(buf[burst.start+21])
-    minute <- as.integer(buf[burst.start+22])
-    hour <- as.integer(buf[burst.start+23])
-    sec100 <- as.integer(buf[burst.start+24])
-    sec <- as.integer(buf[burst.start+25])
-    burst.time.all <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz)
-    samples.per.burst <- readBin(buf[burst.start2 + 30], "integer", size=2, n=nbursts, endian="little", signed=FALSE)
-    burst.sample.all <- c(1, cumsum(samples.per.burst[-length(samples.per.burst)]))
+
+    burst.bufindex2 <- sort(c(burst.bufindex, 1 + burst.bufindex))
+    year <- readBin(buf[burst.bufindex2 + 18], "integer", n=nbursts, size=2, endian="little", signed=FALSE)
+    day <- as.integer(buf[burst.bufindex+20])
+    month <- as.integer(buf[burst.bufindex+21])
+    minute <- as.integer(buf[burst.bufindex+22])
+    hour <- as.integer(buf[burst.bufindex+23])
+    sec100 <- as.integer(buf[burst.bufindex+24])
+    sec <- as.integer(buf[burst.bufindex+25])
+    burst.time <- as.POSIXct(ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz))
+    oce.debug(debug, "burst.time ranges", paste(range(burst.time), collapse=" to "), "\n")
+    nbursts <- length(burst.time)
+    samples.per.burst <- readBin(buf[burst.bufindex2 + 30], "integer", size=2, n=nbursts, endian="little", signed=FALSE)
+    oce.debug(debug, "samples.per.burst[1:10]=", paste(samples.per.burst[1:10], collapse=" "), "\n")
+
+    ## ".extended" refers to a burst sequence to which a final item has been appended,
+    ## to allow the use of approx() for various things.
+    burst.time.extended <- c(burst.time, burst.time[nbursts] + samples.per.burst[nbursts] / metadata$sampling.rate)
+    attr(burst.time.extended, "tzone") <- attr(burst.time, "tzone")
+
+    metadata$measurement.start <- min(burst.time.extended)
+    metadata$measurement.end <- max(burst.time.extended)
+    metadata$measurement.deltat <- (as.numeric(burst.time[length(burst.time)]) - as.numeric(burst.time[1])) / sum(samples.per.burst)
+
+    oce.debug(debug, "burst.time.extended ranges", paste(range(burst.time.extended), collapse=" to "), "\n")
+
+    ## Sample indices (not buf indices) of first sample in each burst
+    burst.sampleindex.extended <- c(1, cumsum(samples.per.burst))
+    burst.sampleindex <- burst.sampleindex.extended[-length(burst.sampleindex.extended)]
+    oce.debug(debug, "burst.sampleindex[1:10]=", paste(burst.sampleindex[1:10], collapse=" "), "\n")
+
     ## Map from sample number to burst number
     burst <- 1:nbursts
-    ##print(data.frame(burst, burst.time, burst.sample))
+    if (debug > 0)
+        print(data.frame(burst, burst.time, burst.bufindex)[1:5,])
 
-    if (inherits(from, "POSIXt")) stop("cannot accept 'from' as a POSIXt")
-    if (inherits(to, "POSIXt")) stop("cannot accept 'to' as a POSIXt")
-    if (is.character(from) || is.character(to) || is.character(by)) stop("cannot accept character from, to, or by")
-
-    from.burst <- floor(approx(burst.sample.all, burst, from)$y)
-    to.burst <- floor(approx(burst.sample.all, burst, to)$y)
+    ## FIXME: check for POSIXt types here
     from.index <- from
     to.index <- to
 
-    oce.debug(debug, "from=",from,"is in burst ", from.burst, "\n")
-    oce.debug(debug, "to=",to,"is in burst ", to.burst, "\n")
+    ## Determine bursts, and offsets within bursts, for from.index and to.index
+    tmp <- approx(burst.sampleindex, burst, from.index)$y
+    if (is.na(tmp))
+        stop("from index", from, " is not in this file")
+    from.burst <- floor(tmp)
+    from.burst.offset <- floor(0.5 + (tmp - from.burst)*samples.per.burst[from.burst])
+    oce.debug(debug, "from is at index", from.index, "which is in burst", from.burst, ", at offset", from.burst.offset, "\n")
+    tmp <- approx(burst.sampleindex, burst, to.index)$y
+    if (is.na(tmp))
+        stop("to index", from, " is not in this file")
+    to.burst <- floor(tmp)
+    to.burst.offset <- floor(0.5 + (tmp - to.burst)*samples.per.burst[to.burst])
+    oce.debug(debug, "to is at index", to.index, "which is in burst", to.burst, ", at offset", to.burst.offset, "\n")
 
-    if (is.na(from.burst)) stop("from=", from, " not in file")
-    if (is.na(to.burst)) stop("to=", to, " not in file")
-
-    burst.look <- unique(seq(from.burst, to.burst))
-    burst <- burst[burst.look]
-    nbursts <- length(burst)
-    burst.start <- burst.start.all[burst.look]
-    burst.time <- burst.time.all[burst.look]
-    burst.sample <- burst.sample.all[burst.look]
-    samples.per.burst <- samples.per.burst[burst.look]
+    ## Set up focus region (not needed; just saves some subscripts later)
+    focus <- unique(seq(from.burst, to.burst)) # collapse, e.g. if in same burst
+    burst.focus <- burst[focus]
+    oce.debug(debug, "burst.focus=", paste(burst.focus, collapse=" "), "\n")
+    nbursts.focus <- length(burst.focus)
+    burst.bufindex.focus <- burst.bufindex[focus]
+    burst.time.focus <- burst.time[focus]
+    samples.per.burst.focus <- samples.per.burst[focus]
 
     if (debug > 0)
-        print(data.frame(burst, burst.time, burst.sample, samples.per.burst))
+        print(data.frame(burst.focus, burst.time.focus, burst.bufindex.focus, samples.per.burst.focus))
 
     ## set up to read everything in every relevant burst (trim later)
-    ntotal <- sum(samples.per.burst)
+    ntotal <- sum(samples.per.burst.focus)
     oce.debug(debug, "ntotal=", ntotal, "\n")
     v <- array(numeric(), dim=c(ntotal, 3))
     heading <- array(numeric(), dim=c(ntotal, 1))
@@ -449,12 +482,15 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     oce.debug(debug, "data.length=", data.length, "\n")
     oce.debug(debug, "burst.header.length=",burst.header.length,"\n")
 
-    for (b in 1:nbursts) {
-        n <- samples.per.burst[b]
-        oce.debug(debug, "burst", b, "at", format(burst.time[b]), "data start at byte", burst.start[b]+burst.header.length, "n=",n,"\n")
-        buf.subset <- buf[burst.start[b]+burst.header.length+0:(-1+data.length*n)]
+    oce.debug(debug, "burst.bufindex.focus:", paste(burst.bufindex.focus, collapse=" "), "\n")
+
+    for (b in 1:nbursts.focus) {
+        n <- samples.per.burst.focus[b]
+        oce.debug(debug, "burst", b, "at", format(burst.time.focus[b]), "data start at byte", burst.bufindex.focus[b]+burst.header.length, "n=",n,"\n")
+        buf.subset <- buf[burst.bufindex.focus[b]+burst.header.length+0:(-1+data.length*n)]
         m <- matrix(buf.subset, ncol=data.length, byrow=TRUE)
-        if (n != dim(m)[1]) stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", data.length)
+        if (n != dim(m)[1])
+            stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", data.length)
         r <- row.offset + 1:n
         v[r,1] <- 1e-4 * readBin(t(m[,1:2]), "integer", size=2, n=n, signed=TRUE, endian="little")
         v[r,2] <- 1e-4 * readBin(t(m[,3:4]), "integer", size=2, n=n, signed=TRUE, endian="little")
@@ -479,20 +515,24 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     }
     if (monitor)
         cat("\n")
-    rm(buf, buf.subset, m)              # possibly space is tight
+    rm(buf, buf.subset, m)              # clean up, in case space is tight
 
-    indices <- seq(from.index, to.index)
-    time <- approx(burst.sample.all, burst.time.all - burst.time[1], indices)$y + burst.time[1]
-    ## FIXME: should be getting adv time by approx (as above), but first will need
-    ## to tack a fake time on the end, to avoid NA if looking in last burst
-    time <- burst.time[1] + (0:(ntotal-1)) / metadata$sampling.rate # FIXME: should use approx()
+    ## Subset data to match the provided 'from', 'to' and 'by'
+    indices <- seq(from.index, to.index) # FIXME: ignoring 'by'
+    oce.debug(debug, "indices[1:10]=", paste(indices[1:10], collapse=" "), "\n")
+    time <- approx(burst.sampleindex.extended, burst.time.extended - burst.time[1], indices)$y + burst.time[1]
+    if (any(is.na(time)))
+        warning("some times are NA; this is an internal coding error")
 
-    ##cat("burst[1]=",burst[1],"  burst[nbursts]=", burst[nbursts],"\n")
-    ##cat("burst.sample[1]=",burst.sample[1],"  burst.sample[nbursts]=", burst.sample[nbursts],"\n")
-    ##cat("from=",from,"to=",to,"\n")
-    ##cat("from-burst.sample[1]=",from-burst.sample[1],"to-burst.sample[1]=",to-burst.sample[1],"\n")
-    iii<<-seq(from, to) - burst.sample[1]
-
+    focus.from <- from.burst.offset
+    focus.to <- to.burst.offset + sum(samples.per.burst.focus[-length(samples.per.burst.focus)])
+    oce.debug(debug, "focus.from=",focus.from, "focus.to=", focus.to,"\n")
+    iii <- seq(focus.from, focus.to)    # FIXME should use by
+    oce.debug(debug, "iii=", iii[1], iii[2], "...", iii[-1+length(iii)], iii[length(iii)], "\n")
+    if (any(iii < 0))
+        stop("got negative numbers in iii, which indicates a coding problem; range(iii)=",paste(range(iii), collapse=" to "))
+    oce.debug(debug, "length(indices)=",length(indices),"; min=", min(indices), " max=", max(indices),"\n")
+    oce.debug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
     v <- v[iii,]
     a <- a[iii,]
     c <- c[iii,]
@@ -502,11 +542,6 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     pitch <- pitch[iii]
     heading <- heading[iii]
     roll <- roll[iii]
-
-    dan.vv<<-v
-    dan.aa<<-a
-    dan.cc<<-c
-
     data <- list(ts=list(time=time,
                  heading=heading,
                  pitch=pitch,
@@ -683,7 +718,11 @@ summary.adv <- function(object, ...)
 
     res <- list(filename=object$metadata$filename,
                 number.of.beams=object$metadata$number.of.beams,
+                orientation=object$metadata$orientation,
                 transformation.matrix=object$metadata$transformation.matrix,
+                measurement.start=object$metadata$measurement.start,
+                measurement.end=object$metadata$measurement.end,
+                measurement.deltat=object$metadata$measurement.deltat,
                 subsample.start=min(object$data$ts$time, na.rm=TRUE),
                 subsample.end=max(object$data$ts$time, na.rm=TRUE),
                 subsample.deltat=(as.numeric(object$data$ts$time[len])-as.numeric(object$data$ts$time[1]))/len,
@@ -703,9 +742,13 @@ summary.adv <- function(object, ...)
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADV Summary\n", ...)
-    cat("  Instrument:            ", x$instrument.type, "; serial number:", x$serial.number, "\n")
+    cat("  Instrument:            ", x$instrument.type, ", serial number:", x$serial.number, "\n")
     cat("  Source:                ", x$filename, "\n")
-    cat(sprintf("  Subsamples:             %s %s to %s %s at interval %.2f s\n",
+    cat(sprintf("  Measurements:           %s %s to %s %s at interval %.3f s\n",
+                format(x$measurement.start), attr(x$measurement.start, "tzone"),
+                format(x$measurement.end), attr(x$measurement.end, "tzone"),
+                x$measurement.deltat), ...)
+    cat(sprintf("  Subsamples:             %s %s to %s %s at interval %.3f s\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 x$subsample.deltat), ...)
@@ -713,6 +756,7 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
     ## cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
     cat("  Number of samples:     ", x$number.of.samples, "\n")
     cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
+    cat("  Orientation:           ", x$orientation, "\n")
     if (x$instrument.type == "vector") {
         cat("  Burst Length:          ", x$burst.length, "\n")
     }

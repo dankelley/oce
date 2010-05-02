@@ -118,8 +118,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 
   \emph{Notes on SonTek ADR files.}
     The binary format is inferred from Appendix 2.2.3 of the Sontek ADV
-    operation Manual - Firmware Version 4.0 (Oct 1997), with the following
-    exceptions.
+    operation Manual, Firmware Version 4.0 (Oct 1997), with the following
+    exceptions and notes.
 
     \enumerate{
 
@@ -130,6 +130,12 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     start with c(0xa5, 0x10), but a test file indicates that they start with
     c(0xa5, 0x11), so the code accepts either alternative for the second
     byte.
+
+    \item Cannot handle beam coordinates, because the header seems not
+    to include any information on the transformation matrix, and the
+    author is unwilling to guess, not having had a need to work with
+    beam-coordinate files.
+
    }
 }
 

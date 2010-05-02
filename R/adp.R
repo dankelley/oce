@@ -124,11 +124,11 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", paste(x$metadata$serial.number, collapse=""), "\n", sep=""), ...)
     cat("  Source:            ", x$filename, "\n", ...)
     if (is.null(x$have.actual.data) || x$have.actual.data) {
-        cat(sprintf("  Measurements:       %s %s to %s %s at interval %.2f s\n",
+        cat(sprintf("  Measurements:       %s %s to %s %s at interval %.3f s\n",
                     format(x$measurement.start), attr(x$measurement.start, "tzone"),
                     format(x$measurement.end), attr(x$measurement.end, "tzone"),
                     x$measurement.deltat), ...)
-        cat(sprintf("  Subsample:          %s %s to %s %s at interval %.2f s\n",
+        cat(sprintf("  Subsample:          %s %s to %s %s at interval %.3f s\n",
                     format(x$subsample.start), attr(x$subsample.start, "tzone"),
                     format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                     x$subsample.deltat), ...)

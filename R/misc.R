@@ -840,7 +840,7 @@ ctime.to.seconds <- function(ctime)
     s
 }
 
-show.fives <- function(x, indent="    ")
+show.fives <- function(x, indent="  ")
 {
     if (!("fives" %in% names(x))) stop("'x' has no item named 'fives'")
     rownames <- rownames(x$fives)
