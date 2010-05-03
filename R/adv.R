@@ -571,6 +571,16 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## Subset data to match the provided 'from', 'to' and 'by'
     if (from.to.POSIX) {
         iii <- from <= time & time <= to
+        if (is.character(by)) {
+            subsampling.rate <- floor(0.5 + ctime.to.seconds(by) * metadata$sampling.rate)
+            oce.debug(debug, paste(" by = '", by, "' yields subsampling.rate=", subsampling.rate, "\n"), sep="")
+            samples <- 1:length(iii)
+            oce.debug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
+            iii <- iii & !(samples %% subsampling.rate)
+            oce.debug(debug, "after  interpreting 'by', iii true for", sum(iii), "cases\n")
+            ##!(1:100)%%metadata$sampling.rate
+            oce.debug(debug, "'by' is character, so subsampling by", floor(0.5 + ctime.to.seconds(by) * metadata$sampling.rate), "\n")
+        }
     } else {
         indices <- seq(from.index, to.index) # FIXME: ignoring 'by'
         oce.debug(debug, "indices[1:10]=", paste(indices[1:10], collapse=" "), "\n")
