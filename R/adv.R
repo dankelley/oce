@@ -286,6 +286,32 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                 header=TRUE, type="",
                                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    bisect.adv.sontek.adr <- function(t.find, add=0, debug=0) {
+        oce.debug(debug, "bisect.adv.sontek.adr(t.find=", format(t.find), ", add=", add, "\n")
+        len <- length(burst.time)
+        lower <- 1
+        upper <- len
+        passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
+        for (pass in 1:passes) {
+            middle <- floor((upper + lower) / 2)
+            t <- burst.time[middle]
+            if (t.find < t)
+                upper <- middle
+            else
+                lower <- middle
+            if (upper - lower < 2)
+                break
+            oce.debug(debug, paste("burst.time[", middle, "] = ", format(t), " (at pass ", pass, " of ", passes, ")\n", sep=""))
+        }
+        middle <- middle + add          # may use add to extend before and after window
+        if (middle < 1) middle <- 1
+        if (middle > len) middle <- len
+        t <- burst.time[middle]
+        oce.debug(debug, "result: t=", format(t), "\n")
+        return(list(index=middle, time=t))
+    }
+
+
     ## The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
     oce.debug(debug, "read.adv.sontek.adr() ENTRY\n")
@@ -301,11 +327,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         open(file, "rb")
         on.exit(close(file))
     }
-
-    ## FIXME: accept wider variety of types for 'from', 'to' and 'by'
-    if (inherits(from, "POSIXt")) stop("cannot accept 'from' as a POSIXt")
-    if (inherits(to, "POSIXt")) stop("cannot accept 'to' as a POSIXt")
-    if (is.character(from) || is.character(to) || is.character(by)) stop("cannot accept character from, to, or by")
+    ## read whole file into 'buf'
+    seek(file, 0, "end", rw="read")
+    file.size <- seek(file, 0, origin="start", rw="read")
+    oce.debug(debug, "filesize=",file.size,"\n")
+    buf <- readBin(file, what="raw", n=file.size, endian="little")
 
     ## Read header, or create a nominal default one.
     hardware.configuration.length <- 24
@@ -314,10 +340,6 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     burst.header.length <- 60
     checksum.length <- 2
     data.length <- 22                   # FIXME: this should be determined based on the headers
-    seek(file, 0, "end", rw="read")
-    file.size <- seek(file, 0, origin="start", rw="read")
-    oce.debug(debug, "filesize=",file.size,"\n")
-    buf <- readBin(file, what="raw", n=file.size, endian="little")
     metadata <- list(filename=filename, instrument.type="adv sontek (adr)", sampling.rate=1)
     if (header) {
         ##hardware.configuration <- readBin(file, "raw", n=hardware.configuration.length) # 24 total
@@ -435,23 +457,44 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (debug > 0)
         print(data.frame(burst, burst.time, burst.bufindex)[1:5,])
 
-    ## FIXME: check for POSIXt types here
-    from.index <- from
-    to.index <- to
-
-    ## Determine bursts, and offsets within bursts, for from.index and to.index
-    tmp <- approx(burst.sampleindex, burst, from.index)$y
-    if (is.na(tmp))
-        stop("from index", from, " is not in this file")
-    from.burst <- floor(tmp)
-    from.burst.offset <- floor(0.5 + (tmp - from.burst)*samples.per.burst[from.burst])
-    oce.debug(debug, "from is at index", from.index, "which is in burst", from.burst, ", at offset", from.burst.offset, "\n")
-    tmp <- approx(burst.sampleindex, burst, to.index)$y
-    if (is.na(tmp))
-        stop("to index", from, " is not in this file")
-    to.burst <- floor(tmp)
-    to.burst.offset <- floor(0.5 + (tmp - to.burst)*samples.per.burst[to.burst])
-    oce.debug(debug, "to is at index", to.index, "which is in burst", to.burst, ", at offset", to.burst.offset, "\n")
+    ## Interpret 'from', 'to', and 'by', possibly integers, POSIX times, or strings for POSIX tiems
+    from.keep <- from
+    to.keep <- to
+    if (inherits(from, "POSIXt")) {
+        if (!inherits(to, "POSIXt"))
+            stop("if 'from' is POSIXt, then 'to' must be, also")
+        from.to.POSIX <- TRUE
+        from.pair <- bisect.adv.sontek.adr(from, add=-1, debug=debug-1)
+        from.burst <- from.pair$index
+        oce.debug(debug, "from.keep=", format(from.keep), " yields burst.time[", from.burst, "]=", format(from.pair$t), "\n")
+        to.pair <- bisect.adv.sontek.adr(to, add=1, debug=debug-1)
+        to.burst <- to.pair$index
+        oce.debug(debug, "to.keep=", format(to.keep), " yields burst.time[", to.burst, "]=", format(to.pair$t), "\n")
+        ## burst offsets  FIXME: do we need these?
+        from.burst.offset <- floor(0.5 + (as.numeric(from) - as.numeric(burst.time[from.burst])) * metadata$sampling.rate)
+        to.burst.offset <- floor(0.5 + (as.numeric(to) - as.numeric(burst.time[to.burst-1])) * metadata$sampling.rate)
+        oce.debug(debug, "from.burst.offset=", from.burst.offset, "to.burst.offset=",to.burst.offset,"\n")
+        from.index <- 1
+        to.index <- sum(samples.per.burst[from.burst:to.burst])
+        oce.debug(debug, "from.index=", from.index, "to.index=", to.index, "\n")
+    } else {
+        from.to.POSIX <- FALSE
+        from.index <- from
+        to.index <- to
+        ## Determine bursts, and offsets within bursts, for from.index and to.index
+        tmp <- approx(burst.sampleindex, burst, from.index)$y
+        if (is.na(tmp))
+            stop("from index", from, " is not in this file")
+        from.burst <- floor(tmp)
+        from.burst.offset <- floor(0.5 + (tmp - from.burst)*samples.per.burst[from.burst])
+        oce.debug(debug, "from is at index", from.index, "which is in burst", from.burst, ", at offset", from.burst.offset, "\n")
+        tmp <- approx(burst.sampleindex, burst, to.index)$y
+        if (is.na(tmp))
+            stop("to index", from, " is not in this file")
+        to.burst <- floor(tmp)
+        to.burst.offset <- floor(0.5 + (tmp - to.burst)*samples.per.burst[to.burst])
+        oce.debug(debug, "to is at index", to.index, "which is in burst", to.burst, ", at offset", to.burst.offset, "\n")
+    }
 
     ## Set up focus region (not needed; just saves some subscripts later)
     focus <- unique(seq(from.burst, to.burst)) # collapse, e.g. if in same burst
@@ -466,9 +509,12 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         print(data.frame(burst.focus, burst.time.focus, burst.bufindex.focus, samples.per.burst.focus))
 
     ## set up to read everything in every relevant burst (trim later)
+    oce.debug(debug, "sum(samplers.burst.focus)", sum(samples.per.burst.focus), "vs", nbursts * as.numeric(burst.time[2]-burst.time[1])*metadata$sampling.rate,"\n")
+
     ntotal <- sum(samples.per.burst.focus)
     oce.debug(debug, "ntotal=", ntotal, "\n")
     v <- array(numeric(), dim=c(ntotal, 3))
+    time <- array(numeric(), dim=c(ntotal, 1))
     heading <- array(numeric(), dim=c(ntotal, 1))
     pitch <- array(numeric(), dim=c(ntotal, 1))
     roll <- array(numeric(), dim=c(ntotal, 1))
@@ -500,6 +546,10 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         c[r,1] <- m[,10]
         c[r,2] <- m[,11]
         c[r,3] <- m[,12]
+        time[r] <- as.numeric(burst.time.focus[b]) + seq(0, n-1) / metadata$sampling.rate
+        ##cat(sprintf("%.2f %.2f %.2f\n", time[r[1]], time[r[2]], time[r[3]]))
+        ##cat("time=", format(time[r[1]]), ";", format(burst.time.focus[b]), "\n")
+        ##print(range(time[r]))
         heading[r] <- 0.1 * readBin(as.raw(t(m[,13:14])), "integer", n=n, size=2, signed=TRUE, endian="little")
         pitch[r] <- 0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
         roll[r] <- 0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
@@ -515,22 +565,26 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (monitor)
         cat("\n")
     rm(buf, buf.subset, m)              # clean up, in case space is tight
-
+    class(time) <- c("POSIXt", "POSIXct")
+    attr(time, "tzone") <- attr(burst.time.focus[1], "tzone")
+    oce.debug(debug, "burst.time[1]=", format(burst.time.focus[1]), "\n   times=", format(time[1:20]),"\n")
     ## Subset data to match the provided 'from', 'to' and 'by'
-    indices <- seq(from.index, to.index) # FIXME: ignoring 'by'
-    oce.debug(debug, "indices[1:10]=", paste(indices[1:10], collapse=" "), "\n")
-    time <- approx(burst.sampleindex.extended, burst.time.extended - burst.time[1], indices)$y + burst.time[1]
-    if (any(is.na(time)))
-        warning("some times are NA; this is an internal coding error")
-
-    focus.from <- from.burst.offset
-    focus.to <- to.burst.offset + sum(samples.per.burst.focus[-length(samples.per.burst.focus)])
-    oce.debug(debug, "focus.from=",focus.from, "focus.to=", focus.to,"\n")
-    iii <- seq(focus.from, focus.to, by=by)
+    if (from.to.POSIX) {
+        iii <- from <= time & time <= to
+    } else {
+        indices <- seq(from.index, to.index) # FIXME: ignoring 'by'
+        oce.debug(debug, "indices[1:10]=", paste(indices[1:10], collapse=" "), "\n")
+        time <- approx(burst.sampleindex.extended, burst.time.extended - burst.time[1], indices)$y + burst.time[1]
+        if (any(is.na(time)))
+            warning("some times are NA; this is an internal coding error")
+        focus.from <- from.burst.offset
+        focus.to <- to.burst.offset + sum(samples.per.burst.focus[-length(samples.per.burst.focus)])
+        oce.debug(debug, "focus.from=",focus.from, "focus.to=", focus.to,"\n")
+        iii <- seq(focus.from, focus.to, by=by)
+    }
     oce.debug(debug, "iii=", iii[1], iii[2], "...", iii[-1+length(iii)], iii[length(iii)], "\n")
     if (any(iii < 0))
         stop("got negative numbers in iii, which indicates a coding problem; range(iii)=",paste(range(iii), collapse=" to "))
-    oce.debug(debug, "length(indices)=",length(indices),"; min=", min(indices), " max=", max(indices),"\n")
     oce.debug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
     v <- v[iii,]
     a <- a[iii,]
@@ -719,6 +773,7 @@ summary.adv <- function(object, ...)
                 number.of.beams=object$metadata$number.of.beams,
                 orientation=object$metadata$orientation,
                 transformation.matrix=object$metadata$transformation.matrix,
+                sampling.rate=object$metadata$sampling.rate,
                 measurement.start=object$metadata$measurement.start,
                 measurement.end=object$metadata$measurement.end,
                 measurement.deltat=object$metadata$measurement.deltat,
@@ -741,12 +796,12 @@ summary.adv <- function(object, ...)
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADV Summary\n", ...)
-    cat("  Instrument:            ", x$instrument.type, ", serial number:", x$serial.number, "\n")
+    cat(paste("  Instrument:             ", x$instrument.type, ", serial number ", x$serial.number, "\n",sep=""))
     cat("  Source:                ", x$filename, "\n")
-    cat(sprintf("  Measurements:           %s %s to %s %s at interval %.3f s\n",
+    cat(sprintf("  Measurements:           %s %s to %s %s sampled at %s Hz\n",
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),
-                x$measurement.deltat), ...)
+                format(x$sampling.rate)), ...)
     cat(sprintf("  Subsamples:             %s %s to %s %s at interval %.3f s\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
