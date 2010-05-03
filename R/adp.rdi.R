@@ -279,55 +279,41 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         on.exit(close(file))
     }
     type <- match.arg(type)
+
+    ## Read whole file into 'buf'
     seek(file, 0, "start")
-    ## go to the end, so the next seek (to get to the data) reveals file length
     seek(file, where=0, origin="end")
     file.size <- seek(file, where=0)
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
+
+    ## decode header
     header <- decode.header.rdi(buf, debug=debug-1)
     if (header$have.actual.data) {
-        ##
-        ##if (debug > 0) {
-        ##  dan.header<<-header
-        ##    dan.buf <<- buf
-        ##    cat("HEADER\n")
-        ##    print(header)
-        ##}
         number.of.beams <- header$number.of.beams
         number.of.cells <- header$number.of.cells
         bin1.distance <- header$bin1.distance
         xmit.pulse.length <- header$xmit.pulse.length
         cell.size <- header$cell.size
-        ##profile.start <- .Call("match2bytes", buf[1:min(50000,length(buf))], 0x80, 0x00, TRUE)
         profile.start <- .Call("match2bytes", buf, 0x80, 0x00, TRUE)
-        ##if (0){
-        ##    dan.ps1<<-profile.start
-        ##    cat("a. profile.start[1:10]=", profile.start[1:10],"\n")
-        ##    cat("a. diff(profile.start)[1:10]=", diff(profile.start)[1:10],"\n")
-        ##    elen <- header$bytes.per.ensemble + 2
-        ##    profile.start <- profile.start[1]+elen*seq(0,floor(file.size/elen))
-        ##    dan.ps2<<-profile.start
-        ##    cat("b. profile.start[1:10]=", profile.start[1:10],"\n")
-        ##}
         profiles.in.file <- length(profile.start)
         oce.debug(debug, "profile.start[1:10]=", profile.start[1:10], "(out of ", length(profile.start), ")\n")
-        measurement.start <- ISOdatetime(2000 +readBin(buf[profile.start[1]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+        measurement.start <- ISOdatetime(2000 + as.integer(buf[profile.start[1]+4]), # year
                                          as.integer(buf[profile.start[1]+5]), # month
                                          as.integer(buf[profile.start[1]+6]), # day
                                          as.integer(buf[profile.start[1]+7]), # hour
                                          as.integer(buf[profile.start[1]+8]), # min
                                          as.integer(buf[profile.start[1]+9]), # sec
                                          tz=tz)
-        measurement.end <- ISOdatetime(2000 +readBin(buf[profile.start[profiles.in.file]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+        measurement.end <- ISOdatetime(2000 + as.integer(buf[profile.start[profiles.in.file]+4]), # year
                                        as.integer(buf[profile.start[profiles.in.file]+5]), # month
                                        as.integer(buf[profile.start[profiles.in.file]+6]), # day
                                        as.integer(buf[profile.start[profiles.in.file]+7]), # hour
                                        as.integer(buf[profile.start[profiles.in.file]+8]), # min
                                        as.integer(buf[profile.start[profiles.in.file]+9]), # sec
                                        tz=tz)
-        measurement.deltat <- as.numeric(      # FIXME: assumes uniform time interval (ok, but document it)
-                                         ISOdatetime(2000 +readBin(buf[profile.start[2]+4],"integer",size=1,signed=FALSE,endian="little"), # year
+        ## FIXME: assumes uniform time interval (ok, but document it)
+        measurement.deltat <- as.numeric(ISOdatetime(2000 + as.integer(buf[profile.start[2]+4]), # year
                                                      as.integer(buf[profile.start[2]+5]), # month
                                                      as.integer(buf[profile.start[2]+6]), # day
                                                      as.integer(buf[profile.start[2]+7]), # hour
