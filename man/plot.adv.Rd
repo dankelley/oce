@@ -7,10 +7,11 @@
 \description{Plot ADV data.}
 
 \usage{\method{plot}{adv}(x,
-     which=1:3,
+     which=c(1:3,14,15),
      titles,
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
+     draw.zero.line=FALSE,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1,mgp[1]+1,2,1.5),
      margins.as.image=FALSE,
@@ -37,6 +38,8 @@
   \item{draw.time.range}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
+  \item{draw.zero.line}{boolean that indicates whether to draw zero
+    lines on velocities.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

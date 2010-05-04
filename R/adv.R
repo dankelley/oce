@@ -840,10 +840,11 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 plot.adv <- function(x,
-                     which=1:3,
+                     which=c(1:3,14,15),
                      titles,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
+                     draw.zero.line=FALSE,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1]+1,mgp[1]+1,2,1.5),
                      margins.as.image=FALSE,
@@ -913,18 +914,24 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
+            if (draw.zero.line)
+                abline(h=0)
         } else if (which[w] == 2) {
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,2],
                         ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
+            if (draw.zero.line)
+                abline(h=0)
         } else if (which[w] == 3) {
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,3],
                         ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
+            if (draw.zero.line)
+                abline(h=0)
         } else if (which[w] == 14) {    # temperature time-series
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                         ylab=resizable.label("T", "y"), type='l', draw.time.range=draw.time.range,
