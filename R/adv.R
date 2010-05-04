@@ -360,9 +360,10 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, "temp.installed=", metadata$temp.installed, "\n")
         metadata$press.installed <- if (as.integer(hardware.configuration[8]) == 1) TRUE else FALSE;
         oce.debug(debug, "press.installed=", metadata$press.installed, "\n")
-        metadata$pressure.scale <- 1e-9 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little")
+        ## pressure is in nanobar / count = 1e-9 bar / count = 1e-7 dbar / count
+        metadata$pressure.scale <- 1e-8 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little", signed=FALSE)
         oce.debug(debug, "pressure.scale=", metadata$pressure.scale,"\n")
-        metadata$pressure.offset <- 1e-5 * readBin(hardware.configuration[13:16], "integer", size=4, n=1, endian="little", signed=FALSE)
+        metadata$pressure.offset <- 1e-5 * readBin(hardware.configuration[13:16], "integer", size=4, n=1, endian="little", signed=TRUE)
         oce.debug(debug, "pressure.offset=", metadata$pressure.offset,"\n")
         orientation.code <- as.integer(hardware.configuration[4])
         metadata$orientation <- c("downward", "upward", "sideward")[orientation.code + 1]
@@ -554,7 +555,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         pitch[r] <- 0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
         roll[r] <- 0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
         temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", size=2, n=n, signed=TRUE, endian="little")
-        pressure[r] <- -metadata$pressure.offset + metadata$pressure.scale*readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        pressure[r] <- metadata$pressure.scale *
+            readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little") +
+                metadata$pressure.offset
         row.offset <- row.offset + n
         if (monitor) {
             cat(".")
