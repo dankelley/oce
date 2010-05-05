@@ -311,7 +311,6 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         return(list(index=middle, time=t))
     }
 
-
     ## The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
     oce.debug(debug, "read.adv.sontek.adr() ENTRY\n")
@@ -342,15 +341,16 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     data.length <- 22                   # FIXME: this should be determined based on the headers
     metadata <- list(filename=filename, instrument.type="adv sontek (adr)", sampling.rate=1)
     if (header) {
-        ##hardware.configuration <- readBin(file, "raw", n=hardware.configuration.length) # 24 total
         hardware.configuration <- buf[1:hardware.configuration.length]
         probe.configuration <- buf[hardware.configuration.length + 1:probe.configuration.length]
         deployment.parameters <- buf[hardware.configuration.length+probe.configuration.length+1:deployment.parameters.length]
+        velocity.range.index <- as.numeric(deployment.parameters[20])
+        oce.debug(debug, "velocity.range.index=", velocity.range.index, "\n")
         metadata$cpu.software.ver.num <- 0.1 * as.numeric(hardware.configuration[1])
         oce.debug(debug, "cpu.software.ver.num=", metadata$cpu.software.ver.num, "\n")
         metadata$dsp.software.ver.num <- 0.1 * as.numeric(hardware.configuration[2])
         oce.debug(debug, "dsp.software.ver.num=", metadata$dsp.software.ver.num, "\n")
-        metadata$sensor.orientation <- c("up", "down", "side")[as.numeric(hardware.configuration[4])+1]
+        metadata$sensor.orientation <- c("down", "up", "side")[1 + as.numeric(hardware.configuration[4])]
         oce.debug(debug, "sensor.orientation=", metadata$sensor.orientation, "\n")
         metadata$compass.installed <- if (as.integer(hardware.configuration[5]) == 1) TRUE else FALSE;
         oce.debug(debug, "compass.installed=", metadata$compass.installed, "\n")
