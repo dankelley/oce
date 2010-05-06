@@ -383,6 +383,10 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ## FIXME: in the above, ignoring "RecorderInstalled" on p105 of docs -- what is that??
         metadata$serial.number <- paste(readBin(probe.configuration[10+1:5],"character",n=5,size=1), collapse="")  # "B373H"
         oce.debug(debug, "serial.number=",metadata$serial.number,"\n")
+
+        metadata$probe.type <- probe.configuration[16] # FIXME: what does this mean? Hydratools confused also.
+        oce.debug(debug, "probe.type=", metadata$probe.type, "\n")
+
         if (deployment.parameters[1]!=0x12)
             stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
         if (deployment.parameters[2]!=0x01)
@@ -737,6 +741,8 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                  ss=list(distance=0),
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
     metadata <- list(instrument.type="sontek adr",
+                     cpu.software.ver.num=metadata$cpu.software.ver.num,
+                     dsp.software.ver.num=metadata$dsp.software.ver.num,
                      filename=basefile,
                      transformation.matrix=if(!missing(transformation.matrix)) transformation.matrix else NULL,
                      number.of.samples=length(data$x),
@@ -800,6 +806,8 @@ summary.adv <- function(object, ...)
     if (inherits(object, "nortek"))
         res$burst.length <- object$metadata$burst.length
     if (inherits(object, "sontek")) {
+        res$cpu.software.ver.num <- object$metadata$cpu.software.ver.num
+        res$dsp.software.ver.num <- object$metadata$dsp.software.ver.num
         res$samples.per.burst <- object$metadata$samples.per.burst
     }
     class(res) <- "summary.adv"
@@ -824,12 +832,13 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Number of samples:     ", x$number.of.samples, "\n")
     cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
     cat("  Orientation:           ", x$orientation, "\n")
-
     if (x$instrument.type == "vector") {
         cat("  Nortek vector specific\n")
-        cat("    Burst Length:          ", x$burst.length, "\n")
-    } else if (x$instrument.type == "sontek adr") {
-        cat("  Sontek adv/adr specific\n")
+        cat("    Samples per burst      ", x$burst.length, "\n") # FIXME: use same names throughout
+    } else if (x$instrument.type == "sontek adr") {              # FIXME: call this just 'sontek'??
+        cat("  Sontek adr specific\n")
+        cat("    CPU software version:  ", x$cpu.software.ver.num, "\n")
+        cat("    DSP software version:  ", x$dsp.software.ver.num, "\n")
         cat("    Samples per burst:     ", x$samples.per.burst, "\n")
         cat("    Velocity range index:  ", x$velocity.range.index, "\n")
     }
