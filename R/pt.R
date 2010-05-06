@@ -270,9 +270,9 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 x$subsample.deltat), ...)
-    cat("\n\nStatistics of subsample\n-----------------------\n\n", ...)
-    cat(show.fives(x), ...)
-    cat("\n\nProcessing Log\n--------------\n\n", ...)
+    cat("* Statistics of subsample\n\n", ...)
+    cat(show.fives(x, indent='              '), ...)
+    cat("\n* Processing log\n\n", ...)
     cat(x$processing.log, ...)
     invisible(x)
 }

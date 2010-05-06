@@ -120,62 +120,62 @@ summary.adp <- function(object, ...)
 
 print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("ADP Summary\n", ...)
-    cat(paste("  Instrument:         ", x$instrument.type, ", serial number ", paste(x$metadata$serial.number, collapse=""), "\n", sep=""), ...)
-    cat("  Source:            ", x$filename, "\n", ...)
+    cat("ADP Summary\n-----------\n\n", ...)
+    cat(paste("* Instrument:         ", x$instrument.type, ", serial number ``", paste(x$metadata$serial.number, collapse=""), "``\n", sep=""), ...)
+    cat("* Source:            ``", x$filename, "``\n", ...)
     if (is.null(x$have.actual.data) || x$have.actual.data) {
-        cat(sprintf("  Measurements:       %s %s to %s %s at interval %.3f s\n",
+        cat(sprintf("* Measurements:       %s %s to %s %s at interval %.3f s\n",
                     format(x$measurement.start), attr(x$measurement.start, "tzone"),
                     format(x$measurement.end), attr(x$measurement.end, "tzone"),
                     x$measurement.deltat), ...)
-        cat(sprintf("  Subsample:          %s %s to %s %s at interval %.3f s\n",
+        cat(sprintf("* Subsample:          %s %s to %s %s at interval %.3f s\n",
                     format(x$subsample.start), attr(x$subsample.start, "tzone"),
                     format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                     x$subsample.deltat), ...)
         ##cat("  Number of profiles:", x$number.of.profiles, "\n", ...)
-        cat(sprintf("  Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
+        cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                     x$number.of.cells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
-        cat("  Coordinate system: ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n", ...)
-        cat("  Frequency:         ", x$frequency, "kHz\n", ...)
-        cat("  Beams:             ", x$number.of.beams, if (x$oce.beam.attenuated) "beams (attenuated)" else "beams (not attenuated)",
+        cat("* Coordinate system: ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n", ...)
+        cat("* Frequency:         ", x$frequency, "kHz\n", ...)
+        cat("* Beams:             ", x$number.of.beams, if (x$oce.beam.attenuated) "beams (attenuated)" else "beams (not attenuated)",
             "oriented", x$orientation, "with angle", x$metadata$beam.angle, "deg to axis\n", ...)
         if (!is.null(x$transformation.matrix)) {
-            cat("  Transformation matrix:\n",
-                "                   ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n",
-                "                   ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n",
-                "                   ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n", ...)
+            cat("* Transformation matrix\n\n")
+            cat("       ", format(x$transformation.matrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
+            cat("       ", format(x$transformation.matrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
+            cat("       ", format(x$transformation.matrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
             if (x$number.of.beams > 3)
-                cat("                    ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n", ...)
+                cat("       ", format(x$transformation.matrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
         }
+        cat("\n")
         if (x$instrument.type == "teledyne rdi") {
-            cat("  Teledyne-specific\n", ...)
-            cat("    System configuration:       ", x$metadata$system.configuration, "\n", ...)
-            cat("    Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
-            cat("    CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)
-            cat("    Xmit pulse length:          ", x$metadata$xmit.pulse.length,"m\n", ...)
-            cat("    Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
-            cat("    Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
+            cat("* Teledyne-specific\n\n", ...)
+            cat("    * System configuration:       ", x$metadata$system.configuration, "\n", ...)
+            cat("    * Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
+            cat("    * CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)
+            cat("    * Xmit pulse length:          ", x$metadata$xmit.pulse.length,"m\n", ...)
+            cat("    * Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
+            cat("    * Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
         }
         if (x$instrument.type == "nortek aquadopp high resolution") {
-            cat("  Nortek-specific:\n", ...)
-            cat("    Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
-            cat("    Hardware revision:           ", x$metadata$hardware.revision, "\n", ...)
-            cat("    Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
+            cat("* Nortek-specific:\n\n", ...)
+            cat("    * Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
+            cat("    * Hardware revision:           ", x$metadata$hardware.revision, "\n", ...)
+            cat("    * Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
         }
         if (x$instrument.type == "sontek") {
-            cat("  Sontek-specific:\n", ...)
-            cat("    CPU software version:        ", x$metadata$cpu.software.ver.num, "\n", ...)
-            cat("    DSP software version:        ", x$metadata$dsp.software.ver.num, "\n", ...)
-            cat("    Board rev:                   ", x$metadata$board.rev, "\n", ...)
+            cat("* Sontek-specific:\n\n", ...)
+            cat("    * CPU software version:        ", x$metadata$cpu.software.ver.num, "\n", ...)
+            cat("    * DSP software version:        ", x$metadata$dsp.software.ver.num, "\n", ...)
+            cat("    * Board rev:                   ", x$metadata$board.rev, "\n", ...)
         }
-        cat("\nStatistics of subsample:\n", ...)
-        cat(show.fives(x), ...)
-        cat("\n", ...)
-        cat("Processing log:\n", ...)
+        cat("\n* Statistics of subsample\n\n", ...)
+        cat(show.fives(x, indent='              '), ...)
+        cat("\n* Processing log\n\n", ...)
         cat(x$processing.log, ...)
         invisible(x)
     } else {
-        cat("  No profiles in file\n")
+        cat("* No profiles in file\n")
         invisible(x)
     }
 }
