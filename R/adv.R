@@ -837,33 +837,32 @@ summary.adv <- function(object, ...)
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADV Summary\n----------\n\n", ...)
-    cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n",sep=""))
-    cat(paste("* Source:                 ``", x$filename, "``\n", sep=""))
-    cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.3f Hz\n",
+    cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n\n",sep=""))
+    cat(paste("* Source:                 ``", x$filename, "``\n\n", sep=""))
+    cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.3f Hz\n\n",
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),
                 1 / x$measurement.deltat), ...)
-    cat(sprintf("* Subsamples:             %s %s to %s %s sampled at %.3f Hz\n",
+    cat(sprintf("* Subsamples:             %s %s to %s %s sampled at %.3f Hz\n\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 1 / x$subsample.deltat), ...)
     ## cat("  Orientation:          ", x$orientation, "\n")
     ## cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
-    cat("* Number of samples:     ", x$number.of.samples, "\n")
-    cat("* Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
+    cat("* Number of samples:     ", x$number.of.samples, "\n\n")
+    cat("* Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n\n")
     cat("* Orientation:           ", x$orientation, "\n")
     if (x$instrument.type == "vector") {
         cat("* Nortek vector specific\n\n")
         cat(  "  * Samples per burst      ", x$burst.length, "\n") # FIXME: use same names throughout
-        cat("\n")
     } else if (x$instrument.type == "sontek adr") {              # FIXME: call this just 'sontek'??
         cat("* Sontek adr specific\n\n")
         cat("    * CPU software version:  ", x$cpu.software.ver.num, "\n")
         cat("    * DSP software version:  ", x$dsp.software.ver.num, "\n")
         cat("    * Samples per burst:     ", x$samples.per.burst, "\n")
         cat("    * Velocity range index:  ", x$velocity.range.index, "\n")
-        cat("\n")
     }
+    cat("\n")
     if (!is.null(x$transformation.matrix)) {
         cat("* Transformation matrix\n")
         cat("       ", format(x$transformation.matrix[1,], width=digits+4, digits=digits, justify="right"), "\n")

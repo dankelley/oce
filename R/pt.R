@@ -260,17 +260,17 @@ summary.pt <- function(object, ...)
 print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("PT Summary\n----------\n\n", ...)
-    cat(paste("* Instrument:         RBR, serial number ``", x$serial.number, "``\n", sep=""), ...)
-    cat(paste("* Source:            ``", x$filename, "``\n", sep=""), ...)
-    cat(sprintf("* Measurements:       %s %s to %s %s at interval %.2f s\n",
+    cat(paste("* Instrument:         RBR, serial number ``", x$serial.number, "``\n\n", sep=""), ...)
+    cat(paste("* Source:            ``", x$filename, "``\n\n", sep=""), ...)
+    cat(sprintf("* Measurements:       %s %s to %s %s at interval %.2f s\n\n",
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),
                 x$measurement.deltat), ...)
-    cat(sprintf("* Subsample:          %s %s to %s %s at interval %.2f s\n",
+    cat(sprintf("* Subsample:          %s %s to %s %s at interval %.2f s\n\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 x$subsample.deltat), ...)
-    cat("* Statistics of subsample\n\n", ...)
+    cat("\n* Statistics of subsample\n\n", ...)
     cat(show.fives(x, indent='              '), ...)
     cat("\n* Processing log\n\n", ...)
     cat(x$processing.log, ...)
