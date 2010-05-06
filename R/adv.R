@@ -61,8 +61,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     header <- decode.header.nortek(buf, debug=debug-1)
     metadata <- list(instrument.type="vector",
                      filename=filename,
-                     measurement.start=if (missing(subsample.start)) NA else subsample.start,
+                     measurement.start=if (missing(subsample.start)) NA else subsample.start, #FIXME is this used?
                      measurement.end=NA,   # FIXME
+                     sampling.rate=NA, # FIXME
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
                      serial.number=header$hardware$serial.number,
                      frequency=header$head$frequency,
@@ -91,8 +92,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      oce.beam.attenuated=FALSE)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
-
-
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
     bisect.nortek.vector.sd <- function(t.find, add=0, debug=0) { # t.find=time add=offset debug=debug
         oce.debug(debug, "  bisect.nortek.vector.sd(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
@@ -109,7 +108,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                              bcd2integer(buf[vsd.start[middle]+7]), # hour
                              bcd2integer(buf[vsd.start[middle]+4]), # min
                              bcd2integer(buf[vsd.start[middle]+5]), # sec
-                             tz=getOption("oce.tz"))
+                             tz=tz)
             if (t.find < t)
                 upper <- middle
             else
@@ -127,7 +126,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          bcd2integer(buf[vsd.start[middle]+7]), # hour
                          bcd2integer(buf[vsd.start[middle]+4]), # min
                          bcd2integer(buf[vsd.start[middle]+5]), # sec
-                         tz=getOption("oce.tz"))
+                         tz=tz)
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", vsd.start[middle], "\n")
         return(list(index=middle, time=t)) # index is within vsd
     }
@@ -135,6 +134,26 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
     vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
     vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+    vsd.len <- length(vsd.start)
+
+    ## Measurement start and end times
+
+
+    metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
+                                              bcd2integer(buf[vsd.start[1]+9]), # month
+                                              bcd2integer(buf[vsd.start[1]+6]), # day
+                                              bcd2integer(buf[vsd.start[1]+7]), # hour
+                                              bcd2integer(buf[vsd.start[1]+4]), # min
+                                              bcd2integer(buf[vsd.start[1]+5]), # sec
+                                              tz=tz)
+    metadata$measurement.end <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[vsd.len]+8]),  # year
+                                            bcd2integer(buf[vsd.start[vsd.len]+9]), # month
+                                            bcd2integer(buf[vsd.start[vsd.len]+6]), # day
+                                            bcd2integer(buf[vsd.start[vsd.len]+7]), # hour
+                                            bcd2integer(buf[vsd.start[vsd.len]+4]), # min
+                                            bcd2integer(buf[vsd.start[vsd.len]+5]), # sec
+                                            tz=tz)
+    metadata$measurement.deltat <- (as.numeric(metadata$measurement.end) - as.numeric(metadata$measurement.start)) / (vsd.len - 1)
 
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
@@ -158,7 +177,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                  bcd2integer(buf[vsd.start[1:2]+7]), # hour
                                  bcd2integer(buf[vsd.start[1:2]+4]), # min
                                  bcd2integer(buf[vsd.start[1:2]+5]), # sec
-                                 tz=getOption("oce.tz"))
+                                 tz=tz)
         vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], units="secs"))
         vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
         vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
@@ -201,7 +220,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          bcd2integer(buf[vsd.start+7]), # hour
                          bcd2integer(buf[vsd.start+4]), # min
                          bcd2integer(buf[vsd.start+5]), # sec
-                         tz=getOption("oce.tz"))
+                         tz=tz)
     ##str(vsd.t)
     vsd.len <- length(vsd.start)
     vsd.start2 <- sort(c(vsd.start, 1 + vsd.start))
@@ -339,7 +358,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     burst.header.length <- 60
     checksum.length <- 2
     data.length <- 22                   # FIXME: this should be determined based on the headers
-    metadata <- list(filename=filename, instrument.type="sontek adr", sampling.rate=1, velocity.scale.factor=1)
+    metadata <- list(filename=filename, instrument.type="sontek adr", measurement.deltat=1, velocity.scale.factor=1)
     if (header) {
         hardware.configuration <- buf[1:hardware.configuration.length]
         probe.configuration <- buf[hardware.configuration.length + 1:probe.configuration.length]
@@ -404,6 +423,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         metadata$sampling.rate <- sampling.rate[1]
         if (metadata$sampling.rate < 0)
             stop("sampling rate must be a positive integer, but got ", metadata$sampling.rate)
+        metadata$measurement.deltat <- 1 / metadata$sampling.rate
         metadata$burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE)
         if (metadata$burst.interval[2] !=0 || metadata$burst.interval[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 in burst.interval vector")
@@ -816,43 +836,43 @@ summary.adv <- function(object, ...)
 
 print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("ADV Summary\n", ...)
-    cat(paste("  Instrument:             ", x$instrument.type, ", serial number ", x$serial.number, "\n",sep=""))
-    cat("  Source:                ", x$filename, "\n")
-    cat(sprintf("  Measurements:           %s %s to %s %s sampled at %s Hz\n",
+    cat("ADV Summary\n----------\n\n", ...)
+    cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n",sep=""))
+    cat(paste("* Source:                 ``", x$filename, "``\n", sep=""))
+    cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.3f Hz\n",
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),
-                format(x$sampling.rate)), ...)
-    cat(sprintf("  Subsamples:             %s %s to %s %s at interval %.3f s\n",
+                1 / x$measurement.deltat), ...)
+    cat(sprintf("* Subsamples:             %s %s to %s %s sampled at %.3f Hz\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
-                x$subsample.deltat), ...)
+                1 / x$subsample.deltat), ...)
     ## cat("  Orientation:          ", x$orientation, "\n")
     ## cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
-    cat("  Number of samples:     ", x$number.of.samples, "\n")
-    cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
-    cat("  Orientation:           ", x$orientation, "\n")
+    cat("* Number of samples:     ", x$number.of.samples, "\n")
+    cat("* Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
+    cat("* Orientation:           ", x$orientation, "\n")
     if (x$instrument.type == "vector") {
-        cat("  Nortek vector specific\n")
-        cat("    Samples per burst      ", x$burst.length, "\n") # FIXME: use same names throughout
+        cat("* Nortek vector specific\n")
+        cat("   * Samples per burst      ", x$burst.length, "\n") # FIXME: use same names throughout
     } else if (x$instrument.type == "sontek adr") {              # FIXME: call this just 'sontek'??
-        cat("  Sontek adr specific\n")
-        cat("    CPU software version:  ", x$cpu.software.ver.num, "\n")
-        cat("    DSP software version:  ", x$dsp.software.ver.num, "\n")
-        cat("    Samples per burst:     ", x$samples.per.burst, "\n")
-        cat("    Velocity range index:  ", x$velocity.range.index, "\n")
+        cat("* Sontek adr specific\n")
+        cat("   * CPU software version:  ", x$cpu.software.ver.num, "\n")
+        cat("   * DSP software version:  ", x$dsp.software.ver.num, "\n")
+        cat("   * Samples per burst:     ", x$samples.per.burst, "\n")
+        cat("   * Velocity range index:  ", x$velocity.range.index, "\n")
     }
     if (!is.null(x$transformation.matrix)) {
-        cat("  Transformation matrix:      ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n")
-        cat("                              ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n")
-        cat("                              ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n")
+        cat("*  Transformation matrix:\n")
+        cat("    ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n")
+        cat("    ", format(x$transformation.matrix[2,], width=digits+3, digits=digits), "\n")
+        cat("    ", format(x$transformation.matrix[3,], width=digits+3, digits=digits), "\n")
         if (x$number.of.beams > 3)
-            cat("                              ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
+            cat("    ", format(x$transformation.matrix[4,], width=digits+3, digits=digits), "\n")
     }
-    cat("\nStatistics of subsample:\n", ...)
+    cat("\n\nStatistics of subsample\n-----------------------\n\n", ...)
     cat(show.fives(x), ...)
-    cat("\n", ...)
-    cat("Processing log:\n", ...)
+    cat("\n\nProcessing log\n--------------\n\n", ...)
     cat(x$processing.log, ...)
     invisible(x)
 }
