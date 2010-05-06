@@ -339,13 +339,15 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     burst.header.length <- 60
     checksum.length <- 2
     data.length <- 22                   # FIXME: this should be determined based on the headers
-    metadata <- list(filename=filename, instrument.type="adv sontek (adr)", sampling.rate=1)
+    metadata <- list(filename=filename, instrument.type="sontek adr", sampling.rate=1, velocity.scale.factor=1)
     if (header) {
         hardware.configuration <- buf[1:hardware.configuration.length]
         probe.configuration <- buf[hardware.configuration.length + 1:probe.configuration.length]
         deployment.parameters <- buf[hardware.configuration.length+probe.configuration.length+1:deployment.parameters.length]
-        velocity.range.index <- as.numeric(deployment.parameters[20])
-        oce.debug(debug, "velocity.range.index=", velocity.range.index, "\n")
+        metadata$velocity.range.index <- as.numeric(deployment.parameters[20])
+        oce.debug(debug, "velocity.range.index=", metadata$velocity.range.index, "\n")
+        if (metadata$velocity.range.index == 4)
+            metadata$velocity.scale.factor <- 2 # FIXME this seems to be needed for sleiwex m03, but WHY??
         metadata$cpu.software.ver.num <- 0.1 * as.numeric(hardware.configuration[1])
         oce.debug(debug, "cpu.software.ver.num=", metadata$cpu.software.ver.num, "\n")
         metadata$dsp.software.ver.num <- 0.1 * as.numeric(hardware.configuration[2])
@@ -599,7 +601,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (any(iii < 0))
         stop("got negative numbers in iii, which indicates a coding problem; range(iii)=",paste(range(iii), collapse=" to "))
     oce.debug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
-    v <- v[iii,]
+    v <- v[iii,] * metadata$velocity.scale.factor
     a <- a[iii,]
     c <- c[iii,]
     time <- time[iii]
@@ -734,7 +736,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                  pressure=pressure),
                  ss=list(distance=0),
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
-    metadata <- list(instrument.type="adv",
+    metadata <- list(instrument.type="sontek adr",
                      filename=basefile,
                      transformation.matrix=if(!missing(transformation.matrix)) transformation.matrix else NULL,
                      number.of.samples=length(data$x),
@@ -776,15 +778,10 @@ summary.adv <- function(object, ...)
     rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     len <- length(object$data$ts$time)
-
-    ##dan.time<<-object$data$ts$time
-    ##print(as.numeric(object$data$ts$time[len]))
-    ##print(as.numeric(object$data$ts$time[1]))
-    ##print((as.numeric(object$data$ts$time[len])-as.numeric(object$data$ts$time[1]))/len)
-
     res <- list(filename=object$metadata$filename,
                 number.of.beams=object$metadata$number.of.beams,
                 orientation=object$metadata$orientation,
+                velocity.range.index=object$metadata$velocity.range.index,
                 transformation.matrix=object$metadata$transformation.matrix,
                 sampling.rate=object$metadata$sampling.rate,
                 measurement.start=object$metadata$measurement.start,
@@ -802,6 +799,9 @@ summary.adv <- function(object, ...)
                 processing.log=processing.log.summary(object))
     if (inherits(object, "nortek"))
         res$burst.length <- object$metadata$burst.length
+    if (inherits(object, "sontek")) {
+        res$samples.per.burst <- object$metadata$samples.per.burst
+    }
     class(res) <- "summary.adv"
     res
 }
@@ -824,8 +824,14 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("  Number of samples:     ", x$number.of.samples, "\n")
     cat("  Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
     cat("  Orientation:           ", x$orientation, "\n")
+
     if (x$instrument.type == "vector") {
-        cat("  Burst Length:          ", x$burst.length, "\n")
+        cat("  Nortek vector specific\n")
+        cat("    Burst Length:          ", x$burst.length, "\n")
+    } else if (x$instrument.type == "sontek adr") {
+        cat("  Sontek adv/adr specific\n")
+        cat("    Samples per burst:     ", x$samples.per.burst, "\n")
+        cat("    Velocity range index:  ", x$velocity.range.index, "\n")
     }
     if (!is.null(x$transformation.matrix)) {
         cat("  Transformation matrix:      ", format(x$transformation.matrix[1,], width=digits+3, digits=digits), "\n")
