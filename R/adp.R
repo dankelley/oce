@@ -168,7 +168,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("    * Board rev:                   ", x$metadata$board.rev, "\n", ...)
         }
         cat("\n* Statistics of subsample\n\n", ...)
-        cat(show.fives(x, indent='              '), ...)
+        cat(show.fives(x, indent='          '), ...)
         cat("\n* Processing log\n\n", ...)
         cat(x$processing.log, ...)
         invisible(x)

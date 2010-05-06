@@ -872,7 +872,7 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("       ", format(x$transformation.matrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
     }
     cat("* Statistics of subsample\n\n", ...)
-    cat(show.fives(x, indent='              '), ...)
+    cat(show.fives(x, indent='          '), ...)
     cat("\n* Processing log\n\n", ...)
     cat(x$processing.log, ...)
     invisible(x)
