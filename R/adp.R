@@ -87,7 +87,7 @@ summary.adp <- function(object, ...)
                     measurement.deltat=object$metadata$measurement.deltat,
                     subsample.start=object$data$ts$time[1],
                     subsample.end.time=object$data$ts$time[length(object$data$ts$time)],
-                    subsample.deltat=mean(diff(as.numeric(object$data$ts$time))),
+                    subsample.deltat=mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE),
                     distance=object$data$ss$distance,
                     metadata=object$metadata,
                     frequency=object$metadata$frequency,
