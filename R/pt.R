@@ -261,7 +261,7 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("PT Summary\n----------\n", ...)
     cat(paste("* Instrument:         RBR, serial number ``", x$serial.number, "``\n", sep=""), ...)
-    cat(paste("* Source:            ``", x$filename, "``\n", sep=""), ...)
+    cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
     cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.2f Hz\n",
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),

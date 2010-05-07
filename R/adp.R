@@ -122,7 +122,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADP Summary\n-----------\n\n", ...)
     cat(paste("* Instrument:         ", x$instrument.type, ", serial number ``", paste(x$metadata$serial.number, collapse=""), "``\n", sep=""), ...)
-    cat(paste("* Source:            ``", x$filename, "``\n", sep=""), ...)
+    cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
     if (is.null(x$have.actual.data) || x$have.actual.data) {
         cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.3f Hz\n",
                     format(x$measurement.start), attr(x$measurement.start, "tzone"),
