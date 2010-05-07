@@ -853,7 +853,7 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
     cat("* Orientation:           ", x$orientation, "\n")
     if (x$instrument.type == "vector") {
-        cat("* Nortek vector specific\n")
+        cat("* Nortek vector specific\n\n")
         cat("  * Samples per burst      ", x$burst.length, "\n") # FIXME: use same names throughout
     } else if (x$instrument.type == "sontek adr") {              # FIXME: call this just 'sontek'??
         cat("* Sontek adr specific\n\n")
