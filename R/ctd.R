@@ -742,7 +742,7 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
         on.exit(close(file))
     }
                                         # Header
-    scientist <- ship <- institute <- address <- cruise <- filename.orig <- ""
+    scientist <- ship <- institute <- address <- cruise <- hexfilename <- ""
     sample.interval <- NA
     system.upload.time <- NULL
     latitude <- longitude <- NA
@@ -754,6 +754,7 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
     found.temperature <- found.salinity <- found.pressure <- found.depth <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
+    serial.number <- "?"
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
         if(debug) cat(paste("examining header line '",line,"'\n"));
@@ -816,21 +817,17 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
             }
             col.names.inferred <- c(col.names.inferred, name)
         }
+        if (0 < regexpr(".*seacat profiler.*", lline))
+            serial.number <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline);
             date <- oce.as.POSIXlt(d)
         }
-        if (0 < (r<-regexpr("filename", lline))) {
-                                        #cat("FileName... ",lline,"\n")
-            filename.orig <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline);
-                                        #cat(" ... '",filename.orig,"'\n")
-        }
+        if (0 < (r<-regexpr("filename", lline)))
+            hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline);
         if (0 < (r<-regexpr("system upload time", lline))) {
-                                        #cat(lline, "\n")
             d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline);
-                                        #cat(d,"\n")
             system.upload.time <- oce.as.POSIXlt(d)
-                                        #cat(paste("system upload time:", system.upload.time, "\n"))
         }
         ## Styles:
         ## * NMEA Latitude = 47 54.760 N
@@ -923,7 +920,7 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigma.theta.unused","depth","flag");
     col.names.inferred <- tolower(col.names.inferred)
     oce.debug(debug, "About to read these names:", col.names.inferred,"\n");
-    data <- read.table(file,col.names=col.names.inferred,colClasses="numeric");
+    data <- read.table(file, col.names=col.names.inferred, colClasses="numeric");
     names <- names(data)
     labels <- names
 
@@ -934,8 +931,9 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
         warning("data file lacked a 'scan' column, so one was created");
     }
     metadata <- list(header=header,
-                     filename=filename, # provided to this routine
-                     filename.orig=filename.orig, # from instrument
+                     type="SBE",
+                     hexfilename=hexfilename, # from instrument
+                     serial.number=serial.number,
                      system.upload.time=system.upload.time,
                      ship=ship,
                      scientist=scientist,
@@ -952,7 +950,7 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
                      sample.interval=sample.interval,
                      names=names,
                      labels=labels,
-                     src=filename)
+                     filename=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -991,7 +989,8 @@ summary.ctd <- function(object, ...)
 		levels="?",
                 fives=fives,
                 processing.log=processing.log.summary(object))
-    if (!is.null(object$metadata$filename.orig))      res$filename <- object$metadata$filename.orig
+    res$filename <- if (!is.null(object$metadata$filename)) object$metadata$filename else "?"
+    res$hexfilename <- if (!is.null(object$metadata$hexfilename)) object$metadata$hexfilename else "?"
     if (!is.null(object$metadata$system.upload.time)) res$upload.time <- object$metadata$system.upload.time
     if (!is.null(object$metadata$date))               res$date <- object$metadata$date
     if (!is.null(object$metadata$institute))          res$institute <- object$metadata$institute
@@ -1005,6 +1004,8 @@ summary.ctd <- function(object, ...)
     if (!is.null(object$metadata$deployed))           res$deployed<- object$metadata$date
     if (!is.null(object$metadata$recovery))           res$recovery <- object$metadata$recovery
     if (!is.null(object$metadata$water.depth))        res$water.depth <- object$metadata$water.depth
+    res$type <- object$metadata$type
+    res$serial.number <- object$metadata$serial.number
     res$levels <- dim[1]
     for (v in 1:dim[2])
         fives[v,] <- fivenum(object$data[,v], na.rm=TRUE)
@@ -1017,25 +1018,27 @@ summary.ctd <- function(object, ...)
 
 print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("CTD Summary\n", ...)
-    cat("  Raw file:           \"",     x$filename, "\"\n",sep="", ...)
-    cat(paste("  System upload time: ", x$system.upload.time, "\n"), ...)
-    cat(paste("  Date:               ", x$date, "\n"), ...)
-    cat("  Institute:          ",       x$institute, "\n", ...)
-    cat("  Scientist:          ",       x$scientist, "\n", ...)
-    cat("  Ship:               ",       x$ship, "\n", ...)
-    cat("  Cruise:             ",       x$cruise, "\n", ...)
-    cat("  Location:           ",       latlon.format(x$latitude, x$longitude, digits=digits), "\n", ...)
-    cat("  Station:            ",       x$station, "\n", ...)
-    cat(paste("  Start time:         ", if (!is.null(x$start.time)) as.POSIXct(x$start.time) else "?", "\n"), ...)
-    cat(paste("  Deployed:           ", x$date, "\n"), ...)
-    cat(paste("  Recovered:          ", x$recovery, "\n"), ...)
-    cat("  Water depth:        ",       x$water.depth, "\n", ...)
-    cat("  No. of levels:      ",       x$levels,  "\n", ...)
-    cat("\nStatistics of subsample:\n", ...)
-    cat(show.fives(x), ...)
-    cat("\n", ...)
-    cat("Processing Log:\n", ...)
+    cat("CTD Summary\n-----------\n\n", ...)
+    cat(paste("* Instrument:          ", x$type, ", serial number ", x$serial.number, "\n",sep=""))
+    cat("* Source:              ``",     x$filename, "``\n",sep="", ...)
+    cat("* Hex source:          ``",     x$hexfilename, "``\n",sep="", ...)
+    cat(paste("* System upload time: ", x$system.upload.time, "\n"), ...)
+    cat(paste("* Date:               ", x$date, "\n"), ...)
+    cat("* Institute:          ",       x$institute, "\n", ...)
+    cat("* Scientist:          ",       x$scientist, "\n", ...)
+    cat("* Ship:               ",       x$ship, "\n", ...)
+    cat("* Cruise:             ",       x$cruise, "\n", ...)
+    cat("* Location:           ",       latlon.format(x$latitude, x$longitude, digits=digits), "\n", ...)
+    cat("* Station:            ",       x$station, "\n", ...)
+    cat(paste("* Start time:         ", if (!is.null(x$start.time)) as.POSIXct(x$start.time) else "?", "\n"), ...)
+    cat(paste("* Deployed:           ", x$date, "\n"), ...)
+    cat(paste("* Recovered:          ", x$recovery, "\n"), ...)
+    cat("* Water depth:        ",       x$water.depth, "m\n", ...)
+    cat("* No. of levels:      ",       x$levels,  "\n", ...)
+    cat("\n",...)
+    cat("* Statistics of subsample::\n\n", ...)
+    cat(show.fives(x, indent='     '), ...)
+    cat("\n* Processing log::\n\n", ...)
     cat(x$processing.log, ...)
     invisible(x)
 }
