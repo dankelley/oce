@@ -139,11 +139,11 @@ summary.windrose <- function(object, ...)
 
 print.summary.windrose <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("\nWindrose data\n")
-    cat("Have n=", x$n, "angles, separated by dtheta=", x$dtheta,"\n")
-    cat(show.fives(x), ...)
-    cat("\n", ...)
-    cat("Processing Log:\n", ...)
+    cat("Windrose data\n-------------\n\n")
+    cat("* Have n=", x$n, "angles, separated by dtheta=", x$dtheta,"\n\n")
+    cat("* Statistics by angle::\n\n", ...)
+    cat(show.fives(x, indent='     '), ...)
+    cat("\n* Processing log::\n\n", ...)
     cat(x$processing.log, ...)
     invisible(x)
 }
