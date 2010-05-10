@@ -14,6 +14,10 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         return(x)
     }
     res <- x
+    if (is.character(start))
+        start <- as.POSIXct(start, tz=getOption("oce.tz"))
+    if (is.character(end))
+        end <- as.POSIXct(end, tz=getOption("oce.tz"))
     keep <- start <= res$data$ts$time & res$data$ts$time < end
     for (tsname in names(res$data$ts)) {
         res$data$ts[[tsname]] <- res$data$ts[[tsname]][keep]

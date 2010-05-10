@@ -12,8 +12,8 @@
 
 \arguments{
   \item{x}{an \code{oce} object.}
-  \item{start}{start the start time of the period of interest.}
-  \item{end}{end the start time of the period of interest.}
+  \item{start}{the start time of the period of interest.}
+  \item{end}{the end time of the period of interest.}
   \item{frequency}{not permitted yet.}
   \item{deltat}{not permitted yet}
   \item{extend}{not permitted yet}
