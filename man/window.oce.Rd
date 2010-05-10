@@ -6,44 +6,47 @@
 
 \description{Window an oce object by time}
 
-
 \usage{\method{window}{oce}(x, start = NULL, end = NULL,
-     frequency = NULL, deltat = NULL, extend = FALSE, \dots)}
+     frequency = NULL, deltat = NULL, extend = FALSE,
+     which=c("time","distance"), \dots)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
-  \item{start}{the start time of the period of interest.}
-  \item{end}{the end time of the period of interest.}
+  \item{start}{the start time (or distance) of the time (or space)
+    region of interest.}
+  \item{end}{the end time (or distance) of the time (or space)
+    region of interest.}
   \item{frequency}{not permitted yet.}
   \item{deltat}{not permitted yet}
   \item{extend}{not permitted yet}
-  \item{\dots}{ignored.}
+  \item{which}{string containing the name of the quantity on which
+    sampling is done.  Possibilities are \code{"time"}, which applies
+    the windowing on \code{x$data$ts$time}, and \code{"distance"}, which
+    applies the windowing on \code{x$data$ss$distance} (for those
+    objects, such as \code{adp}, that have a \code{data$ss$distance}
+    component).}
+  \item{\dots}{ignored}
 }
 
-\details{Based on the generic \code{\link{window}}, this function
-  subsets an \code{oce} object based on time.  If the object does not
-  contain a time vector (stored in \code{data$ta$time}), a warning is
-  given and a copy of the object is returned..
-
-  The start and end times may be integers, referring to sample number,
-  or POSIX times, or character strings that can be converted to POSIX
-  times.  (In the third case, the timezone is set to
-  \code{getOption("oce.tz")}.)
-}
+\details{Windows \code{x} on either time or distance, depending on the
+  value of \code{which}.  In each case, values of \code{start} and
+  \code{end} may be integers, to indicate a portion of the time or
+  distance range.  If \code{which} is \code{"time"}, then the
+  \code{start} and \code{end} values may also be provided as POSIX
+  times, or character strings indicating times (in time zone
+  given by the value of \code{getOption("oce.tz")}).}
 
 \value{A new \code{oce} object.}
 
-\seealso{\code{\link{subset.oce}} provides more flexible selection,
-  based on any property, not just time.}
+\seealso{\code{\link{subset.oce}} provides more flexible selection of
+subsets.}
 
 \examples{
 library(oce)
-# CTD data
 data(adp)
 plot(adp)
-adp.windowed <- window(adp, start=as.POSIXct("2008-06-26 00:00:00",
-tz="UTC"), end=as.POSIXct("2008-06-26 12:00:00", tz="UTC"))
-plot(adp.windowed)
+adpw <- window(adp, start="2008-06-26 00:00:00", end="2008-06-26 12:00:00")
+plot(adpw)
 }
 
 \author{Dan Kelley}

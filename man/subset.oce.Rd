@@ -27,7 +27,8 @@
 
 \value{A new \code{oce} object.}
 
-\seealso{\code{\link{subset.data.frame}}, upon which this is based.}
+\seealso{\code{\link{window.oce}} provides a simpler, but less powerful,
+  way to subset data.}
 
 \examples{
 library(oce)

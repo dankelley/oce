@@ -1,37 +1,63 @@
-window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, ...)
+window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), ...)
 {
     if (extend) stop("cannot handle extend=TRUE yet")
     if (!is.null(frequency)) stop("cannot handle frequency yet")
     if (!is.null(deltat)) stop("cannot handle deltat yet")
     if (is.null(start)) stop("must provide start")
     if (is.null(end)) stop("must provide end")
-    if (!("ts" %in% names(x$data))) {
-        warning("oce object has no $data$ts vector, so window is returning it unaltered")
-        return(x)
-    }
-    if (!("time" %in% names(x$data$ts))) {
-        warning("oce object has no $data$ts$time vector, so window is returning it unaltered")
-        return(x)
-    }
     res <- x
-    if (is.character(start))
-        start <- as.POSIXct(start, tz=getOption("oce.tz"))
-    if (is.character(end))
-        end <- as.POSIXct(end, tz=getOption("oce.tz"))
-    keep <- start <= res$data$ts$time & res$data$ts$time < end
-    for (tsname in names(res$data$ts)) {
-        res$data$ts[[tsname]] <- res$data$ts[[tsname]][keep]
-    }
-    if ("ma" %in% names(res$data)) {
-        for (maname in names(res$data$ma)) {
-            ldim <- length(dim(res$data$ma[[maname]]))
-            if (ldim == 2)
-                res$data$ma[[maname]] <- res$data$ma[[maname]][keep,]
-            else if (ldim == 3)
-                res$data$ma[[maname]] <- res$data$ma[[maname]][keep,,]
-            else
-                stop("cannot handle data$ma item of dimension ", ldim)
+    which <- match.arg(which)
+    if (which == "time") {
+        if (!("ts" %in% names(x$data))) {
+            warning("oce object has no $data$ts vector, so window is returning it unaltered")
+            return(x)
         }
+        if (!("time" %in% names(x$data$ts))) {
+            warning("oce object has no $data$ts$time vector, so window is returning it unaltered")
+            return(x)
+        }
+        if (is.character(start))
+            start <- as.POSIXct(start, tz=getOption("oce.tz"))
+        if (is.character(end))
+            end <- as.POSIXct(end, tz=getOption("oce.tz"))
+        keep <- start <= res$data$ts$time & res$data$ts$time < end
+        for (tsname in names(res$data$ts)) {
+            res$data$ts[[tsname]] <- res$data$ts[[tsname]][keep]
+        }
+        if ("ma" %in% names(res$data)) {
+            for (maname in names(res$data$ma)) {
+                ldim <- length(dim(res$data$ma[[maname]]))
+                if (ldim == 2)
+                    res$data$ma[[maname]] <- res$data$ma[[maname]][keep,]
+                else if (ldim == 3)
+                    res$data$ma[[maname]] <- res$data$ma[[maname]][keep,,]
+                else
+                    stop("cannot handle data$ma item of dimension ", ldim)
+            }
+        }
+    } else if (which == "distance") {
+        if (!("ss" %in% names(x$data))) {
+            warning("oce object has no $data$ss vector, so window is returning it unaltered")
+            return(x)
+        }
+        if (!("distance" %in% names(x$data$ss))) {
+            warning("oce object has no $data$s$distance vector, so window is returning it unaltered")
+            return(x)
+        }
+        keep <- start <= res$data$ss$distance & res$data$ss$distance < end
+        ## FIXME: make it work on sections, on CTD, etc.
+        if (!inherits(x, "adp")) {
+            warning("window(..., which=\"distance\") only works for objects of class adp")
+            return(x)
+        }
+        res$data$ss$distance <- x$data$ss$distance[keep]
+        if ("ma" %in% names(res$data)) {
+            for (maname in names(res$data$ma)) {
+                res$data$ma[[maname]] <- res$data$ma[[maname]][,keep,]
+            }
+        }
+    } else {
+        stop("unknown value of which \"", which, "\"") # cannot get here
     }
     res
 }
