@@ -1,3 +1,37 @@
+window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, ...)
+{
+    if (extend) stop("cannot handle extend=TRUE yet")
+    if (!is.null(frequency)) stop("cannot handle frequency yet")
+    if (!is.null(deltat)) stop("cannot handle deltat yet")
+    if (is.null(start)) stop("must provide start")
+    if (is.null(end)) stop("must provide end")
+    if (!("ts" %in% names(x$data))) {
+        warning("oce object has no $data$ts vector, so window is returning it unaltered")
+        return(x)
+    }
+    if (!("time" %in% names(x$data$ts))) {
+        warning("oce object has no $data$ts$time vector, so window is returning it unaltered")
+        return(x)
+    }
+    res <- x
+    keep <- start <= res$data$ts$time & res$data$ts$time < end
+    for (tsname in names(res$data$ts)) {
+        res$data$ts[[tsname]] <- res$data$ts[[tsname]][keep]
+    }
+    if ("ma" %in% names(res$data)) {
+        for (maname in names(res$data$ma)) {
+            ldim <- length(dim(res$data$ma[[maname]]))
+            if (ldim == 2)
+                res$data$ma[[maname]] <- res$data$ma[[maname]][keep,]
+            else if (ldim == 3)
+                res$data$ma[[maname]] <- res$data$ma[[maname]][keep,,]
+            else
+                stop("cannot handle data$ma item of dimension ", ldim)
+        }
+    }
+    res
+}
+
 oce.approx <- function(x, y, xout, method=c("reiniger-ross"))
 {
     method <- match.arg(method)
