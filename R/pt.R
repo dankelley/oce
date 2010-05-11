@@ -166,7 +166,7 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     }
     if (!missing(to)) {
         if (inherits(to, "POSIXt") || length(grep(":", to))) {
-            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), subsample.start, units="secs")) / subsample.deltat
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), subsample.start, units="secs")) / measurement.deltat
             oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
         }
     }
@@ -186,10 +186,14 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
     oce.debug(debug, "Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
-    if (missing(to))
+    if (missing(to)) {
+        oce.debug(debug, "reading whole file, since 'to' was not provided\n")
         d <- scan(file, character(), skip=from-1, quiet=TRUE) # whole file
-    else
+    } else {
+        oce.debug(debug, "skipping (from-1)=", from-1, "lines, then reading (to-from+1)=", to-from+1, "lines\n")
         d <- scan(file, character(), skip=from-1, quiet=TRUE, nlines=(to - from + 1))
+    }
+    oce.debug("got length(d)=", length(d), "during the scan()\n")
     ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
@@ -200,14 +204,17 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     n <- dim(d)[2]
     subsample.start <- measurement.start
     if (nvar == 2) {
-        time <- subsample.start + seq(from=1, to=n) * subsample.deltat # BUG: 'from' seems wrong
+        oce.debug(debug, "nvar=2; decoding data\n")
+        time <- subsample.start + seq(from=1, to=n) * measurement.deltat
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
+        oce.debug(debug, "nvar=4; decoding data\n")
         time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
         temperature <- as.numeric(d[3,])
         pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
+        oce.debug(debug, "nvar=5; decoding data\n")
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
         time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
         temperature <- as.numeric(d[3,])
