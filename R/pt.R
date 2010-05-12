@@ -179,8 +179,9 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
         }
     }
     if (!missing(by)) {
+        oce.debug(debug, "by=", by, "originally\n")
         by <- ctime.to.seconds(by)
-        subsample.deltat <- by
+        oce.debug(debug, "by=", by, "after translation\n")
     }
     oce.debug(debug, "by inferred to be", by, "s\n")
 
@@ -192,7 +193,7 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     line <- gsub("[ ]+$", "", gsub("^[ ]+","", line))
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
-    oce.debug(debug, "Data line '", line, "' reveals ", nvar, " data per line\n", sep="")
+    oce.debug(debug, " data line '", line, "' reveals ", nvar, " data per line\n", sep="")
     if (missing(to)) {
         oce.debug(debug, "reading whole file, since 'to' was not provided\n")
         d <- scan(file, character(), skip=from-1, quiet=TRUE) # whole file
@@ -206,13 +207,17 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     dim(d) <- c(nvar, n)
     if (is.numeric(from) && from != 1)
         warning("ignoring value of 'from'")
+
+    ## subset
     look <- seq(from=1, to=n, by=by)    # BUG: why not using proper 'from'?
     d <- d[,look]
     n <- dim(d)[2]
     subsample.start <- measurement.start
+    subsample.deltat <- by * measurement.deltat
     if (nvar == 2) {
         oce.debug(debug, "nvar=2; decoding data\n")
-        time <- subsample.start + seq(from=1, to=n) * measurement.deltat
+        time <- subsample.start + seq(from=1, to=n) * subsample.deltat
+        cat("nvar=2; setting time[1:2]=", time[1:2], "with subsample.deltat=", subsample.deltat,"\n")
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
@@ -228,11 +233,15 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
         pressure <- as.numeric(d[4,])
         ## ignore column 5
     } else stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)
+    if (0){
     n <- length(temperature)
     subset <- seq(1, n, by=by)
+    str(time)
     time <- time[subset]
+    str(time)
     pressure <- pressure[subset]
     temperature <- temperature[subset]
+}
     data <- data.frame(time=time, temperature=temperature, pressure=pressure)
     metadata <- list(filename=filename,
                      instrument.type="rbr",
@@ -281,11 +290,11 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("PT Summary\n----------\n", ...)
     cat(paste("* Instrument:         RBR, serial number ``", x$serial.number, "``\n", sep=""), ...)
     cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
-    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.2f Hz\n",
+    cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),
                 1 / x$measurement.deltat), ...)
-    cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.2f Hz\n",
+    cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 1 / x$subsample.deltat), ...)
