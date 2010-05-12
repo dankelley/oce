@@ -144,8 +144,16 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
             l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
             measurement.start <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
         }
-        if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
-            l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
+        ## "Logging end" would seem to be the sensible thing to examine,
+        ## but "Logger time" seems correct in SLEIWEX 2008 data.  I think
+        ## the issue is that the devices were turned off manually, and
+        ## that time (the relevant one) is in "Logger time".
+        ##OLD if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
+        ##OLD    l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
+        ##OLD    measurement.end <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+        ##OLD }
+        if (0 < (r<-regexpr("Logger[ \t]*time", line))) {
+            l <- sub("[ ]*Logger[ \t]*time[ ]*", "", line)
             measurement.end <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
         }
         if (0 < (r<-regexpr("Sample[ \t]*period", line))) {
@@ -176,7 +184,6 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     }
     oce.debug(debug, "by inferred to be", by, "s\n")
 
-    ## Handle time-based args 'from', 'to', and 'by'.
     col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
 
     ## Read a line to determine if there is a pair of columns for time
@@ -193,7 +200,7 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
         oce.debug(debug, "skipping (from-1)=", from-1, "lines, then reading (to-from+1)=", to-from+1, "lines\n")
         d <- scan(file, character(), skip=from-1, quiet=TRUE, nlines=(to - from + 1))
     }
-    oce.debug("got length(d)=", length(d), "during the scan()\n")
+    oce.debug(debug, "got length(d)=", length(d), "during the scan()\n")
     ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
@@ -221,6 +228,11 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
         pressure <- as.numeric(d[4,])
         ## ignore column 5
     } else stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)
+    n <- length(temperature)
+    subset <- seq(1, n, by=by)
+    time <- time[subset]
+    pressure <- pressure[subset]
+    temperature <- temperature[subset]
     data <- data.frame(time=time, temperature=temperature, pressure=pressure)
     metadata <- list(filename=filename,
                      instrument.type="rbr",

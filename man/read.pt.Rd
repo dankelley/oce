@@ -60,6 +60,16 @@
   \item{processing.log}{a processing log, in the standard \code{oce} format.}
 }
 
+\section{Implementation notes}{The end time for measurement
+  (\code{metadata$measurement.start}) is inferred from the \code{Logger
+  time} field in the header, not from \code{Logging end}.  The datasets
+  available to the author suggest this is the proper scheme when the
+  recorders are turned off manually before the end time that was
+  programmed in.  In other cases, the assumption may or may not be
+  correct.  Still, the end time for subsampling
+  (\code{metdata$subsample.end}) should be correct.}
+
+
 \seealso{The generic function \code{\link{read.oce}} provides an
   alternative to this.  Objects of type \code{pt} can be plotted
   with \code{\link{plot.pt}}, and summarized with
