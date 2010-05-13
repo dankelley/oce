@@ -5,18 +5,26 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
-    if (type == "nortek") read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
-        header=header,
-        subsample.start=subsample.start, subsample.deltat=subsample.deltat,
-        debug=debug, monitor=monitor, log.action=log.action)
-    else if (type == "sontek") read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
-             header=header,
-             subsample.start=subsample.start, subsample.deltat=subsample.deltat,
-             debug=debug, monitor=monitor, log.action=log.action)
-    else if (type == "sontek.adr") read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
-             debug=debug, log.action=log.action)
-    else if (type == "sontek.text") read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
-             debug=debug, log.action=log.action)
+
+    ## FIXME: all these read.adv variants should have the same argument list
+    if (type == "nortek")
+        read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
+                        header=header,
+                        subsample.start=subsample.start, subsample.deltat=subsample.deltat,
+                        debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek")
+        read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
+                        header=header,
+                        subsample.start=subsample.start, subsample.deltat=subsample.deltat,
+                        debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek.adr")
+        read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
+                            debug=debug, log.action=log.action)
+    else if (type == "sontek.text")
+        read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
+                             debug=debug, log.action=log.action)
+    else
+        stop("read.adv() cannot understand type = \"", type, "\"")
 }
 
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),

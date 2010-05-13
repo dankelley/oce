@@ -169,21 +169,15 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     oce.debug(debug, "serial.number=", serial.number,"\n")
     ## Now that we know the logging times, we can work with 'from 'and 'to'
     if (inherits(from, "POSIXt") || inherits(from, "character")) {
-        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), subsample.start, units="secs")) / measurement.deltat
+        if (!inherits(to, "POSIXt") && !inherits(to, "character")) stop("if 'from' is POSIXt or character, then 'to' must be, also")
+        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurement.start, units="secs")) / measurement.deltat
         oce.debug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+        to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurement.start, units="secs")) / measurement.deltat
+        oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
     }
-    if (!missing(to)) {
-        if (inherits(to, "POSIXt") || length(grep(":", to))) {
-            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), subsample.start, units="secs")) / measurement.deltat
-            oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
-        }
-    }
-    if (!missing(by)) {
-        oce.debug(debug, "by=", by, "originally\n")
-        by <- ctime.to.seconds(by)
-        oce.debug(debug, "by=", by, "after translation\n")
-    }
-    oce.debug(debug, "by inferred to be", by, "s\n")
+    oce.debug(debug, "by=", by, "in argument list\n")
+    by <- ctime.to.seconds(by)
+    oce.debug(debug, "inferred by=", by, "s\n")
 
     col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
 
@@ -206,17 +200,11 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
 
-    ## FIXME: allow POSIXt and character values for 'from' and 'to'
-    if (is.numeric(from) && from != 1)
-        warning("ignoring value of 'from'")  ## FIXME: get rid of this
-    ## FIXME: allow POSIXt and character values for 'from' and 'to'
-
-
     ## subset
     look <- seq(from=1, to=n, by=by)    # BUG: why not using proper 'from'?
     d <- d[,look]
     n <- dim(d)[2]
-    subsample.start <- measurement.start
+    subsample.start <- measurement.start + (from - 1) * measurement.deltat # FIXME: check this
     subsample.deltat <- by * measurement.deltat
     if (nvar == 2) {
         oce.debug(debug, "nvar=2; decoding data\n")
