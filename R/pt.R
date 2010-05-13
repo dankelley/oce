@@ -205,8 +205,12 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
     n <- length(d) / nvar
     dim(d) <- c(nvar, n)
+
+    ## FIXME: allow POSIXt and character values for 'from' and 'to'
     if (is.numeric(from) && from != 1)
-        warning("ignoring value of 'from'")
+        warning("ignoring value of 'from'")  ## FIXME: get rid of this
+    ## FIXME: allow POSIXt and character values for 'from' and 'to'
+
 
     ## subset
     look <- seq(from=1, to=n, by=by)    # BUG: why not using proper 'from'?
