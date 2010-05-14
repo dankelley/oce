@@ -851,7 +851,7 @@ print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),
                 1 / x$measurement.deltat), ...)
-    cat(sprintf("* Subsamples:             %s %s to %s %s sampled at %.4g Hz\n",
+    cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 1 / x$subsample.deltat), ...)
