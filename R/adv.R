@@ -842,7 +842,7 @@ summary.adv <- function(object, ...)
     res
 }
 
-print.summary.adv <- function(x, digits=max(6, getOption("digits") - 1), ...)
+print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
 {
     cat("ADV Summary\n-----------\n\n", ...)
     cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n",sep=""))

@@ -9,7 +9,7 @@
 
 \usage{
 \method{summary}{adv}(object, \dots)
-\method{print}{summary.adv}(x, digits=max(6, getOption("digits")-1), \dots)
+\method{print}{summary.adv}(x, digits=max(5, getOption("digits")-1), \dots)
 }
 
 \arguments{
