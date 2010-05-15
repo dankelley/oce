@@ -10,7 +10,6 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
-                        subsample.start=subsample.start, subsample.deltat=subsample.deltat,
                         debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek")
         read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
@@ -30,20 +29,16 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="vector",
                             header=TRUE,
-                            subsample.start, subsample.deltat, # FIXME: use from and by for these
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, "read.adv.nortek(...,type=\"", type, "\", ...)\n")
-    by.is.broken <- TRUE
+    if (!is.numeric(by))
+        stop("cannot handle non-numeric 'by' yet")
+    if (by < 1)
+        stop("cannot handle negative 'by' values")
     if (is.numeric(by)   && by   < 1) stop("argument \"by\" must be 1 or larger")
     if (is.numeric(from) && from < 1) stop("argument \"from\" must be 1 or larger")
     if (is.numeric(to)   && to   < 1) stop("argument \"to\" must be 1 or larger")
-
-    ## if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
-    ## if (!inherits(from, "POSIXt")) stop("\"from\" must be a POSIXt time (this limitation may be relaxed in a future version)")
-    ## if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
-    if (!missing(subsample.start)) stop("cannot handle argument \"subsample.start\"")
-    if (!missing(subsample.deltat)) stop("cannot handle argument \"subsample.deltat\"")
 
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -69,7 +64,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     header <- decode.header.nortek(buf, debug=debug-1)
     metadata <- list(instrument.type="vector",
                      filename=filename,
-                     measurement.start=if (missing(subsample.start)) NA else subsample.start, #FIXME is this used?
+                     measurement.start=NA, # FIXME
                      measurement.end=NA,   # FIXME
                      sampling.rate=NA, # FIXME
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
@@ -97,7 +92,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      velocity.scale=header$user$velocity.scale,
                      coordinate.system=header$user$coordinate.system,
                      oce.coordinate=header$user$coordinate.system,
-                     oce.beam.attenuated=FALSE)
+                     oce.beam.attenuated=FALSE,
+                     deploy.name=header$user$deploy.name,
+                     comments=header$user$comments)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
@@ -145,8 +142,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     vsd.len <- length(vsd.start)
 
     ## Measurement start and end times
-
-
     metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
                                               bcd2integer(buf[vsd.start[1]+9]), # month
                                               bcd2integer(buf[vsd.start[1]+6]), # day
@@ -203,24 +198,23 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         from.index <- from
         to.index <- to
         if (to.index < 1 + from.index) stop("need more separation between from and to")
-        oce.debug(debug,
-                  'numeric values for args from=',from,'to=',to,'\n',
-                  "vvd.start BEFORE\n",
-                  str(vvd.start),"\n",
-                  "vvd.start AFTER\n",
-                  str(vvd.start))
+        oce.debug(debug, 'numeric values for args from=',from,'to=',to,'\n')
         vvd.start <- vvd.start[from.index:to.index]
         oce.debug(debug, "vsd.start BEFORE\n", str(vsd.start))
         vsd.start <- subset(vsd.start, vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)])
         oce.debug(debug, "vsd.start AFTER\n", str(vsd.start))
     }
+    oce.debug(debug, "by=", by, "\n")
+
     oce.debug(debug, "step 1 vsd.start:\n", str(vsd.start))
     vsd.start <- vsd.start[vvd.start[1] < vsd.start & vsd.start < vvd.start[length(vvd.start)]]
     oce.debug(debug, "step 2 vsd.start:\n", str(vsd.start))
 
-    if (2 > length(vsd.start)) stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
+    if (2 > length(vsd.start))
+        stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
 
-    if (to.index <= from.index) stop("no data in specified range from=", format(from), " to=", format(to))
+    if (to.index <= from.index)
+        stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
                          bcd2integer(buf[vsd.start+9]), # month
@@ -229,7 +223,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          bcd2integer(buf[vsd.start+4]), # min
                          bcd2integer(buf[vsd.start+5]), # sec
                          tz=tz)
-    ##str(vsd.t)
     vsd.len <- length(vsd.start)
     vsd.start2 <- sort(c(vsd.start, 1 + vsd.start))
     heading <- 0.1 * readBin(buf[vsd.start2 + 14], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
@@ -245,6 +238,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
               "vsd roll:\n", str(roll),
               "vsd temperature:\n", str(temperature))
     metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0)
+    oce.debug(debug, "metadata$burst.length=", metadata$burst.length, "\n")
+
     vvd.start2 <- sort(c(vvd.start, 1 + vvd.start))
     vvd.len <- length(vvd.start)          # FIXME: should be subsampled with 'by' ... but how???
     p.MSB <- as.numeric(buf[vvd.start + 4])
@@ -280,23 +275,27 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     oce.debug(debug, "vvd.t:\n", str(vvd.t))
     rm(buf)
     gc()
-    data <- list(ts=list(time=vvd.t + vsd.t[1],
+
+    ## subset using 'by'
+    look <- seq(1, length(vvd.t), by=by)
+    vvd.start <- vvd.start[look]
+    data <- list(ts=list(time=vvd.t[look] + vsd.t[1],
                  heading=approx(vsd.start, heading, xout=vvd.start, rule=2)$y,
                  pitch=approx(vsd.start, pitch, xout=vvd.start, rule=2)$y,
                  roll=approx(vsd.start, roll, xout=vvd.start, rule=2)$y,
                  temperature=approx(vsd.start, temperature, xout=vvd.start, rule=2)$y,
-                 pressure=pressure),
+                 pressure=pressure[look]),
                  ss=list(distance=0),
-                 ma=list(v=v, a=a, c=c))
+                 ma=list(v=v[look,], a=a[look,], c=c[look,]))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("nortek", "adv", "oce")
     gc()
     res
 }
 
-##  24 bytes hardware configuration
-## 164 bytes probe configuration
-## 253 bytes probe configuration
+##  24 bytes hardware configuration ("AdvSystemConfigType" in the docs)
+## 164 bytes probe configuration ("AdvConfType" in the docs)
+## 253 bytes deployment setup ("AdvDeploymentSetupType" in the docs)
 read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="default", header=TRUE,
                             subsample.start, subsample.deltat, # FIXME: use from and by for these
@@ -384,8 +383,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         metadata$dsp.software.ver.num <- 0.1 * as.numeric(hardware.configuration[2])
         oce.debug(debug, "dsp.software.ver.num=", metadata$dsp.software.ver.num, "\n")
 
-        metadata$sensor.orientation <- c("down", "up", "side")[1 + as.numeric(hardware.configuration[4])]
-        oce.debug(debug, "sensor.orientation=", metadata$sensor.orientation, "\n")
+        metadata$orientation <- c("down", "up", "side")[1 + as.numeric(hardware.configuration[4])]
+        oce.debug(debug, "orientation=", metadata$orientation, "\n")
 
         metadata$compass.installed <- as.integer(hardware.configuration[5]) == 1
         oce.debug(debug, "compass.installed=", metadata$compass.installed, "\n")
@@ -401,7 +400,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             stop("cannot handle data files for ADV files that lack thermometer data")
 
         metadata$pressure.installed <- as.integer(hardware.configuration[8]) == 1
-        oce.debug(debug, "press.installed=", metadata$press.installed, "\n")
+        oce.debug(debug, "pressure.installed=", metadata$pressure.installed, "\n")
         if (!metadata$pressure.installed)
             stop("cannot handle data files for ADV files that lack pressure data")
 
@@ -432,12 +431,65 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
         ##
         ## Analyze "probe configuration" header
+        ## Docs (p102 of Sontek-ADV-op-man-2001.pdf) say as follows (the initial index number is mine):
+        ## [1] unsigned char FileType
+        ## [2] unsigned char FileVer
+        ## [3:6] DateType FileDate (4 bytes for real-time clock, 2 for year, 1 for day, 1 for month)
+        ## [7:10] long FileNbytes
+        ## [11:16] SerialNum[6]
+        ## [16] char ProbeType
+        ## [17] char ProbeSize
+        ## [18:19] int ProbeNBeams
+        ## ...
 
-        metadata$serial.number <- paste(readBin(probe.configuration[10+1:5],"character",n=5,size=1), collapse="")  # "B373H"
+        metadata$serial.number <- paste(readBin(probe.configuration[11:16],"character",n=5,size=1), collapse="")  # "B373H"
         oce.debug(debug, "serial.number=",metadata$serial.number,"\n")
 
-        metadata$probe.type <- probe.configuration[16] # FIXME: what does this mean? Hydratools confused also.
-        oce.debug(debug, "probe.type=", metadata$probe.type, "\n")
+        metadata$probe.type <- readBin(probe.configuration[17], "integer", n=1, size=1)
+        oce.debug(debug, "probe.type=", metadata$probe.type, "(\"3/2-d orientation\", according to the docs)\n")
+
+        metadata$probe.size <- readBin(probe.configuration[18], "integer", n=1, size=1)
+        oce.debug(debug, "probe.size=", metadata$probe.size, "(0 means 5cm; 1 means 10cm probe, according to docs)\n")
+
+        metadata$number.of.beams <- readBin(probe.configuration[19:20], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "number.of.beams=", metadata$number.of.beams, "(should be 3)\n")
+        if (metadata$number.of.beams != 3)
+            warning("number of beams should be 3, but it is ", metadata$number.of.beams, " ... reseting to 3")
+
+        metadata$probe.nom.peak.pos <- readBin(probe.configuration[21:22], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.nom.peak.pos=", metadata$probe.nom.peak.pos, "(not used here)\n")
+
+        metadata$probe.nsamp <- readBin(probe.configuration[23:24], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.nsamp=", metadata$probe.nsamp, "(not used here)\n")
+
+        metadata$probe.samp.interval <- readBin(probe.configuration[25:26], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.samp.interval=", metadata$probe.samp.interval, "(not used here)\n")
+
+        metadata$probe.pulse.lag <- readBin(probe.configuration[27:56], "integer", n=15, size=2, endian="little")
+        oce.debug(debug, "probe.pulse.lag=", metadata$probe.pulse.lag, "([5][3], not used here)\n")
+
+        metadata$probe.nxmit <- readBin(probe.configuration[57:86], "integer", n=15, size=2, endian="little")
+        oce.debug(debug, "probe.nxmit=", metadata$probe.nxmit, "([5][3], not used here)\n")
+
+        metadata$probe.lag.delay <- readBin(probe.configuration[87:116], "integer", n=15, size=2, endian="little")
+        oce.debug(debug, "probe.lag.delay=", metadata$probe.lag.delay, "([5][3], not used here)\n")
+
+        metadata$probe.beam.delay <- readBin(probe.configuration[117:118], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.beam.delay=", metadata$probe.beam.delay, "(not used here)\n")
+
+        metadata$probe.ping.delay <- readBin(probe.configuration[119:120], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.ping.delay=", metadata$probe.ping.delay, "(not used here)\n")
+
+        metadata$transformation.matrix <- matrix(readBin(probe.configuration[121:157], "numeric", n=9, size=4, endian="little"),
+                                                 nrow=3, byrow=TRUE)
+        oce.debug(debug, "transformation matrix:\n")
+        oce.debug(debug, "  ", format(metadata$transformation.matrix[1,], width=10, digits=5, justify="right"), "\n")
+        oce.debug(debug, "  ", format(metadata$transformation.matrix[2,], width=10, digits=5, justify="right"), "\n")
+        oce.debug(debug, "  ", format(metadata$transformation.matrix[3,], width=10, digits=5, justify="right"), "\n")
+
+        ## [158:161] float XmitRecDist
+        ## [162:165] float CalCw
+        ## FIXME why is this not 164 bytes in total?
 
         ##
         ## Analyze "deployment parameters" header
@@ -819,6 +871,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                      subsample.start=data$t[1],
                      oce.coordinate=coordinate.system,
                      coordinate.system=coordinate.system)
+    warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -829,11 +882,6 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
 summary.adv <- function(object, ...)
 {
     if (!inherits(object, "adv")) stop("method is only for adv objects")
-    if (inherits(object, "sontek")) {
-        res.specific <- NULL;
-    } else if (inherits(object, "nortek")) {
-        res.specific <- list(burst.length=object$burst.length);
-    } else stop("can only summarize ADV objects of sub-type \"nortek\" or \"sontek\", not class ", paste(class(object),collapse=","))
     ts.names <- names(object$data$ts)
     ma.names <- names(object$data$ma)
     fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
@@ -852,8 +900,8 @@ summary.adv <- function(object, ...)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     len <- length(object$data$ts$time)
     res <- list(filename=object$metadata$filename,
-                number.of.beams=object$metadata$number.of.beams,
-                orientation=object$metadata$sensor.orientation,
+                number.of.beams=if (!is.null(object$metadata$number.of.beams)) object$metadata$number.of.beams else 3,
+                orientation=object$metadata$orientation,
                 velocity.range.index=object$metadata$velocity.range.index,
                 transformation.matrix=object$metadata$transformation.matrix,
                 sampling.rate=object$metadata$sampling.rate,
@@ -870,9 +918,11 @@ summary.adv <- function(object, ...)
                 oce.coordinate=object$metadata$oce.coordinate,
                 fives=fives,
                 processing.log=processing.log.summary(object))
-    if (inherits(object, "nortek"))
+    if (inherits(object, "nortek")) {
         res$burst.length <- object$metadata$burst.length
-    if (inherits(object, "sontek")) {
+        res$deploy.name <- object$metadata$deploy.name
+        res$comments <- object$metadata$comments
+    } else if (inherits(object, "sontek")) {
         res$cpu.software.ver.num <- object$metadata$cpu.software.ver.num
         res$dsp.software.ver.num <- object$metadata$dsp.software.ver.num
         res$samples.per.burst <- object$metadata$samples.per.burst
@@ -894,14 +944,15 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 1 / x$subsample.deltat), ...)
-    ## cat("  Orientation:          ", x$orientation, "\n")
     ## cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
     cat("* Number of samples:     ", x$number.of.samples, "\n")
     cat("* Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
     cat("* Orientation:           ", x$orientation, "\n")
     if (x$instrument.type == "vector") {
-        cat("* Nortek vector specific\n\n")
-        cat("  * Samples per burst      ", x$burst.length, "\n") # FIXME: use same names throughout
+        cat("\n* Nortek vector specific\n\n")
+        cat("  * Samples per burst:      ", x$burst.length, "\n") # FIXME: use same names throughout
+        cat("  * Deploy name:            ", x$deploy.name, "\n")
+        cat("  * Comments:               ", x$comments, "\n")
     } else if (x$instrument.type == "sontek adr") {              # FIXME: call this just 'sontek'??
         cat("* Sontek adr specific\n\n")
         cat("  * CPU software version:  ", x$cpu.software.ver.num, "\n")
@@ -910,7 +961,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
         cat("  * Velocity range index:  ", x$velocity.range.index, "\n")
     }
     if (!is.null(x$transformation.matrix)) {
-        cat("* Transformation matrix::\n\n")
+        cat("\n* Transformation matrix::\n\n")
         cat("  ", format(x$transformation.matrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
         cat("  ", format(x$transformation.matrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
         cat("  ", format(x$transformation.matrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
@@ -1088,6 +1139,7 @@ adv.beam2xyz <- function(x)
     if (is.null(x$metadata$transformation.matrix)) stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
     transformation.matrix <- x$metadata$transformation.matrix
     ##print(transformation.matrix)
+    ## alter transformation matrix if pointing downward. FIXME: is this right?
     if (x$metadata$orientation == "downward") {
         transformation.matrix[2,] <- -transformation.matrix[2,]
         transformation.matrix[3,] <- -transformation.matrix[3,]

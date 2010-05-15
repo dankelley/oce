@@ -57,7 +57,7 @@ summary.adp <- function(object, ...)
                                  board.rev=object$metadata$board.rev,
                                  adp.type=object$metadata$adp.type,
                                  slant.angle=object$metadata$slant.angle,
-                                 sensor.orientation=object$metadata$sensor.orientation)
+                                 orientation=object$metadata$orientation)
         } else if (inherits(object, "nortek")) {
             res.specific <- NULL
         } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
