@@ -306,7 +306,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## Technical Documentation (Sept 1, 2001)
     ##subsample.start <- match.bytes(buf, 0x85, 0x16)
     ##subsample.start <- subsample.start[1:(-1 + length(subsample.start))] # last may be partial
-    stop('read.adv.sontek() disabled for the moment')
+    stop('read.adv.sontek() disabled for the moment [but read.adv.sontek.adr() works]')
 }
 
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
@@ -368,63 +368,100 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     data.length <- 22                   # FIXME: this should be determined based on the headers
     metadata <- list(filename=filename, instrument.type="sontek adr", measurement.deltat=1, velocity.scale.factor=1)
     if (header) {
+        ##
+        ## Slice out three headers
+        ##
         hardware.configuration <- buf[1:hardware.configuration.length]
         probe.configuration <- buf[hardware.configuration.length + 1:probe.configuration.length]
         deployment.parameters <- buf[hardware.configuration.length+probe.configuration.length+1:deployment.parameters.length]
-        metadata$velocity.range.index <- as.numeric(deployment.parameters[20])
-        oce.debug(debug, "velocity.range.index=", metadata$velocity.range.index, "\n")
-        if (metadata$velocity.range.index == 4)
-            metadata$velocity.scale.factor <- 2 # FIXME this seems to be needed for sleiwex m03, but WHY??
+
+        ##
+        ## Analyze "hardware configuration" header
+        ##
         metadata$cpu.software.ver.num <- 0.1 * as.numeric(hardware.configuration[1])
         oce.debug(debug, "cpu.software.ver.num=", metadata$cpu.software.ver.num, "\n")
+
         metadata$dsp.software.ver.num <- 0.1 * as.numeric(hardware.configuration[2])
         oce.debug(debug, "dsp.software.ver.num=", metadata$dsp.software.ver.num, "\n")
+
         metadata$sensor.orientation <- c("down", "up", "side")[1 + as.numeric(hardware.configuration[4])]
         oce.debug(debug, "sensor.orientation=", metadata$sensor.orientation, "\n")
-        metadata$compass.installed <- if (as.integer(hardware.configuration[5]) == 1) TRUE else FALSE;
-        oce.debug(debug, "compass.installed=", metadata$compass.installed, "\n")
-        metadata$recorder.installed <- if (as.integer(hardware.configuration[6]) == 1) TRUE else FALSE;
-        oce.debug(debug, "recorder.installed=", metadata$recorder.installed, "\n")
-        metadata$temp.installed <- if (as.integer(hardware.configuration[7]) == 1) TRUE else FALSE;
-        oce.debug(debug, "temp.installed=", metadata$temp.installed, "\n")
-        metadata$press.installed <- if (as.integer(hardware.configuration[8]) == 1) TRUE else FALSE;
-        oce.debug(debug, "press.installed=", metadata$press.installed, "\n")
-        ## pressure is in nanobar / count = 1e-9 bar / count = 1e-7 dbar / count
-        metadata$pressure.scale <- 1e-8 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little", signed=FALSE)
-        oce.debug(debug, "pressure.scale=", metadata$pressure.scale,"\n")
-        metadata$pressure.offset <- 1e-5 * readBin(hardware.configuration[13:16], "integer", size=4, n=1, endian="little", signed=TRUE)
-        oce.debug(debug, "pressure.offset=", metadata$pressure.offset,"\n")
-        orientation.code <- as.integer(hardware.configuration[4])
-        metadata$orientation <- c("downward", "upward", "sideward")[orientation.code + 1]
-        if (is.na(metadata$orientation))
-            stop("cannot understand orientation code ", orientation.code, " (should be 0=downward, 1=upward or 2=sideward")
+
         metadata$compass.installed <- as.integer(hardware.configuration[5]) == 1
+        oce.debug(debug, "compass.installed=", metadata$compass.installed, "\n")
         if (!metadata$compass.installed)
             stop("cannot handle data files for ADV files that lack compass data")
+
+        metadata$recorder.installed <- if (as.integer(hardware.configuration[6]) == 1) TRUE else FALSE;
+        oce.debug(debug, "recorder.installed=", metadata$recorder.installed, "\n")
+
         metadata$thermometer.installed <- as.integer(hardware.configuration[7]) == 1
+        oce.debug(debug, "thermometer.installed=", metadata$thermometer.installed, "\n")
         if (!metadata$thermometer.installed)
             stop("cannot handle data files for ADV files that lack thermometer data")
+
         metadata$pressure.installed <- as.integer(hardware.configuration[8]) == 1
+        oce.debug(debug, "press.installed=", metadata$press.installed, "\n")
         if (!metadata$pressure.installed)
             stop("cannot handle data files for ADV files that lack pressure data")
-        ## FIXME: in the above, ignoring "RecorderInstalled" on p105 of docs -- what is that??
+
+        ## we report pressure in dbar, so use the fact that 1 nanobar/count = 1e-8 dbar/count
+        metadata$pressure.scale <- 1e-8 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little", signed=FALSE)
+        oce.debug(debug, "pressure.scale=", metadata$pressure.scale,"dbar/count (header gives in nanobar/count)\n")
+
+        ## we report pressure in dbar, so use the fact that 1 microbar = 1e-5 dbar
+        metadata$pressure.offset <- 1e-5 * readBin(hardware.configuration[13:16], "integer", size=4, n=1, endian="little", signed=TRUE)
+        oce.debug(debug, "pressure.offset=", metadata$pressure.offset,"dbar (header gives in microbar)\n")
+
+        metadata$compass.offset <- readBin(hardware.configuration[23:24], "integer", size=2, n=1, endian="little", signed=TRUE)
+        oce.debug(debug, "compass offset=", metadata$compass.offset,"(degrees to East of North)\n")
+
+        metadata$press.freq.offset <- as.integer(hardware.configuration[25])
+        oce.debug(debug, "press.freq.offset=", metadata$press.freq.offset,"(\"Frequency Pres Sensor Offset\" in docs)\n")
+
+        metadata$ext.sensor.installed <- as.integer(hardware.configuration[26])
+        oce.debug(debug, "ext.sensor.installed=", metadata$ext.sensor.installed,"(\"0=None, 1=Standard (ch 1/3)\" in docs)\n")
+
+        metadata$ext.press.installed <- as.integer(hardware.configuration[27])
+        oce.debug(debug, "ext.press.installed=", metadata$ext.press.installed,"(1=Paros 2=Druck 3=ParosFreq)\n")
+
+        ## we report pressure in dbar, so use the fact that 1 pbar = 1e-11 dbar
+        metadata$pressure.scale.2 <- 1e-11 * readBin(hardware.configuration[28:29], "integer", size=2, n=1, endian="little", signed=TRUE)
+        oce.debug(debug, "pressure.scale.2=", metadata$pressure.scale.2,"dbar/count^2 (file gives in picobar/count^2)\n")
+
+
+        ##
+        ## Analyze "probe configuration" header
+
         metadata$serial.number <- paste(readBin(probe.configuration[10+1:5],"character",n=5,size=1), collapse="")  # "B373H"
         oce.debug(debug, "serial.number=",metadata$serial.number,"\n")
 
         metadata$probe.type <- probe.configuration[16] # FIXME: what does this mean? Hydratools confused also.
         oce.debug(debug, "probe.type=", metadata$probe.type, "\n")
 
+        ##
+        ## Analyze "deployment parameters" header
+
         if (deployment.parameters[1]!=0x12)
             stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
+
         if (deployment.parameters[2]!=0x01)
             stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
+
+        metadata$velocity.range.index <- as.numeric(deployment.parameters[20])
+        oce.debug(debug, "velocity.range.index=", metadata$velocity.range.index, "\n")
+        if (metadata$velocity.range.index == 4)
+            metadata$velocity.scale.factor <- 2 # FIXME this seems to be needed for sleiwex m03, but WHY??
+
         coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
         metadata$coordinate.system <- c("beam", "xyz", "enu")[1+coordinate.system.code]
         metadata$oce.coordinate <- metadata$coordinate.system
         oce.debug(debug, "coordinate.system=", metadata$coordinate.system, "\n")
         if (metadata$coordinate.system == "beam")
             stop("cannot handle beam coordinates")
-        ## bug: docs say sampling rate in 0.1Hz, but the SLEIWEX-2008-m3 data file shows 0.01Hz
+
+        ## bug: docs say sampling rate in units of 0.1Hz, but the SLEIWEX-2008-m3 data file is in 0.01Hz
+
         sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE)
         if (sampling.rate[2] != 0 || sampling.rate[3] != 0)
             warning("ignoring non-zero items 2 and/or 3 of sampling.rate vector")
@@ -589,9 +626,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         pitch[r] <- 0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
         roll[r] <- 0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
         temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", size=2, n=n, signed=TRUE, endian="little")
-        pressure[r] <- metadata$pressure.scale *
-            readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little") +
-                metadata$pressure.offset
+
+        ## Pressure, using quadratic conversion from counts
+        p.count <- readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        pressure[r] <- metadata$pressure.offset + p.count * (metadata$pressure.scale + p.count * metadata$pressure.scale.2)
+
         row.offset <- row.offset + n
         if (monitor) {
             cat(".")
@@ -814,7 +853,7 @@ summary.adv <- function(object, ...)
     len <- length(object$data$ts$time)
     res <- list(filename=object$metadata$filename,
                 number.of.beams=object$metadata$number.of.beams,
-                orientation=object$metadata$orientation,
+                orientation=object$metadata$sensor.orientation,
                 velocity.range.index=object$metadata$velocity.range.index,
                 transformation.matrix=object$metadata$transformation.matrix,
                 sampling.rate=object$metadata$sampling.rate,
