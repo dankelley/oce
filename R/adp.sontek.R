@@ -85,8 +85,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, "beam.geometry=", beam.geometry, "; 0 means 2 beams; 1 means 3 beams, 2 means 4 beams with 1 verticl; 3 means 4 beams, Janus\n")
         slant.angle <- readBin(buf[29:30], "integer", n=1, size=2, signed=FALSE) / 10
         oce.debug(debug, "slant.angle=",slant.angle,"\n")
-        sensor.orientation <- switch(as.integer(buf[31]) + 1, "down", "up", "side")
-        oce.debug(debug, "sensor.orientation=",sensor.orientation,"\n")
+        orientation <- switch(as.integer(buf[31]) + 1, "down", "up", "side")
+        oce.debug(debug, "orientation=", orientation,"\n")
         compass.installed <- switch(as.integer(buf[32]) + 1, FALSE, TRUE)
         recorder.installed <- switch(as.integer(buf[33]) + 1, FALSE, TRUE)
         temp.installed <- switch(as.integer(buf[34]) + 1, FALSE, TRUE)
@@ -95,7 +95,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ## 37 int[16], so I guess 2-byte ints, signed?
     } else {
         cpu.software.ver.num <- dsp.software.ver.num <- board.rev <-
-            adp.type <- nbeams <- slant.angle <- sensor.orientation <-
+            adp.type <- nbeams <- slant.angle <- orientation <-
                 compass.installed <- recorder.installed <- temp.installed <- press.installed <- "?"
     }
     profile.start <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
