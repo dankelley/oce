@@ -18,7 +18,6 @@ read.adv(file, from=1, to, by=1, tz=getOption("oce.tz"),
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                 type="vector",
                 header=TRUE,
-                subsample.start, subsample.deltat,
                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 type="default",

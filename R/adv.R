@@ -10,7 +10,6 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
-                        subsample.start=subsample.start, subsample.deltat=subsample.deltat,
                         debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek")
         read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
@@ -30,7 +29,6 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="vector",
                             header=TRUE,
-                            subsample.start, subsample.deltat, # FIXME: use from and by for these
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, "read.adv.nortek(...,type=\"", type, "\", ...)\n")
@@ -38,12 +36,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (is.numeric(by)   && by   < 1) stop("argument \"by\" must be 1 or larger")
     if (is.numeric(from) && from < 1) stop("argument \"from\" must be 1 or larger")
     if (is.numeric(to)   && to   < 1) stop("argument \"to\" must be 1 or larger")
-
-    ## if (missing(to)) stop("must supply \"to\" (this limitation may be relaxed in a future version)")
-    ## if (!inherits(from, "POSIXt")) stop("\"from\" must be a POSIXt time (this limitation may be relaxed in a future version)")
-    ## if (!inherits(to, "POSIXt")) stop("\"to\" must be a POSIXt time (this limitation may be relaxed in a future version)")
-    if (!missing(subsample.start)) stop("cannot handle argument \"subsample.start\"")
-    if (!missing(subsample.deltat)) stop("cannot handle argument \"subsample.deltat\"")
 
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -69,7 +61,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     header <- decode.header.nortek(buf, debug=debug-1)
     metadata <- list(instrument.type="vector",
                      filename=filename,
-                     measurement.start=if (missing(subsample.start)) NA else subsample.start, #FIXME is this used?
+                     measurement.start=NA, # FIXME
                      measurement.end=NA,   # FIXME
                      sampling.rate=NA, # FIXME
                      number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
@@ -145,8 +137,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     vsd.len <- length(vsd.start)
 
     ## Measurement start and end times
-
-
     metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
                                               bcd2integer(buf[vsd.start[1]+9]), # month
                                               bcd2integer(buf[vsd.start[1]+6]), # day
@@ -214,6 +204,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         vsd.start <- subset(vsd.start, vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)])
         oce.debug(debug, "vsd.start AFTER\n", str(vsd.start))
     }
+    oce.debug(debug, "by=", by, "\n")
     oce.debug(debug, "step 1 vsd.start:\n", str(vsd.start))
     vsd.start <- vsd.start[vvd.start[1] < vsd.start & vsd.start < vvd.start[length(vvd.start)]]
     oce.debug(debug, "step 2 vsd.start:\n", str(vsd.start))
@@ -294,9 +285,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-##  24 bytes hardware configuration
-## 164 bytes probe configuration
-## 253 bytes probe configuration
+##  24 bytes hardware configuration ("AdvSystemConfigType" in the docs)
+## 164 bytes probe configuration ("AdvConfType" in the docs)
+## 253 bytes deployment setup ("AdvDeploymentSetupType" in the docs)
 read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="default", header=TRUE,
                             subsample.start, subsample.deltat, # FIXME: use from and by for these
@@ -401,7 +392,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             stop("cannot handle data files for ADV files that lack thermometer data")
 
         metadata$pressure.installed <- as.integer(hardware.configuration[8]) == 1
-        oce.debug(debug, "press.installed=", metadata$press.installed, "\n")
+        oce.debug(debug, "pressure.installed=", metadata$pressure.installed, "\n")
         if (!metadata$pressure.installed)
             stop("cannot handle data files for ADV files that lack pressure data")
 
@@ -432,12 +423,65 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
         ##
         ## Analyze "probe configuration" header
+        ## Docs (p102 of Sontek-ADV-op-man-2001.pdf) say as follows (the initial index number is mine):
+        ## [1] unsigned char FileType
+        ## [2] unsigned char FileVer
+        ## [3:6] DateType FileDate (4 bytes for real-time clock, 2 for year, 1 for day, 1 for month)
+        ## [7:10] long FileNbytes
+        ## [11:16] SerialNum[6]
+        ## [16] char ProbeType
+        ## [17] char ProbeSize
+        ## [18:19] int ProbeNBeams
+        ## ...
 
-        metadata$serial.number <- paste(readBin(probe.configuration[10+1:5],"character",n=5,size=1), collapse="")  # "B373H"
+        metadata$serial.number <- paste(readBin(probe.configuration[11:16],"character",n=5,size=1), collapse="")  # "B373H"
         oce.debug(debug, "serial.number=",metadata$serial.number,"\n")
 
-        metadata$probe.type <- probe.configuration[16] # FIXME: what does this mean? Hydratools confused also.
-        oce.debug(debug, "probe.type=", metadata$probe.type, "\n")
+        metadata$probe.type <- readBin(probe.configuration[17], "integer", n=1, size=1)
+        oce.debug(debug, "probe.type=", metadata$probe.type, "(\"3/2-d orientation\", according to the docs)\n")
+
+        metadata$probe.size <- readBin(probe.configuration[18], "integer", n=1, size=1)
+        oce.debug(debug, "probe.size=", metadata$probe.size, "(0 means 5cm; 1 means 10cm probe, according to docs)\n")
+
+        metadata$number.of.beams <- readBin(probe.configuration[19:20], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "number.of.beams=", metadata$number.of.beams, "(should be 3)\n")
+        if (metadata$number.of.beams != 3)
+            warning("number of beams should be 3, but it is ", metadata$number.of.beams, " ... reseting to 3")
+
+        metadata$probe.nom.peak.pos <- readBin(probe.configuration[21:22], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.nom.peak.pos=", metadata$probe.nom.peak.pos, "(not used here)\n")
+
+        metadata$probe.nsamp <- readBin(probe.configuration[23:24], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.nsamp=", metadata$probe.nsamp, "(not used here)\n")
+
+        metadata$probe.samp.interval <- readBin(probe.configuration[25:26], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.samp.interval=", metadata$probe.samp.interval, "(not used here)\n")
+
+        metadata$probe.pulse.lag <- readBin(probe.configuration[27:56], "integer", n=15, size=2, endian="little")
+        oce.debug(debug, "probe.pulse.lag=", metadata$probe.pulse.lag, "([5][3], not used here)\n")
+
+        metadata$probe.nxmit <- readBin(probe.configuration[57:86], "integer", n=15, size=2, endian="little")
+        oce.debug(debug, "probe.nxmit=", metadata$probe.nxmit, "([5][3], not used here)\n")
+
+        metadata$probe.lag.delay <- readBin(probe.configuration[87:116], "integer", n=15, size=2, endian="little")
+        oce.debug(debug, "probe.lag.delay=", metadata$probe.lag.delay, "([5][3], not used here)\n")
+
+        metadata$probe.beam.delay <- readBin(probe.configuration[117:118], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.beam.delay=", metadata$probe.beam.delay, "(not used here)\n")
+
+        metadata$probe.ping.delay <- readBin(probe.configuration[119:120], "integer", n=1, size=2, endian="little")
+        oce.debug(debug, "probe.ping.delay=", metadata$probe.ping.delay, "(not used here)\n")
+
+        metadata$transformation.matrix <- matrix(readBin(probe.configuration[121:157], "numeric", n=9, size=4, endian="little"),
+                                                 nrow=3, byrow=TRUE)
+        oce.debug(debug, "transformation matrix:\n")
+        oce.debug(debug, "  ", format(metadata$transformation.matrix[1,], width=10, digits=5, justify="right"), "\n")
+        oce.debug(debug, "  ", format(metadata$transformation.matrix[2,], width=10, digits=5, justify="right"), "\n")
+        oce.debug(debug, "  ", format(metadata$transformation.matrix[3,], width=10, digits=5, justify="right"), "\n")
+
+        ## [158:161] float XmitRecDist
+        ## [162:165] float CalCw
+        ## FIXME why is this not 164 bytes in total?
 
         ##
         ## Analyze "deployment parameters" header
@@ -852,7 +896,7 @@ summary.adv <- function(object, ...)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     len <- length(object$data$ts$time)
     res <- list(filename=object$metadata$filename,
-                number.of.beams=object$metadata$number.of.beams,
+                number.of.beams=if (!is.null(object$metadata$number.of.beams)) object$metadata$number.of.beams else 3,
                 orientation=object$metadata$sensor.orientation,
                 velocity.range.index=object$metadata$velocity.range.index,
                 transformation.matrix=object$metadata$transformation.matrix,
@@ -1088,6 +1132,7 @@ adv.beam2xyz <- function(x)
     if (is.null(x$metadata$transformation.matrix)) stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
     transformation.matrix <- x$metadata$transformation.matrix
     ##print(transformation.matrix)
+    ## alter transformation matrix if pointing downward. FIXME: is this right?
     if (x$metadata$orientation == "downward") {
         transformation.matrix[2,] <- -transformation.matrix[2,]
         transformation.matrix[3,] <- -transformation.matrix[3,]
