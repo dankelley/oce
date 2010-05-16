@@ -1,7 +1,7 @@
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
-                     subsample.start, subsample.deltat, # FIXME: use from and by for these
+                     start, deltat,
                      debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
@@ -14,7 +14,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     else if (type == "sontek")
         read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
-                        subsample.start=subsample.start, subsample.deltat=subsample.deltat,
+                        start=start, deltat=deltat,
                         debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
@@ -250,7 +250,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
               "vsd pitch:\n", str(pitch),
               "vsd roll:\n", str(roll),
               "vsd temperature:\n", str(temperature))
-    metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0)
+    metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0) # FIXME: surely this is in the header (?!?)
     oce.debug(debug, "metadata$burst.length=", metadata$burst.length, "\n")
 
     vvd.start2 <- sort(c(vvd.start, 1 + vvd.start))
@@ -325,19 +325,110 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-##  24 bytes hardware configuration ("AdvSystemConfigType" in the docs)
-## 164 bytes probe configuration ("AdvConfType" in the docs)
-## 253 bytes deployment setup ("AdvDeploymentSetupType" in the docs)
 read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="default", header=TRUE,
-                            subsample.start, subsample.deltat, # FIXME: use from and by for these
+                            start, deltat,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    warning("read.adv.sontek() is VERY preliminary: times are wrong; pressure is wrong; to/from/by are ignored; orientation is guessed; beam coordinate is guessed")
+    if (header) {
+        stop("cannot handle the case with header=TRUE yet")
+    } else {
+        if (missing(start))
+            stop("must supply start, since there is no header")
+        if (missing(deltat))
+            stop("must supply deltat, since there is no header")
+        if (is.numeric(start))
+            stop("'start' must be a string, or a POSIXt time")
+        if (is.character(start))
+            start <- as.POSIXct(start, tz=tz)
+        oce.debug(debug, "time series is inferred to start at", format(start), "\n")
+        if (is.character(deltat))
+            deltat <- ctime.to.seconds(deltat)
+        oce.debug(debug, "time series is inferred to have data every", deltat, "s\n")
+    }
+    oce.debug(debug, "read.adv.sontek() ENTRY\n")
+    if (is.character(file)) {
+        filename <- full.filename(file)
+        file <- file(file, "rb")
+        on.exit(close(file))
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        filename <- "(connection)"
+        open(file, "rb")
+        on.exit(close(file))
+    }
+    ## read whole file into buffer
+    seek(file, 0, "end", rw="read")
+    file.size <- seek(file, 0, origin="start", rw="read")
+    oce.debug(debug, "filesize=",file.size,"\n")
+    buf <- readBin(file, what="raw", n=file.size, endian="little")
+
     ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
     ## Technical Documentation (Sept 1, 2001)
-    ##subsample.start <- match.bytes(buf, 0x85, 0x16)
-    ##subsample.start <- subsample.start[1:(-1 + length(subsample.start))] # last may be partial
-    stop('read.adv.sontek() disabled for the moment [but read.adv.sontek.adr() works]')
+    v.start.1 <- match.bytes(buf[1:100], 0x85, 0x16)[1]
+    v.start <- seq(v.start.1, length(buf) - v.start.1, as.numeric(0x16))
+    v.start <- v.start[-length(v.start)] # remove last, which may be partial
+    len <- length(v.start)
+    v.start2 <- sort(c(v.start, 1+v.start))
+    ## ByteOffset content
+    ## 0 Id
+    ## 1 NBytes
+    ## 2:3 SampleNum
+    ## 4:5 u
+    ## 6:7 v
+    ## 8:9 w
+    ## 10 a1
+    ## 11 a2
+    ## 12 a3
+    ## 13 cm1
+    ## 14 cm2
+    ## 15 cm3
+    ## 16:17 Temp
+    ## 18:19 Pressure
+    uu <- 0.1e-3 * readBin(buf[v.start2+4], "integer", size=2, n=len, signed=TRUE, endian="little")
+    vv <- 0.1e-3 * readBin(buf[v.start2+6], "integer", size=2, n=len, signed=TRUE, endian="little")
+    ww <- 0.1e-3 * readBin(buf[v.start2+8], "integer", size=2, n=len, signed=TRUE, endian="little")
+    v <- cbind(uu, vv, ww)
+    a1 <- readBin(buf[v.start+10], "integer", size=1, n=len, signed=FALSE, endian="little")
+    a2 <- readBin(buf[v.start+11], "integer", size=1, n=len, signed=FALSE, endian="little")
+    a3 <- readBin(buf[v.start+12], "integer", size=1, n=len, signed=FALSE, endian="little")
+    a <- cbind(a1, a2, a3)
+    c1 <- readBin(buf[v.start+13], "integer", size=1, n=len, signed=FALSE, endian="little")
+    c2 <- readBin(buf[v.start+14], "integer", size=1, n=len, signed=FALSE, endian="little")
+    c3 <- readBin(buf[v.start+15], "integer", size=1, n=len, signed=FALSE, endian="little")
+    c <- cbind(c1, c2, c3)
+    temperature <- 0.01 * readBin(buf[v.start2+16], "integer", size=2, n=len, signed=TRUE, endian="little")
+    pressure <- readBin(buf[v.start2+18], "integer", size=2, n=len, signed=FALSE, endian="little")
+    cat("pressures are wrong -- not sure why; here is fivenum:", paste(fivenum(pressure), collapse=" "), "\n")
+    metadata <- list(instrument.type="sontek",
+                     serial.number="(unknown)",
+                     filename=filename,
+                     measurement.start=0, measurement.end=len, measurement.deltat=1,
+                     subsample.start=0, subsample.end=len, subsample.deltat=1,
+                     coordinate.system="xyz",
+                     oce.coordinate="xyz",
+                     orientation="up"
+                     )
+    time <- start + (0:(-1+len)) * deltat
+
+    str(time)
+
+    data <- list(ts=list(time=time,
+                 heading=rep(0,len),
+                 pitch=rep(0,len),
+                 roll=rep(0,len),
+                 temperature=temperature,
+                 pressure=pressure),
+                 ss=list(distance=0),
+                 ma=list(v=v,a=a,c=c))
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("sontek", "adv", "oce")
+    res
 }
 
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
@@ -391,6 +482,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     buf <- readBin(file, what="raw", n=file.size, endian="little")
 
     ## Read header, or create a nominal default one.
+    ##  24 bytes hardware configuration ("AdvSystemConfigType" in the docs)
+    ## 164 bytes probe configuration ("AdvConfType" in the docs)
+    ## 253 bytes deployment setup ("AdvDeploymentSetupType" in the docs)
     hardware.configuration.length <- 24
     probe.configuration.length <- 164
     deployment.parameters.length <- 253
@@ -982,11 +1076,12 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     cat("* Orientation:           ", x$orientation, "\n")
     if (x$instrument.type == "vector") {
         cat("\n* Nortek vector specific\n\n")
+        ## FIXME: put other info here, e.g. software version, sampling volume, transducer frequency, etc.; the manufacturer file is a good guide
         cat("  * Samples per burst:      ", x$burst.length, "\n") # FIXME: use same names throughout
         cat("  * Deploy name:            ", x$deploy.name, "\n")
         cat("  * Comments:               ", x$comments, "\n")
-    } else if (x$instrument.type == "sontek adr") {              # FIXME: call this just 'sontek'??
-        cat("* Sontek adr specific\n\n")
+    } else if (x$instrument.type == "sontek adr") {
+        cat("\n* Sontek adr specific\n\n")
         cat("  * CPU software version:  ", x$cpu.software.ver.num, "\n")
         cat("  * DSP software version:  ", x$dsp.software.ver.num, "\n")
         cat("  * Samples per burst:     ", x$samples.per.burst, "\n")

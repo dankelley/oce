@@ -13,7 +13,7 @@
 read.adv(file, from=1, to, by=1, tz=getOption("oce.tz"),
         type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
         header=TRUE,
-        subsample.start, subsample.deltat,
+        start, deltat,
         debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                 type="vector",
@@ -22,7 +22,7 @@ read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
 read.adv.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 type="default",
                 header=TRUE,
-                subsample.start, subsample.deltat,
+                start, deltat,
                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     header=TRUE, type="",
@@ -40,24 +40,28 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     (used only by read.adv.sontek.text). The actual filenames are constructed
     by appending \code{".hd1"} and \code{".ts1"} to the base name.}
   \item{from}{index number of first profile to be read, or the
-    (POSIXt) time of that first profile.  See \dQuote{Examples}, and
-    make careful note of the use of the \code{tz} argument.}
+    (POSIXt) time of that first profile.  This is ignored if
+    \code{header=FALSE}. See \dQuote{Examples}, and make careful note of
+    the use of the \code{tz} argument.}
   \item{to}{indication of the last profiel to read, in a format matching
-    that of \code{from}.}
+    that of \code{from}.  This is ignored if \code{header=FALSE}.}
   \item{by}{an indication of the stride length to use while walking
-    through the file.  If this is an integer, then \code{by-1}
-    profiles are skipped between each pair of profiles that is read.
-    This may not make much sense, if the data are not equi-spaced in
-    time.  If \code{by} is a string representing a time interval, in
-    colon-separated format, then this interval is divided by the
-    sampling interval, to get the stride length. \emph{BUG:} if the
-    data are not equi-spaced, then odd results will occur.}
+    through the file.    This is ignored if \code{header=FALSE}.
+    Otherwise, if this is an integer, then \code{by-1} profiles are
+    skipped between each pair of profiles that is read. This may not make
+    much sense, if the data are not equi-spaced in time.  If \code{by}
+    is a string representing a time interval, in colon-separated format,
+    then this interval is divided by the sampling interval, to get the
+    stride length. \emph{BUG:} if the data are not equi-spaced, then odd
+    results will occur.}
   \item{header}{a boolean indicating whether the file contains a 
     header at the start.  (This will not be the case for files
     that are created by data loggers that chop the raw data up into a
   series of sub-files, e.g. once per hour.)}
-  \item{subsample.start}{a POSIXct time corresponding to the first sample. 
+  \item{start}{a POSIXct time corresponding to the first sample. 
     (This is mandatory if \code{header=FALSE}.)}
+  \item{deltat}{the time between samples. (This is mandatory if
+    \code{header=FALSE}.)}
   \item{coordinate.system}{character string indicating coordinate system, one
     of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.}
   \item{transformation.matrix}{transformation matrix to use,
@@ -67,8 +71,6 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     \code{"beam"}.}
   \item{type}{character string indicating type of file (ignored at present).}
   \item{tz}{character string indicating time zone to be assumed in the data.}
-  \item{subsample.deltat}{the time between samples. (This is mandatory if
-    \code{header=FALSE}.)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.  Note
     that \code{debug} is reduced by 1 for every depth in the function
@@ -83,22 +85,22 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     a user.}
 }
 
-\details{Reads a binary-format ADV file.
-  It is crucial to pay careful attention if \code{header} is
-  \code{FALSE}, since that condition forces \code{read.adv} to make
-  guesses about important things.  In particular, it will set
-  \code{metadata$deltat=1},
-  \code{metadata$orientation="downward"} and
-  \code{metadata$oce.coordinate="beam"}.  It is up to the user to
-  modify these values if they are wrong.
+\details{Reads a binary-format ADV file.  This is relatively
+  straightforward if there is a header.  If not, i.e. if
+  \code{header} is \code{FALSE}, then \code{read.adv} is forced
+  to make guesses about important things, and the wise user will
+  check on the elements of \code{metadata} in the return value,
+  rectifying any that are wrong, and adding any that are missing.  At a
+  bare minimum, cases with no header require the user to give the
+  \code{start} time and the time \code{deltat} between samples, since,
+  without these, no time base can be set up.
 
   \emph{Notes on NorTek files.}
 
   \enumerate{
 
     \item The full file is first read into a buffer. Velocity chunks are
-    located within the buffer by using \preformatted{vc <-
-      match.bytes(buf, 0xa5, 0x10)} which yields a vector of indices
+    located within the buffer by using \preformatted{vc <- match.bytes(buf, 0xa5, 0x10)} which yields a vector of indices
     within \code{buf}, at which the velocity chunks start.  \emph{BUG:}
     the checksum provided in bytes 23 and 24 of these chunks should be
     examined to discard matches that occur randomly (with probability
@@ -116,24 +118,36 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   }
 
   \emph{Notes on SonTek ADR files.}
-    The binary format is inferred from Appendix 2.2.3 of the Sontek ADV
-    operation Manual, Firmware Version 4.0 (Oct 1997), with the following
-    exceptions and notes.
+  The binary format is inferred from Appendix 2.2.3 of the Sontek ADV
+  operation Manual, Firmware Version 4.0 (Oct 1997), with the following
+  exceptions and notes.
 
-    \enumerate{
+  \enumerate{
 
-    \item The documentation says sampling rate is in 0.1Hz, but a test file indicates
-    that it is in 0.01 Hz.
+    \item The documentation says sampling rate is in units of 0.1Hz, but
+    a test file indicates that it is in 0.01 Hz.
 
-    \item The documentations says that burst sequences
-    start with c(0xa5, 0x10), but a test file indicates that they start with
-    c(0xa5, 0x11), so the code accepts either alternative for the second
-    byte.
+    \item Bursts are recognized by byte sequences, as documented on page
+    95 of [1].  In each case, a signalling byte is to be followed by a
+    certain number of bytes, and so this code checks for two-byte
+    sequences.  The are as follows:
 
-    \item Cannot handle beam coordinates, because the header seems not
-    to include any information on the transformation matrix, and the
-    author is unwilling to guess, not having had a need to work with
-    beam-coordinate files.
+    \itemize{
+      \item \code{c(0x81,0x12)} for an ADV with no optional sensors
+      installed.
+
+      \item \code{c(0x83,0x18)} if a compass/tilt sensor is installed,
+      but no temperature or pressor sensors.
+
+      \item \code{c(0x85,0x16)} if temperature and/or pressure sensors
+      are installed, but no compass/tilt sensor.
+
+      \item \code{c(0x87,0x1c)} if a compass/tilt sensor is installed
+      in addition to temperature and/or pressure sensors.
+
+    }
+    \strong{Bug:} only the second-last of these is handled in the present
+    version of the package.
 
    }
 }
@@ -172,11 +186,23 @@ plot(cumsum(u) * dt / 1e3, cumsum(v) * dt / 1e3, xlab="East [km]",
 ylab="North [km]", asp=1, type='l')
 
 ## Nortek file, chopped into pieces with a data logger
-adv <- read.adv("/data/archive/sleiwex/2008/moorings/m06/adv/autopod/day183/SL08A183.015",
-       sample.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
+f <- "/data/archive/sleiwex/2008/moorings/m05/adv/autopod/day183/SL08A183.015"
+adv <- read.adv(f, header=FALSE, start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
 summary(adv)
 plot(adv)
+
+## Sontek file, chopped into pieces with a data logger
+f <- "/data/archive/sleiwex/2008/moorings/m05/adv/sontek_133/raw/adv_sontek_133.183.001"
+adv <- read.adv.sontek(f, header=FALSE, start="2008-07-01 00:00:00", deltat=0.1)
+summary(adv)
 }
+}
+
+\references{
+
+1. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
+Technical Documentation (Sept 1, 2001).
+
 }
 
 \author{Dan Kelley}

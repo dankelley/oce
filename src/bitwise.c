@@ -15,7 +15,7 @@
 
 */
 
-/*#define DEBUG*/
+#define DEBUG
 SEXP nortek_checksum(SEXP buf, SEXP key)
 {
   /* http://www.nortek-as.com/en/knowledge-center/forum/current-profilers-and-current-meters/367698326 */
@@ -197,7 +197,7 @@ print(vvd.start)
   if (lkey != 2) error("key length must be 2");
   int ires = 0, lres = (int)(lbuf / lsequence + 3); /* get some extra space; fill some with NA */
   SEXP res;
-#if DEBUG
+#ifdef DEBUG
   Rprintf("lsequence=%d, lres=%d\n",lsequence,lres);
 #endif
   /* Rprintf("max_lres=%d\n", max_lres); */
