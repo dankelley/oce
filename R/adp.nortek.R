@@ -55,7 +55,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             oce.debug(debug, "hardware$hw.revision=", hardware$hw.revision, "\n")
             hardware$rec.size <- readBin(buf[o+27:28], "integer", n=1, size=2, endian="little")
             oce.debug(debug, "hardware$rec.size=", hardware$rec.size, "\n")
-            hardware$velocity.range <- readBin(buf[o+29:30], "integer", n=1, size=2, endian="little")
+            hardware$velocity.range <- readBin(buf[o+29:30], "integer", n=1, size=2, signed=FALSE, endian="little")
             oce.debug(debug, "hardware$velocity.range=", hardware$velocity.range, "\n")
             hardware$fw.version <- as.numeric(paste(readBin(buf[o+43:46], "character", n=4, size=1), collapse=""))
             oce.debug(debug, "hardware$fw.version=", hardware$fw.version, "\n")
@@ -279,6 +279,14 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                                  bcd2integer(buf[profile.start[2]+4]), # min
                                                  bcd2integer(buf[profile.start[2]+5]), # sec
                                                  tz=tz)) - as.numeric(measurement.start)
+
+    oce.debug(debug, "ORIG measurement.deltat=", measurement.deltat, "\n")
+
+    measurement.deltat <- (as.numeric(measurement.end) - as.numeric(measurement.start)) / profiles.in.file
+
+    oce.debug(debug, "NEW  measurement.deltat=", measurement.deltat, "\n")
+
+
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
         from.pair <- bisect.adp.nortek(from, -1, debug-1)

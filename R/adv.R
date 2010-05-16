@@ -182,9 +182,17 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                  bcd2integer(buf[vsd.start[1:2]+6]), # day
                                  bcd2integer(buf[vsd.start[1:2]+7]), # hour
                                  bcd2integer(buf[vsd.start[1:2]+4]), # min
-                                 bcd2integer(buf[vsd.start[1:2]+5]), # sec
+                                 bcd2integer(buf[vsd.start[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
                                  tz=tz)
-        vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], units="secs"))
+        vsd.dt <- as.numeric(two.times[2]) - as.numeric(two.times[1]) # FIXME: need # samples per burst here
+
+        ## Next two lines suggest that readBin() can be used instead of bcd2integer ... I imagine it would be faster
+        ##cat("month=", readBin(buf[vsd.start[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
+        ##cat("month=", bcd2integer(buf[vsd.start[1]+9]), "(as bcd)\n")
+
+        oce.debug(debug, "nrecords=", readBin(buf[vsd.start[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
+        oce.debug(debug, "vsd.dt=",vsd.dt,"(from two.times)\n")
+
         vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
         vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
         oce.debug(debug,
@@ -224,6 +232,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          bcd2integer(buf[vsd.start+4]), # min
                          bcd2integer(buf[vsd.start+5]), # sec
                          tz=tz)
+
+    ## update metadata$measurement.deltat
+    metadata$measurement.deltat <- mean(diff(as.numeric(vsd.t)), na.rm=TRUE) * length(vsd.start)/length(vvd.start)
+
     vsd.len <- length(vsd.start)
     vsd.start2 <- sort(c(vsd.start, 1 + vsd.start))
     heading <- 0.1 * readBin(buf[vsd.start2 + 14], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
@@ -269,30 +281,26 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         print(matrix(as.numeric(c[1:min(10,vvd.len),]), ncol=3))
     }
     sec <- as.numeric(vsd.t - vsd.t[1])
-    dan.sec<<-sec
     if (0 != var(diff(sec))) warning("the times in the file are not equi-spaced, but they are taken to be so")
-    ##vsd.i <- 1:length(vsd.start)
-    ##vvd.i <- 1:length(vvd.start)
-    ##vvd.t <- approx(x=vsd.i, y=sec, xout=vvd.i, rule=2)$y # FIXME: do by index or by pointer?
     vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y
 
-    dan.vsd.start<<-vsd.start
-    dan.vvd.start<<-vvd.start
-    dan.vvd.sec<<-vvd.sec
-
-    oce.debug(debug, "vvd.t:\n", str(vvd.t))
     rm(buf)
     gc()
 
     ## subset using 'by'
-    if (is.character(by))
-        stop("cannot character 'by' yet")
+    by.orig <- by
+    if (is.character(by)) {
+        oce.debug(debug, "by='",by,"' given as argument to read.adv.nortek()\n",sep="")
+        oce.debug(debug, " ... infer to be", ctime.to.seconds(by), "s\n")
+        by <- ctime.to.seconds(by) / metadata$measurement.deltat
+        oce.debug(debug, " ... so step by" ,by,"through the data\n")
+    }
     len <- length(vvd.start)
     look <- seq(1, len, by=by)
-    cat("length(vvd.start)=",length(vvd.start),"\n")
+    oce.debug(debug, "length(vvd.start)=",length(vvd.start),"\n")
     vvd.start.orig <- vvd.start
     vvd.start <- vvd.start[look]
-    cat("length(vvd.start)=",length(vvd.start),"(after 'look'ing) with by=", by, "\n")
+    oce.debug(debug, "length(vvd.start)=",length(vvd.start),"(after 'look'ing) with by=", by, "\n")
     heading <- approx(vsd.start, heading, xout=vvd.start, rule=2)$y
     pitch <- approx(vsd.start, pitch, xout=vvd.start, rule=2)$y
     roll <- approx(vsd.start, roll, xout=vvd.start, rule=2)$y
@@ -934,7 +942,7 @@ summary.adv <- function(object, ...)
                 measurement.deltat=object$metadata$measurement.deltat,
                 subsample.start=min(object$data$ts$time, na.rm=TRUE),
                 subsample.end=max(object$data$ts$time, na.rm=TRUE),
-                subsample.deltat=(as.numeric(object$data$ts$time[len])-as.numeric(object$data$ts$time[1]))/len,
+                subsample.deltat=mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE),
                 instrument.type=object$metadata$instrument.type,
                 serial.number=object$metadata$serial.number,
                 number.of.samples=length(object$data$ts$time),
