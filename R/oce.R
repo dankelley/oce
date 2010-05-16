@@ -718,10 +718,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
                 }
             }
         }
-        delta.t <- mean(diff(as.numeric(x)))
-        ##mtext(paste(attr(time.range, "tzone"), tr1, "to", tr2,  "by", format(delta.t, digits=3), "s", sep=" "),
-        ##      side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
-        mtext(paste(tr1, "to", tr2,  "by", format(delta.t, digits=3), "s", sep=" "),
+        delta.t <- mean(diff(as.numeric(x)), na.rm=TRUE)
+        mtext(paste(tr1, attr(time.range[1], "tzone"), "to",
+                    tr2,  attr(time.range[2], "tzone"), "@",
+                    sprintf("%.4g Hz", 1/delta.t), sep=" "),
               side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
     }
     axis(side, at = z, labels = labels, ...)

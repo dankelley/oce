@@ -32,10 +32,12 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, "read.adv.nortek(...,type=\"", type, "\", ...)\n")
-    if (!is.numeric(by))
-        stop("cannot handle non-numeric 'by' yet")
-    if (by < 1)
+    if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
+#    if (by != 1) {
+#        warning("read.adv.nortek() cannot handle 'by' values other than 1, so using 1, i.e. not subsampling")
+#        by <- 1
+#    }
     if (is.numeric(by)   && by   < 1) stop("argument \"by\" must be 1 or larger")
     if (is.numeric(from) && from < 1) stop("argument \"from\" must be 1 or larger")
     if (is.numeric(to)   && to   < 1) stop("argument \"to\" must be 1 or larger")
@@ -156,7 +158,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                             bcd2integer(buf[vsd.start[vsd.len]+4]), # min
                                             bcd2integer(buf[vsd.start[vsd.len]+5]), # sec
                                             tz=tz)
-    metadata$measurement.deltat <- (as.numeric(metadata$measurement.end) - as.numeric(metadata$measurement.start)) / (vsd.len - 1)
+    vvd.len <- length(vvd.start)
+    metadata$measurement.deltat <- (as.numeric(metadata$measurement.end) - as.numeric(metadata$measurement.start)) / (vvd.len - 1)
 
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
@@ -184,8 +187,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         vsd.dt <- as.numeric(difftime(two.times[2], two.times[1], units="secs"))
         vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
         vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
-        by <- by.time / vvd.dt
-        vvd.start <- vvd.start[seq(1, length(vvd.start), by=by)]
         oce.debug(debug,
                   'vvd.dt=',vvd.dt,'\n',
                   'by=',by, "1/by=",1/by,"\n",
@@ -268,25 +269,48 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         print(matrix(as.numeric(c[1:min(10,vvd.len),]), ncol=3))
     }
     sec <- as.numeric(vsd.t - vsd.t[1])
+    dan.sec<<-sec
     if (0 != var(diff(sec))) warning("the times in the file are not equi-spaced, but they are taken to be so")
-    vsd.i <- 1:length(vsd.start)
-    vvd.i <- 1:length(vvd.start)
-    vvd.t <- approx(x=vsd.i, y=sec, xout=vvd.i, rule=2)$y
+    ##vsd.i <- 1:length(vsd.start)
+    ##vvd.i <- 1:length(vvd.start)
+    ##vvd.t <- approx(x=vsd.i, y=sec, xout=vvd.i, rule=2)$y # FIXME: do by index or by pointer?
+    vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y
+
+    dan.vsd.start<<-vsd.start
+    dan.vvd.start<<-vvd.start
+    dan.vvd.sec<<-vvd.sec
+
     oce.debug(debug, "vvd.t:\n", str(vvd.t))
     rm(buf)
     gc()
 
     ## subset using 'by'
-    look <- seq(1, length(vvd.t), by=by)
+    if (is.character(by))
+        stop("cannot character 'by' yet")
+    len <- length(vvd.start)
+    look <- seq(1, len, by=by)
+    cat("length(vvd.start)=",length(vvd.start),"\n")
+    vvd.start.orig <- vvd.start
     vvd.start <- vvd.start[look]
-    data <- list(ts=list(time=vvd.t[look] + vsd.t[1],
-                 heading=approx(vsd.start, heading, xout=vvd.start, rule=2)$y,
-                 pitch=approx(vsd.start, pitch, xout=vvd.start, rule=2)$y,
-                 roll=approx(vsd.start, roll, xout=vvd.start, rule=2)$y,
-                 temperature=approx(vsd.start, temperature, xout=vvd.start, rule=2)$y,
-                 pressure=pressure[look]),
+    cat("length(vvd.start)=",length(vvd.start),"(after 'look'ing) with by=", by, "\n")
+    heading <- approx(vsd.start, heading, xout=vvd.start, rule=2)$y
+    pitch <- approx(vsd.start, pitch, xout=vvd.start, rule=2)$y
+    roll <- approx(vsd.start, roll, xout=vvd.start, rule=2)$y
+    temperature <- approx(vsd.start, temperature, xout=vvd.start, rule=2)$y
+    vvd.sec <- vvd.sec[look]
+    pressure <- pressure[look]          # only output at burst headers, not with velo
+    v <- v[look,]
+    a <- a[look,]
+    c <- c[look,]
+    time <- vvd.sec + vsd.t[1]            #FIXME
+    data <- list(ts=list(time=time,
+                 heading=heading,
+                 pitch=pitch,
+                 roll=roll,
+                 temperature=temperature,
+                 pressure=pressure),
                  ss=list(distance=0),
-                 ma=list(v=v[look,], a=a[look,], c=c[look,]))
+                 ma=list(v=v, a=a, c=c))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("nortek", "adv", "oce")
     gc()
@@ -983,7 +1007,7 @@ plot.adv <- function(x,
                      draw.time.range=getOption("oce.draw.time.range"),
                      draw.zero.line=FALSE,
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1]+1,mgp[1]+1,2,1.5),
+                     mar=c(mgp[1],mgp[1]+1,1,1.5),
                      margins.as.image=FALSE,
                      cex=1,
                      xlim, ylim,
