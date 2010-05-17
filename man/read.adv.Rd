@@ -165,25 +165,14 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 \examples{
 \dontrun{
 library(oce)
-## Nortek binary file
-# First few samples (which are in the air, before deployment)
+
+## Nortek binary file, half-hourly sub-sampling
 vec <- "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
-adv1 <- read.adv(vec, from=1, to=100, by=1)
-summary(adv1)
-plot(adv1)
-# Second day of deployment, half-hourly sub-sampling
 from <- as.POSIXct("2008-06-26 00:00:00", tz="UTC")
 to <- as.POSIXct("2008-06-27 00:00:00", tz="UTC")
 by <- "00:30:00"
 adv2 <- read.adv.nortek(vec, from=from, to=to, by=by)
 plot(adv2, which=c(1:3,15))      # beams plus pressure
-# Progressive vector
-enu <- adv.xyz2enu(adv.beam2xyz(adv2))
-u <- enu$data$ma$v[,1]
-v <- enu$data$ma$v[,2]
-dt <- 30 * 60
-plot(cumsum(u) * dt / 1e3, cumsum(v) * dt / 1e3, xlab="East [km]",
-ylab="North [km]", asp=1, type='l')
 
 ## Sontek file, chopped into hourly files with a data logger
 f <- "/data/archive/sleiwex/2008/moorings/m05/adv/sontek_133/raw/adv_sontek_133.183.001"
@@ -192,6 +181,35 @@ adv$metadata$serial.number <- "B202H"
 adv$metadata$orientation <- "down"
 summary(adv)
 plot(adv, which=c(1:3,14))      # skip pressure (not measured)
+
+## Sontek adr file, with method to estimate turbulent dissipation
+f <- "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr"
+adv <- read.adv.sontek.adr(f, from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
+                           to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
+adv$data$ma$v[,2] <- -adv$data$ma$v[,2] # account for deployment setup
+adv$data$ma$v[,3] <- -adv$data$ma$v[,3] # account for deployment setup
+w <- ts(adv$data$ma$v[,3], deltat=1/adv$metadata$sampling.rate)
+par(mfrow=c(2,2))
+par(mgp=getOption("oce.mgp"))
+par(mar=c(3,3,2,1))
+plot(w)
+plot(adv$data$ts$time, sqrt(adv$data$ma$v[,1]^2+adv$data$ma$v[,2]^2),
+    type='l', xlab="Time [s]", ylab="Horizontal velocity [m/s]")
+U <- mean(sqrt(adv$data$ma$v[,1]^2+adv$data$ma$v[,2]^2))
+abline(h=U, col='red')
+mtext(sprintf("U=\%.2fm/s", U), side=4, at=U)
+s <- spectrum(w, spans=c(3,5,7), plot=FALSE)  # just guessing on spans
+plot(log10(s$freq), log10(s$spec), type='l', xlab="f [Hz]", ylab="E", asp=1)
+for (a in seq(-20, 10, 1))
+    abline(a, -5/3, col='lightgray')     # slope if turbulent
+k <- 2 * pi * s$freq / U
+plot(log10(k), log10(k^(5/3)*s$spec), type='l', xlab="k [radian/m]", ylab=expression(k^(5/3)*E), asp=1)
+alpha <- 0.4                    # a 3D Kolmogorov coefficient
+epsilon <- (median(k^(5/3)*s$spec)/alpha)^(3/2) # median might ignore low-freq
+abline(h=log10(alpha * epsilon^(2/3)), col="red")
+mtext(sprintf("\%.0e W/kg", epsilon), side=4, at=log10(alpha * epsilon^(2/3)))
+grid()
+
 }
 }
 
