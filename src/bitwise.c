@@ -15,7 +15,7 @@
 
 */
 
-#define DEBUG
+/*#define DEBUG*/
 SEXP nortek_checksum(SEXP buf, SEXP key)
 {
   /* http://www.nortek-as.com/en/knowledge-center/forum/current-profilers-and-current-meters/367698326 */

@@ -194,6 +194,8 @@ plot(adv)
 ## Sontek file, chopped into pieces with a data logger
 f <- "/data/archive/sleiwex/2008/moorings/m05/adv/sontek_133/raw/adv_sontek_133.183.001"
 adv <- read.adv.sontek(f, header=FALSE, start="2008-07-01 00:00:00", deltat=0.1)
+adv$metadata$serial.number <- "B202H"
+adv$metadata$orientation <- "down"
 summary(adv)
 }
 }
