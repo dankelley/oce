@@ -629,7 +629,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         metadata$velocity.range.index <- as.numeric(deployment.parameters[20])
         oce.debug(debug, "velocity.range.index=", metadata$velocity.range.index, "\n")
         if (metadata$velocity.range.index == 4)
-            metadata$velocity.scale.factor <- 2 # FIXME this seems to be needed for sleiwex m03, but WHY??
+            metadata$velocity.scale.factor <- 2 # range indices 1 through 3 have factor 1
 
         coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
         metadata$coordinate.system <- c("beam", "xyz", "enu")[1+coordinate.system.code]
