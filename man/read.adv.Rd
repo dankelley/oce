@@ -166,7 +166,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 \dontrun{
 library(oce)
 
-## Nortek binary file, half-hourly sub-sampling
+## Nortek binary file, daily at 1/2 hour decimation
 vec <- "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
 from <- as.POSIXct("2008-06-26 00:00:00", tz="UTC")
 to <- as.POSIXct("2008-06-27 00:00:00", tz="UTC")
@@ -175,7 +175,7 @@ adv2 <- read.adv.nortek(vec, from=from, to=to, by=by)
 plot(adv2, which=c(1:3,15))      # beams plus pressure
 
 ## Sontek file, chopped into hourly files with a data logger
-f <- "/data/archive/sleiwex/2008/moorings/m05/adv/sontek_133/raw/adv_sontek_133.183.001"
+f <- "/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw/adv_sontek_202h.183.001"
 adv <- read.adv.sontek(f, header=FALSE, start="2008-07-01 00:00:00", deltat=0.1)
 adv$metadata$serial.number <- "B202H"
 adv$metadata$orientation <- "down"
