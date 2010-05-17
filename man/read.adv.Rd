@@ -167,7 +167,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 library(oce)
 ## Nortek binary file
 # First few samples (which are in the air, before deployment)
-vec <- "/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
+vec <- "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
 adv1 <- read.adv(vec, from=1, to=100, by=1)
 summary(adv1)
 plot(adv1)
@@ -185,18 +185,13 @@ dt <- 30 * 60
 plot(cumsum(u) * dt / 1e3, cumsum(v) * dt / 1e3, xlab="East [km]",
 ylab="North [km]", asp=1, type='l')
 
-## Nortek file, chopped into pieces with a data logger
-f <- "/data/archive/sleiwex/2008/moorings/m05/adv/autopod/day183/SL08A183.015"
-adv <- read.adv(f, header=FALSE, start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
-summary(adv)
-plot(adv)
-
-## Sontek file, chopped into pieces with a data logger
+## Sontek file, chopped into hourly files with a data logger
 f <- "/data/archive/sleiwex/2008/moorings/m05/adv/sontek_133/raw/adv_sontek_133.183.001"
 adv <- read.adv.sontek(f, header=FALSE, start="2008-07-01 00:00:00", deltat=0.1)
 adv$metadata$serial.number <- "B202H"
 adv$metadata$orientation <- "down"
 summary(adv)
+plot(adv, which=c(1:3,14))      # skip pressure (not measured)
 }
 }
 
