@@ -1154,7 +1154,7 @@ plot.adv <- function(x,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    if (!all(which %in% c(1:3,5:7,14:21))) stop("\"which\" must be in the range c(1:3,5:7,14:21)")
+    if (!all(which %in% c(1:3,5:7,9:11,14:21))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21) but it is ", which)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -1238,15 +1238,15 @@ plot.adv <- function(x,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] == 5) {     # beam 1
+        } else if (which[w] == 5) {     # a[1]
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
-            oce.plot.ts(x$data$ts$time, x$data$ma$a[,1],
+            oce.plot.ts(x$data$ts$time, x$data$ma$a[,which[w]-4],
                         ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
-        } else if (which[w] == 6) {     # beam 2
+        } else if (which[w] == 6) {     # a[2]
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,2],
@@ -1254,11 +1254,35 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
-        } else if (which[w] == 7) {     # beam 3
+        } else if (which[w] == 7) {     # a[3]
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,3],
                         ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 9) {     # c[1]
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
+            oce.plot.ts(x$data$ts$time, x$data$ma$c[,1],
+                        ylab=expression(c[1]), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 10) {     # c[2]
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
+            oce.plot.ts(x$data$ts$time, x$data$ma$c[,2],
+                        ylab=expression(c[2]), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 11) {    # c[3]
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
+            oce.plot.ts(x$data$ts$time, x$data$ma$c[,3],
+                        ylab=expression(c[3]), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)

@@ -59,14 +59,17 @@
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADV.
-  The panels are controlled by the \code{which} argument.
+  The panels are controlled by the \code{which} argument.  (Note the
+  gaps in the sequence, e.g. 4 and 8 are not used.)
 
   \itemize{ 
     \item \code{which=1} yields a timeseries of the x component of velocity.
     \item \code{which=2} yields a timeseries of the y component of velocity.
     \item \code{which=3} yields a timeseries of the z component of velocity.
     \item \code{which=5:7} yields a timeseries of backscatter intensity
-    of beams 1 through 3, respectively.
+    for beams 1, 2 and 3
+    \item \code{which=9:11} yields a timeseries of correlation
+    for beams 1, 2 and 3
     \item \code{which=14} yields a timeseries of temperature.
     \item \code{which=15} yields a timeseries of pressure.
     \item \code{which=16} yields a timeseries of heading.
