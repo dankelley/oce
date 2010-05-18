@@ -195,11 +195,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
         vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
         vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
-        oce.debug(debug,
-                  'vvd.dt=',vvd.dt,'\n',
-                  'by=',by, "1/by=",1/by,"\n",
-                  "vvd.start after indexing:\n",
-                  str(vvd.start))
         ## find vvd region that lies inside the vsd [from, to] region.
         vvd.start.from <- max(1, vvd.start[vvd.start < from.pair$index])
         vvd.start.to   <- min(length(vvd.start), vvd.start[vvd.start > to.pair$index])

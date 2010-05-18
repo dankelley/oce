@@ -446,10 +446,10 @@ read.oce <- function(file, ...)
 {
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    if (type == "shapefile")              stop("cannot yet read shapefiles")
+    if (type == "shapefile")              stop("cannot read shapefiles")
     if (type == "adp/rdi")                return(read.adp.rdi(file, log.action=log.action, ...))
     if (type == "adp/sontek")             return(read.adp.sontek(file, log.action=log.action, ...)) # FIXME is pcadcp different?
-    if (type == "adp/nortek/aquadopp")    stop("Sorry, the oce package cannot read ADP/nortek/aquadopp files yet")
+    if (type == "adp/nortek/aquadopp")    stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
     if (type == "adp/nortek/aquadoppHR")  return(read.adp.nortek(file, log.action=log.action, ...))
     if (type == "adv/nortek/vector")      return(read.adv.nortek(file, log.action=log.action, ...))
     if (type == "adv/sontek/adr")         return(read.adv.sontek.adr(file, log.action=log.action, ...))

@@ -17,12 +17,12 @@ processing.log.summary <- function(object)
     if (n > 0) {
         res <- NULL
         for (i in 1:n) {
-            res <- c(res, paste("    ",
+            res <- c(res, paste("  ",
                                 paste(as.character(as.POSIXlt(object$processing.log$time[i], "UTC"),sep=""),
                                       "UTC\n      ", object$processing.log$action[i], "\n"),sep=""))
         }
     } else {
-        res <- "    (none)"
+        res <- "  (none)"
     }
     class(res) <- "processing.log.summary"
     res
