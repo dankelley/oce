@@ -5,7 +5,6 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     type = match.arg(type)
-
     ## FIXME: all these read.adv variants should have the same argument list
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
@@ -40,7 +39,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 #    }
     if (is.numeric(by)   && by   < 1) stop("argument \"by\" must be 1 or larger")
     if (is.numeric(from) && from < 1) stop("argument \"from\" must be 1 or larger")
-    if (is.numeric(to)   && to   < 1) stop("argument \"to\" must be 1 or larger")
+    if (!missing(to) && is.numeric(to)   && to   < 1) stop("argument \"to\" must be 1 or larger")
 
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -161,6 +160,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     vvd.len <- length(vvd.start)
     metadata$measurement.deltat <- (as.numeric(metadata$measurement.end) - as.numeric(metadata$measurement.start)) / (vvd.len - 1)
 
+    if (missing(to))
+        stop("must supply 'to'")
+
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
@@ -199,14 +201,55 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         vvd.start.from <- max(1, vvd.start[vvd.start < from.pair$index])
         vvd.start.to   <- min(length(vvd.start), vvd.start[vvd.start > to.pair$index])
     } else {
-        from.index <- from
-        to.index <- to
-        if (to.index < 1 + from.index) stop("need more separation between from and to")
-        oce.debug(debug, 'numeric values for args from=',from,'to=',to,'\n')
-        vvd.start <- vvd.start[from.index:to.index]
-        oce.debug(debug, "vsd.start BEFORE\n", str(vsd.start))
-        vsd.start <- subset(vsd.start, vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)])
-        oce.debug(debug, "vsd.start AFTER\n", str(vsd.start))
+        ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
+        if (inherits(from, "POSIXt")) {
+            if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+            from.pair <- bisect.nortek.vector.sd(from, -1, debug-1)
+            from <- from.index <- from.pair$index
+            to.pair <- bisect.nortek.vector.sd(to, 1, debug-1)
+            to <- to.index <- to.pair$index
+            by.time <- ctime.to.seconds(by)
+            oce.debug(debug,
+                      "  from=", format(from.pair$t), " yields vsd.start[", from.index, "]\n",
+                      "  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n",
+                      "  by=", by, "by.time=", by.time, "s\n",
+                      "vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n",
+                      "vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n",
+                      "vsd.start:\n", str(vsd.start),
+                      "vvd.start:\n", str(vvd.start))
+            two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
+                                     bcd2integer(buf[vsd.start[1:2]+9]), # month
+                                     bcd2integer(buf[vsd.start[1:2]+6]), # day
+                                     bcd2integer(buf[vsd.start[1:2]+7]), # hour
+                                     bcd2integer(buf[vsd.start[1:2]+4]), # min
+                                     bcd2integer(buf[vsd.start[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
+                                     tz=tz)
+            vsd.dt <- as.numeric(two.times[2]) - as.numeric(two.times[1]) # FIXME: need # samples per burst here
+            ## Next two lines suggest that readBin() can be used instead of bcd2integer ... I imagine it would be faster
+            ##cat("month=", readBin(buf[vsd.start[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
+            ##cat("month=", bcd2integer(buf[vsd.start[1]+9]), "(as bcd)\n")
+            oce.debug(debug, "nrecords=", readBin(buf[vsd.start[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
+            oce.debug(debug, "vsd.dt=",vsd.dt,"(from two.times)\n")
+            vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
+            vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
+            oce.debug(debug,
+                      'vvd.dt=',vvd.dt,'\n',
+                      'by=',by, "1/by=",1/by,"\n",
+                      "vvd.start after indexing:\n",
+                      str(vvd.start))
+            ## find vvd region that lies inside the vsd [from, to] region.
+            vvd.start.from <- max(1, vvd.start[vvd.start < from.pair$index])
+            vvd.start.to   <- min(length(vvd.start), vvd.start[vvd.start > to.pair$index])
+        } else {
+            from.index <- from
+            to.index <- to
+            if (to.index < 1 + from.index) stop("need more separation between from and to")
+            oce.debug(debug, 'numeric values for args from=',from,'to=',to,'\n')
+            vvd.start <- vvd.start[from.index:to.index]
+            oce.debug(debug, "vsd.start BEFORE\n", str(vsd.start))
+            vsd.start <- subset(vsd.start, vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)])
+            oce.debug(debug, "vsd.start AFTER\n", str(vsd.start))
+        }
     }
     oce.debug(debug, "by=", by, "\n")
 
@@ -1083,7 +1126,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
         cat("  * Velocity range index:  ", x$velocity.range.index, "\n")
     }
     if (!is.null(x$transformation.matrix)) {
-        cat("\n* Transformation matrix::\n\n")
+        cat("\n* Transformation matrix\n  ::\n\n")
         cat("  ", format(x$transformation.matrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
         cat("  ", format(x$transformation.matrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
         cat("  ", format(x$transformation.matrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
@@ -1091,10 +1134,11 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
             cat("  ", format(x$transformation.matrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
     }
     cat("\n",...)
-    cat("* Statistics of subsample::\n\n", ...)
+    cat("* Statistics of subsample\n  ::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    cat("\n* Processing log::\n\n", ...)
-    cat(x$processing.log, ...)
+    ##cat("\n* Processing log\n\n", ...)
+    cat("\n")
+    print(x$processing.log, ...)
     invisible(x)
 }
 

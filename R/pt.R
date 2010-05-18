@@ -291,8 +291,9 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 1 / x$subsample.deltat), ...)
     cat("* Statistics of subsample::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    cat("\n* Processing log::\n\n", ...)
-    cat(x$processing.log, ...)
+    ##cat("\n* Processing log::\n\n", ...)
+    cat("\n")
+    print(x$processing.log, ...)
     invisible(x)
 }
 
