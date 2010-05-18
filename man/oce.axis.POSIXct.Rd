@@ -28,7 +28,7 @@
 
 \value{The locations on the axis scale at which tick marks were drawn.}
 
-\seealso{\code{axis.POSIXct}, from which this is derived.}
+\seealso{This is used mainly by \code{\link{oce.plot.ts}}.}
 
 \author{Dan Kelley}
 

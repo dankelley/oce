@@ -65,10 +65,12 @@
     \item \code{which=1} yields a timeseries of the x component of velocity.
     \item \code{which=2} yields a timeseries of the y component of velocity.
     \item \code{which=3} yields a timeseries of the z component of velocity.
+    \item \code{which=5:7} yields a timeseries of backscatter intensity
+    of beams 1 through 3, respectively.
     \item \code{which=14} yields a timeseries of temperature.
     \item \code{which=15} yields a timeseries of pressure.
     \item \code{which=16} yields a timeseries of heading.
-    \item \code{which=17} yields a timeseries of pich.
+    \item \code{which=17} yields a timeseries of pitch.
     \item \code{which=18} yields a timeseries of roll.
     \item \code{which=19} yields a plot of beam 1 correlation vs
     amplitude, using \code{\link{smoothScatter}}.

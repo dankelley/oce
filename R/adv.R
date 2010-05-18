@@ -451,9 +451,6 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      orientation="up"
                      )
     time <- start + (0:(-1+len)) * deltat
-
-    str(time)
-
     data <- list(ts=list(time=time,
                  heading=rep(0,len),
                  pitch=rep(0,len),
@@ -1157,7 +1154,7 @@ plot.adv <- function(x,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    if (!all(which %in% c(1:3,14:21))) stop("\"which\" must be in the range c(1:3,14:21)")
+    if (!all(which %in% c(1:3,5:7,14:21))) stop("\"which\" must be in the range c(1:3,5:7,14:21)")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -1212,6 +1209,8 @@ plot.adv <- function(x,
     for (w in 1:lw) {
         par(mgp=mgp, mar=mar, cex=cex)
         if (which[w] == 1) {
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,1],
                         ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
@@ -1220,6 +1219,8 @@ plot.adv <- function(x,
             if (draw.zero.line)
                 abline(h=0)
         } else if (which[w] == 2) {
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,2],
                         ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
@@ -1228,56 +1229,92 @@ plot.adv <- function(x,
             if (draw.zero.line)
                 abline(h=0)
         } else if (which[w] == 3) {
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,3],
                         ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
-                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
+        } else if (which[w] == 5) {     # beam 1
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
+            oce.plot.ts(x$data$ts$time, x$data$ma$a[,1],
+                        ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 6) {     # beam 2
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
+            oce.plot.ts(x$data$ts$time, x$data$ma$a[,2],
+                        ylab=expression(a[2]), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
+        } else if (which[w] == 7) {     # beam 3
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
+            oce.plot.ts(x$data$ts$time, x$data$ma$a[,3],
+                        ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
+                        adorn=adorn[w],
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        ...)
         } else if (which[w] == 14) {    # temperature time-series
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                         ylab=resizable.label("T", "y"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
-                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 15) {    # pressure time-series
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
                         ylab=resizable.label("p", "y"), type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
-                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 16) {    # heading
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$heading,
                         ylab="heading", type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
-                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 17) {    # pitch
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
                         ylab="pitch", type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
-                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
         } else if (which[w] == 18) {    # roll
+            if (missing(xlim))
+                xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$roll,
                         ylab="roll", type='l', draw.time.range=draw.time.range,
                         adorn=adorn[w],
-                        ylim=if (gave.ylim) ylim[w,] else NULL,
+                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
-        } else if (which[w] == 19) {    # beam 1 corrleation-amplitude diagnostic plot
+        } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,1])
             c <- as.integer(x$data$ma$c[,1])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 1))
-        } else if (which[w] == 20) {    # beam 2 corrleation-amplitude diagnostic plot
+        } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,2])
             c <- as.integer(x$data$ma$c[,2])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 2))
-        } else if (which[w] == 21) {    # beam 3 corrleation-amplitude diagnostic plot
+        } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,3])
             c <- as.integer(x$data$ma$c[,3])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",

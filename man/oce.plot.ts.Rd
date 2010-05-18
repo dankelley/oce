@@ -43,26 +43,6 @@ y <- sin(as.numeric(t - t.start) * 2 * pi / (12 * 3600))
 oce.plot.ts(t, y, type='l', xaxs='i')
 }
 
-\references{
-Color Brewer.
-http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
-
-Light, A., and P. J. Bartlein, 2004.
-The End of the Rainbow? Color Schemes for Improved Data Graphics.
-\emph{Eos Trans. AGU}, 85(40), doi:10.1029/2004EO400002.
-
-Martin Jakobsson, Ron Macnab, and Members of the Editorial Board, IBCAO.
-Selective comparisons of GEBCO (1979) and IBCAO (2000) maps.
-\url{http://www.ngdc.noaa.gov/mgg/bathymetry/arctic/ibcao_gebco_comp.html}
-
-Stephenson, David B., 2005.
-Comment on ``Color schemes for improved data graphics,''
-by A. Light and P. J. Bartlein.
-\emph{Eos Trans. AGU}, 86(20).
-
-
-}
-
 \author{Dan Kelley}
 
 \keyword{misc}
