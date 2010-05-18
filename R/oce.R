@@ -344,9 +344,14 @@ magic <- function(file, debug=getOption("oce.debug"))
     oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
-    bytes <- readBin(file, what="raw", n=2)
+    bytes <- readBin(file, what="raw", n=4)
     oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
+    if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
+        oce.debug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
+        return("shapefile")
+    }
+
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         ## 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
@@ -441,6 +446,7 @@ read.oce <- function(file, ...)
 {
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
+    if (type == "shapefile")              stop("cannot yet read shapefiles")
     if (type == "adp/rdi")                return(read.adp.rdi(file, log.action=log.action, ...))
     if (type == "adp/sontek")             return(read.adp.sontek(file, log.action=log.action, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")    stop("Sorry, the oce package cannot read ADP/nortek/aquadopp files yet")
@@ -455,7 +461,7 @@ read.oce <- function(file, ...)
     if (type == "topo")                   return(read.topo(file, log.action=log.action, ...))
     if (type == "pt")                     return(read.pt(file, log.action=log.action, ...))
     if (type == "section")                return(read.section(file, log.action=log.action, ...))
-    stop("unknown file type")
+    stop("unknown file type \"", type, "\"")
 }
 
 oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
