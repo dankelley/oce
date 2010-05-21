@@ -1,4 +1,5 @@
 0.1-81
+- to plot.adp() add argument use.layout
 - add window.oce()
 - make objects remember full filename, not just local filename (issue8)
 - plot.tidem(): remove argument 'plot.type', using 'which' instead

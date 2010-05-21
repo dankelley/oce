@@ -192,6 +192,7 @@ plot.adp <- function(x,
                      margins.as.image=FALSE,
                      cex=1,
                      control,
+                     use.layout=TRUE,
                      debug=getOption("oce.debug"),
                      ...)
 {
@@ -244,12 +245,14 @@ plot.adp <- function(x,
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
     }
-    if (any(which %in% images) || margins.as.image) {
-        w <- 1.5
-        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-    } else {
-        if (lw != 1 || which != 23) {
-            lay <- layout(cbind(1:lw))
+    if (use.layout) {
+        if (any(which %in% images) || margins.as.image) {
+            w <- 1.5
+            lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+        } else {
+            if (lw != 1 || which != 23) {
+                lay <- layout(cbind(1:lw))
+            }
         }
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"

@@ -17,6 +17,7 @@
      margins.as.image=FALSE,
      cex=1,
      control,
+     use.layout=TRUE,
      debug=getOption("oce.debug"),
      \dots)}
 
@@ -72,6 +73,9 @@
     list.  (The margin is made wide if there are some images in the sequence.)}
   \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
   \item{control}{optional list of parameters that may be used for different plot types;}
+  \item{use.layout}{set to \code{FALSE} to prevent using
+    \code{\link{layout}} to set up the plot.  This is needed if the call
+    is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
