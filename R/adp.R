@@ -140,7 +140,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("* Beams:             ", x$number.of.beams, if (x$oce.beam.attenuated) "beams (attenuated)" else "beams (not attenuated)",
             "oriented", x$orientation, "with angle", x$metadata$beam.angle, "deg to axis\n", ...)
         if (!is.null(x$transformation.matrix)) {
-            cat("* Transformation matrix::\n\n")
+            cat("\n* Transformation matrix\n  ::\n\n")
             cat("  ", format(x$transformation.matrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
             cat("  ", format(x$transformation.matrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
             cat("  ", format(x$transformation.matrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
@@ -167,7 +167,8 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * DSP software version:        ", x$metadata$dsp.software.ver.num, "\n", ...)
             cat("  * Board rev:                   ", x$metadata$board.rev, "\n", ...)
         }
-        cat("* Statistics of subsample::\n\n", ...)
+        cat("\n",...)
+        cat("* Statistics of subsample\n  ::\n\n", ...)
         cat(show.fives(x, indent='     '), ...)
         ##cat("\n* Processing log::\n\n", ...)
         cat("\n")

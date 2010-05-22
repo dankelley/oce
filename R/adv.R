@@ -63,6 +63,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     oce.debug(debug, "  file.size=", file.size, "\n")
     buf <- readBin(file, "raw", file.size)
     header <- decode.header.nortek(buf, debug=debug-1)
+    print(header)
+    stop('testing')
     metadata <- list(instrument.type="vector",
                      filename=filename,
                      measurement.start=NA, # FIXME

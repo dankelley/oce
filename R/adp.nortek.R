@@ -35,7 +35,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
         oce.debug(debug, "\n")
         oce.debug(debug, "buf[o+2]=", buf[o+2], "\n")
         if (buf[o+1] != sync.code)
-            stop("expecting sync code 0x", sync.code, " at byte ", seek(file), " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
+            stop("expecting sync code 0x", sync.code, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
         if (buf[o+2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
             oce.debug(debug, "HARDWARE CONFIGURATION\n")
             hardware$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2, endian="little")
