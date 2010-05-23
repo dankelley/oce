@@ -143,6 +143,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             user$number.of.cells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
             oce.debug(debug, "user$number.of.cells: ", user$number.of.cells, "\n")
             user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oce.debug(debug, "user$hBinLength: ", user$hBinLength, "\n")
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
                 ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
                 user$cell.size <- cos(25*pi/180) * user$hBinLength * 0.000052734375
@@ -152,7 +153,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             } else {
                 user$cell.size <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
             }
-            oce.debug(debug, "cell.size=", user$cell.size, "m\n")
+            oce.debug(debug, "cell.size=", user$cell.size, "m (FIXME: no docs on this)\n")
             user$measurement.interval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
                 ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.0135*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
@@ -166,7 +167,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             oce.debug(debug, "blanking.distance=", user$blanking.distance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
             oce.debug(debug, "measurement.interval=", user$measurement.interval, "\n")
             user$deployment.name <- readBin(buf[o+41:46], "character")
-            user$sw.version <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little")
+            user$sw.version <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oce.debug(debug, "sw.version=", user$sw.version,"\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1
             oce.debug(debug, "salinity=", user$salinity,"\n")

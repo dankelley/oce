@@ -77,6 +77,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      serial.number=header$hardware$serial.number,
                      frequency=header$head$frequency,
                      internal.code.version=header$hardware$pic.version,
+                     software.version=header$user$sw.version,
                      hardware.revision=header$hardware$hw.revision,
                      rec.size=header$hardware$rec.size,
                      velocity.range=header$hardware$velocity.range,
@@ -1085,9 +1086,13 @@ summary.adv <- function(object, ...)
                 fives=fives,
                 processing.log=processing.log.summary(object))
     if (inherits(object, "nortek")) {
+        res$software.version <- object$metadata$software.version
+        res$internal.code.version <- object$metadata$internal.code.version
+        res$revision.number <- object$metadata$hardware.revision
         res$burst.length <- object$metadata$burst.length
         res$deploy.name <- object$metadata$deploy.name
         res$comments <- object$metadata$comments
+        res$head.frequency <- object$metadata$frequency
     } else if (inherits(object, "sontek")) {
         res$cpu.software.ver.num <- object$metadata$cpu.software.ver.num
         res$dsp.software.ver.num <- object$metadata$dsp.software.ver.num
@@ -1116,7 +1121,11 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     cat("* Orientation:           ", x$orientation, "\n")
     if (x$instrument.type == "vector") {
         cat("\n* Nortek vector specific\n\n")
-        ## FIXME: put other info here, e.g. software version, sampling volume, transducer frequency, etc.; the manufacturer file is a good guide
+        cat("  * Internal code version:  ", x$internal.code.version, "\n")
+        cat("  * Revision number:        ", x$revision.number, "\n")
+        cat("  * Software version:       ", x$software.version, "\n")
+        cat("  * Head frequency:         ", x$head.frequency, "kHz\n")
+        ## FIXME: put other info here, e.g. software version, sampling volume, etc.; the manufacturer file is a good guide
         cat("  * Samples per burst:      ", x$burst.length, "\n") # FIXME: use same names throughout
         cat("  * Deploy name:            ", x$deploy.name, "\n")
         cat("  * Comments:               ", x$comments, "\n")
