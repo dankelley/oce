@@ -33,10 +33,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     oce.debug(debug, "read.adv.nortek(...,type=\"", type, "\", ...)\n")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
-#    if (by != 1) {
-#        warning("read.adv.nortek() cannot handle 'by' values other than 1, so using 1, i.e. not subsampling")
-#        by <- 1
-#    }
     if (is.numeric(by)   && by   < 1) stop("argument \"by\" must be 1 or larger")
     if (is.numeric(from) && from < 1) stop("argument \"from\" must be 1 or larger")
     if (!missing(to) && is.numeric(to)   && to   < 1) stop("argument \"to\" must be 1 or larger")
@@ -106,14 +102,14 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     log.item <- processing.log.item(log.action)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
     bisect.nortek.vector.sd <- function(t.find, add=0, debug=0) { # t.find=time add=offset debug=debug
-        oce.debug(debug, "  bisect.nortek.vector.sd(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
+        oce.debug(debug, "\n")
+        oce.debug(debug, "bisect.nortek.vector.sd(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         vsd.len <- length(vsd.start)
         lower <- 1
         upper <- vsd.len
         passes <- floor(10 + log(vsd.len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            oce.debug(debug, "pass=",pass,"middle=", middle, "\n")
             t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[middle]+8]),  # year
                              bcd2integer(buf[vsd.start[middle]+9]), # month
                              bcd2integer(buf[vsd.start[middle]+6]), # day
@@ -182,9 +178,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                   "  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n",
                   "  by=", by, "by.time=", by.time, "s\n",
                   "vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n",
-                  "vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n",
-                  "vsd.start:\n", str(vsd.start),
-                  "vvd.start:\n", str(vvd.start))
+                  "vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
         two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
                                  bcd2integer(buf[vsd.start[1:2]+9]), # month
                                  bcd2integer(buf[vsd.start[1:2]+6]), # day
@@ -220,9 +214,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                       "  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n",
                       "  by=", by, "by.time=", by.time, "s\n",
                       "vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n",
-                      "vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n",
-                      "vsd.start:\n", str(vsd.start),
-                      "vvd.start:\n", str(vvd.start))
+                      "vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
             two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
                                      bcd2integer(buf[vsd.start[1:2]+9]), # month
                                      bcd2integer(buf[vsd.start[1:2]+6]), # day
@@ -252,16 +244,28 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             if (to.index < 1 + from.index) stop("need more separation between from and to")
             oce.debug(debug, 'numeric values for args from=',from,'to=',to,'\n')
             vvd.start <- vvd.start[from.index:to.index]
-            oce.debug(debug, "vsd.start BEFORE\n", str(vsd.start))
-            vsd.start <- subset(vsd.start, vvd.start[1] <= vsd.start & vsd.start <= vvd.start[length(vvd.start)])
-            oce.debug(debug, "vsd.start AFTER\n", str(vsd.start))
+            oce.debug(debug, "vsd.start BEFORE\n", str(vsd.start), "\n")
+            vsd.start <- subset(vsd.start, vvd.start[1] < vsd.start & vsd.start < vvd.start[length(vvd.start)])
+            oce.debug(debug, "vsd.start AFTER\n", str(vsd.start), "\n")
         }
     }
     oce.debug(debug, "by=", by, "\n")
 
-    oce.debug(debug, "step 1 vsd.start:\n", str(vsd.start))
-    vsd.start <- vsd.start[vvd.start[1] < vsd.start & vsd.start < vvd.start[length(vvd.start)]]
-    oce.debug(debug, "step 2 vsd.start:\n", str(vsd.start))
+    oce.debug(debug, "about to trim vsd.start, based on vvd.start[1]=", vvd.start[1], " and vvd.start[length(vvd.start)]=", vvd.start[length(vvd.start)], "\n")
+
+    oce.debug(debug, "before trimming, first 9 (or all) vsd.start=", vsd.start[1:min(9,length(vsd.start))],"\n")
+
+    ## Find spanning subset, expanded a little for now
+    subset.start <- which.max(vvd.start[1] < vsd.start)
+    if (subset.start > 1)
+        subset.start <- subset.start - 1 # extend a bit (for now)
+    subset.end <- which.min(vsd.start < vvd.start[length(vvd.start)])
+
+    ##oce.debug(debug, "try vsd.start[", subset.start, "], i.e.", vsd.start[subset.start], "\n")
+    ##oce.debug(debug, "try vsd.start[", subset.end,   "], i.e.", vsd.start[subset.end],   "\n")
+
+    vsd.start <- vsd.start[subset.start:subset.end]
+    oce.debug(debug, "after trimming,  first 9 (or all) vsd.start=", vsd.start[1:min(9,length(vsd.start))], "\n")
 
     if (2 > length(vsd.start))
         stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
@@ -283,17 +287,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     vsd.len <- length(vsd.start)
     vsd.start2 <- sort(c(vsd.start, 1 + vsd.start))
     heading <- 0.1 * readBin(buf[vsd.start2 + 14], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
+    oce.debug(debug, "heading begins: ", heading[1:min(5, length(heading))], "\n")
     pitch <-   0.1 * readBin(buf[vsd.start2 + 16], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
+    oce.debug(debug, "pitch begins: ", pitch[1:min(5, length(pitch))], "\n")
     roll <-    0.1 * readBin(buf[vsd.start2 + 18], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
+    oce.debug(debug, "roll begins: ", roll[1:min(5, length(roll))], "\n")
     temperature <- 0.01 * readBin(buf[vsd.start2 + 20], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug,
-              "vvd.start (velocity chunks):\n", str(vvd.start),
-              "vsd.start (header chunks):\n", str(vsd.start),
-              "vsd time:\n", str(vsd.t),
-              "vsd heading:\n", str(heading),
-              "vsd pitch:\n", str(pitch),
-              "vsd roll:\n", str(roll),
-              "vsd temperature:\n", str(temperature))
+    oce.debug(debug, "temperature begins: ", temperature[1:min(5, length(temperature))], "\n")
     metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0) # FIXME: surely this is in the header (?!?)
     oce.debug(debug, "metadata$burst.length=", metadata$burst.length, "\n")
 
@@ -302,18 +302,18 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     p.MSB <- as.numeric(buf[vvd.start + 4])
     p.LSW <- readBin(buf[vvd.start2 + 6], "integer", size=2, n=vvd.len, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
-    oce.debug(debug, "pressure:\n", str(pressure))
+    oce.debug(debug, "pressure begins: ", pressure[1:min(5, length(pressure))], "\n")
     v <- array(dim=c(vvd.len, 3))
     v[,1] <- readBin(buf[vvd.start2 + 10], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
     v[,2] <- readBin(buf[vvd.start2 + 12], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
     v[,3] <- readBin(buf[vvd.start2 + 14], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
-    oce.debug(debug, "v[", dim(v), "] begins...\n",  format(v[1:min(10,vvd.len),]))
+    oce.debug(debug, "v[", dim(v), "] begins ...",  format(v[1:min(10,vvd.len),]), "\n")
     a <- array(raw(), dim=c(vvd.len, 3))
     a[,1] <- buf[vvd.start + 16]
     a[,2] <- buf[vvd.start + 17]
     a[,3] <- buf[vvd.start + 18]
     if (debug > 0) {
-        cat("a[", dim(a), "] begins...\n")
+        oce.debug(debug, "a[", dim(a), "] begins...\n")
         print(matrix(as.numeric(a[1:min(10,vvd.len),]), ncol=3))
     }
     c <- array(raw(), dim=c(vvd.len, 3))
@@ -327,6 +327,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     sec <- as.numeric(vsd.t - vsd.t[1])
     if (0 != var(diff(sec))) warning("the times in the file are not equi-spaced, but they are taken to be so")
     vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y
+    oce.debug(debug, "vsd.start[1:2]=", vsd.start[1:2], "\n")
+    oce.debug(debug, "vvd.start[1:9]=", vvd.start[1:9], "\n")
 
     rm(buf)
     gc()
@@ -355,6 +357,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     a <- a[look,]
     c <- c[look,]
     time <- vvd.sec + vsd.t[1]            #FIXME
+    oce.debug(debug, "time=", format(time[1]), ",", format(time[2]), "...\n")
+    oce.debug(debug, "vvd.sec=", vvd.sec[1], ",", vvd.sec[2], "...\n")
     data <- list(ts=list(time=time,
                  heading=heading,
                  pitch=pitch,
