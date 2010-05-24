@@ -438,25 +438,39 @@ undrift.time <- function(x, slow.end = 0, tname="time")
     rval
 }
 
-fill.gap <- function(x, start, end, column)
+##fill.gap <- function(x, start, end, column)
+##{
+##    if (!inherits(x, "oce")) stop("method is only for oce objects")
+##    if (missing(start)) stop("must supply start")
+##    if (missing(end)) stop("must supply end")
+##    if (!missing(column)) {
+##        start <- rev(which(x$data[[column]] <= start))[1]
+##        end <- which(x$data[[column]] >= end)[1]
+##    }
+##    if (end - start < 1) stop("end must be at least 1+start")
+##    rval <- x
+##    i <- start:end
+##    for (name in names(x$data)) {
+##        filler <- approx(x=c(start, end), y=x$data[[name]][c(start,end)], xout=i)$y
+##        class(filler) <- class(x$data[[name]])
+##        rval$data[[name]][i] <- filler
+##    }
+##    rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+##    rval
+##}
+
+fill.gap <- function(x, method=c("linear"))
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (missing(start)) stop("must supply start")
-    if (missing(end)) stop("must supply end")
-    if (!missing(column)) {
-        start <- rev(which(x$data[[column]] <= start))[1]
-        end <- which(x$data[[column]] >= end)[1]
-    }
-    if (end - start < 1) stop("end must be at least 1+start")
-    rval <- x
-    i <- start:end
-    for (name in names(x$data)) {
-        filler <- approx(x=c(start, end), y=x$data[[name]][c(start,end)], xout=i)$y
-        class(filler) <- class(x$data[[name]])
-        rval$data[[name]][i] <- filler
-    }
-    rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    if (!is.numeric(x))
+        stop("only works for numeric 'x'")
+    if (!is.vector(x))
+        stop("only works for vector 'x'")
+    method <- match.arg(method)
+    class <- class(x)
+    x <- as.numeric(x)
+    res <- .Call("fillgap", x)
+    class(res) <-  class
+    res
 }
 
 oce.colors.gebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))

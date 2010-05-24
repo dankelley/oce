@@ -1,4 +1,5 @@
 0.1-81
+- improve (but temporarily limit) fill.gap
 - to plot.adp() add argument use.layout
 - add window.oce()
 - make objects remember full filename, not just local filename (issue8)
