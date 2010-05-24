@@ -6,34 +6,35 @@
 
 \description{Fill a gap in an oce object}
 
-\usage{fill.gap(x, start, end, column)}
+\usage{fill.gap(x, method=c("linear"))}
 
 \arguments{
   \item{x}{an \code{oce} object.}
-  \item{start}{the start of the bad section of data (see details).}
-  \item{end}{the start of the bad section of data (see details).}
-  \item{column}{if provided, the name of the column referred to by
-    \code{start} and \code{end}.}
+  \item{method}{to use; see \dQuote{Details}.}
 }
 
-\details{Gaps in the data (i.e. columns in \code{x$data}) are filled by
-  linear interpolation between the \code{start} and \code{end} points.
-  If \code{column} is not provided, then \code{start} and \code{end} are
-  indices.  If \code{column} is provided, then \code{start} and
-  \code{end} refer to values in the named column.}
+\details{Sequences of \code{NA} values, are filled by linear
+  interpolation between the non-\code{NA} values that bound the gap.}
 
-\value{A new \code{oce} object.}
+\section{Bugs}{\itemize{
+    \item Eventually, this will be expanded to work with any
+    \code{oce} object.  But, for now, it only works for vectors that can
+    be coerced to numeric.
+    \item If the first or last point is \code{NA}, then \code{x}
+    is returned unaltered.}}
+
+\value{A new \code{oc} object, with gaps removed.}
 
 \examples{
 library(oce)
-data(pt)
-# mess up a day
-d <- pt
-d$data$temperature[as.POSIXct("2008-06-27", tz="UTC")<=d$data$time & d$data$time <= as.POSIXct("2008-06-28", tz="UTC")] <- 20
-plot(d, which=1)
-# fix that day by linear interpolation
-dd <- fill.gap(d, as.POSIXct("2008-06-27", tz="UTC"), as.POSIXct("2008-06-28", tz="UTC"), "time")
-lines(dd$data$time, dd$data$temperature, col="red")
+# Integers
+x <- c(1:2, NA, NA, 5:6)
+y <- fill.gap(x)
+print(data.frame(x,y))
+# Floats
+x <- x + 0.1
+y <- fill.gap(x)
+print(data.frame(x,y))
 }
 
 \author{Dan Kelley}
