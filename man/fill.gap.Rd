@@ -16,12 +16,17 @@
 \details{Sequences of \code{NA} values, are filled by linear
   interpolation between the non-\code{NA} values that bound the gap.}
 
-\section{Bugs}{\itemize{
-    \item Eventually, this will be expanded to work with any
-    \code{oce} object.  But, for now, it only works for vectors that can
-    be coerced to numeric.
-    \item If the first or last point is \code{NA}, then \code{x}
-    is returned unaltered.}}
+\section{Bugs}{
+  \enumerate{
+    \item{}{Eventually, this will be expanded to work with any
+      \code{oce} object.  But, for now, it only works for vectors that can
+      be coerced to numeric.}
+    \item{}{If the first or last point is \code{NA}, then \code{x}
+      is returned unaltered.}
+    \item{}{Only method \code{linear} works now, and that argument is
+      ignored at present.}
+    }
+}
 
 \value{A new \code{oc} object, with gaps removed.}
 
