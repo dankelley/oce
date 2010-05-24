@@ -33,9 +33,29 @@ SEXP fillgap(SEXP x)
     Rprintf("x[%d]=%f\n", i, xp[i]);
   }
 #endif
+  int last_ok, next_ok;
+  double x_last_ok, x_next_ok;
   for (i = 0; i < xlen; i++) {
-    resp[i] = xp[i];
-  }
+    if (ISNA(xp[i])) {
+      last_ok = i - 1;          /* FIXME: what if NA at start? */
+      if (i == 0)
+        x_last_ok = 0.0;
+      else
+        x_last_ok = xp[last_ok];
+      for (int j = i; j < xlen; j++) {
+        if (!ISNA(xp[j])) {
+          /* interpolate */
+          for (int ij = last_ok + 1; ij < j; ij++) {
+            resp[ij] = 999.99;       /* FIXME: interpolate here */
+          }
+          i = j - 1;
+          break;
+        }
+      }
+    } else {
+      resp[i] = xp[i];
+    }
+  } /* FIXME: what if ends in NA? */
   UNPROTECT(2);
   return(res);
 }
