@@ -27,11 +27,6 @@ SEXP fillgap(SEXP x)
   SEXP res;
   PROTECT(res = allocVector(REALSXP, xlen));
   double *resp = REAL(res);
-#ifdef DEBUG
-  for (i = 0; i < n; i++) {
-    Rprintf("x[%d]=%f\n", i, xp[i]);
-  }
-#endif
   int last_ok, next_ok;
   double x_last_ok = 0.0;
   for (i = 0; i < xlen; i++) {
@@ -48,7 +43,7 @@ SEXP fillgap(SEXP x)
           i = j - 1;
           break;
         }
-        if (j == xlen)
+        if (j == xlen - 1)
           error("fillgap cannot handle NA at end");
       }
     } else {
