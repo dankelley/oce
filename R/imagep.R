@@ -34,13 +34,15 @@ imagep <- function(x, y, z,
             if (missing(col))
                 breaks <- pretty(zrange)
             else
-                breaks <- seq(zrange[1], zrange[2], length.out=1+length(col))
+                breaks <- seq(zrange[1], zrange[2],
+                              length.out=if(is.function(col))128 else 1+length(col))
             breaks.orig <- breaks
         } else {
             if (missing(col))
                 breaks <- pretty(zlim)
             else
-                breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                breaks <- seq(zlim[1], zlim[2],
+                              length.out=if(is.function(col))128 else 1+length(col))
             breaks.orig <- breaks
             breaks[1] <- zrange[1]
             breaks[length(breaks)] <- zrange[2]
@@ -50,6 +52,8 @@ imagep <- function(x, y, z,
     }
     if (missing(col))
         col <- oce.colors.palette(n=length(breaks)-1)
+    if (is.function(col))
+        col <- col(n=length(breaks)-1)
 
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
 
