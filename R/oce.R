@@ -120,24 +120,21 @@ oce.plot.ts <- function(x,
                         grid=TRUE,
                         adorn=NULL,
                         fill=FALSE,
+                        xlab="", ylab="", cex=par("cex"),
+                        mgp=getOption("oce.mgp"),
+                        mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1),
                         ...)
 {
+    par(mgp=mgp, mar=mar, cex=cex)
     args <- list(...)
-    have.ylab <- "ylab" %in% names(args)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, ...)
-        fillcol <- if ("col" %in% names(args)) args$col else "lightgray"
-        if (have.ylab)
-            do.call(polygon, list(x=xx, y=yy, col=fillcol, ylab=args$ylab))
-        else
-            do.call(polygon, list(x=xx, y=yy, col=fillcol))
+        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex, ...)
+        fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
+        do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        if (have.ylab)
-            plot(x, y, axes=FALSE, xaxs=xaxs, ...)
-        else
-            plot(x, y, axes=FALSE, xaxs=xaxs, ylab=paste(deparse(substitute(y))), ...)
+        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex, ...)
     }
     xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
     if (grid) {
@@ -546,7 +543,7 @@ oce.colors.palette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, ...)
+oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), ...)
 {
     debug <- !TRUE
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
@@ -709,7 +706,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     if (draw.time.range) {
         time.range <- par("usr")[1:2]   # axis, not data
         class(time.range) <- c("POSIXt", "POSIXct")
-        attr(time.range, "tzone") <- attr(x, "tzone")
+        attr(time.range, "tzone") <- attr(x, "tzone")[1]
         time.range <-  as.POSIXlt(time.range)
         tr1 <- format(time.range[1])
         tr2 <- format(time.range[2])
@@ -723,12 +720,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
                     }
                 }
             }
+            time.range <- as.POSIXct(time.range)
         }
-        delta.t <- mean(diff(as.numeric(x)), na.rm=TRUE)
-        mtext(paste(tr1, attr(time.range[1], "tzone"), "to",
-                    tr2,  attr(time.range[2], "tzone"), "@",
-                    sprintf("%.4g Hz", 1/delta.t), sep=" "),
-              side=if (side==1) 3 else 1, cex=4/5*par("cex"), adj=0)
+        deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
+        label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
+        mtext(label, side=if (side==1) 3 else 1, cex=cex, adj=0)
     }
-    axis(side, at = z, labels = labels, ...)
+    axis(side, at = z, labels = labels, cex=cex, ...)
 }

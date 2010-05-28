@@ -6,7 +6,8 @@
 
 \description{Modified version of axis.POSIXct}
 
-\usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, ...)}
+\usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE,
+                 draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), ...)}
 
 \arguments{
   \item{side}{as for \code{\link{axis.POSIXct}}.}
@@ -19,6 +20,7 @@
   \item{abbreviate.time.range}{boolean, \code{TRUE} to abbreviate the
     second number in the time range, e.g. dropping the year if it is the
     same in the first number.}
+  \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
   \item{\dots}{as for \code{\link{axis.POSIXct}}.}
 }
 
