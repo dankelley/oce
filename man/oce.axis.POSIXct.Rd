@@ -7,7 +7,8 @@
 \description{Modified version of axis.POSIXct}
 
 \usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE,
-                 draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), ...)}
+                 draw.time.range=TRUE, abbreviate.time.range=FALSE,
+                 cex=par("cex"), main="", ...)}
 
 \arguments{
   \item{side}{as for \code{\link{axis.POSIXct}}.}
@@ -21,6 +22,7 @@
     second number in the time range, e.g. dropping the year if it is the
     same in the first number.}
   \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
+  \item{main}{title of plot.}
   \item{\dots}{as for \code{\link{axis.POSIXct}}.}
 }
 

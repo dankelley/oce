@@ -123,6 +123,7 @@ oce.plot.ts <- function(x,
                         xlab="", ylab="", cex=par("cex"),
                         mgp=getOption("oce.mgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1),
+                        main="",
                         ...)
 {
     par(mgp=mgp, mar=mar, cex=cex)
@@ -136,7 +137,7 @@ oce.plot.ts <- function(x,
     } else {
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex, ...)
     }
-    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range)
+    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main)
     if (grid) {
         lwd <- par("lwd")
         abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
@@ -543,7 +544,7 @@ oce.colors.palette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), ...)
+oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), main="", ...)
 {
     debug <- !TRUE
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
@@ -725,6 +726,9 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         mtext(label, side=if (side==1) 3 else 1, cex=cex, adj=0)
+    }
+    if (nchar(main) > 0) {
+        mtext(main, side=if(side==1) 3 else 1, cex=cex, adj=1)
     }
     axis(side, at = z, labels = labels, cex=cex, ...)
 }
