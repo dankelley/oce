@@ -58,8 +58,10 @@ oce.plot.ts(t, y, type='l', xaxs='i')
 \dontrun{
 weatherplot <- function(stationID=6358, year=2010, month=5, day=30)
 {
-    f <- paste("http://www.climate.weatheroffice.gc.ca/climateData/bulkdata_e.html?timeframe=1&Prov=XX&StationID=",
-               stationID, "&Year=", year, "Month=", month, "&Day=", day, "&format=csv&type=hly", sep="")
+    site <- "http://www.climate.weatheroffice.gc.ca/climateData/bulkdata_e.html"
+    f <- paste(site,
+               "?StationID=", stationID, "&Year=", year, "&Month=", month, "&Day=", day, 
+               "&format=csv&type=hly", sep="")
     d <- read.csv(f, skip=15, header=TRUE)
     oce.plot.ts(as.POSIXct(d$Date.Time), d$Stn.Press..kPa., type='l', ylab="Pressure", cex=.6)
 }
