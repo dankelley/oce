@@ -57,28 +57,24 @@ oce.plot.ts(t, y, type='l', xaxs='i')
 
 ## weather plot
 \dontrun{
+library(oce)
 weatherplot <- function(stationID=6358, time=as.POSIXlt(Sys.Date()), title)
 {
-    # The default stationID is Halifax, NS, Canada
+    ## The default stationID is Halifax, NS, Canada
     site <- "http://www.climate.weatheroffice.gc.ca/climateData/bulkdata_e.html"
+    time <- as.POSIXlt(time)
     f <- paste(site,
                "?StationID=", stationID,
                "&Year=", time$year+1900,
                "&Month=", time$mon+1,
                "&Day=", time$mday,
                "&format=csv&type=hly", sep="")
-    cat(f, "\n")
     d <- read.csv(f, skip=15, header=TRUE)
-    oce.plot.ts(as.POSIXct(d$Date.Time), d$Stn.Press..kPa., type='l', ylab="Pressure", cex=.6)
-    if (missing(title))
-        mtext(paste("Station", stationID), side=3, adj=1, cex=0.6)
-   else
-        mtext(title, side=3, adj=1, cex=0.6)
+    oce.plot.ts(as.POSIXct(d$Date.Time), d$Stn.Press..kPa., type='l',
+                ylab="Pressure [dbar]", cex=2/3,
+                main=if(missing(title)) stationID else title)
 }
-# Pressure during SLEIWEX 2008 experiment
-par(mfrow=c(2,1))
-weatherplot(8539, as.POSIXlt("2008-06-01"), "Rivière du-loup")
-weatherplot(8539, as.POSIXlt("2008-07-01"))
+weatherplot(6358, time=as.POSIXlt(Sys.Date()), title="Halifax NS")
 }
 }
 
