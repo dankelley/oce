@@ -2,8 +2,11 @@
 \alias{plot.windrose}
 \title{Plot a wind rose diagram}
 \description{Plot a wind-rose diagram}
-\usage{plot.windrose(x, type=c("count","mean","median","fivenum"),  mgp=getOption("oce.mgp"), 
-     mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]), col, \dots)}
+
+\usage{
+plot.windrose(x, type=c("count","mean","median","fivenum"),
+              mgp=getOption("oce.mgp"), 
+              mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]), col, \dots)}
 
 \arguments{
   \item{x}{a \code{windrose} object, e.g. as created by \code{\link{as.windrose}}.}

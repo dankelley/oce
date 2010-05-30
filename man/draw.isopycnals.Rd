@@ -2,7 +2,12 @@
 \alias{draw.isopycnals}
 \title{Draw isopycnal curves on an existing temperature-salinity plot}
 \description{Draw isopycnal curves on an existing temperature-salinity plot}
-\usage{draw.isopycnals(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))}
+
+\usage{
+draw.isopycnals(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE,
+                cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
+}
+
 \arguments{
   \item{rho.levels}{suggested number of density levels (i.e. isopycnal curves).}
   \item{rotate.rho.labels}{boolean, set to \code{TRUE} to write all density labels horizontally.}

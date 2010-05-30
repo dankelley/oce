@@ -59,24 +59,25 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     that are created by data loggers that chop the raw data up into a
   series of sub-files, e.g. once per hour.)}
   \item{start}{a POSIXct time corresponding to the first sample. 
-    (This is mandatory if \code{header=FALSE}.)}
+    (This is mandatory if \code{header} is \code{FALSE}.)}
   \item{deltat}{the time between samples. (This is mandatory if
     \code{header=FALSE}.)}
   \item{coordinate.system}{character string indicating coordinate system, one
     of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.}
-  \item{transformation.matrix}{transformation matrix to use,
-    over-riding anything in the data file e.g. \code{rbind(c(2.710,
+  \item{transformation.matrix}{transformation matrix to use in
+    converting beam coordinates to xyz coordinates.  This will over-ride
+    the matrix in the file header, if there is one.  An example is
+    \code{rbind(c(2.710,
     -1.409, -1.299), c(0.071, 2.372, -2.442), c(0.344, 0.344,
-    0.344))}.  This is only relevant if the coordinate system is
-    \code{"beam"}.}
+    0.344))}.}
   \item{type}{character string indicating type of file (ignored at present).}
   \item{tz}{character string indicating time zone to be assumed in the data.}
-  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
-    moderate amount of debugging information, or to 2 to get more.  Note
-    that \code{debug} is reduced by 1 for every depth in the function
-    call, i.e. \code{read.adv.nortek()} calls
-    \code{read.header.nortek()}, so you should set \code{debug=2} to get
-    debugging to "reach" down to the level of reading the header.}
+  \item{debug}{a flag that turns on debugging.  The value indicates the
+    depth within the call stack to which debugging applies.  For
+    example, \code{read.adv.nortek()} calls \code{read.header.nortek()},
+    so that \code{read.adv.nortek(...,debug=2)} provides information
+    about not just the main body of the data file, but also the details
+    of the header.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of every data burst read.}
   \item{log.action}{if provided, the action item to be stored in the
@@ -166,36 +167,38 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 \dontrun{
 library(oce)
 
+dir <- "/data/archive/sleiwex/2008/moorings/"
+
 ## Nortek binary file, daily at 1/2 hour decimation
-vec <- "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec"
+f <- paste(dir, "m05/adv/nortek_1943/raw/adv_nortek_1943.vec", sep="")
 from <- as.POSIXct("2008-06-26 00:00:00", tz="UTC")
 to <- as.POSIXct("2008-06-27 00:00:00", tz="UTC")
 by <- "00:30:00"
-adv2 <- read.adv.nortek(vec, from=from, to=to, by=by)
-plot(adv2, which=c(1:3,15))      # beams plus pressure
+d <- read.adv.nortek(f, from=from, to=to, by=by)
+plot(d, which=c(1:3,15))      # beams plus pressure
 
 ## Sontek file, chopped into hourly files with a data logger
-f <- "/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw/adv_sontek_202h.183.001"
-adv <- read.adv.sontek(f, header=FALSE, start="2008-07-01 00:00:00", deltat=0.1)
-adv$metadata$serial.number <- "B202H"
-adv$metadata$orientation <- "down"
-summary(adv)
-plot(adv, which=c(1:3,14))      # skip pressure (not measured)
+f <- paste(dir, "m05/adv/sontek_202h/raw/adv_sontek_202h.183.001", sep="")
+d <- read.adv.sontek(f, header=FALSE, start="2008-07-01 00:00:00", deltat=0.1)
+d$metadata$serial.number <- "B202H"
+d$metadata$orientation <- "down"
+summary(d)
+plot(d, which=c(1:3,14))      # skip pressure (not measured)
 
 ## Sontek adr file, with method to estimate turbulent dissipation
-f <- "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr"
-adv <- read.adv.sontek.adr(f, from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
-                           to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
-adv$data$ma$v[,2] <- -adv$data$ma$v[,2] # account for deployment setup
-adv$data$ma$v[,3] <- -adv$data$ma$v[,3] # account for deployment setup
+f <- paste(dir, "m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr", sep="")
+d <- read.adv.sontek.adr(f, from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
+                            to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
+d$data$ma$v[,2] <- -d$data$ma$v[,2] # account for deployment setup
+d$data$ma$v[,3] <- -d$data$ma$v[,3] # account for deployment setup
 w <- ts(adv$data$ma$v[,3], deltat=1/adv$metadata$sampling.rate)
 par(mfrow=c(2,2))
 par(mgp=getOption("oce.mgp"))
 par(mar=c(3,3,2,1))
 plot(w)
-plot(adv$data$ts$time, sqrt(adv$data$ma$v[,1]^2+adv$data$ma$v[,2]^2),
+plot(d$data$ts$time, sqrt(d$data$ma$v[,1]^2+d$data$ma$v[,2]^2),
     type='l', xlab="Time [s]", ylab="Horizontal velocity [m/s]")
-U <- mean(sqrt(adv$data$ma$v[,1]^2+adv$data$ma$v[,2]^2))
+U <- mean(sqrt(d$data$ma$v[,1]^2 + d$data$ma$v[,2]^2))
 abline(h=U, col='red')
 mtext(sprintf("U=\%.2fm/s", U), side=4, at=U)
 s <- spectrum(w, spans=c(3,5,7), plot=FALSE)  # just guessing on spans
@@ -203,7 +206,8 @@ plot(log10(s$freq), log10(s$spec), type='l', xlab="f [Hz]", ylab="E", asp=1)
 for (a in seq(-20, 10, 1))
     abline(a, -5/3, col='lightgray')     # slope if turbulent
 k <- 2 * pi * s$freq / U
-plot(log10(k), log10(k^(5/3)*s$spec), type='l', xlab="k [radian/m]", ylab=expression(k^(5/3)*E), asp=1)
+plot(log10(k), log10(k^(5/3)*s$spec), type='l', 
+     xlab="k [radian/m]", ylab=expression(k^(5/3)*E), asp=1)
 alpha <- 0.4                    # a 3D Kolmogorov coefficient
 epsilon <- (median(k^(5/3)*s$spec)/alpha)^(3/2) # median might ignore low-freq
 abline(h=log10(alpha * epsilon^(2/3)), col="red")

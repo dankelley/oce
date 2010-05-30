@@ -2,7 +2,8 @@
 \alias{make.filter}
 \title{Make a digital filter}
 \description{make a digital filter}
-\usage{make.filter(type=c("blackman-harris","rectangular", "hamming", "hann"), m, asKernel=FALSE)}
+\usage{make.filter(type=c("blackman-harris","rectangular", "hamming", "hann"),
+            m, asKernel=FALSE)}
 \arguments{
   \item{type}{a string indicating the type of filter: \code{"blackman-harris"}
     for the Blackman-Harris filter (a modified raised-cosine filter), 
@@ -63,12 +64,12 @@ fr <- function(coef)
     class(res) <- "fr"
     res
 }
-plot.fr <- function(fr, ...)
+plot.fr <- function(x, ...)
 {
     if ("log" \%in\% names(list(...)))
-        plot(fr$f, fr$H, xlab="Frequency/Nyquist", ylab="Response", type='l', ...)
+        plot(x$f, x$H, xlab="Frequency", ylab="Response", type='l', ...)
     else
-        plot(fr$f, fr$H, xlab="Frequency/Nyquist", ylab="Response", type='l', log='x', ...)
+        plot(x$f, x$H, xlab="Frequency", ylab="Response", type='l', log='x', ...)
     abline(h=1, lty='dotted', col='lightgray')
 }
 par(mfrow=c(2,2))

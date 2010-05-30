@@ -5,9 +5,12 @@
 
 \description{Plot a time-series, obeying the timezone and possibly drawing the range in the top-left margin}
 
-\usage{oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL, fill=FALSE,
+\usage{
+oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL,
+            fill=FALSE,
             xlab="", ylab="", cex=par("cex"), mgp=getOption("oce.mgp"),
-            mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1),
+            mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
+            mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1),
             main="",
             \dots)}
 

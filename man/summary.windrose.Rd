@@ -7,8 +7,7 @@
 
 \description{Summarizes some of the data in a \code{windrose} object.}
 
-\usage{
-\method{summary}{windrose}(object, \dots)
+\usage{\method{summary}{windrose}(object, \dots)
 
 \method{print}{summary.windrose}(x, digits=max(6, getOption("digits")-1), \dots)
 }
