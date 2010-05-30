@@ -212,7 +212,7 @@ gravity <- function(latitude=45, degrees=TRUE)
     9.780318*(1.0+5.3024e-3*sin(latitude)^2-5.9e-6*sin(2*latitude)^2)
 }
 
-make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m)
+make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=FALSE)
 {
     type <- match.arg(type)
     if (missing(m)) stop("must supply 'm'")
@@ -229,7 +229,15 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
     } else if (type == "hann") {
         coef <- 0.50 - 0.50 * cos(2 * pi * i / (m-1))
     }
-    coef / sum(coef)                # make unit sum
+    coef <- coef / sum(coef)
+    if (!asKernel)
+        return(coef)
+    if (m == 2 * floor(m/2))
+        stop("m must be odd")
+    middle <- ceiling(m / 2)
+    coef <- coef[middle:m]
+    m <- length(coef) - 1
+    return(kernel(coef=coef, m=m, name=paste("Blackman-Harris(", middle, ")", sep="")))
 }
 
 oce.filter <- function(b, a=1, x)
