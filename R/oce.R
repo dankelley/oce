@@ -122,7 +122,7 @@ oce.plot.ts <- function(x,
                         fill=FALSE,
                         xlab="", ylab="", cex=par("cex"),
                         mgp=getOption("oce.mgp"),
-                        mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1),
+                        mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
                         main="",
                         ...)
 {

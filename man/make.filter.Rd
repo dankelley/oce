@@ -49,7 +49,7 @@ legend("topright", lwd=1, col=c("red", "blue"), legend=c("m=5", "m=11"))
 fr <- function(coef)
 {
     n <- 200
-    omega <- seq(pi/n, pi, length.out=n)
+    omega <- seq(pi/1e4, pi, length.out=n)
     if (class(coef) == "tskernel")
         coef <- coef[-coef$m:coef$m]
     res <- rep(coef[1], n)
@@ -64,26 +64,23 @@ fr <- function(coef)
     class(res) <- "fr"
     res
 }
-plot.fr <- function(x, ...)
+plot.fr <- function(x, log="xy", ...)
 {
-    if ("log" \%in\% names(list(...)))
-        plot(x$f, x$H, xlab="Frequency", ylab="Response", type='l', ...)
-    else
-        plot(x$f, x$H, xlab="Frequency", ylab="Response", type='l', log='x', ...)
+    plot(x$f, x$H, xlab="Frequency", ylab="Response", type='l', log=log, ...)
     abline(h=1, lty='dotted', col='lightgray')
 }
 par(mfrow=c(2,2))
 par(mgp=getOption("oce.mgp"))
 par(mar=c(3,3,2,1))
 bh <- make.filter(m=41, asKernel=TRUE)
-plot(fr(bh))
+plot(fr(bh), log="")
 mtext("Blackman-Harris m=51")
-plot(fr(bh), log="xy")
+plot(fr(bh))
 mtext("Blackman-Harris m=41")
 d <- kernel('daniell', c(9,3))
-plot(fr(d))
+plot(fr(d), log="")
 mtext("Daniell m=c(9,3)")
-plot(fr(d), log="xy")
+plot(fr(d))
 mtext("Daniell m=c(9,3)")
 
 # Bandwidth
@@ -95,6 +92,15 @@ abline(v=bandwidth.kernel(bh)*c(-1,1), col="red", lwd=2)
 plot(d)
 abline(v=bandwidth.kernel(bh)*c(-1,1), col="red", lwd=2)
 
+## If sampling at 1Hz, this filter has a 50-percent gain at 60s.
+par(mfrow=c(1,1))
+plot(fr(make.filter(m=79, asKernel=TRUE)))
+abline(h=c(1/2, 1),col=c('red','blue'))
+abline(v=c(1/60), col='red')
+mtext("Half-amplitude\n60 Hz", side=3, at=1/60, col='red')
+abline(v=1/2)
+mtext("Nyquist\n0.5 Hz", side=3, at=1/2)
+mtext("Blackman-Harris, m=79", side=3, adj=0)
 }
 
 \references{F. J. Harris, 1978.  On the use of windows for harmonic
