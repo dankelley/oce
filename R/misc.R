@@ -218,8 +218,8 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
     if (missing(m)) stop("must supply 'm'")
     if (m == 2 * floor(m/2)) warning("suggestion: use an odd value of m in filter()")
     i <- seq(0, m - 1)
-    if (type == "blackman-harris") {    # See Harris (1978)
-        a <- c(0.35875, 0.488829, 0.14128, 0.01168)
+    if (type == "blackman-harris") {    # See Harris (1978) table on p65
+        a <- c(0.35875, 0.488829, 0.14128, 0.01168) # 4-term (-92dB) coefficients
         ff <- pi * i / (m - 1)
         coef <- a[1] - a[2]*cos(2*ff) + a[3]*cos(4*ff) - a[4]*cos(6*ff)
     } else if (type == "rectangular") {
@@ -236,8 +236,8 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
         stop("m must be odd")
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
-    m <- length(coef) - 1
-    return(kernel(coef=coef, m=m, name=paste("Blackman-Harris(", middle, ")", sep="")))
+    ## Note retention of original 'm' in name
+    return(kernel(coef=coef, m=length(coef)-1, name=paste("Blackman-Harris(", m, ")", sep="")))
 }
 
 oce.filter <- function(b, a=1, x)
