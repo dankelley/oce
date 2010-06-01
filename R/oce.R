@@ -123,6 +123,7 @@ oce.plot.ts <- function(x,
                         xlab="", ylab="", cex=par("cex"),
                         mgp=getOption("oce.mgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
+                        type="l",
                         main="",
                         ...)
 {
@@ -131,11 +132,11 @@ oce.plot.ts <- function(x,
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex, ...)
+        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex, type=type, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex, ...)
+        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex,  type=type, ...)
     }
     xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main)
     if (grid) {

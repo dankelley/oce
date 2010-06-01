@@ -11,6 +11,7 @@ oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL,
             xlab="", ylab="", cex=par("cex"), mgp=getOption("oce.mgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
+            type="l",
             main="",
             \dots)}
 
@@ -38,6 +39,7 @@ oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL,
   tighter than the R default, in order to use more space for the
   data and less for the axes.}
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{type}{plot type.}
 \item{main}{title of plot.}
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
 }

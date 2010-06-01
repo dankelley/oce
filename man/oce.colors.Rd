@@ -77,6 +77,7 @@ Stephenson, David B., 2005.
 Comment on ``Color schemes for improved data graphics,''
 by A. Light and P. J. Bartlein.
 \emph{Eos Trans. AGU}, 86(20).
+(See also \url{http://geography.uoregon.edu/datagraphics/color_scales.htm})
 
 
 }
