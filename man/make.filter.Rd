@@ -69,21 +69,42 @@ lines(x2, col='blue')
 legend("topright", lwd=1, col=c("red", "blue"), legend=c("m=5", "m=11"))
 
 # Power response
-fr <- function(coef)
+fr <- function(coef, a, b)
 {
     n <- 1000
     omega <- seq(1e-5, pi, length.out=n)
-    if (class(coef) == "tskernel")
-        coef <- coef[-coef$m:coef$m]
-    res <- rep(coef[1], n)
-    ncoef <- length(coef)
-    ejw <- exp(-1i * omega)
-    ejw0 <- ejw
-    for (i in 2:ncoef) {
-        res <- res + coef[i] * ejw
-        ejw <- ejw * ejw0
+    ejw0 <- exp(-1i * omega)
+    if (missing(coef)) {
+        if (missing(a) || missing(b))
+            stop("must give a and b, if coef not given")
+        na <- length(a)
+        nb <- length(b)
+        ejw <- ejw0
+        numerator <- rep(b[1], n)
+        for (i in 2:nb) {
+            numerator <- numerator + b[i] * ejw
+            ejw <- ejw * ejw0
+        }
+        ejw <- ejw0
+        denominator <- rep(1, n)        # sage seems to give a[1]=1 anyway
+        for (i in 2:na) {
+            denominator <- denominator + a[i] * ejw
+            ejw <- ejw * ejw0
+        }
+        p <- Mod(numerator / denominator)^2
+    } else {
+        if (class(coef) == "tskernel")
+            coef <- coef[(-coef$m):coef$m]
+        res <- rep(coef[1], n)
+        ncoef <- length(coef)
+        ejw <- ejw0
+        for (i in 2:ncoef) {
+            res <- res + coef[i] * ejw
+            ejw <- ejw * ejw0
+        }
+        p <- Mod(res)^2
     }
-    res <- list(f=omega/(2*pi), p=Mod(res)^2)
+    res <- list(f=omega/(2*pi), p=p)
     class(res) <- "fr"
     res
 }
@@ -93,7 +114,7 @@ plot.fr <- function(x, ...)
     abline(h=1, lty='dotted', col='lightgray')
 }
 
-# Compare Blackman-Harris with Daniell (with no attempt to match)
+## 1. Compare Blackman-Harris with Daniell (with no attempt to match)
 m <- 61                         # 1-minute half-power for sampling at 1Hz
 par(mfcol=c(2,2))
 # Left column: frequency response
@@ -114,7 +135,7 @@ abline(v=bandwidth.kernel(bh)*c(-1,1), col="red", lwd=2)
 plot(d)
 abline(v=bandwidth.kernel(d)*c(-1,1), col="red", lwd=2)
 
-## Test filter response, fr(), against spectal ratio
+## 2. Verify fr() using direct spectral ratio
 par(mfrow=c(2,1))
 plot(fr(bh), xlim=c(-6,0), lwd=2)
 mtext("Blackman-Harris calculated response", side=3, adj=0)
@@ -126,7 +147,7 @@ plot(sx$freq, 10*log10(sy$spec/sx$spec), type='l', log="x", xlim=c(1e-6,1),
      xlab="Frequency", ylab="dB", lwd=2)
 mtext("Blackman-Harris response from spectral ratio random time-series", side=3, adj=0)
 
-## Near-cutoff behaviour
+## 3. Demonstrate Blackman-Harris cutoff location and slope
 par(mfrow=c(1,1))
 plot(fr(bh), xlim=log10(1/m*sqrt(c(0.5, 2))), ylim=c(-6,0), lwd=2)
 abline(h=-3, col="red", lty="dotted") # half power
@@ -136,6 +157,33 @@ mtext("Half power", side=4, at=-3, col="red")
 mtext(attr(bh,"name"), side=3, adj=0)
 abline(-39, -6*log2(10), lwd=1, col="blue") # 6db/octave (Harris Table 1)
 legend("topright", col=c("black", "blue"), lwd=c(2,1), legend=c("Response", "6db/octave"))
+
+## 4. Illustrate effect of Butterworth order on frequency response
+par(mfrow=c(2,1))
+# Next line is how the author created this filter
+# sage -python ~/bin/butterworth-design.py -o2 -c0.01,0.1 -s1 -tbandpass
+a <- c( 1,-3.1594633021,3.7926844229,-2.0825733172,0.45044543006 )
+b <- c( 0.056448462261,0,-0.11289692452,0,0.056448462261 )
+par(mgp=getOption("oce.mgp"))
+par(mar=c(3,3,1,1))
+plot(fr(a=a, b=b), ylim=c(-20,0), xlim=c(-3, 0))
+abline(v=log10(c(0.01, 0.1)), col='red', lty="dotted")
+abline(h=c(0,-3), col='red', lty="dotted")
+mtext("Butterworth, order=2", side=3, adj=0, cex=2/3)
+
+## Next line is how the author created this filter
+## sage -python ~/bin/butterworth-design.py -o4 -c0.01,0.1 -s1 -tbandpass
+a <- c( 1,-6.3987950868,18.056234988,-29.398420878,30.245469352,-20.147981515,8.4876967896,-2.0670139621,0.22281157292 )
+b <- c( 0.0033628151287,0,-0.013451260515,-6.2896966359e-18,0.020176890772,6.2896966359e-18,-0.013451260515,0,0.0033628151287 )
+par(mgp=getOption("oce.mgp"))
+par(mar=c(3,3,1,1))
+plot(fr(a=a, b=b), ylim=c(-20,0), xlim=c(-3, 0))
+abline(v=log10(c(0.01, 0.1)), col='red', lty="dotted")
+abline(h=c(0,-3), col='red', lty="dotted")
+mtext("Butterworth, order=4", side=3, adj=0, cex=2/3)
+
+## FIXME: should compare Blackman-Harris with Butterworth
+
 }
 
 \references{F. J. Harris, 1978.  On the use of windows for harmonic
