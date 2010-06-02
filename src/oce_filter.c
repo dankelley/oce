@@ -2,7 +2,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-SEXP oce_filter(SEXP b, SEXP a, SEXP x)
+SEXP oce_filter(SEXP x, SEXP a, SEXP b)
 {
   int i, ib, ia, nb, na, nx;
   double *bp, *ap, *xp, *yp;

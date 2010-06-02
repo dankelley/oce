@@ -188,6 +188,9 @@ abline(h=c(0,-3), col='red', lty="dotted")
 mtext("Butterworth, order=4", side=3, adj=0, cex=2/3)
 
 ## Compare Blackman-Harris with Butterworth
+par(mfrow=c(1,1))
+par(mgp=getOption("oce.mgp"))
+par(mar=c(3,3,1,1))
 bh <- make.filter(type="blackman-harris", m=61)
 plot(fr(bh), xlim=c(-3,-0.5), ylim=c(-30, 0))
 abline(v=log10(1/60), col="green")
@@ -201,8 +204,7 @@ b <- c(6.57905243486e-06, 2.63162097395e-05, 3.94743146092e-05, 2.63162097395e-0
 plot(fr(a=a, b=b), add=TRUE, col="blue")
 legend("topright", lwd=1, col=c("black", "red", "blue", "green"),
        legend=c("BH", "butter 2", "butter 4", "cutoff"))
-title("NOTE: this is for ONE pass of butterworth")
-
+mtext("NOTE: this is for ONE pass of butterworth", side=3, adj=0)
 }
 
 \references{F. J. Harris, 1978.  On the use of windows for harmonic

@@ -2,11 +2,16 @@
 \alias{oce.filter}
 \title{Filter a time-series, possibly recursively}
 \description{Filter a time-series, possibly recursively}
-\usage{oce.filter(b, a=1, x)}
+\usage{oce.filter(x, a=1, b, zero.phase=FALSE)}
 \arguments{
-\item{b}{a vector of numeric values, giving the \eqn{b}{b} coefficients (see \dQuote{Details}).}
-\item{a}{a vector of numeric values, giving the \eqn{a}{a} coefficients (see \dQuote{Details}).}
 \item{x}{a vector of numeric values, to be filtered as a time series.}
+\item{a}{a vector of numeric values, giving the \eqn{a}{a} coefficients
+  (see \dQuote{Details}).}
+\item{b}{a vector of numeric values, giving the \eqn{b}{b} coefficients
+  (see \dQuote{Details}).} 
+\item{zero.phase}{boolean, set to \code{TRUE} to run the filter
+  forwards, and then backwards, thus removing any phase shifts
+  associated with the filter.}
 }
 
 \details{The filter is defined as e.g.  \eqn{y[i]=b[1]*x[i] +
@@ -21,28 +26,35 @@
   \code{oce.filter} lacks the option to do a circular filter.  As a
   consequence, \code{oce.filter} introduces a phase lag.  One way to
   remove this lag is to run the filter forwards and then backwards, as
-  in the \dQuote{Examples}.}
+  in the \dQuote{Examples}.  However, the result is still problematic,
+  in the sense that applying it in the reverse order would yield a
+  different result.  (Matlab's \code{filtfilt} shares this problem.)}
 
 \note{The first value in the \code{a} vector is ignored, and if
-  \code{length(a)} equals 1, the result is a non-recursive filter.  This
-  somewhat odd convention is followed so that this will match exactly
-  the Matlab function named \code{filter}.}
+  \code{length(a)} equals 1, a non-recursive filter results.} 
 
-\value{A numeric vector of the filtered results, \eqn{y}{y} as denoted
+\value{A numeric vector of the filtered results, \eqn{y}{y}, as denoted
   in \dQuote{Details}.}
 
 \examples{
 library(oce)
+par(mar=c(4,4,1,1))
 b <- rep(1,5)/5
 a <- 1
-x <- seq(1, 4, by=0.2)
-y <- oce.filter(b, a, x)
-plot(x, y)
-points(x, x, pch="x", col="red") # note that y is offset
+x <- seq(0, 10)
+y <- ifelse(x == 5, 1, 0)
+f1 <- oce.filter(y, a, b)
+plot(x, y, ylim=c(-0, 1.5), pch="o", type='b')
+points(x, f1, pch="x", col="red")
 
 # remove the phase lag
-y <- rev(oce.filter(b, a, rev(oce.filter(b, a, x))))
-points(x, y, pch="+", col="blue")
+f2 <- oce.filter(y, a, b, TRUE)
+points(x, f2, pch="+", col="blue")
+
+legend("topleft", col=c("black","red","blue"), pch=c("o","x","+"),
+       legend=c("data","normal filter", "zero-phase filter"))
+mtext("note that normal filter rolls off at end")
+
 }
 
 \author{Dan Kelley}

@@ -243,11 +243,18 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
     return(kernel(coef=coef, m=length(coef)-1, name=paste("Blackman-Harris(", m, ")", sep="")))
 }
 
-oce.filter <- function(b, a=1, x)
+oce.filter <- function(x, a=1, b, zero.phase=FALSE)
 {
-    if (missing(b)) stop("must supply b")
     if (missing(x)) stop("must supply x")
-    .Call("oce_filter", b, a, x)
+    if (missing(b)) stop("must supply b")
+    if (!zero.phase) {
+        return(.Call("oce_filter", x, a, b))
+    } else {
+        rval <- .Call("oce_filter", x, a, b)
+        rval <- rev(rval)
+        rval <- .Call("oce_filter", rval, a, b)
+        return(rev(rval))
+    }
 }
 
 ## Calculation of geodetic distance on surface of earth,
