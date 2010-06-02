@@ -108,10 +108,15 @@ fr <- function(coef, a, b)
     class(res) <- "fr"
     res
 }
-plot.fr <- function(x, ...)
+
+plot.fr <- function(x, add=FALSE, ...)
 {
-    plot(log10(x$f), 10*log10(x$p), xlab=expression(log[10](frequency)), ylab="dB", type='l', ...)
-    abline(h=1, lty='dotted', col='lightgray')
+    if (add) {
+        lines(log10(x$f), 10*log10(x$p), ...)
+    } else {
+        plot(log10(x$f), 10*log10(x$p), xlab=expression(log[10](frequency)), ylab="dB", type='l', ...)
+        grid()
+    }
 }
 
 ## 1. Compare Blackman-Harris with Daniell (with no attempt to match)
@@ -182,7 +187,21 @@ abline(v=log10(c(0.01, 0.1)), col='red', lty="dotted")
 abline(h=c(0,-3), col='red', lty="dotted")
 mtext("Butterworth, order=4", side=3, adj=0, cex=2/3)
 
-## FIXME: should compare Blackman-Harris with Butterworth
+## Compare Blackman-Harris with Butterworth
+bh <- make.filter(type="blackman-harris", m=61)
+plot(fr(bh), xlim=c(-3,-0.5), ylim=c(-30, 0))
+abline(v=log10(1/60), col="green")
+# /Users/kelley/bin/butterworth-design.py -o2 -c0.016667 -s1 -tlow -R
+a <- c( 1.0 , -1.8521435375 , 0.862346071863 )
+b <- c( 0.00255063358957 , 0.00510126717914 , 0.00255063358957 )
+plot(fr(a=a, b=b), add=TRUE, col="red")
+# /Users/kelley/bin/butterworth-design.py -o4 -c0.016667 -s1 -tlow -R
+a <- c(1.0, -3.72640902937, 5.21603324655, -3.25000460109, 0.760485648747)
+b <- c(6.57905243486e-06, 2.63162097395e-05, 3.94743146092e-05, 2.63162097395e-05, 6.57905243486e-06)
+plot(fr(a=a, b=b), add=TRUE, col="blue")
+legend("topright", lwd=1, col=c("black", "red", "blue", "green"),
+       legend=c("BH", "butter 2", "butter 4", "cutoff"))
+title("NOTE: this is for ONE pass of butterworth")
 
 }
 
