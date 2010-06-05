@@ -6,7 +6,8 @@
             m, asKernel=FALSE)}
 \arguments{
   \item{type}{a string indicating the type of filter to
-    use.
+    use.    (See Harris (1978) for a comparison of these and similar
+    filters.)
     \itemize{
       \item \code{"blackman-harris"} yields a modified raised-cosine
       filter designated as  "4-Term (-92 dB) Blackman-Harris" by Harris
@@ -29,8 +30,6 @@
       \item \code{"hann"} (a raised cosine that tapers to zero at the
       ends).
     }
-    See Harris (1978) for a comparison of these and other filters.
-    (This paper recommends for the Blackman-Harris filter.)
   }
   \item{m}{length of filter.  This should be an odd number, for any
     non-rectangular filter.}
@@ -86,7 +85,7 @@ fr <- function(coef, a, b)
             ejw <- ejw * ejw0
         }
         ejw <- ejw0
-        denominator <- rep(1, n)        # sage seems to give a[1]=1 anyway
+        denominator <- rep(1, n)
         for (i in 2:na) {
             denominator <- denominator + a[i] * ejw
             ejw <- ejw * ejw0
@@ -118,6 +117,13 @@ plot.fr <- function(x, add=FALSE, ...)
         grid()
     }
 }
+
+make.butterworth <- function(n, W, type, sampling.frequency)
+{
+    butter <- butter(n=n, W=W/(0.5*sampling.frequency), type=type)
+    list(a=butter$a, b=butter$b)
+}
+
 
 ## 1. Compare Blackman-Harris with Daniell (with no attempt to match)
 m <- 61                         # 1-minute half-power for sampling at 1Hz
@@ -165,24 +171,26 @@ legend("topright", col=c("black", "blue"), lwd=c(2,1), legend=c("Response", "6db
 
 ## 4. Illustrate effect of Butterworth order on frequency response
 par(mfrow=c(2,1))
-# Next line is how the author created this filter
-# sage -python ~/bin/butterworth-design.py -o2 -c0.01,0.1 -s1 -tbandpass
-a <- c( 1,-3.1594633021,3.7926844229,-2.0825733172,0.45044543006 )
-b <- c( 0.056448462261,0,-0.11289692452,0,0.056448462261 )
+# library(signal)
+# ab <- make.butterworth(n=2, W=c(0.01,0.1), type="pass", sampling.frequency=1)
+ab <- list(a=c(1,-3.1594633021,3.7926844229,-2.0825733172,0.45044543006),
+           b=c(0.056448462261,0,-0.11289692452,0,0.056448462261))
 par(mgp=getOption("oce.mgp"))
 par(mar=c(3,3,1,1))
-plot(fr(a=a, b=b), ylim=c(-20,0), xlim=c(-3, 0))
+plot(fr(a=ab$a, b=ab$b), ylim=c(-20,0), xlim=c(-3, 0))
 abline(v=log10(c(0.01, 0.1)), col='red', lty="dotted")
 abline(h=c(0,-3), col='red', lty="dotted")
 mtext("Butterworth, order=2", side=3, adj=0, cex=2/3)
 
-## Next line is how the author created this filter
-## sage -python ~/bin/butterworth-design.py -o4 -c0.01,0.1 -s1 -tbandpass
-a <- c( 1,-6.3987950868,18.056234988,-29.398420878,30.245469352,-20.147981515,8.4876967896,-2.0670139621,0.22281157292 )
-b <- c( 0.0033628151287,0,-0.013451260515,-6.2896966359e-18,0.020176890772,6.2896966359e-18,-0.013451260515,0,0.0033628151287 )
+# library(signal)
+# ab <- make.butterworth(n=4, W=c(0.01,0.1), type="pass", sampling.frequency=1)
+ab <- list(a=c( 1,          -6.3987950868, 18.056234988, -29.398420878, 30.245469352,
+               -20.147981515, 8.4876967896, -2.0670139621, 0.22281157292),
+           b=c(0.0033628151287, 0, -0.013451260515, -6.2896966359e-18,
+               0.020176890772, 6.2896966359e-18, -0.013451260515, 0, 0.0033628151287))
 par(mgp=getOption("oce.mgp"))
 par(mar=c(3,3,1,1))
-plot(fr(a=a, b=b), ylim=c(-20,0), xlim=c(-3, 0))
+plot(fr(a=ab$a, b=ab$b), ylim=c(-20,0), xlim=c(-3, 0))
 abline(v=log10(c(0.01, 0.1)), col='red', lty="dotted")
 abline(h=c(0,-3), col='red', lty="dotted")
 mtext("Butterworth, order=4", side=3, adj=0, cex=2/3)
@@ -194,14 +202,16 @@ par(mar=c(3,3,1,1))
 bh <- make.filter(type="blackman-harris", m=61)
 plot(fr(bh), xlim=c(-3,-0.5), ylim=c(-30, 0))
 abline(v=log10(1/60), col="green")
-# /Users/kelley/bin/butterworth-design.py -o2 -c0.016667 -s1 -tlow -R
-a <- c( 1.0 , -1.8521435375 , 0.862346071863 )
-b <- c( 0.00255063358957 , 0.00510126717914 , 0.00255063358957 )
-plot(fr(a=a, b=b), add=TRUE, col="red")
-# /Users/kelley/bin/butterworth-design.py -o4 -c0.016667 -s1 -tlow -R
-a <- c(1.0, -3.72640902937, 5.21603324655, -3.25000460109, 0.760485648747)
-b <- c(6.57905243486e-06, 2.63162097395e-05, 3.94743146092e-05, 2.63162097395e-05, 6.57905243486e-06)
-plot(fr(a=a, b=b), add=TRUE, col="blue")
+# library(signal)
+# ab <- make.butterworth(n=2, W=0.016667, type="low", sampling.frequency=1)
+ab <- list(a = c(1.0             , -1.8521435375    , 0.862346071863),
+           b = c(0.00255063358957,  0.00510126717914, 0.00255063358957))
+plot(fr(a=ab$a, b=ab$b), add=TRUE, col="red")
+# library(signal)
+# ab <- make.butterworth(n=4, W=0.016668, type="low", sampling.frequency=1)
+ab <- list(a = c(1.0, -3.72640902937, 5.21603324655, -3.25000460109, 0.760485648747),
+           b = c(6.57905243486e-06, 2.63162097395e-05, 3.94743146092e-05, 2.63162097395e-05, 6.57905243486e-06))
+plot(fr(a=ab$a, b=ab$b), add=TRUE, col="blue")
 legend("topright", lwd=1, col=c("black", "red", "blue", "green"),
        legend=c("BH", "butter 2", "butter 4", "cutoff"))
 mtext("NOTE: this is for ONE pass of butterworth", side=3, adj=0)
