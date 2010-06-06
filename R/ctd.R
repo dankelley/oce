@@ -360,6 +360,13 @@ plot.ctd <- function (x, which = 1:4,
         ##layout.show(lay)
         ##stop()
     }
+    ## Ignore any bottom region consisting of NA for temperature and salinity, e.g.
+    ## as created by make.section().
+    last.good <- which(rev(is.na(x$data$sa))==FALSE)[1]
+    if (length(last.good) > 0) {
+        last.good <- length(x$data$temperature) - last.good + 1
+        x$data <- x$data[1:last.good,]
+    }
     for (w in 1:length(which)) {
         if (which[w] == 1) plot.profile(x, xtype = "S+T", Slim=Slim, Tlim=Tlim, plim=plim,
                  grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)

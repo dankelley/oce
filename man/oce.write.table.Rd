@@ -23,7 +23,7 @@
   \code{sep} argument in the \code{...} list (see
   \code{\link[utils]{write.table}}).
 
-  This function is really no more than a thin wrapper around
+  This function is little  more than a thin wrapper around
   \code{\link[utils]{write.table}}, the only difference being that row
   names are ommitted here, making for a file format that is more
   conventional in Oceanography.}
