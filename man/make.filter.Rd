@@ -61,41 +61,34 @@
 library(oce)
 x <- c(rep(0,30),rep(1,30),rep(0,30))
 plot.ts(x)
-x1 <- filter(x, make.filter("blackman-harris", 5))
+x1 <- stats::filter(x, make.filter("blackman-harris", 5))
 lines(x1, col='red')
-x2 <- filter(x, make.filter("blackman-harris", 11))
+x2 <- stats::filter(x, make.filter("blackman-harris", 11))
 lines(x2, col='blue')
 legend("topright", lwd=1, col=c("red", "blue"), legend=c("m=5", "m=11"))
 
 # Power response
 fr <- function(coef, a, b)
 {
-    n <- 1000
+    postpad <- function (x, n)
+    {
+        nx <- length(x)
+        if (n > nx)
+            c(x, rep(0, n - nx))
+        else x[1:n]
+    }
+    n <- 10000
     omega <- seq(1e-5, pi, length.out=n)
-    ejw0 <- exp(-1i * omega)
     if (missing(coef)) {
         if (missing(a) || missing(b))
             stop("must give a and b, if coef not given")
-        na <- length(a)
-        nb <- length(b)
-        ejw <- ejw0
-        numerator <- rep(b[1], n)
-        for (i in 2:nb) {
-            numerator <- numerator + b[i] * ejw
-            ejw <- ejw * ejw0
-        }
-        ejw <- ejw0
-        denominator <- rep(1, n)
-        for (i in 2:na) {
-            denominator <- denominator + a[i] * ejw
-            ejw <- ejw * ejw0
-        }
-        p <- Mod(numerator / denominator)^2
+        p <- Mod(fft(postpad(b, 2*n))[1:n] / fft(postpad(a, 2*n))[1:n])^2
     } else {
         if (class(coef) == "tskernel")
             coef <- coef[(-coef$m):coef$m]
         res <- rep(coef[1], n)
         ncoef <- length(coef)
+        ejw0 <- exp(-1i * omega)
         ejw <- ejw0
         for (i in 2:ncoef) {
             res <- res + coef[i] * ejw
@@ -108,12 +101,15 @@ fr <- function(coef, a, b)
     res
 }
 
-plot.fr <- function(x, add=FALSE, ...)
+plot.fr <- function(x, add=FALSE, xtype="log", ...)
 {
     if (add) {
         lines(log10(x$f), 10*log10(x$p), ...)
     } else {
-        plot(log10(x$f), 10*log10(x$p), xlab=expression(log[10](frequency)), ylab="dB", type='l', ...)
+        if (xtype=="log")
+            plot(log10(x$f), 10*log10(x$p), xlab=expression(log[10](frequency)), ylab="dB", type='l', ...)
+        else
+            plot(x$f, 10*log10(x$p), xlab=expression(frequency), ylab="dB", type='l', ...)
         grid()
     }
 }
@@ -121,7 +117,6 @@ plot.fr <- function(x, add=FALSE, ...)
 make.butterworth <- function(n, W, type, sampling.frequency)
 {
     butter <- butter(n=n, W=W/(0.5*sampling.frequency), type=type)
-    list(a=butter$a, b=butter$b)
 }
 
 
