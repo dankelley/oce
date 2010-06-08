@@ -83,18 +83,11 @@ fr <- function(coef, a, b)
         if (missing(a) || missing(b))
             stop("must give a and b, if coef not given")
         p <- Mod(fft(postpad(b, 2*n))[1:n] / fft(postpad(a, 2*n))[1:n])^2
+        pp <- p
     } else {
         if (class(coef) == "tskernel")
             coef <- coef[(-coef$m):coef$m]
-        res <- rep(coef[1], n)
-        ncoef <- length(coef)
-        ejw0 <- exp(-1i * omega)
-        ejw <- ejw0
-        for (i in 2:ncoef) {
-            res <- res + coef[i] * ejw
-            ejw <- ejw * ejw0
-        }
-        p <- Mod(res)^2
+        p <- Mod(fft(postpad(coef, 2*n))[1:n])^2 # check if need to double coef
     }
     res <- list(f=omega/(2*pi), p=p)
     class(res) <- "fr"
@@ -129,6 +122,8 @@ par(mgp=getOption("oce.mgp"))
 par(mar=c(3,3,2,1))
 bh <- make.filter(type="blackman-harris", m=m, asKernel=TRUE)
 plot(fr(bh))
+abline(v=log10(1/61),col='red') # design half-power frequency
+abline(h=-3, col='red')         # half-power line
 mtext(attr(bh,"name"), side=3, adj=0)
 d <- kernel("daniell", c(9,3))
 plot(fr(d))

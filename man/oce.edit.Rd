@@ -40,7 +40,8 @@
 \examples{
 library(oce)
 data(ctd)
-ctd2 <- oce.edit(ctd, item="latitude", value=47.8879, reason="illustration", person="Dan Kelley")
+ctd2 <- oce.edit(ctd, item="latitude", value=47.8879,
+                 reason="illustration", person="Dan Kelley")
 ctd3 <- oce.edit(ctd, action= "x$data$pressure <- x$data$pressure - 1")
 }
 \author{Dan Kelley}
