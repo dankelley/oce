@@ -34,6 +34,7 @@ export(
        gravity,
        header,
        imagep,
+       imagepnew,
        interp.barnes,
        integer2ascii,
        lat.format,
