@@ -84,8 +84,6 @@ imagepnew <- function(x, y, z,
 
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
 
-    ## FIXME: should draw palette first, perhaps, to let users add to main plot
-
     if (draw.palette) {
         the.mai <- c(omai[1],
                      2*widths$margin.lhs + widths$main + 2*widths$palette.separation, # FIXME: why do the "2*" work?
