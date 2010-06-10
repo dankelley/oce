@@ -11,7 +11,7 @@ imagepnew <- function(x, y, z,
                       flip.y=FALSE,
                       xlab="", ylab="", zlab="",
                       breaks, col,
-                      draw.contours=TRUE, # FIXME
+                      draw.contours=TRUE,
                       draw.time.range=getOption("oce.draw.time.range"),
                       mgp=getOption("oce.mgp"),
                       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
@@ -49,9 +49,9 @@ imagepnew <- function(x, y, z,
                    main=NA,           # main image width
                    palette.separation=1/8,  # between main & palette
                    palette.width=1/4,       # palette width
-                   ##margin.rhs=omai[1]) # width of RHS margin (fixme: more space than needed)
-                   margin.rhs=line.height+tic.length) # width of RHS margin (fixme: more space than needed)
-    widths$main <- opin[1] - widths$margin.lhs - widths$palette.separation - widths$palette.width - widths$margin.rhs # doing this here ensures things add up
+                   margin.rhs=line.height+tic.length) # width of RHS margin
+    # next line ensures that things add up... but see FIXME below
+    widths$main <- opin[1] - widths$margin.lhs - widths$palette.separation - widths$palette.width - widths$margin.rhs
 
     gave.breaks <- !missing(breaks)
     if (!gave.breaks) {
@@ -135,7 +135,7 @@ imagepnew <- function(x, y, z,
             axis(2, cex.axis=cex, cex.lab=cex)
         }
     }
-    if (draw.contours && !missing(breaks))
+    if (draw.contours)
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
     if (!missing(adorn)) {
@@ -151,7 +151,6 @@ imagepnew <- function(x, y, z,
     the.mai <- clipmin(the.mai, 0.1)         # just in case
     oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), "\n")
     par(new=TRUE, mai=the.mai, cex=cex)
-    ##plot(1:10, 1:10);return()
     if (!gave.breaks) {
         if (missing(zlim)) {
             palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
@@ -172,10 +171,9 @@ imagepnew <- function(x, y, z,
               col=col,
               zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
     }
-    if (draw.contours && gave.breaks)   #FIXME imagep() different (and this one fails to give contours in palette)
+    if (draw.contours)
         abline(h=breaks)
     box()
     axis(side=4, at=pretty(palette), cex.axis=cex)
-##    par(mai=omai)                       # FIXME: do I really want this?
     par(mar=omar)
 }
