@@ -9,6 +9,7 @@
       breaks, col,
       draw.contours=TRUE,
       draw.time.range=getOption("oce.draw.time.range"),
+      draw.palette=TRUE,
       mgp=getOption("oce.mgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
       xaxs="i",
@@ -42,6 +43,8 @@
     data (not the axis) is indicated at the top-left margin of the
     graph.  This is useful because the labels on time axes only indicate
     hours if the range is less than a day, etc.}
+  \item{draw.palette}{boolean, with value \code{TRUE} to draw a palette
+    at the right-hand side of the main image.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
@@ -61,14 +64,21 @@
 }
 
 \details{
-  \emph{(NEW TEST VERSION -- MAY BE REMOVED)}
+  \emph{(NEW TEST VERSION -- MAY BE REMOVED IF IT IS NO GOOD)}
 
   Creates an image with a colour palette to the right.  The
   effect is similar to \code{\link{filled.contour}} except that with
   \code{imagep} it is possible to set the \code{\link{layout}} outside
   the function, which enables the creation of plots with many
   image-palette panels.  Note that the contour lines may not coincide
-  with the colour transitions, in the case of coarse images.}
+  with the colour transitions, in the case of coarse images.
+
+  Note that this does not use \code{\link{layout}} or any of the other
+  screen splitting methods.  It simply manipulates margins, and draws
+  two plots together.  This lets users employ their favourite layout
+  schemes.  The palette is drawn before the image, so that further
+  drawing can be done on the image if desired, if the user prefers not
+  to use the \code{adorn} argument.}
 
 \value{None.}
 

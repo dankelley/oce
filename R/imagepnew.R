@@ -13,6 +13,7 @@ imagepnew <- function(x, y, z,
                       breaks, col,
                       draw.contours=TRUE,
                       draw.time.range=getOption("oce.draw.time.range"),
+                      draw.palette=TRUE,
                       mgp=getOption("oce.mgp"),
                       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
                       xaxs = "i", yaxs = "i",
@@ -85,17 +86,54 @@ imagepnew <- function(x, y, z,
 
     ## FIXME: should draw palette first, perhaps, to let users add to main plot
 
+    if (draw.palette) {
+        the.mai <- c(omai[1],
+                     2*widths$margin.lhs + widths$main + 2*widths$palette.separation, # FIXME: why do the "2*" work?
+                     omai[3],
+                     widths$margin.rhs)
+        the.mai <- clipmin(the.mai, 0.1)         # just in case
+        oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), "\n")
+        par(mai=the.mai, cex=cex)
+        if (!gave.breaks) {
+            if (missing(zlim)) {
+                palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
+            } else {
+                palette <- seq(zlim[1], zlim[2], length.out=300)
+            }
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
+                  cex=cex, cex.axis=cex, cex.lab=cex,
+                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+        } else {
+            if (missing(zlim)) {
+                palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
+            } else {
+                palette <- seq(zlim[1], zlim[2], length.out=300)
+            }
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                  breaks=breaks.orig,
+                  col=col,
+                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+        }
+        if (draw.contours)
+            abline(h=breaks)
+        box()
+        axis(side=4, at=pretty(palette), cex.axis=cex)
+    }
+
     ## main image
-    the.mai <- c(omai[1],
-                 widths$margin.lhs,
-                 omai[3],
-                 widths$palette.separation + widths$palette.width + widths$margin.rhs)
-    the.mai <- clipmin(the.mai, 0.1)         # just in case
-    if (debug > 0)
-        str(widths)
-    oce.debug(debug, "original value of par(mai)=", paste(omai), "\n")
-    oce.debug(debug, "MAIN: setting     par(mai)=", paste(the.mai), "\n")
-    par(mai=the.mai)
+    if (draw.palette) {
+        the.mai <- c(omai[1],
+                     widths$margin.lhs,
+                     omai[3],
+                     widths$palette.separation + widths$palette.width + widths$margin.rhs)
+        the.mai <- clipmin(the.mai, 0.1)         # just in case
+        if (debug > 0)
+            str(widths)
+        oce.debug(debug, "original value of par(mai)=", paste(omai), "\n")
+        oce.debug(debug, "MAIN: setting     par(mai)=", paste(the.mai), "\n")
+        par(new=TRUE, mai=the.mai, cex=cex)
+    }
+
     if (x.is.time) {
         if (!gave.breaks) {
             image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
@@ -143,37 +181,5 @@ imagepnew <- function(x, y, z,
         if (class(t) == "try-error") warning("cannot evaluate adorn='", adorn, "'\n")
     }
 
-    ## palette
-    the.mai <- c(omai[1],
-                 2*widths$margin.lhs + widths$main + 2*widths$palette.separation, # FIXME: why do the "2*" work?
-                 omai[3],
-                 widths$margin.rhs)
-    the.mai <- clipmin(the.mai, 0.1)         # just in case
-    oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), "\n")
-    par(new=TRUE, mai=the.mai, cex=cex)
-    if (!gave.breaks) {
-        if (missing(zlim)) {
-            palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
-        } else {
-            palette <- seq(zlim[1], zlim[2], length.out=300)
-        }
-        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
-              cex=cex, cex.axis=cex, cex.lab=cex,
-              zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
-    } else {
-        if (missing(zlim)) {
-            palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
-        } else {
-            palette <- seq(zlim[1], zlim[2], length.out=300)
-        }
-        image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
-              breaks=breaks.orig,
-              col=col,
-              zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
-    }
-    if (draw.contours)
-        abline(h=breaks)
-    box()
-    axis(side=4, at=pretty(palette), cex.axis=cex)
     par(mar=omar)
 }
