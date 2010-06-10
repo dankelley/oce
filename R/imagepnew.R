@@ -2,6 +2,10 @@
 #quartz()
 #source('~/src/R-kelley/oce/R/imagepnew.R');imagepnew(h, drho, speed, xlab="Equivalent depth [m]",ylab=expression(paste(Delta*rho, " [kg/m^3]")),zlab="Internal-wave speed [m/s]",debug=4)
 
+clipmin <- function(x, min=0)
+{
+    ifelse(x < min, min, x)
+}
 imagepnew <- function(x, y, z,
                       xlim, ylim, zlim,
                       flip.y=FALSE,
@@ -26,6 +30,7 @@ imagepnew <- function(x, y, z,
     if (dim[1] != length(x)) stop("dim(z)[1] must equal length(x)")
     if (dim[2] != length(y)) stop("dim(z)[2] must equal length(y)")
 
+    omar <- par("mar")
     # set overall graphical parameters (note: get opai after setting mar)
     par(mgp=mgp, mar=mar, cex=cex)
     omai <- par("mai")
@@ -85,6 +90,7 @@ imagepnew <- function(x, y, z,
                  widths$margin.lhs,
                  omai[3],
                  widths$palette.separation + widths$palette.width + widths$margin.rhs)
+    the.mai <- clipmin(the.mai, 0.1)         # just in case
     if (debug > 0)
         str(widths)
     oce.debug(debug, "original value of par(mai)=", paste(omai), "\n")
@@ -142,6 +148,7 @@ imagepnew <- function(x, y, z,
                  2*widths$margin.lhs + widths$main + 2*widths$palette.separation, # FIXME: why do the "2*" work?
                  omai[3],
                  widths$margin.rhs)
+    the.mai <- clipmin(the.mai, 0.1)         # just in case
     oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), "\n")
     par(new=TRUE, mai=the.mai, cex=cex)
     ##plot(1:10, 1:10);return()
@@ -169,5 +176,6 @@ imagepnew <- function(x, y, z,
         abline(h=breaks)
     box()
     axis(side=4, at=pretty(palette), cex.axis=cex)
-    par(mai=omai)                       # FIXME: do I really want this?
+##    par(mai=omai)                       # FIXME: do I really want this?
+    par(mar=omar)
 }
