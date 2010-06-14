@@ -15,7 +15,10 @@ imagepnew <- function(x, y, z,
                       draw.time.range=getOption("oce.draw.time.range"),
                       draw.palette=TRUE,
                       mgp=getOption("oce.mgp"),
-                      mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
+                      mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
+                            mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
+                            mgp[2]+1/2,
+                            1/2),
                       xaxs = "i", yaxs = "i",
                       cex=par("cex"),
                       adorn,
@@ -23,23 +26,23 @@ imagepnew <- function(x, y, z,
                       debug=getOption("oce.debug"),
                       ...)
 {
-    oce.debug(debug, "at top of new.imagep(), par('cex') is", par('cex'), "\n")
+    omai <- par("mai")
+    on.exit(par(mai=omai))
+    oce.debug(debug, "\n")
+    oce.debug(debug, paste(">>> At top of new.imagep(), xlab='", xlab, "'; ylab='", ylab, "'; mar=", paste(mar, collapse=","), "\n", sep=""))
     if (missing(x)) stop("must supply x")
     if (missing(y)) stop("must supply y")
     if (missing(z)) stop("must supply z")
     dim <- dim(z)
-    if (dim[1] != length(x)) stop("dim(z)[1] must equal length(x)")
-    if (dim[2] != length(y)) stop("dim(z)[2] must equal length(y)")
+    if (dim[1] != length(x)) stop("image width, dim(z)[1], must equal length(x)")
+    if (dim[2] != length(y)) stop("image height, dim(z)[2], must equal length(y)")
 
     omar <- par("mar")
     # set overall graphical parameters (note: get opai after setting mar)
     par(mgp=mgp, mar=mar, cex=cex)
     omai <- par("mai")
-    opin <- par("pin")
-    if (debug > 0)
-        cat("paper geometry: ", paste(format(opin, digits=2), collapse=" inches wide and "), " inches tall\n")
-
-
+    device.width <- par("din")[1]
+    oce.debug(debug, sprintf("paper width: %.2f inches\n", device.width))
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
     tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
 
@@ -52,7 +55,8 @@ imagepnew <- function(x, y, z,
                    palette.width=1/4,       # palette width
                    margin.rhs=line.height+tic.length) # width of RHS margin
     # next line ensures that things add up... but see FIXME below
-    widths$main <- opin[1] - widths$margin.lhs - widths$palette.separation - widths$palette.width - widths$margin.rhs
+    widths$main <- device.width - widths$margin.lhs - widths$palette.separation - widths$palette.width - widths$margin.rhs
+    ##oce.debug(debug, "widths=", format(widths, digits=2), "\n")
 
     gave.breaks <- !missing(breaks)
     if (!gave.breaks) {
@@ -86,12 +90,12 @@ imagepnew <- function(x, y, z,
 
     if (draw.palette) {
         the.mai <- c(omai[1],
-                     widths$main + 2*(widths$margin.lhs + widths$palette.separation), # FIXME: why do the "2*" work?
+                     widths$main + widths$margin.lhs + widths$palette.separation,
                      omai[3],
                      widths$margin.rhs)
-        oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), " (before clipping)\n")
+        oce.debug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
         the.mai <- clipmin(the.mai, 0.1)         # just in case
-        oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), " (after clipping)\n")
+        oce.debug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
         par(mai=the.mai, cex=cex)
         if (!gave.breaks) {
             if (missing(zlim)) {
@@ -116,7 +120,7 @@ imagepnew <- function(x, y, z,
         if (draw.contours)
             abline(h=breaks)
         box()
-        axis(side=4, at=pretty(palette), cex.axis=0.8*cex) # FIXME: decide on font size
+        axis(side=4, at=pretty(palette), cex.axis=cex) # FIXME: decide on font size
     }
 
     ## main image
@@ -124,12 +128,12 @@ imagepnew <- function(x, y, z,
         the.mai <- c(omai[1],
                      widths$margin.lhs,
                      omai[3],
-                     widths$palette.separation + widths$palette.width + 2*widths$margin.rhs)
+                     widths$palette.separation + widths$palette.width + widths$margin.rhs)
         the.mai <- clipmin(the.mai, 0.1)         # just in case
         if (debug > 0)
             str(widths)
-        oce.debug(debug, "original value of par(mai)=", paste(omai), "\n")
-        oce.debug(debug, "MAIN: setting     par(mai)=", paste(the.mai), "\n")
+        oce.debug(debug, "original value of par(mai)=", format(omai, digits=2), "\n")
+        oce.debug(debug, "MAIN: setting     par(mai)=", format(the.mai, digits=2), "\n")
         par(new=TRUE, mai=the.mai, cex=cex)
     }
 
@@ -179,6 +183,4 @@ imagepnew <- function(x, y, z,
         t <- try(eval.parent(adorn), silent=!TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn='", adorn, "'\n")
     }
-
-    par(mar=omar)
 }

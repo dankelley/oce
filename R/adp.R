@@ -248,7 +248,7 @@ plot.adp <- function(x,
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
     }
-    oce.debug(debug, "use.layout=", use.layout, "\n")
+    ##oce.debug(debug, "use.layout=", use.layout, "\n")
     if (use.layout) {
         if (any(which %in% images) || margins.as.image) {
             w <- 1.5
@@ -266,7 +266,7 @@ plot.adp <- function(x,
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
-        oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
+        ##oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
             if (which[w] %in% 1:(0+x$metadata$number.of.beams)) {    #velocity
@@ -292,7 +292,7 @@ plot.adp <- function(x,
                 zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
             } else skip <- TRUE
             if (!skip) {
-                oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, " (just about to plot)\n")
+                ##oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, " (just about to plot)\n")
                 if (use.new.imagep) {
                     imagepnew(x=tt, y=x$data$ss$distance, z=z,
                            zlim=zlim,
@@ -306,7 +306,7 @@ plot.adp <- function(x,
                            adorn=adorn[w],
                            mgp=mgp,
                            mar=mar,
-                           cex=1,
+                           cex=cex*(1 - min(lw / 8, 1/4)), # FIXME: should emulate par(mfrow)
                            debug=debug-1,
                            ...)
                 } else {
