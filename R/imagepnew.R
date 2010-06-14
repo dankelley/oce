@@ -37,7 +37,7 @@ imagepnew <- function(x, y, z,
     omai <- par("mai")
     opin <- par("pin")
     if (debug > 0)
-        cat("paper geometry:", paste(opin, collapse="x"), "\n")
+        cat("paper geometry: ", paste(format(opin, digits=2), collapse=" inches wide and "), " inches tall\n")
 
 
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
@@ -86,11 +86,12 @@ imagepnew <- function(x, y, z,
 
     if (draw.palette) {
         the.mai <- c(omai[1],
-                     2*widths$margin.lhs + widths$main + 2*widths$palette.separation, # FIXME: why do the "2*" work?
+                     widths$main + 2*(widths$margin.lhs + widths$palette.separation), # FIXME: why do the "2*" work?
                      omai[3],
                      widths$margin.rhs)
+        oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), " (before clipping)\n")
         the.mai <- clipmin(the.mai, 0.1)         # just in case
-        oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), "\n")
+        oce.debug(debug, "PALETTE: setting  par(mai)=", paste(the.mai), " (after clipping)\n")
         par(mai=the.mai, cex=cex)
         if (!gave.breaks) {
             if (missing(zlim)) {
@@ -99,7 +100,6 @@ imagepnew <- function(x, y, z,
                 palette <- seq(zlim[1], zlim[2], length.out=300)
             }
             image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
-                  cex=cex, cex.axis=cex, cex.lab=cex,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
         } else {
             if (missing(zlim)) {
@@ -107,6 +107,7 @@ imagepnew <- function(x, y, z,
             } else {
                 palette <- seq(zlim[1], zlim[2], length.out=300)
             }
+
             image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                   breaks=breaks.orig,
                   col=col,
@@ -115,7 +116,7 @@ imagepnew <- function(x, y, z,
         if (draw.contours)
             abline(h=breaks)
         box()
-        axis(side=4, at=pretty(palette), cex.axis=cex)
+        axis(side=4, at=pretty(palette), cex.axis=0.8*cex) # FIXME: decide on font size
     }
 
     ## main image
@@ -123,7 +124,7 @@ imagepnew <- function(x, y, z,
         the.mai <- c(omai[1],
                      widths$margin.lhs,
                      omai[3],
-                     widths$palette.separation + widths$palette.width + widths$margin.rhs)
+                     widths$palette.separation + widths$palette.width + 2*widths$margin.rhs)
         the.mai <- clipmin(the.mai, 0.1)         # just in case
         if (debug > 0)
             str(widths)

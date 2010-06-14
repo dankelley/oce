@@ -1,3 +1,4 @@
+use.new.imagep <- TRUE
 ad.beam.name <- function(x, which)
 {
     if (x$metadata$oce.coordinate == "beam")
@@ -193,10 +194,11 @@ plot.adp <- function(x,
                      margins.as.image=FALSE,
                      cex=1,
                      control,
-                     use.layout=TRUE,
+                     use.layout=FALSE,  # FIXME: remove from arg list if imagep gets working
                      debug=getOption("oce.debug"),
                      ...)
 {
+    oce.debug(debug, "Entering plot.adp()\n")
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (!(is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data)) {
         warning("there are no profiles in this dataset")
@@ -246,6 +248,7 @@ plot.adp <- function(x,
             zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
         }
     }
+    oce.debug(debug, "use.layout=", use.layout, "\n")
     if (use.layout) {
         if (any(which %in% images) || margins.as.image) {
             w <- 1.5
@@ -255,6 +258,11 @@ plot.adp <- function(x,
                 lay <- layout(cbind(1:lw))
             }
         }
+    } else {
+        if (use.new.imagep)
+            par(mfrow=c(lw, 1))
+        else
+            stop("cannot have use.layout=FALSE unless use.new.imagep=TRUE")
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
@@ -285,22 +293,40 @@ plot.adp <- function(x,
             } else skip <- TRUE
             if (!skip) {
                 oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, " (just about to plot)\n")
-                imagep(x=tt, y=x$data$ss$distance, z=z,
-                       zlim=zlim,
-                       flip.y=flip.y,
-                       col=col,
-                       ylab=resizable.label("distance"),
-                       xlab="Time",
-                       zlab=zlab,
-                       draw.time.range=draw.time.range,
-                       draw.contours=FALSE,
-                       do.layout=FALSE,
-                       adorn=adorn[w],
-                       mgp=mgp,
-                       mar=mar,
-                       cex=1,
-                       debug=debug-1,
-                       ...)
+                if (use.new.imagep) {
+                    imagepnew(x=tt, y=x$data$ss$distance, z=z,
+                           zlim=zlim,
+                           flip.y=flip.y,
+                           col=col,
+                           ylab=resizable.label("distance"),
+                           xlab="Time",
+                           zlab=zlab,
+                           draw.time.range=draw.time.range,
+                           draw.contours=FALSE,
+                           adorn=adorn[w],
+                           mgp=mgp,
+                           mar=mar,
+                           cex=1,
+                           debug=debug-1,
+                           ...)
+                } else {
+                    imagep(x=tt, y=x$data$ss$distance, z=z,
+                           zlim=zlim,
+                           flip.y=flip.y,
+                           col=col,
+                           ylab=resizable.label("distance"),
+                           xlab="Time",
+                           zlab=zlab,
+                           draw.time.range=draw.time.range,
+                           draw.contours=FALSE,
+                           do.layout=FALSE,
+                           adorn=adorn[w],
+                           mgp=mgp,
+                           mar=mar,
+                           cex=1,
+                           debug=debug-1,
+                           ...)
+                }
                 draw.time.range <- FALSE
             }
         } else if (which[w] %in% timeseries) { # time-series types

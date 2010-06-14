@@ -592,7 +592,7 @@ during St Lawrence Estuary Internal Wave Experiment.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.8\textwidth}
-<<label=adpfig ,fig=TRUE, width=9, height=5, echo=FALSE>>=
+<<label=adpfig ,fig=TRUE, width=12, height=7, echo=FALSE>>=
 <<adpplot>>
 @
 \end{center}

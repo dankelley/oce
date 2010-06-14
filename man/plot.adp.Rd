@@ -17,7 +17,7 @@
      margins.as.image=FALSE,
      cex=1,
      control,
-     use.layout=TRUE,
+     use.layout=FALSE,
      debug=getOption("oce.debug"),
      \dots)}
 
