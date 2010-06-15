@@ -166,7 +166,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 \examples{
 \dontrun{
 library(oce)
-
+opar <- par(no.readonly = TRUE)
 dir <- "/data/archive/sleiwex/2008/moorings/"
 
 ## Nortek binary file, daily at 1/2 hour decimation
@@ -213,7 +213,7 @@ epsilon <- (median(k^(5/3)*s$spec)/alpha)^(3/2) # median might ignore low-freq
 abline(h=log10(alpha * epsilon^(2/3)), col="red")
 mtext(sprintf("\%.0e W/kg", epsilon), side=4, at=log10(alpha * epsilon^(2/3)))
 grid()
-
+par(opar)
 }
 }
 

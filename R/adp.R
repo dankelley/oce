@@ -198,7 +198,10 @@ plot.adp <- function(x,
                      debug=getOption("oce.debug"),
                      ...)
 {
+    oce.debug(debug, "\n")
     oce.debug(debug, "Entering plot.adp()\n")
+    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (!(is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data)) {
         warning("there are no profiles in this dataset")
@@ -207,6 +210,7 @@ plot.adp <- function(x,
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
+    oce.debug(debug, "length(which) =", lw, "\n")
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
@@ -228,6 +232,11 @@ plot.adp <- function(x,
     }
     gave.ylim <- "ylim" %in% names(dots)
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
+
+    oce.debug(debug, "later on in plot.adp:\n")
+    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+
 
     images <- 1:12
     timeseries <- 13:22
@@ -253,16 +262,24 @@ plot.adp <- function(x,
         if (any(which %in% images) || margins.as.image) {
             w <- 1.5
             lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+            oce.debug(debug, "calling layout(matrix...)\n")
+            oce.debug(debug, "using layout, since this is an image, or has margins as image\n")
         } else {
             if (lw != 1 || which != 23) {
                 lay <- layout(cbind(1:lw))
+                oce.debug(debug, "calling layout(cbind(1:", lw, ")\n")
+                oce.debug(debug, "using layout\n")
             }
         }
     } else {
-        if (use.new.imagep)
-            par(mfrow=c(lw, 1))
-        else
+        if (use.new.imagep) {
+            if (lw > 1) {
+                par(mfrow=c(lw, 1))
+                oce.debug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
+            }
+        } else {
             stop("cannot have use.layout=FALSE unless use.new.imagep=TRUE")
+        }
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
@@ -408,7 +425,7 @@ plot.adp <- function(x,
                 v[is.na(v)] <- 0
                 x.dist <- cumsum(u) * dt / m.per.km
                 y.dist <- cumsum(v) * dt / m.per.km
-                plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
+                plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=col[1], ...)
             } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)

@@ -18,6 +18,8 @@
 \value{A smoothed matrix.}
 
 \examples{
+library(oce)
+opar <- par(no.readonly = TRUE)
 m <- matrix(rep(seq(0, 1, length.out=5), 5), nrow=5, byrow=TRUE)
 m[3,3] <- 2
 m1 <- matrix.smooth(m)
@@ -28,6 +30,7 @@ image(m,  col=rainbow(100), zlim=c(0,4), main="original image")
 image(m1, col=rainbow(100), zlim=c(0,4), main="smoothed 1 time")
 image(m2, col=rainbow(100), zlim=c(0,4), main="smoothed 2 times")
 image(m3, col=rainbow(100), zlim=c(0,4), main="smoothed 3 times")
+par(opar)
 }
 
 \author{Dan Kelley}

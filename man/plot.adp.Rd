@@ -220,6 +220,7 @@ ADP data may be plotted with \code{\link{plot.adp}}.
 
 \examples{
 library(oce)
+##opar <- par(no.readonly = TRUE)
 data(adp)
 e <- adp.xyz2enu(adp.beam2xyz(adp))
 plot(e, which=1:3)
@@ -229,6 +230,7 @@ plot(e, which=1:2,
          abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
          lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='blue')
      }))
+##par(opar)
 }
 
 \author{Dan Kelley}

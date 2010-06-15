@@ -26,10 +26,12 @@ imagepnew <- function(x, y, z,
                       debug=getOption("oce.debug"),
                       ...)
 {
-    omai <- par("mai")
-    on.exit(par(mai=omai))
     oce.debug(debug, "\n")
-    oce.debug(debug, paste(">>> At top of new.imagep(), xlab='", xlab, "'; ylab='", ylab, "'; mar=", paste(mar, collapse=","), "\n", sep=""))
+    oce.debug(debug, ">>> entering new.imagep() <<<\n")
+    oce.debug(debug, paste("  xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep=""))
+    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+
     if (missing(x)) stop("must supply x")
     if (missing(y)) stop("must supply y")
     if (missing(z)) stop("must supply z")
@@ -37,7 +39,9 @@ imagepnew <- function(x, y, z,
     if (dim[1] != length(x)) stop("image width, dim(z)[1], must equal length(x)")
     if (dim[2] != length(y)) stop("image height, dim(z)[2], must equal length(y)")
 
+    omai <- par("mai")
     omar <- par("mar")
+    ocex <- par("cex")
     # set overall graphical parameters (note: get opai after setting mar)
     par(mgp=mgp, mar=mar, cex=cex)
     omai <- par("mai")
@@ -183,4 +187,7 @@ imagepnew <- function(x, y, z,
         t <- try(eval.parent(adorn), silent=!TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn='", adorn, "'\n")
     }
+    par(mar=omar, cex=ocex)
+    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "<<< leaving imagepnew() >>>\n")
 }

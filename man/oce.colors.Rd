@@ -53,12 +53,14 @@ oce.colors.two(n, low=2/3, high=0, smax=1, alpha = 1)
 
 \examples{
 library(oce)
+opar <- par(no.readonly = TRUE)
 x <- array(1:1000, dim=c(1,1000))
 par(mfrow=c(1,4))
 image(x, col=oce.colors.two(100), main="oce.colors.two")
 image(x, col=oce.colors.jet(100), main="oce.colors.jet")
 image(x, col=oce.colors.gebco(100), main="oce.colors.gebco")
 image(x, col=oce.colors.palette(100), main="oce.colors.palette")
+par(opar)
 }
 
 \references{

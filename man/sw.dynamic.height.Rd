@@ -45,6 +45,7 @@
 
 \examples{
 library(oce)
+opar <- par(no.readonly = TRUE)
 data(a03)
 
 # Dynamic height and geostrophy
@@ -74,6 +75,7 @@ v <- diff(dh.GS$height)/diff(dh.GS$distance) * g / f / 1e3
 plot(dh.GS$distance[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
 grid()
 abline(h=0)
+par(opar)
 }
 
 \references{Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic

@@ -59,6 +59,7 @@
 
 \examples{
 library(oce)
+opar <- par(no.readonly = TRUE)
 x <- c(rep(0,30),rep(1,30),rep(0,30))
 plot.ts(x)
 x1 <- stats::filter(x, make.filter("blackman-harris", 5))
@@ -205,6 +206,7 @@ plot(fr(a=ab$a, b=ab$b), add=TRUE, col="blue")
 legend("topright", lwd=1, col=c("black", "red", "blue", "green"),
        legend=c("BH", "butter 2", "butter 4", "cutoff"))
 mtext("NOTE: this is for ONE pass of butterworth", side=3, adj=0)
+par(opar)
 }
 
 \references{F. J. Harris, 1978.  On the use of windows for harmonic
