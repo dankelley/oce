@@ -133,6 +133,7 @@ export(
        tidem.astron,
        tidem.vuf,
        undrift.time,
+       use.heading,
        window.oce,
        write.ctd
        )

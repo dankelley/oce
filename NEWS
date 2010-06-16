@@ -1,4 +1,5 @@
 0.1-81
+- add use.heading()
 - make.filter(): can now produce tskernel type
 - improve (but temporarily limit) fill.gap
 - to plot.adp() add argument use.layout
