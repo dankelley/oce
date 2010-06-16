@@ -1,24 +1,22 @@
-use.heading <- function(from, to, add=0)
+use.heading <- function(b, g, add=0)
 {
-    if (!"heading" %in% names(from$data$ts))
-        stop("'from' does not have any heading data (in from$data$ts$heading)")
-    if (!"time" %in% names(from$data$ts))
-        stop("'from' does not have any time data (in from$data$ts$time)")
-    if (!"heading" %in% names(to$data$ts))
-        stop("'to' does not have any heading data (in to$data$ts$heading)")
-    if (!"time" %in% names(to$data$ts))
-        stop("'to' does not have any time data (in to$data$ts$time)")
-    rval <- from
-    t0 <- from$data$ts$time[1]
+    if (!"heading" %in% names(b$data$ts))
+        stop("'from' does not have any heading data (in b$data$ts$heading)")
+    if (!"time" %in% names(b$data$ts))
+        stop("'b' does not have any time data (in b$data$ts$time)")
+    if (!"heading" %in% names(g$data$ts))
+        stop("'g' does not have any heading data (in g$data$ts$heading)")
+    if (!"time" %in% names(g$data$ts))
+        stop("'g' does not have any time data (in g$data$ts$time)")
+    rval <- b
+    t0 <- as.numeric(g$data$ts$time[1])
     if (is.na(t0))
         stop("need first element of from$data$ts$time to be non-NA")
-    from.t <- as.numeric(from$data$ts$time) - as.numeric(t0)
-    to.t <- as.numeric(to$data$ts$time) - as.numeric(t0)
-    rval$data$ts$heading <- approx(x=from.t,
-                                   y=from$data$ts$heading + add,
-                                   xout=to.t)$y
+    b.t <- as.numeric(b$data$ts$time) - t0
+    g.t <- as.numeric(g$data$ts$time) - t0
+    rval$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add
     processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
-    return(rval)
+    rval
 }
 
 window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), ...)
