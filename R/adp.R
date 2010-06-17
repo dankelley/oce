@@ -409,7 +409,7 @@ plot.adp <- function(x,
         } else if (which[w] %in% spatial) {                   # various spatial types
             if (which[w] == 23) {                             # progressive-vector
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec"))
+                dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec")) # FIXME: should not assume all equal
                 m.per.km <- 1000
                 if (!missing(control) && !is.null(control$bin)) {
                     if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)

@@ -1172,7 +1172,7 @@ plot.adv <- function(x,
                      ...)
 {
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    if (!all(which %in% c(1:3,5:7,9:11,14:21))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21) but it is ", which)
+    if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -1362,6 +1362,18 @@ plot.adv <- function(x,
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 3))
+        } else if (which[w] == 23) {    # progressive vector
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            dt <- diff(as.numeric(x$data$ts$time[2]))
+            dt <- c(dt[1], dt)    # make right length by copying first
+            m.per.km <- 1000
+            u <- x$data$ma$v[,1]
+            v <- x$data$ma$v[,2]
+            u[is.na(u)] <- 0        # zero out missing
+            v[is.na(v)] <- 0
+            x.dist <- cumsum(u) * dt / m.per.km
+            y.dist <- cumsum(v) * dt / m.per.km
+            plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=col[1], ...)
         } else {
             stop("unknown value of \"which\":", which)
         }

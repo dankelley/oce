@@ -79,6 +79,10 @@
     amplitude, using \code{\link{smoothScatter}}.
     \item \code{which=20} as for \code{which=19} but for beam 2.
     \item \code{which=21} as for \code{which=19} but for beam 3.
+    \item \code{which=23} yields a progressive-vector diagram in the
+      horizontal plane, plotted with \code{asp=1}, and taking
+      beam1 and beam2 as the eastward and northward components of
+      velocity, respectively.
   }
 }
 
