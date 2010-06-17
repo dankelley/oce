@@ -14,7 +14,7 @@ use.heading <- function(b, g, add=0)
         stop("need first element of from$data$ts$time to be non-NA")
     b.t <- as.numeric(b$data$ts$time) - t0
     g.t <- as.numeric(g$data$ts$time) - t0
-    rval$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add
+    rval$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add * pi / 180
     processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
