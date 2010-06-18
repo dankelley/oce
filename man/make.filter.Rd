@@ -210,59 +210,53 @@ par(opar)
 }
 
 
-\section{Butterworth filters}{
+\section{Butterworth filters in Sage/scipy, Matlab, and R}{
 
-Matlab:
+  Sage (scipy):
+  \preformatted{
+    sage: from scipy.signal import butter,buttord
+
+    sage: butter(2, 0.5)
+    (array([ 0.29289322,  0.58578644,  0.29289322]), array([
+    1.00000000e+00,  -1.95106077e-16,   1.71572875e-01]))
+
+    sage: butter(2, 0.25)
+    (array([ 0.09763107,  0.19526215,  0.09763107]), array([ 1.,
+    -0.94280904,  0.33333333]))
+    
+  }
+  
+  Matlab:
 
 \preformatted{
   >> [b,a]=butter(2,0.5)
-
   b =
-
   0.2929    0.5858    0.2929
-
-
   a =
-
   1.0000   -0.0000    0.1716
 
   >> [b,a]=butter(2,0.25)
-
   b =
-
   0.0976    0.1953    0.0976
-
-
   a =
-
   1.0000   -0.9428    0.3333
-
-  >>
-  
 }
 
 R package \code{signal}
 
 \preformatted{
-  library(signal)
-  > butter(2, 0.5)
-  $b
-  [1] 0.2928932 0.5857864 0.2928932
-
-  $a
-  [1]  1.000000e+00 -1.625884e-16  1.715729e-01
-
-  attr(,"class")
-  [1] "Arma"
-  > butter(2, 0.25)
-  $b
-  [1] 0.09763107 0.19526215 0.09763107
-
-  $a
-  [1]  1.0000000 -0.9428090  0.3333333
-
-  attr(,"class")
-  [1] "Arma"
+  > library(signal)
+  > data.frame(butter(2,0.5)[c("a","b")])
+  a         b
+  1  1.000000e+00 0.2928932
+  2 -1.625884e-16 0.5857864
+  3  1.715729e-01 0.2928932
+  > data.frame(butter(2,0.25)[c("a","b")])
+  a          b
+  1  1.0000000 0.09763107
+  2 -0.9428090 0.19526215
+  3  0.3333333 0.09763107
+  > 
 }
 
 }
