@@ -1,3 +1,13 @@
+vector.show <- function(v, msg="vector:") # not in NAMESPACE
+{
+    n <- length(v)
+    if (n > 4) {
+        paste(msg, " ", v[1], " ", v[2], " ... ", v[n-1], " ", v[n], " (length ", n, ")\n", sep="")
+    } else {
+        paste(msg, paste(v, collapse=" "), sprintf("(length %d)\n", n), collapse="")
+    }
+}
+
 full.filename <- function(filename)
 {
     first.char <- substr(filename, 1, 1)
