@@ -1363,9 +1363,12 @@ plot.adv <- function(x,
                           xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 3))
         } else if (which[w] == 23) {    # progressive vector
+            oce.debug(debug, "doing progressive-vector diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            dt <- diff(as.numeric(x$data$ts$time[2]))
+            dt <- diff(as.numeric(x$data$ts$time))
             dt <- c(dt[1], dt)    # make right length by copying first
+            print(stem(dt))
+            dt <- mean(dt, na.rm=TRUE)
             m.per.km <- 1000
             u <- x$data$ma$v[,1]
             v <- x$data$ma$v[,2]
@@ -1373,7 +1376,7 @@ plot.adv <- function(x,
             v[is.na(v)] <- 0
             x.dist <- cumsum(u) * dt / m.per.km
             y.dist <- cumsum(v) * dt / m.per.km
-            plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=col[1], ...)
+            plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
         } else {
             stop("unknown value of \"which\":", which)
         }

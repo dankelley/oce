@@ -209,6 +209,64 @@ mtext("NOTE: this is for ONE pass of butterworth", side=3, adj=0)
 par(opar)
 }
 
+
+\section{Butterworth filters}{
+
+Matlab:
+
+\preformatted{
+  >> [b,a]=butter(2,0.5)
+
+  b =
+
+  0.2929    0.5858    0.2929
+
+
+  a =
+
+  1.0000   -0.0000    0.1716
+
+  >> [b,a]=butter(2,0.25)
+
+  b =
+
+  0.0976    0.1953    0.0976
+
+
+  a =
+
+  1.0000   -0.9428    0.3333
+
+  >>
+  
+}
+
+R package \code{signal}
+
+\preformatted{
+  library(signal)
+  > butter(2, 0.5)
+  $b
+  [1] 0.2928932 0.5857864 0.2928932
+
+  $a
+  [1]  1.000000e+00 -1.625884e-16  1.715729e-01
+
+  attr(,"class")
+  [1] "Arma"
+  > butter(2, 0.25)
+  $b
+  [1] 0.09763107 0.19526215 0.09763107
+
+  $a
+  [1]  1.0000000 -0.9428090  0.3333333
+
+  attr(,"class")
+  [1] "Arma"
+}
+
+}
+
 \references{F. J. Harris, 1978.  On the use of windows for harmonic
   analysis with the discrete Fourier Transform.
   \emph{Proceedings of the IEEE}, 66(1), 51-83
