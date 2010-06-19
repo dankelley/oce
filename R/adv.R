@@ -345,8 +345,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     }
     sec <- as.numeric(vsd.t) - as.numeric(vsd.t[1])
     oce.debug(debug, vector.show(sec, "sec:"))
-
-    if (0 != var(diff(sec))) warning("the times in the file are not equi-spaced, but they are taken to be so")
+    vds <- var(diff(sec))
+    if (!is.na(vds) & 0 != vds)
+        warning("the times in the file are not equi-spaced, but they are taken to be so")
     vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y
     oce.debug(debug, "vsd.start[1:2]=", vsd.start[1:2], "\n")
     oce.debug(debug, "vvd.start[1:9]=", vvd.start[1:9], "\n")
@@ -1388,7 +1389,6 @@ plot.adv <- function(x,
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             dt <- diff(as.numeric(x$data$ts$time))
             dt <- c(dt[1], dt)    # make right length by copying first
-            print(stem(dt))
             dt <- mean(dt, na.rm=TRUE)
             m.per.km <- 1000
             u <- x$data$ma$v[,1]
@@ -1418,18 +1418,19 @@ adv.beam2xyz <- function(x)
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
     if (is.null(x$metadata$transformation.matrix)) stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
-    transformation.matrix <- x$metadata$transformation.matrix
-    ##print(transformation.matrix)
+    tm <- x$metadata$transformation.matrix
     ## alter transformation matrix if pointing downward. FIXME: is this right?
-    if (x$metadata$orientation == "downward") {
-        transformation.matrix[2,] <- -transformation.matrix[2,]
-        transformation.matrix[3,] <- -transformation.matrix[3,]
+    if (FALSE) {                        # FIXME: do I need this, or not?
+        if (x$metadata$orientation == "downward") {
+            tm[2,] <- -tm[2,]
+            tm[3,] <- -tm[3,]
+        }
     }
-    ##print(transformation.matrix)
-    enu <- transformation.matrix %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
-    res$data$ma$v[,1] <- enu[1,]
-    res$data$ma$v[,2] <- enu[2,]
-    res$data$ma$v[,3] <- enu[3,]
+    ## Not using the matrix method because it might consume more memory, and measures no faster
+    ## xyz <- tm %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
+    res$data$ma$v[,1] <- tm[1,1] * x$data$ma$v[,1] + tm[1,2] * x$data$ma$v[,2] + tm[1,3] * x$data$ma$v[,3]
+    res$data$ma$v[,2] <- tm[2,1] * x$data$ma$v[,1] + tm[2,2] * x$data$ma$v[,2] + tm[2,3] * x$data$ma$v[,3]
+    res$data$ma$v[,3] <- tm[3,1] * x$data$ma$v[,1] + tm[3,2] * x$data$ma$v[,2] + tm[3,3] * x$data$ma$v[,3]
     res$metadata$oce.coordinate <- "xyz"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     processing.log.append(res, log.action)
