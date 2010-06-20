@@ -108,13 +108,18 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     1:65025) but this is not done in the present version of oce. (FIXME:
     check this ... I think the code reads the checksum now.)
 
-    \item System chunks are recognized by using
-    \preformatted{sc <- match.bytes(buf, 0xa5, 0x11, 0x0e)}
-    and it is these chunks that contain the times of observation, along
-    with the orientation of the device.
+    \item System chunks are recognized by using \preformatted{sc <-
+    match.bytes(buf, 0xa5, 0x11, 0x0e)}.  These chunks that the times of
+    observation, along with the orientation of the device, etc.
 
-    \item Times from the system chunks are coordinated with velocities
-    in the velocity chunks by ... \emph{BUG:} fill in the method.
+    \item Times from the system chunks are mapped to velocity chunks by
+    linear interpolation.
+
+    \item Unlike related functions, \code{read.adv.nortek} reads and
+    decodes every system chunk, even if a \code{by} argument is
+    specified.  This makes this function slow, because decoding times is
+    a slow operation.  (About 60 percent of the execution time is spent
+    calling \code{\link{ISOdatetime}}.)
 
   }
 

@@ -487,24 +487,26 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm, ...)
         }
-        res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
-        res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
-        res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
-        res$data$ma$v[,,4] <-  tm[4,1] * x$data$ma$v[,,1] + tm[4,2] * x$data$ma$v[,,2] + tm[4,3] * x$data$ma$v[,,3] + tm[4,4] * x$data$ma$v[,,4]
+        res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
+        res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
+        res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
+        res$data$ma$v[,,4] <- tm[4,1] * x$data$ma$v[,,1] + tm[4,2] * x$data$ma$v[,,2] + tm[4,3] * x$data$ma$v[,,3] + tm[4,4] * x$data$ma$v[,,4]
     } else if (inherits(x, "nortek")) {
         if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from nortek")
         res <- x
         if (!is.null(x$metadata$transformation.matrix)) {
             tm <- x$metadata$transformation.matrix
-            if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
-                ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
-                tm[2,] <- -tm[2,]       # FIXME: shouldn't this be done in read.adp.nortek() ?
-                tm[3,] <- -tm[3,]
-            } else if (x$metadata$orientation != "upward")
-                stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
-            res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
-            res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
-            res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
+            if (FALSE) {                                    # FIXME: decide whether to modify transformation matrix here
+                if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
+                    ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
+                    tm[2,] <- -tm[2,]       # FIXME: shouldn't this be done in read.adp.nortek() ?
+                    tm[3,] <- -tm[3,]
+                } else if (x$metadata$orientation != "upward")
+                    stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
+            }
+            res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
+            res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
+            res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
         } else {
             stop("adp.beam2xyz() needs metadata$transformation.matrix")
         }

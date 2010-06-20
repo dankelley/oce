@@ -64,9 +64,16 @@ summary(f)
 plot(f, which=1:3)
 }
 
-\references{R D Instruments, 1998.
+\references{
+
+1. R D Instruments, 1998.
 \emph{ADP Coordinate Transformation, formulas and calculations.}
-P/N 951-6079-00 (July 1998).}
+P/N 951-6079-00 (July 1998).
+
+2. WHOI/USGS-provided Matlab code for beam-enu transformation
+\url{http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m}
+
+}
 
 \seealso{See \code{\link{read.adp}} for other functions that relate to objects
 of class \code{"adp"}.}

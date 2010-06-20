@@ -288,6 +288,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (to.index <= from.index)
         stop("no data in specified range from=", format(from), " to=", format(to))
     ## we make the times *after* trimming, because this is a slow operation
+    ## NOTE: the ISOdatetime() call takes 60% of the entire time for this function.
+
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
                          bcd2integer(buf[vsd.start+9]), # month
                          bcd2integer(buf[vsd.start+6]), # day
