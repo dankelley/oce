@@ -1422,7 +1422,7 @@ adv.beam2xyz <- function(x)
     if (is.null(x$metadata$transformation.matrix)) stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
     tm <- x$metadata$transformation.matrix
     ## alter transformation matrix if pointing downward. FIXME: is this right?
-    if (FALSE) {                        # FIXME: do I need this, or not?
+    if (FALSE) {  # FIXME: should we modify the transformation matrix?
         if (x$metadata$orientation == "downward") {
             tm[2,] <- -tm[2,]
             tm[3,] <- -tm[3,]

@@ -461,17 +461,19 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ## Thus, for the upwards-mounted orientation, we must transform
         ## x to -x and z to -z.  The matrix below is from page 13 (section 5.30
         ## of the ACT.  So, if the orientation is upwards, we need to
-        ## change the signs of rows 1 and 3.
+        ## change the signs of rows 1 and 3.  (FIXME: docs say "col" not "row")
         metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
                                                    0        ,          0, -tm.c*tm.a, tm.c*tm.a,
                                                    tm.b     ,       tm.b,       tm.b,      tm.b,
                                                    tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                                  nrow=4, byrow=TRUE)
-        if (metadata$orientation == "upward") {
-            metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
-            metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
-        } else if (metadata$orientation == "downward") {
-        } else warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
+        if (FALSE) { # FIXME: should we modify the transformation matrix?
+            if (metadata$orientation == "upward") {
+                metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
+                metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
+            } else if (metadata$orientation == "downward") {
+            } else warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
+        }
         if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
         ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)
         class(time) <- c("POSIXt", "POSIXct")

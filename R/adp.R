@@ -183,7 +183,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 plot.adp <- function(x,
                      which=1:dim(x$data$ma$v)[3],
-                     col=oce.colors.palette(128, 1),
+                     col,
                      zlim,
                      titles,
                      ytype=c("profile", "distance"),
@@ -241,7 +241,8 @@ plot.adp <- function(x,
     images <- 1:12
     timeseries <- 13:22
     spatial <- 23:27
-    if (any(!which %in% c(images, timeseries, spatial))) stop("unknown value of 'which'")
+    speed <- 28
+    if (any(!which %in% c(images, timeseries, spatial, speed))) stop("unknown value of 'which'")
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -312,25 +313,25 @@ plot.adp <- function(x,
                 ##oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, " (just about to plot)\n")
                 if (use.new.imagep) {
                     imagepnew(x=tt, y=x$data$ss$distance, z=z,
-                           zlim=zlim,
-                           flip.y=flip.y,
-                           col=col,
-                           ylab=resizable.label("distance"),
-                           xlab="Time",
-                           zlab=zlab,
-                           draw.time.range=draw.time.range,
-                           draw.contours=FALSE,
-                           adorn=adorn[w],
-                           mgp=mgp,
-                           mar=mar,
-                           cex=cex*(1 - min(lw / 8, 1/4)), # FIXME: should emulate par(mfrow)
-                           debug=debug-1,
-                           ...)
+                              zlim=zlim,
+                              flip.y=flip.y,
+                              col=if (missing(col)) oce.colors.palette(128, 1) else col,
+                              ylab=resizable.label("distance"),
+                              xlab="Time",
+                              zlab=zlab,
+                              draw.time.range=draw.time.range,
+                              draw.contours=FALSE,
+                              adorn=adorn[w],
+                              mgp=mgp,
+                              mar=mar,
+                              cex=cex*(1 - min(lw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                              debug=debug-1,
+                              ...)
                 } else {
                     imagep(x=tt, y=x$data$ss$distance, z=z,
                            zlim=zlim,
                            flip.y=flip.y,
-                           col=col,
+                           col=if (missing(col)) oce.colors.palette(128, 1) else col,
                            ylab=resizable.label("distance"),
                            xlab="Time",
                            zlab=zlab,
@@ -425,7 +426,7 @@ plot.adp <- function(x,
                 v[is.na(v)] <- 0
                 x.dist <- cumsum(u) * dt / m.per.km
                 y.dist <- cumsum(v) * dt / m.per.km
-                plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=col[1], ...)
+                plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=if (missing(col)) "black" else col, ...)
             } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)
@@ -446,6 +447,30 @@ plot.adp <- function(x,
                     plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 4), ylab="Distance [m]", type='l', ...)
                     ##grid()
                 } else warning("cannot use which=27 because this device did not have 4 beams")
+            }
+            if (w <= adorn.length) {
+                t <- try(eval(adorn[w]), silent=TRUE)
+                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            }
+        } else if (which[w] %in% speed) { # various speed types
+            if (which[w] == 28) {         # current ellipse
+                par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+                if (!missing(control) && !is.null(control$bin)) {
+                    if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                    max.bin <- dim(x$data$ma$v)[2]
+                    if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                    u <- x$data$ma$v[,control$bin,1]
+                    v <- x$data$ma$v[,control$bin,2]
+                } else {
+                    u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
+                    v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+                }
+                if ("type" %in% names(dots)) {
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
+                } else {
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
+                    points(u, v, cex=cex/3, col=if (missing(col)) "black" else col)
+                }
             }
             if (w <= adorn.length) {
                 t <- try(eval(adorn[w]), silent=TRUE)
@@ -522,9 +547,9 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm, ...)
         }
-        res$data$ma$v[,,1] <-  tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
-        res$data$ma$v[,,2] <-  tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
-        res$data$ma$v[,,3] <-  tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
+        res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
+        res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
+        res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
@@ -541,9 +566,9 @@ adp.xyz2enu <- function(x)
     heading <- res$data$ts$heading
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    if (res$metadata$orientation == "downward") {
-        pitch <- -pitch
-        roll <- -roll
+    if (res$metadata$orientation == "downward") { # FIXME: I don't know if this is right
+        pitch <- -pitch                 # near top of p14 of RDI coordinate doc
+        roll <- -roll                   # NOT PRESENT in above-named doca
     }
     to.radians <- pi / 180
     CH <- cos(to.radians * heading)

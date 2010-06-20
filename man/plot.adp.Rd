@@ -7,7 +7,8 @@
 \description{Plot ADP data.}
 
 \usage{\method{plot}{adp}(x, which=1:dim(x$data$ma$v)[3],
-     col=oce.colors.palette(128,1), zlim, 
+     col,
+     zlim,
      titles,
      ytype=c("profile", "distance"),
      adorn=NULL,
@@ -27,10 +28,9 @@
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
     \code{which}.}
-  \item{col}{color palette to use.  The default
-    \code{\link{oce.colors.two}} palette blends from blue for negative
-    values, through white at zero, to red at positive values; see
-    \dQuote{Details}.}
+  \item{col}{optional indication of colour(s) to use.  If not provided,
+    the default for images is \code{oce.colors.palette(128,1)}, and for
+    lines and points is black.}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
     \code{\link{imagep}} call that is used to create the image.  If
     omitted, \code{zlim} is set for each panel individually, to
@@ -171,6 +171,12 @@
 
     \item \code{which=27} as for 24, but the fourth component (if that makes sense, for the given instrument).
 
+    \item \code{which=28} yields a current diagram in the
+    horizontal plane, plotted with \code{asp=1}.  Normally, the
+    depth-averaged velocity components are used, but if the
+    \code{control} list contains an item named \code{bin}, then the
+    depth bin will be used (with an error resulting if the bin is out of
+    range).
   }
 
   The color scheme for image plots (\code{which} in 1:12) is provided
