@@ -8,9 +8,13 @@
   coordinate system to an enu-based coordinate system, by using
   the instrument's recording of heading,  pitch, and roll.}
 
-\usage{adp.xyz2enu(x)}
+\usage{adp.xyz2enu(x, debug=getOption("oce.debug"))}
 
-\arguments{\item{x}{an object of class \code{"adp"}.}}
+\arguments{
+  \item{x}{an object of class \code{"adp"}.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
+}
 
 \details{Different formulae are used for different instruments, e.g for
   RDI instruments, beams are rotated using formulae from page 13 and 14

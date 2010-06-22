@@ -495,7 +495,7 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     processing.log.append(res, log.action)
 }
 
-adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
+adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
@@ -510,7 +510,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
                            -0.2588190, -0.2588190, -0.2588190, -0.2588190,
                            1.3660254 ,  1.3660254, -1.3660254, -1.3660254), nrow=4, byrow=TRUE)
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
-            print(tm, ...)
+            print(tm)
         }
         res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
@@ -545,7 +545,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
                            0.000, -1.366,  1.366,
                            0.368,  0.368,  0.368), nrow=4, byrow=TRUE)
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
-            print(tm, ...)
+            print(tm)
         }
         res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
         res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
@@ -558,7 +558,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"), ...)
     processing.log.append(res, log.action)
 }
 
-adp.xyz2enu <- function(x)
+adp.xyz2enu <- function(x, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates")
@@ -566,17 +566,19 @@ adp.xyz2enu <- function(x)
     heading <- res$data$ts$heading
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    if (res$metadata$orientation == "downward") { # FIXME: I don't know if this is right
-        pitch <- -pitch                 # near top of p14 of RDI coordinate doc
-        roll <- -roll                   # NOT PRESENT in above-named doca
-    }
     to.radians <- pi / 180
     CH <- cos(to.radians * heading)
     SH <- sin(to.radians * heading)
     CP <- cos(to.radians * pitch)
     SP <- sin(to.radians * pitch)
-    CR <- cos(to.radians * roll)
-    SR <- sin(to.radians * roll)
+    if (x$metadata$instrument.type == "teledyne rdi" && res$metadata$orientation == "upward") {
+        oce.debug(debug, "adding pi to roll, because this is an upward-looking 'teledyne rdi' instrument")
+        CR <- cos(to.radians * roll + pi)
+        SR <- sin(to.radians * roll + pi)
+    } else {
+        CR <- cos(to.radians * roll)
+        SR <- sin(to.radians * roll)
+    }
     np <- dim(x$data$ma$v)[1]
     nc <- dim(x$data$ma$v)[2]
     tr.mat <- array(dim=c(3, 3, np))
