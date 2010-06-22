@@ -134,6 +134,7 @@ export(
        tidem.vuf,
        undrift.time,
        use.heading,
+       vector.show,
        window.oce,
        write.ctd
        )
