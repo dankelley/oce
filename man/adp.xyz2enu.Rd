@@ -8,10 +8,12 @@
   coordinate system to an enu-based coordinate system, by using
   the instrument's recording of heading,  pitch, and roll.}
 
-\usage{adp.xyz2enu(x, debug=getOption("oce.debug"))}
+\usage{adp.xyz2enu(x, declination=0, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adp"}.}
+  \item{declination}{magnetic declination to be added to the heading, to
+    get ENU with N as "true" north.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
 }

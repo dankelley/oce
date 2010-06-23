@@ -566,12 +566,12 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
     processing.log.append(res, log.action)
 }
 
-adp.xyz2enu <- function(x, debug=getOption("oce.debug"))
+adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates")
     res <- x
-    heading <- res$data$ts$heading
+    heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
     if (x$metadata$instrument.type == "teledyne rdi") {
