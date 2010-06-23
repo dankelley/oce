@@ -159,7 +159,7 @@ oce.plot.ts <- function(x,
     } else {
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex,  type=type, ...)
     }
-    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main)
+    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main, ...)
     if (grid) {
         lwd <- par("lwd")
         abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
@@ -573,6 +573,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
         stop("must supply x")
+    dots <- list(...)
+    if ("xlim" %in% names(dots)) {
+        ok <- dots$xlim[1] <= x & x <= dots$xlim[2]
+        x <- x[ok]
+    }
     mat <- missing(at) || is.null(at)
     if (!mat) x <- as.POSIXct(at) else x <- as.POSIXct(x)
     range <- par("usr")[if (side%%2) 1:2 else 3:4]

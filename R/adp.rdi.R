@@ -90,6 +90,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     else if (bits == "11") coordinate.system <- "enu"
     heading.alignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
     heading.bias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
+    oce.debug(10+debug, "heading.alignment=", heading.alignment, "; heading.bias=", heading.bias, "\n")
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
     sensors.available <- readBin(FLD[32], "integer", n=1, size=1)
     bin1.distance <- readBin(FLD[33:34], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
@@ -219,6 +220,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
          ##pitch=pitch,
          ##roll=roll,
          ##salinity=salinity
+         heading.alignment,
+         heading.bias,
          have.actual.data=have.actual.data)
 }                                       # read.header.rdi()
 
@@ -438,11 +441,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         metadata$number.of.beams <- header$number.of.beams
         metadata$depth.of.transducer <- mean(depth.of.transducer, na.rm=TRUE)
         ## Transformation matrix
-        tm.c <- if (metadata$beam.pattern == "convex") 1 else -1;
+        tm.c <- if (metadata$beam.pattern == "convex") 1 else -1; # control sign of first 2 rows of transformation.matrix
         tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
         tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
         tm.d <- tm.a / sqrt(2)
-        ## FIXME Dal people use 'a' in last row of matrix, and RDI has two definitions!
+        ## FIXME Dal people use 'a' in last row of matrix, but both
+        ## RDI and CODAS use as we have here.  (And I think RDI
+        ## may have two definitions...)
         ##
         ## Notes on coordinate transformation matrix.
         ## From figure 3 on page 12 of ACT (adcp coordinate transformation.pdf)
@@ -469,13 +474,15 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ## Thus, for the upwards-mounted orientation, we must transform
         ## x to -x and z to -z.  The matrix below is from page 13 (section 5.30
         ## of the ACT.  So, if the orientation is upwards, we need to
-        ## change the signs of rows 1 and 3.  (FIXME: docs say "col" not "row")
+        ## change the signs of rows 1 and 3.
+        ## NOTE: be careful on rows and columns, which differ in different codes.
+        ## check: http://currents.soest.hawaii.edu/hg/hgwebdir.cgi/pycurrents/file/tip/adcp/transform.py
         metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
                                                    0        ,          0, -tm.c*tm.a, tm.c*tm.a,
                                                    tm.b     ,       tm.b,       tm.b,      tm.b,
                                                    tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                                  nrow=4, byrow=TRUE)
-        if (FALSE) { # FIXME: should we modify the transformation matrix?
+        if (!FALSE) { # FIXME: should we modify the transformation matrix?
             if (metadata$orientation == "upward") {
                 metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
                 metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]

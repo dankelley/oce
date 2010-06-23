@@ -48,6 +48,8 @@ summary.adp <- function(object, ...)
                                  velocity.scale=object$metadata$velocity.scale)
         } else if (inherits(object, "rdi")) {
             res.specific <- list(number.of.data.types=object$metadata$number.of.data.types,
+                                 heading.alignment=object$metadata$heading.alignment,
+                                 heading.bias=object$metadata$heading.bias,
                                  bin1.distance=object$metadata$bin1.distance,
                                  xmit.pulse.length=object$metadata$xmit.pulse.length,
                                  oce.beam.attenuated=object$metadata$oce.beam.attenuated,
@@ -157,6 +159,8 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Xmit pulse length:          ", x$metadata$xmit.pulse.length,"m\n", ...)
             cat("  * Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
             cat("  * Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
+            cat("  * Heading alignment:          ", x$metadata$heading.alignment, "\n", ...)
+            cat("  * Heading bias:               ", x$metadata$heading.bias, "\n", ...)
         } else if (x$instrument.type == "nortek aquadopp high resolution") {
             cat("* Nortek-specific:\n\n", ...)
             cat("  * Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
@@ -512,6 +516,10 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm)
         }
+        if (x$metadata$orientation == "upward") { # change sign of u and w, since RDI is pointing upward
+            tm[1,] <- -tm[1,]
+            tm[3,] <- -tm[3,]
+        }
         res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
@@ -566,19 +574,18 @@ adp.xyz2enu <- function(x, debug=getOption("oce.debug"))
     heading <- res$data$ts$heading
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
+    if (x$metadata$instrument.type == "teledyne rdi") {
+        heading <- heading + 2 * res$metadata$heading.bias
+        if (res$metadata$orientation == "upward")
+            roll <- roll + 180
+    }
     to.radians <- pi / 180
     CH <- cos(to.radians * heading)
     SH <- sin(to.radians * heading)
     CP <- cos(to.radians * pitch)
     SP <- sin(to.radians * pitch)
-    if (x$metadata$instrument.type == "teledyne rdi" && res$metadata$orientation == "upward") {
-        oce.debug(debug, "adding pi to roll, because this is an upward-looking 'teledyne rdi' instrument")
-        CR <- cos(to.radians * roll + pi)
-        SR <- sin(to.radians * roll + pi)
-    } else {
-        CR <- cos(to.radians * roll)
-        SR <- sin(to.radians * roll)
-    }
+    CR <- cos(to.radians * roll)
+    SR <- sin(to.radians * roll)
     np <- dim(x$data$ma$v)[1]
     nc <- dim(x$data$ma$v)[2]
     tr.mat <- array(dim=c(3, 3, np))
