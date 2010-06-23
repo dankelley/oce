@@ -575,7 +575,7 @@ adp.xyz2enu <- function(x, debug=getOption("oce.debug"))
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
     if (x$metadata$instrument.type == "teledyne rdi") {
-        heading <- heading + 2 * res$metadata$heading.bias
+        heading <- heading + res$metadata$heading.bias
         if (res$metadata$orientation == "upward")
             roll <- roll + 180
     }
