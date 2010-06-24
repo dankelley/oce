@@ -6,13 +6,15 @@
 
 \description{Subset an oce object}
 
-\usage{\method{subset}{oce}(x, subset, indices=NULL, \dots)}
+\usage{\method{subset}{oce}(x, subset, indices=NULL, debug=getOption("oce.debug"), \dots)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
   \item{subset}{a condition to be applied to the \code{data} portion of
     \code{x} (ignored for \code{station} objects).}
   \item{indices}{list of station indices (used only for \code{section} objects).}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{ignored.}
 }
 

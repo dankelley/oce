@@ -194,7 +194,7 @@ plot.adp <- function(x,
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1.5),
+                     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
                      cex=1,
                      control,
@@ -404,7 +404,7 @@ plot.adp <- function(x,
                 else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             draw.time.range <- FALSE
-            if (margins.as.image)  {
+            if (margins.as.image && use.layout)  {
                 ## blank plot, to get axis length same as for images
                 omar <- par("mar")
                 par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
@@ -473,7 +473,7 @@ plot.adp <- function(x,
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
                 } else {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
-                    points(u, v, cex=cex/3, col=if (missing(col)) "black" else col)
+                    points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
             }
             if (w <= adorn.length) {
@@ -575,9 +575,12 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
     if (x$metadata$instrument.type == "teledyne rdi") {
+        oce.debug(debug, "adding metadata$heading.bias=", res$metadata$heading.bias, "to the heading of this RDI instrument\n")
         heading <- heading + res$metadata$heading.bias
-        if (res$metadata$orientation == "upward")
+        if (res$metadata$orientation == "upward") {
+            oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
+        }
     }
     to.radians <- pi / 180
     CH <- cos(to.radians * heading)

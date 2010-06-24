@@ -249,9 +249,8 @@ oce.write.table <- function (x, file="", ...)
     else write.table(x$data, file, ...)
 }
 
-subset.oce <- function (x, subset, indices=NULL, ...)
+subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), ...)
 {
-    debug <- !TRUE
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
@@ -261,14 +260,13 @@ subset.oce <- function (x, subset, indices=NULL, ...)
             stop("this version of oce cannot subset adp data by index")
         } else if (!missing(subset)) {
             subset.string <- deparse(substitute(subset))
+            oce.debug(debug, "subset.string='", subset.string, "'\n")
             if (length(grep("time", subset.string))) {
+                oce.debug(debug, "subsetting an adp by time\n")
                 ##stop("cannot understand the subset; it should be e.g. 'time < as.POSIXct(\"2008-06-26 12:00:00\", tz = \"UTC\")'")
                 keep <- eval(substitute(subset), x$data$ts, parent.frame())
+                oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
                 if (sum(keep) < 2) stop("must keep at least 2 profiles")
-                if (debug) {
-                    cat("keeping profiles:\n")
-                    print(keep)
-                }
                 rval <- x
                 for (name in names(x$data$ts)) {
                     rval$data$ts[[name]] <- x$data$ts[[name]][keep]
@@ -277,12 +275,10 @@ subset.oce <- function (x, subset, indices=NULL, ...)
                     rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
                 }
             } else if (length(grep("distance", subset.string))) {
+                oce.debug(debug, "subsetting an adp by distance\n")
                 keep <- eval(substitute(subset), x$data$ss, parent.frame())
+                oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
                 if (sum(keep) < 2) stop("must keep at least 2 bins")
-                if (debug) {
-                    cat("keeping bins:\n")
-                    print(keep)
-                }
                 rval <- x
                 for (name in names(x$data$ss)) {
                     rval$data$ss[[name]] <- x$data$ss[[name]][keep]
