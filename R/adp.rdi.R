@@ -364,7 +364,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
         q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
         g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
-        ii <- 1
+        bad.profiles <- NULL
         for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
             o <- profile.start[i] + 65      # are we *sure* this will be 65?
             oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
@@ -388,8 +388,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     cat(".", ...)
                     if (!(i %% 50)) cat(i, "\n", ...)
                 }
-                ii <- ii + 1
             } else {
+                bad.profiles <- c(bad.profiles, i)
                 if (monitor) {
                     cat("X", ...)
                     if (!(i %% 50)) cat(i, "\n", ...)
@@ -400,12 +400,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 }
             }
         }
-        if (ii != 1+profiles.to.read) {
-            v <- v[1:(ii-1),,]
-            a <- a[1:(ii-1),,]
-            g <- g[1:(ii-1),,]
-            cat("discarded", profiles.to.read - ii, "spurious profiles")
-        }
         time <- ISOdatetime(2000+as.integer(buf[profile.start+4]), # year
                             as.integer(buf[profile.start+5]),      # month
                             as.integer(buf[profile.start+6]),      # day
@@ -413,6 +407,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             as.integer(buf[profile.start+8]),      # minute
                             as.integer(buf[profile.start+9]),      # second
                             tz=tz)
+        if (length(bad.profiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
+            t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
+            time <- fill.gap(as.numeric(time) - as.numeric(t0)) + t0
+            warning("Discarded ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), sep=", "), "\n")
+        }
+
         profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
         profile.start4 <- sort(c(profile.start, profile.start + 1, profile.start + 2, profile.start + 3)) # lets us index four-byte chunks
         speed.of.sound <- 0.1 * readBin(buf[profile.start2 + 14], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
