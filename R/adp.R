@@ -577,7 +577,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     roll <- res$data$ts$roll
     if (x$metadata$instrument.type == "teledyne rdi") {
         oce.debug(debug, "adding metadata$heading.bias=", res$metadata$heading.bias, "to the heading of this RDI instrument\n")
-        heading <- heading + res$metadata$heading.bias
+        heading <- heading + res$metadata$heading.bias # FIXME: I do *NOT* know if this is right.  What is in the file? Heading or heading+EB??
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
