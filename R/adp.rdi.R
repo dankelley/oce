@@ -3,6 +3,8 @@
 
 decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("oce.tz"), ...)
 {
+    ## reference: WCODF = "WorkHorse Commands and Output Data Format_Nov07.pdf"
+
     ##
     ## header, of length 6 + 2 * number.of.data.types bytes
     ##
@@ -88,8 +90,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     else if (bits == "01") coordinate.system <- "instrument"
     else if (bits == "10") coordinate.system <- "xyz"
     else if (bits == "11") coordinate.system <- "enu"
-    heading.alignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little")
-    heading.bias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little")
+    heading.alignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little") # WCODF p 130
+    heading.bias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
     oce.debug(10+debug, "heading.alignment=", heading.alignment, "; heading.bias=", heading.bias, "\n")
     sensor.source <- readBin(FLD[31], "integer", n=1, size=1)
     sensors.available <- readBin(FLD[32], "integer", n=1, size=1)

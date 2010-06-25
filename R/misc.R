@@ -1,8 +1,8 @@
-vector.show <- function(v, msg="vector:") # not in NAMESPACE
+vector.show <- function(v, msg="vector:")
 {
     n <- length(v)
-    if (n > 4) {
-        paste(msg, " ", v[1], " ", v[2], " ... ", v[n-1], " ", v[n], " (length ", n, ")\n", sep="")
+    if (n > 6) {
+        paste(msg, " ", v[1], " ", v[2], " ", v[3], " ... ", v[n-2], " ", v[n-1], " ", v[n], " (length ", n, ")\n", sep="")
     } else {
         paste(msg, paste(v, collapse=" "), sprintf("(length %d)\n", n), collapse="")
     }
@@ -561,25 +561,59 @@ add.column <- function (x, data, name)
     rval
 }
 
-decimate <- function(x, by=10, method=c("direct", "filter"), filter)
+decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "oce")) stop("method is only for oce objects")
-    method <- match.arg(method)
-    if (method == "filter" && missing(filter)) stop("must provide filter coefficients")
-    if (method == "direct" && !missing(filter)) stop("cannot supply a filter if method is \"direct\"")
     res <- x
-    do.filter <- method == "filter"
+    do.filter <- !missing(filter)
+    select <- if (missing(to)) seq(1, length(x$data$ts[[1]]), by=by) else to
+    oce.debug(debug, vector.show(select, "select:"))
     if (inherits(x, "adp")) {
-        stop("cannot handle ADP objects (request this from the author)")
-    } else if (inherits(x, "adv")) {
-        i <- seq(1, length(x$data$ts[[1]]), by=by)
-        num.ts <- length(x$data$ts)
-        for (v in 1:num.ts) {
-            if (names(x$data$ts)[[v]] == "time" || !do.filter) {
-                res$data$ts[[v]] <- x$data$ts[[v]][i]
-            } else {
-                res$data$ts[[v]] <- filter(x$data$ts[[v]], filter, circular=TRUE)[i]
+        oce.debug(debug, "decimate() on an ADP object\n")
+        nts <- length(x$data$ts)
+        for (its in 1:nts) {
+            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+            if (names(x$data$ts)[[its]] != "time" && do.filter) {
+                tmp <- mean(x$data$ts[[its]], na.rm=TRUE)
+                res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE, sides=2) + tmp
             }
+            res$data$ts[[its]] <- x$data$ts[[its]][select]
+            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+        }
+        nma <- length(x$data$ma)
+        for (ma in 1:nma) {
+            dim <- dim(x$data$ma[[ma]])
+            nbeam <- dim[3]
+            ndepth <- dim[2]
+            oce.debug(debug, "ma=", ma, "; nbeam=", nbeam, "; ndepth=", ndepth, "\n")
+            if (do.filter) {
+                raw <- is.raw(x$data$ma[[ma]])
+                for (depth in 1:ndepth) {
+                    for (beam in 1:nbeam) {
+                        oce.debug(debug, "depth=", depth, "; beam=", beam, "\n")
+                        if (raw) {
+                            tmp <- filter(as.numeric(x$data$ma[[ma]][,depth,beam]), filter, circular=TRUE)
+                            tmp[tmp < 0] <- 0
+                            tmp[tmp > 255] <- 255
+                            res$data$ma[[ma]][,depth,beam] <- as.raw(tmp)
+                        } else {
+                            res$data$ma[[ma]][,depth,beam] <- filter(x$data$ma[[ma]][,depth,beam], filter, circular=TRUE)
+                        }
+                    }
+                }
+            }
+            res$data$ma[[ma]] <- res$data$ma[[ma]][select,,]
+        }
+    } else if (inherits(x, "adv")) { # FIXME: the (newer) adp code is probably better than this ADV code
+        oce.debug(debug, "decimate() on an ADV object\n")
+        nts <- length(x$data$ts)
+        for (its in 1:nts) {
+            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+            if (names(x$data$ts)[[its]] == "time" || !do.filter)
+                res$data$ts[[its]] <- x$data$ts[[its]][select]
+            else
+                res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE)[select]
+            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
         }
         num.ma <- length(x$data$ma)
         for (v in 1:num.ma) {
@@ -596,15 +630,15 @@ decimate <- function(x, by=10, method=c("direct", "filter"), filter)
                         res$data$ma[[v]][,beam] <- filter(x$data$ma[[v]][,beam], filter, circular=TRUE)
                     }
                 }
-                res$data$ma[[v]] <- res$data$ma[[v]][i,]
+                res$data$ma[[v]] <- res$data$ma[[v]][select,]
             } else {
-                res$data$ma[[v]] <- res$data$ma[[v]][i,]
+                res$data$ma[[v]] <- res$data$ma[[v]][select,]
             }
         }
     } else if (inherits(x, "ctd")) {
         if (do.filter) stop("cannot (yet) filter ctd data during decimation") # FIXME
-        i <- seq(1, dim(x$data)[1], by=by)
-        res$data <- x$data[i,]
+        select <- seq(1, dim(x$data)[1], by=by)
+        res$data <- x$data[select,]
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }

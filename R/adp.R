@@ -50,6 +50,7 @@ summary.adp <- function(object, ...)
             res.specific <- list(number.of.data.types=object$metadata$number.of.data.types,
                                  heading.alignment=object$metadata$heading.alignment,
                                  heading.bias=object$metadata$heading.bias,
+                                 pings.per.ensemble=object$metadata$pings.per.ensemble,
                                  bin1.distance=object$metadata$bin1.distance,
                                  xmit.pulse.length=object$metadata$xmit.pulse.length,
                                  oce.beam.attenuated=object$metadata$oce.beam.attenuated,
