@@ -247,7 +247,7 @@ plot.adp <- function(x,
     timeseries <- 13:22
     spatial <- 23:27
     speed <- 28
-    if (any(!which %in% c(images, timeseries, spatial, speed))) stop("unknown value of 'which'")
+    if (any(!floor(0.01 + which) %in% c(images, timeseries, spatial, speed))) stop("unknown value of 'which'")
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -457,8 +457,8 @@ plot.adp <- function(x,
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
-        } else if (which[w] %in% speed) { # various speed types
-            if (which[w] == 28) {         # current ellipse
+        } else if (floor(0.01 + which[w]) %in% speed) { # various speed types
+            if (round(which[w], 0) == 28) {         # currents=28; with ellipse=28.1
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 if (!missing(control) && !is.null(control$bin)) {
                     if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
@@ -475,6 +475,23 @@ plot.adp <- function(x,
                 } else {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
                     points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
+                }
+                if (round(which[w], 1) == 28.1) {
+                    ## eigen ellipse
+                    uv <- data.frame(u=apply(x$data$ma$v[,,1],1,mean,na.rm=TRUE),
+                                     v=apply(x$data$ma$v[,,2],1,mean,na.rm=TRUE))
+                    e <- eigen(cov(uv))
+                    M <- sqrt(e$values[1])  # major
+                    m <- sqrt(e$values[2])  # minor
+                    ##segments(0, 0, M * e$vectors[1,1], M * e$vectors[2,1], col='red')
+                    ##segments(0, 0, m * e$vectors[1,2], m * e$vectors[2,2], col='blue')
+                    theta <- seq(0, 2*pi, length.out=100)
+                    x <- M*cos(theta)
+                    y <- m*sin(theta)
+                    theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+                    rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                    xy <- rotate %*% rbind(x, y)
+                    lines(xy[1,], xy[2,])
                 }
             }
             if (w <= adorn.length) {

@@ -177,7 +177,10 @@
     \code{control} list contains an item named \code{bin}, then the
     depth bin will be used (with an error resulting if the bin is out of
     range).
-  }
+
+    \item \code{which=28.1} is as for 28, except that an ellipse is
+    drawn, based on the eigenvectors of the covarance matrix between the
+    u and v velocity components.}
 
   The color scheme for image plots (\code{which} in 1:12) is provided
   by the \code{col} argument, which is passed to \code{\link{image}} to
