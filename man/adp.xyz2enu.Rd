@@ -18,9 +18,16 @@
     moderate amount of debugging information, or to 2 to get more.} 
 }
 
-\details{Different formulae are used for different instruments, e.g for
-  RDI instruments, beams are rotated using formulae from page 13 and 14
-  of \emph{RD Instruments} (1998).}
+\details{Different formulae are used for different instruments.
+
+  A few notes are in order for RDI instruments, for which this code was
+  originally written, and which is well tested.  The beams are rotated
+  using formulae from page 13 and 14 of \emph{RD Instruments} (1998).
+  If a heading bias was set for the deployment (e.g. by using the
+  \code{EB} command in the RDI setup system), then this will be
+  subtracted from the heading, before the coordinate transformation is
+  done.  (The heading bias is stored in the header at
+  \code{$data$metadata$heading.bias}.)}
 
 \value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
   and with \code{metadata$oce.orientation} changed from \code{xyz} to
