@@ -161,7 +161,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
             cat("  * Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
             cat("  * Heading alignment:          ", x$metadata$heading.alignment, "\n", ...)
-            cat("  * Heading bias:               ", x$metadata$heading.bias, "[note: this is *subtracted* from the object's data$ts$heading by adp.xyz2enu()]\n", ...)
+            cat("  * Heading bias:               ", x$metadata$heading.bias, "[note: this is *subtracted* from the object's ``$data$ts$heading`` by ``adp.xyz2enu()``]\n", ...)
         } else if (x$instrument.type == "nortek aquadopp high resolution") {
             cat("* Nortek-specific:\n\n", ...)
             cat("  * Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
