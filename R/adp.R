@@ -161,7 +161,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
             cat("  * Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
             cat("  * Heading alignment:          ", x$metadata$heading.alignment, "\n", ...)
-            cat("  * Heading bias:               ", x$metadata$heading.bias, "\n", ...)
+            cat("  * Heading bias:               ", x$metadata$heading.bias, "[note: this is *subtracted* from the object's data$ts$heading by adp.xyz2enu()]\n", ...)
         } else if (x$instrument.type == "nortek aquadopp high resolution") {
             cat("* Nortek-specific:\n\n", ...)
             cat("  * Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
@@ -593,8 +593,8 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
     if (x$metadata$instrument.type == "teledyne rdi") {
-        oce.debug(debug, "adding metadata$heading.bias=", res$metadata$heading.bias, "to the heading of this RDI instrument\n")
-#        heading <- heading + res$metadata$heading.bias # FIXME: I do *NOT* know if this is right.  What is in the file? Heading or heading+EB??
+        oce.debug(debug, "subtracting metadata$heading.bias=", res$metadata$heading.bias, "to the heading of this RDI instrument\n")
+        heading <- heading - res$metadata$heading.bias # not documented well by RDI; this is from email exchange 2010-06-28-29
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
