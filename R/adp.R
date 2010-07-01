@@ -173,7 +173,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Heading alignment:          ", x$metadata$heading.alignment, "\n", ...)
             cat("  * Heading bias:               ", x$metadata$heading.bias)
             if (x$metadata$heading.bias != 0)
-                cat("[note: this is *subtracted* from the object's ``$data$ts$heading`` by ``adp.xyz2enu()``]\n", ...)
+                cat(" [note: this is *subtracted* from the object's ``$data$ts$heading`` by ``adp.xyz2enu()``]\n", ...)
             else
                 cat("\n", ...)
         } else if (x$instrument.type == "nortek aquadopp high resolution") {
