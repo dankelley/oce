@@ -159,7 +159,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## Comment out some things not needed here (may be wrong, too)
     ##depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
     ##oce.debug(debug, "depth of transducer:", depth.of.transducer, "\n")
-    heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01
+    heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01 - heading.bias
     ##if (heading < 0 || heading > 360) warning("heading ", heading, " should be between 0 and 360 degrees, inclusive")
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
     roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
