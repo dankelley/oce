@@ -25,9 +25,7 @@
   using formulae from page 13 and 14 of \emph{RD Instruments} (1998).
   If a heading bias was set for the deployment (e.g. by using the
   \code{EB} command in the RDI setup system), then this will be
-  subtracted from the heading, before the coordinate transformation is
-  done.  (The heading bias is stored in the header at
-  \code{$data$metadata$heading.bias}.)}
+  subtracted from the heading, as the file is read.}
 
 \value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
   and with \code{metadata$oce.orientation} changed from \code{xyz} to

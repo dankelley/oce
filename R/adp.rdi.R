@@ -305,7 +305,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, vector.show(profile.start, "profile.start before trimming:"))
         profiles.in.file <- length(profile.start)
         oce.debug(debug, "profiles.in.file=", profiles.in.file, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
-        if (profiles.in.file > 1)  {
+        if (profiles.in.file > 0)  {
             measurement.start <- ISOdatetime(2000 + as.integer(buf[profile.start[1]+4]), # year
                                              as.integer(buf[profile.start[1]+5]), # month
                                              as.integer(buf[profile.start[1]+6]), # day
@@ -367,9 +367,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
             g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
             bad.profiles <- NULL
-
-            cat("profiles.to.read=",profiles.to.read,"\n")
-
+            oce.debug(debug, "profiles.to.read=", profiles.to.read, "\n")
             for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
                 o <- profile.start[i] + 65      # FIXME: are we *sure* this will be 65?
                 oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
@@ -428,17 +426,16 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             profile.start4 <- sort(c(profile.start, profile.start + 1, profile.start + 2, profile.start + 3)) # lets us index four-byte chunks
             speed.of.sound <- 0.1 * readBin(buf[profile.start2 + 14], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
             depth.of.transducer <- 0.1 * readBin(buf[profile.start2 + 16], "integer", n=profiles.to.read, size=2, endian="little")
-            heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
+            ## Note that the heading.bias needs to be removed
+            heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE) - header$heading.bias
             pitch <- 0.01 * readBin(buf[profile.start2 + 20], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             roll <- 0.01 * readBin(buf[profile.start2 + 22], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-
-            tmp <- pitch
+            ##tmp <- pitch
             oce.debug(debug, vector.show(pitch, "pitch, before correction as on p14 of 'adcp coordinate transformation.pdf'"))
             pitch <- 180 / pi * atan(tan(pitch * pi / 180) / cos(roll * pi / 180)) # correct the pitch (see ACT page 14)
             oce.debug(debug, vector.show(pitch, "pitch, correction"))
-            oce.debug(debug, "RMS change in pitch:", sqrt(mean((pitch - tmp)^2, na.rm=TRUE)), "\n")
-            rm(tmp)
-
+            ##oce.debug(debug, "RMS change in pitch:", sqrt(mean((pitch - tmp)^2, na.rm=TRUE)), "\n")
+            ##rm(tmp)
             salinity <- readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)

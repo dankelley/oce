@@ -87,7 +87,6 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   m2p = RAW_POINTER(m2);
   ds = *INTEGER(demand_sequential);
   n = LENGTH(buf);
-  n_match = 0;
   unsigned short seq_last=0, seq_this;
   // Rprintf("demand_sequential=%d\n",ds);
   int nnn=10;
@@ -97,12 +96,13 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   //
   // Pass 1: allocate vector
   //
+  n_match = 0;                  /* don't demand anything at start */
   for (i = 0; i < n - 1; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
         seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
         // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
           n_match++;
           ++i;			// skip
           seq_last = seq_this;
@@ -126,13 +126,15 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   seq_last = 0;
   nnn = 1000;
   //Rprintf("PASS 2\n");
+  n_match = 0;                  /* don't demand anything at start */
   for (i = 0; i < n - 1; i++) {
     //    Rprintf("[%d]:", i);
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
         seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
         //if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-        if ((seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+          n_match++;
           resp[j++] = i + 1;	/* the 1 is to offset from C to R */
           ++i;			/* skip */
           seq_last = seq_this;

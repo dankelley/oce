@@ -173,7 +173,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Heading alignment:          ", x$metadata$heading.alignment, "\n", ...)
             cat("  * Heading bias:               ", x$metadata$heading.bias)
             if (x$metadata$heading.bias != 0)
-                cat(" [note: this is *subtracted* from the object's ``$data$ts$heading`` by ``adp.xyz2enu()``]\n", ...)
+                cat(" [note: was *subtracted* from the file's heading, to create the obect's heading]\n", ...)
             else
                 cat("\n", ...)
         } else if (x$instrument.type == "nortek aquadopp high resolution") {
@@ -607,8 +607,6 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
     if (x$metadata$instrument.type == "teledyne rdi") {
-        oce.debug(debug, "subtracting metadata$heading.bias=", res$metadata$heading.bias, "to the heading of this RDI instrument\n")
-        heading <- heading - res$metadata$heading.bias # not documented well by RDI; this is from email exchange 2010-06-28-29
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
