@@ -33,14 +33,6 @@
   and with \code{metadata$oce.orientation} changed from \code{xyz} to
   \code{enu}.}
 
-\examples{
-library(oce)
-data(adp)
-f <- adp.beam2xyz(adp)
-e <- adp.xyz2enu(f)
-plot(e, which=1:3)
-}
-
 \references{RD Instruments, 1998.
 \emph{ADCP Coordinate Transformation, formulas and calculations.}
 P/N 951-6079-00 (July 1998).}

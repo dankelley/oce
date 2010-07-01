@@ -65,59 +65,67 @@ summary.adp <- function(object, ...)
         } else if (inherits(object, "nortek")) {
             res.specific <- NULL
         } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
-        ts.names <- names(object$data$ts)
-        ma.names <- names(object$data$ma)
-        fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
-        ii <- 1
-        for (i in 1:length(ts.names)) {
-            if (names(object$data$ts)[i] != "time") {
-                fives[ii,] <- fivenum(object$data$ts[[ts.names[i]]], na.rm=TRUE)
+
+        ## start building res from the header information
+        have.data <- !is.null(object$data)
+        res <- res.specific
+        res$have.data <- have.data
+        res$filename <- object$metadata$filename
+        res$instrument.type <- object$metadata$instrument.type
+        res$serial.number <- object$metadata$serial.number
+        res$measurement.start <- object$metadata$measurement.start
+        res$measurement.end <- object$metadata$measurement.end
+        res$measurement.deltat <- object$metadata$measurement.deltat
+        res$frequency <- object$metadata$frequency
+        res$number.of.data.types <- object$metadata$number.of.data.type
+        res$bin1.distance <- object$metadata$bin1.distance
+        res$cell.size <- object$metadata$cell.size
+        res$xmit.pulse.length <- object$metadata$xmit.pulse.length
+        res$oce.beam.attenuated <- object$metadata$oce.beam.attenuated
+        res$beam.angle <- object$metadata$beam.angle
+        res$beam.config <- object$metadata$beam.config
+        res$transformation.matrix <- object$metadata$transformation.matrix
+        res$orientation <- object$metadata$orientation
+        res$coordinate.system <- object$metadata$coordinate.system
+        res$oce.coordinate <- object$metadata$oce.coordinate
+        res$processing.log <- processing.log.summary(object)
+
+        if (have.data) {
+            ts.names <- names(object$data$ts)
+            ma.names <- names(object$data$ma)
+            fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
+            ii <- 1
+            for (i in 1:length(ts.names)) {
+                if (names(object$data$ts)[i] != "time") {
+                    fives[ii,] <- fivenum(object$data$ts[[ts.names[i]]], na.rm=TRUE)
+                    ii <- ii + 1
+                }
+            }
+            for (i in 1:length(ma.names)) {
+                fives[ii,] <- fivenum(as.numeric(object$data$ma[[ma.names[i]]]), na.rm=TRUE)
                 ii <- ii + 1
             }
+            rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
+            colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+            v.dim <- dim(object$data$ma$v)
+            res$subsample.start <- object$data$ts$time[1]
+            res$subsample.end.time <- object$data$ts$time[length(object$data$ts$time)]
+            res$subsample.deltat <- mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE)
+            res$distance <- object$data$ss$distance
+            res$fives <- fives
+            res$time <- object$data$ts$time
+            res$number.of.profiles <- v.dim[1]
+            res$number.of.cells <- v.dim[2]
+            res$number.of.beams <- v.dim[3]
+            res$ts.names <- names(object$data$ts)
+            res$ma.names <- names(object$data$ma)
         }
-        for (i in 1:length(ma.names)) {
-            fives[ii,] <- fivenum(as.numeric(object$data$ma[[ma.names[i]]]), na.rm=TRUE)
-            ii <- ii + 1
-        }
-        rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
-        colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-        v.dim <- dim(object$data$ma$v)
-        res <- list(res.specific,
-                    filename=object$metadata$filename,
-                    instrument.type=object$metadata$instrument.type,
-                    serial.number=object$metadata$serial.number,
-                    measurement.start=object$metadata$measurement.start,
-                    measurement.end=object$metadata$measurement.end,
-                    measurement.deltat=object$metadata$measurement.deltat,
-                    subsample.start=object$data$ts$time[1],
-                    subsample.end.time=object$data$ts$time[length(object$data$ts$time)],
-                    subsample.deltat=mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE),
-                    distance=object$data$ss$distance,
-                    metadata=object$metadata,
-                    frequency=object$metadata$frequency,
-                    number.of.profiles=v.dim[1],
-                    number.of.cells=v.dim[2],
-                    number.of.beams=v.dim[3],
-                    number.of.data.types=object$metadata$number.of.data.type,
-                    bin1.distance=object$metadata$bin1.distance,
-                    cell.size=object$metadata$cell.size,
-                    xmit.pulse.length=object$metadata$xmit.pulse.length,
-                    oce.beam.attenuated=object$metadata$oce.beam.attenuated,
-                    beam.angle=object$metadata$beam.angle,
-                    beam.config=object$metadata$beam.config,
-                    transformation.matrix=object$metadata$transformation.matrix,
-                    orientation=object$metadata$orientation,
-                    coordinate.system=object$metadata$coordinate.system,
-                    oce.coordinate=object$metadata$oce.coordinate,
-                    fives=fives,
-                    time=object$data$ts$time,
-                    processing.log=processing.log.summary(object))
     } else {
-        res <- list(instrument.type=object$metadata$instrument.type,
-                    filename=object$metadata$filename,
-                    serial.number="unknown",
-                    have.actual.data=FALSE)
+        res$instrument.type <- object$metadata$instrument.type
+        res$filename <- object$metadata$filename
+        res$serial.number <- "unknown"
     }
+    res$metadata <- object$metadata # FIXME: lazy
     class(res) <- "summary.adp"
     res
 }                                       # summary.adp()
@@ -127,7 +135,8 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("ADP Summary\n-----------\n\n", ...)
     cat(paste("* Instrument:         ", x$instrument.type, ", serial number ``", paste(x$metadata$serial.number, collapse=""), "``\n", sep=""), ...)
     cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
-    if (is.null(x$have.actual.data) || x$have.actual.data) {
+    have.data <- x$have.data
+    if (have.data) {
         cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
                     format(x$measurement.start), attr(x$measurement.start, "tzone"),
                     format(x$measurement.end), attr(x$measurement.end, "tzone"),
@@ -136,12 +145,13 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
                     format(x$subsample.start), attr(x$subsample.start, "tzone"),
                     format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                     1 / x$subsample.deltat), ...)
-        ##cat("  Number of profiles:", x$number.of.profiles, "\n", ...)
         cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                     x$number.of.cells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
-        cat("* Coordinate system: ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n", ...)
-        cat("* Frequency:         ", x$frequency, "kHz\n", ...)
-        cat("* Beams:             ", x$number.of.beams, if (x$oce.beam.attenuated) "beams (attenuated)" else "beams (not attenuated)",
+    }
+    cat("* Coordinate system: ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n", ...)
+    cat("* Frequency:         ", x$frequency, "kHz\n", ...)
+    if (have.data) {
+        cat("* Beams:             ", x$number.of.beams, if (!is.null(x$oce.beam.attenuated) & x$oce.beam.attenuated) "beams (attenuated)" else "beams (not attenuated)",
             "oriented", x$orientation, "with angle", x$metadata$beam.angle, "deg to axis\n", ...)
         if (!is.null(x$transformation.matrix)) {
             cat("\n* Transformation matrix\n  ::\n\n")
@@ -161,7 +171,11 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Beam pattern:               ", x$metadata$beam.pattern, "\n", ...)
             cat("  * Pings per ensemble:         ", x$metadata$pings.per.ensemble, "\n", ...)
             cat("  * Heading alignment:          ", x$metadata$heading.alignment, "\n", ...)
-            cat("  * Heading bias:               ", x$metadata$heading.bias, "[note: this is *subtracted* from the object's ``$data$ts$heading`` by ``adp.xyz2enu()``]\n", ...)
+            cat("  * Heading bias:               ", x$metadata$heading.bias)
+            if (x$metadata$heading.bias != 0)
+                cat("[note: this is *subtracted* from the object's ``$data$ts$heading`` by ``adp.xyz2enu()``]\n", ...)
+            else
+                cat("\n", ...)
         } else if (x$instrument.type == "nortek aquadopp high resolution") {
             cat("* Nortek-specific:\n\n", ...)
             cat("  * Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
@@ -179,11 +193,11 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         ##cat("\n* Processing log::\n\n", ...)
         cat("\n")
         print(x$processing.log, ...)
-        invisible(x)
     } else {
-        cat("* No profiles in file\n")
-        invisible(x)
+        cat("* There are no profiles in this file\n")
+        print(x$processing.log, ...)
     }
+    invisible(x)
 }
 
 plot.adp <- function(x,

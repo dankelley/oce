@@ -1,10 +1,14 @@
 vector.show <- function(v, msg="vector:")
 {
     n <- length(v)
-    if (n > 6) {
-        paste(msg, " ", v[1], " ", v[2], " ", v[3], " ... ", v[n-2], " ", v[n-1], " ", v[n], " (length ", n, ")\n", sep="")
+    if (n == 0) {
+        paste(msg, "(empty vector)\n")
     } else {
-        paste(msg, paste(v, collapse=" "), sprintf("(length %d)\n", n), collapse="")
+        if (n > 6) {
+            paste(msg, " ", v[1], " ", v[2], " ", v[3], " ... ", v[n-2], " ", v[n-1], " ", v[n], " (length ", n, ")\n", sep="")
+        } else {
+            paste(msg, paste(v, collapse=" "), sprintf("(length %d)\n", n), collapse="")
+        }
     }
 }
 

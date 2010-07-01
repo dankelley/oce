@@ -55,14 +55,6 @@
   To indicate the change, the value of \code{metadata$oce.orientation}
   is changed from \code{beam} to \code{xyz}.}
 
-\examples{
-library(oce)
-data(adp)
-f <- adp.beam2xyz(adp)
-summary(f)
-plot(f, which=1:3)
-}
-
 \references{
 
 1. R D Instruments, 1998.

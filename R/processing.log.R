@@ -18,9 +18,9 @@ processing.log.summary <- function(object)
         res <- NULL
         for (i in 1:n) {
             kludge <- gsub(", [   ]*", ", ", object$processing.log$action[i]) # FIXME: why are these spaces there?
-            res <- c(res, paste("  ",
+            res <- c(res, paste("  *",
                                 paste(as.character(as.POSIXlt(object$processing.log$time[i], tz="UTC")),
-                                      " UTC\n     ``", kludge, "``\n",sep="")))
+                                      " UTC: ``", kludge, "``\n",sep="")))
         }
     } else {
         res <- "  (none)"

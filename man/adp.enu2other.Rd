@@ -44,10 +44,7 @@
 \examples{
 library(oce)
 data(adp)
-f <- adp.beam2xyz(adp)
-e <- adp.xyz2enu(f)
-plot(e, which=1:3)
-o <- adp.enu2other(e, heading=31.5)
+o <- adp.enu2other(adp, heading=31.5)
 plot(o, which=1:3)
 }
 

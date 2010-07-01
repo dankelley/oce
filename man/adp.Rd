@@ -11,27 +11,34 @@
   by Teledyne-RDI, as part of the St Lawrence Internal Wave Experiment.}
 
 \examples{
+\dontrun{
+# How data were created
+beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
+                 from=as.POSIXct("2008-06-26", tz="UTC"), to=as.POSIXct("2008-06-27", tz="UTC"), by="10:00")
+xyz <- adp.beam2xyz(beam)
+adp <- adp.xyz2enu(xyz, declination=-18.1)
+}
+
 library(oce)
 data(adp)
-adp.enu <- adp.xyz2enu(adp.beam2xyz(adp))
 
-# Plot overview images
-plot(adp.enu)
+# images of velocity components
+plot(adp)
 
-# Plot diagnostic timeseries.  Angles should be constant for a mooring.
-plot(adp.enu, which=13:18)
+# see if tides moved the mooring
+plot(adp, which=15:18)
+
+# horizontal velocity scattergram, and coastline
+par(mfrow=c(1,2))
+plot(adp, which=28.1)
+data(coastline.sle)
+plot(coastline.sle,xlim=c(-70,-69.5), ylim=c(47.7,48.1))
+points(-69.73433, 47.88126, col="red")
 }
 
 \usage{data(adp)}
 
-\source{This file was created with the following command (which uses
-  a large file that is not provided with the package).  Note the
-  use of UTC, to match how the instrument was set up.
-\preformatted{
-adp <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
-               from=as.POSIXct("2008-06-26", tz="UTC"), to=as.POSIXct("2008-06-27", tz="UTC"), by="30:00")
-}
-}
+\source{This file came from the SLEIWEX-2008 experiment.}
 
 \seealso{See \code{\link{read.adp}} for notes on the contents of
   \code{adp} objects, and for functions to work with them.}
