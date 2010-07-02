@@ -44,10 +44,10 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
                     have.actual.data=have.actual.data))
 
     system.configuration <- paste(byte2binary(FLD[5], endian="big"), byte2binary(FLD[6],endian="big"),sep="-")
-    oce.debug(debug, "FLD[4]=", byte2binary(FLD[4]), "(looking near the system.configuration bytes to find a problem)\n")
-    oce.debug(debug, "FLD[5]=", byte2binary(FLD[5]), "(should be one of the system.configuration bytes)\n")
-    oce.debug(debug, "FLD[6]=", byte2binary(FLD[6]), "(should be one of the system.configuration bytes)\n")
-    oce.debug(debug, "FLD[7]=", byte2binary(FLD[7]), "(looking near the system.configuration bytes to find a problem)\n")
+    oce.debug(debug, "FLD[4]=", byte2binary(FLD[4], endian="big"), "(looking near the system.configuration bytes to find a problem)\n")
+    oce.debug(debug, "FLD[5]=", byte2binary(FLD[5], endian="big"), "(should be one of the system.configuration bytes)\n")
+    oce.debug(debug, "FLD[6]=", byte2binary(FLD[6], endian="big"), "(should be one of the system.configuration bytes)\n")
+    oce.debug(debug, "FLD[7]=", byte2binary(FLD[7], endian="big"), "(looking near the system.configuration bytes to find a problem)\n")
     bits <- substr(system.configuration, 6, 8)
     if (bits == "000") frequency <- 75        # kHz
     else if (bits == "001") frequency <-  150
