@@ -2,7 +2,8 @@
 \alias{ctd.trim}
 \title{Trim start/end portions of a CTD cast}
 \description{Trim start/end portions of a CTD cast.}
-\usage{ctd.trim(x, method="downcast",parameters, verbose=FALSE)}
+\usage{ctd.trim(x, method=c("downcast","index","range"), parameters,
+         debug=getOption("oce.debug"))}
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{method}{Various methods exist, some of which use parameters:
@@ -32,23 +33,24 @@
 	}
       }
       \item{"index"}{Select values only in indicated list of indices,
-	\emph{e.g.} \code{selection <- ctd.trim(ctd, "index", seq(10,30))}
+	\emph{e.g.} \code{selection <- ctd.trim(ctd, "range", parameters
+          = list(item="index", from=10, to=30))}
 	selects data points 10, 11, ... 30.}
-      \item{"(ANYTHING ELSE)"}{Select data only if the named item
-	(\emph{e.g.} \code{scan}, \code{time}, \emph{etc}.) falls
-	in the range of values indicated by the list stored in \code{parameters}.  
-	This list has elements \code{from} (the lower limit) and \code{to}
-	(the upper limit)  Sensible things happen if only one limit is
-	given.  For example, \code{ctd2 <- ctd.trim(ctd, "scan", list(from=5))} 
+      \item{"range"}{Select data based on the value of the column named
+        \code{parameters$item}.  This may be by range or by critical value.
+        By range: select values between \code{parameters$from} (the
+        lower limit) and \code{parameters$to} (the upper limit)
+        By critical value: select if the named column exceeds the value.
+	For example, \code{ctd2 <- ctd.trim(ctd, "range",
+          list(item="scan", from=5))} 
 	starts at scan number 5 and continues to the end,
-	while \code{ctd3 <- ctd.trim(ctd, "scan", list(from=5,to=100))}
+	while \code{ctd3 <- ctd.trim(ctd, "range", list(item="scan",from=5,to=100))}
 	also starts at scan 5, but extends only to scan 100.}
     }
   }
   \item{parameters}{A list whose elemetns depend on the method; see above.}
-  \item{verbose}{If set to TRUE, some debugging information is provided,
-    including a suggested call based on the scan number, which can serve
-    as a good starting point for manual trimming.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
 }
 
 \details{For normal CTD profiling, the goal is to isolate only the

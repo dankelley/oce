@@ -156,7 +156,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
     res
 }
 
-ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
+ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     result <- x
@@ -165,9 +165,10 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
         warning("too few data to ctd.trim()")
     } else {
         which.method <- pmatch(method, c("index", "downcast"), nomatch=0)
-        ##if (verbose) cat("ctd.trim()\n  using method", which.method,"\n")
+        method <- match.arg(method)
+        oce.debug(debug, paste("ctd.trim() using method \"", method,"\"\n", sep=""))
         keep <- rep(TRUE, n)
-        if (which.method == 1) {        # "index"
+        if (method == "index") {
             ##if (verbose)	cat("  parameters:",parameters,"\n");
             if (min(parameters) < 1)
                 stop("Cannot select indices < 1");
@@ -175,13 +176,14 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
                 stop(paste("Cannot select past end of array, i.e. past ", n))
             keep <- rep(FALSE, n)
             keep[parameters] <- TRUE
-        } else if (which.method == 2) { # "downcast"
-                                        # 1. despike to remove (rare) instrumental problems
+        } else if (method == "downcast") {
+            ## 1. despike to remove (rare) instrumental problems
             x$data$pressure <- smooth(x$data$pressure,kind="3R")
             pmin <- 0
             if (!missing(parameters)) {
                 if ("pmin" %in% names(parameters)) pmin <- parameters$pmin else stop("parameter not understood for this method")
             }
+            oce.debug(debug, 'pmin=', pmin, '\n')
             keep <- (x$data$pressure > pmin) # 2. in water (or below start depth)
             delta.p <- diff(x$data$pressure)  # descending
             delta.p <- c(delta.p[1], delta.p) # to get right length
@@ -192,7 +194,7 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
             max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
             max.location <- trim.top + max.spot
             keep[max.location:n] <- FALSE
-            ##if (verbose) cat("  pressure maximum at index=",max.spot,"\n")
+            oce.debug(debug, "pressure maximum at index=", max.spot, "\n")
             if (FALSE) {
                                         # deleted method: slowly-falling data
                 delta.p.sorted <- sort(delta.p)
@@ -217,7 +219,6 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
                 }
                 pp <- x$data$pressure[keep]
                 ss <- x$data$scan[keep]
-                ##if (verbose) plot(ss,pp,ylim=rev(range(pp)))
                 p0 <- 0
                 s0 <- ss[0.25*length(ss)]
                 p0 <- pp[1]
@@ -229,22 +230,21 @@ ctd.trim <- function(x, method="downcast", parameters, verbose=FALSE)
                 if (class(t) != "try-error") {
                     if (m$convInfo$isConv) {
                         s0 <- floor(coef(m)[[1]])
-                        ##if (verbose) cat("  trimming scan numbers below", s0, "\n")
-                        ##if (verbose) print(summary(m))
+                        oce.debug(debug, "trimming scan numbers below", s0, "\n")
                         keep <- keep & (x$data$scan > (coef(m)[[1]]))
                     }
                 } else {
                     warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
                 }
-                if (verbose) cat("ctd.trim(read.oce(\"", x$metadata$filename, "\"), \"scan\", c(", min(x$data$scan[keep],na.rm=TRUE), ",", max(x$data$scan[keep],na.rm=TRUE),"))\n",sep="")
             }
-        } else {
-            if (verbose)	cat(paste("column",method,"; parameters ", parameters[1], parameters[2]))
+        } else if (method == "range") {
+            item <- parameters$item
+            oce.debug(debug, "column", item,"; parameters ", parameters[1], parameters[2], "\n")
             l <- length(parameters)
             if (l == 1) { 		# lower limit
-                keep <- (x$data[[method]] > parameters[1]);
+                keep <- (x$data[[item]] >= parameters$from);
             } else if (l == 2) {	# lower and upper limits
-                keep <- (x$data[[method]] > parameters[1]) & (x$data[[method]] < parameters[2])
+                keep <- (x$data[[item]] >= parameters$from) & (x$data[[method]] <= parameters$to)
             }
         }
     }
