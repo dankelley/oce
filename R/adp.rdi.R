@@ -43,7 +43,11 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
                     program.version=program.version,
                     have.actual.data=have.actual.data))
 
-    system.configuration <- paste(byte2binary(FLD[5]), byte2binary(FLD[6]),sep="-")
+    system.configuration <- paste(byte2binary(FLD[5], endian="big"), byte2binary(FLD[6],endian="big"),sep="-")
+    oce.debug(debug, "FLD[4]=", byte2binary(FLD[4], endian="big"), "(looking near the system.configuration bytes to find a problem)\n")
+    oce.debug(debug, "FLD[5]=", byte2binary(FLD[5], endian="big"), "(should be one of the system.configuration bytes)\n")
+    oce.debug(debug, "FLD[6]=", byte2binary(FLD[6], endian="big"), "(should be one of the system.configuration bytes)\n")
+    oce.debug(debug, "FLD[7]=", byte2binary(FLD[7], endian="big"), "(looking near the system.configuration bytes to find a problem)\n")
     bits <- substr(system.configuration, 6, 8)
     if (bits == "000") frequency <- 75        # kHz
     else if (bits == "001") frequency <-  150
@@ -51,15 +55,20 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     else if (bits == "011") frequency <-  600
     else if (bits == "100") frequency <- 1200
     else if (bits == "101") frequency <- 2400
+    oce.debug(debug, "bits:", bits, "so frequency=", frequency, "\n")
     bits <- substr(system.configuration, 16, 17)
+    oce.debug(debug, "system.configuration:", system.configuration,"\n")
+    oce.debug(debug, "bits:", bits, "00 is 15deg, 01 is 20deg, 02 is 30deg, 11 is 'other'\n")
     if (bits == "00") beam.angle <- 15
     else if (bits == "01") beam.angle <- 20
     else if (bits == "10") beam.angle <- 30
     else if (bits == "11") beam.angle <- NA # means 'other'
+    oce.debug(debug, "bits=", bits, "so beam.angle=", beam.angle, "\n")
+    if (beam.angle < 19 || 21 < beam.angle) warning("expecting a beam angle of 20deg [more-or-less standard for RDI] but got", beam.angle, "; using the latter in the transformation matrix")
     bits <- substr(system.configuration, 5, 5)
     if (bits == "0") beam.pattern <- "concave"
     else beam.pattern <- "convex"
-    ##cat("BITS='",bits,"'\n",sep="", ...)
+    oce.debug(debug, "bits=", bits, "so beam.pattern=", beam.pattern, "\n")
     beam.config <- "?"
     bits <- substr(system.configuration, 10, 13)
     if (bits == "0100") beam.config <- "janus"
@@ -68,7 +77,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     bits <- substr(system.configuration, 1, 1)
     if (bits == "1") orientation <- "upward"
     else orientation <- "downward"
-    ##cat("beam.config=", beam.config, "\n", ...)
+    oce.debug(debug, "bits=", bits, "so that orientation=", orientation, "\n")
+
     real.sim.flag <- readBin(FLD[7], "integer", n=1, size=1)
     lag.length <- readBin(FLD[8], "integer", n=1, size=1)
     number.of.beams <- readBin(FLD[9], "integer", n=1, size=1)
@@ -248,7 +258,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             second <-        readBin(buf[profile.start[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
             sec100 <-        readBin(buf[profile.start[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
             t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=tz)
-            oce.debug(debug, "t=", format(t), "| y=", year, " m=", month, " d=", format(day, width=2), " h=", format(hour, width=2), " m=", format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass", format(pass, width=2), "/", passes, "| middle=", middle, "(", middle/upper*100, "%)\n")
+            oce.debug(debug, "t=", format(t), "| y=", year, " m=", month, " d=", format(day, width=2), " h=", format(hour, width=2), " m=", format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass", format(pass, width=2), "/", passes, "| middle=", middle, "(", format(middle/upper*100,digits=4), "%)\n")
             if (t.find < t)
                 upper <- middle
             else

@@ -1,6 +1,10 @@
 Package: oce
 Version: 0.1-81
+<<<<<<< HEAD
 Date: 2010-07-23
+=======
+Date: 2010-07-02
+>>>>>>> 24e47b0094a856e57b60a75adfd2ae03d10cabf0
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
