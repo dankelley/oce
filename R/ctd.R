@@ -562,6 +562,8 @@ read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, stat
         filename <- full.filename(file)
         file <- file(file, "r")
         on.exit(close(file))
+    } else {
+        filename <- "filename unknown"
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
@@ -742,6 +744,8 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
         filename <- full.filename(file)
         file <- file(file, "r")
         on.exit(close(file))
+    } else {
+        filename <- "filename unknown"
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
