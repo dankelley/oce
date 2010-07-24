@@ -243,14 +243,27 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 q[i,,b] <- qq[,b]
             }
             if (monitor) {
-                cat(".", ...)
-                if (!(i %% 50)) cat(i, "\n", ...)
+                cat(".")
+                if (!(i %% 50)) cat(i, "\n")
             }
         }
-        if (monitor) cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n", ...)
+        if (monitor) cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n")
         ma <- list(v=v, a=a, q=q)
     } else {
         ma <- NULL
+    }
+    ## interpolate headings (which may be less frequent than profiles ... FIXME: really???)
+    nheading <- length(heading)
+    nv <- dim(v)[1]
+    if (nheading != nv) {
+        warning("read.adp.sontek() interpolating ", nheading, " heading/pitch/roll values to the ", nv, " velocity profiles")
+        oce.debug(debug, "BEFORE: length(heading)=", nheading, ", nv=", nv, "\n")
+        xout <- seq(1, nheading, length.out=nv)
+        heading <- approx(1:nheading, heading, seq(1,nheading,length.out=nv))$y
+        ##print(data.frame(xout=xout, heading=heading))
+        pitch <- approx(1:nheading, pitch, seq(1,nheading,length.out=nv))$y
+        roll <- approx(1:nheading, roll, seq(1,nheading,length.out=nv))$y
+        oce.debug(debug, "AFTER:  length(heading)=", length(heading), "\n")
     }
     data <- list(ma=ma,
                  ss=list(distance=seq(blanking.distance, by=cell.size, length.out=number.of.cells)),
@@ -261,7 +274,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     beam.angle <- if (slant.angle == "?") 25 else slant.angle
     metadata <- list(filename=filename,
                      instrument.type="sontek",
-                     serial.number=serial.number,
+                     serial.number=if (exists('serial.number')) serial.number else "?",
                      measurement.start=measurement.start,
                      measurement.end=measurement.end,
                      measurement.deltat=measurement.deltat,
