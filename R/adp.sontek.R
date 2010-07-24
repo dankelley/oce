@@ -2,7 +2,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type=c("adp"),
                             debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
-    to.missing <- missing(to)
+    missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     bisect.sontek.adp <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.sontek.adv(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
@@ -47,7 +47,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
         return(list(index=middle, time=t)) # index is within vsd
     }
-    oce.debug(debug, "read.adp.sontek(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,"...)\n")
+    oce.debug(debug, "read.adp.sontek(...,from=",from,",to=",if (missing.to) "(missing)" else to,",by=",by,"type=",type,"...)\n")
     parameters <- list(profile.byte1 = 0xa5, profile.byte2=0x10, profile.header.length=80)
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -138,7 +138,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                   as.integer(buf[profile.start[1]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
                                   tz=tz)
     oce.debug(debug, "measurement.start=", format(measurement.start), "\n")
-    oce.debug(debug, "length(measurement.start)=", length(measurement.start), " [FIXME: if to not given, use this??]\n")
+    oce.debug(debug, "length(profile.start)=", length(profile.start), " [FIXME: if to not given, use this??]\n")
 
     measurement.end <- ISOdatetime(readBin(buf[profile.start[profiles.in.file]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
                                    as.integer(buf[profile.start[profiles.in.file]+21]), # month
@@ -188,6 +188,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, 'dt=',dt,'\n', 'by=',by, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
     } else {
         from.index <- from
+        if (missing.to)
+            to <- length(profile.start)
         to.index <- to
         if (to.index < 1 + from.index) stop("need more separation between from and to")
         if (is.character(by)) stop("cannot have string for 'by' if 'from' and 'to' are integers")

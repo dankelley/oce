@@ -400,7 +400,7 @@ plot.adp <- function(x,
                                 ylab=ad.beam.name(x, 2),
                                 type='l', draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
-                else warning("cannot plot beam/velo 2 because the device has only", x$metadata$number.of.beams, "beams")
+                else warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
             }
             if (which[w] == 21) {
                 if (x$metadata$number.of.beams > 2)
