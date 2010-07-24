@@ -1444,6 +1444,9 @@ adv.xyz2enu <- function(x)
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
     to.radians <- pi / 180
+    ##vector.show(heading, "heading (in adv.xyz2enu)")
+    ##vector.show(pitch, "pitch (in adv.xyz2enu)")
+    ##vector.show(roll, "roll (in adv.xyz2enu)")
     CH <- cos(to.radians * x$data$ts$heading)
     SH <- sin(to.radians * x$data$ts$heading)
     CP <- cos(to.radians * x$data$ts$pitch)
