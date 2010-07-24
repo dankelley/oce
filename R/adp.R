@@ -624,11 +624,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     SR <- sin(to.radians * roll)
     np <- dim(x$data$ma$v)[1]
     nc <- dim(x$data$ma$v)[2]
-
-    cat("adp.xyz2enu has np=", np, ", nc=", nc, ", length(heading)=", length(heading), "\n")
-
     tr.mat <- array(dim=c(3, 3, np))
-    print(dim(tr.mat))
     tr.mat[1,1,] <-  CH * CR + SH * SP * SR
     tr.mat[1,2,] <-  SH * CP
     tr.mat[1,3,] <-  CH * SR - SH * SP * CR

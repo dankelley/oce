@@ -2,6 +2,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type=c("adp"),
                             debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
+    to.missing <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     bisect.sontek.adp <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.sontek.adv(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
@@ -137,6 +138,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                   as.integer(buf[profile.start[1]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
                                   tz=tz)
     oce.debug(debug, "measurement.start=", format(measurement.start), "\n")
+    oce.debug(debug, "length(measurement.start)=", length(measurement.start), " [FIXME: if to not given, use this??]\n")
+
     measurement.end <- ISOdatetime(readBin(buf[profile.start[profiles.in.file]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
                                    as.integer(buf[profile.start[profiles.in.file]+21]), # month
                                    as.integer(buf[profile.start[profiles.in.file]+20]), # day
