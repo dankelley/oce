@@ -32,8 +32,9 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
     string that converts to a POSIXt time (assuming UTC timezone).  See
     \dQuote{Examples}, and make careful note of the use of the \code{tz}
     argument.}
-  \item{to}{indication of the last profiel to read, in a format matching
-    that of \code{from}.}
+  \item{to}{if supplied, an indication of the last profile to read, in a
+    format as described for \code{from}.  If not supplied, the whole
+    file will be read.}
   \item{by}{an indication of the stride length to use while walking
     through the file.  If this is an integer, then \code{by-1}
     profiles are skipped between each pair of profiles that is read.  If
@@ -53,29 +54,37 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
 }
 
 \details{Reads a binary-format ADP file.  Three types can be handled at
-  the moment: the Teledyne-RDI Workhorse instrument using
-  firmware version 16.30 (and, to some extent, also firmware 16.28 and 16.21),
-  the NorTek Aquadopp High Resolution profiler, and SonTek PCADP.
-  \code{read.adp} may also work on other units, but this has not been tested.
+  the moment: the Teledyne-RDI Workhorse instrument using firmware
+  version 16.30 (and, to some extent, also firmware 16.28 and 16.21),
+  the NorTek Aquadopp High Resolution profiler, and SonTek PCADP.}
+
+\value{An object of \code{\link[base]{class}} \code{"adp"}, which
+  contains measurements made with an ADP device.  The value of
+  \code{metadata$coordinate} is set to \code{"beam"}, a fact that is
+  used in other steps in processing.  For information on data stored in
+  the object, see \dQuote{Details}.
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
   within lists named \code{data$ss}, \code{data$ts} and \code{data$ma},
-  and their contents are as follows.
+  respectively, with contents as follows.
   \describe{
     \item{\code{ss}}{A space-series named \code{distance}, which
       stores the distance of cells from the transducer head, in the
       vertical (not slant-wise) direction.}
-    \item{\code{ts}}{A collection time series, each of which has a value for each
-      profile.  The series are as follows.
+    \item{\code{ts}}{A collection time series, each of which has a value
+      for each profile.  The series are as follows.
       	\describe{
 	  \item{\code{time}}{Times of the profiles, in POSIXct format.}
 	  \item{\code{pressure}}{Pressure, in decibars.}
 	  \item{\code{temperature}}{The temperature, in deg C.}
-	  \item{\code{salinity}}{The salinity, in PSU.  (This may be measured, or 
-	  just a repeated constant value specified when the equipment was set up.)}
-	  \item{\code{depth.of.transducer}}{The depth of the transducer.}
-	  \item{\code{heading}}{The heading of the instrument, in degrees.}
+	  \item{\code{salinity}}{The salinity, in PSU.  (This may be
+            measured, or just a repeated constant value specified when
+            the equipment was set up.)}
+	  \item{\code{depth.of.transducer}}{The depth of the
+            transducer.}
+	  \item{\code{heading}}{The heading of the instrument, in
+            degrees.}
 	  \item{\code{pitch}}{The pitch of the instrument, in degrees.}
 	  \item{\code{roll}}{The roll of the instrument, in degrees.}
 	}}
@@ -92,19 +101,11 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
       number.  Objects of class \code{rdi} typically have 4 beams, while
       those of type \code{aquadopp} have 3 beams.}
     }
-    In addition to the \code{data} entry, the \code{metadata} entry holds
-    general information about such things as beam geometry, etc.
-}
-
-\value{An object of \code{\link[base]{class}} \code{"adp"}, which
-  contains measurements made with an ADP device.  The value of
-  \code{metadata$coordinate} is set to \code{"beam"}, a fact that is
-  used in other steps in processing.  For information on data stored in
-  the object, see \dQuote{Details}.}
+    In addition to the \code{data} entry, the \code{metadata} entry
+    holds general information about such things as beam geometry, etc.}
 
 \section{Implementation notes}{
   \itemize{
-
     \item \strong{Teledyne-RDI files.} If a heading bias had been set
     with the \code{EB} command during the setup for the deployment, then
     a heading bias will have been stored in the file's header.  This
@@ -113,12 +114,12 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
     subtracted from the headings stored in the file, and the result of
     this subtraction is stored in the objects heading value (in
     \code{data$ts$heading}).
-
+    
     It should be noted that \code{read.adp.rdi()} was tested for
     firmware version 16.30.  For other versions, there may be problems.
     For example, the serial number is not recognized properly for
     version 16.28.
-
+    
     \item \strong{Nortek Aquadopp-HR files.} Page 38 of the Nortek
     System Integrator Guide says to offset 53 bytes in profile records
     to get the first velocity, but experiments on files drived from a
