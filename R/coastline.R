@@ -15,23 +15,33 @@ plot.coastline <- function (x,
                             mar=c(mgp[1], mgp[1], 2*par("cex"), 2*par("cex")),
                             bg,
                             axes=TRUE,
+                            expand=1.5,
                             debug=getOption("oce.debug"),
                             ...)
 {
     if (!inherits(x, "coastline")) stop("method is only for coastline objects")
     par(mgp=mgp, mar=mar)
     dots <- list(...)
+    names.dots <- names(dots)
+    if ("ylim" %in% names.dots || "ylim" %in% names.dots)
+        expand <- 1
     if (missing(asp)) {
         if ("ylim" %in% names(dots))
             asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
         else
             asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
     }
+    ## Expand
+    xr <- range(x$data$longitude, na.rm=TRUE)
+    yr <- range(x$data$latitude, na.rm=TRUE)
+    if (expand >= 0) {
+        xr <- mean(xr) + expand * diff(xr) * c(-1/2, 1/2)
+        yr <- mean(yr) + expand * diff(yr) * c(-1/2, 1/2)
+    }
+
     ## The following is a somewhat provisional hack, to get around a
     ## tendency of plot() to produce latitudes past the poles.
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
-    xr <- range(x$data$longitude, na.rm=TRUE)
-    yr <- range(x$data$latitude, na.rm=TRUE)
     oce.debug(debug, "par('pin') is", par("pin"), "\n")
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
     oce.debug(debug, "asp.page=", asp.page, "\n")
