@@ -648,7 +648,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
         res$data <- x$data[select,]
     } else if (inherits(x, "pt")) {
         if (do.filter) stop("cannot (yet) filter pt data during decimation") # FIXME
-        res$data <- x$data[select,]
+        for (name in names(res$data$ts))
+            res$data[[name]] <- x$data[[name]][select]
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
