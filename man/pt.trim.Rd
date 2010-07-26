@@ -2,7 +2,7 @@
 \alias{pt.trim}
 \title{Trim start/end portions of a pT cast}
 \description{Trim start/end portions of a pT cast.}
-\usage{pt.trim(x, method="water",parameters=NULL, verbose=FALSE)}
+\usage{pt.trim(x, method="water", parameters=NULL, debug=getOption("oce.debug"))}
 \arguments{
   \item{x}{A \code{pt} object, e.g. as read by \code{\link{read.pt}}.}
   \item{method}{Various methods exist, some of which use parameters:
@@ -16,7 +16,12 @@
     }
   }
   \item{parameters}{Depends on method; see above.}
-  \item{verbose}{If set to TRUE, some debugging information is provided.}
+  \item{debug}{a flag that turns on debugging.  The value indicates the
+    depth within the call stack to which debugging applies.  For
+    example, \code{read.adv.nortek()} calls \code{read.header.nortek()},
+    so that \code{read.adv.nortek(...,debug=2)} provides information
+    about not just the main body of the data file, but also the details
+    of the header.}
 }
 
 \details{The \code{"water"} method is mainly for quick and dirty work.

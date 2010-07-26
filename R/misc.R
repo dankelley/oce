@@ -567,10 +567,13 @@ add.column <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
+    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     res <- x
     do.filter <- !missing(filter)
-    select <- if (missing(to)) seq(1, length(x$data$ts[[1]]), by=by) else to
+    if (missing(to))
+        to <- length(x$data$ts[[1]])
+    select <- seq(from=1, to=to, by=by)
     oce.debug(debug, vector.show(select, "select:"))
     if (inherits(x, "adp")) {
         oce.debug(debug, "decimate() on an ADP object\n")
@@ -642,6 +645,9 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
     } else if (inherits(x, "ctd")) {
         if (do.filter) stop("cannot (yet) filter ctd data during decimation") # FIXME
         select <- seq(1, dim(x$data)[1], by=by)
+        res$data <- x$data[select,]
+    } else if (inherits(x, "pt")) {
+        if (do.filter) stop("cannot (yet) filter pt data during decimation") # FIXME
         res$data <- x$data[select,]
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))

@@ -25,27 +25,27 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
     par(mgp=mgp, mar=mar)
     for (w in 1:lw) {
         if (which[w] == 1) {
-            plot(x$data$time, x$data$temperature,
+            plot(x$data$ts$time, x$data$ts$temperature,
                  xlab=if (missing(xlab)) "" else xlab,
                  ylab=if (missing(ylab)) resizable.label("T", "y") else ylab,
                  xaxs="i", type='l',
-                 xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
-                 ylim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
+                 xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
+                 ylim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$time, draw.time.range=draw.time.range)
+            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
             draw.time.range <- FALSE
             axis(2)
         } else if (which[w] == 3) {     # pressure timeseries
-            plot(x$data$time, x$data$pressure,
+            plot(x$data$ts$time, x$data$ts$pressure,
                  xlab=if (missing(xlab)) "" else xlab,
                  ylab=if (missing(ylab)) resizable.label("p", "y") else ylab,
                  xaxs="i", type='l',
-                 xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
-                 ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
+                 xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
+                 ylim=if (missing(plim)) range(x$data$ts$pressure, na.rm=TRUE) else plim,
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$time, draw.time.range=draw.time.range)
+            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
             draw.time.range <- FALSE
             axis(2)
         } else if (which[w] == 2) {
@@ -71,17 +71,17 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!is.null(x$metadata$serial.number))
                 text.item(paste("Serial Number: ", x$metadata$serial.number),cex=cex)
             if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
-                text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=cex)
-                text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=cex)
-                text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="secs"), "s"),cex=cex)
+                text.item(paste("Start:", x$data$ts$time[1], attr(x$data$ts$time, "tzone")), cex=cex)
+                text.item(paste("End:", x$data$ts$time[length(x$data$ts$time)], attr(x$data$ts$time, "tzone")), cex=cex)
+                text.item(paste("Sampled interval:", difftime(x$data$ts$time[2], x$data$ts$time[1], units="secs"), "s"),cex=cex)
             }
             par(mar=mar)
         } else if (which[w] == 4) {     # temperature 'profile'
-            args <- list(x=x$data$temperature, y=x$data$pressure,
+            args <- list(x=x$data$ts$temperature, y=x$data$ts$pressure,
                          xlab=resizable.label("T"),
                          ylab=resizable.label("p"),
-                         xlim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
-                         ylim=if (missing(plim)) rev(range(x$data$pressure, na.rm=TRUE)) else plim,
+                         xlim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
+                         ylim=if (missing(plim)) rev(range(x$data$ts$pressure, na.rm=TRUE)) else plim,
                          ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
@@ -224,16 +224,7 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
         pressure <- as.numeric(d[4,])
         ## ignore column 5
     } else stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)
-    if (0){
-    n <- length(temperature)
-    subset <- seq(1, n, by=by)
-    str(time)
-    time <- time[subset]
-    str(time)
-    pressure <- pressure[subset]
-    temperature <- temperature[subset]
-}
-    data <- data.frame(time=time, temperature=temperature, pressure=pressure)
+    data <- list(ts=list(time=time, temperature=temperature, pressure=pressure))
     metadata <- list(filename=filename,
                      instrument.type="rbr",
                      serial.number=serial.number,
@@ -254,8 +245,12 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
 summary.pt <- function(object, ...)
 {
     if (!inherits(object, "pt")) stop("method is only for pt objects")
-    time.range <- range(object$data$time, na.rm=TRUE)
+    time.range <- range(object$data$ts$time, na.rm=TRUE)
     fives <- matrix(nrow=2, ncol=5)
+    fives[1,] <- fivenum(object$data$ts$temperature, na.rm=TRUE)
+    fives[2,] <- fivenum(object$data$ts$pressure, na.rm=TRUE)
+    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(fives) <- c("Temperature", "Pressure")
     res <- list(filename=object$metadata$filename,
                 serial.number=object$metadata$serial.number,
                 measurement.start=object$metadata$measurement.start,
@@ -264,14 +259,9 @@ summary.pt <- function(object, ...)
                 subsample.start=object$metadata$subsample.start,
                 subsample.end=object$metadata$subsample.end,
                 subsample.deltat=object$metadata$subsample.deltat,
-                samples=length(object$data$temperature), # FIXME: do we need this?
+                samples=length(object$data$ts$temperature), # FIXME: do we need this?
                 fives=fives,
                 processing.log=processing.log.summary(object))
-    fives[1,] <- fivenum(object$data$temperature, na.rm=TRUE, ...)
-    fives[2,] <- fivenum(object$data$pressure, na.rm=TRUE)
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    rownames(fives) <- c("Temperature", "Pressure")
-    res$fives <- fives
     class(res) <- "summary.pt"
     res
 }
@@ -299,7 +289,7 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 pt.patm <- function(x, dp=0.5)
 {
-    if (inherits(x, "pt")) p <- x$data$pressure else p <- x
+    if (inherits(x, "pt")) p <- x$data$ts$pressure else p <- x
     sap <- 10.1325                      # standard atm pressure
     if (length(p) < 1) return(rep(sap, 4))
     p <- p[(sap - dp) <= p & p <= (sap + dp)] # window near sap
@@ -310,33 +300,32 @@ pt.patm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-pt.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
+pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "pt")) stop("method is only for pt objects")
     res <- x
-    n <- length(x$data$temperature)
-    if (verbose) cat("pt.trim() working on dataset with", n, "points\n")
+    n <- length(x$data$ts$temperature)
+    oce.debug(debug, "pt.trim() working on dataset with", n, "points\n")
     if (n < 2) {
         warning("too few data to pt.trim()")
     } else {
         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
-        if (verbose) cat("using method", which.method,"\n")
+        oce.debug(debug, "using method", which.method, "\n")
         if (which.method == 1) {        # "water"
             keep <- rep(FALSE, n)
-            air <- x$data$pressure < 10.5 # NB. standard pressure is 10.1325
+            air <- x$data$ts$pressure < 10.5 # NB. standard pressure is 10.1325
             water.indices <- which(!air)
             b <- 2                      # trim a few descending points
             i.start <- water.indices[1] + b
             i.stop <- water.indices[-b + length(water.indices)]
             keep[i.start:i.stop] <- TRUE
-            #message("The mean (deleted) air pressure is", mean(x$data$pressure[air]),"dbar\n")
         } else if (which.method == 2) { # "time"
-            if (verbose) cat("trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n");
+            oce.debug(debug, "trimming to time range ",as.character(parameters[1])," to ", as.character(parameters[2]), "\n")
             keep <- rep(TRUE, n)
-            keep[x$data$time < as.POSIXlt(parameters[1])] <- FALSE
-            keep[x$data$time > as.POSIXlt(parameters[2])] <- FALSE
+            keep[x$data$ts$time < as.POSIXlt(parameters[1])] <- FALSE
+            keep[x$data$ts$time > as.POSIXlt(parameters[2])] <- FALSE
         } else if (which.method == 3) { # "index"
-            if (verbose)	cat("parameters:",parameters,"\n");
+            oce.debug(debug, "parameters:",parameters,"\n")
             if (min(parameters) < 1)
                 stop("Cannot select indices < 1");
             if (max(parameters) > n)
@@ -347,8 +336,9 @@ pt.trim <- function(x, method="water", parameters=NULL, verbose=FALSE)
             stop("Unknown method")
         }
     }
-    res$data <- subset(x$data, keep)
-    res$data$pressure <- res$data$pressure - 10.1325 # remove avg sealevel pressure
+    for (name in names(x$data$ts))
+        res$data$ts[[name]] <- subset(x$data$ts[[name]], keep)
+    res$data$ts$pressure <- res$data$ts$pressure - 10.1325 # remove avg sealevel pressure
     res <- processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
     res
 }

@@ -771,7 +771,7 @@ plot(pt, which=c(1,3))
 
 pt.trim.auto <- pt.trim(pt)
 plot(pt.trim.auto)
-print(range(pt.trim.auto$data$time)) # gives a starting point
+print(range(pt.trim.auto$data$ts$time)) # gives a starting point
 
 abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
 abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
@@ -780,11 +780,10 @@ abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
 abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
 abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-pt.trim <- subset(pt, as.POSIXct("2008-06-25 15:00:00") <= time &
-                  time <= as.POSIXct("2008-07-04 12:00:00"))
-print(pt.patm(pt)) # take 10.2dbar from this
-pt.trim <- oce.edit(pt.trim, action="x$data$pressure <- x$data$pressure - 10.2", reason="remove atm pressure", person="DK")
-plot(pt.trim)
+###pt.trim <- subset(pt, as.POSIXct("2008-06-25 15:00:00") <= ts$time & ts$time <= as.POSIXct("2008-07-04 12:00:00"))
+##print(pt.patm(pt)) # take 10.2dbar from this
+##pt.trim <- oce.edit(pt.trim.auto, action="x$data$ts$pressure <- x$data$ts$pressure - 10.2", reason="remove atm pressure", person="DK")
+##plot(pt.trim)
 @
 
 \printindex
