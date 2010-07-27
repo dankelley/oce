@@ -613,9 +613,9 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         }
     }
     to.radians <- pi / 180
-    cat(vector.show(1.0*heading, "heading"))
-    cat(vector.show(pitch, "pitch"))
-    cat(vector.show(roll, "roll"))
+    oce.debug(debug, vector.show(heading, "heading"))
+    oce.debug(debug, vector.show(pitch, "pitch"))
+    oce.debug(debug, vector.show(roll, "roll"))
     CH <- cos(to.radians * heading)
     SH <- sin(to.radians * heading)
     CP <- cos(to.radians * pitch)
