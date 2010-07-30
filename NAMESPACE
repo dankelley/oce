@@ -60,6 +60,7 @@ export(
        oce.plot.ts,
        oce.plot.sticks,
        oce.smooth,
+       oce.spectrum,
        oce.write.table,
        parse.latlon,
        plot.adp,

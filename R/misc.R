@@ -1,3 +1,12 @@
+oce.spectrum <- function(x, ...)
+{
+    rval <- spectrum(x, ...)
+    dt <- diff(rval$freq[1:2])
+    normalize <- var(x) / (sum(rval$spec) * dt)
+    rval$spec <- normalize * rval$spec
+    invisible(rval)
+}
+
 vector.show <- function(v, msg="vector:")
 {
     n <- length(v)
