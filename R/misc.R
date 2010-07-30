@@ -1,9 +1,18 @@
 oce.spectrum <- function(x, ...)
 {
-    rval <- spectrum(x, ...)
+    args <- list(...)
+    want.plot <- FALSE
+    if ("plot" %in% names(args)) {
+        want.plot <- args$plot
+        args$plot <- FALSE
+        args$x <- x
+        rval <- do.call(spectrum, args)
+    }
     dt <- diff(rval$freq[1:2])
     normalize <- var(x) / (sum(rval$spec) * dt)
     rval$spec <- normalize * rval$spec
+    if (want.plot)
+        plot(rval)
     invisible(rval)
 }
 
