@@ -13,6 +13,7 @@ export(
        adp.xyz2enu,
        adp.enu2other,
        adp.beam.attenuate,
+       adv.2enu,
        adv.beam2xyz,
        adv.xyz2enu,
        adv.enu2other,
