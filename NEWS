@@ -1,4 +1,5 @@
 0.1-81
+- add 'newdata' argument to predict.tidem()
 - add adv.2enu()
 - adp.xyz2enu(): make it correct for heading.bias
 - make.filter(): can now produce tskernel type
