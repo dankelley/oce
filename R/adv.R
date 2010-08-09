@@ -1414,6 +1414,21 @@ plot.adv <- function(x,
     }
 }
 
+adv.2enu <- function(x)
+{
+    coord <- x$metadata$oce.coordinate
+    if (coord == "beam") {
+        return(adv.xyz2enu(adv.beam2xyz(x)))
+    } else if (coord == "xyz") {
+        return(adv.xyz2enu(x))
+    } else if (coord == "enu") {
+        return(x)
+    } else {
+        warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
+        return(x)
+    }
+}
+
 adv.beam2xyz <- function(x)
 {
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
