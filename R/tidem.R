@@ -389,7 +389,8 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
         if (length(cc)) {
             cannot.fit <- (interval * abs(freq[i]-tc2$freq[cc])) < rc
             ##cat("compare name=", name[i], "with", kmpr[i],":", cannot.fit,"\n")
-            if (cannot.fit)	drop.term <- c(drop.term, i)
+            if (cannot.fit)
+                drop.term <- c(drop.term, i)
         }
     }
     if (length(drop.term) > 0) {
@@ -399,25 +400,18 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
         freq <- freq[-drop.term]
         kmpr <- kmpr[-drop.term]
     }
-
     nc <- length(freq)
     nt <- length(sl$data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-
     hour <- unclass(as.POSIXct(sl$data$time, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
-
     centralindex <- floor(length(sl$data$t) / 2)
-
-##    hour.wrt.centre <- unclass(hour - hour[centralindex])
-##    hour2pi <- 2 * pi * hour.wrt.centre
-
+    ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
+    ##    hour2pi <- 2 * pi * hour.wrt.centre
     hour.offset <- unclass(hour - unclass(as.POSIXct(start.time, tz="GMT"))/3600)
     hour2pi <- 2 * pi * hour.offset
-
-##    cat(sprintf("hour[1] %.3f\n",hour[1]))
-##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
-
+    ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
+    ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
     for (i in 1:nc) {
         omega.t <- freq[i] * hour2pi
         x[,2*i-1] <- sin(omega.t)
@@ -533,8 +527,34 @@ print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
     invisible(x)
 }
 
-predict.tidem <- function(object, ...)
+predict.tidem <- function(object, newdata, ...)
 {
-    ## FIXME: should construct a matrix of sine and cosine, then pass to predict
-    predict(object$model, ...)
+    if (!missing(newdata) && !is.null(newdata)) {
+        newdata.class <- class(newdata)
+        if (inherits(newdata, "POSIXt")) {
+            freq <- object$freq[-1]     # drop first (intercept)
+            name <- object$name[-1]     # drop "z0" (intercept)
+            nc <- length(freq)
+            hour <- unclass(as.POSIXct(newdata, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00 (FIXME: is tz OK??)
+            nt <- length(hour)
+            x <- array(dim=c(nt, 2 * nc))
+            x[,1] <- rep(1, nt)
+            hour.offset <- unclass(hour - unclass(as.POSIXct(object$start.time, tz="UTC"))/3600)
+            hour2pi <- 2 * pi * hour.offset
+            for (i in 1:nc) {
+                omega.t <- freq[i] * hour2pi
+                x[,2*i-1] <- sin(omega.t)
+                x[,2*i  ] <- cos(omega.t)
+            }
+            name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
+            dim(name2) <- c(2 * length(name), 1)
+            colnames(x) <- name2
+            rval <- predict(object$model, newdata=list(x=x), ...)
+        } else {
+            stop("newdata must be of class POSIXt")
+        }
+    } else {
+        rval <- predict(object$model, ...)
+    }
+    rval
 }

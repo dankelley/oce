@@ -2,9 +2,12 @@
 \alias{predict.tidem}
 \title{Predict a time series from a tidal model}
 \description{Predict a time series from a tidal model.}
-\usage{\method{predict}{tidem}(object, ...)}
+\usage{\method{predict}{tidem}(object, newdata, ...)}
 \arguments{
   \item{object}{a \code{tidem} object.}
+  \item{newdata}{optional vector of POSIXt times at which to make the
+    prediction.  If not present, \code{predict.tidem} uses the times
+    that were provided in the original call to \code{\link{tidem}}.}
   \item{\dots}{optional arguments passed on to children.}
 }
 
