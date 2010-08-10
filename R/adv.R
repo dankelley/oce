@@ -856,9 +856,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         if (n != dim(m)[1])
             stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", data.length)
         r <- row.offset + 1:n
-        v[r,1] <- 1e-4 * readBin(t(m[,1:2]), "integer", size=2, n=n, signed=TRUE, endian="little")
-        v[r,2] <- 1e-4 * readBin(t(m[,3:4]), "integer", size=2, n=n, signed=TRUE, endian="little")
-        v[r,3] <- 1e-4 * readBin(t(m[,5:6]), "integer", size=2, n=n, signed=TRUE, endian="little")
+        v[r,1] <- 1e-4 * readBin(t(m[,1:2]), "integer", n=n, size=2, signed=TRUE, endian="little")
+        v[r,2] <- 1e-4 * readBin(t(m[,3:4]), "integer", n=n, size=2, signed=TRUE, endian="little")
+        v[r,3] <- 1e-4 * readBin(t(m[,5:6]), "integer", n=n, size=2, signed=TRUE, endian="little")
         a[r,1] <- m[,7]
         a[r,2] <- m[,8]
         a[r,3] <- m[,9]
@@ -870,12 +870,12 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ##cat("time=", format(time[r[1]]), ";", format(burst.time.focus[b]), "\n")
         ##print(range(time[r]))
         heading[r] <- 0.1 * readBin(as.raw(t(m[,13:14])), "integer", n=n, size=2, signed=TRUE, endian="little")
-        pitch[r] <- 0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
-        roll[r] <- 0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
-        temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        pitch[r] <-   0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
+        roll[r] <-    0.1 * readBin(as.raw(t(m[,17:18])), "integer", n=n, size=2, signed=TRUE, endian="little")
+        temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", n=n, size=2, signed=TRUE, endian="little")
 
         ## Pressure, using quadratic conversion from counts
-        p.count <- readBin(as.raw(t(m[,21:22])), "integer", size=2, n=n, signed=TRUE, endian="little")
+        p.count <- readBin(as.raw(t(m[,21:22])), "integer", n=n, size=2, signed=TRUE, endian="little") # FIXME: should be unsigned (p95 ADVField/Hydra Operation Manual)
         pressure[r] <- metadata$pressure.offset + p.count * (metadata$pressure.scale + p.count * metadata$pressure.scale.2)
 
         row.offset <- row.offset + n
