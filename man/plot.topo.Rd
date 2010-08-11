@@ -18,7 +18,7 @@
      legend.loc="topright", 
      asp,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1],0.5,0.5),
+     mar=c(mgp[1]+1,mgp[1]+1,1,1),
      debug=FALSE,
      \dots)}
 
