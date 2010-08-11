@@ -8,7 +8,7 @@
 
 \usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE,
                  draw.time.range=TRUE, abbreviate.time.range=FALSE,
-                 cex=par("cex"), main="", ...)}
+                 cex=par("cex"), main="", debug=getOption("oce.debug"), ...)}
 
 \arguments{
   \item{side}{as for \code{\link{axis.POSIXct}}.}
@@ -23,6 +23,8 @@
     same in the first number.}
   \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
   \item{main}{title of plot.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{as for \code{\link{axis.POSIXct}}.}
 }
 

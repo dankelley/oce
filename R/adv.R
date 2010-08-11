@@ -1259,6 +1259,7 @@ plot.adv <- function(x,
                         ylab=ad.beam.name(x, 1), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
@@ -1270,6 +1271,7 @@ plot.adv <- function(x,
                         ylab=ad.beam.name(x, 2), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
@@ -1281,6 +1283,7 @@ plot.adv <- function(x,
                         ylab=ad.beam.name(x, 3), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
@@ -1292,6 +1295,7 @@ plot.adv <- function(x,
                         ylab=expression(a[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 6) {     # a[2]
             if (missing(xlim))
@@ -1301,6 +1305,7 @@ plot.adv <- function(x,
                         ylab=expression(a[2]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 7) {     # a[3]
             if (missing(xlim))
@@ -1310,6 +1315,7 @@ plot.adv <- function(x,
                         ylab=expression(a[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 9) {     # c[1]
             if (missing(xlim))
@@ -1319,6 +1325,7 @@ plot.adv <- function(x,
                         ylab=expression(c[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 10) {     # c[2]
             if (missing(xlim))
@@ -1328,6 +1335,7 @@ plot.adv <- function(x,
                         ylab=expression(c[2]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 11) {    # c[3]
             if (missing(xlim))
@@ -1337,6 +1345,7 @@ plot.adv <- function(x,
                         ylab=expression(c[3]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 14) {    # temperature time-series
             if (missing(xlim))
@@ -1346,6 +1355,7 @@ plot.adv <- function(x,
                         ylab=resizable.label("T", "y"), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 15) {    # pressure time-series
             if (missing(xlim))
@@ -1355,6 +1365,7 @@ plot.adv <- function(x,
                         ylab=resizable.label("p", "y"), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 16) {    # heading
             if (missing(xlim))
@@ -1364,6 +1375,7 @@ plot.adv <- function(x,
                         ylab="heading", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 17) {    # pitch
             if (missing(xlim))
@@ -1373,6 +1385,7 @@ plot.adv <- function(x,
                         ylab="pitch", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 18) {    # roll
             if (missing(xlim))
@@ -1382,6 +1395,7 @@ plot.adv <- function(x,
                         ylab="roll", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        debug=debug-1,
                         ...)
         } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,1])

@@ -13,6 +13,7 @@ oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
             type="l",
             main="",
+            debug=getOption("oce.debug"),
             \dots)}
 
 \arguments{
@@ -41,6 +42,8 @@ oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL,
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 \item{type}{plot type.}
 \item{main}{title of plot.}
+\item{debug}{a flag that turns on debugging.  Set to 1 to get a
+  moderate amount of debugging information, or to 2 to get more.}
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
 }
 
