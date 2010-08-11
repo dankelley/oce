@@ -63,28 +63,28 @@ resizable.label <- function(item=c("S", "T", "p", "z", "distance", "heading", "p
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
-        full <- expression(paste("Temperature [ ", degree, "C ]"))
-        abbreviated <- expression(paste("T [ ", degree, "C ]"))
+        full <- expression(paste("Temperature [", degree, "C]"))
+        abbreviated <- expression(paste("T [", degree, "C]"))
     } else if (item == "S") {
-        full <- "Salinity [ PSU ]"
-        abbreviated <- "S [ PSU ]"
+        full <- "Salinity [PSU]"
+        abbreviated <- "S [PSU]"
     } else if (item == "p") {
-        full <- "Pressure [ dbar ]"
-        abbreviated <- "P [ dbar ]"
+        full <- "Pressure [dbar]"
+        abbreviated <- "P [dbar]"
     } else if (item == "z") {
         full <- "z [ m ]"
-        abbreviated <- "z [ m ]"
+        abbreviated <- "z [m]"
     } else if (item == "distance") {
-        full <- "Distance [ m ]"
-        abbreviated <- "Dist. [ m ]"
+        full <- "Distance [m]"
+        abbreviated <- "Dist. [m]"
     } else if (item == "heading") {
-        full <- "Heading [ deg ]"
+        full <- "Heading [deg]"
         abbreviated <- "Heading"
     } else if (item == "pitch") {
-        full <- "Pitch [ deg ]"
+        full <- "Pitch [deg]"
         abbreviated <- "Pitch"
     } else if (item == "roll") {
-        full <- "Roll [ deg ]"
+        full <- "Roll [deg]"
         abbreviated <- "Roll"
     }
     fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
