@@ -875,7 +875,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         temperature[r] <- 0.01 * readBin(as.raw(t(m[,19:20])), "integer", n=n, size=2, signed=TRUE, endian="little")
 
         ## Pressure, using quadratic conversion from counts
-        p.count <- readBin(as.raw(t(m[,21:22])), "integer", n=n, size=2, signed=TRUE, endian="little") # FIXME: should be unsigned (p95 ADVField/Hydra Operation Manual)
+        p.count <- readBin(as.raw(t(m[,21:22])), "integer", n=n, size=2, signed=FALSE, endian="little")
         pressure[r] <- metadata$pressure.offset + p.count * (metadata$pressure.scale + p.count * metadata$pressure.scale.2)
 
         row.offset <- row.offset + n
