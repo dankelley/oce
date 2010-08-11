@@ -34,18 +34,31 @@
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{which}{list of desired plot types.  
-    The value \code{which}=1 gives a combined profile of temperature and
-    salinity, \code{which}=2 gives a combined profile of sigma-theta and
-    \eqn{N^2}{N^2}, \code{which}=3 gives a TS plot,
-    \code{which}=4 gives a textual summary of some aspects of the data,
-    \code{which}=5 gives a map, with a dot for the station
-    location (note that this requires that a \code{coastline} be
-    given), \code{which}=6 gives a profile of density and dP/dt (useful
-    for evaluating whether the instrument is dropping properly through
-    the water column),  \code{which}=7 gives a profile of density and
-    time, \code{which}=8 gives a profile of index number (especially
-    useful for \code{\link{ctd.trim}}) and \code{which}=9 gives a plot of
-    density.}
+    \itemize{
+      \item \code{which=1} or \code{which="temperature+salinity"} gives
+      a combined profile of temperature and salinity
+      \item \code{which=2} or \code{which="density+N2"} gives a combined
+      profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
+      \item \code{which=3} or \code{which="TS"} gives a TS plot
+      \item \code{which=4} or \code{which="text"} gives a textual
+      summary of some aspects of the data
+      \item \code{which=5} or \code{which="map"} gives a map, with a dot
+      for the station location (note that this requires that a
+      \code{coastline} be given)
+      \item \code{which=6} or \code{which="density+dpdt"} gives a
+      profile of density and \eqn{dP/dt}{dP/dt}, which is useful for
+      evaluating whether the instrument is dropping properly through the
+      water column
+      \item \code{which=7} or \code{which="density+time"} gives a
+      profile of density and time
+      \item \code{which=8} or \code{which="index"} gives a profile of
+      index number (especially useful for \code{\link{ctd.trim}})
+      \item \code{which=9} or \code{which="salinity"} gives a salinity profile
+      \item \code{which=10} or \code{which="temperature"} gives a temperature profile
+      \item \code{which=11} or \code{which="density"} gives a density profile
+      \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
+    }
+  }
   \item{ref.lat}{Latitude of reference point for distance calculation}
   \item{ref.lon}{Longitude of reference point for distance calculation}
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}

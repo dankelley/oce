@@ -345,8 +345,14 @@ plot.ctd <- function (x, which = 1:4,
     ## 6=density+dpdt
     ## 7=density+time
     ## 8=index
-    ## 9=density
-    if (any(!which %in% 1:9)) stop("which must be between 1 and 9")
+    ##
+    ## new as of 2010-08-11
+    ## 9=salinity profile
+    ## 10=temperature profile
+    ## 11=density profile
+    ## 12=N2 profile
+
+    ##if (any(!which %in% 1:12)) stop("which must be between 1 and 12")
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -373,24 +379,47 @@ plot.ctd <- function (x, which = 1:4,
         x$data <- x$data[1:last.good,]
     }
     for (w in 1:length(which)) {
-        if (which[w] == 1) plot.profile(x, xtype = "S+T", Slim=Slim, Tlim=Tlim, plim=plim,
-                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
-        if (which[w] == 2) plot.profile(x, xtype = "density+N2", plim=plim,
-                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
-        if (which[w] == 6) plot.profile(x, xtype="density+dpdt", plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
-                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
-        if (which[w] == 7) plot.profile(x, xtype="density+time", plim=plim, densitylim=densitylim, timelim=timelim,
-                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
-        if (which[w] == 8) plot.profile(x, xtype="index", plim=plim,
-                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
-        if (which[w] == 9) plot.profile(x, xtype="density", plim=plim,
-                 grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
-        if (which[w] == 3) {
-##            par(mar=c(3.5,3,2,2))
+        if (which[w] == 1 || which[w] == "temperature+salinity")
+            plot.profile(x, xtype = "S+T", Slim=Slim, Tlim=Tlim, plim=plim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 2 || which[w] == "density+N2")
+            plot.profile(x, xtype = "density+N2",
+                         plim=plim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 6 || which[w] == "density+dpdt")
+            plot.profile(x, xtype="density+dpdt",
+                         plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 7 || which[w] == "density+time")
+            plot.profile(x, xtype="density+time",
+                         plim=plim, densitylim=densitylim, timelim=timelim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 8 || which[w] == "index")
+            plot.profile(x, xtype="index",
+                         plim=plim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 9 || which[w] == "salinity")
+            plot.profile(x, xtype="salinity",
+                         plim=plim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 10 || which[w] == "temperature")
+            plot.profile(x, xtype="temperature",
+                         ##plim=plim,
+                         grid=grid, col.t="black", col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 11 || which[w] == "density")
+            plot.profile(x, xtype="density",
+                         plim=plim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 12 || which[w] == "N2")
+            plot.profile(x, xtype="N2",
+                         plim=plim,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+        else if (which[w] == 3 || which[w] == "TS") {
+            ##par(mar=c(3.5,3,2,2))
             plot.TS(x, Slim=Slim, Tlim=Tlim,
                     grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         }
-        if (which[w] == 4) {
+        else if (which[w] == 4 || which[w] == "text") {
             text.item <- function(item, label, cex=0.8) {
                 if (!is.null(item) && !is.na(item)) {
                     text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex);
@@ -424,8 +453,7 @@ plot.ctd <- function (x, which = 1:4,
                                                ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
                 yloc <- yloc - d.yloc
             }
-        }
-        if (which[w] == 5) {
+        } else if (which[w] == 5 || which[w] == "map") {
             if (missing(coastline)) stop("need a coastline to draw a map")
             if (missing(lonlim)) {
                 lonlim.c <- x$metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
@@ -451,6 +479,7 @@ plot.ctd <- function (x, which = 1:4,
             if (!is.na(x$metadata$station))
                 mtext(paste("Station", x$metadata$station), side=3, cex=par("cex"))
         }
+        else stop("unknown value of which, ", which[w])
         if (w <= adorn.length && nchar(adorn[w]) > 0) {
             t <- try(eval(adorn[w]), silent=TRUE)
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
@@ -1270,7 +1299,9 @@ plot.profile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
         lines(x$data$salinity, y, col = col.S, lwd=lwd)
-    } else if (xtype == "T") {
+    } else if (xtype == "T" || xtype == "temperature") {
+        dots <- list(...)
+        type <- if ("type" %in% names(dots)) dots$type else 'l'
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
         plot(x$data$temperature, y,
              xlim=Tlim, ylim=ylim,
@@ -1286,7 +1317,16 @@ plot.profile <- function (x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-        lines(x$data$temperature, y, col = col.t, lwd=lwd)
+        if (type == 'l') {
+            lines(x$data$temperature, y, col = col.t, lwd=lwd)
+        } else if (type == 'p') {
+            points(x$data$temperature, y, col = col.t)
+        } else if (type == 'b') {
+            lines(x$data$temperature, y, col = col.t, lwd=lwd)
+            points(x$data$temperature, y, col = col.t)
+        } else {
+            lines(x$data$temperature, y, col = col.t, lwd=lwd)
+        }
     } else if (xtype == "density") {
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
         if (missing(densitylim)) densitylim <- range(st, na.rm=TRUE)
