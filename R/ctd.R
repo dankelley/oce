@@ -310,7 +310,7 @@ plot.ctd <- function (x, which = 1:4,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                       adorn=NULL,
                       mgp=getOption("oce.mgp"),
-                      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]),
+                      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
                       debug=getOption("oce.debug"),
                       ...)
 {
@@ -402,11 +402,13 @@ plot.ctd <- function (x, which = 1:4,
             plot.profile(x, xtype="salinity",
                          plim=plim,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
-        else if (which[w] == 10 || which[w] == "temperature")
+        else if (which[w] == 10 || which[w] == "temperature") {
+            ##cat("plot.ctd() ctd.R:406 Tlim=", Tlim, "\n")
             plot.profile(x, xtype="temperature",
                          ##plim=plim,
+                         Tlim=Tlim,
                          grid=grid, col.t="black", col.grid=col.grid, lty.grid=lty.grid, ...)
-        else if (which[w] == 11 || which[w] == "density")
+        } else if (which[w] == 11 || which[w] == "density")
             plot.profile(x, xtype="density",
                          plim=plim,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
@@ -1301,8 +1303,16 @@ plot.profile <- function (x,
         lines(x$data$salinity, y, col = col.S, lwd=lwd)
     } else if (xtype == "T" || xtype == "temperature") {
         dots <- list(...)
+        ##print(dots)
         type <- if ("type" %in% names(dots)) dots$type else 'l'
-        if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
+        if (missing(Tlim)) {
+            ##cat("Tlim is missing\n")
+            if ("xlim" %in% names(dots))
+                Tlim <- range(x$data$temperature, na.rm=TRUE)
+            else
+                Tlim <- dots$xlim
+        }
+        ##cat("Tlim=", Tlim, "\n")
         plot(x$data$temperature, y,
              xlim=Tlim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)

@@ -27,7 +27,7 @@
      latlon.col="red",
      adorn=NULL,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]),
+     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
      debug=getOption("oce.debug"),
      \dots)
 }

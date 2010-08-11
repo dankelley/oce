@@ -1249,12 +1249,14 @@ plot.adv <- function(x,
         }
     }
     for (w in 1:lw) {
+        oce.debug(debug, "in plot.adv(), which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar, cex=cex)
         if (which[w] == 1) {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,1],
-                        ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
+                        ##ylab=ad.beam.name(x, 1), type='l', draw.time.range=draw.time.range,
+                        ylab=ad.beam.name(x, 1), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1264,7 +1266,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,2],
-                        ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
+                        ##ylab=ad.beam.name(x, 2), type='l', draw.time.range=draw.time.range,
+                        ylab=ad.beam.name(x, 2), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1274,7 +1277,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,3],
-                        ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
+                        ##ylab=ad.beam.name(x, 3), type='l', draw.time.range=draw.time.range,
+                        ylab=ad.beam.name(x, 3), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1284,7 +1288,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,which[w]-4],
-                        ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
+                        ##ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
+                        ylab=expression(a[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1292,7 +1297,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,2],
-                        ylab=expression(a[2]), type='l', draw.time.range=draw.time.range,
+                        ##ylab=expression(a[2]), type='l', draw.time.range=draw.time.range,
+                        ylab=expression(a[2]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1300,7 +1306,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,3],
-                        ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
+                        ##ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
+                        ylab=expression(a[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1308,7 +1315,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$c[,1],
-                        ylab=expression(c[1]), type='l', draw.time.range=draw.time.range,
+                        ##ylab=expression(c[1]), type='l', draw.time.range=draw.time.range,
+                        ylab=expression(c[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1316,7 +1324,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$c[,2],
-                        ylab=expression(c[2]), type='l', draw.time.range=draw.time.range,
+                        ##ylab=expression(c[2]), type='l', draw.time.range=draw.time.range,
+                        ylab=expression(c[2]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1324,7 +1333,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$c[,3],
-                        ylab=expression(c[3]), type='l', draw.time.range=draw.time.range,
+                        ##ylab=expression(c[3]), type='l', draw.time.range=draw.time.range,
+                        ylab=expression(c[3]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1332,7 +1342,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
-                        ylab=resizable.label("T", "y"), type='l', draw.time.range=draw.time.range,
+                        ##ylab=resizable.label("T", "y"), type='l', draw.time.range=draw.time.range,
+                        ylab=resizable.label("T", "y"), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1340,7 +1351,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
-                        ylab=resizable.label("p", "y"), type='l', draw.time.range=draw.time.range,
+                        ##ylab=resizable.label("p", "y"), type='l', draw.time.range=draw.time.range,
+                        ylab=resizable.label("p", "y"), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1348,7 +1360,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$heading,
-                        ylab="heading", type='l', draw.time.range=draw.time.range,
+                        ##ylab="heading", type='l', draw.time.range=draw.time.range,
+                        ylab="heading", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1356,7 +1369,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
-                        ylab="pitch", type='l', draw.time.range=draw.time.range,
+                        ##ylab="pitch", type='l', draw.time.range=draw.time.range,
+                        ylab="pitch", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
@@ -1364,7 +1378,8 @@ plot.adv <- function(x,
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$roll,
-                        ylab="roll", type='l', draw.time.range=draw.time.range,
+                        ##ylab="roll", type='l', draw.time.range=draw.time.range,
+                        ylab="roll", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         ...)
