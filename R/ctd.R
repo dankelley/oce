@@ -16,8 +16,13 @@ as.ctd <- function(salinity, temperature, pressure,
             pressure <- df$pressure
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
     }
-    if (length(pressure) == 1) # special case
-        pressure <- rep(pressure, length(salinity))
+    depths <- max(length(salinity), length(temperature), length(pressure))
+    if (length(pressure) < depths)
+        pressure <- rep(pressure[1], depths)
+    if (length(salinity) < depths)
+        salinity <- rep(salinity[1], depths)
+    if (length(temperature) < depths)
+        temperature <- rep(temperature[1], depths)
     data <- data.frame(salinity=salinity,
                        temperature=temperature,
                        pressure=pressure,
