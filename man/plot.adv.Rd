@@ -94,8 +94,10 @@
 \examples{
 \dontrun{
 library(oce)
-adv <- read.adv("~/data/sleiwex-archive/2008/mooring/m6/autopod/day183/SL08A183.015", 
-       sampling.start=as.POSIXct("2008-07-01 15:00:00", tz="UTC"), deltat=0.1)
+adv <- read.oce("/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr",
+               from=as.POSIXct("2008-07-01"),
+               to=as.POSIXct("2008-07-02"),
+               by="00:05:00")
 plot(adv)
 }
 }

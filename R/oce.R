@@ -145,7 +145,7 @@ oce.plot.ts <- function(x,
                         ylab="",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oce.mgp"),
-                        mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
+                        mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
                         type="l",
 
                         main="",
@@ -746,10 +746,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
-        mtext(label, side=if (side==1) 3 else 1, cex=cex.main*par('cex'), adj=0)
+        mtext(label, side=if (side==1) 3 else 1, cex=3/4*cex.axis*par('cex'), adj=0)
     }
     if (nchar(main) > 0) {
-        mtext(main, side=if(side==1) 3 else 1, cex=cex.main*par('cex'), adj=1)
+        mtext(main, side=if(side==1) 3 else 1, cex=3/4*cex.axis*par('cex'), adj=1)
     }
     axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
     oce.debug(debug, "\b\boce.axis.POSIXct() exit\n")
