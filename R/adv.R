@@ -1190,11 +1190,13 @@ plot.adv <- function(x,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1],mgp[1]+1,1,1.5),
                      margins.as.image=FALSE,
-                     cex=1,
+                     cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim,
                      debug=getOption("oce.debug"),
                      ...)
 {
+    oce.debug(debug, "\b\bplot.adv() enter\n")
+    oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
@@ -1236,10 +1238,6 @@ plot.adv <- function(x,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-    if (debug > 0) {
-        cat("adorn:\n")
-        print(adorn)
-    }
     if (lw > 1) {
         if (margins.as.image) {
             w <- 1.5
@@ -1249,7 +1247,7 @@ plot.adv <- function(x,
         }
     }
     for (w in 1:lw) {
-        oce.debug(debug, "in plot.adv(), which[", w, "]=", which[w], "\n")
+        oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar, cex=cex)
         if (which[w] == 1) {
             if (missing(xlim))
@@ -1259,6 +1257,7 @@ plot.adv <- function(x,
                         ylab=ad.beam.name(x, 1), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1271,6 +1270,7 @@ plot.adv <- function(x,
                         ylab=ad.beam.name(x, 2), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1283,6 +1283,7 @@ plot.adv <- function(x,
                         ylab=ad.beam.name(x, 3), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1295,6 +1296,7 @@ plot.adv <- function(x,
                         ylab=expression(a[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 6) {     # a[2]
@@ -1305,6 +1307,7 @@ plot.adv <- function(x,
                         ylab=expression(a[2]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 7) {     # a[3]
@@ -1315,6 +1318,7 @@ plot.adv <- function(x,
                         ylab=expression(a[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 9) {     # c[1]
@@ -1325,6 +1329,7 @@ plot.adv <- function(x,
                         ylab=expression(c[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 10) {     # c[2]
@@ -1335,6 +1340,7 @@ plot.adv <- function(x,
                         ylab=expression(c[2]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 11) {    # c[3]
@@ -1345,6 +1351,7 @@ plot.adv <- function(x,
                         ylab=expression(c[3]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 14) {    # temperature time-series
@@ -1355,6 +1362,7 @@ plot.adv <- function(x,
                         ylab=resizable.label("T", "y"), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 15) {    # pressure time-series
@@ -1365,6 +1373,7 @@ plot.adv <- function(x,
                         ylab=resizable.label("p", "y"), draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 16) {    # heading
@@ -1375,6 +1384,7 @@ plot.adv <- function(x,
                         ylab="heading", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 17) {    # pitch
@@ -1385,6 +1395,7 @@ plot.adv <- function(x,
                         ylab="pitch", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 18) {    # roll
@@ -1395,6 +1406,7 @@ plot.adv <- function(x,
                         ylab="roll", draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
@@ -1428,7 +1440,9 @@ plot.adv <- function(x,
             v[is.na(v)] <- 0
             x.dist <- cumsum(u) * dt / m.per.km
             y.dist <- cumsum(v) * dt / m.per.km
-            plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
+            plot(x.dist, y.dist, xlab="km", ylab="km", type='l',
+                 cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                 asp=1, ...)
         } else {
             stop("unknown value of \"which\":", which)
         }
@@ -1441,6 +1455,7 @@ plot.adv <- function(x,
             par(mar=omar)
         }
     }
+    oce.debug(debug, "\b\bplot.adv() exit\n")
 }
 
 adv.2enu <- function(x)

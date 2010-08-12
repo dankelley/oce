@@ -8,7 +8,9 @@
 \usage{
 oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL,
             fill=FALSE,
-            xlab="", ylab="", cex=par("cex"), mgp=getOption("oce.mgp"),
+            xlab="", ylab="", 
+            cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+            mgp=getOption("oce.mgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
             type="l",
@@ -34,7 +36,9 @@ oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="i", grid=TRUE, adorn=NULL,
   does incorrectly if there are missing values in \code{y}).}
 \item{xlab}{names for x axis.}
 \item{ylab}{names for y axis.}
-\item{cex}{size of labels on axes and palette; see \code{\link[graphics]{par}}("cex").}
+\item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
+\item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
+\item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
 \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
   also for \code{par(mar)}, computed from this.  The default is
   tighter than the R default, in order to use more space for the

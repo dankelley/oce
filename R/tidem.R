@@ -305,7 +305,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
             sl <- as.sealevel(sl)
         else stop("cannot deal with 'sl' of class ", class(sl)[1])
     }
-    if (missing(start.time)) start.time <- sl$data$t[which(!is.na(sl$data$t))][1]
+    if (missing(start.time)) start.time <- as.POSIXct(sl$data$t[which(!is.na(sl$data$t))][1], tz="UTC")
 
     if (!quiet) {
         cat("start.time=")
@@ -329,12 +329,13 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
         indices <- c(indices, seq(1:ntc)[standard])
-        if (!quiet) print(name);
-    }
-    else {
+        if (!quiet)
+            print(name)
+    } else {
         nconst <- length(constituents)
         for (i in 1:nconst) {
-            if (!quiet) cat("[", constituents[i], "]\n",sep="")
+            if (!quiet)
+                cat("[", constituents[i], "]\n",sep="")
             if (constituents[i] == "standard") { # must be first!
                 if (i != 1) stop("\"standard\" must occur first in constituents list")
                 name <- tc$name[standard][-1]
@@ -346,16 +347,20 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
                 if (substr(constituents[i], 1, 1) == "-") {
                     cc <- substr(constituents[i], 2, nchar(constituents[i]))
                     delete <- which(tc$name == cc)
-                    if (length(delete) == 1) indices <- indices[indices != delete]
-                    else stop("cannot delete constituent '", cc, "' from the list because it is not there")
+                    if (length(delete) == 1)
+                        indices <- indices[indices != delete]
+                    else
+                        stop("cannot delete constituent '", cc, "' from the list because it is not there")
                 }
                 else {
                     add <- which(tc$name == constituents[i])
                     if (length(add) == 1) {
-                        if (0 == sum(indices == add)) indices <- c(indices, add) # avoid duplicates
+                        if (0 == sum(indices == add)) {
+                            indices <- c(indices, add) # avoid duplicates
+                        } else {
+                            stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tideconst")
+                        }
                     }
-                    else
-                        stop("cannot add constituent '", constituents[i], "' because it is not known; see ?tideconst")
                 }
             }
             if (!quiet) cat("<<", tc$name[indices], ">>\n")

@@ -15,7 +15,7 @@
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1],mgp[1]+1,1,1.5),
      margins.as.image=FALSE,
-     cex=1,
+     cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim,
      ylim,
      debug=getOption("oce.debug"),
@@ -48,7 +48,9 @@
   \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
     right of time-series plots, matching the space used up by a palette
     in an \code{\link{imagep}} plot.}
-  \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
+  \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
+  \item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
+  \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
   \item{xlim}{optional 2-element list for \code{xlim}, or 2-column matrix, in which case
     the rows are used, in order, for the panels of the graph.}
   \item{ylim}{optional 2-element list for \code{ylim}, or 2-column matrix, in which case

@@ -141,26 +141,36 @@ oce.plot.ts <- function(x,
                         grid=TRUE,
                         adorn=NULL,
                         fill=FALSE,
-                        xlab="", ylab="", cex=par("cex"),
+                        xlab="",
+                        ylab="",
+                        cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oce.mgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
                         type="l",
+
                         main="",
                         debug=getOption("oce.debug"),
                         ...)
 {
+    oce.debug(debug, "\b\boce.plot.ts() enter\n")
+    oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     par(mgp=mgp, mar=mar, cex=cex)
     args <- list(...)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex, type=type, ...)
+        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab,
+             cex=cex, cex.lab=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
+             type=type, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, cex=cex,  type=type, ...)
+        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab,
+             cex=cex, cex.lab=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
+             type=type, ...)
     }
-    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main, debug=debug-1, ...)
+    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main, debug=debug-1,
+                              cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
     if (grid) {
         lwd <- par("lwd")
         abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
@@ -169,12 +179,13 @@ oce.plot.ts <- function(x,
                col="lightgray", lty="dotted", lwd=lwd)
     }
     box()
-    axis(2)
-    axis(4, labels=FALSE)
+    axis(2, cex.axis=cex.axis)
+    axis(4, labels=FALSE, ...)
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
     }
+    oce.debug(debug, "\b\boce.plot.ts() exit\n")
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
@@ -571,9 +582,10 @@ oce.colors.palette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), main="", debug=getOption("oce.debug"), ...)
+oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), main="", debug=getOption("oce.debug"), ...)
 {
-    oce.debug(debug, "in oce.axis.POSIXct()\n")
+    oce.debug(debug, "\b\boce.axis.POSIXct() enter\n")
+    oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
@@ -734,10 +746,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
-        mtext(label, side=if (side==1) 3 else 1, cex=cex, adj=0)
+        mtext(label, side=if (side==1) 3 else 1, cex=cex.main*par('cex'), adj=0)
     }
     if (nchar(main) > 0) {
-        mtext(main, side=if(side==1) 3 else 1, cex=cex, adj=1)
+        mtext(main, side=if(side==1) 3 else 1, cex=cex.main*par('cex'), adj=1)
     }
-    axis(side, at = z, labels = labels, cex=cex, ...)
+    axis(side, at = z, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
+    oce.debug(debug, "\b\boce.axis.POSIXct() exit\n")
 }
