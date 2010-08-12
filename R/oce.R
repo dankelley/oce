@@ -751,6 +751,6 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.main*par('cex'), adj=1)
     }
-    axis(side, at = z, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
+    axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
     oce.debug(debug, "\b\boce.axis.POSIXct() exit\n")
 }

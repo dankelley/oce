@@ -8,7 +8,7 @@
 {
     op <- options()
     op.oce <- list(oce.tz = "UTC",
-                   oce.mgp = c(2,3/4,0),
+                   oce.mgp = c(2,1,0),
                    oce.draw.time.range = TRUE,
                    oce.debug = 0)
     toset <- !(names(op.oce) %in% names(op))
