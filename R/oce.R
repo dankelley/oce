@@ -154,6 +154,7 @@ oce.plot.ts <- function(x,
 {
     oce.debug(debug, "\b\boce.plot.ts() enter\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     par(mgp=mgp, mar=mar, cex=cex)
     args <- list(...)
     if (fill) {

@@ -1197,6 +1197,7 @@ plot.adv <- function(x,
 {
     oce.debug(debug, "\b\bplot.adv() enter\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
@@ -1238,6 +1239,7 @@ plot.adv <- function(x,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
+    oce.debug(debug, "before layout, cex=", par('cex'), "\n")
     if (lw > 1) {
         if (margins.as.image) {
             w <- 1.5
@@ -1246,6 +1248,7 @@ plot.adv <- function(x,
             lay <- layout(cbind(1:lw))
         }
     }
+    oce.debug(debug, "after layout, cex=", par('cex'), "\n")
     for (w in 1:lw) {
         oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar, cex=cex)
@@ -1258,6 +1261,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1271,6 +1275,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1284,6 +1289,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1297,6 +1303,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 6) {     # a[2]
@@ -1308,6 +1315,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 7) {     # a[3]
@@ -1319,6 +1327,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 9) {     # c[1]
@@ -1330,6 +1339,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 10) {     # c[2]
@@ -1341,6 +1351,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 11) {    # c[3]
@@ -1352,6 +1363,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 14) {    # temperature time-series
@@ -1363,6 +1375,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 15) {    # pressure time-series
@@ -1374,6 +1387,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 16) {    # heading
@@ -1385,6 +1399,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 17) {    # pitch
@@ -1396,6 +1411,7 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
         } else if (which[w] == 18) {    # roll
@@ -1407,8 +1423,10 @@ plot.adv <- function(x,
                         adorn=adorn[w],
                         xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
+            ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
         } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,1])
             c <- as.integer(x$data$ma$c[,1])
