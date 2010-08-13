@@ -1188,14 +1188,14 @@ plot.adv <- function(x,
                      draw.time.range=getOption("oce.draw.time.range"),
                      draw.zero.line=FALSE,
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1,1,1.5),
+                     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim,
                      debug=getOption("oce.debug"),
                      ...)
 {
-    oce.debug(debug, "\b\bplot.adv() enter\n")
+    oce.debug(debug, "\b\bplot.adv() {\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
@@ -1473,7 +1473,7 @@ plot.adv <- function(x,
             par(mar=omar)
         }
     }
-    oce.debug(debug, "\b\bplot.adv() exit\n")
+    oce.debug(debug, "\b\b}\n")
 }
 
 adv.2enu <- function(x)

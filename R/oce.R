@@ -137,7 +137,7 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 oce.plot.ts <- function(x,
                         y,
                         draw.time.range=TRUE,
-                        xaxs="i",
+                        xaxs="r",       # was "i"
                         grid=TRUE,
                         adorn=NULL,
                         fill=FALSE,
@@ -145,14 +145,14 @@ oce.plot.ts <- function(x,
                         ylab="",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oce.mgp"),
-                        mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, mgp[2]+1/2),
+                        mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
                         type="l",
 
                         main="",
                         debug=getOption("oce.debug"),
                         ...)
 {
-    oce.debug(debug, "\b\boce.plot.ts() enter\n")
+    oce.debug(debug, "\b\boce.plot.ts() {\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     par(mgp=mgp, mar=mar, cex=cex)
@@ -185,7 +185,7 @@ oce.plot.ts <- function(x,
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
     }
-    oce.debug(debug, "\b\boce.plot.ts() exit\n")
+    oce.debug(debug, "\b\b}\n")
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
@@ -584,8 +584,9 @@ oce.colors.palette <- function(n, which=1)
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), main="", debug=getOption("oce.debug"), ...)
 {
-    oce.debug(debug, "\b\boce.axis.POSIXct() enter\n")
+    oce.debug(debug, "\b\boce.axis.POSIXct() {\n")
     oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oce.debug(debug,vector.show(x, "x"))
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
@@ -649,13 +650,15 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 sec")
-        oce.debug(debug, vector.show(z, "Time range is under a minute; z="))
+        oce.debug(debug, "time range is under a minute\n")
+        oce.debug(debug, vector.show(z, "z"))
         if (missing(format)) format <- "%H:%M:%S"
     } else if (d < 60 * 30) {                  # under 30min
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="min")
-        oce.debug(debug, vector.show(z, "Time range is under 30 min; z="))
+        oce.debug(debug, "time range is under 30 min\n")
+        oce.debug(debug, vector.show(z, "z"))
         if (missing(format)) format <- "%H:%M"
     } else if (d < 60 * 60) {                  # under 1 hour
         t.start <- trunc(rr[1]-30, "mins")
@@ -717,8 +720,16 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     }
     if (!mat)
         z <- x[is.finite(x)]
-    keep <- range[1] <= z & z <= range[2]
+
+    ##
+    ## FIXME: I was twiddling the numbers, to get more labels, but xaxs="r" fixes that.
+    twiddle <- 0*diff(as.numeric(range)) / 10 # FIXME: do I need this anymore?
+    ##oce.debug(debug, "range:", format(range[1]), "to", format(range[2]), "\n")
+    keep <- range[1] <= (z + twiddle) & (z - twiddle) <= range[2]
+    ##oce.debug(debug, vector.show(keep, "keep"))
+    ##oce.debug(debug, vector.show(z, "z before keep"))
     z <- z[keep]
+    ##oce.debug(debug, vector.show(z, "z after keep"))
     if (!is.logical(labels))
         labels <- labels[keep]
     else if (identical(labels, TRUE))
@@ -746,12 +757,13 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
-        mtext(label, side=if (side==1) 3 else 1, cex=cex.axis*par('cex'), adj=0)
+        oce.debug(debug, "label=", label, "\n")
+        mtext(label, side=if (side==1) 3 else 1, cex=3/4*cex.axis*par('cex'), adj=0)
         oce.debug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
     }
     if (nchar(main) > 0) {
-        mtext(main, side=if(side==1) 3 else 1, cex=3/4*cex.axis*par('cex'), adj=1)
+        mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
     axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
-    oce.debug(debug, "\b\boce.axis.POSIXct() exit\n")
+    oce.debug(debug, "\b\b}\n")
 }
