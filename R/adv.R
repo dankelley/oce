@@ -1199,7 +1199,7 @@ plot.adv <- function(x,
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
+    #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -1252,7 +1252,7 @@ plot.adv <- function(x,
     for (w in 1:lw) {
         oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar, cex=cex)
-        if (which[w] == 1) {
+        if (which[w] == 1 || which[w] == "u1") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,1],
@@ -1266,7 +1266,7 @@ plot.adv <- function(x,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] == 2) {
+        } else if (which[w] == 2 || which[w] == "u2") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,2],
@@ -1280,7 +1280,7 @@ plot.adv <- function(x,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] == 3) {
+        } else if (which[w] == 3 || which[w] == "u3") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,3],
@@ -1294,7 +1294,7 @@ plot.adv <- function(x,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] == 5) {     # a[1]
+        } else if (which[w] == 5 || which[w] == "b1") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,which[w]-4],
@@ -1306,7 +1306,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 6) {     # a[2]
+        } else if (which[w] == 6 || which[w] == "b2") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,2],
@@ -1318,7 +1318,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 7) {     # a[3]
+        } else if (which[w] == 7 || which[w] == "b3") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$a[,3],
@@ -1330,7 +1330,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 9) {     # c[1]
+        } else if (which[w] == 9 || which[w] == "c1") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$c[,1],
@@ -1342,7 +1342,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 10) {     # c[2]
+        } else if (which[w] == 10 || which[w] == "c2") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$c[,2],
@@ -1354,7 +1354,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 11) {    # c[3]
+        } else if (which[w] == 11 || which[w] == "c3") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ma$c[,3],
@@ -1366,7 +1366,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 14) {    # temperature time-series
+        } else if (which[w] == 14 || which[w] == "temperature") {    # temperature time-series
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
@@ -1378,7 +1378,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 15) {    # pressure time-series
+        } else if (which[w] == 15 || which[w] == "pressure") {    # pressure time-series
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
@@ -1390,7 +1390,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 16) {    # heading
+        } else if (which[w] == 16 || which[w] == "heading") {    # heading
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$heading,
@@ -1402,7 +1402,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 17) {    # pitch
+        } else if (which[w] == 17 || which[w] == "pitch") {    # pitch
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
@@ -1414,7 +1414,7 @@ plot.adv <- function(x,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 18) {    # roll
+        } else if (which[w] == 18 || which[w] == "roll") {    # roll
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
             oce.plot.ts(x$data$ts$time, x$data$ts$roll,
@@ -1445,7 +1445,7 @@ plot.adv <- function(x,
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 3))
-        } else if (which[w] == 23) {    # progressive vector
+        } else if (which[w] == 23 || which[w] == "progressive-vector") {    # progressive vector
             oce.debug(debug, "doing progressive-vector diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             dt <- diff(as.numeric(x$data$ts$time))

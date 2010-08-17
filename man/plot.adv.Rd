@@ -65,23 +65,29 @@
   gaps in the sequence, e.g. 4 and 8 are not used.)
 
   \itemize{ 
-    \item \code{which=1} yields a timeseries of the x component of velocity.
-    \item \code{which=2} yields a timeseries of the y component of velocity.
-    \item \code{which=3} yields a timeseries of the z component of velocity.
-    \item \code{which=5:7} yields a timeseries of backscatter intensity
-    for beams 1, 2 and 3
-    \item \code{which=9:11} yields a timeseries of correlation
-    for beams 1, 2 and 3
-    \item \code{which=14} yields a timeseries of temperature.
-    \item \code{which=15} yields a timeseries of pressure.
-    \item \code{which=16} yields a timeseries of heading.
-    \item \code{which=17} yields a timeseries of pitch.
-    \item \code{which=18} yields a timeseries of roll.
+    \item \code{which=1} or \code{which="u1"} yields a timeseries of the x component of velocity (in either xyz or enu coordinates).
+    \item \code{which=2} or \code{which="u2"} yields a timeseries of the y component of velocity (in either xyz or enu coordinates).
+    \item \code{which=3} or \code{which="u3"} yields a timeseries of the z component of velocity (in either xyz or enu coordinates).
+    \item \code{which=4} is not permitted (since ADV are 3-beam devices)
+    \item \code{which=5} or \code{which="b1"} yields a timeseries of backscatter for beam 1
+    \item \code{which=6} or \code{which="b2"} yields a timeseries of backscatter for beam 2
+    \item \code{which=7} or \code{which="b3"} yields a timeseries of backscatter for beam 3
+    \item \code{which=8} is not permitted (since ADV are 3-beam devices)
+    \item \code{which=9}  or \code{which="c1"} yields a timeseries of correlation for beam 1
+    \item \code{which=10} or \code{which="c2"} yields a timeseries of correlation for beam 2
+    \item \code{which=11} or \code{which="c3"} yields a timeseries of correlation for beam 3
+    \item \code{which=12} is not permitted
+    \item \code{which=13} is not permitted
+    \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
+    \item \code{which=15} or \code{which="pressure"} yields a timeseries of pressure.
+    \item \code{which=16} or \code{which="heading"} yields a timeseries of heading.
+    \item \code{which=17} or \code{which="heading"}yields a timeseries of pitch.
+    \item \code{which=18} or \code{which="heading"}yields a timeseries of roll.
     \item \code{which=19} yields a plot of beam 1 correlation vs
     amplitude, using \code{\link{smoothScatter}}.
     \item \code{which=20} as for \code{which=19} but for beam 2.
     \item \code{which=21} as for \code{which=19} but for beam 3.
-    \item \code{which=23} yields a progressive-vector diagram in the
+    \item \code{which=23} or \code{"progressive-vector"} yields a progressive-vector diagram in the
       horizontal plane, plotted with \code{asp=1}, and taking
       beam1 and beam2 as the eastward and northward components of
       velocity, respectively.
