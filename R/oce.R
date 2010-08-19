@@ -763,6 +763,9 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")[1]
         time.range <-  as.POSIXlt(time.range)
+        time.range.data <- range(x, na.rm=TRUE)
+        time.range[1] <- max(time.range[1], time.range.data[1])
+        time.range[2] <- min(time.range[2], time.range.data[2])
         tr1 <- format(time.range[1])
         tr2 <- format(time.range[2])
         if (abbreviate.time.range) {
