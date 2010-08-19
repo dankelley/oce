@@ -338,6 +338,29 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         for (name in names(rval$data$ts))
             rval$data$ts[[name]] <- x$data$ts[[name]][r]
         rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+    } else if (inherits(x, "adv")) {
+        if (!is.null(indices))
+            stop("cannot specify 'indices' for adv objects (not coded yet)")
+        if (missing(subset))
+            stop("must specify a 'subset'")
+        subset.string <- deparse(substitute(subset))
+        oce.debug(debug, "subset.string='", subset.string, "'\n")
+        if (length(grep("time", subset.string))) {
+            oce.debug(debug, "subsetting an adp by time\n")
+            keep <- eval(substitute(subset), x$data$ts, parent.frame())
+            oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
+            if (sum(keep) < 2)
+                stop("must keep at least 2 profiles")
+            rval <- x
+            for (name in names(x$data$ts)) {
+                rval$data$ts[[name]] <- x$data$ts[[name]][keep]
+            }
+            for (name in names(x$data$ma)) {
+                rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
+            }
+        } else {
+            stop("only 'time' is permitted for subsetting")
+        }
     } else {
         r <- eval(substitute(subset), x$data, parent.frame())
         r <- r & !is.na(r)
