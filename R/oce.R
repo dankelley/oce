@@ -338,7 +338,6 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         for (name in names(rval$data$ts))
             rval$data$ts[[name]] <- x$data$ts[[name]][r]
         rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
-
     } else {
         r <- eval(substitute(subset), x$data, parent.frame())
         r <- r & !is.na(r)
