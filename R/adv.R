@@ -402,6 +402,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             start, deltat,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
+    oce.debug(debug, paste("\b\bread.adv.sontek(file=\"", file, "\", from=", from, ", to=", to, ", by=", by, ", type=\"", type, "\", header=", header, ", start=", start, ", deltat=", deltat, ", debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n",sep=""))
     warning("read.adv.sontek() is VERY preliminary: times are wrong; pressure is wrong; to/from/by are ignored; orientation is guessed; beam coordinate is guessed")
     if (header) {
         stop("cannot handle the case with header=TRUE yet")
@@ -419,7 +420,6 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             deltat <- ctime.to.seconds(deltat)
         oce.debug(debug, "time series is inferred to have data every", deltat, "s\n")
     }
-    oce.debug(debug, "read.adv.sontek() ENTRY\n")
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "rb")
@@ -437,10 +437,12 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     file.size <- seek(file, 0, origin="start", rw="read")
     oce.debug(debug, "filesize=",file.size,"\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
-
+    if (debug) { debug.buf <<- buf }
     ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
     ## Technical Documentation (Sept 1, 2001)
-    v.start.1 <- match.bytes(buf[1:100], 0x85, 0x16)[1]
+    v.start.1 <- match.bytes(buf[1:min(2000, length(buf))], 0x85, 0x16)[1]
+    oce.debug(debug, "v.start.1=", v.start.1, "\n")
+    oce.debug(debug, "length(buf)=", length(buf), "\n")
     v.start <- seq(v.start.1, length(buf) - v.start.1, as.numeric(0x16))
     v.start <- v.start[-length(v.start)] # remove last, which may be partial
     len <- length(v.start)
