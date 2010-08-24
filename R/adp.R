@@ -606,13 +606,22 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    if (x$metadata$instrument.type == "teledyne rdi") {
+    if (1 == length(agrep("rdi", x$metadata$instrument.type))) {
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
         }
     }
-    to.radians <- pi / 180
+    if (1 == length(agrep("sontek", x$metadata$instrument.type))) {
+        warning("adp.xyz2enu() detected SONTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
+    }
+    if (1 == length(agrep("nortek", x$metadata$instrument.type))) {
+        warning("adp.xyz2enu() detected NORTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
+    }
+    ## FIXME need to check for sontek and nortek here, and
+    ## FIXME  1) add 90 degrees to heading
+    ## FIXME  2) multiply pitch by -1
+    to.radians <- atan2(1,1) / 45
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
@@ -624,6 +633,9 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     SR <- sin(to.radians * roll)
     np <- dim(x$data$ma$v)[1]
     nc <- dim(x$data$ma$v)[2]
+    ## Note: construct a 3*3*np matrix that is the product of three
+    ## rotation matrices.  This is 9*np of matrix memory, versus
+    ## 27*np for the three matrices.
     tr.mat <- array(dim=c(3, 3, np))
     tr.mat[1,1,] <-  CH * CR + SH * SP * SR
     tr.mat[1,2,] <-  SH * CP
@@ -648,7 +660,7 @@ adp.enu2other <- function(x, heading=0, pitch=0, roll=0)
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "enu") stop("input must be in enu coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    to.radians <- pi / 180
+    to.radians <- atan2(1,1) / 45
     CH <- cos(to.radians * heading)
     SH <- sin(to.radians * heading)
     CP <- cos(to.radians * pitch)

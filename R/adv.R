@@ -437,7 +437,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     file.size <- seek(file, 0, origin="start", rw="read")
     oce.debug(debug, "filesize=",file.size,"\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
-    if (debug) { debug.buf <<- buf }
+    ###if (debug) { debug.buf <<- buf }
     ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
     ## Technical Documentation (Sept 1, 2001)
     v.start.1 <- match.bytes(buf[1:min(2000, length(buf))], 0x85, 0x16)[1]
@@ -1522,21 +1522,33 @@ adv.xyz2enu <- function(x)
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    to.radians <- pi / 180
+    to.radians <- atan2(1,1) / 45
+    heading <- x$data$ts$heading
+    pitch <- x$data$ts$pitch
+    roll <- x$data$ts$roll
+    if (1 == length(agrep("sontek", x$metadata$instrument.type))) { # FIXME: brittle dependence on instrument.type
+        heading <- heading + 90
+        pitch <- - pitch
+    }
+    if (1 == length(agrep("nortek", x$metadata$instrument.type))) {# FIXME: brittle dependence on instrument.type
+        heading <- heading + 90
+        pitch <- - pitch
+    }
     ##vector.show(heading, "heading (in adv.xyz2enu)")
     ##vector.show(pitch, "pitch (in adv.xyz2enu)")
     ##vector.show(roll, "roll (in adv.xyz2enu)")
-    CH <- cos(to.radians * x$data$ts$heading)
-    SH <- sin(to.radians * x$data$ts$heading)
-    CP <- cos(to.radians * x$data$ts$pitch)
-    SP <- sin(to.radians * x$data$ts$pitch)
-    CR <- cos(to.radians * x$data$ts$roll)
-    SR <- sin(to.radians * x$data$ts$roll)
+    CH <- cos(to.radians * heading)
+    SH <- sin(to.radians * heading)
+    CP <- cos(to.radians * pitch)
+    SP <- sin(to.radians * pitch)
+    CR <- cos(to.radians * roll)
+    SR <- sin(to.radians * roll)
     if (x$metadata$orientation == "downward") { #FIXME: I think this is plain wrong; should change sign of row 2 and 3 (??)
         SP <- -SP
         SR <- -SR
     }
     np <- dim(x$data$ma$v)[1]
+    ## as with corresponding adp routine, construct single 3*3*np matrix
     tr.mat <- array(numeric(), dim=c(3, 3, np))
     tr.mat[1,1,] <-  CH * CR + SH * SP * SR
     tr.mat[1,2,] <-  SH * CP
@@ -1562,7 +1574,7 @@ adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "enu") stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    to.radians <- pi / 180
+    to.radians <- atan2(1,1) / 45
     CH <- cos(to.radians * heading)
     SH <- sin(to.radians * heading)
     CP <- cos(to.radians * pitch)
