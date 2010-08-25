@@ -1539,11 +1539,11 @@ adv.xyz2enu <- function(x)
     pitch <- x$data$ts$pitch
     roll <- x$data$ts$roll
     if (1 == length(agrep("sontek", x$metadata$instrument.type))) { # FIXME: brittle dependence on instrument.type
-        heading <- heading + 90
+        heading <- heading - 90                                     # 20100825: ckr agree
         pitch <- - pitch
     }
     if (1 == length(agrep("nortek", x$metadata$instrument.type))) {# FIXME: brittle dependence on instrument.type
-        heading <- heading + 90
+        heading <- heading - 90
         pitch <- - pitch
     }
     ##vector.show(heading, "heading (in adv.xyz2enu)")
