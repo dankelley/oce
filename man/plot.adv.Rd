@@ -81,16 +81,21 @@
     \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
     \item \code{which=15} or \code{which="pressure"} yields a timeseries of pressure.
     \item \code{which=16} or \code{which="heading"} yields a timeseries of heading.
-    \item \code{which=17} or \code{which="heading"}yields a timeseries of pitch.
-    \item \code{which=18} or \code{which="heading"}yields a timeseries of roll.
+    \item \code{which=17} or \code{which="pitch"}yields a timeseries of pitch.
+    \item \code{which=18} or \code{which="roll"}yields a timeseries of roll.
     \item \code{which=19} yields a plot of beam 1 correlation vs
     amplitude, using \code{\link{smoothScatter}}.
     \item \code{which=20} as for \code{which=19} but for beam 2.
     \item \code{which=21} as for \code{which=19} but for beam 3.
-    \item \code{which=23} or \code{"progressive-vector"} yields a progressive-vector diagram in the
-      horizontal plane, plotted with \code{asp=1}, and taking
-      beam1 and beam2 as the eastward and northward components of
-      velocity, respectively.
+    \item \code{which=23} or \code{"progressive-vector"} yields a
+      progressive-vector diagram in the horizontal plane, plotted with
+      \code{asp=1}, and taking beam1 and beam2 as the eastward and
+      northward components of velocity, respectively.
+    \item \code{which=24} or \code{"horizontal-velocity"} yields 
+      velocity plot in the horizontal plane, i.e. u[2] versus u[1].
+    \item \code{which=25} or \code{"horizontal-velocity-1"} yields 
+      a \code{\link{smoothScatter}} velocity plot in the horizontal
+      plane, i.e. u[2] versus u[1].
   }
 }
 

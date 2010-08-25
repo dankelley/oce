@@ -1463,6 +1463,18 @@ plot.adv <- function(x,
             plot(x.dist, y.dist, xlab="km", ylab="km", type='l',
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                  asp=1, ...)
+        } else if (which[w] == 24 || which[w] == "horizontal-velocity") {
+            oce.debug(debug, "doing horizontal-velocity diagram\n")
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type='p',
+                 cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                 asp=1, ...)
+        } else if ((is.numeric(which[w]) && round(which[w], 1) == 24.1) || which[w] == "horizontal-velocity-1") {
+            oce.debug(debug, "doing horizontal-velocity-1 diagram\n")
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
+                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                          asp=1, ...)
         } else {
             stop("unknown value of \"which\":", which[w])
         }
