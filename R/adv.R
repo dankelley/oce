@@ -1197,7 +1197,7 @@ plot.adv <- function(x,
                      debug=getOption("oce.debug"),
                      ...)
 {
-    oce.debug(debug, "\b\bplot.adv() {\n")
+    oce.debug(debug, "\b\bplot.adv(x, which=c(", paste(which,collapse=","),"), ...) {\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
@@ -1299,7 +1299,7 @@ plot.adv <- function(x,
         } else if (which[w] == 5 || which[w] == "b1") {
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
-            oce.plot.ts(x$data$ts$time, x$data$ma$a[,which[w]-4],
+            oce.plot.ts(x$data$ts$time, x$data$ma$a[,1],
                         ##ylab=expression(a[1]), type='l', draw.time.range=draw.time.range,
                         ylab=expression(a[1]), draw.time.range=draw.time.range,
                         adorn=adorn[w],
@@ -1464,7 +1464,7 @@ plot.adv <- function(x,
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                  asp=1, ...)
         } else {
-            stop("unknown value of \"which\":", which)
+            stop("unknown value of \"which\":", which[w])
         }
         draw.time.range <- FALSE
         if (margins.as.image)  {
