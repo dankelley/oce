@@ -621,16 +621,19 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ## FIXME need to check for sontek and nortek here, and
     ## FIXME  1) add 90 degrees to heading
     ## FIXME  2) multiply pitch by -1
-    to.radians <- atan2(1,1) / 45
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
-    CH <- cos(to.radians * heading)
-    SH <- sin(to.radians * heading)
-    CP <- cos(to.radians * pitch)
-    SP <- sin(to.radians * pitch)
-    CR <- cos(to.radians * roll)
-    SR <- sin(to.radians * roll)
+    to.radians <- atan2(1,1) / 45
+    hrad <- to.radians * heading        # This could save millions of multiplies
+    prad <- to.radians * pitch          # although the trig is probably taking
+    rrad <- to.radians * roll           # most of the time.
+    CH <- cos(hrad)
+    SH <- sin(hrad)
+    CP <- cos(prad)
+    SP <- sin(prad)
+    CR <- cos(rrad)
+    SR <- sin(rrad)
     np <- dim(x$data$ma$v)[1]
     nc <- dim(x$data$ma$v)[2]
     ## Note: construct a 3*3*np matrix that is the product of three
@@ -646,6 +649,8 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     tr.mat[3,1,] <- -CP * SR
     tr.mat[3,2,] <-  SP
     tr.mat[3,3,] <-  CP * CR
+    ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
+    ## FIXME: see if plyr library is faster than lapply
     rotated <- array(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
     res$data$ma$v[,,1] <- t(rotated[1,,])
     res$data$ma$v[,,2] <- t(rotated[2,,])
