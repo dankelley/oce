@@ -337,34 +337,25 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         print(matrix(as.numeric(c[1:min(3,vvd.len),]), ncol=3))
     }
     sec <- as.numeric(vsd.t) - as.numeric(vsd.t[1])
-    cat(vector.show(sec, "sec:"))
     vds <- var(diff(sec))
     if (!is.na(vds) & 0 != vds)
         warning("the times in the file are not equi-spaced, but they are taken to be so")
-    vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y # FIXME: produces "stuttering" times HEREHEREHERE
-##    vvd.sec.new <- seq(vsd.t[1], vsd.t[length(vsd.t)], length.out=length(vvd.start))
-
-    vvd.sec.new <- seq(sec[1], sec[length(sec)], length.out=length(vvd.start))
-
-    cat(vector.show(vsd.start, "vsd.start"))
-    cat(vector.show(vvd.start, "vvd.start"))
-
-    cat("length(vsd.start)=", length(vsd.start), "\n")
-    cat("length(vvd.start)=", length(vvd.start), "\n")
-
-    vvd.sec <- vvd.sec.new              # TESTING
-
-    cat(vector.show(vsd.start, "vsd.start"))
-    cat(vector.show(vsd.t, "vsd.t"))
-    cat(vector.show(vvd.sec, "vvd.sec"))
-    cat(vector.show(vvd.sec.new, "vvd.sec.new"))
-    .vvd.sec<<-vvd.sec;.vvd.sec.new<<-vvd.sec.new
+    ##vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y # FIXME: produces "stuttering" times
+    vvd.sec <- seq(sec[1], sec[length(sec)], length.out=1+length(vvd.start))
+    ##cat(vector.show(sec, "sec:"))
+    ##cat(vector.show(vsd.start, "vsd.start"))
+    ##cat(vector.show(vvd.start, "vvd.start"))
+    ##cat("length(vsd.start)=", length(vsd.start), "\n")
+    ##cat("length(vvd.start)=", length(vvd.start), "\n")
+    ##cat(vector.show(vsd.start, "vsd.start"))
+    ##cat(vector.show(vsd.t, "vsd.t"))
+    ##cat(vector.show(vvd.sec, "vvd.sec"))
+    ##cat(vector.show(vvd.sec.new, "vvd.sec.new"))
+    ##.vvd.sec<<-vvd.sec;.vvd.sec.new<<-vvd.sec.new
     oce.debug(debug, "vsd.start[1:2]=", vsd.start[1:2], "\n")
     oce.debug(debug, "vvd.start[1:9]=", vvd.start[1:9], "\n")
-
     rm(buf)
     gc()
-
     ## subset using 'by'
     by.orig <- by
     if (is.character(by)) {
