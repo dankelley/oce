@@ -337,34 +337,14 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         print(matrix(as.numeric(c[1:min(3,vvd.len),]), ncol=3))
     }
     sec <- as.numeric(vsd.t) - as.numeric(vsd.t[1])
-    cat(vector.show(sec, "sec:"))
     vds <- var(diff(sec))
     if (!is.na(vds) & 0 != vds)
         warning("the times in the file are not equi-spaced, but they are taken to be so")
-    vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y # FIXME: produces "stuttering" times HEREHEREHERE
-##    vvd.sec.new <- seq(vsd.t[1], vsd.t[length(vsd.t)], length.out=length(vvd.start))
-
-    vvd.sec.new <- seq(sec[1], sec[length(sec)], length.out=length(vvd.start))
-
-    cat(vector.show(vsd.start, "vsd.start"))
-    cat(vector.show(vvd.start, "vvd.start"))
-
-    cat("length(vsd.start)=", length(vsd.start), "\n")
-    cat("length(vvd.start)=", length(vvd.start), "\n")
-
-    vvd.sec <- vvd.sec.new              # TESTING
-
-    cat(vector.show(vsd.start, "vsd.start"))
-    cat(vector.show(vsd.t, "vsd.t"))
-    cat(vector.show(vvd.sec, "vvd.sec"))
-    cat(vector.show(vvd.sec.new, "vvd.sec.new"))
-    .vvd.sec<<-vvd.sec;.vvd.sec.new<<-vvd.sec.new
-    oce.debug(debug, "vsd.start[1:2]=", vsd.start[1:2], "\n")
-    oce.debug(debug, "vvd.start[1:9]=", vvd.start[1:9], "\n")
-
+    vvd.sec <- seq(sec[1], sec[length(sec)], length.out=1+length(vvd.start))
+    oce.debug(debug, vector.show(vsd.start, "vsd.start"))
+    oce.debug(debug, vector.show(vvd.start, "vvd.start"))
     rm(buf)
     gc()
-
     ## subset using 'by'
     by.orig <- by
     if (is.character(by)) {
@@ -1263,6 +1243,7 @@ plot.adv <- function(x,
         }
     }
     oce.debug(debug, "after layout, cex=", par('cex'), "\n")
+    have.ts.slow <- "ts.slow" %in% names(x$data)
     for (w in 1:lw) {
         oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar, cex=cex)
@@ -1383,15 +1364,25 @@ plot.adv <- function(x,
         } else if (which[w] == 14 || which[w] == "temperature") {    # temperature time-series
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
-            oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
-                        ##ylab=resizable.label("T", "y"), type='l', draw.time.range=draw.time.range,
-                        ylab=resizable.label("T", "y"), draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
-                        debug=debug-1,
-                        ...)
+            if (have.ts.slow) {
+                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$temperature,
+                            ylab=resizable.label("T", "y"), draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            } else {
+                oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
+                            ylab=resizable.label("T", "y"), draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            }
         } else if (which[w] == 15 || which[w] == "pressure") {    # pressure time-series
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
@@ -1407,39 +1398,73 @@ plot.adv <- function(x,
         } else if (which[w] == 16 || which[w] == "heading") {    # heading
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
-            oce.plot.ts(x$data$ts$time, x$data$ts$heading,
-                        ##ylab="heading", type='l', draw.time.range=draw.time.range,
-                        ylab="heading", draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
-                        debug=debug-1,
-                        ...)
+            if (have.ts.slow) {
+                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$heading,
+                            ##ylab="heading", type='l', draw.time.range=draw.time.range,
+                            ylab="heading", draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            } else {
+                oce.plot.ts(x$data$ts$time, x$data$ts$heading,
+                            ##ylab="heading", type='l', draw.time.range=draw.time.range,
+                            ylab="heading", draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            }
         } else if (which[w] == 17 || which[w] == "pitch") {    # pitch
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
-            oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
-                        ##ylab="pitch", type='l', draw.time.range=draw.time.range,
-                        ylab="pitch", draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
-                        debug=debug-1,
-                        ...)
+            if (have.ts.slow) {
+                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$pitch,
+                            ylab="pitch", draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            } else {
+                oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
+                            ylab="pitch", draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            }
         } else if (which[w] == 18 || which[w] == "roll") {    # roll
             if (missing(xlim))
                 xlim <- range(x$data$ts$time, na.rm=TRUE)
-            oce.plot.ts(x$data$ts$time, x$data$ts$roll,
-                        ##ylab="roll", type='l', draw.time.range=draw.time.range,
-                        ylab="roll", draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
-                        debug=debug-1,
-                        ...)
+            if (have.ts.slow) {
+                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$roll,
+                            ##ylab="roll", type='l', draw.time.range=draw.time.range,
+                            ylab="roll", draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            } else {
+                oce.plot.ts(x$data$ts$time, x$data$ts$roll,
+                            ##ylab="roll", type='l', draw.time.range=draw.time.range,
+                            ylab="roll", draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=xlim, ylim=if (gave.ylim) ylim[w,] else NULL,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,mar=mar, # FIXME
+                            debug=debug-1,
+                            ...)
+            }
             ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
         } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
             a <- as.integer(x$data$ma$a[,1])

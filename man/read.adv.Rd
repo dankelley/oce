@@ -96,6 +96,15 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   \code{start} time and the time \code{deltat} between samples, since,
   without these, no time base can be set up.
 
+  The returned object is a list containing lists named \code{metadata},
+  \code{data}, and \code{processing.log}.  The \code{data} list contains
+  lists \code{ts}, potentially (for Nortek Vector units) \code{ts.slow},
+  \code{ss}, and \code{ma} (matrices of velocity, etc).  These are as
+  \code{adp} objects, except for the presence of \code{ts.slow}, for
+  timeseries that vary on a slow timescale, e.g. on Nortek Vector units,
+  \code{ts.slow} holds \code{heading}, \code{pitch}, \code{roll}, and
+  \code{temperature}, while \code{ts} holds only \code{pressure}.
+
   \emph{Notes on NorTek files.}
 
   \enumerate{
