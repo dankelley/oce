@@ -65,7 +65,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     oce.debug(debug, "  file.size=", file.size, "\n")
     buf <- readBin(file, "raw", file.size)
     header <- decode.header.nortek(buf, debug=debug-1)
-    if (debug > 0) {
+    if (debug > 1) {                    # Note: need high debugging to get this
         cat("\nheader is as follows:\n")
         str(header)
     }
@@ -143,16 +143,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", vsd.start[middle], "\n")
         return(list(index=middle, time=t)) # index is within vsd
     }
-
-
     ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
-    oce.debug(debug, "About to find vvd.start and vsd.start by scanning binary file.\n")
     vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
     vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
     vsd.len <- length(vsd.start)
-
-    oce.debug(debug, "... finished finding vvd.start and vsd.start\n")
-
     ## Measurement start and end times
     metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
                                               bcd2integer(buf[vsd.start[1]+9]), # month
@@ -204,7 +198,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, "nrecords=", readBin(buf[vsd.start[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
         oce.debug(debug, "vsd.dt=",vsd.dt,"(from two.times)\n")
 
-        vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
+        vvd.start <- vvd.start[vsd.start[from.index] <= vvd.start & vvd.start <= vsd.start[to.index]]
         vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
         ## find vvd region that lies inside the vsd [from, to] region.
         vvd.start.from <- max(1, vvd.start[vvd.start < from.pair$index])
@@ -261,7 +255,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             oce.debug(debug, vector.show(vsd.start, "    ... later, vsd.start is"))
         }
     }
-    oce.debug(debug, "by=", by, "\n")
     oce.debug(debug, "about to trim vsd.start, based on vvd.start[1]=", vvd.start[1], " and vvd.start[length(vvd.start)]=", vvd.start[length(vvd.start)], "\n")
     oce.debug(debug, vector.show(vsd.start, "before trimming, vsd.start:"))
     oce.debug(debug, "from=", from, "to=", to, "\n")
@@ -273,14 +266,12 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     subset.end <- which.min(vsd.start < vvd.start[length(vvd.start)])
     if (subset.end < length(vsd.start))
         subset.end <- subset.end + 1
-    oce.debug(debug, "subset.start=", subset.start, "\n")
-    oce.debug(debug, "subset.end=", subset.end, "\n")
 
-    oce.debug(debug, "try start vsd.start[", subset.start, "], i.e.", vsd.start[subset.start], "\n")
-    oce.debug(debug, "try end   vsd.start[", subset.end,   "], i.e.", vsd.start[subset.end],   "\n")
-
-    vsd.start <- vsd.start[subset.start:subset.end]
-    oce.debug(debug, vector.show(vsd.start, "after trimming, vsd.start:"))
+    oce.debug(debug, "try start vsd.start[subset.start=", subset.start, "] = ", vsd.start[subset.start], "\n")
+    oce.debug(debug, "try end   vsd.start[subset.end=  ", subset.end,   "] = ", vsd.start[subset.end],   "\n")
+    oce.debug(debug, vector.show(vsd.start, "before trimming, vsd.start:"))
+    vsd.start <- vsd.start[seq(subset.start, subset.end-1, 1)]
+    oce.debug(debug, vector.show(vsd.start, "after  trimming, vsd.start:"))
 
     if (2 > length(vsd.start))
         stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
@@ -327,7 +318,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     v[,3] <- readBin(buf[vvd.start2 + 14], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
     if (debug > 0) {
         oce.debug(debug, "v[", dim(v), "] begins...\n")
-        print(matrix(as.numeric(v[1:min(10,vvd.len),]), ncol=3))
+        print(matrix(as.numeric(v[1:min(3,vvd.len),]), ncol=3))
     }
     a <- array(raw(), dim=c(vvd.len, 3))
     a[,1] <- buf[vvd.start + 16]
@@ -335,7 +326,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     a[,3] <- buf[vvd.start + 18]
     if (debug > 0) {
         oce.debug(debug, "a[", dim(a), "] begins...\n")
-        print(matrix(as.numeric(a[1:min(10,vvd.len),]), ncol=3))
+        print(matrix(as.numeric(a[1:min(3,vvd.len),]), ncol=3))
     }
     c <- array(raw(), dim=c(vvd.len, 3))
     c[,1] <- buf[vvd.start + 19]
@@ -343,14 +334,31 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     c[,3] <- buf[vvd.start + 21]
     if (debug > 0) {
         cat("c[", dim(c), "] begins...\n")
-        print(matrix(as.numeric(c[1:min(10,vvd.len),]), ncol=3))
+        print(matrix(as.numeric(c[1:min(3,vvd.len),]), ncol=3))
     }
     sec <- as.numeric(vsd.t) - as.numeric(vsd.t[1])
-    oce.debug(debug, vector.show(sec, "sec:"))
+    cat(vector.show(sec, "sec:"))
     vds <- var(diff(sec))
     if (!is.na(vds) & 0 != vds)
         warning("the times in the file are not equi-spaced, but they are taken to be so")
-    vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y
+    vvd.sec <- approx(vsd.start, sec, xout=vvd.start)$y # FIXME: produces "stuttering" times HEREHEREHERE
+##    vvd.sec.new <- seq(vsd.t[1], vsd.t[length(vsd.t)], length.out=length(vvd.start))
+
+    vvd.sec.new <- seq(sec[1], sec[length(sec)], length.out=length(vvd.start))
+
+    cat(vector.show(vsd.start, "vsd.start"))
+    cat(vector.show(vvd.start, "vvd.start"))
+
+    cat("length(vsd.start)=", length(vsd.start), "\n")
+    cat("length(vvd.start)=", length(vvd.start), "\n")
+
+    vvd.sec <- vvd.sec.new              # TESTING
+
+    cat(vector.show(vsd.start, "vsd.start"))
+    cat(vector.show(vsd.t, "vsd.t"))
+    cat(vector.show(vvd.sec, "vvd.sec"))
+    cat(vector.show(vvd.sec.new, "vvd.sec.new"))
+    .vvd.sec<<-vvd.sec;.vvd.sec.new<<-vvd.sec.new
     oce.debug(debug, "vsd.start[1:2]=", vsd.start[1:2], "\n")
     oce.debug(debug, "vvd.start[1:9]=", vvd.start[1:9], "\n")
 
@@ -371,25 +379,23 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     vvd.start.orig <- vvd.start
     vvd.start <- vvd.start[look]
     oce.debug(debug, "length(vvd.start)=",length(vvd.start),"(after 'look'ing) with by=", by, "\n")
-    heading <- approx(vsd.start, heading, xout=vvd.start, rule=2)$y
-    pitch <- approx(vsd.start, pitch, xout=vvd.start, rule=2)$y
-    roll <- approx(vsd.start, roll, xout=vvd.start, rule=2)$y
-    temperature <- approx(vsd.start, temperature, xout=vvd.start, rule=2)$y
+    ##heading <- approx(vsd.start, heading, xout=vvd.start, rule=2)$y
+    ##pitch <- approx(vsd.start, pitch, xout=vvd.start, rule=2)$y
+    ##roll <- approx(vsd.start, roll, xout=vvd.start, rule=2)$y
+    ##temperature <- approx(vsd.start, temperature, xout=vvd.start, rule=2)$y
     vvd.sec <- vvd.sec[look]
     pressure <- pressure[look]          # only output at burst headers, not with velo
     v <- v[look,]
     a <- a[look,]
     c <- c[look,]
-    time <- vvd.sec + vsd.t[1]            #FIXME
-    oce.debug(debug, "time=", format(time[1]), ",", format(time[2]), "...\n")
-    oce.debug(debug, "vvd.sec=", vvd.sec[1], ",", vvd.sec[2], "...\n")
-    data <- list(ts=list(time=time,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll,
-                 temperature=temperature,
+    ##oce.debug(debug, "vvd.sec=", vvd.sec[1], ",", vvd.sec[2], "...\n")
+    ##cat(vector.show(vsd.t[1:10]))
+    ## vsd at 1Hz; vvd at sampling rate
+    data <- list(ts=list(time=vvd.sec + vsd.t[1], # FIXME
+                 ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
                  pressure=pressure),
-                 ss=list(distance=0),
+                 ts.slow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
+                 ss=list(distance=0),   # FIXME: why even have this?
                  ma=list(v=v, a=a, c=c))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("nortek", "adv", "oce")
@@ -1080,22 +1086,28 @@ summary.adv <- function(object, ...)
 {
     if (!inherits(object, "adv")) stop("method is only for adv objects")
     ts.names <- names(object$data$ts)
+    ts.slow.names <- names(object$data$ts.slow)
     ma.names <- names(object$data$ma)
-    fives <- matrix(nrow=(-1+length(ts.names)+length(ma.names)), ncol=5)
+    fives <- matrix(nrow=(-2+length(ts.names)+length(ts.slow.names)+length(ma.names)), ncol=5) # -2 for ts$time and ts.slow$time
     ii <- 1
-    for (i in 1:length(ts.names)) {
-        if (names(object$data$ts)[i] != "time") {
-            fives[ii,] <- fivenum(as.numeric(object$data$ts[[ts.names[i]]]), na.rm=TRUE)
+    for (name in ts.names) {
+        if (name != "time") {
+            fives[ii,] <- fivenum(as.numeric(object$data$ts[[name]]), na.rm=TRUE)
             ii <- ii + 1
         }
     }
-    for (i in 1:length(ma.names)) {
-        fives[ii,] <- fivenum(as.numeric(object$data$ma[[i]]), na.rm=TRUE)
+    for (name in ts.slow.names) {
+        if (name != "time") {
+            fives[ii,] <- fivenum(as.numeric(object$data$ts.slow[[name]]), na.rm=TRUE)
+            ii <- ii + 1
+        }
+    }
+    for (name in ma.names) {
+        fives[ii,] <- fivenum(as.numeric(object$data$ma[[name]]), na.rm=TRUE)
         ii <- ii + 1
     }
-    rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
+    rownames(fives) <- c(ts.names[ts.names != "time"], ts.slow.names[ts.slow.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    len <- length(object$data$ts$time)
     res <- list(filename=object$metadata$filename,
                 number.of.beams=if (!is.null(object$metadata$number.of.beams)) object$metadata$number.of.beams else 3,
                 orientation=object$metadata$orientation,
