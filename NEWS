@@ -1,20 +1,20 @@
 0.1-81
 - plot.ctd(): add more plot types (and re-used which=9 for salinity, not density)
-- improve flexibilty of 'as.ctd()'
-- add 'newdata' argument to predict.tidem()
-- add adv.2enu()
+- as.ctd(): improve flexibilty
+- predict.tidem(): add 'newdata' argument
+- adv.2enu() added
 - adp.xyz2enu(): make it correct for heading.bias
 - make.filter(): can now produce tskernel type
 - improve (but temporarily limit) fill.gap
-- to plot.adp() add argument use.layout
-- add window.oce()
+- plot.adp(): add 'use.layout' argument
+- window.oce() added
 - make objects remember full filename, not just local filename (issue8)
 - plot.tidem(): remove argument 'plot.type', using 'which' instead
 - read.pt(): add arguments from, by, and to
 - fix issue 57 [read.adp.rdi() read the heading incorrectly]
 - add "reiniger-ross" method to ctd.decimate()
-- add oce.approx()
-- add topo.world dataset
+- oce.approx() added
+- topo.world dataset added
 - plot.ctd(): by default, make coastlines extend to box boundaries
 - reformulate sun.angle in R
 - fix google-code issue 56 [plot.topo() should accept land.z=NULL]

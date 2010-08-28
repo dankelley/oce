@@ -1066,9 +1066,15 @@ summary.adv <- function(object, ...)
 {
     if (!inherits(object, "adv")) stop("method is only for adv objects")
     ts.names <- names(object$data$ts)
-    ts.slow.names <- names(object$data$ts.slow)
+    nrow <- length(ts.names) - 1          # the -1 is for 'time'
+    have.ts.slow <- "ts.slow" %in% names(object$data)
+    if (have.ts.slow) {
+        ts.slow.names <- names(object$data$ts.slow)
+        nrow <- nrow + length(ts.slow.names) - 1 # the -1 is for 'time'
+    }
     ma.names <- names(object$data$ma)
-    fives <- matrix(nrow=(-2+length(ts.names)+length(ts.slow.names)+length(ma.names)), ncol=5) # -2 for ts$time and ts.slow$time
+    nrow <- nrow + length(ma.names)
+    fives <- matrix(nrow=nrow, ncol=5)
     ii <- 1
     for (name in ts.names) {
         if (name != "time") {
@@ -1076,17 +1082,22 @@ summary.adv <- function(object, ...)
             ii <- ii + 1
         }
     }
-    for (name in ts.slow.names) {
-        if (name != "time") {
-            fives[ii,] <- fivenum(as.numeric(object$data$ts.slow[[name]]), na.rm=TRUE)
-            ii <- ii + 1
+    if (have.ts.slow) {
+        for (name in ts.slow.names) {
+            if (name != "time") {
+                fives[ii,] <- fivenum(as.numeric(object$data$ts.slow[[name]]), na.rm=TRUE)
+                ii <- ii + 1
+            }
         }
     }
     for (name in ma.names) {
         fives[ii,] <- fivenum(as.numeric(object$data$ma[[name]]), na.rm=TRUE)
         ii <- ii + 1
     }
-    rownames(fives) <- c(ts.names[ts.names != "time"], ts.slow.names[ts.slow.names != "time"], ma.names)
+    if (have.ts.slow)
+        rownames(fives) <- c(ts.names[ts.names != "time"], ts.slow.names[ts.slow.names != "time"], ma.names)
+    else
+        rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
                 number.of.beams=if (!is.null(object$metadata$number.of.beams)) object$metadata$number.of.beams else 3,
@@ -1527,23 +1538,26 @@ plot.adv <- function(x,
     oce.debug(debug, "\b\b}\n")
 }
 
-adv.2enu <- function(x)
+adv.2enu <- function(x, debug=getOption("oce.debug"))
 {
+    oce.debug(debug, "\b\badv.2enu() {\n")
     coord <- x$metadata$oce.coordinate
     if (coord == "beam") {
-        return(adv.xyz2enu(adv.beam2xyz(x)))
+        rval <- adv.xyz2enu(adv.beam2xyz(x, debug=debug-1), debug=debug-1)
     } else if (coord == "xyz") {
-        return(adv.xyz2enu(x))
+        rval <- adv.xyz2enu(x, debug=debug-1)
     } else if (coord == "enu") {
-        return(x)
+        rval <- x
     } else {
         warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
-        return(x)
     }
+    oce.debug(debug, "\b\b}\n")
+    rval
 }
 
-adv.beam2xyz <- function(x)
+adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
 {
+    oce.debug(debug, "\b\badv.beam2xyz() {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
@@ -1556,6 +1570,10 @@ adv.beam2xyz <- function(x)
             tm[3,] <- -tm[3,]
         }
     }
+    oce.debug(debug, "Transformation matrix:\n")
+    oce.debug(debug, "%.10f %.10f %.10f\n", tm[1,1], tm[1,2], tm[1,3])
+    oce.debug(debug, "%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3])
+    oce.debug(debug, "%.10f %.10f %.10f\n", tm[3,1], tm[3,2], tm[3,3])
     ## Not using the matrix method because it might consume more memory, and measures no faster
     ## xyz <- tm %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
     res$data$ma$v[,1] <- tm[1,1] * x$data$ma$v[,1] + tm[1,2] * x$data$ma$v[,2] + tm[1,3] * x$data$ma$v[,3]
@@ -1563,28 +1581,41 @@ adv.beam2xyz <- function(x)
     res$data$ma$v[,3] <- tm[3,1] * x$data$ma$v[,1] + tm[3,2] * x$data$ma$v[,2] + tm[3,3] * x$data$ma$v[,3]
     res$metadata$oce.coordinate <- "xyz"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
+    oce.debug(debug, "\b\b}\n")
     processing.log.append(res, log.action)
 }
 
-adv.xyz2enu <- function(x)
+adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
 {
+    oce.debug(debug, "\b\badv.xyz2enu() {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    heading <- x$data$ts$heading
-    pitch <- x$data$ts$pitch
-    roll <- x$data$ts$roll
+    have.ts.slow <- "ts.slow" %in% names(x$data)
+    have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading) == 1 && length(x$data$ts.slow$pitch) == 1 && length(x$data$ts.slow$roll) == 1) || (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
+    if (have.ts.slow && !have.steady.angles) {
+        t0 <- as.numeric(x$data$ts.slow$time[1])    # arbitrary; done in case approx hates large x values
+        t.fast <- as.numeric(x$data$ts$time) - t0
+        t.slow <- as.numeric(x$data$ts.slow$time) - t0
+        heading <- approx(t.slow, x$data$ts.slow$heading, xout=t.fast)$y
+        pitch <- approx(t.slow, x$data$ts.slow$pitch, xout=t.fast)$y
+        roll <- approx(t.slow, x$data$ts.slow$roll, xout=t.fast)$y
+    } else {
+        heading <- x$data$ts$heading
+        pitch <- x$data$ts$pitch
+        roll <- x$data$ts$roll
+    }
     if (1 == length(agrep("sontek", x$metadata$instrument.type))) { # FIXME: brittle dependence on instrument.type
-        heading <- heading - 90                                     # 20100825: ckr agree
+        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
         pitch <- - pitch
     }
     if (1 == length(agrep("nortek", x$metadata$instrument.type))) {# FIXME: brittle dependence on instrument.type
-        heading <- heading - 90
+        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
         pitch <- - pitch
     }
-    ##vector.show(heading, "heading (in adv.xyz2enu)")
-    ##vector.show(pitch, "pitch (in adv.xyz2enu)")
-    ##vector.show(roll, "roll (in adv.xyz2enu)")
+    oce.debug(debug, vector.show(heading, "heading"))
+    oce.debug(debug, vector.show(pitch, "pitch"))
+    oce.debug(debug, vector.show(roll, "roll"))
     to.radians <- atan2(1,1) / 45
     hrad <- to.radians * heading        # This could save millions of multiplies
     prad <- to.radians * pitch          # although the trig is probably taking
@@ -1596,11 +1627,14 @@ adv.xyz2enu <- function(x)
     CR <- cos(rrad)
     SR <- sin(rrad)
     if (x$metadata$orientation == "downward") { #FIXME: I think this is plain wrong; should change sign of row 2 and 3 (??)
+        warning("adv.xyz2enu() switching signs of pitch and roll, because unit is oriented downward. BUT IS THIS CORRECT??")
         SP <- -SP
         SR <- -SR
     }
     np <- dim(x$data$ma$v)[1]
     ## as with corresponding adp routine, construct single 3*3*np matrix
+    if (have.steady.angles)
+        warning("have steady angles, so no need for large matrix")
     tr.mat <- array(numeric(), dim=c(3, 3, np))
     tr.mat[1,1,] <-  CH * CR + SH * SP * SR
     tr.mat[1,2,] <-  SH * CP
@@ -1618,6 +1652,7 @@ adv.xyz2enu <- function(x)
     res$data$ma$v[,3] <- rotated[3,]
     res$metadata$oce.coordinate <- "enu"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
+    oce.debug(debug, "\b\b}\n")
     processing.log.append(res, log.action)
 }
 

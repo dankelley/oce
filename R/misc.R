@@ -16,16 +16,18 @@ oce.spectrum <- function(x, ...)
     invisible(rval)
 }
 
-vector.show <- function(v, msg="vector:")
+vector.show <- function(v, msg)
 {
     n <- length(v)
+    if (missing(msg))
+        msg <- deparse(substitute(v))
     if (n == 0) {
         paste(msg, "(empty vector)\n")
     } else {
         if (n > 6) {
-            paste(msg, " ", v[1], " ", v[2], " ", v[3], " ... ", v[n-2], " ", v[n-1], " ", v[n], " (length ", n, ")\n", sep="")
+            paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
         } else {
-            paste(msg, paste(v, collapse=" "), sprintf("(length %d)\n", n), collapse="")
+            paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
         }
     }
 }

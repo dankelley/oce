@@ -1,14 +1,12 @@
-
-
-
 \name{vector.show}
 \alias{vector.show}
 \title{Show some values from a vector}
 \description{Show some values from a vector}
-\usage{vector.show(v, msg="vector:")}
+\usage{vector.show(v, msg)}
 \arguments{
 \item{v}{the vector.}
-\item{msg}{a message to show, introducing the vector.}
+\item{msg}{a message to show, introducing the vector.  If not provided,
+  then a label is created from \code{v}.}
 }
 
 \details{This is similar to \code{\link{str}}, but it shows data at the
