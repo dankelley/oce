@@ -7,17 +7,22 @@
 \description{Convert ADV velocities to enu coordinates, from any other
 coordinates}
 
-\usage{adv.2enu(x)}
+\usage{adv.2enu(x, debug=getOption("oce.debug"))}
 
-\arguments{\item{x}{an object of class \code{"adv"}.}}
+\arguments{
+  \item{x}{an object of class \code{"adv"}.}
+  \item{debug}{a flag that, if non-zero, turns on debugging.  Higher
+    values yield more extensive debugging.  This is passed to called
+    functions, after subtracting 1.}
+}
 
-\details{The coordinate transformation is done using the matrix
-  contained within the header.  To indicate the change, the value of
-  \code{metadata$oce.orientation} is set to \code{enu}; note that the
-  \code{metadata$coordinate.system} is \emph{not} changed.}
+\details{This is mostly a wrapper that calls \code{\link{adv.beam2xyz}} if needed,
+  and then calls \code{\link{adv.xyz2enu}}.}
 
 \seealso{See \code{\link{read.adv}} for notes on functions relating to
-  \code{"adv"} objects.}
+  \code{"adv"} objects.  Also, see \code{\link{adv.beam2xyz}} and
+  \code{\link{adv.xyz2enu}}.
+}
 
 \author{Dan Kelley}
 

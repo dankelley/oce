@@ -147,7 +147,6 @@ oce.plot.ts <- function(x,
                         mgp=getOption("oce.mgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
                         type="l",
-
                         main="",
                         debug=getOption("oce.debug"),
                         ...)

@@ -7,9 +7,13 @@
 \description{Convert ADV velocity components from a beam-based
   coordinate system to a xyz-based coordinate system.}
 
-\usage{adv.beam2xyz(x)}
+\usage{adv.beam2xyz(x, debug=getOption("oce.debug"))}
 
-\arguments{\item{x}{an object of class \code{"adv"}.}}
+\arguments{
+  \item{x}{an object of class \code{"adv"}.}
+  \item{debug}{a flag that, if non-zero, turns on debugging.  Higher
+    values yield more extensive debugging.}
+}
 
 \details{The coordinate transformation is done using the matrix
   contained within the header.  To indicate the change, the value of

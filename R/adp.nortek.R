@@ -75,8 +75,8 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             oce.debug(debug, "head$config.magnetometer.sensor=", head$config.magnetometer.sensor,"\n")
             head$config.tilt.sensor <- substr(head$config[1], 3, 3) == "1"
             oce.debug(debug, "head$config.tilt.sensor=", head$config.tilt.sensor,"\n")
-            head$orientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
-            oce.debug(debug, "head$orientation=", head$orientation, "\n")
+            head$tilt.sensor.orientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
+            oce.debug(debug, "head$tilt.sensor.orientation=", head$tilt.sensor.orientation, "\n")
             head$frequency <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oce.debug(debug, "head$frequency=", head$frequency, "kHz\n")
             head$head.type <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
@@ -404,7 +404,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      config.magnetometer.sensor=header$head$config.magnetometer.sensor,
                      config.tilt.sensor=header$head$config.tilt.sensor,
                      beam.angle=25,     # FIXME: may change with new devices
-                     orientation=header$head$orientation,
+                     tilt.sensor.orientation=header$head$tilt.sensor.orientation,
                      frequency=header$head$frequency,
                      head.serial.number=header$head$head.serial.number,
                      bin1.distance=header$user$blanking.distance, # FIXME: is this right?
