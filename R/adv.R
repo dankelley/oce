@@ -383,7 +383,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),      # FIXME (two timescales)
                             type="default", header=TRUE,
                             start, deltat,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
@@ -488,7 +488,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),      # FIXME (two timescales)
                                 header=TRUE, type="",
                                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
