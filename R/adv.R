@@ -1606,7 +1606,6 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
     SP <- sin(prad)
     CR <- cos(rrad)
     SR <- sin(rrad)
-    print(str(x$metadata))                      # FIXME-debugging
     if (x$metadata$orientation == "downward") { #FIXME: I think this is plain wrong; should change sign of row 2 and 3 (??)
         warning("adv.xyz2enu() switching signs of pitch and roll, because unit is oriented downward. BUT IS THIS CORRECT??")
         SP <- -SP
