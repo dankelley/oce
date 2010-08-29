@@ -15,13 +15,21 @@
     values yield more extensive debugging.}
 }
 
-\details{The coordinate transformation is done using the heading,
-  pitch, and roll information contained within \code{x}.  The
-  algorithm is similar to that used for Teledyne/RDI ADCP units,
-  except that the heading is defined along the x axis.  Normally, the
-  transformation is done on a time-by-time basis, which is a slow
-  operation.  However, if there is only value in the vectors for
-  heading, etc., then a faster calculation is done.
+\details{The coordinate transformation is done using the heading, pitch,
+  and roll information contained within \code{x}.  The algorithm is
+  similar to that used for Teledyne/RDI ADCP units, except that the
+  heading is defined along the x axis.
+
+  Normally, the transformation is done on a time-by-time basis, which is
+  a slow operation.  However, this function checks whether the vectors
+  for heading, pitch and roll, are all of unit length, and in that case,
+  the calculation time is reduced by an order of magnitude.  This
+  situation of singleton vectors is not uncommon, because the
+  orientation data can be noisy, requiring the user to substitute
+  cleaned-up values, and if the instrument is moored on a steady
+  platform, it makes sense to supply single values.  Note that the
+  angles are held in \code{data$ts.slow} for Nortek instruments and
+  \code{data$ts} for Sontek instruments.
 
   To indicate the change in coordinate, the value of
   \code{metadata$oce.orientation} is changed from \code{xyz} to
