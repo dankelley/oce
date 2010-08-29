@@ -379,7 +379,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                  ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
                  pressure=pressure),
                  ts.slow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
-                 ss=list(distance=0),   # FIXME: why even have this?
+                 ##ss=list(distance=0),   # FIXME: why even have this?
                  ma=list(v=v, a=a, c=c))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("nortek", "adv", "oce")
@@ -483,7 +483,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),     
                  roll=rep(0,len),
                  temperature=temperature,
                  pressure=pressure),
-                 ss=list(distance=0),
+                 ##ss=list(distance=0),
                  ma=list(v=v,a=a,c=c))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -926,7 +926,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                  roll=roll,
                  temperature=temperature,
                  pressure=pressure),
-                 ss=list(distance=0),
+                 ##ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -1044,7 +1044,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                  roll=approx(t, roll, xout=tt, rule=2)$y[ok],
                  temperature=temperature,
                  pressure=pressure),
-                 ss=list(distance=0),
+                 ##ss=list(distance=0),
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
     metadata <- list(instrument.type="sontek adr",
                      cpu.software.ver.num=metadata$cpu.software.ver.num,
