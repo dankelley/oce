@@ -78,6 +78,7 @@ export(
        plot.tidem,
        plot.windrose,
        processing.log.add,
+       processing.log.append,
        processing.log.item,
        processing.log.summary,
        pt.patm,
