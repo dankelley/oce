@@ -527,8 +527,9 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     for (beam in 1:x$metadata$number.of.beams)
         res$data$ma$a[,,beam] <- as.raw(count2db[1] * as.numeric(x$data$ma$a[,,beam]) + correction)
     res$metadata$oce.beam.attenuated <- TRUE
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
@@ -594,8 +595,9 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oce.coordinate <- "xyz"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
@@ -656,8 +658,9 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     res$data$ma$v[,,2] <- t(rotated[2,,])
     res$data$ma$v[,,3] <- t(rotated[3,,])
     res$metadata$oce.coordinate <- "enu"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 adp.enu2other <- function(x, heading=0, pitch=0, roll=0)
@@ -683,7 +686,9 @@ adp.enu2other <- function(x, heading=0, pitch=0, roll=0)
     res$data$ma$v[,,3] <- t(rotated[3,,])
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 peek.ahead <- function(file, bytes=2, debug=!TRUE)

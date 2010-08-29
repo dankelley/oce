@@ -1563,9 +1563,10 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
     res$data$ma$v[,2] <- tm[2,1] * x$data$ma$v[,1] + tm[2,2] * x$data$ma$v[,2] + tm[2,3] * x$data$ma$v[,3]
     res$data$ma$v[,3] <- tm[3,1] * x$data$ma$v[,1] + tm[3,2] * x$data$ma$v[,2] + tm[3,3] * x$data$ma$v[,3]
     res$metadata$oce.coordinate <- "xyz"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b}\n")
-    processing.log.append(res, log.action)
+    res
 }
 
 adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
@@ -1657,13 +1658,15 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
         res$data$ma$v[,3] <- rotated[3,]
     }
     res$metadata$oce.coordinate <- "enu"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b}\n")
-    processing.log.append(res, log.action)
+    res
 }
 
 adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
 {
+    oce.debug(debug, "\b\badv.enu2other() {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "enu") stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
@@ -1682,6 +1685,8 @@ adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
     res$data$ma$v[,2] <- other[2,]
     res$data$ma$v[,3] <- other[3,]
     res$metadata$oce.coordinate <- "other"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b}\n")
+    res
 }

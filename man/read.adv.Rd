@@ -37,16 +37,17 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   \item{file}{a connection or a character string giving the name of the
     file to load.}
   \item{basefile}{character string giving the base name of files to load
-    (used only by read.adv.sontek.text). The actual filenames are constructed
-    by appending \code{".hd1"} and \code{".ts1"} to the base name.}
-  \item{from}{index number of first profile to be read, or the
-    (POSIXt) time of that first profile.  This is ignored if
-    \code{header=FALSE}. See \dQuote{Examples}, and make careful note of
-    the use of the \code{tz} argument.}
+    (used only by \code{read.adv.sontek.text}). The actual filenames are
+    constructed by appending \code{".hd1"} and \code{".ts1"} to the base
+    name.}
+  \item{from}{index number of the first profile to be read, or the time
+    of that profile, as created with \code{\link{as.POSIXct}} (hint: use
+    \code{tz="UTC"}).  This argument is ignored if
+    \code{header==FALSE}. See \dQuote{Examples}.}
   \item{to}{indication of the last profiel to read, in a format matching
-    that of \code{from}.  This is ignored if \code{header=FALSE}.}
+    that of \code{from}.  This is ignored if \code{header==FALSE}.}
   \item{by}{an indication of the stride length to use while walking
-    through the file.    This is ignored if \code{header=FALSE}.
+    through the file.    This is ignored if \code{header==FALSE}.
     Otherwise, if this is an integer, then \code{by-1} profiles are
     skipped between each pair of profiles that is read. This may not make
     much sense, if the data are not equi-spaced in time.  If \code{by}
@@ -57,9 +58,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   \item{header}{a boolean indicating whether the file contains a 
     header at the start.  (This will not be the case for files
     that are created by data loggers that chop the raw data up into a
-  series of sub-files, e.g. once per hour.)}
-  \item{start}{a POSIXct time corresponding to the first sample. 
-    (This is mandatory if \code{header} is \code{FALSE}.)}
+    series of sub-files, e.g. once per hour.)}
+  \item{start}{the time of the first sample, typically created with
+    \code{\link{as.POSIXct}}.  This is mandatory if \code{header} is
+    \code{FALSE}.}
   \item{deltat}{the time between samples. (This is mandatory if
     \code{header=FALSE}.)}
   \item{coordinate.system}{character string indicating coordinate system, one

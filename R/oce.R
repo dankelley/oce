@@ -8,15 +8,16 @@ use.heading <- function(b, g, add=0)
         stop("'g' does not have any heading data (in g$data$ts$heading)")
     if (!"time" %in% names(g$data$ts))
         stop("'g' does not have any time data (in g$data$ts$time)")
-    rval <- b
+    res <- b
     t0 <- as.numeric(g$data$ts$time[1])
     if (is.na(t0))
         stop("need first element of from$data$ts$time to be non-NA")
     b.t <- as.numeric(b$data$ts$time) - t0
     g.t <- as.numeric(g$data$ts$time) - t0
-    rval$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add * pi / 180
-    processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add * pi / 180
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), ...)
@@ -250,7 +251,9 @@ oce.edit <- function(x, item, value, action, reason="not specified", person="not
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    processing.log.append(x, paste(deparse(match.call()), sep="", collapse=""))
+    x$processing.log <- processing.log.add(x$processing.log,
+                                           paste(deparse(match.call()), sep="", collapse=""))
+    x
 }
 
 oce.write.table <- function (x, file="", ...)
@@ -329,14 +332,16 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
             }
         }
-        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+        rval$processing.log <- processing.log.add(rval$processing.log,
+                                                  paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "pt")) {
         r <- eval(substitute(subset), x$data$ts, parent.frame())
         r <- r & !is.na(r)
         rval <- x
         for (name in names(rval$data$ts))
             rval$data$ts[[name]] <- x$data$ts[[name]][r]
-        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+        rval$processing.log <- processing.log.add(rval$processing.log,
+                                                  paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "adv")) {
         if (!is.null(indices))
             stop("cannot specify 'indices' for adv objects (not coded yet)")
@@ -365,7 +370,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         r <- r & !is.na(r)
         rval <- x
         rval$data <- x$data[r,]
-        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+        rval$processing.log <- processing.log.add(rval$processing.log,
+                                                  paste(deparse(match.call()), sep="", collapse=""))
     }
     rval
 }

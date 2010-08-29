@@ -486,30 +486,10 @@ undrift.time <- function(x, slow.end = 0, tname="time")
         }
         rval$data <- out
     }
-    rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
-
-##fill.gap <- function(x, start, end, column)
-##{
-##    if (!inherits(x, "oce")) stop("method is only for oce objects")
-##    if (missing(start)) stop("must supply start")
-##    if (missing(end)) stop("must supply end")
-##    if (!missing(column)) {
-##        start <- rev(which(x$data[[column]] <= start))[1]
-##        end <- which(x$data[[column]] >= end)[1]
-##    }
-##    if (end - start < 1) stop("end must be at least 1+start")
-##    rval <- x
-##    i <- start:end
-##    for (name in names(x$data)) {
-##        filler <- approx(x=c(start, end), y=x$data[[name]][c(start,end)], xout=i)$y
-##        class(filler) <- class(x$data[[name]])
-##        rval$data[[name]][i] <- filler
-##    }
-##    rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
-##    rval
-##}
 
 fill.gap <- function(x, method=c("linear"))
 {
@@ -581,7 +561,8 @@ add.column <- function (x, data, name)
     rval <- x
     rval$data <- data.frame(x$data, data)
     names(rval$data) <- c(names(x$data), name)
-    rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -675,7 +656,9 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
-    processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 oce.smooth <- function(x, ...)
@@ -712,7 +695,9 @@ oce.smooth <- function(x, ...)
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 stickplot <- function(t, x, y, ...)

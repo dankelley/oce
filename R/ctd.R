@@ -60,13 +60,14 @@ ctd.add.column <- function (x, column, name, label, debug = FALSE)
     if (length(column) != dim(x$data)[1]) stop("column has ", length(column), " data but it must have ", dim(x$data)[1], " data to match existing object")
     if (missing(name))  stop("must supply \"name\"")
     if (missing(label)) label <- name
-    result <- x
+    res <- x
     r <- range(column)
-    result$data[,name] <- column
-    result$metadata$names <- c(result$metadata$names, name)
-    result$metadata$labels <- c(result$metadata$labels, label)
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(result, log.action)
+    res$data[,name] <- column
+    res$metadata$names <- c(res$metadata$names, name)
+    res$metadata$labels <- c(res$metadata$labels, label)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"), e=1.5, debug=getOption("oce.debug"))
@@ -156,15 +157,15 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
     }
     data.new[["pressure"]] <- pt
     res$data <- data.new
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    res <- processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
 ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
-    result <- x
+    res <- x
     n <- length(x$data$pressure)
     if (n < 2) {
         warning("too few data to ctd.trim()")
@@ -253,9 +254,10 @@ ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debu
             }
         }
     }
-    result$data <- subset(x$data, keep)
-    result <- processing.log.append(result, paste(deparse(match.call()), sep="", collapse=""))
-    result
+    res$data <- subset(x$data, keep)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 ctd.update.header <- function (x, debug = FALSE)
@@ -1022,7 +1024,7 @@ read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, stati
     }
     res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta",
                           "Sigma Theta", "kg/m^3")
-    return(res)
+    res
 }
 
 summary.ctd <- function(object, ...)

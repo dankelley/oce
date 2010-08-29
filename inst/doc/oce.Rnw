@@ -201,7 +201,7 @@ data, such as trimming CTD profiles with \verb@ctd.trim()@, but of course you
 may do that sort of work by acting on the data directly, if necessary.  Just
 make sure you realize that the metadata will not be altered if you do that.
 Also, it is a good idea to add log entries to any objects that you change, by
-using the \verb@processing.log.append()@ function.  (You can see an example of
+using the \verb@processing.log.add()@ function.  (You can see an example of
 this in action with \verb@?section@.)
 
 \begin{figure}

@@ -1,9 +1,12 @@
-processing.log.append <- function (x, action="")
+processing.log.add <- function(pl, action="")
 {
-    x$processing.log$time <- c(x$processing.log$time, as.POSIXct(Sys.time(),tz="GMT"))
-    x$processing.log$action <- c(x$processing.log$action, action)
-    x
+    rval <- if (is.null(pl)) list(time=NULL, action=NULL) else pl
+    rval$time <- c(rval$time, as.POSIXct(Sys.time(), tz="GMT"))
+    rval$action <- c(rval$action, action)
+    class(rval) <- "processing.log"
+    rval
 }
+
 processing.log.item <- function(log.action="")
 {
     rval <- list(time=c(Sys.time()), action=log.action)
