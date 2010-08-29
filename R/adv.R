@@ -1547,16 +1547,16 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
     if (is.null(x$metadata$transformation.matrix)) stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
     tm <- x$metadata$transformation.matrix
     ## alter transformation matrix if pointing downward. FIXME: is this right?
-    if (FALSE) {  # FIXME: should we modify the transformation matrix?
-        if (x$metadata$orientation == "downward") {
-            tm[2,] <- -tm[2,]
-            tm[3,] <- -tm[3,]
-        }
-    }
+    ##if (FALSE) {  # FIXME: should we modify the transformation matrix?
+    ##    if (x$metadata$orientation == "downward") {
+    ##        tm[2,] <- -tm[2,]
+    ##        tm[3,] <- -tm[3,]
+    ##    }
+    ##}
     oce.debug(debug, "Transformation matrix:\n")
-    oce.debug(debug, "%.10f %.10f %.10f\n", tm[1,1], tm[1,2], tm[1,3])
-    oce.debug(debug, "%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3])
-    oce.debug(debug, "%.10f %.10f %.10f\n", tm[3,1], tm[3,2], tm[3,3])
+    oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[1,1], tm[1,2], tm[1,3]))
+    oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3]))
+    oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[3,1], tm[3,2], tm[3,3]))
     ## Not using the matrix method because it might consume more memory, and measures no faster
     ## xyz <- tm %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
     res$data$ma$v[,1] <- tm[1,1] * x$data$ma$v[,1] + tm[1,2] * x$data$ma$v[,2] + tm[1,3] * x$data$ma$v[,3]
@@ -1576,13 +1576,20 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
     res <- x
     have.ts.slow <- "ts.slow" %in% names(x$data)
     have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading) == 1 && length(x$data$ts.slow$pitch) == 1 && length(x$data$ts.slow$roll) == 1) || (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
-    if (have.ts.slow && !have.steady.angles) {
-        t0 <- as.numeric(x$data$ts.slow$time[1])    # arbitrary; done in case approx hates large x values
-        t.fast <- as.numeric(x$data$ts$time) - t0
-        t.slow <- as.numeric(x$data$ts.slow$time) - t0
-        heading <- approx(t.slow, x$data$ts.slow$heading, xout=t.fast)$y
-        pitch <- approx(t.slow, x$data$ts.slow$pitch, xout=t.fast)$y
-        roll <- approx(t.slow, x$data$ts.slow$roll, xout=t.fast)$y
+    oce.debug(debug, "have.steady.angles=",have.steady.angles,"\n")
+    if (have.ts.slow) {
+        if (have.steady.angles) {
+            heading <- x$data$ts.slow$heading
+            pitch <- x$data$ts.slow$pitch
+            roll <- x$data$ts.slow$roll
+        } else {
+            t0 <- as.numeric(x$data$ts.slow$time[1])    # arbitrary; done in case approx hates large x values
+            t.fast <- as.numeric(x$data$ts$time) - t0
+            t.slow <- as.numeric(x$data$ts.slow$time) - t0
+            heading <- approx(t.slow, x$data$ts.slow$heading, xout=t.fast)$y
+            pitch <- approx(t.slow, x$data$ts.slow$pitch, xout=t.fast)$y
+            roll <- approx(t.slow, x$data$ts.slow$roll, xout=t.fast)$y
+        }
     } else {
         heading <- x$data$ts$heading
         pitch <- x$data$ts$pitch
@@ -1616,23 +1623,39 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
     }
     np <- dim(x$data$ma$v)[1]
     ## as with corresponding adp routine, construct single 3*3*np matrix
-    if (have.steady.angles)
-        warning("have steady angles, so no need for large matrix")
-    tr.mat <- array(numeric(), dim=c(3, 3, np))
-    tr.mat[1,1,] <-  CH * CR + SH * SP * SR
-    tr.mat[1,2,] <-  SH * CP
-    tr.mat[1,3,] <-  CH * SR - SH * SP * CR
-    tr.mat[2,1,] <- -SH * CR + CH * SP * SR
-    tr.mat[2,2,] <-  CH * CP
-    tr.mat[2,3,] <- -SH * SR - CH * SP * CR
-    tr.mat[3,1,] <- -CP * SR
-    tr.mat[3,2,] <-  SP
-    tr.mat[3,3,] <-  CP * CR
-    ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
-    rotated <- matrix(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% x$data$ma$v[p,])), nrow=3)
-    res$data$ma$v[,1] <- rotated[1,]
-    res$data$ma$v[,2] <- rotated[2,]
-    res$data$ma$v[,3] <- rotated[3,]
+    if (have.steady.angles) {
+        oce.debug(debug, "the heading, pitch, and roll are all constant\n")
+        R <- array(numeric(), dim=c(3, 3))
+        R[1,1] <-  CH * CR + SH * SP * SR
+        R[1,2] <-  SH * CP
+        R[1,3] <-  CH * SR - SH * SP * CR
+        R[2,1] <- -SH * CR + CH * SP * SR
+        R[2,2] <-  CH * CP
+        R[2,3] <- -SH * SR - CH * SP * CR
+        R[3,1] <- -CP * SR
+        R[3,2] <-  SP
+        R[3,3] <-  CP * CR
+        res$data$ma$v[,1] <- R[1,1] * x$data$ma$v[,1] + R[1,2] * x$data$ma$v[,2] + R[1,3] * x$data$ma$v[,3]
+        res$data$ma$v[,2] <- R[2,1] * x$data$ma$v[,1] + R[2,2] * x$data$ma$v[,2] + R[2,3] * x$data$ma$v[,3]
+        res$data$ma$v[,3] <- R[3,1] * x$data$ma$v[,1] + R[3,2] * x$data$ma$v[,2] + R[3,3] * x$data$ma$v[,3]
+        ##res$data$ma$v <- t(tr.mat %*% t(x$data$ma$v))
+    } else {
+        tr.mat <- array(numeric(), dim=c(3, 3, np))
+        tr.mat[1,1,] <-  CH * CR + SH * SP * SR
+        tr.mat[1,2,] <-  SH * CP
+        tr.mat[1,3,] <-  CH * SR - SH * SP * CR
+        tr.mat[2,1,] <- -SH * CR + CH * SP * SR
+        tr.mat[2,2,] <-  CH * CP
+        tr.mat[2,3,] <- -SH * SR - CH * SP * CR
+        tr.mat[3,1,] <- -CP * SR
+        tr.mat[3,2,] <-  SP
+        tr.mat[3,3,] <-  CP * CR
+        ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
+        rotated <- matrix(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% x$data$ma$v[p,])), nrow=3)
+        res$data$ma$v[,1] <- rotated[1,]
+        res$data$ma$v[,2] <- rotated[2,]
+        res$data$ma$v[,3] <- rotated[3,]
+    }
     res$metadata$oce.coordinate <- "enu"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     oce.debug(debug, "\b\b}\n")
