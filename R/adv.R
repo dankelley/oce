@@ -1622,7 +1622,6 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
         SR <- -SR
     }
     np <- dim(x$data$ma$v)[1]
-    ## as with corresponding adp routine, construct single 3*3*np matrix
     if (have.steady.angles) {
         oce.debug(debug, "the heading, pitch, and roll are all constant\n")
         R <- array(numeric(), dim=c(3, 3))
@@ -1638,8 +1637,9 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
         res$data$ma$v[,1] <- R[1,1] * x$data$ma$v[,1] + R[1,2] * x$data$ma$v[,2] + R[1,3] * x$data$ma$v[,3]
         res$data$ma$v[,2] <- R[2,1] * x$data$ma$v[,1] + R[2,2] * x$data$ma$v[,2] + R[2,3] * x$data$ma$v[,3]
         res$data$ma$v[,3] <- R[3,1] * x$data$ma$v[,1] + R[3,2] * x$data$ma$v[,2] + R[3,3] * x$data$ma$v[,3]
-        ##res$data$ma$v <- t(tr.mat %*% t(x$data$ma$v))
+        ##(speed test; replace above 3 lines with this) res$data$ma$v <- t(R %*% t(x$data$ma$v))
     } else {
+        ## as with corresponding adp routine, construct single 3*3*np matrix
         tr.mat <- array(numeric(), dim=c(3, 3, np))
         tr.mat[1,1,] <-  CH * CR + SH * SP * SR
         tr.mat[1,2,] <-  SH * CP
