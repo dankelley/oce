@@ -80,7 +80,6 @@ export(
        processing.log.add,
        processing.log.append,
        processing.log.item,
-       processing.log.summary,
        pt.patm,
        pt.trim,
        read.adp,
@@ -158,6 +157,7 @@ S3method(print, summary.adv)
 S3method(print, summary.coastline)
 S3method(print, summary.ctd)
 S3method(print, summary.lobo)
+S3method(print, summary.processing.log)
 S3method(print, summary.sealevel)
 S3method(print, summary.section)
 S3method(print, summary.pt)

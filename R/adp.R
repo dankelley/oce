@@ -30,7 +30,7 @@ summary.adp <- function(object, ...)
 {
     if (!inherits(object, "adp")) stop("method is only for adp objects")
     if (is.null(object$metadata$have.actual.data) || object$metadata$have.actual.data) {
-        if (inherits(object, "aquadopp")) {
+        if (1 == length(agrep("nortek", object$metadata$manufacturer, ignore.case=TRUE))) {
             res.specific <- list(internal.code.version=object$metadata$internal.code.version,
                                  hardware.revision=object$metadata$hardware.revision,
                                  rec.size=object$metadata$rec.size*65536/1024/1024,
@@ -46,7 +46,7 @@ summary.adp <- function(object, ...)
                                  measurement.interval=object$metadata$measurement.interval,
                                  deployment.name=object$metadata$deployment.name,
                                  velocity.scale=object$metadata$velocity.scale)
-        } else if (inherits(object, "rdi")) {
+        } else if (1 == length(agrep("rdi", object$metadata$manufacturer, ignore.case=TRUE))) {
             res.specific <- list(number.of.data.types=object$metadata$number.of.data.types,
                                  heading.alignment=object$metadata$heading.alignment,
                                  heading.bias=object$metadata$heading.bias,
@@ -55,15 +55,13 @@ summary.adp <- function(object, ...)
                                  xmit.pulse.length=object$metadata$xmit.pulse.length,
                                  oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                                  beam.config=object$metadata$beam.config)
-        } else if (inherits(object, "sontek")) {
+        } else if (1 == length(agrep("sontek", object$metadata$manufacturer, ignore.case=TRUE))) {
             res.specific <- list(cpu.software.ver.num=object$metadata$cpu.software.ver.num,
                                  dsp.software.ver.num=object$metadata$dsp.software.ver.num,
                                  board.rev=object$metadata$board.rev,
                                  adp.type=object$metadata$adp.type,
                                  slant.angle=object$metadata$slant.angle,
                                  orientation=object$metadata$orientation)
-        } else if (inherits(object, "nortek")) {
-            res.specific <- NULL
         } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
 
         ## start building res from the header information
@@ -162,7 +160,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 cat("  ", format(x$transformation.matrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
         }
         cat("\n")
-        if (x$instrument.type == "teledyne rdi") {
+        if (1 == length(agrep("rdi", x$instrument.type, ignore.case=TRUE))) {
             cat("* Teledyne-specific\n\n", ...)
             cat("  * System configuration:       ", x$metadata$system.configuration, "\n", ...)
             cat("  * Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
@@ -176,12 +174,12 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 cat(" [note: was *subtracted* from the file's heading, to create the obect's heading]\n", ...)
             else
                 cat("\n", ...)
-        } else if (x$instrument.type == "nortek aquadopp high resolution") {
-            cat("* Nortek-specific:\n\n", ...)
+        } else if (1 == length(agrep("aquadopp", x$instrument.type, ignore.case=TRUE))) {
+            cat("* Nortek-aquadopp-specific:\n\n", ...)
             cat("  * Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
             cat("  * Hardware revision:           ", x$metadata$hardware.revision, "\n", ...)
             cat("  * Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
-        } else if (x$instrument.type == "sontek") {
+        } else if (1 == length(agrep("sontek", x$instrument.type, ignore.case=TRUE))) {
             cat("* Sontek-specific:\n\n", ...)
             cat("  * CPU software version:        ", x$metadata$cpu.software.ver.num, "\n", ...)
             cat("  * DSP software version:        ", x$metadata$dsp.software.ver.num, "\n", ...)
@@ -608,16 +606,16 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    if (1 == length(agrep("rdi", x$metadata$instrument.type))) {
+    if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) {
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
         }
     }
-    if (1 == length(agrep("sontek", x$metadata$instrument.type))) {
+    if (1 == length(agrep("sontek", x$metadata$instrument.type, ignore.case=TRUE))) {
         warning("adp.xyz2enu() detected SONTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
     }
-    if (1 == length(agrep("nortek", x$metadata$instrument.type))) {
+    if (1 == length(agrep("nortek", x$metadata$instrument.type, ignore.case=TRUE))) {
         warning("adp.xyz2enu() detected NORTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
     }
     ## FIXME need to check for sontek and nortek here, and
