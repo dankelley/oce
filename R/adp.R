@@ -624,37 +624,70 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
+    have.steady.angles <- length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1
     to.radians <- atan2(1,1) / 45
-    hrad <- to.radians * heading        # This could save millions of multiplies
-    prad <- to.radians * pitch          # although the trig is probably taking
-    rrad <- to.radians * roll           # most of the time.
-    CH <- cos(hrad)
-    SH <- sin(hrad)
-    CP <- cos(prad)
-    SP <- sin(prad)
-    CR <- cos(rrad)
-    SR <- sin(rrad)
-    np <- dim(x$data$ma$v)[1]
-    nc <- dim(x$data$ma$v)[2]
-    ## Note: construct a 3*3*np matrix that is the product of three
-    ## rotation matrices.  This is 9*np of matrix memory, versus
-    ## 27*np for the three matrices.
-    tr.mat <- array(dim=c(3, 3, np))
-    tr.mat[1,1,] <-  CH * CR + SH * SP * SR
-    tr.mat[1,2,] <-  SH * CP
-    tr.mat[1,3,] <-  CH * SR - SH * SP * CR
-    tr.mat[2,1,] <- -SH * CR + CH * SP * SR
-    tr.mat[2,2,] <-  CH * CP
-    tr.mat[2,3,] <- -SH * SR - CH * SP * CR
-    tr.mat[3,1,] <- -CP * SR
-    tr.mat[3,2,] <-  SP
-    tr.mat[3,3,] <-  CP * CR
-    ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
-    ## FIXME: see if plyr library is faster than lapply
-    rotated <- array(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
-    res$data$ma$v[,,1] <- t(rotated[1,,])
-    res$data$ma$v[,,2] <- t(rotated[2,,])
-    res$data$ma$v[,,3] <- t(rotated[3,,])
+    h <- to.radians * heading
+    p <- to.radians * pitch
+    r <- to.radians * roll
+    CH <- cos(h)
+    SH <- sin(h)
+    CP <- cos(p)
+    SP <- sin(p)
+    CR <- cos(r)
+    SR <- sin(r)
+    np <- dim(x$data$ma$v)[1]           # number of profiles
+    nc <- dim(x$data$ma$v)[2]           # number of cells
+    warning("TESTING: have.steady.angles=",have.steady.angles,"\n")
+    warning("NOTE: results NOT QUITE RIGHT!")
+    if (have.steady.angles) {
+        R <- array(dim=c(3, 3))
+        R[1,1] <-  CH * CR + SH * SP * SR
+        R[1,2] <-  SH * CP
+        R[1,3] <-  CH * SR - SH * SP * CR
+        R[2,1] <- -SH * CR + CH * SP * SR
+        R[2,2] <-  CH * CP
+        R[2,3] <- -SH * SR - CH * SP * CR
+        R[3,1] <- -CP * SR
+        R[3,2] <-  SP
+        R[3,3] <-  CP * CR
+        ## Timing tests suggest using a 2D matrix for R drops user
+        ## time by factor of 2, but elapsed time by a factor of 8 or
+        ## more.  Details: ADP dataset with 84 bins, sampling 6 days
+        ## every 10 seconds on a machine with 4G memory.  I think the
+        ## main issue is memory, since the system became sluggish with
+        ## the 3D rotation matrix.
+        ##
+        ## Timing tests (not well documented) seem to suggest that
+        ## there is no difference in working across profile, or across
+        ## cell.  This is consistent with an assumption that the loop
+        ## overhead is small compared with the actual calculation.
+        ##
+        ## NOTE: working across cell, here.  Q: does this use up a lot
+        ## more memory?
+        rot <- array(unlist(lapply(1:nc, function(c) R %*% t(x$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
+        res$data$ma$v[,,1] <- rot[1,,]
+        res$data$ma$v[,,2] <- rot[2,,]
+        res$data$ma$v[,,3] <- rot[3,,]
+    } else {
+        ## Note: construct a 3*3*np matrix that is the product of three
+        ## rotation matrices.  This is 9*np of matrix memory, versus
+        ## 27*np for the three matrices.
+        R <- array(dim=c(3, 3, np))
+        R[1,1,] <-  CH * CR + SH * SP * SR
+        R[1,2,] <-  SH * CP
+        R[1,3,] <-  CH * SR - SH * SP * CR
+        R[2,1,] <- -SH * CR + CH * SP * SR
+        R[2,2,] <-  CH * CP
+        R[2,3,] <- -SH * SR - CH * SP * CR
+        R[3,1,] <- -CP * SR
+        R[3,2,] <-  SP
+        R[3,3,] <-  CP * CR
+        ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
+        rot <- array(unlist(lapply(1:np, function(p) R[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+        res$data$ma$v[,,1] <- t(rot[1,,])
+        res$data$ma$v[,,2] <- t(rot[2,,])
+        res$data$ma$v[,,3] <- t(rot[3,,])
+    }
     res$metadata$oce.coordinate <- "enu"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
