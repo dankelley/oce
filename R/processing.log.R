@@ -23,7 +23,7 @@ processing.log.item <- function(log.action="")
     rval
 }
 
-summary.processing.log <- function(object)
+processing.log.summary <- function(object)
 {
     n <- length(object$processing.log$action)
     if (n > 0) {
@@ -41,7 +41,7 @@ summary.processing.log <- function(object)
     res
 }
 
-print.summary.processing.log <- function(x, ...)
+print.processing.log.summary <- function(x, ...)
 {
     n <- length(x)
     cat("* Processing log\n\n", ...)

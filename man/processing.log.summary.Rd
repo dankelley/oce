@@ -1,12 +1,12 @@
-\name{summary.processing.log}
+\name{processing.log.summary}
 
-\alias{summary.processing.log}
+\alias{processing.log.summary}
 
 \title{Summarize the processing log of an object}
 
 \description{Summarize the processing log of an object.}
 
-\usage{summary.processing.log(object)}
+\usage{processing.log.summary(object)}
 
 \arguments{
 \item{object}{an \code{oce} object.}
@@ -20,7 +20,7 @@
 \examples{
 library(oce)
 data(ctd)
-summary.processing.log(ctd)
+processing.log.summary(ctd)
 }
 
 \author{Dan Kelley}
