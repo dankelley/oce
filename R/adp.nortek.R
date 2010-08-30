@@ -22,6 +22,7 @@
 decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "decode.header.nortek() entry; buf[1:20]=",buf[1:20],"\n")
+    deg.to.rad <- atan2(1, 1) / 45
     sync.code <- as.raw(0xa5)
     id.hardware.configuration <- as.raw(0x05)
     id.head.configuration <- as.raw(0x04)
@@ -106,7 +107,9 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             if (2 * user$size != header.length.user)
                 stop("size of user header expected to be ", header.length.user, "but got ", user$size)
             ##buf <- readBin(file, "raw", header.length.user)
-
+            user$T1 <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
+            user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oce.debug(debug, "user$T1=", user$T1, "; user$T2=", user$T2, "\n")
             user$transmit.pulse.length <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
             oce.debug(debug, "user$transmit.pulse.length=", user$transmit.pulse.lengthu, "in counts\n")
             user$blanking.distance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
@@ -155,17 +158,17 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             }
             oce.debug(debug, "cell.size=", user$cell.size, "m (FIXME: no docs on this)\n")
             user$measurement.interval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
+            oce.debug(debug, "measurement.interval=", user$measurement.interval, "\n")
+
+            ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.0135*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
-                user$blanking.distance <- cos(25*pi/180) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blanking.distance <- cos(25*deg.to.rad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
             } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
-                ## printf("\nBlanking distance (m) ---- %.2f", cos(DEGTORAD(25.0))*(0.00675*conf.hT2 - 12.0*conf.hT1/head.hFrequency));
-                user$blanking.distance <- cos(25*pi/180) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blanking.distance <- cos(25*deg.to.rad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
             } else {
                 user$blanking.distance <- 0
             }
             oce.debug(debug, "blanking.distance=", user$blanking.distance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
-            oce.debug(debug, "measurement.interval=", user$measurement.interval, "\n")
             user$deployment.name <- readBin(buf[o+41:46], "character")
             user$sw.version <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oce.debug(debug, "sw.version=", user$sw.version,"\n")
