@@ -429,7 +429,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             if (length(bad.profiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fill.gap(as.numeric(time) - as.numeric(t0)) + t0
-                warning("Discarded ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), sep=", "), "\n")
+                warning("Interpolated across ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), sep=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
             }
 
             profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
