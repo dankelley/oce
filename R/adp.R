@@ -636,10 +636,12 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         }
     }
     if (1 == length(agrep("sontek", x$metadata$instrument.type, ignore.case=TRUE))) {
-        warning("adp.xyz2enu() detected SONTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
+        warning("adp.xyz2enu() detected a SONTEK profiler, so added 90 to heading.  *** Q: should the sign of pitch be changed? ***")
+        heading <- heading + 90
     }
     if (1 == length(agrep("nortek", x$metadata$instrument.type, ignore.case=TRUE))) {
-        warning("adp.xyz2enu() detected NORTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
+        heading <- heading + 90
+        warning("adp.xyz2enu() detected a NORTEK profiler, so added 90 to heading.  *** Q: should the sign of pitch be changed? ***")
     }
     ## FIXME need to check for sontek and nortek here, and
     ## FIXME  1) add 90 degrees to heading
