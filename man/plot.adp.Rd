@@ -86,55 +86,44 @@
 
   \itemize{ 
 
-    \item \code{which=1} yield a distance-time image plot of a
-    velocity component.  If \code{x} is in \code{beam} coordinates
-    (signalled by \code{x$metadata$oce.coordinate=="beam"}), this will
-    be the first beam.  If \code{x} is in xyz coordinates (sometimes
-    called frame coordinates, or ship coordinates), it will be the
-    velocity component to the right of 
-    the frame or ship (labelled \code{u}).  If \code{x} is in
+    \item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
+    distance-time image plot of a velocity component.  If \code{x} is in
+    \code{beam} coordinates (signalled by
+    \code{x$metadata$oce.coordinate=="beam"}), this will be the beam
+    velocity, labelled \code{b[1]} etc.  If \code{x} is in xyz
+    coordinates (sometimes called frame coordinates, or ship
+    coordinates), it will be the velocity component to the right of the
+    frame or ship (labelled \code{u} etc).  Finally, if \code{x} is in
     \code{"enu"} coordinates, the image will show the the eastward
-    component (labelled \code{east}).  If \code{x} is in
-    \code{"other"} coordinates, it will be component corresponding to
-    east, after rotation (labelled \code{u\'}).  Note that the
-    coordinate is set by \code{\link{read.adp}}, or by
-    \code{\link{adp.beam2xyz}},
-    \code{\link{adp.xyz2enu}},
-    or
-    \code{\link{adp.enu2other}}.
+    component (labelled \code{east}).  If \code{x} is in \code{"other"}
+    coordinates, it will be component corresponding to east, after
+    rotation (labelled \code{u\'}).  Note that the coordinate is set by
+    \code{\link{read.adp}}, or by \code{\link{adp.beam2xyz}},
+    \code{\link{adp.xyz2enu}}, or \code{\link{adp.enu2other}}.
     
-    \item \code{which=2} is as for \code{which=1}, but for the second
-    beam, forward velocity component, northward velocity component, or
-    rotated north velocity component, depending on the coordinates of
-    \code{x}.
-    
-    \item \code{which=3} is as for \code{which=1}, but for third beam,
-    up-frame velocity component, upward velocity component, or rotated
-    upward velocity component.
-    
-    \item \code{which=4} is as for \code{which=1}, but for the fourth
-    beam for \code{beam} coordinates, or for the estimate velocity
-    error, for all other coordinate systems.  (This is ignored unless
-    there are 4 beams.)
+    \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
+    distance-time images of backscatter intensity of the respective beams.
 
-    \item \code{which=5:7} (or \code{5:8} for 4-beam data) yields
-    distance-time images of backscatter intensity of beams 1 through 3
-    (or 4), respectively.
-
-    \item \code{which=9:11} (or \code{9:12} for 4-beam data) yields
+    \item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield
     distance-time images of signal quality for the respective beams.
 
-    \item \code{which=13} yields a time-series plot of salinity.
+    \item \code{which=13} (or \code{which="salinity"}) yields a
+    time-series plot of salinity.
 
-    \item \code{which=14} yields a time-series plot of temperature.
+    \item \code{which=14} (or \code{which="temperature"}) yields a
+    time-series plot of temperature.
 
-    \item \code{which=15} yields a time-series plot of pressure.
+    \item \code{which=15} (or \code{which="pressure"}) yields a
+    time-series plot of pressure.
 
-    \item \code{which=16} yields a time-series plot of instrument heading.
+    \item \code{which=16} (or \code{which="heading"}) yields a
+time-series plot of instrument heading.
 
-    \item \code{which=17} yields a time-series plot of instrument pitch.
+    \item \code{which=17} (or \code{which="pitch"}) yields a time-series
+plot of instrument pitch.
 
-    \item \code{which=18} yields a time-series plot of instrument roll.
+    \item \code{which=18} (or \code{which="roll"}) yields a time-series
+plot of instrument roll.
 
     \item \code{which=19} yields a time-series plot of
     distance-averaged velocity for beam 1, rightward velocity,

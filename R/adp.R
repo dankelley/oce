@@ -254,12 +254,33 @@ plot.adp <- function(x,
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
-
+    ## Translate word-style (want to keep fractional numbers for variants)
+    for (w in 1:lw) {
+        if (     which[w] == "u1") which[w] <- 1
+        else if (which[w] == "u2") which[w] <- 2
+        else if (which[w] == "u3") which[w] <- 3
+        else if (which[w] == "u4") which[w] <- 4
+        else if (which[w] == "a1") which[w] <- 5
+        else if (which[w] == "a2") which[w] <- 6
+        else if (which[w] == "a3") which[w] <- 7
+        else if (which[w] == "a4") which[w] <- 8
+        else if (which[w] == "q1") which[w] <- 9
+        else if (which[w] == "q2") which[w] <- 10
+        else if (which[w] == "q3") which[w] <- 11
+        else if (which[w] == "q4") which[w] <- 12
+        else if (which[w] == "salinity") which[w] <- 13
+        else if (which[w] == "temperature") which[w] <- 14
+        else if (which[w] == "pressure") which[w] <- 15
+        else if (which[w] == "heading") which[w] <- 16
+        else if (which[w] == "pitch") which[w] <- 17
+        else if (which[w] == "roll") which[w] <- 18
+        else if (which[w] == "progressive-vector") which[w] <- 23
+    }
     images <- 1:12
     timeseries <- 13:22
     spatial <- 23:27
     speed <- 28
-    if (any(!floor(0.01 + which) %in% c(images, timeseries, spatial, speed))) stop("unknown value of 'which'")
+    ##if (any(!floor(0.01 + which) %in% c(images, timeseries, spatial, speed))) stop("unknown value of 'which'")
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -425,7 +446,7 @@ plot.adp <- function(x,
                 par(mar=omar)
             }
         } else if (which[w] %in% spatial) {                   # various spatial types
-            if (which[w] == 23) {                             # progressive-vector
+            if (which[w] == 23) {    # progressive vector
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec")) # FIXME: should not assume all equal
                 m.per.km <- 1000
@@ -463,7 +484,9 @@ plot.adp <- function(x,
                     value <- apply(x$data$ma$v[,,4], 2, mean, na.rm=TRUE)
                     plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 4), ylab="Distance [m]", type='l', ...)
                     ##grid()
-                } else warning("cannot use which=27 because this device did not have 4 beams")
+                } else {
+                    warning("cannot use which=27 because this device did not have 4 beams")
+                }
             }
             if (w <= adorn.length) {
                 t <- try(eval(adorn[w]), silent=TRUE)
