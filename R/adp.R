@@ -637,8 +637,6 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     SR <- sin(r)
     np <- dim(x$data$ma$v)[1]           # number of profiles
     nc <- dim(x$data$ma$v)[2]           # number of cells
-    warning("TESTING: have.steady.angles=",have.steady.angles,"\n")
-    warning("NOTE: results NOT QUITE RIGHT!")
     if (have.steady.angles) {
         R <- array(dim=c(3, 3))
         R[1,1] <-  CH * CR + SH * SP * SR
@@ -651,19 +649,18 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         R[3,2] <-  SP
         R[3,3] <-  CP * CR
         ## Timing tests suggest using a 2D matrix for R drops user
-        ## time by factor of 2, but elapsed time by a factor of 8 or
-        ## more.  Details: ADP dataset with 84 bins, sampling 6 days
-        ## every 10 seconds on a machine with 4G memory.  I think the
-        ## main issue is memory, since the system became sluggish with
-        ## the 3D rotation matrix.
+        ## time by factor of 2.  That may be an underestimate, if jobs
+        ## have to compete for RAM, which was the case on the test
+        ## machine with 4Gb of RAM, working on a six-day dataset
+        ## sampled at 0.1Hz with 84 bins.
         ##
-        ## Timing tests (not well documented) seem to suggest that
-        ## there is no difference in working across profile, or across
-        ## cell.  This is consistent with an assumption that the loop
-        ## overhead is small compared with the actual calculation.
-        ##
-        ## NOTE: working across cell, here.  Q: does this use up a lot
-        ## more memory?
+        ## Timing tests (not recorded) suggest little speed difference
+        ## in working across profiles or across cells.  This may just
+        ## mean that the loop overhead is small compared with the
+        ## matrix work.  In any case, it opens the possibility of
+        ## doing the work across profile, or cell, as fits the
+        ## problem.  Below, partly as a demonstration, I am working
+        ## across cells (nor profiles, as the rest of the code).
         rot <- array(unlist(lapply(1:nc, function(c) R %*% t(x$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
         res$data$ma$v[,,1] <- rot[1,,]
         res$data$ma$v[,,2] <- rot[2,,]
