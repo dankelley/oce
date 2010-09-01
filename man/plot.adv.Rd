@@ -87,15 +87,17 @@
     amplitude, using \code{\link{smoothScatter}}.
     \item \code{which=20} as for \code{which=19} but for beam 2.
     \item \code{which=21} as for \code{which=19} but for beam 3.
-    \item \code{which=23} or \code{"progressive-vector"} yields a
+    \item \code{which=23} or \code{"progressive vector"} yields a
       progressive-vector diagram in the horizontal plane, plotted with
       \code{asp=1}, and taking beam1 and beam2 as the eastward and
       northward components of velocity, respectively.
-    \item \code{which=24} or \code{"horizontal-velocity"} yields 
-      velocity plot in the horizontal plane, i.e. u[2] versus u[1].
-    \item \code{which=25} or \code{"horizontal-velocity-1"} yields 
-      a \code{\link{smoothScatter}} velocity plot in the horizontal
-      plane, i.e. u[2] versus u[1].
+    \item \code{which=28} or \code{"uv"} yields velocity plot in the
+      horizontal plane, i.e. u[2] versus u[1].  If the number of data
+      points is small, a scattergraph is used, but if it is large,
+      \code{\link{smoothScatter}} is used.
+    \item \code{which=28.1} or \code{"uv+ellipse"} as the \code{"uv"}
+      case, but with an added indication of the tidal ellipse,
+      calculated from the eigen vectors of the covariance matrix.
   }
 }
 

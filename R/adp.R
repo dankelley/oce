@@ -254,33 +254,42 @@ plot.adp <- function(x,
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
-    ## Translate word-style (want to keep fractional numbers for variants)
+    ## Translate word-style (FIXME: ugly coding)
+    which2 <- vector("numeric", length(which))
     for (w in 1:lw) {
-        if (     which[w] == "u1") which[w] <- 1
-        else if (which[w] == "u2") which[w] <- 2
-        else if (which[w] == "u3") which[w] <- 3
-        else if (which[w] == "u4") which[w] <- 4
-        else if (which[w] == "a1") which[w] <- 5
-        else if (which[w] == "a2") which[w] <- 6
-        else if (which[w] == "a3") which[w] <- 7
-        else if (which[w] == "a4") which[w] <- 8
-        else if (which[w] == "q1") which[w] <- 9
-        else if (which[w] == "q2") which[w] <- 10
-        else if (which[w] == "q3") which[w] <- 11
-        else if (which[w] == "q4") which[w] <- 12
-        else if (which[w] == "salinity") which[w] <- 13
-        else if (which[w] == "temperature") which[w] <- 14
-        else if (which[w] == "pressure") which[w] <- 15
-        else if (which[w] == "heading") which[w] <- 16
-        else if (which[w] == "pitch") which[w] <- 17
-        else if (which[w] == "roll") which[w] <- 18
-        else if (which[w] == "progressive-vector") which[w] <- 23
+        ww <- which[w]
+        if (is.numeric(ww)) {
+            which2[w] <- ww
+        } else {
+            if (     ww == "u1") which2[w] <- 1
+            else if (ww == "u2") which2[w] <- 2
+            else if (ww == "u3") which2[w] <- 3
+            else if (ww == "u4") which2[w] <- 4
+            else if (ww == "a1") which2[w] <- 5
+            else if (ww == "a2") which2[w] <- 6
+            else if (ww == "a3") which2[w] <- 7
+            else if (ww == "a4") which2[w] <- 8
+            else if (ww == "q1") which2[w] <- 9
+            else if (ww == "q2") which2[w] <- 10
+            else if (ww == "q3") which2[w] <- 11
+            else if (ww == "q4") which2[w] <- 12
+            else if (ww == "salinity") which2[w] <- 13
+            else if (ww == "temperature") which2[w] <- 14
+            else if (ww == "pressure") which2[w] <- 15
+            else if (ww == "heading") which2[w] <- 16
+            else if (ww == "pitch") which2[w] <- 17
+            else if (ww == "roll") which2[w] <- 18
+            else if (ww == "progressive vector") which2[w] <- 23
+            else if (ww == "uv") which2[w] <- 28
+            else if (ww == "uv+ellipse") which2[w] <- 28.1
+            else stop("unknown 'which':", ww)
+        }
     }
+    which <- which2
     images <- 1:12
     timeseries <- 13:22
     spatial <- 23:27
     speed <- 28
-    ##if (any(!floor(0.01 + which) %in% c(images, timeseries, spatial, speed))) stop("unknown value of 'which'")
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -322,7 +331,7 @@ plot.adp <- function(x,
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
-        ##oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
+        oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
             if (which[w] %in% 1:(0+x$metadata$number.of.beams)) {    #velocity
@@ -492,47 +501,67 @@ plot.adp <- function(x,
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
-        } else if (floor(0.01 + which[w]) %in% speed) { # various speed types
-            if (round(which[w], 0) == 28) {         # currents=28; with ellipse=28.1
-                par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                if (!missing(control) && !is.null(control$bin)) {
-                    if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
-                    max.bin <- dim(x$data$ma$v)[2]
-                    if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                    u <- x$data$ma$v[,control$bin,1]
-                    v <- x$data$ma$v[,control$bin,2]
-                } else {
-                    u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
-                    v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
-                }
+        } else if (round(which[w], 1) == 28) {         # 28 or "uv"
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            n <- prod(dim(x$data$ma$v)[1:2])
+            if (!missing(control) && !is.null(control$bin)) {
+                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                max.bin <- dim(x$data$ma$v)[2]
+                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                u <- x$data$ma$v[,control$bin,1]
+                v <- x$data$ma$v[,control$bin,2]
+            } else {
+                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
+                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+            }
+            if (n < 2000) {
                 if ("type" %in% names(dots)) {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
                 } else {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
                     points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
-                if (round(which[w], 1) == 28.1) {
-                    ## eigen ellipse
-                    uv <- data.frame(u=apply(x$data$ma$v[,,1],1,mean,na.rm=TRUE),
-                                     v=apply(x$data$ma$v[,,2],1,mean,na.rm=TRUE))
-                    e <- eigen(cov(uv))
-                    M <- sqrt(e$values[1])  # major
-                    m <- sqrt(e$values[2])  # minor
-                    ##segments(0, 0, M * e$vectors[1,1], M * e$vectors[2,1], col='red')
-                    ##segments(0, 0, m * e$vectors[1,2], m * e$vectors[2,2], col='blue')
-                    theta <- seq(0, 2*pi, length.out=100)
-                    x <- M*cos(theta)
-                    y <- m*sin(theta)
-                    theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-                    rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
-                    xy <- rotate %*% rbind(x, y)
-                    lines(xy[1,], xy[2,])
+            } else {
+                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+            }
+        } else if (round(which[w], 1) == 28.1) { # 28.1 or "uv+ellipse"
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            n <- prod(dim(x$data$ma$v)[1:2])
+            if (!missing(control) && !is.null(control$bin)) {
+                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                max.bin <- dim(x$data$ma$v)[2]
+                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                u <- x$data$ma$v[,control$bin,1]
+                v <- x$data$ma$v[,control$bin,2]
+            } else {
+                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
+                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+            }
+            if (n < 2000) {
+                if ("type" %in% names(dots)) {
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
+                } else {
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
+                    points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
+            } else {
+                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
+                              ...)
             }
-            if (w <= adorn.length) {
-                t <- try(eval(adorn[w]), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-            }
+            e <- eigen(cov(data.frame(u,v)))
+            major <- sqrt(e$values[1])  # major
+            minor <- sqrt(e$values[2])  # minor
+            theta <- seq(0, 2*pi, length.out=100)
+            x <- major * cos(theta)
+            y <- minor * sin(theta)
+            theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+            rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+            xy <- rotate %*% rbind(x, y)
+            lines(xy[1,], xy[2,])
+        }
+        if (w <= adorn.length) {
+            t <- try(eval(adorn[w]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
 }
