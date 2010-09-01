@@ -1208,6 +1208,7 @@ plot.adv <- function(x,
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
+    dots <- names(list(...))
     #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
@@ -1478,8 +1479,7 @@ plot.adv <- function(x,
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
             mtext(ad.beam.name(x, 3))
-        } else if (which[w] == 23 || which[w] == "progressive-vector") {    # progressive vector
-            oce.debug(debug, "doing progressive-vector diagram\n")
+        } else if (which[w] == 23 || which[w] == "progressive vector") {    # progressive vector
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             dt <- diff(as.numeric(x$data$ts$time))
             dt <- c(dt[1], dt)    # make right length by copying first
@@ -1494,18 +1494,43 @@ plot.adv <- function(x,
             plot(x.dist, y.dist, xlab="km", ylab="km", type='l',
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                  asp=1, ...)
-        } else if (which[w] == 24 || which[w] == "horizontal-velocity") {
+        } else if (which[w] == 28 || which[w] == "uv") {
             oce.debug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type='p',
-                 cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                 asp=1, ...)
-        } else if ((is.numeric(which[w]) && round(which[w], 1) == 24.1) || which[w] == "horizontal-velocity-1") {
-            oce.debug(debug, "doing horizontal-velocity-1 diagram\n")
+            n <- length(x$data$ts$time)
+            if (n < 2000) {
+                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type='p',
+                     cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                     asp=1, ...)
+            } else {
+                smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
+                              cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                              asp=1, ...)
+            }
+        } else if ((is.numeric(which[w]) && round(which[w], 1) == 28.1) || which[w] == "uv+ellipse") {
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
-                          cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                          asp=1, ...)
+            n <- length(x$data$ts$time)
+            if (n < 2000) {
+                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type='p',
+                     cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                     asp=1, ...)
+            } else {
+                smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
+                              cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                              asp=1, ...)
+            }
+            uv <- data.frame(u=x$data$ma$v[,1], v=x$data$ma$v[,2])
+            .uv<<-uv
+            e <- eigen(cov(uv))
+            major <- sqrt(e$values[1])
+            minor <- sqrt(e$values[2])
+            theta <- seq(0, 2*pi, length.out=100)
+            x <- major * cos(theta)
+            y <- minor * sin(theta)
+            theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+            rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+            xy <- rotate %*% rbind(x, y)
+            lines(xy[1,], xy[2,], lwd=2*par("lwd"), col=if ("col" %in% dots) col else "red")
         } else {
             stop("unknown value of \"which\":", which[w])
         }
