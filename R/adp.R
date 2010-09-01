@@ -664,13 +664,12 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             roll <- roll + 180
         }
     }
-    if (1 == length(agrep("sontek", x$metadata$instrument.type, ignore.case=TRUE))) {
-        warning("adp.xyz2enu() detected a SONTEK profiler, so added 90 to heading.  *** Q: should the sign of pitch be changed? ***")
-        heading <- heading + 90
-    }
-    if (1 == length(agrep("nortek", x$metadata$instrument.type, ignore.case=TRUE))) {
-        heading <- heading + 90
-        warning("adp.xyz2enu() detected a NORTEK profiler, so added 90 to heading.  *** Q: should the sign of pitch be changed? ***")
+    if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
+        1 == length(agrep("sontek", x$metadata$manufacturer))) {
+        warning("detected nortek-vector or sontek-adv, and subtracting 90 from heading")
+        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
+        warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
+        pitch <- - pitch
     }
     ## FIXME need to check for sontek and nortek here, and
     ## FIXME  1) add 90 degrees to heading

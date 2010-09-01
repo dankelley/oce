@@ -69,7 +69,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         cat("\nheader is as follows:\n")
         str(header)
     }
-    metadata <- list(instrument.type="vector",
+    metadata <- list(manufacturer="nortek",
+                     instrument.type="vector",
                      filename=filename,
                      measurement.start=NA, # FIXME
                      measurement.end=NA,   # FIXME
@@ -467,15 +468,15 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),     
     temperature <- 0.01 * readBin(buf[v.start2+16], "integer", size=2, n=len, signed=TRUE, endian="little")
     pressure <- readBin(buf[v.start2+18], "integer", size=2, n=len, signed=FALSE, endian="little")
     cat("pressures are wrong -- not sure why; here is fivenum:", paste(fivenum(pressure), collapse=" "), "\n")
-    metadata <- list(instrument.type="sontek",
+    metadata <- list(manufacturer="sontek",
+                     instrument.type="adv",
                      serial.number="(unknown)",
                      filename=filename,
                      measurement.start=0, measurement.end=len, measurement.deltat=1,
                      subsample.start=0, subsample.end=len, subsample.deltat=1,
                      coordinate.system="xyz",
                      oce.coordinate="xyz",
-                     orientation="up"
-                     )
+                     orientation="up")
     time <- start + (0:(-1+len)) * deltat
     data <- list(ts=list(time=time,
                  heading=rep(0,len),
@@ -552,7 +553,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     burst.header.length <- 60
     checksum.length <- 2
     data.length <- 22                   # FIXME: this should be determined based on the headers
-    metadata <- list(filename=filename, instrument.type="sontek adr", measurement.deltat=1, velocity.scale.factor=1)
+    metadata <- list(manufacturer="sontek",
+                     instrument.type="adv", # FIXME or "adr"???
+                     filename=filename,
+                     measurement.deltat=1,
+                     velocity.scale.factor=1)
     if (header) {
         ##
         ## Slice out three headers
@@ -1046,7 +1051,8 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                  pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
-    metadata <- list(instrument.type="sontek adr",
+    metadata <- list(manufacturer="sontek",
+                     instrument.type="adv", # FIXME or "adr"?
                      cpu.software.ver.num=metadata$cpu.software.ver.num,
                      dsp.software.ver.num=metadata$dsp.software.ver.num,
                      filename=basefile,
@@ -1520,7 +1526,6 @@ plot.adv <- function(x,
                               asp=1, ...)
             }
             uv <- data.frame(u=x$data$ma$v[,1], v=x$data$ma$v[,2])
-            .uv<<-uv
             e <- eigen(cov(uv))
             major <- sqrt(e$values[1])
             minor <- sqrt(e$values[2])
@@ -1621,12 +1626,12 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
     }
-    if (1 == length(agrep("sontek", x$metadata$instrument.type))) { # FIXME: brittle dependence on instrument.type
+    ##print(x$metadata)
+    if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
+        1 == length(agrep("sontek", x$metadata$manufacturer))) {
+        warning("detected nortek-vector or sontek-adv, and subtracting 90 from heading")
         heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
-        pitch <- - pitch
-    }
-    if (1 == length(agrep("nortek", x$metadata$instrument.type))) {# FIXME: brittle dependence on instrument.type
-        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
+        warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
         pitch <- - pitch
     }
     oce.debug(debug, vector.show(heading, "heading"))
