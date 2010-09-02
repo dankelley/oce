@@ -270,7 +270,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x$metadata$number.of.profiles)[indices]
-            print(keep)
+            oce.debug(debug, vector.show(keep, "keeping indices"))
             stop("this version of oce cannot subset adp data by index")
         } else if (!missing(subset)) {
             subset.string <- deparse(substitute(subset))
@@ -352,7 +352,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         if (length(grep("time", subset.string))) {
             oce.debug(debug, "subsetting an adp by time\n")
             keep <- eval(substitute(subset), x$data$ts, parent.frame())
-            oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
+            oce.debug(debug, vector.show(keep, "keeping bins:"))
             if (sum(keep) < 2)
                 stop("must keep at least 2 profiles")
             rval <- x
@@ -362,6 +362,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             for (name in names(x$data$ma)) {
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
+            if ("ts.slow" %in% names(x$data)) {
+                oce.debug(debug, "have ts.slow\n")
+                keep <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+                for (name in names(x$data$ts.slow)) {
+                    rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep]
+                }
+            }
         } else {
             stop("only 'time' is permitted for subsetting")
         }
@@ -370,9 +377,9 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         r <- r & !is.na(r)
         rval <- x
         rval$data <- x$data[r,]
-        rval$processing.log <- processing.log.add(rval$processing.log,
-                                                  paste(deparse(match.call()), sep="", collapse=""))
     }
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

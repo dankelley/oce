@@ -36,7 +36,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$ts$time, etc.
 
-    oce.debug(debug, "read.adv.nortek(...,type=\"", type, "\", ...)\n")
+    oce.debug(debug, "\b\bread.adv.nortek(file=\"", file, "\", type=\"", type, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", type=\"", type, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (is.numeric(by)   && by   < 1) stop("argument \"by\" must be 1 or larger")
@@ -290,6 +290,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          bcd2integer(buf[vsd.start+5]), # sec
                          tz=tz)
 
+    oce.debug(debug, "reading Nortek Vector, and using timezone: ", tz, "\n")
+
+
     ## update metadata$measurement.deltat
     metadata$measurement.deltat <- mean(diff(as.numeric(vsd.t)), na.rm=TRUE) *
         length(vsd.start) / length(vvd.start)
@@ -376,7 +379,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##oce.debug(debug, "vvd.sec=", vvd.sec[1], ",", vvd.sec[2], "...\n")
     ##cat(vector.show(vsd.t[1:10]))
     ## vsd at 1Hz; vvd at sampling rate
-    data <- list(ts=list(time=vvd.sec + vsd.t[1], # FIXME
+    time <- vvd.sec + vsd.t[1]
+    ##print(attributes(time)) # is time out somehow?
+    ##print(time[1])
+    data <- list(ts=list(time=time,
                  ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
                  pressure=pressure),
                  ts.slow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
@@ -384,7 +390,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                  ma=list(v=v, a=a, c=c))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("nortek", "adv", "oce")
-    gc()
+    oce.debug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
     res
 }
 

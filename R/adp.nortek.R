@@ -34,11 +34,11 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
     o <- 0                              # offset
     for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
         oce.debug(debug, "\n")
-        oce.debug(debug, "buf[o+2]=", buf[o+2], "\n")
+        oce.debug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
         if (buf[o+1] != sync.code)
             stop("expecting sync code 0x", sync.code, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
         if (buf[o+2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
-            oce.debug(debug, "HARDWARE CONFIGURATION\n")
+            oce.debug(debug, "\n\bHARDWARE CONFIGURATION\n")
             hardware$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2, endian="little")
             if (hardware$size != 24) stop("size of hardware header expected to be 24 two-byte words, but got ", hardware$size)
             if (2 * hardware$size != header.length.hardware)
@@ -62,7 +62,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             oce.debug(debug, "hardware$fw.version=", hardware$fw.version, "\n")
             o <- o + 2 * hardware$size
         } else if (buf[o+2] == id.head.configuration) {     # see page 30 of System Integrator Guide
-            oce.debug(debug, "HEAD CONFIGURATION\n")
+            oce.debug(debug, "\n\bHEAD CONFIGURATION\n")
             ##buf <- readBin(file, "raw", header.length.head)
             head$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2)
             if (2 * head$size != header.length.head)
@@ -102,7 +102,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
             oce.debug(debug, "head$number.of.beams=", head$number.of.beams, "\n")
             o <- o + 2 * head$size
         } else if (buf[o+2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
-            oce.debug(debug, "USER CONFIGURATION\n")
+            oce.debug(debug, "\n\bUSER CONFIGURATION\n")
             user$size <- readBin(buf[o+3:4], what="integer", n=1, size=2, endian="little")
             if (2 * user$size != header.length.user)
                 stop("size of user header expected to be ", header.length.user, "but got ", user$size)
