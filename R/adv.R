@@ -1209,7 +1209,7 @@ plot.adv <- function(x,
                      draw.time.range=getOption("oce.draw.time.range"),
                      draw.zero.line=FALSE,
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
+                     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim,
@@ -1314,62 +1314,68 @@ plot.adv <- function(x,
                         ...)
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] == 5 || which[w] == "b1") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$a[,1], ylab=expression(a[1]),
+        } else if (which[w] == 5 || which[w] == "a1") {
+            y <- as.numeric(x$data$ma$a[,1])
+            oce.plot.ts(x$data$ts$time, y, ylab=expression(a[1]),
                         draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$a[,1], na.rm=TRUE),
+                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 6 || which[w] == "b2") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$a[,2], ylab=expression(a[2]),
+        } else if (which[w] == 6 || which[w] == "a2") {
+            y <- as.numeric(x$data$ma$a[,2])
+            oce.plot.ts(x$data$ts$time, y, ylab=expression(a[2]),
                         draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$a[,2], na.rm=TRUE),
+                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 7 || which[w] == "b3") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$a[,3], ylab=expression(a[3]),
+        } else if (which[w] == 7 || which[w] == "a3") {
+            y <- as.numeric(x$data$ma$a[,3])
+            oce.plot.ts(x$data$ts$time, y, ylab=expression(a[3]),
                         draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$a[,3], na.rm=TRUE),
+                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 9 || which[w] == "c1") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$c[,1], ylab=expression(c[1]),
+        } else if (which[w] == 9 || which[w] == "q1") {
+            y <- as.numeric(x$data$ma$c[,1])
+            oce.plot.ts(x$data$ts$time, y, ylab=expression(c[1]),
                         draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$c[,1], na.rm=TRUE),
+                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 10 || which[w] == "c2") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$c[,2], ylab=expression(c[2]),
+        } else if (which[w] == 10 || which[w] == "q2") {
+            y <- as.numeric(x$data$ma$c[,2])
+            oce.plot.ts(x$data$ts$time, y, ylab=expression(c[2]),
                         draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$c[,2], na.rm=TRUE),
+                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
                         ...)
-        } else if (which[w] == 11 || which[w] == "c3") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$c[,3], ylab=expression(c[3]),
+        } else if (which[w] == 11 || which[w] == "q3") {
+            y <- as.numeric(x$data$ma$c[,3])
+            oce.plot.ts(x$data$ts$time, y, ylab=expression(c[3]),
                         draw.time.range=draw.time.range,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$c[,3], na.rm=TRUE),
+                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp,mar=mar, # FIXME
                         debug=debug-1,
@@ -1474,23 +1480,26 @@ plot.adv <- function(x,
             }
             ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
         } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
-            a <- as.integer(x$data$ma$a[,1])
-            c <- as.integer(x$data$ma$c[,1])
+            a <- as.numeric(x$data$ma$a[,1])
+            c <- as.numeric(x$data$ma$c[,1])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
-                          xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
-            mtext(ad.beam.name(x, 1))
+                          xlim=if (gave.xlim) xlim[w,] else range(a),
+                          ylim=if (gave.ylim) ylim[w,] else range(c))
+            mtext("beam 1")
         } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
-            a <- as.integer(x$data$ma$a[,2])
-            c <- as.integer(x$data$ma$c[,2])
+            a <- as.numeric(x$data$ma$a[,2])
+            c <- as.numeric(x$data$ma$c[,2])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
-                          xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
-            mtext(ad.beam.name(x, 2))
+                          xlim=if (gave.xlim) xlim[w,] else range(a),
+                          ylim=if (gave.ylim) ylim[w,] else range(c))
+            mtext("beam 2")
         } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
-            a <- as.integer(x$data$ma$a[,3])
-            c <- as.integer(x$data$ma$c[,3])
+            a <- as.numeric(x$data$ma$a[,3])
+            c <- as.numeric(x$data$ma$c[,3])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
-                          xlim=if (gave.xlim) xlim[w,], ylim=if (gave.ylim) ylim[w,])
-            mtext(ad.beam.name(x, 3))
+                          xlim=if (gave.xlim) xlim[w,] else range(a),
+                          ylim=if (gave.ylim) ylim[w,] else range(c))
+            mtext("beam 3")
         } else if (which[w] == 23 || which[w] == "progressive vector") {    # progressive vector
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             dt <- diff(as.numeric(x$data$ts$time))

@@ -13,7 +13,7 @@
      draw.time.range=getOption("oce.draw.time.range"),
      draw.zero.line=FALSE,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      margins.as.image=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim,
@@ -65,19 +65,21 @@
   gaps in the sequence, e.g. 4 and 8 are not used.)
 
   \itemize{ 
-    \item \code{which=1} or \code{which="u1"} yields a timeseries of the x component of velocity (in either xyz or enu coordinates).
-    \item \code{which=2} or \code{which="u2"} yields a timeseries of the y component of velocity (in either xyz or enu coordinates).
-    \item \code{which=3} or \code{which="u3"} yields a timeseries of the z component of velocity (in either xyz or enu coordinates).
+    \item \code{which=1} to \code{3} (or \code{"u1"} to \code{"u3"})
+      yield timeseries of the first, second, and third components of
+      velocity (in beam, xyz or enu coordinates).
     \item \code{which=4} is not permitted (since ADV are 3-beam devices)
-    \item \code{which=5} or \code{which="b1"} yields a timeseries of backscatter for beam 1
-    \item \code{which=6} or \code{which="b2"} yields a timeseries of backscatter for beam 2
-    \item \code{which=7} or \code{which="b3"} yields a timeseries of backscatter for beam 3
+    \item \code{which=5} to \code{7} (or \code{"a1"} to \code{"a3"})
+      yield timeseries of the amplitudes of beams 1 to 3.  (Note that
+      the data are called \code{data$ma$a[,1]}, \code{data$ma$a[,2]} and
+      \code{data$ma$a[,3]}, for these three timeseries.)
     \item \code{which=8} is not permitted (since ADV are 3-beam devices)
-    \item \code{which=9}  or \code{which="c1"} yields a timeseries of correlation for beam 1
-    \item \code{which=10} or \code{which="c2"} yields a timeseries of correlation for beam 2
-    \item \code{which=11} or \code{which="c3"} yields a timeseries of correlation for beam 3
-    \item \code{which=12} is not permitted
-    \item \code{which=13} is not permitted
+    \item \code{which=9} to \code{11} (or \code{"q1"} to \code{"q3"})
+      yield timeseries of correlation for beams 1 to 3.  (Note that the
+      data are called \code{data$ma$c[,1]}, \code{data$ma$c[,2]} and
+      \code{data$ma$c[,3]}, for these three timeseries.)
+    \item \code{which=12} is not permitted (since ADVs are 3-beam devices)
+    \item \code{which=13} is not permitted (since ADVs do not measure salinity)
     \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
     \item \code{which=15} or \code{which="pressure"} yields a timeseries of pressure.
     \item \code{which=16} or \code{which="heading"} yields a timeseries of heading.
@@ -117,6 +119,3 @@ plot(adv)
 
 \author{Dan Kelley}
 \keyword{misc}
-
-
-
