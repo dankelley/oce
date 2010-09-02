@@ -87,8 +87,7 @@
     \item \code{which=18} or \code{which="roll"}yields a timeseries of roll.
     \item \code{which=19} to \code{21} yields plots of correlation versus
     amplitude, for beams 1 through 3, using \code{\link{smoothScatter}}.
-    \item \code{which=20} as for \code{which=19} but for beam 2.
-    \item \code{which=21} as for \code{which=19} but for beam 3.
+    \item \code{which=22} is not permitted (since ADVs are 3-beam devices)
     \item \code{which=23} or \code{"progressive vector"} yields a
       progressive-vector diagram in the horizontal plane, plotted with
       \code{asp=1}, and taking beam1 and beam2 as the eastward and
