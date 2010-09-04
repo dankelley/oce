@@ -5,7 +5,8 @@
 \usage{oce.edit(x, item, value, action,
          reason="", person="", debug=getOption("oce.debug"))}
 \arguments{
-\item{x}{an \code{oce} object.}
+\item{x}{an \code{oce} object.  The exact action of \code{oce.edit} depends
+  on the \code{\link{class}} of \code{x}; see \dQuote{Details}.}
 \item{item}{if supplied, a character string naming an item in the
   object's metadata (see \dQuote{Details}).}
 \item{value}{new value for item, if both supplied.}
@@ -28,6 +29,14 @@
   some action to be performed on the object, e.g. a manipulation of a
   column.  The action must refer to the object as \code{x}; see
   Examples.
+
+  3. Applied to an \code{adv} object (i.e. data from an acoustic
+     velocimeter), \code{oce.edit} treats items named \code{heading},
+     \code{pitch}, \code{roll} appropriately, depending on the type of
+     \code{adv} instrument used.  (This is necessary because different
+     manufacturers produce different forms of these items, i.e. Nortek
+     reports them on a time base that is different from the velocity
+     reporting, while Sontek reports them on the same time base.)
 
   In each case, a log entry is stored in the object, to document the
   change.  Indeed, this is the main benefit to using this function,
