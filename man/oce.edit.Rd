@@ -3,9 +3,9 @@
 \title{Edit an oce object}
 \description{Edit an element of a oce object}
 \usage{oce.edit(x, item, value, action,
-         reason="not specified", person="not specified")}
+         reason="", person="", debug=getOption("oce.debug"))}
 \arguments{
-\item{x}{a \code{oce} object.}
+\item{x}{an \code{oce} object.}
 \item{item}{if supplied, a character string naming an item in the
   object's metadata (see \dQuote{Details}).}
 \item{value}{new value for item, if both supplied.}
@@ -13,6 +13,8 @@
   out some action on the object.}
 \item{reason}{character string giving the reason for the change.}
 \item{person}{character string giving the name of person making the change.}
+\item{debug}{an integer that specifies a level of debugging, with 0 or
+  less indicating no debugging, and 1 or more indicating debugging.}
 }
 
 \details{There are two ways to use this function.

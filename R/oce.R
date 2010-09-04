@@ -240,20 +240,73 @@ oce.as.POSIXlt <- function (x, tz = "")
     .Internal(as.POSIXlt(x, tz))
 }
 
-oce.edit <- function(x, item, value, action, reason="not specified", person="not specified")
+oce.edit <- function(x, item, value, action, reason="", person="",
+                     debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    oce.debug(debug, "\b\boce.edit() {\n")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
     if (!missing(item)) {
-        if (missing(value)) stop("must supply a 'value' for this 'item'")
-        if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
-        x$metadata[item] <- value
+        if (missing(value))
+            stop("must supply a 'value' for this 'item'")
+        ##if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
+        if (inherits(x, "adv")) {
+            hpr <- 0 < length(grep("heading|pitch|roll", item))
+            if (hpr) {
+                if (inherits(x, "nortek")) {
+                    x$data$ts.slow[[name]] <- value
+                } else {
+                    x$data$ts[[name]] <- value
+                }
+            } else {
+                if (item %in% names(x$metadata))
+                    x$metadata[item] <- value
+                else
+                    stop("do not know how to handle this item")
+            }
+        } else {
+            if (item %in% names(x$metadata))
+                x$metadata[item] <- value
+            else
+                stop("do not know how to handle this item")
+        }
     } else if (!missing(action)) {
-        eval(parse(text=action))        # FIXME: should check if it worked
+        if (inherits(x, "adv")) {
+            oce.debug(debug, "editing an adv object\n")
+            oce.debug(debug, "action=\"", action, "\"\n", sep="")
+            hpr <- 0 < length(grep("heading|pitch|roll", action))
+#            print(deparse(bquote(action)))
+#            cat("DOOD 1", deparse(quote(action)), "\n")
+#            cat("DOOD 2", deparse(quote(action)), "\n")
+            if (hpr) {
+                oce.debug(debug, "editing heading, pitch, or roll\n")
+                if (inherits(x, "nortek")) {
+                    oce.debug(debug, vector.show(x$data$ts.slow$roll, "before"))
+                    ts.slow <- x$data$ts.slow
+                    print(summary(ts.slow))
+                    ts.slow <- with(ts.slow, parse(text=action))
+                    print(summary(ts.slow))
+                    ts.slow <- eval.parent(parse(text=action))
+#                    x$data$ts.slow <- ts.slow
+                    cat("DONE (?)\n")
+                    ##x$data$ts.slow <- ts.slow #within(x$data$ts.slow, parse(text=action))
+                    #x$data$ts.slow <- within(x$data$ts.slow, roll<-3)
+                    #oce.debug(debug, vector.show(x$data$ts.slow$roll, "after desparate test!"))
+
+                } else {
+                    ##eval(parse(text=action), envir=x$data$ts)#, enclos=parent.frame())
+                    x$data$ts <- within(x$data$ts, parse(text=action))
+                }
+            }
+        } else {
+            eval(parse(text=action))        # FIXME: should check if it worked
+        }
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
     x$processing.log <- processing.log.add(x$processing.log,
                                            paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b}\n")
     x
 }
 
