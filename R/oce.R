@@ -152,7 +152,8 @@ oce.plot.ts <- function(x,
                         debug=getOption("oce.debug"),
                         ...)
 {
-    oce.debug(debug, "\b\boce.plot.ts() {\n")
+    debug <- min(debug, 4)
+    oce.debug(debug, "\b\boce.plot.ts(...,debug=", debug, ",...) {\n",sep="")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     par(mgp=mgp, mar=mar, cex=cex)
@@ -618,7 +619,7 @@ oce.colors.palette <- function(n, which=1)
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), main="", debug=getOption("oce.debug"), ...)
 {
-    oce.debug(debug, "\b\boce.axis.POSIXct() {\n")
+    oce.debug(debug, "\b\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
     oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug,vector.show(x, "x"))
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
@@ -667,6 +668,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
                 format <- "%a"
         } else {
             sc <- 60 * 60 * 24
+            oce.debug(debug, "more than a month time range; sc=", sc, "\n")
             if (missing(format))
                 format <- "%a"
         }
@@ -729,6 +731,12 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         oce.debug(debug, vector.show(z, "Time range is under 2 weeks; z="))
+        if (missing(format)) format <- "%b %d"
+    } else if (d < 60 * 60 * 24 * 32 * 4) {        # under 4 months
+        t.start <- trunc(rr[1], "day")
+        t.end <- trunc(rr[2] + 86400, "day")
+        z <- seq(t.start, t.end, by="day")
+        oce.debug(debug, vector.show(z, "Time range is 4 months; z="))
         if (missing(format)) format <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
         t.start <- trunc(rr[1], "day")
