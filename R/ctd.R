@@ -564,6 +564,7 @@ plot.ctd.scan <- function(x,
 read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL, station=NULL, log.action, ...)
 {
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    ofile <- file
     filename <- NULL
     if (is.null(type)) {
         if (is.character(file)) {
@@ -571,7 +572,8 @@ read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL
             file <- file(file, "r")
             on.exit(close(file))
         }
-        if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
+        if (!inherits(file, "connection"))
+            stop("argument `file' must be a character string or connection")
         if (!isOpen(file)) {
             open(file, "r")
             on.exit(close(file))
@@ -587,8 +589,8 @@ read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL
         else stop("type must be SBE19 or WOCE, not ", type)
     }                                   # FIXME: should just use magic() here
     switch(type,
-           SBE19 = read.ctd.sbe(file, debug=debug, columns, station=station, log.action=log.action, ...),
-           WOCE  = read.ctd.woce(file, debug=debug, columns, station=station, missing.value=-999, log.action=log.action, ...)
+           SBE19 = read.ctd.sbe(ofile, debug=debug, columns, station=station, log.action=log.action, ...),
+           WOCE  = read.ctd.woce(ofile, debug=debug, columns, station=station, missing.value=-999, log.action=log.action, ...)
            )
 }
 

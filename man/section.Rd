@@ -2,12 +2,13 @@
 \docType{section}
 \alias{section}
 \title{Seawater CTD section}
-\description{A CTD section running the length of Halifax Harbour.}
+\description{A CTD section running the length of Halifax Harbour}
 \usage{data(section)}
 
 \format{The individual stations are available as
-  \code{section$station[[1]]} through to \code{section$station[[7]]},
-  each of which is an object of type \code{ctd}.}
+  \code{section$data$station[[1]]} through to
+  \code{section$data$station[[7]]}, each of which is an object of type
+  \code{ctd}.}
 
 \source{This section is based on measurements made during October of
   2003 in Halifax Harbour by students in the \emph{Introduction to
