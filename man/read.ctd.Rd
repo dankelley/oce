@@ -9,13 +9,9 @@
 \description{Read a CTD data file, producing an object of type \code{ctd}.}
 
 \usage{
-read.ctd(file, type=NULL, debug=getOption("oce.debug"),
- 	columns=NULL, station=NULL, log.action, \dots)
-read.ctd.sbe(file, debug=getOption("oce.debug"),
- 	columns=NULL, station=NULL, missing.value, log.action, \dots)
-read.ctd.woce(file, debug=getOption("oce.debug"),
- 	columns=NULL, station=NULL, missing.value=-999, log.action, \dots)
-}
+read.ctd(file, type=NULL, columns=NULL, station=NULL, debug=getOption("oce.debug"), log.action, \dots)
+read.ctd.sbe(file, columns=NULL, station=NULL, missing.value, debug=getOption("oce.debug"), log.action, \dots)
+read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, debug=getOption("oce.debug"), log.action, \dots)
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the

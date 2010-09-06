@@ -589,12 +589,12 @@ read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL
         else stop("type must be SBE19 or WOCE, not ", type)
     }                                   # FIXME: should just use magic() here
     switch(type,
-           SBE19 = read.ctd.sbe(file, debug=debug, columns, station=station, log.action=log.action, ...),
-           WOCE  = read.ctd.woce(file, debug=debug, columns, station=station, missing.value=-999, log.action=log.action, ...)
+           SBE19 = read.ctd.sbe(file, columns=columns, station=station, debug=debug, log.action=log.action, ...),
+           WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, debug=debug, log.action=log.action, ...)
            )
 }
 
-read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value=-999, log.action, ...)
+read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, debug=getOption("oce.debug"), log.action, ...)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -603,12 +603,13 @@ read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, stat
     } else {
         filename <- "filename unknown"
     }
-    if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         open(file, "r")
         on.exit(close(file))
     }
-                                        # Header
+    ## Header
     scientist <- ship <- institute <- address <- NULL
     filename.orig <- NULL
     sample.interval <- NaN
@@ -640,7 +641,7 @@ read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, stat
     if (0 < regexpr("SIO", diw)) institute <- "SIO"
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
-        if(debug) cat(paste("examining header line '",line,"'\n"));
+        oce.debug(debug, paste("examining header line '",line,"'\n"))
         header <- c(header, line);
         ## SAMPLE:
         ##      EXPOCODE = 31WTTUNES_3
@@ -693,6 +694,7 @@ read.ctd.woce <- function(file, debug=getOption("oce.debug"), columns=NULL, stat
     if (is.na(Tcol)) stop("cannot find temperature column in list", paste(var.names,","))
 
     var.names <- strsplit(line, split=",")[[1]]
+    oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "\n")
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     var.units <- strsplit(line, split=",")[[1]]
     pressure <- NULL
