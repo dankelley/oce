@@ -42,31 +42,36 @@ read.ctd.woce(file, debug=getOption("oce.debug"),
   \item{\dots}{additional arguments, passed to called routines.}
 }
 
-\details{Oceanographers use CTD (conductivity-temperature-depth)
-  instruments to measure key properties of the ocean, such as water
-  temperature, salinity, etc.  This function reads CTD datasets that
-  have been stored in common formats, and could be extended to
-  accommodate other formats if needed.
+\details{These functions read CTD datasets that have been stored in
+  common formats, and could be extended to accommodate other formats if
+  needed.  \code{read.ctd} is a dispatch function that analyzes some of
+  the file contents, and then calls either \code{read.ctd.sbe} (for
+  files created by Seabird CTD instruments) or \code{read.ctd.woce} (for
+  files stored in the exchange format used by the World Ocean
+  Circulation Experiment.)
 
-  \code{read.ctd} does a reasonable job of inferring meta-information
-  from file headers, but it still has limitations.  For
-  example, in the first file tested during development, 
-  the sampling rate was written as
-  \code{* sample rate = 1 scan every 0.5 seconds}, while 
-  in the second test file it was written 
-  \code{* Real-Time Sample Interval = 0.125 seconds}.  Similarly,
-  \code{read.ctd} can be challenged in parsing latitudes and longitudes
-  in the wide variety of ways that humans choose.  Still, such limitations
-  are not really pressing in practice, since the \code{ctd} object is made available
-  for manipulation.  If \code{read.ctd} cannot scan \code{33 and a third} as a latitude,
-  just examine the header (stored as a list in \code{object$metadata$header}),
-  and do something like \code{object$metadata$latitude <- 33 + 1/3}.
+  The funcitons attempt to infer a wide range of meta-information from
+  file headers, but variations in these headers impose some limitations
+  on the process.  For example, in the first file tested during
+  development, the sampling rate was written as \code{* sample rate = 1
+  scan every 0.5 seconds}, while the second test file had \code{*
+  Real-Time Sample Interval = 0.125 seconds}; dealing with such
+  variations is not easy.  Similarly, the functions can be challenged in
+  parsing latitudes and longitudes in the wide variety of ways that
+  humans choose (decimal versus degree-minute-second, signed versus
+  "east" and "west", or "e" and "w".).  The solution to the challenge is
+  simple: do a reasonable job with common file formats, and provide
+  users with the tools to correct (or insert) information that would
+  ideally be gleaned from the headers.  This can be done by direct
+  manipulation of the entries in the object's \code{metadata},
+  e.g. writing \code{object$metadata$latitude <- 33 + 1/3}.
 
-  It should be noted that different file types provide different meta-information.
-  For example, the WOCE exchange format binds together the institute name and the
-  initials of the chief scientist into a single string that \code{read.ctd} cannot
-  parse, so both \code{object$institute} and \code{object$scientist} are left 
-  blank for WOCE files.
+  It should be noted that different file types provide different
+  meta-information.  For example, the WOCE exchange format binds
+  together the institute name and the initials of the chief scientist
+  into a single string that \code{read.ctd} cannot parse, so both
+  \code{object$institute} and \code{object$scientist} are left blank for
+  WOCE files.
 }
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
@@ -144,6 +149,10 @@ library(oce)
 x <- read.oce(system.file("data", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
+\dontrun{
+woce <- read.oce("http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")
+plot(woce)
+}
 }
 
 \references{The Sea-Bird SBE 19plus profiler is described at
@@ -156,8 +165,9 @@ plot.TS(x) # just the TS
   instances.
 
   The WOCE-exchange format is described at
-\url{http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm}
-}
+\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
+and a sample file is at \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+
 
 \author{Dan Kelley}
 
