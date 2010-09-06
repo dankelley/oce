@@ -8,10 +8,10 @@
 \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater profile.
 }
 
-\usage{sw.N2(p, sigma.theta=NULL, \dots)}
+\usage{sw.N2(pressure, sigma.theta=NULL, \dots)}
 
 \arguments{
-  \item{p}{either pressure [dbar] (in which case \code{sigma.theta} must
+  \item{pressure}{either pressure [dbar] (in which case \code{sigma.theta} must
   be provided) \strong{or} an object of class \code{ctd} object (in which case
     \code{sigma.theta} is inferred from the object.}
   \item{sigma.theta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}

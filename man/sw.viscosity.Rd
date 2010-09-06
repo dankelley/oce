@@ -6,14 +6,15 @@
 
 \description{Compute viscosity of seawater, in \eqn{Pa\cdot s}{Pa*s}}
 
-\usage{sw.viscosity(S, t=NULL)}
+\usage{sw.viscosity(salinity, temperature=NULL)}
 
 \arguments{
-  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
-    must be provided) \strong{or} a \code{ctd} object (in which case
-    \code{S}, \code{t} and \code{p} are determined from the object, and
-    must not be provided in the argument list).}
-  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{salinity}{either salinity [PSU] (in which case
+    \code{temperature} and \code{pressure} must be provided) \strong{or}
+    a \code{ctd} object (in which case \code{salinity},
+    \code{temperature} and \code{pressure} are determined from the
+    object, and must not be provided in the argument list).}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,

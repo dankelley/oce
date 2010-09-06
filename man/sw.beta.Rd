@@ -8,16 +8,17 @@
   algorithm. NOTE: this conflicts with base::beta, so be sure to prefix
   as sw.beta().}
 
-\usage{sw.beta(S, t, p, is.theta=FALSE)}
+\usage{sw.beta(salinity, temperature, pressure, is.theta=FALSE)}
 
 \arguments{
-  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
-    must be provided) \strong{or} a \code{ctd} object (in which case
-    \code{S}, \code{t} and \code{p} are determined from the object, and
-    must not be provided in the argument list).}
-  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{pressure [dbar]}
-  \item{is.theta}{Set TRUE if t is theta or FALSE if t is in-situ}
+  \item{salinity}{either salinity [PSU] (in which case
+    \code{temperature} and \code{pressure} must be provided) \strong{or}
+    a \code{ctd} object (in which case \code{salinity},
+    \code{temperature} and \code{pressure} are determined from the
+    object, and must not be provided in the argument list).}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{pressure}{seawater pressure [dbar]}
+  \item{is.theta}{Set TRUE if temperature is theta or FALSE if temperature is in-situ}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,

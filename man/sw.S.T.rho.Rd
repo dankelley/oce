@@ -7,12 +7,12 @@
 \description{Compute \emph{in-situ} salinity, given temperature,
   density, and pressure.}
 
-\usage{sw.S.T.rho(t, rho, p)}
+\usage{sw.S.T.rho(temperature, density, pressure)}
 
 \arguments{
-  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{rho}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
-  \item{p}{\emph{in-situ} pressure [dbar]}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{density}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
+  \item{pressure}{\emph{in-situ} pressure [dbar]}
 }
 
 \details{Finds the salinity that yields the given density, with the

@@ -6,15 +6,16 @@
 
 \description{Compute \eqn{\theta}{theta}, the potential temperature of seawater. }
 
-\usage{sw.theta(S, t=NULL, p=NULL, pref=0, method=c("UNESCO1983","Bryden1973"))}
+\usage{sw.theta(salinity, temperature=NULL, pressure=NULL, pref=0, method=c("UNESCO1983","Bryden1973"))}
 
 \arguments{
-  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
-    must be provided) \strong{or} a \code{ctd} object (in which case
-    \code{S}, \code{t} and \code{p} are determined from the object, and
-    must not be provided in the argument list).}
-  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{pressure [dbar]}
+  \item{salinity}{either salinity [PSU] (in which case
+    \code{temperature} and \code{pressure} must be provided) \strong{or}
+    a \code{ctd} object (in which case \code{salinity},
+    \code{temperature} and \code{pressure} are determined from the
+    object, and must not be provided in the argument list).}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{pressure}{pressure [dbar]}
   \item{pref}{reference pressure [dbar]}
   \item{method}{algorithm to be used (see details)}
 }

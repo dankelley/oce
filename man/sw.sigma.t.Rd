@@ -7,15 +7,16 @@
 \description{Compute \eqn{\sigma_t}{sigma-t}, a quasi-potential density
   of seawater, minus 1000 kg/m\eqn{^3}{^3}.}
 
-\usage{sw.sigma.t(S, t=NULL, p=NULL)}
+\usage{sw.sigma.t(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
-  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
-    must be provided) \strong{or} a \code{ctd} object (in which case
-    \code{S}, \code{t} and \code{p} are determined from the object, and
+  \item{salinity}{either salinity [PSU] (in which case
+    \code{temperature} and \code{pressure} must be provided) \strong{or}
+    a \code{ctd} object (in which case \code{salinity},
+    \code{temperature} and \code{pressure} are determined from the object, and
     must not be provided in the argument list).}
-  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{pressure [dbar]}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{pressure}{pressure [dbar]}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,

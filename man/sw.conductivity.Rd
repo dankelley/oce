@@ -6,13 +6,13 @@
 
 \description{Compute seawater conductivity, in \eqn{W m^{-1\circ}C^{-1}}{W/(m*degC)}}
 
-\usage{sw.conductivity(S, t=NULL, p=NULL)}
+\usage{sw.conductivity(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
-  \item{S}{salinity [PSU], or a \code{ctd} object, in which case
-    \code{t} and \code{p} will be ignored.}
-  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{pressure [dbar]}
+  \item{salinity}{salinity [PSU], or a \code{ctd} object, in which case
+    \code{temperature} and \code{pressure} will be ignored.}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{pressure}{pressure [dbar]}
 }
 
 \details{If the first item is \code{ctd} object, then the salinity,

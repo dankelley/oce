@@ -8,15 +8,15 @@
 \description{Compute depth from pressure and latitude.}
 
 \usage{
-sw.depth(p, lat=45, degrees=TRUE)
-sw.z(p, lat=45, degrees=TRUE)
+sw.depth(pressure, latitude=45, degrees=TRUE)
+sw.z(pressure, latitude=45, degrees=TRUE)
 }
 
 \arguments{
-  \item{p}{either pressure [dbar], in which case \code{lat} must also be
+  \item{pressure}{either pressure [dbar], in which case \code{lat} must also be
     given, or a \code{ctd} object, in which case \code{lat} will be
     inferred from the object.}
-  \item{lat}{Latitude in \eqn{^\circ}{deg}N or radians north of the equator.}
+  \item{latitude}{Latitude in \eqn{^\circ}{deg}N or radians north of the equator.}
   \item{degrees}{Flag indicating whether degrees are used for latitude;
     if set to \code{FALSE}, radians are used.}
 }
