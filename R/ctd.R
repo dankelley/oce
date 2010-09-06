@@ -563,7 +563,7 @@ plot.ctd.scan <- function(x,
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, debug=getOption("oce.debug"), columns=NULL, station=NULL, log.action, ...)
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, debug=getOption("oce.debug"), log.action, ...)
 {
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     filename <- NULL
@@ -776,7 +776,7 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
     x
 }
 
-read.ctd.sbe <- function(file, debug=getOption("oce.debug"), columns=NULL, station=NULL, missing.value, log.action, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, debug=getOption("oce.debug"), log.action, ...)
 {
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
