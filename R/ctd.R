@@ -563,7 +563,7 @@ plot.ctd.scan <- function(x,
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, debug=getOption("oce.debug"), log.action, ...)
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=TRUE, debug=getOption("oce.debug"), log.action, ...)
 {
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     filename <- NULL
@@ -589,12 +589,15 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, debug=getOptio
         else stop("type must be SBE19 or WOCE, not ", type)
     }                                   # FIXME: should just use magic() here
     switch(type,
-           SBE19 = read.ctd.sbe(file, columns=columns, station=station, debug=debug, log.action=log.action, ...),
-           WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, debug=debug, log.action=log.action, ...)
+           SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
+           debug=debug, log.action=log.action, ...),
+           WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
+           debug=debug, log.action=log.action, ...)
            )
 }
 
-read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, debug=getOption("oce.debug"), log.action, ...)
+read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=TRUE,
+                          debug=getOption("oce.debug"), log.action, ...)
 {
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -684,6 +687,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     }
     ##CTDPRS,CTDPRS_FLAG_W,CTDTMP,CTDTMP_FLAG_W,CTDSAL,CTDSAL_FLAG_W,CTDOXY,CTDOXY_FLAG_W,
     var.names <- strsplit(line, split=",")[[1]]
+    oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "\n")
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     var.units <- strsplit(line, split=",")[[1]]
     pcol <- pmatch("CTDPRS", var.names)
@@ -692,7 +696,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     if (is.na(Scol)) stop("cannot find salinity column in list", paste(var.names,","))
     Tcol <- pmatch("CTDTMP", var.names)
     if (is.na(Tcol)) stop("cannot find temperature column in list", paste(var.names,","))
-
+    Ocol <- pmatch("CTDOXY", var.names)
+    oce.debug(debug, "pcol=", pcol, "Scol=", Scol, "Tcol=", Tcol, "Ocol=", Ocol, "\n")
     var.names <- strsplit(line, split=",")[[1]]
     oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "\n")
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
@@ -700,19 +705,41 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     pressure <- NULL
     temperature <- NULL
     salinity <- NULL
+    oxygen <- NULL
+    b <- 1
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        if (0 < (r<-regexpr("END_DATA", line))) break
+        if (0 < (r<-regexpr("END_DATA", line)))
+            break
         items <- strsplit(line, ",")[[1]]
         pressure    <- c(pressure,    as.numeric(items[pcol]))
         salinity    <- c(salinity,    as.numeric(items[Scol]))
         temperature <- c(temperature, as.numeric(items[Tcol]))
+        oxygen <- c(oxygen, as.numeric(items[Ocol]))
+        if (monitor) {
+            cat(".")
+            if (!(b %% 50))
+                cat(b, "\n")
+            b <- b + 1
+        }
     }
+    if (monitor)
+        cat("\nRead", b-1, "lines of data\n")
     pressure[pressure == missing.value] <- NA
     salinity[salinity == missing.value] <- NA
     temperature[temperature == missing.value] <- NA
     sigma.theta <- sw.sigma.theta(salinity, temperature, pressure)
+
     data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
+    names <- c("pressure", "salinity", "temperature", "sigma.theta")
+    labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta")
+    if (length(oxygen) > 0) {
+        oxygen[oxygen == missing.value] <- NA
+        data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta, oxygen=oxygen)
+        data <- transform(data, oyxgen=oxygen)
+        names <- c(names, "oxygen")
+        labels <- c(labels, "Oxygen")
+    }
     metadata <- list(header=header,
                      filename=filename, # provided to this routine
                      filename.orig=filename.orig, # from instrument
@@ -730,8 +757,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                      recovery=recovery,
                      water.depth=water.depth,
                      sample.interval=sample.interval,
-                     names=c("pressure", "salinity", "temperature", "sigma.theta"),
-                     labels=c("Pressure", "Salinity", "Temperature", "Sigma Theta"),
+                     names=names,
+                     labels=labels,
                      src=filename)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
@@ -776,7 +803,7 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
     x
 }
 
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, debug=getOption("oce.debug"), log.action, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=TRUE, debug=getOption("oce.debug"), log.action, ...)
 {
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.

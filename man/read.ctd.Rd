@@ -9,11 +9,11 @@
 \description{Read a CTD data file, producing an object of type \code{ctd}.}
 
 \usage{
-read.ctd(file, type=NULL, columns=NULL, station=NULL, 
+read.ctd(file, type=NULL, columns=NULL, station=NULL, monitor=TRUE,
          debug=getOption("oce.debug"), log.action, \dots)
-read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
+read.ctd.sbe(file, columns=NULL, station=NULL, missing.value, monitor=TRUE,
              debug=getOption("oce.debug"), log.action, \dots)
-read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
+read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, monitor=TRUE,
               debug=getOption("oce.debug"), log.action, \dots)
 }
 
@@ -36,6 +36,9 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
     the name automatically, or if another name is preferred.)}
   \item{missing.value}{optional missing-value flag; data matching this value will
     be set to \code{NA} upon reading.}
+  \item{monitor}{boolean, set to \code{TRUE} to provide an indication
+    of line of data read.  (This may be useful in debugging problems in
+    reading files that are misconfigured.)}
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
