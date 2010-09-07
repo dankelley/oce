@@ -184,7 +184,7 @@ oce.plot.ts <- function(x,
     }
     box()
     axis(2, cex.axis=cex.axis)
-    axis(4, labels=FALSE, ...)
+    axis(4, labels=FALSE)
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
@@ -837,6 +837,6 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
-    axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
+    axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
     oce.debug(debug, "\b\b}\n")
 }
