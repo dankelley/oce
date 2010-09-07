@@ -110,18 +110,21 @@ produces different sorts of plots for different sorts of \verb@x@ objects.
 \index{calculation!seawater properties}
 \index{seawater properties, calculations of}
 
-The \verb@oce@ package provides many functions for dealing with seawater
-properties. Perhaps the most used is \verb@sw.rho(S,T,p)@, which computes
-seawater density $\rho=\rho(S, T, p)$, where $S$ (PSU) is salinity, $T$
-($^\circ$C) is \emph{in-situ} temperature, and $p$ (dbar) is seawater pressure,
-expressed as an increment over standard atmospheric pressure.  (This
-  and similar functions starts with the letters \verb@sw.@ to designate that
-  they relate to seawater properties; a future version of \verb@oce@ may  provide
-  air properties, with functions names starting with \verb@air.@) The result is a
-number in the order of $1000$\,kg/m$^3$.  For many purposes, Oceanographers
-prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$, provided with
-\verb@sw.sigma(S,t,p)@, or its adiabatic cousin $\sigma_\theta$, provided with
-\verb@sw.sigma.theta(S,t,p)@.
+The \verb@oce@ package provides many functions for dealing with
+seawater properties. Perhaps the most used is \verb@sw.rho(S,T,p)@,
+which computes seawater density $\rho=\rho(salinity, temperature,
+pressure)$, where salinity follows the practical salinity scale,
+$temperature$ is \emph{in-situ} temperature in $^\circ$C, and
+$pressure$ is seawater pressure, i.e. the excess over atmospheric
+pressure, in dbar.  (This and similar functions starts with the
+letters \verb@sw.@ to designate that they relate to seawater
+properties; a future version of \verb@oce@ may provide air properties,
+with functions names starting with \verb@air.@) The result is a number
+in the order of $1000$\,kg/m$^3$.  For many purposes, Oceanographers
+prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$,
+provided with \verb@sw.sigma(salinity,temperature,pressure)@, or its
+adiabatic cousin $\sigma_\theta$, provided with
+\verb@sw.sigma.theta(salinity,temperature,pressure)@.
 
 \looseness=1
 \index{dynamic height}
@@ -130,9 +133,9 @@ may be added as they come into use in the literature.
 A partial list of seawater functions is as follows:
 \verb@sw.dynamic.height@ (dynamic height),
 \verb@sw.N2@ (buoyancy frequency),
-\verb@sw.S.C.T.p@ (salinity $S$ from conductivity $C$, $T$ and $p$),
-\verb@sw.S.T.rho@ ($S$ from $T$ and $\rho$),
-\verb@sw.T.S.rho@ ($T$ from $S$ and $\rho$),
+\verb@sw.S.C.T.p@ (salinity from conductivity, temperature and pressure),
+\verb@sw.S.T.rho@ (salinity from temperature and density),
+\verb@sw.T.S.rho@ (temperature from salinity and density),
 \verb@sw.T.freeze@ (freezing temperature),
 \verb@sw.alpha@ (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
 \verb@sw.beta@ (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
@@ -201,7 +204,7 @@ data, such as trimming CTD profiles with \verb@ctd.trim()@, but of course you
 may do that sort of work by acting on the data directly, if necessary.  Just
 make sure you realize that the metadata will not be altered if you do that.
 Also, it is a good idea to add log entries to any objects that you change, by
-using the \verb@processing.log.append()@ function.  (You can see an example of
+using the \verb@processing.log.add()@ function.  (You can see an example of
 this in action with \verb@?section@.)
 
 \begin{figure}
@@ -660,10 +663,10 @@ to check, build, or install the package.
 \workedanswer{1}{Seawater properties}
 <<>>=
 library(oce)
-sw.rho(S=34, t=10, p=100)
-sw.theta(S=34, t=10, p=100)
-sw.rho(S=34, t=sw.theta(S=34, t=10, p=100), p=0)
-sw.rho(S=34, t=sw.theta(S=34, t=10, p=100, pref=200), p=200)
+sw.rho(34, 10, 100)
+sw.theta(34, 10, 100)
+sw.rho(34, sw.theta(34, 10, 100), 0)
+sw.rho(34, sw.theta(34, 10, 100, 200), 200)
 plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 

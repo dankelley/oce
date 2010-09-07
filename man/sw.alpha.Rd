@@ -8,15 +8,16 @@
   coefficient, as the product of \eqn{\alpha/\beta}{alpha/beta} and
   \eqn{\beta}{beta}, each calculated from McDougall's (1987) algorithm.}
 
-\usage{sw.alpha(S, t=NULL, p=NULL, is.theta=FALSE)}
+\usage{sw.alpha(salinity, temperature=NULL, pressure=NULL, is.theta=FALSE)}
 
 \arguments{
-  \item{S}{either salinity [PSU] (in which case \code{t} and \code{p}
-    must be provided) \strong{or} a \code{ctd} object (in which case
-    \code{S}, \code{t} and \code{p} are determined from the object, and
-    must not be provided in the argument list).}
-  \item{t}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
-  \item{p}{pressure [dbar]}
+  \item{salinity}{either salinity [PSU] (in which case
+    \code{temperature} and \code{pressure} must be provided) \strong{or}
+    a \code{ctd} object (in which case \code{salinity},
+    \code{temperature} and \code{pressure} are determined from the
+    object, and must not be provided in the argument list).}
+  \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
+  \item{pressure}{pressure [dbar]}
   \item{is.theta}{Set TRUE if t is theta or FALSE if t is in-situ}
 }
 

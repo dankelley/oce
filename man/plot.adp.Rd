@@ -78,7 +78,9 @@
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
+
   \item{\dots}{optional arguments passed to plotting functions.}
+
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADP
@@ -86,145 +88,135 @@
 
   \itemize{ 
 
-    \item \code{which=1} yield a distance-time image plot of a
-    velocity component.  If \code{x} is in \code{beam} coordinates
-    (signalled by \code{x$metadata$oce.coordinate=="beam"}), this will
-    be the first beam.  If \code{x} is in xyz coordinates (sometimes
-    called frame coordinates, or ship coordinates), it will be the
-    velocity component to the right of 
-    the frame or ship (labelled \code{u}).  If \code{x} is in
-    \code{"enu"} coordinates, the image will show the the eastward
-    component (labelled \code{east}).  If \code{x} is in
-    \code{"other"} coordinates, it will be component corresponding to
-    east, after rotation (labelled \code{u\'}).  Note that the
-    coordinate is set by \code{\link{read.adp}}, or by
-    \code{\link{adp.beam2xyz}},
-    \code{\link{adp.xyz2enu}},
-    or
-    \code{\link{adp.enu2other}}.
+    \item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
+      distance-time image plot of a velocity component.  If \code{x} is
+      in \code{beam} coordinates (signalled by
+      \code{x$metadata$oce.coordinate=="beam"}), this will be the beam
+      velocity, labelled \code{b[1]} etc.  If \code{x} is in xyz
+      coordinates (sometimes called frame coordinates, or ship
+      coordinates), it will be the velocity component to the right of
+      the frame or ship (labelled \code{u} etc).  Finally, if \code{x}
+      is in \code{"enu"} coordinates, the image will show the the
+      eastward component (labelled \code{east}).  If \code{x} is in
+      \code{"other"} coordinates, it will be component corresponding to
+      east, after rotation (labelled \code{u\'}).  Note that the
+      coordinate is set by \code{\link{read.adp}}, or by
+      \code{\link{adp.beam2xyz}}, \code{\link{adp.xyz2enu}}, or
+      \code{\link{adp.enu2other}}.
     
-    \item \code{which=2} is as for \code{which=1}, but for the second
-    beam, forward velocity component, northward velocity component, or
-    rotated north velocity component, depending on the coordinates of
-    \code{x}.
-    
-    \item \code{which=3} is as for \code{which=1}, but for third beam,
-    up-frame velocity component, upward velocity component, or rotated
-    upward velocity component.
-    
-    \item \code{which=4} is as for \code{which=1}, but for the fourth
-    beam for \code{beam} coordinates, or for the estimate velocity
-    error, for all other coordinate systems.  (This is ignored unless
-    there are 4 beams.)
+    \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
+      distance-time images of backscatter intensity of the respective beams.
 
-    \item \code{which=5:7} (or \code{5:8} for 4-beam data) yields
-    distance-time images of backscatter intensity of beams 1 through 3
-    (or 4), respectively.
+    \item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield
+      distance-time images of signal quality for the respective beams.
 
-    \item \code{which=9:11} (or \code{9:12} for 4-beam data) yields
-    distance-time images of signal quality for the respective beams.
+    \item \code{which=13} (or \code{which="salinity"}) yields a
+      time-series plot of salinity.
 
-    \item \code{which=13} yields a time-series plot of salinity.
+    \item \code{which=14} (or \code{which="temperature"}) yields a
+      time-series plot of temperature.
 
-    \item \code{which=14} yields a time-series plot of temperature.
+    \item \code{which=15} (or \code{which="pressure"}) yields a
+      time-series plot of pressure.
 
-    \item \code{which=15} yields a time-series plot of pressure.
+    \item \code{which=16} (or \code{which="heading"}) yields a
+      time-series plot of instrument heading.
 
-    \item \code{which=16} yields a time-series plot of instrument heading.
+    \item \code{which=17} (or \code{which="pitch"}) yields a time-series
+      plot of instrument pitch.
 
-    \item \code{which=17} yields a time-series plot of instrument pitch.
+    \item \code{which=18} (or \code{which="roll"}) yields a time-series
+      plot of instrument roll.
 
-    \item \code{which=18} yields a time-series plot of instrument roll.
-
-    \item \code{which=19} yields a time-series plot of
-    distance-averaged velocity for beam 1, rightward velocity,
-    eastward velocity, or rotated-eastward velocity, depending on the
-    coordinate system.
+    \item \code{which=19} yields a time-series plot of distance-averaged
+      velocity for beam 1, rightward velocity, eastward velocity, or
+      rotated-eastward velocity, depending on the coordinate system.
 
     \item \code{which=20} yields a time-series of distance-averaged
-    velocity for beam 2, foreward velocity, northward velocity, or
-    rotated-northward velocity, depending on the coordinate system.
+      velocity for beam 2, foreward velocity, northward velocity, or
+      rotated-northward velocity, depending on the coordinate system.
 
     \item \code{which=21} yields a time-series of distance-averaged
-    velocity for beam 3, up-frame velocity, upward velocity, or
-    rotated-upward velocity, depending on the coordinate system.
+      velocity for beam 3, up-frame velocity, upward velocity, or
+      rotated-upward velocity, depending on the coordinate system.
 
     \item \code{which=22} yields a time-series of distance-averaged
-    velocity for beam 4, for \code{beam} coordiantes, or velocity
-    estimate, for other coordinates.  (This is ignored for 3-beam
-    data.)
+      velocity for beam 4, for \code{beam} coordiantes, or velocity
+      estimate, for other coordinates.  (This is ignored for 3-beam
+      data.)
 
     \item \code{which=23} yields a progressive-vector diagram in the
-    horizontal plane, plotted with \code{asp=1}.  Normally, the
-    depth-averaged velocity components are used, but if the
-    \code{control} list contains an item named \code{bin}, then the
-    depth bin will be used (with an error resulting if the bin is out
-    of range).
+      horizontal plane, plotted with \code{asp=1}.  Normally, the
+      depth-averaged velocity components are used, but if the
+      \code{control} list contains an item named \code{bin}, then the
+      depth bin will be used (with an error resulting if the bin is out
+      of range).
 
     \item \code{which=24} yields a time-averaged profile of the first
-    component of velocity (see \code{which=19} for the meaning
-    of the component, in various coordinate systems).
+      component of velocity (see \code{which=19} for the meaning of the
+      component, in various coordinate systems).
 
     \item \code{which=25} as for 24, but the second component.
 
     \item \code{which=26} as for 24, but the third component.
 
-    \item \code{which=27} as for 24, but the fourth component (if that makes sense, for the given instrument).
+    \item \code{which=27} as for 24, but the fourth component (if that
+      makes sense, for the given instrument).
 
-    \item \code{which=28} yields a current diagram in the
-    horizontal plane, plotted with \code{asp=1}.  Normally, the
-    depth-averaged velocity components are used, but if the
-    \code{control} list contains an item named \code{bin}, then the
-    depth bin will be used (with an error resulting if the bin is out of
-    range).
+    \item \code{which=28} or \code{"uv"} yields velocity plot in the
+      horizontal plane, i.e. u[2] versus u[1].  If the number of data
+      points is small, a scattergraph is used, but if it is large,
+      \code{\link{smoothScatter}} is used.
 
-    \item \code{which=28.1} is as for 28, except that an ellipse is
-    drawn, based on the eigenvectors of the covarance matrix between the
-    u and v velocity components.}
+    \item \code{which=28.1} or \code{"uv+ellipse"} as the \code{"uv"}
+      case, but with an added indication of the tidal ellipse,
+      calculated from the eigen vectors of the covariance matrix.
 
-  The color scheme for image plots (\code{which} in 1:12) is provided
-  by the \code{col} argument, which is passed to \code{\link{image}} to
-  do the actual plotting.  See \dQuote{Examples} for some comparisons.
+    }
 
-  A common quick-look plot to assess mooring movement is to use
-  \code{which=15:18} (pressure being included to signal the tide, and
-  tidal currents may dislodge a mooring or cause it to settle).
+    The color scheme for image plots (\code{which} in 1:12) is provided
+    by the \code{col} argument, which is passed to \code{\link{image}}
+    to do the actual plotting.  See \dQuote{Examples} for some
+    comparisons.
 
-  By default, \code{plot.adp} uses a \code{zlim} value for the
-  \code{\link{image}} that is constructed to contain all the data, but
-  to be symmetric about zero.  This is done on a per-panel basis, and
-  the scale is plotted at the top-right corner, along with the name of
-  the variable being plotted. You may also supply \code{zlim} as one of
-  the \dots arguments, but be aware that a reasonable limit on
-  horizontal velocity components is unlikely to be of much use for the
-  vertical component.
+    A common quick-look plot to assess mooring movement is to use
+    \code{which=15:18} (pressure being included to signal the tide, and
+    tidal currents may dislodge a mooring or cause it to settle).
 
-  A good first step in the analysis of measurements made from a moored
-  device (stored in \code{d}, say) is to do \code{plot(d, which=14:18)}.
-  This shows time series of water properties and sensor orientation,
-  which is helpful in deciding which data to trim at the start and end
-  of the deployment, because they were measured on the dock or on the
-  ship as it travelled to the mooring site.
+    By default, \code{plot.adp} uses a \code{zlim} value for the
+    \code{\link{image}} that is constructed to contain all the data, but
+    to be symmetric about zero.  This is done on a per-panel basis, and
+    the scale is plotted at the top-right corner, along with the name of
+    the variable being plotted. You may also supply \code{zlim} as one
+    of the \dots arguments, but be aware that a reasonable limit on
+    horizontal velocity components is unlikely to be of much use for the
+    vertical component.
+
+    A good first step in the analysis of measurements made from a moored
+    device (stored in \code{d}, say) is to do \code{plot(d,
+    which=14:18)}.  This shows time series of water properties and
+    sensor orientation, which is helpful in deciding which data to trim
+    at the start and end of the deployment, because they were measured
+    on the dock or on the ship as it travelled to the mooring site.
 }
 
 \seealso{The data are normally read with \code{\link{read.oce}}, which
-is usually able to detect the type of instrument.  If that fails, the user
-should try \code{\link{read.adp.rdi}} (for RDI files) 
-or \code{\link{read.adp.nortek}} 
-(for NorTek files).  These files may be in beam coordinates, 
-in xyz coordinates, or in enu coordinates.  It is common in a scientific
-setting to use beam coordinates, and so this package offers functions
-\code{\link{adp.beam2xyz}} and 
-\code{\link{adp.xyz2enu}} to take the intermediate steps, and
-\code{\link{adp.enu2other}} to go further, e.g. to rotate into
-a coordinate system aligned with the shoreline or with an isobath.
+  is usually able to detect the type of instrument.  If that fails, the
+  user should try \code{\link{read.adp.rdi}} (for RDI files) or
+  \code{\link{read.adp.nortek}} (for NorTek files).  These files may be
+  in beam coordinates, in xyz coordinates, or in enu coordinates.  It is
+  common in a scientific setting to use beam coordinates, and so this
+  package offers functions \code{\link{adp.beam2xyz}} and
+  \code{\link{adp.xyz2enu}} to take the intermediate steps, and
+  \code{\link{adp.enu2other}} to go further, e.g. to rotate into a
+  coordinate system aligned with the shoreline or with an isobath.
 
-The beam stength may be corrected for R-squared spreading with
-\code{\link{adp.beam.attenuate}}.  
+  The beam stength may be corrected for R-squared spreading with
+  \code{\link{adp.beam.attenuate}}.
 
-Summaries of ADP data are provided by \code{\link{summary.adp}}.
+  Summaries of ADP data are provided by \code{\link{summary.adp}}.
 
-ADP data may be plotted with \code{\link{plot.adp}}.
+  ADP data may be plotted with \code{\link{plot.adp}}.
 }
 
 \examples{

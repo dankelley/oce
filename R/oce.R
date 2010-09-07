@@ -8,15 +8,16 @@ use.heading <- function(b, g, add=0)
         stop("'g' does not have any heading data (in g$data$ts$heading)")
     if (!"time" %in% names(g$data$ts))
         stop("'g' does not have any time data (in g$data$ts$time)")
-    rval <- b
+    res <- b
     t0 <- as.numeric(g$data$ts$time[1])
     if (is.na(t0))
         stop("need first element of from$data$ts$time to be non-NA")
     b.t <- as.numeric(b$data$ts$time) - t0
     g.t <- as.numeric(g$data$ts$time) - t0
-    rval$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add * pi / 180
-    processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    res$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add * pi / 180
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), ...)
@@ -151,10 +152,14 @@ oce.plot.ts <- function(x,
                         debug=getOption("oce.debug"),
                         ...)
 {
-    oce.debug(debug, "\b\boce.plot.ts() {\n")
+    debug <- min(debug, 4)
+    oce.debug(debug, "\b\boce.plot.ts(...,debug=", debug, ",...) {\n",sep="")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
-    par(mgp=mgp, mar=mar, cex=cex)
+    if (length(cex) == 1)
+        par(mgp=mgp, mar=mar, cex=cex)
+    else
+        par(mgp=mgp, mar=mar)
     args <- list(...)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
@@ -179,7 +184,7 @@ oce.plot.ts <- function(x,
     }
     box()
     axis(2, cex.axis=cex.axis)
-    axis(4, labels=FALSE, ...)
+    axis(4, labels=FALSE)
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
@@ -238,19 +243,46 @@ oce.as.POSIXlt <- function (x, tz = "")
     .Internal(as.POSIXlt(x, tz))
 }
 
-oce.edit <- function(x, item, value, action, reason="not specified", person="not specified")
+oce.edit <- function(x, item, value, action, reason="", person="",
+                     debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    oce.debug(debug, "\b\boce.edit() {\n")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
     if (!missing(item)) {
-        if (missing(value)) stop("must supply a 'value' for this 'item'")
-        if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
-        x$metadata[item] <- value
+        if (missing(value))
+            stop("must supply a 'value' for this 'item'")
+        ##if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
+        if (inherits(x, "adv")) {
+            hpr <- 0 < length(grep("heading|pitch|roll", item))
+            if (hpr) {
+                if (inherits(x, "nortek")) {
+                    x$data$ts.slow[[item]] <- value
+                } else {
+                    x$data$ts[[item]] <- value
+                }
+            } else {
+                if (item %in% names(x$metadata))
+                    x$metadata[item] <- value
+                else
+                    stop("do not know how to handle this item")
+            }
+        } else {
+            if (item %in% names(x$metadata))
+                x$metadata[item] <- value
+            else
+                stop("do not know how to handle this item")
+        }
     } else if (!missing(action)) {
+        warning("the 'action' method may not work -- this needs testing!")
         eval(parse(text=action))        # FIXME: should check if it worked
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    processing.log.append(x, paste(deparse(match.call()), sep="", collapse=""))
+    x$processing.log <- processing.log.add(x$processing.log,
+                                           paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b}\n")
+    x
 }
 
 oce.write.table <- function (x, file="", ...)
@@ -267,7 +299,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x$metadata$number.of.profiles)[indices]
-            print(keep)
+            oce.debug(debug, vector.show(keep, "keeping indices"))
             stop("this version of oce cannot subset adp data by index")
         } else if (!missing(subset)) {
             subset.string <- deparse(substitute(subset))
@@ -329,14 +361,16 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
             }
         }
-        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+        rval$processing.log <- processing.log.add(rval$processing.log,
+                                                  paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "pt")) {
         r <- eval(substitute(subset), x$data$ts, parent.frame())
         r <- r & !is.na(r)
         rval <- x
         for (name in names(rval$data$ts))
             rval$data$ts[[name]] <- x$data$ts[[name]][r]
-        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
+        rval$processing.log <- processing.log.add(rval$processing.log,
+                                                  paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "adv")) {
         if (!is.null(indices))
             stop("cannot specify 'indices' for adv objects (not coded yet)")
@@ -347,7 +381,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         if (length(grep("time", subset.string))) {
             oce.debug(debug, "subsetting an adp by time\n")
             keep <- eval(substitute(subset), x$data$ts, parent.frame())
-            oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
+            oce.debug(debug, vector.show(keep, "keeping bins:"))
             if (sum(keep) < 2)
                 stop("must keep at least 2 profiles")
             rval <- x
@@ -357,6 +391,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             for (name in names(x$data$ma)) {
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
+            if ("ts.slow" %in% names(x$data)) {
+                oce.debug(debug, "have ts.slow\n")
+                keep <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+                for (name in names(x$data$ts.slow)) {
+                    rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep]
+                }
+            }
         } else {
             stop("only 'time' is permitted for subsetting")
         }
@@ -365,8 +406,9 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         r <- r & !is.na(r)
         rval <- x
         rval$data <- x$data[r,]
-        rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
     }
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -605,7 +647,7 @@ oce.colors.palette <- function(n, which=1)
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), main="", debug=getOption("oce.debug"), ...)
 {
-    oce.debug(debug, "\b\boce.axis.POSIXct() {\n")
+    oce.debug(debug, "\b\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
     oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug,vector.show(x, "x"))
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
@@ -654,6 +696,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
                 format <- "%a"
         } else {
             sc <- 60 * 60 * 24
+            oce.debug(debug, "more than a month time range; sc=", sc, "\n")
             if (missing(format))
                 format <- "%a"
         }
@@ -716,6 +759,12 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         oce.debug(debug, vector.show(z, "Time range is under 2 weeks; z="))
+        if (missing(format)) format <- "%b %d"
+    } else if (d < 60 * 60 * 24 * 32 * 4) {        # under 4 months
+        t.start <- trunc(rr[1], "day")
+        t.end <- trunc(rr[2] + 86400, "day")
+        z <- seq(t.start, t.end, by="day")
+        oce.debug(debug, vector.show(z, "Time range is 4 months; z="))
         if (missing(format)) format <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
         t.start <- trunc(rr[1], "day")
@@ -788,6 +837,6 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
-    axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
+    axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
     oce.debug(debug, "\b\b}\n")
 }

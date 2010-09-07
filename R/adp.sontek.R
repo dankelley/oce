@@ -277,8 +277,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                  pressure=pressure,
                  heading=heading, pitch=pitch, roll=roll))
     beam.angle <- if (slant.angle == "?") 25 else slant.angle
-    metadata <- list(filename=filename,
-                     instrument.type="sontek",
+    metadata <- list(manufacturer="sontek",
+                     filename=filename,
                      serial.number=if (exists('serial.number')) serial.number else "?",
                      measurement.start=measurement.start,
                      measurement.end=measurement.end,

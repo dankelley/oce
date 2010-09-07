@@ -339,6 +339,7 @@ pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oce.deb
     for (name in names(x$data$ts))
         res$data$ts[[name]] <- subset(x$data$ts[[name]], keep)
     res$data$ts$pressure <- res$data$ts$pressure - 10.1325 # remove avg sealevel pressure
-    res <- processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
     res
 }

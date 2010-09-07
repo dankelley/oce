@@ -37,7 +37,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
         warning("program version ", program.version, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
     if (!have.actual.data)
-        return(list(instrument.type="teledyne rdi",
+        return(list(instrument.type="adcp",
                     program.version.major=program.version.major,
                     program.version.minor=program.version.minor,
                     program.version=program.version,
@@ -182,7 +182,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## Skipping a lot ...
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
 
-    list(instrument.type="teledyne rdi",
+    list(instrument.type="adcp",
          program.version.major=program.version.major,
          program.version.minor=program.version.minor,
          program.version=program.version,
@@ -429,7 +429,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             if (length(bad.profiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fill.gap(as.numeric(time) - as.numeric(t0)) + t0
-                warning("Discarded ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), sep=", "), "\n")
+                warning("Interpolated across ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), sep=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
             }
 
             profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
@@ -535,6 +535,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         metadata$filename <- filename
         data <- NULL
     }
+    metadata$manufacturer <- "teledyne rdi"
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)

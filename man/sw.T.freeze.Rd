@@ -6,12 +6,12 @@
 
 \description{Compute freezing temperature of seawater.}
 
-\usage{sw.T.freeze(S, p=NULL)}
+\usage{sw.T.freeze(salinity, pressure=NULL)}
 
 \arguments{
-  \item{S}{either salinity [PSU] or a \code{ctd} object from which
+  \item{salinity}{either salinity [PSU] or a \code{ctd} object from which
   salinity will be inferred.}
-  \item{p}{pressure [dbar]}
+  \item{pressure}{seawater pressure [dbar]}
 }
 
 \details{In the first form, the argument is a \code{ctd} object, from

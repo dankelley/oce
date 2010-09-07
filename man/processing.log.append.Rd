@@ -2,9 +2,9 @@
 
 \alias{processing.log.append}
 
-\title{Append item to the processing log of object}
+\title{Copy an object, but with an updated processing log.}
 
-\description{Appends a time-stamped item to the processing log of an object.}
+\description{Append an item to a processing log}
 
 \usage{processing.log.append(x, action="")}
 
@@ -13,18 +13,15 @@
   \item{action}{a character string describing the action.}
 }
 
-\details{This is used to add a time-stamped item to the processing log
-  of the object.}
+\details{This returns an object with an updated processing log.}
 
-\value{The object, with a new entry in its log.}
+\value{A copy of the object, but with the processing log containing the
+  new entry.}
 
 \examples{
-\dontrun{
-# This (and another typographical correction) was done in creating data(section).
 data(ctd)
 ctd$metadata$latitude <- ctd$metadata$latitude + 1
-ctd <- processing.log.append(ctd, "DEK: move station a degree north")
-}
+ctd <- processing.log.append(ctd, "correct latitude")
 }
 
 \author{Dan Kelley}

@@ -18,7 +18,7 @@
 \value{An object of class \code{"processing.log"}, suitable for
   inclusion in any \code{"oce"} object.}
 
-\seealso{\code{\link{processing.log.append}}}
+\seealso{\code{\link{processing.log.add}}}
 
 \author{Dan Kelley}
 

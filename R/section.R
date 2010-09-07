@@ -57,7 +57,8 @@ make.section <- function(item, ...)
     res$metadata$latitude <- c(res$metadata$latitude, station$metadata$latitude)
     res$metadata$longitude <- c(res$metadata$longitude, station$metadata$longitude)
     res$metadata$station.id <- c(res$metadata$station.id, station$metadata$station)
-    res <- processing.log.append(res, paste(deparse(match.call()), sep="", collapse=""))
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -428,7 +429,8 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
     }
     data <- list(station=station)
     metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    if (missing(log.action))
+        log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")
@@ -496,8 +498,8 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
         ##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
         ##cat("\n")
     }
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    res <- processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 ## bugs: should ensure that every station has identical pressures
@@ -509,7 +511,7 @@ section.smooth <- function(section, ...)
     nprs <- length(section$data$station[[1]]$data$pressure)
     supplied.df <- "df" %in% names(list(...))
     if (!supplied.df) df <- nstn / 5
-    rval <- section
+    res <- section
     x <- geod.dist(section)
     temperature.mat <- array(dim=c(nprs, nstn))
     salinity.mat <- array(dim=c(nprs, nstn))
@@ -534,13 +536,14 @@ section.smooth <- function(section, ...)
         }
     }
     for (s in 1:nstn) {
-        rval$data$station[[s]]$data$temperature <- temperature.mat[,s]
-        rval$data$station[[s]]$data$salinity <- salinity.mat[,s]
-        rval$data$station[[s]]$data$sigma.theta <- sigma.theta.mat[,s]
+        res$data$station[[s]]$data$temperature <- temperature.mat[,s]
+        res$data$station[[s]]$data$salinity <- salinity.mat[,s]
+        res$data$station[[s]]$data$sigma.theta <- sigma.theta.mat[,s]
     }
-    class(rval) <- c("section", "oce")
-    rval <- processing.log.append(rval, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    class(res) <- c("section", "oce")
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 summary.section <- function(object, ...)

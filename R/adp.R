@@ -30,7 +30,7 @@ summary.adp <- function(object, ...)
 {
     if (!inherits(object, "adp")) stop("method is only for adp objects")
     if (is.null(object$metadata$have.actual.data) || object$metadata$have.actual.data) {
-        if (inherits(object, "aquadopp")) {
+        if (1 == length(agrep("nortek", object$metadata$manufacturer, ignore.case=TRUE))) {
             res.specific <- list(internal.code.version=object$metadata$internal.code.version,
                                  hardware.revision=object$metadata$hardware.revision,
                                  rec.size=object$metadata$rec.size*65536/1024/1024,
@@ -46,7 +46,7 @@ summary.adp <- function(object, ...)
                                  measurement.interval=object$metadata$measurement.interval,
                                  deployment.name=object$metadata$deployment.name,
                                  velocity.scale=object$metadata$velocity.scale)
-        } else if (inherits(object, "rdi")) {
+        } else if (1 == length(agrep("rdi", object$metadata$manufacturer, ignore.case=TRUE))) {
             res.specific <- list(number.of.data.types=object$metadata$number.of.data.types,
                                  heading.alignment=object$metadata$heading.alignment,
                                  heading.bias=object$metadata$heading.bias,
@@ -55,15 +55,13 @@ summary.adp <- function(object, ...)
                                  xmit.pulse.length=object$metadata$xmit.pulse.length,
                                  oce.beam.attenuated=object$metadata$oce.beam.attenuated,
                                  beam.config=object$metadata$beam.config)
-        } else if (inherits(object, "sontek")) {
+        } else if (1 == length(agrep("sontek", object$metadata$manufacturer, ignore.case=TRUE))) {
             res.specific <- list(cpu.software.ver.num=object$metadata$cpu.software.ver.num,
                                  dsp.software.ver.num=object$metadata$dsp.software.ver.num,
                                  board.rev=object$metadata$board.rev,
                                  adp.type=object$metadata$adp.type,
                                  slant.angle=object$metadata$slant.angle,
                                  orientation=object$metadata$orientation)
-        } else if (inherits(object, "nortek")) {
-            res.specific <- NULL
         } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
 
         ## start building res from the header information
@@ -162,7 +160,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 cat("  ", format(x$transformation.matrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
         }
         cat("\n")
-        if (x$instrument.type == "teledyne rdi") {
+        if (1 == length(agrep("rdi", x$instrument.type, ignore.case=TRUE))) {
             cat("* Teledyne-specific\n\n", ...)
             cat("  * System configuration:       ", x$metadata$system.configuration, "\n", ...)
             cat("  * Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
@@ -176,12 +174,12 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 cat(" [note: was *subtracted* from the file's heading, to create the obect's heading]\n", ...)
             else
                 cat("\n", ...)
-        } else if (x$instrument.type == "nortek aquadopp high resolution") {
-            cat("* Nortek-specific:\n\n", ...)
+        } else if (1 == length(agrep("aquadopp", x$instrument.type, ignore.case=TRUE))) {
+            cat("* Nortek-aquadopp-specific:\n\n", ...)
             cat("  * Internal code version:       ", x$metadata$internal.code.version, "\n", ...)
             cat("  * Hardware revision:           ", x$metadata$hardware.revision, "\n", ...)
             cat("  * Head serial number:          ", x$metadata$head.serial.number, "\n", ...)
-        } else if (x$instrument.type == "sontek") {
+        } else if (1 == length(agrep("sontek", x$instrument.type, ignore.case=TRUE))) {
             cat("* Sontek-specific:\n\n", ...)
             cat("  * CPU software version:        ", x$metadata$cpu.software.ver.num, "\n", ...)
             cat("  * DSP software version:        ", x$metadata$dsp.software.ver.num, "\n", ...)
@@ -256,12 +254,42 @@ plot.adp <- function(x,
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
-
+    ## Translate word-style (FIXME: ugly coding)
+    which2 <- vector("numeric", length(which))
+    for (w in 1:lw) {
+        ww <- which[w]
+        if (is.numeric(ww)) {
+            which2[w] <- ww
+        } else {
+            if (     ww == "u1") which2[w] <- 1
+            else if (ww == "u2") which2[w] <- 2
+            else if (ww == "u3") which2[w] <- 3
+            else if (ww == "u4") which2[w] <- 4
+            else if (ww == "a1") which2[w] <- 5
+            else if (ww == "a2") which2[w] <- 6
+            else if (ww == "a3") which2[w] <- 7
+            else if (ww == "a4") which2[w] <- 8
+            else if (ww == "q1") which2[w] <- 9
+            else if (ww == "q2") which2[w] <- 10
+            else if (ww == "q3") which2[w] <- 11
+            else if (ww == "q4") which2[w] <- 12
+            else if (ww == "salinity") which2[w] <- 13
+            else if (ww == "temperature") which2[w] <- 14
+            else if (ww == "pressure") which2[w] <- 15
+            else if (ww == "heading") which2[w] <- 16
+            else if (ww == "pitch") which2[w] <- 17
+            else if (ww == "roll") which2[w] <- 18
+            else if (ww == "progressive vector") which2[w] <- 23
+            else if (ww == "uv") which2[w] <- 28
+            else if (ww == "uv+ellipse") which2[w] <- 28.1
+            else stop("unknown 'which':", ww)
+        }
+    }
+    which <- which2
     images <- 1:12
     timeseries <- 13:22
     spatial <- 23:27
     speed <- 28
-    if (any(!floor(0.01 + which) %in% c(images, timeseries, spatial, speed))) stop("unknown value of 'which'")
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -303,7 +331,7 @@ plot.adp <- function(x,
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
-        ##oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
+        oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
             if (which[w] %in% 1:(0+x$metadata$number.of.beams)) {    #velocity
@@ -427,7 +455,7 @@ plot.adp <- function(x,
                 par(mar=omar)
             }
         } else if (which[w] %in% spatial) {                   # various spatial types
-            if (which[w] == 23) {                             # progressive-vector
+            if (which[w] == 23) {    # progressive vector
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec")) # FIXME: should not assume all equal
                 m.per.km <- 1000
@@ -465,53 +493,75 @@ plot.adp <- function(x,
                     value <- apply(x$data$ma$v[,,4], 2, mean, na.rm=TRUE)
                     plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 4), ylab="Distance [m]", type='l', ...)
                     ##grid()
-                } else warning("cannot use which=27 because this device did not have 4 beams")
+                } else {
+                    warning("cannot use which=27 because this device did not have 4 beams")
+                }
             }
             if (w <= adorn.length) {
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
-        } else if (floor(0.01 + which[w]) %in% speed) { # various speed types
-            if (round(which[w], 0) == 28) {         # currents=28; with ellipse=28.1
-                par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                if (!missing(control) && !is.null(control$bin)) {
-                    if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
-                    max.bin <- dim(x$data$ma$v)[2]
-                    if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                    u <- x$data$ma$v[,control$bin,1]
-                    v <- x$data$ma$v[,control$bin,2]
-                } else {
-                    u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
-                    v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
-                }
+        } else if (round(which[w], 1) == 28) {         # 28 or "uv"
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            n <- prod(dim(x$data$ma$v)[1:2])
+            if (!missing(control) && !is.null(control$bin)) {
+                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                max.bin <- dim(x$data$ma$v)[2]
+                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                u <- x$data$ma$v[,control$bin,1]
+                v <- x$data$ma$v[,control$bin,2]
+            } else {
+                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
+                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+            }
+            if (n < 2000) {
                 if ("type" %in% names(dots)) {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
                 } else {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
                     points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
-                if (round(which[w], 1) == 28.1) {
-                    ## eigen ellipse
-                    uv <- data.frame(u=apply(x$data$ma$v[,,1],1,mean,na.rm=TRUE),
-                                     v=apply(x$data$ma$v[,,2],1,mean,na.rm=TRUE))
-                    e <- eigen(cov(uv))
-                    M <- sqrt(e$values[1])  # major
-                    m <- sqrt(e$values[2])  # minor
-                    ##segments(0, 0, M * e$vectors[1,1], M * e$vectors[2,1], col='red')
-                    ##segments(0, 0, m * e$vectors[1,2], m * e$vectors[2,2], col='blue')
-                    theta <- seq(0, 2*pi, length.out=100)
-                    x <- M*cos(theta)
-                    y <- m*sin(theta)
-                    theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-                    rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
-                    xy <- rotate %*% rbind(x, y)
-                    lines(xy[1,], xy[2,])
+            } else {
+                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+            }
+        } else if (round(which[w], 1) == 28.1) { # 28.1 or "uv+ellipse"
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            n <- prod(dim(x$data$ma$v)[1:2])
+            if (!missing(control) && !is.null(control$bin)) {
+                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                max.bin <- dim(x$data$ma$v)[2]
+                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                u <- x$data$ma$v[,control$bin,1]
+                v <- x$data$ma$v[,control$bin,2]
+            } else {
+                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
+                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+            }
+            if (n < 2000) {
+                if ("type" %in% names(dots)) {
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
+                } else {
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
+                    points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
+            } else {
+                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
+                              ...)
             }
-            if (w <= adorn.length) {
-                t <- try(eval(adorn[w]), silent=TRUE)
-                if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-            }
+            e <- eigen(cov(data.frame(u,v)))
+            major <- sqrt(e$values[1])  # major
+            minor <- sqrt(e$values[2])  # minor
+            theta <- seq(0, 2*pi, length.out=100)
+            x <- major * cos(theta)
+            y <- minor * sin(theta)
+            theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+            rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+            xy <- rotate %*% rbind(x, y)
+            lines(xy[1,], xy[2,])
+        }
+        if (w <= adorn.length) {
+            t <- try(eval(adorn[w]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
 }
@@ -527,8 +577,9 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
     for (beam in 1:x$metadata$number.of.beams)
         res$data$ma$a[,,beam] <- as.raw(count2db[1] * as.numeric(x$data$ma$a[,,beam]) + correction)
     res$metadata$oce.beam.attenuated <- TRUE
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
@@ -594,8 +645,9 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oce.coordinate <- "xyz"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
@@ -606,17 +658,18 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    if (1 == length(agrep("rdi", x$metadata$instrument.type))) {
+    if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) {
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
         }
     }
-    if (1 == length(agrep("sontek", x$metadata$instrument.type))) {
-        warning("adp.xyz2enu() detected SONTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
-    }
-    if (1 == length(agrep("nortek", x$metadata$instrument.type))) {
-        warning("adp.xyz2enu() detected NORTEK, so should (1) add 90 to heading and (2) multiply pitch by -1, BUT DOING NEITHER SO FAR")
+    if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
+        1 == length(agrep("sontek", x$metadata$manufacturer))) {
+        warning("detected nortek-vector or sontek-adv, and subtracting 90 from heading")
+        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
+        warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
+        pitch <- - pitch
     }
     ## FIXME need to check for sontek and nortek here, and
     ## FIXME  1) add 90 degrees to heading
@@ -624,40 +677,71 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
+    have.steady.angles <- length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1
     to.radians <- atan2(1,1) / 45
-    hrad <- to.radians * heading        # This could save millions of multiplies
-    prad <- to.radians * pitch          # although the trig is probably taking
-    rrad <- to.radians * roll           # most of the time.
-    CH <- cos(hrad)
-    SH <- sin(hrad)
-    CP <- cos(prad)
-    SP <- sin(prad)
-    CR <- cos(rrad)
-    SR <- sin(rrad)
-    np <- dim(x$data$ma$v)[1]
-    nc <- dim(x$data$ma$v)[2]
-    ## Note: construct a 3*3*np matrix that is the product of three
-    ## rotation matrices.  This is 9*np of matrix memory, versus
-    ## 27*np for the three matrices.
-    tr.mat <- array(dim=c(3, 3, np))
-    tr.mat[1,1,] <-  CH * CR + SH * SP * SR
-    tr.mat[1,2,] <-  SH * CP
-    tr.mat[1,3,] <-  CH * SR - SH * SP * CR
-    tr.mat[2,1,] <- -SH * CR + CH * SP * SR
-    tr.mat[2,2,] <-  CH * CP
-    tr.mat[2,3,] <- -SH * SR - CH * SP * CR
-    tr.mat[3,1,] <- -CP * SR
-    tr.mat[3,2,] <-  SP
-    tr.mat[3,3,] <-  CP * CR
-    ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
-    ## FIXME: see if plyr library is faster than lapply
-    rotated <- array(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
-    res$data$ma$v[,,1] <- t(rotated[1,,])
-    res$data$ma$v[,,2] <- t(rotated[2,,])
-    res$data$ma$v[,,3] <- t(rotated[3,,])
+    h <- to.radians * heading
+    p <- to.radians * pitch
+    r <- to.radians * roll
+    CH <- cos(h)
+    SH <- sin(h)
+    CP <- cos(p)
+    SP <- sin(p)
+    CR <- cos(r)
+    SR <- sin(r)
+    np <- dim(x$data$ma$v)[1]           # number of profiles
+    nc <- dim(x$data$ma$v)[2]           # number of cells
+    if (have.steady.angles) {
+        R <- array(dim=c(3, 3))
+        R[1,1] <-  CH * CR + SH * SP * SR
+        R[1,2] <-  SH * CP
+        R[1,3] <-  CH * SR - SH * SP * CR
+        R[2,1] <- -SH * CR + CH * SP * SR
+        R[2,2] <-  CH * CP
+        R[2,3] <- -SH * SR - CH * SP * CR
+        R[3,1] <- -CP * SR
+        R[3,2] <-  SP
+        R[3,3] <-  CP * CR
+        ## Timing tests suggest using a 2D matrix for R drops user
+        ## time by factor of 2.  That may be an underestimate, if jobs
+        ## have to compete for RAM, which was the case on the test
+        ## machine with 4Gb of RAM, working on a six-day dataset
+        ## sampled at 0.1Hz with 84 bins.
+        ##
+        ## Timing tests (not recorded) suggest little speed difference
+        ## in working across profiles or across cells.  This may just
+        ## mean that the loop overhead is small compared with the
+        ## matrix work.  In any case, it opens the possibility of
+        ## doing the work across profile, or cell, as fits the
+        ## problem.  Below, partly as a demonstration, I am working
+        ## across cells (nor profiles, as the rest of the code).
+        rot <- array(unlist(lapply(1:nc, function(c) R %*% t(x$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
+        res$data$ma$v[,,1] <- rot[1,,]
+        res$data$ma$v[,,2] <- rot[2,,]
+        res$data$ma$v[,,3] <- rot[3,,]
+    } else {
+        ## Note: construct a 3*3*np matrix that is the product of three
+        ## rotation matrices.  This is 9*np of matrix memory, versus
+        ## 27*np for the three matrices.
+        R <- array(dim=c(3, 3, np))
+        R[1,1,] <-  CH * CR + SH * SP * SR
+        R[1,2,] <-  SH * CP
+        R[1,3,] <-  CH * SR - SH * SP * CR
+        R[2,1,] <- -SH * CR + CH * SP * SR
+        R[2,2,] <-  CH * CP
+        R[2,3,] <- -SH * SR - CH * SP * CR
+        R[3,1,] <- -CP * SR
+        R[3,2,] <-  SP
+        R[3,3,] <-  CP * CR
+        ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
+        rot <- array(unlist(lapply(1:np, function(p) R[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+        res$data$ma$v[,,1] <- t(rot[1,,])
+        res$data$ma$v[,,2] <- t(rot[2,,])
+        res$data$ma$v[,,3] <- t(rot[3,,])
+    }
     res$metadata$oce.coordinate <- "enu"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 adp.enu2other <- function(x, heading=0, pitch=0, roll=0)
@@ -683,7 +767,9 @@ adp.enu2other <- function(x, heading=0, pitch=0, roll=0)
     res$data$ma$v[,,3] <- t(rotated[3,,])
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    processing.log.append(res, log.action)
+    res$processing.log <- processing.log.add(res$processing.log,
+                                             paste(deparse(match.call()), sep="", collapse=""))
+    res
 }
 
 peek.ahead <- function(file, bytes=2, debug=!TRUE)
