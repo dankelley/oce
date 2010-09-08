@@ -1,10 +1,19 @@
 use.new.imagep <- TRUE
+coordinate <- function(x)
+{
+    if (inherits(x, "adp") || inherits(x, "adv"))
+        return(x$metadata$oce.coordinate == "beam")
+    else {
+        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
+        return(NULL)
+    }
+}
 is.beam <- function(x)
 {
     if (inherits(x, "adp") || inherits(x, "adv"))
         return(x$metadata$oce.coordinate == "beam")
     else {
-        warning("is.beam() does not understand file type since it does not inherit from \"adv\" or \"adp\"")
+        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
         return(FALSE)
     }
 }
@@ -13,7 +22,7 @@ is.xyz <- function(x)
     if (inherits(x, "adp") || inherits(x, "adv"))
         return(x$metadata$oce.coordinate == "xyz")
     else {
-        warning("is.beam() does not understand file type since it does not inherit from \"adv\" or \"adp\"")
+        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
         return(FALSE)
     }
 }
@@ -22,7 +31,7 @@ is.enu <- function(x)
     if (inherits(x, "adp") || inherits(x, "adv"))
         return(x$metadata$oce.coordinate == "enu")
     else {
-        warning("is.beam() does not understand file type since it does not inherit from \"adv\" or \"adp\"")
+        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
         return(FALSE)
     }
 }

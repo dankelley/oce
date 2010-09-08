@@ -19,6 +19,7 @@ export(
        adv.enu2other,
        bcd2integer,
        byte2binary,
+       coordinate,
        coriolis,
        ctd.add.column,
        ctd.decimate,
