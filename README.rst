@@ -9,11 +9,16 @@ versions of Oce.  To use the develop branch, you must first set up to
 
     git checkout --track origin/develop
 
-and, after that, you should be able to just do 
+This only has to be done *one time*.  After this is done, you may do
 
      git checkout develop
+
+to switch to the ``develop`` branch and then do
+
      git pull
 
-to get updates.
+to pull the updates.  (If you stay on the develop branch, you will
+just need to do this final step, to get updates.)
+
 
 
