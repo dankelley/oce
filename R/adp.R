@@ -2,10 +2,10 @@ use.new.imagep <- TRUE
 coordinate <- function(x)
 {
     if (inherits(x, "adp") || inherits(x, "adv"))
-        return(x$metadata$oce.coordinate == "beam")
+        x$metadata$oce.coordinate
     else {
         warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
-        return(NULL)
+        NULL
     }
 }
 is.beam <- function(x)
