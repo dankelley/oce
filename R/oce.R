@@ -321,6 +321,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 for (name in names(x$data$ts)) {
                     rval$data$ts[[name]] <- x$data$ts[[name]][keep]
                 }
+                if ("ts.slow" %in% names(x$data)) {
+                    keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+                    for (name in names(rval$data$ts.slow)) {
+                        if (length(rval$data$ts.slow[[name]]) > 1)
+                            rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
+                    }
+                }
                 for (name in names(x$data$ma)) {
                     rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
                 }
