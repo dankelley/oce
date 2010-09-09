@@ -47,11 +47,10 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             res$data$ts[[name]] <- res$data$ts[[name]][keep]
         }
         if ("ts.slow" %in% names(res$data)) {
-            keep <- start <= res$data$ts.slow$time & res$data$ts.slow$time < end
+            keep.slow <- start <= res$data$ts.slow$time & res$data$ts.slow$time < end
             for (name in names(res$data$ts.slow)) {
-                cat("working on", name, "\n")
                 if (length(res$data$ts.slow[[name]]) > 1)
-                    res$data$ts.slow[[name]] <- res$data$ts.slow[[name]][keep]
+                    res$data$ts.slow[[name]] <- res$data$ts.slow[[name]][keep.slow]
             }
         }
         if ("ma" %in% names(res$data)) {
