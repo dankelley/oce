@@ -1285,7 +1285,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$v[,1], na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1297,7 +1298,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$v[,2], na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1309,7 +1311,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$v[,3], na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
             if (draw.zero.line)
@@ -1322,7 +1325,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 6 || which[w] == "a2") {
@@ -1333,7 +1337,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 7 || which[w] == "a3") {
@@ -1344,7 +1349,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 9 || which[w] == "q1") {
@@ -1355,7 +1361,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 10 || which[w] == "q2") {
@@ -1366,7 +1373,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 11 || which[w] == "q3") {
@@ -1377,7 +1385,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 14 || which[w] == "temperature") {
@@ -1388,7 +1397,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tslim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$temperature, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             } else {
@@ -1398,7 +1408,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$temperature, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             }
@@ -1409,7 +1420,8 @@ plot.adv <- function(x,
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pressure, na.rm=TRUE),
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,mar=mar, # FIXME
+                        mgp=mgp,
+                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 16 || which[w] == "heading") {
@@ -1420,7 +1432,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tslim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$heading, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             } else {
@@ -1430,7 +1443,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$heading, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             }
@@ -1442,7 +1456,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tslim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$pitch, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             } else {
@@ -1452,7 +1467,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pitch, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             }
@@ -1464,7 +1480,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tslim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$roll, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             } else {
@@ -1474,7 +1491,8 @@ plot.adv <- function(x,
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$roll, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,mar=mar, # FIXME
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
                             ...)
             }
