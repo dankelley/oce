@@ -274,6 +274,22 @@ oce.edit <- function(x, item, value, action, reason="", person="",
                 else
                     stop("do not know how to handle this item")
             }
+        } else if ("instrument.type" %in% names(x$metadata) && x$metadata$instrument.type == "aquadopp-hr") {
+            oce.debug(debug, "About to try editing AQUADOPP ...\n")
+            hpr <- 0 < length(grep("heading|pitch|roll", item)) # FIXME: possibly aquadopp should have ts.slow
+            x$data$ts[[item]] <- value
+            if (hpr) {
+                x$data$ts[[item]] <- value
+                oce.debug(debug, " edited x$ts[", item, "]\n", sep="")
+            } else {
+                if (item %in% names(x$metadata)) {
+                    oce.debug(debug, " edited x$metadata[", item, "]\n", sep="")
+                    x$metadata[item] <- value
+                } else {
+                    stop("do not know how to handle this item, named \"", item, "\"\n", sep="")
+                }
+            }
+            oce.debug(debug, "...AQUADOPP edited\n")
         } else {
             if (item %in% names(x$metadata))
                 x$metadata[item] <- value

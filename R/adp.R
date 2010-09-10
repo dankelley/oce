@@ -594,7 +594,7 @@ plot.adp <- function(x,
             theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
             rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
             xy <- rotate %*% rbind(x, y)
-            lines(xy[1,], xy[2,])
+            lines(xy[1,], xy[2,], lwd=2*par("lwd"), col=if ("col" %in% dots) col else "red")
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
