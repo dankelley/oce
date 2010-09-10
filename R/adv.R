@@ -1227,7 +1227,7 @@ plot.adv <- function(x,
 
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     if (lw > 1) on.exit(par(opar))
-    par(mgp=mgp, mar=mar, cex=cex)
+    par(mgp=mgp, mar=mar)
     dots <- list(...)
 
     ## user may specify a matrix for xlim and ylim
@@ -1277,7 +1277,7 @@ plot.adv <- function(x,
         tslim <- range(x$data$ts.slow$time, na.rm=TRUE)
     for (w in 1:lw) {
         oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
-        par(mgp=mgp, mar=mar, cex=cex)
+        par(mgp=mgp, mar=mar)
         if (which[w] == 1 || which[w] == "u1") {
             oce.plot.ts(x$data$ts$time, x$data$ma$v[,1], ylab=ad.beam.name(x, 1),
                         draw.time.range=draw.time.range,
