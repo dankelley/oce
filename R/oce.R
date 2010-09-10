@@ -20,8 +20,9 @@ use.heading <- function(b, g, add=0)
     res
 }
 
-window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), ...)
+window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), debug=getOption("oce.debug"), ...)
 {
+    oce.debug(debug, "\b\bwindow.oce() {\n")
     if (extend) stop("cannot handle extend=TRUE yet")
     if (!is.null(frequency)) stop("cannot handle frequency yet")
     if (!is.null(deltat)) stop("cannot handle deltat yet")
@@ -30,6 +31,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     res <- x
     which <- match.arg(which)
     if (which == "time") {
+        oce.debug(debug, "windowing by time\n")
         if (!("ts" %in% names(x$data))) {
             warning("oce object has no $data$ts vector, so window is returning it unaltered")
             return(x)
@@ -42,11 +44,15 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             start <- as.POSIXct(start, tz=getOption("oce.tz"))
         if (is.character(end))
             end <- as.POSIXct(end, tz=getOption("oce.tz"))
+        oce.debug(debug, "tz of start:", attr(start, "tzone"), "\n")
+        oce.debug(debug, "tz of end:", attr(end, "tzone"), "\n")
+        oce.debug(debug, "tz of data$ts$time:", attr(res$data$ts$time, "tzone"), "\n")
         keep <- start <= res$data$ts$time & res$data$ts$time < end
         for (name in names(res$data$ts)) {
             res$data$ts[[name]] <- res$data$ts[[name]][keep]
         }
         if ("ts.slow" %in% names(res$data)) {
+        oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
             keep.slow <- start <= res$data$ts.slow$time & res$data$ts.slow$time < end
             for (name in names(res$data$ts.slow)) {
                 if (length(res$data$ts.slow[[name]]) > 1)
@@ -65,6 +71,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             }
         }
     } else if (which == "distance") {
+        oce.debug(debug, "windowing by distance\n")
         if (!("ss" %in% names(x$data))) {
             warning("oce object has no $data$ss vector, so window is returning it unaltered")
             return(x)
@@ -88,6 +95,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     } else {
         stop("unknown value of which \"", which, "\"") # cannot get here
     }
+    oce.debug(debug, "\b\b} # window.oce()\n")
     res
 }
 
