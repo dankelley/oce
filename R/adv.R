@@ -147,7 +147,12 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
     vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
     vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
-    .vsd <<- buf[vsd.start[1] + seq(0, 27)]
+    ##TEST## .vsd <<- buf[vsd.start[1] + seq(0, 27)] # FIXME: remove
+    ## FIXME: determine whether to use the velocity scale in next line, or other value.
+    oce.debug(debug, "VSD", paste("0x", format(as.raw(buf[vsd.start[1]+0:27])),sep=""), "\n")
+    metadata$velocity.scale <- if ("0" == substr(byte2binary(buf[vsd.start[1] + 23]), 7, 7)) 1e-3 else 0.1e-3
+    oce.debug(debug, "velocity scale:", metadata$velocity.scale, "m/s (from VSD header byte 24, 0x",
+              as.raw(buf[vsd.start[1] + 23]), "(bit 7)\n")
     vsd.len <- length(vsd.start)
     ## Measurement start and end times
     metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
@@ -322,9 +327,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     pressure <- (65536 * p.MSB + p.LSW) / 1000
     oce.debug(debug, vector.show(pressure, "pressure:"))
     v <- array(dim=c(vvd.len, 3))
-    v[,1] <- readBin(buf[vvd.start2 + 10], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
-    v[,2] <- readBin(buf[vvd.start2 + 12], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
-    v[,3] <- readBin(buf[vvd.start2 + 14], "integer", size=2, n=vvd.len, signed=TRUE, endian="little") / 1000
+    v[,1] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 10], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")
+    v[,2] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 12], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")
+    v[,3] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 14], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")
     if (debug > 0) {
         oce.debug(debug, "v[", dim(v), "] begins...\n")
         print(matrix(as.numeric(v[1:min(3,vvd.len),]), ncol=3))
