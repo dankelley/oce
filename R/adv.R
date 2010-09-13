@@ -147,6 +147,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
     vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
     vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+    .vsd <<- buf[vsd.start[1] + seq(0, 27)]
     vsd.len <- length(vsd.start)
     ## Measurement start and end times
     metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
