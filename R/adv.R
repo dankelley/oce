@@ -1205,6 +1205,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
 plot.adv <- function(x,
                      which=c(1:3,14,15),
                      titles,
+                     type="l",
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      draw.zero.line=FALSE,
@@ -1213,10 +1214,16 @@ plot.adv <- function(x,
                      margins.as.image=FALSE,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim,
+                     brush.correlation, col.brush="red",
                      debug=getOption("oce.debug"),
                      ...)
 {
+    debug <- round(debug)
+    if (debug < 0) debug <- 0
+    if (debug > 4) debug <- 4
     oce.debug(debug, "\b\bplot.adv(x, which=c(", paste(which,collapse=","),"), ...) {\n")
+    have.brush.correlation <- !missing(brush.correlation)
+    oce.debug(debug, "brush.correlation", if (have.brush.correlation) brush.correlation else "not given", "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
@@ -1270,6 +1277,44 @@ plot.adv <- function(x,
             lay <- layout(cbind(1:lw))
         }
     }
+    ## Translate word-style (FIXME: ugly coding)
+    lw <- length(which)
+    oce.debug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+    which2 <- vector("numeric", lw)
+    for (w in 1:lw) {
+        ww <- which[w]
+        if (is.numeric(ww)) {
+            which2[w] <- ww
+        } else {
+            if (     ww == "u1") which2[w] <- 1
+            else if (ww == "u2") which2[w] <- 2
+            else if (ww == "u3") which2[w] <- 3
+            ## 4 not allowed since ADV is 3-beam
+            else if (ww == "a1") which2[w] <- 5
+            else if (ww == "a2") which2[w] <- 6
+            else if (ww == "a3") which2[w] <- 7
+            ## 4 not allowed since ADV is 3-beam
+            else if (ww == "q1") which2[w] <- 9
+            else if (ww == "q2") which2[w] <- 10
+            else if (ww == "q3") which2[w] <- 11
+            ## 4 not allowed since ADV is 3-beam
+            ## 13 not allowed since ADV do not measure salinity
+            else if (ww == "temperature") which2[w] <- 14
+            else if (ww == "pressure") which2[w] <- 15
+            else if (ww == "heading") which2[w] <- 16
+            else if (ww == "pitch") which2[w] <- 17
+            else if (ww == "roll") which2[w] <- 18
+            ## 19 allowed, but has no nickname
+            ## 20 allowed, but has no nickname
+            else if (ww == "progressive vector") which2[w] <- 23
+            else if (ww == "uv") which2[w] <- 28
+            else if (ww == "uv+ellipse") which2[w] <- 29
+            else stop("unknown 'which':", ww)
+        }
+    }
+    which <- which2
+    oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+
     oce.debug(debug, "after layout, cex=", par('cex'), "\n")
     have.ts.slow <- "ts.slow" %in% names(x$data)
     tlim <- range(x$data$ts$time, na.rm=TRUE)
@@ -1278,117 +1323,102 @@ plot.adv <- function(x,
     for (w in 1:lw) {
         oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar)
-        if (which[w] == 1 || which[w] == "u1") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$v[,1], ylab=ad.beam.name(x, 1),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$v[,1], na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
+        if (which[w] %in% 1:3) {        # u1, u2, u3
+            y <- as.numeric(x$data$ma$v[,which[w]])
+            if (have.brush.correlation && type == "p") {
+                good <- as.numeric(x$data$ma$c[,which[w]]) >= brush.correlation
+                oce.plot.ts(x$data$ts$time[good], y[good], ylab=ad.beam.name(x, which[w]),
+                            draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=if (gave.xlim) xlim[w,] else tlim,
+                            ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
+                            type=type,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            debug=debug-1,
+                            ...)
+                points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=col.brush)
+            } else {
+                oce.plot.ts(x$data$ts$time, y, ylab=ad.beam.name(x, which[w]),
+                            draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=if (gave.xlim) xlim[w,] else tlim,
+                            ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
+                            type=type,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            debug=debug-1,
+                            ...)
+            }
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] == 2 || which[w] == "u2") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$v[,2], ylab=ad.beam.name(x, 2),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$v[,2], na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
-            if (draw.zero.line)
-                abline(h=0)
-        } else if (which[w] == 3 || which[w] == "u3") {
-            oce.plot.ts(x$data$ts$time, x$data$ma$v[,3], ylab=ad.beam.name(x, 3),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ma$v[,3], na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
-            if (draw.zero.line)
-                abline(h=0)
-        } else if (which[w] == 5 || which[w] == "a1") {
-            y <- as.numeric(x$data$ma$a[,1])
-            oce.plot.ts(x$data$ts$time, y, ylab=expression(a[1]),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
-        } else if (which[w] == 6 || which[w] == "a2") {
-            y <- as.numeric(x$data$ma$a[,2])
-            oce.plot.ts(x$data$ts$time, y, ylab=expression(a[2]),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
-        } else if (which[w] == 7 || which[w] == "a3") {
-            y <- as.numeric(x$data$ma$a[,3])
-            oce.plot.ts(x$data$ts$time, y, ylab=expression(a[3]),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
-        } else if (which[w] == 9 || which[w] == "q1") {
-            y <- as.numeric(x$data$ma$c[,1])
-            oce.plot.ts(x$data$ts$time, y, ylab=expression(c[1]),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
-        } else if (which[w] == 10 || which[w] == "q2") {
-            y <- as.numeric(x$data$ma$c[,2])
-            oce.plot.ts(x$data$ts$time, y, ylab=expression(c[2]),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
-        } else if (which[w] == 11 || which[w] == "q3") {
-            y <- as.numeric(x$data$ma$c[,3])
-            oce.plot.ts(x$data$ts$time, y, ylab=expression(c[3]),
-                        draw.time.range=draw.time.range,
-                        adorn=adorn[w],
-                        xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
-                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        debug=debug-1,
-                        ...)
+            rm(y)                       # space may be tight
+        } else if (which[w] %in% 5:7) { # a1, a2, a3
+            ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
+            oce.debug(debug, "plotting a1, a2, or a3 since which[w] == ", which[w], "\n")
+            y <- as.numeric(x$data$ma$a[,which[w]-4])
+            oce.debug("range(y):", range(y, na.rm=TRUE), "\n")
+            if (have.brush.correlation && type == "p") {
+                good <- as.numeric(x$data$ma$c[,which[w]-4]) >= brush.correlation
+                oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(a[which[w]-4]),
+                            draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=if (gave.xlim) xlim[w,] else tlim,
+                            ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
+                            type=type,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            debug=debug-1,
+                            ...)
+                points(x$data$ts$time[!good], y[!good], col=col.brush)
+            } else {
+                oce.plot.ts(x$data$ts$time, y, ylab=expression(a[which[w]-4]),
+                            draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=if (gave.xlim) xlim[w,] else tlim,
+                            ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
+                            type=type,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            debug=debug-1,
+                            ...)
+            }
+            rm(y)                       # space may be tight
+        } else if (which[w] %in% 9:11) { # q1, q2, q3
+            ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
+            y <- as.numeric(x$data$ma$q[,which[w-8]])
+            if (have.brush.correlation && type == "p") {
+                good <- as.numeric(x$data$ma$c[,which[w]-8]) >= brush.correlation
+                oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(q[which[w-8]]),
+                            draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=if (gave.xlim) xlim[w,] else tlim,
+                            ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
+                            type=type,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            debug=debug-1,
+                            ...)
+                points(x$data$ts$time[!good], y[!good], col=col.brush)
+            } else {
+                oce.plot.ts(x$data$ts$time, y, ylab=expression(q[which[w-8]]),
+                            draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            xlim=if (gave.xlim) xlim[w,] else tlim,
+                            ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
+                            type=type,
+                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                            mgp=mgp,
+                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            debug=debug-1,
+                            ...)
+            }
+            rm(y)                       # space may be tight
         } else if (which[w] == 14 || which[w] == "temperature") {
             if (have.ts.slow) {
                 oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$temperature, ylab=resizable.label("T", "y"),
@@ -1530,7 +1560,7 @@ plot.adv <- function(x,
             v[is.na(v)] <- 0
             x.dist <- cumsum(u) * dt / m.per.km
             y.dist <- cumsum(v) * dt / m.per.km
-            plot(x.dist, y.dist, xlab="km", ylab="km", type='l',
+            plot(x.dist, y.dist, xlab="km", ylab="km", type=type,
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                  asp=1, ...)
         } else if (which[w] == 28 || which[w] == "uv") {
@@ -1538,7 +1568,7 @@ plot.adv <- function(x,
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- length(x$data$ts$time)
             if (n < 2000) {
-                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type='p',
+                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                      asp=1, ...)
             } else {
@@ -1546,11 +1576,11 @@ plot.adv <- function(x,
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                               asp=1, ...)
             }
-        } else if ((is.numeric(which[w]) && round(which[w], 1) == 28.1) || which[w] == "uv+ellipse") {
+        } else if (which[w] == 29) {
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- length(x$data$ts$time)
             if (n < 2000) {
-                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type='p',
+                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                      asp=1, ...)
             } else {

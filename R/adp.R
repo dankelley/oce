@@ -318,7 +318,7 @@ plot.adp <- function(x,
             else if (ww == "roll") which2[w] <- 18
             else if (ww == "progressive vector") which2[w] <- 23
             else if (ww == "uv") which2[w] <- 28
-            else if (ww == "uv+ellipse") which2[w] <- 28.1
+            else if (ww == "uv+ellipse") which2[w] <- 29
             else stop("unknown 'which':", ww)
         }
     }
@@ -538,7 +538,7 @@ plot.adp <- function(x,
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
-        } else if (round(which[w], 1) == 28) {         # 28 or "uv"
+        } else if (which[w] == 28) {    # "uv"
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- prod(dim(x$data$ma$v)[1:2])
             if (!missing(control) && !is.null(control$bin)) {
@@ -561,7 +561,7 @@ plot.adp <- function(x,
             } else {
                 smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             }
-        } else if (round(which[w], 1) == 28.1) { # 28.1 or "uv+ellipse"
+        } else if (which[w] == 29) {    # "uv+ellipse"
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- prod(dim(x$data$ma$v)[1:2])
             if (!missing(control) && !is.null(control$bin)) {

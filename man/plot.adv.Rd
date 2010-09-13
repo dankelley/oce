@@ -9,6 +9,7 @@
 \usage{\method{plot}{adv}(x,
      which=c(1:3,14,15),
      titles,
+     type="l",
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      draw.zero.line=FALSE,
@@ -18,6 +19,7 @@
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim,
      ylim,
+     brush.correlation, col.brush="red",
      debug=getOption("oce.debug"),
      \dots)}
 
@@ -32,6 +34,7 @@
     placed in the right hand side of the top margin.  For timeseries,
     these strings are ignored.
     If this is provided, its length must equal that of \code{which}.}
+  \item{type}{type of plot, as for \code{\link{plot}}.}
   \item{adorn}{optional list of \code{\link{expression}}s to be performed
     immediately after drawing the panels. (See \code{\link{plot.adp}} for
     an example.)}
@@ -55,6 +58,13 @@
     the rows are used, in order, for the panels of the graph.}
   \item{ylim}{optional 2-element list for \code{ylim}, or 2-column matrix, in which case
     the rows are used, in order, for the panels of the graph.}
+  \item{brush.correlation}{optional number between 0 and 100, indicating
+    a per-beam correlation threshhold below which data are to be
+    considered suspect.  If the plot type is \code{p}, the suspect
+    points (velocity, backscatter amplitude, or correlation) will be
+    coloured red; otherwise, this argument is ignored.}
+  \item{col.brush}{colour to use for brushed (bad) data, if
+    \code{brush.correlation} is active.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
@@ -96,7 +106,7 @@
       horizontal plane, i.e. u[2] versus u[1].  If the number of data
       points is small, a scattergraph is used, but if it is large,
       \code{\link{smoothScatter}} is used.
-    \item \code{which=28.1} or \code{"uv+ellipse"} as the \code{"uv"}
+    \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"}
       case, but with an added indication of the tidal ellipse,
       calculated from the eigen vectors of the covariance matrix.
   }

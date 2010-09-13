@@ -168,7 +168,7 @@
       points is small, a scattergraph is used, but if it is large,
       \code{\link{smoothScatter}} is used.
 
-    \item \code{which=28.1} or \code{"uv+ellipse"} as the \code{"uv"}
+    \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"}
       case, but with an added indication of the tidal ellipse,
       calculated from the eigen vectors of the covariance matrix.
 
