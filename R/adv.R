@@ -150,11 +150,27 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##TEST## .vsd <<- buf[vsd.start[1] + seq(0, 27)] # FIXME: remove
     ## FIXME: determine whether to use the velocity scale in next line, or other value.
     oce.debug(debug, "VSD", paste("0x", format(as.raw(buf[vsd.start[1]+0:27])),sep=""), "\n")
+
+    ## Velocity scale.  Nortek's System Integrator Guide (p36) says
+    ## the velocity scale is in bit 1 of "status" byte (at offset 23)
+    ## in the Vector System Data header.  However, they seem to count
+    ## bits in the opposite way as oce does, so their bit 1 (starting
+    ## from 0) corresponds to our bit 7 (ending at 8).
+    ##
+    ## NOTE: the S.I.G. is confusing on the velocity scale, and this
+    ## confusion resulted in a change to the present code on
+    ## 2010-09-13.  Page 35 of S.I.G. clearly states that velocities
+    ## are in mm/s, which was used in the code previously.  However,
+    ## p44 contradicts this, saying that there are two possible scale
+    ## factors, namely 1mm/s and 0.1mm/s.  Starting on 2010-09-13, the
+    ## present function started using this possibility of two scale
+    ## factors, as determined in the next code line, following p36.
     metadata$velocity.scale <- if ("0" == substr(byte2binary(buf[vsd.start[1] + 23]), 7, 7)) 1e-3 else 0.1e-3
     oce.debug(debug, "velocity scale:", metadata$velocity.scale, "m/s (from VSD header byte 24, 0x",
               as.raw(buf[vsd.start[1] + 23]), "(bit 7)\n")
+
+    ## Measurement start and end times.
     vsd.len <- length(vsd.start)
-    ## Measurement start and end times
     metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
                                               bcd2integer(buf[vsd.start[1]+9]), # month
                                               bcd2integer(buf[vsd.start[1]+6]), # day
