@@ -301,9 +301,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
     if (to.index <= from.index)
         stop("no data in specified range from=", format(from), " to=", format(to))
+
     ## we make the times *after* trimming, because this is a slow operation
     ## NOTE: the ISOdatetime() call takes 60% of the entire time for this function.
-
     vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
                          bcd2integer(buf[vsd.start+9]), # month
                          bcd2integer(buf[vsd.start+6]), # day
@@ -314,34 +314,32 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
     oce.debug(debug, "reading Nortek Vector, and using timezone: ", tz, "\n")
 
-
     ## update metadata$measurement.deltat
-    metadata$measurement.deltat <- mean(diff(as.numeric(vsd.t)), na.rm=TRUE) *
-        length(vsd.start) / length(vvd.start)
+    metadata$measurement.deltat <- mean(diff(as.numeric(vsd.t)), na.rm=TRUE) * length(vsd.start) / length(vvd.start) # FIXME
 
     vsd.len <- length(vsd.start)
     vsd.start2 <- sort(c(vsd.start, 1 + vsd.start))
     heading <- 0.1 * readBin(buf[vsd.start2 + 14], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(heading, "heading: "))
+    oce.debug(debug, vector.show(heading, "heading"))
     pitch <-   0.1 * readBin(buf[vsd.start2 + 16], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(pitch, "pitch: "))
+    oce.debug(debug, vector.show(pitch, "pitch"))
     roll <-    0.1 * readBin(buf[vsd.start2 + 18], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(roll, "roll: "))
+    oce.debug(debug, vector.show(roll, "roll"))
     temperature <- 0.01 * readBin(buf[vsd.start2 + 20], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(temperature, "temperature: "))
+    oce.debug(debug, vector.show(temperature, "temperature"))
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
     status <- buf[vsd.start[floor(0.5*length(vsd.start))] + 23]
-    metadata$orientation <- if ("0" == substr(byte2binary(status, endian="little"), 1, 1)) "upwards" else "downwards"
+    metadata$orientation <- if ("0" == substr(byte2binary(status, endian="little"), 8, 8)) "upwards" else "downwards" # FIXME: was bit 1 until 2010-09-14
     ##
     metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0) # FIXME: surely this is in the header (?!?)
-    oce.debug(debug, vector.show(metadata$burst.length, "burst.length: "))
+    oce.debug(debug, vector.show(metadata$burst.length, "burst.length"))
     vvd.start2 <- sort(c(vvd.start, 1 + vvd.start))
     vvd.len <- length(vvd.start)          # FIXME: should be subsampled with 'by' ... but how???
     p.MSB <- as.numeric(buf[vvd.start + 4])
     p.LSW <- readBin(buf[vvd.start2 + 6], "integer", size=2, n=vvd.len, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
-    oce.debug(debug, vector.show(pressure, "pressure:"))
+    oce.debug(debug, vector.show(pressure, "pressure"))
     v <- array(dim=c(vvd.len, 3))
     v[,1] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 10], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")
     v[,2] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 12], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")

@@ -168,9 +168,10 @@ oce.plot.ts <- function(x,
                         ...)
 {
     debug <- min(debug, 4)
-    oce.debug(debug, "\b\boce.plot.ts(...,debug=", debug, ",...) {\n",sep="")
+    oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ",...) {\n",sep="")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
+    oce.debug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
     par(mgp=mgp, mar=mar)
     args <- list(...)
     if (fill) {
@@ -322,6 +323,7 @@ oce.write.table <- function (x, file="", ...)
 
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), ...)
 {
+    oce.debug(debug, "\b\bsubset.oce() {\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
     if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
@@ -414,24 +416,33 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         subset.string <- deparse(substitute(subset))
         oce.debug(debug, "subset.string='", subset.string, "'\n")
         if (length(grep("time", subset.string))) {
-            oce.debug(debug, "subsetting an adp by time\n")
+            oce.debug(debug, "subsetting an adv object by time\n")
             keep <- eval(substitute(subset), x$data$ts, parent.frame())
+            oce.debug(debug, "keeping", sum(keep), "of the", length(keep), "time slots\n")
             oce.debug(debug, vector.show(keep, "keeping bins:"))
+            first.kept <- which(keep==TRUE)[1]
+            oce.debug(debug, "first kept data$ts bin is", first.kept, "which has data$ts$time", format(x$data$ts$time[first.kept]), "(zone=", attr(x$data$ts$time[1], "tzone"), ")\n")
             if (sum(keep) < 2)
                 stop("must keep at least 2 profiles")
             rval <- x
             for (name in names(x$data$ts)) {
+                oce.debug(debug, " subsetting data$ts[[", name, "]]\n", sep="")
                 rval$data$ts[[name]] <- x$data$ts[[name]][keep]
             }
+            oce.debug(debug, "after trimming time, first data$ts$time is", format(rval$data$ts$time[1]), "(zone=", attr(rval$data$ts$time[1], "tzone"), ")\n")
             for (name in names(x$data$ma)) {
+                oce.debug(debug, " subsetting data$ma[[", name, "]]\n", sep="")
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
             if ("ts.slow" %in% names(x$data)) {
-                oce.debug(debug, "have ts.slow\n")
                 keep <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+                first.kept <- which(keep==TRUE)[1]
+                oce.debug(debug, "first kept data$ts.slow bin is", first.kept, "which has data$ts.slow$time", format(rval$data$ts.slow$time[first.kept]), "(zone=", attr(rval$data$ts$time[1], "tzone"), ")\n")
                 for (name in names(x$data$ts.slow)) {
+                    oce.debug(debug, " subsetting data$ts.slow[[", name, "]]\n", sep="")
                     rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep]
                 }
+                oce.debug(debug, "after trimming time, first data$ts.slow$time is", format(rval$data$ts.slow$time[1]), "(zone=", attr(rval$data$ts.slow$time[1], "tzone"), ")\n")
             }
         } else {
             stop("only 'time' is permitted for subsetting")
@@ -442,6 +453,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         rval <- x
         rval$data <- x$data[r,]
     }
+    oce.debug(debug, "\b\b} # subset.oce\n")
     rval$processing.log <- processing.log.add(rval$processing.log,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
@@ -682,7 +694,7 @@ oce.colors.palette <- function(n, which=1)
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), main="", debug=getOption("oce.debug"), ...)
 {
-    oce.debug(debug, "\b\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
+    oce.debug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
     oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug,vector.show(x, "x"))
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
