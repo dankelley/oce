@@ -1,6 +1,7 @@
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
+                     latitude=NA, longitude=NA,
                      start, deltat,
                      debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
@@ -9,17 +10,21 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
+                        latitude=latitude, longitude=longitude,
                         debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek")
         read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
+                        latitude=latitude, longitude=longitude,
                         start=start, deltat=deltat,
                         debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
+                            latitude=latitude, longitude=longitude,
                             debug=debug, log.action=log.action)
     else if (type == "sontek.text")
         read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
+                             latitude=latitude, longitude=longitude,
                              debug=debug, log.action=log.action)
     else
         stop("read.adv() cannot understand type = \"", type, "\"")
@@ -28,6 +33,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="vector",
                             header=TRUE,
+                            latitude=NA, longitude=NA,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     ## abbreviations:
@@ -72,6 +78,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     metadata <- list(manufacturer="nortek",
                      instrument.type="vector",
                      filename=filename,
+                     latitude=latitude, longitude=longitude,
                      measurement.start=NA, # FIXME
                      measurement.end=NA,   # FIXME
                      sampling.rate=NA, # FIXME
@@ -417,6 +424,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
 read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),      # FIXME (two timescales)
                             type="default", header=TRUE,
+                            latitude=NA, longitude=NA,
                             start, deltat,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
@@ -499,6 +507,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),     
                      instrument.type="adv",
                      serial.number="(unknown)",
                      filename=filename,
+                     latitude=latitude, longitude=longitude,
                      measurement.start=0, measurement.end=len, measurement.deltat=1,
                      subsample.start=0, subsample.end=len, subsample.deltat=1,
                      coordinate.system="xyz",
@@ -521,7 +530,9 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),     
 }
 
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),      # FIXME (two timescales)
-                                header=TRUE, type="",
+                                header=TRUE,
+                                latitude=NA, longitude=NA,
+                                type="",
                                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     bisect.adv.sontek.adr <- function(t.find, add=0, debug=0) {
@@ -583,6 +594,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     metadata <- list(manufacturer="sontek",
                      instrument.type="adv", # FIXME or "adr"???
                      filename=filename,
+                     latitude=latitude, longitude=longitude,
                      measurement.deltat=1,
                      velocity.scale.factor=1)
     if (header) {
@@ -967,9 +979,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     res
 }
 
-
 read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
                                  coordinate.system="xyz", transformation.matrix,
+                                 latitude=NA, longitude=NA,
                                  debug=getOption("oce.debug"), log.action)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
@@ -1080,6 +1092,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
     metadata <- list(manufacturer="sontek",
                      instrument.type="adv", # FIXME or "adr"?
+                     latitude=latitude, longitude=longitude,
                      cpu.software.ver.num=metadata$cpu.software.ver.num,
                      dsp.software.ver.num=metadata$dsp.software.ver.num,
                      filename=basefile,
@@ -1138,6 +1151,8 @@ summary.adv <- function(object, ...)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
                 number.of.beams=if (!is.null(object$metadata$number.of.beams)) object$metadata$number.of.beams else 3,
+                latitude=object$metadata$latitude,
+                longitude=object$metadata$longitude,
                 orientation=object$metadata$orientation,
                 velocity.range.index=object$metadata$velocity.range.index,
                 transformation.matrix=object$metadata$transformation.matrix,
@@ -1176,12 +1191,14 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
 {
     cat("ADV Summary\n-----------\n\n", ...)
     cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n",sep=""))
-    cat(paste("* Source:                 ``", x$filename, "``\n", sep=""))
-    cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz\n",
+    cat(paste("* Source filename:        ``", x$filename, "``\n", sep=""))
+    cat(paste("* Location:               ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
+              if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
+    cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
                 format(x$measurement.start), attr(x$measurement.start, "tzone"),
                 format(x$measurement.end), attr(x$measurement.end, "tzone"),
                 1 / x$measurement.deltat), ...)
-    cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz\n",
+    cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
                 format(x$subsample.start), attr(x$subsample.start, "tzone"),
                 format(x$subsample.end),  attr(x$subsample.end, "tzone"),
                 1 / x$subsample.deltat), ...)
