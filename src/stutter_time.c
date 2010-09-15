@@ -6,14 +6,14 @@
 1. compile from commandline:
 ::
 
-    R CMD SHLIB adv_time.c
+    R CMD SHLIB stutter_time.c
    
 2. test R code
 ::
 
     library(oce)
-    dyn.load("adv_time.so")
-    .Call("adv_time", 0:3, 8)
+    dyn.load("stutter_time.so")
+    .Call("stutter_time", 0:3, 8)
 
 3. speed tests
 ::
@@ -21,14 +21,14 @@
         user  system elapsed 
        4.056   1.907   5.923
 
-    > system.time(.Call("adv_time", 0:1e7, 8))
+    > system.time(.Call("stutter_time", 0:1e7, 8))
         user  system elapsed 
        0.599   0.308   0.899 
 
 */
 
 /*#define DEBUG*/
-SEXP adv_time(SEXP t, SEXP f)
+SEXP stutter_time(SEXP t, SEXP f)
 {
   PROTECT(t = AS_NUMERIC(t));
   PROTECT(f = AS_NUMERIC(f));
