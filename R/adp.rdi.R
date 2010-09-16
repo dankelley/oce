@@ -239,6 +239,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
 }                                       # read.header.rdi()
 
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                         latitude=NA, longitude=NA,
                          type=c("workhorse"),
                          debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
@@ -450,6 +451,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
             metadata <- header
+            metadata$latitude <- latitude
+            metadata$longitude <- longitude
             metadata$bin1.distance <- bin1.distance
             metadata$xmit.pulse.length <- xmit.pulse.length
             metadata$measurement.start <- measurement.start

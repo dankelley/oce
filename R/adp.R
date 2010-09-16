@@ -50,17 +50,25 @@ ad.beam.name <- function(x, which)
 }
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                     type=c("rdi", "nortek", "sontek"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+                     latitude=NA, longitude=NA,
+                     type=c("rdi", "nortek", "sontek"),
+                     debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     oce.debug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)
     if (monitor) cat(file, "\n", ...)
     if (type == "rdi")
-        read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
+                     latitude=latitude, longitude=longitude,
+                     debug=debug-1, monitor=monitor, log.action=log.action, ...)
     else if (type == "nortek")
-        read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
+                        latitude=latitude, longitude=longitude,
+                        debug=debug-1, monitor=monitor, log.action=log.action, ...)
     else if (type == "sontek")
-        read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
+                        latitude=latitude, longitude=longitude,
+                        debug=debug-1, monitor=monitor, log.action=log.action, ...)
 }
 
 summary.adp <- function(object, ...)
@@ -105,6 +113,8 @@ summary.adp <- function(object, ...)
         have.data <- !is.null(object$data)
         res <- res.specific
         res$have.data <- have.data
+        res$latitude <- object$metadata$latitude
+        res$longitude <- object$metadata$longitude
         res$filename <- object$metadata$filename
         res$instrument.type <- object$metadata$instrument.type
         res$serial.number <- object$metadata$serial.number
@@ -169,7 +179,11 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADP Summary\n-----------\n\n", ...)
     cat(paste("* Instrument:         ", x$instrument.type, ", serial number ``", paste(x$metadata$serial.number, collapse=""), "``\n", sep=""), ...)
-    cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
+    cat(paste("* Source filename:   ``", x$filename, "``\n", sep=""), ...)
+    if ("latitude" %in% names(x)) {
+        cat(paste("* Location:               ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
+                  if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
+    }
     have.data <- x$have.data
     if (have.data) {
         cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
