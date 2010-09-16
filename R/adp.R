@@ -609,6 +609,8 @@ plot.adp <- function(x,
             rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
             xy <- rotate %*% rbind(x, y)
             lines(xy[1,], xy[2,], lwd=2*par("lwd"), col=if ("col" %in% dots) col else "red")
+        } else {
+            stop("unknown value of which (", which[w], ")")
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
@@ -711,7 +713,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     roll <- res$data$ts$roll
     if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) {
         if (res$metadata$orientation == "upward") {
-            oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
+            warning("adding 180 deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
         }
     }

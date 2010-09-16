@@ -281,7 +281,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             vvd.start <- vvd.start[from.index:to.index]
             oce.debug(debug, vector.show(vvd.start, "    ... later, vvd.start is"))
             oce.debug(debug, vector.show(vsd.start, "before subset, vsd.start is"))
-            vsd.start <- subset(vsd.start, vvd.start[1] < vsd.start & vsd.start < vvd.start[length(vvd.start)])
+            vsd.start.from <- which(vvd.start[1] < vsd.start)[1]
+            vsd.start.to <- which(vsd.start > vvd.start[length(vvd.start)])[1]
+            oce.debug(debug, "vsd.start.from=", vsd.start.from, "and vsd.start.to=", vsd.start.to, "(raw)\n")
+            vsd.start <- vsd.start[seq(vsd.start.from, vsd.start.to)]
             oce.debug(debug, vector.show(vsd.start, "    ... later, vsd.start is"))
         }
     }
@@ -294,6 +297,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (subset.start > 1)
         subset.start <- subset.start - 1 # extend a bit (for now)
     subset.end <- which.min(vsd.start < vvd.start[length(vvd.start)])
+    oce.debug(debug, "first guess: subset.end=", subset.end, "\n")
+
     if (subset.end < length(vsd.start))
         subset.end <- subset.end + 1
 

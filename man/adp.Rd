@@ -8,7 +8,8 @@
 
 \description{This is a sampling of measurements made with an
   upward-pointing ADP (acoustic doppler current profiler) manufactured
-  by Teledyne-RDI, as part of the St Lawrence Internal Wave Experiment.}
+  by Teledyne-RDI, as part of the St Lawrence Internal Wave Experiment
+  (SLEIWEX).}
 
 \examples{
 \dontrun{
@@ -33,7 +34,7 @@ plot(adp, which=15:18)
 
 # horizontal velocity scattergram, and coastline
 par(mfrow=c(1,2))
-plot(adp, which=28.1)
+plot(adp, which=29)
 data(coastline.sle)
 plot(coastline.sle,xlim=c(-70,-69.5), ylim=c(47.7,48.1))
 points(-69.73433, 47.88126, col="red")
