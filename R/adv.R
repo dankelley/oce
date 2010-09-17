@@ -172,9 +172,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## factors, namely 1mm/s and 0.1mm/s.  Starting on 2010-09-13, the
     ## present function started using this possibility of two scale
     ## factors, as determined in the next code line, following p36.
-    metadata$velocity.scale <- if ("0" == substr(byte2binary(buf[vsd.start[1] + 23]), 7, 7)) 1e-3 else 0.1e-3
+    metadata$velocity.scale <- if ("0" == substr(byte2binary(buf[vsd.start[1] + 23], endian="big"), 7, 7)) 1e-3 else 0.1e-3
     oce.debug(debug, "velocity scale:", metadata$velocity.scale, "m/s (from VSD header byte 24, 0x",
-              as.raw(buf[vsd.start[1] + 23]), "(bit 7)\n")
+              as.raw(buf[vsd.start[1] + 23]), "(bit 7 of",
+              byte2binary(buf[vsd.start[1] + 23], endian="big"), ")\n")
 
     ## Measurement start and end times.
     vsd.len <- length(vsd.start)
@@ -342,7 +343,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
     status <- buf[vsd.start[floor(0.5*length(vsd.start))] + 23]
-    metadata$orientation <- if ("0" == substr(byte2binary(status, endian="little"), 8, 8)) "upwards" else "downwards" # FIXME: was bit 1 until 2010-09-14
+    metadata$orientation <- if ("0" == substr(byte2binary(status, endian="big"), 1, 1)) "upwards" else "downwards"
     ##
     metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0) # FIXME: surely this is in the header (?!?)
     oce.debug(debug, vector.show(metadata$burst.length, "burst.length"))
