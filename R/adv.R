@@ -1199,7 +1199,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n",sep=""))
     cat(paste("* Source filename:        ``", x$filename, "``\n", sep=""))
     if ("latitude" %in% names(x)) {
-        cat(paste("* Location:               ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
+        cat(paste("* Location:           ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
                   if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
     }
     cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",

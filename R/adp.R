@@ -181,7 +181,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(paste("* Instrument:         ", x$instrument.type, ", serial number ``", paste(x$metadata$serial.number, collapse=""), "``\n", sep=""), ...)
     cat(paste("* Source filename:   ``", x$filename, "``\n", sep=""), ...)
     if ("latitude" %in% names(x)) {
-        cat(paste("* Location:               ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
+        cat(paste("* Location:           ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
                   if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
     }
     have.data <- x$have.data
