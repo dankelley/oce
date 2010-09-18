@@ -1647,7 +1647,7 @@ plot.adv <- function(x,
             e <- eigen(cov(uv))
             major <- sqrt(e$values[1])
             minor <- sqrt(e$values[2])
-            theta <- seq(0, 2*pi, length.out=100)
+            theta <- seq(0, 2*pi, length.out=360/5)
             xx <- major * cos(theta)
             yy <- minor * sin(theta)
             theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])

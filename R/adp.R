@@ -553,7 +553,7 @@ plot.adp <- function(x,
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
-        } else if (which[w] == 28) {    # "uv"
+        } else if (which[w] %in% 28:30) { # "uv", "uv+ellipse", or "uv+ellipse+arrow"
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- prod(dim(x$data$ma$v)[1:2])
             if (!missing(control) && !is.null(control$bin)) {
@@ -576,44 +576,21 @@ plot.adp <- function(x,
             } else {
                 smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             }
-        } else if (which[w] == 29 || which[w] == 30) {    # "uv+ellipse" or "uv+ellipse+arrow"
-            ## FIXME: not DRY enough; should combine 28, 29, and 30, as 29 and 30 are combined
-            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- prod(dim(x$data$ma$v)[1:2])
-            if (!missing(control) && !is.null(control$bin)) {
-                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
-                max.bin <- dim(x$data$ma$v)[2]
-                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                u <- x$data$ma$v[,control$bin,1]
-                v <- x$data$ma$v[,control$bin,2]
-            } else {
-                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
-                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+            if (which[w] >= 28) {
+                e <- eigen(cov(data.frame(u,v)))
+                major <- sqrt(e$values[1])  # major
+                minor <- sqrt(e$values[2])  # minor
+                theta <- seq(0, 2*pi, length.out=360/5)
+                xx <- major * cos(theta)
+                yy <- minor * sin(theta)
+                theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+                rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                xxyy <- rotate %*% rbind(xx, yy)
+                col <- if ("col" %in% dots) col else "red"
+                lines(xxyy[1,], xxyy[2,], lwd=2*par("lwd"), col=col)
+                if (which[w] >= 30)
+                    arrows(0, 0, mean(x$data$ma$v[,,1], na.rm=TRUE), mean(x$data$ma$v[,,2], na.rm=TRUE), lwd=2, length=1/10, col=col)
             }
-            if (n < 2000) {
-                if ("type" %in% names(dots)) {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
-                } else {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
-                    points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
-                }
-            } else {
-                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
-                              ...)
-            }
-            e <- eigen(cov(data.frame(u,v)))
-            major <- sqrt(e$values[1])  # major
-            minor <- sqrt(e$values[2])  # minor
-            theta <- seq(0, 2*pi, length.out=100)
-            xx <- major * cos(theta)
-            yy <- minor * sin(theta)
-            theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-            rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
-            xxyy <- rotate %*% rbind(xx, yy)
-            col <- if ("col" %in% dots) col else "red"
-            lines(xxyy[1,], xxyy[2,], lwd=2*par("lwd"), col=col)
-            if (which[w] == 30)
-                arrows(0, 0, mean(x$data$ma$v[,,1], na.rm=TRUE), mean(x$data$ma$v[,,2], na.rm=TRUE), lwd=2, length=1/10, col=col)
         } else {
             stop("unknown value of which (", which[w], ")")
         }
