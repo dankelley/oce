@@ -1,4 +1,5 @@
 0.1-81
+- add unwrap.angle()
 - read.adv.nortek(): detect the velocity range
 - add processing.log.add(), an alternative to processing.log.append()
 - plot.ctd(): add more plot types (and re-used which=9 for salinity, not density)

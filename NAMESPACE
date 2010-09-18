@@ -140,6 +140,7 @@ export(
        tidem.astron,
        tidem.vuf,
        undrift.time,
+       unwrap.angle,
        use.heading,
        vector.show,
        window.oce,
