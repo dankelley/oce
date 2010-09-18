@@ -1,12 +1,12 @@
-\name{unwrap.anagle}
+\name{unwrap.angle}
 
-\alias{unwrap.anagle}
+\alias{unwrap.angle}
 
 \title{Unwrap an angle that suffers modulo-360 problems}
 
 \description{Unwrap an angle that suffers modulo-360 problems}
 
-\usage{unwrap.angle}(angle)}
+\usage{unwrap.angle(angle)}
 
 \arguments{
   \item{angle}{an angle (in degrees) that is thought be near 360

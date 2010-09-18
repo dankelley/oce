@@ -1,9 +1,9 @@
-unwrap.angle <- function(x)
+unwrap.angle <- function(angle)
 {
     to.rad <- atan2(1, 1) / 45
-    x <- x * to.rad
-    S <- sin(x)
-    C <- cos(x)
+    angle <- angle * to.rad
+    S <- sin(angle)
+    C <- cos(angle)
     Smean <- mean(S, na.rm=TRUE)
     Smedian <- median(S, na.rm=TRUE)
     Cmean <- mean(C, na.rm=TRUE)
