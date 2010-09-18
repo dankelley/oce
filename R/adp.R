@@ -333,6 +333,7 @@ plot.adp <- function(x,
             else if (ww == "progressive vector") which2[w] <- 23
             else if (ww == "uv") which2[w] <- 28
             else if (ww == "uv+ellipse") which2[w] <- 29
+            else if (ww == "uv+ellipse+arrow") which2[w] <- 30
             else stop("unknown 'which':", ww)
         }
     }
@@ -575,7 +576,8 @@ plot.adp <- function(x,
             } else {
                 smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             }
-        } else if (which[w] == 29) {    # "uv+ellipse"
+        } else if (which[w] == 29 || which[w] == 30) {    # "uv+ellipse" or "uv+ellipse+arrow"
+            ## FIXME: not DRY enough; should combine 28, 29, and 30, as 29 and 30 are combined
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- prod(dim(x$data$ma$v)[1:2])
             if (!missing(control) && !is.null(control$bin)) {
@@ -603,12 +605,15 @@ plot.adp <- function(x,
             major <- sqrt(e$values[1])  # major
             minor <- sqrt(e$values[2])  # minor
             theta <- seq(0, 2*pi, length.out=100)
-            x <- major * cos(theta)
-            y <- minor * sin(theta)
+            xx <- major * cos(theta)
+            yy <- minor * sin(theta)
             theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
             rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
-            xy <- rotate %*% rbind(x, y)
-            lines(xy[1,], xy[2,], lwd=2*par("lwd"), col=if ("col" %in% dots) col else "red")
+            xxyy <- rotate %*% rbind(xx, yy)
+            col <- if ("col" %in% dots) col else "red"
+            lines(xxyy[1,], xxyy[2,], lwd=2*par("lwd"), col=col)
+            if (which[w] == 30)
+                arrows(0, 0, mean(x$data$ma$v[,,1], na.rm=TRUE), mean(x$data$ma$v[,,2], na.rm=TRUE), lwd=2, length=1/10, col=col)
         } else {
             stop("unknown value of which (", which[w], ")")
         }
@@ -706,7 +711,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
-    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates")
+    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates; consider adp.2enu() if you do not know the coordinate system")
     res <- x
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
@@ -724,17 +729,14 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
         pitch <- - pitch
     }
-    ## FIXME need to check for sontek and nortek here, and
-    ## FIXME  1) add 90 degrees to heading
-    ## FIXME  2) multiply pitch by -1
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
     have.steady.angles <- length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1
-    to.radians <- atan2(1,1) / 45
-    h <- to.radians * heading
-    p <- to.radians * pitch
-    r <- to.radians * roll
+    radian.per.degree <- atan2(1,1) / 45
+    h <- heading * radian.per.degree
+    p <- pitch * radian.per.degree
+    r <- roll * radian.per.degree
     CH <- cos(h)
     SH <- sin(h)
     CP <- cos(p)

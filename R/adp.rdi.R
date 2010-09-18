@@ -64,7 +64,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     else if (bits == "10") beam.angle <- 30
     else if (bits == "11") beam.angle <- NA # means 'other'
     oce.debug(debug, "bits=", bits, "so beam.angle=", beam.angle, "\n")
-    if (beam.angle < 19 || 21 < beam.angle) warning("expecting a beam angle of 20deg [more-or-less standard for RDI] but got", beam.angle, "; using the latter in the transformation matrix")
+    if (beam.angle < 19 || 21 < beam.angle)
+        warning("expecting a beam angle of 20deg [more-or-less standard for RDI] but got", beam.angle, "; using the latter in the transformation matrix")
     bits <- substr(system.configuration, 5, 5)
     if (bits == "0") beam.pattern <- "concave"
     else beam.pattern <- "convex"
@@ -165,19 +166,15 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
-    if (speed.of.sound < 1400 || speed.of.sound > 1600) warning("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
+    if (speed.of.sound < 1400 || speed.of.sound > 1600)
+        warning("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
     ## Comment out some things not needed here (may be wrong, too)
     ##depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
     ##oce.debug(debug, "depth of transducer:", depth.of.transducer, "\n")
     heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01 - heading.bias
-    ##if (heading < 0 || heading > 360) warning("heading ", heading, " should be between 0 and 360 degrees, inclusive")
     pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
     roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
     oce.debug(debug, "VLD header has: heading=", heading, " pitch=", pitch, " roll=", roll, "\n")
-    ##salinity <- readBin(VLD[25:26], "integer", n=1, size=2, endian="little")
-    ##if (salinity < 0 || salinity > 40) warning("salinity is ", salinity, ", which is outside the permitted range of 0 to 40 PSU")
-    ##temperature <- readBin(VLD[27:28], "integer", n=1, size=2, endian="little") * 0.01
-    ##if (temperature < -5 || temperature > 40) warning("temperature is ", temperature, ", which is outside the permitted range of -5 to 40 degC")
 
     ## Skipping a lot ...
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
@@ -390,18 +387,24 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     v[i,,] <- matrix(vv / 1000, ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(v[i,,], "v:"))
                     o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
-                    if (buf[o] != 0x00) warning("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
-                    if (buf[o+1] != 0x02) warning("second byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+                    if (buf[o] != 0x00)
+                        warning("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
+                    if (buf[o+1] != 0x02)
+                        warning("second byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
                     q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(q[i,,], "q:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-                    if (buf[o] != 0x00) warning("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
-                    if (buf[o+1] != 0x03) warning("second byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
+                    if (buf[o] != 0x00)
+                        warning("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
+                    if (buf[o+1] != 0x03)
+                        warning("second byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
                     a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(a[i,,], "a:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
-                    if (buf[o] != 0x00) warning("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
-                    if (buf[o+1] != 0x04) warning("second byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
+                    if (buf[o] != 0x00)
+                        warning("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
+                    if (buf[o+1] != 0x04)
+                        warning("second byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
                     g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
                     ##cat(vector.show(g[i,,], "g:"))
                     if (monitor) {
@@ -439,6 +442,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             depth.of.transducer <- 0.1 * readBin(buf[profile.start2 + 16], "integer", n=profiles.to.read, size=2, endian="little")
             ## Note that the heading.bias needs to be removed
             heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE) - header$heading.bias
+            if (header$heading.bias != 0)
+                warning("subtracted a heading bias of", header$heading.bias, "degrees")
             pitch <- 0.01 * readBin(buf[profile.start2 + 20], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             roll <- 0.01 * readBin(buf[profile.start2 + 22], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             ##tmp <- pitch
@@ -505,12 +510,18 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                                        tm.b     ,       tm.b,       tm.b,      tm.b,
                                                        tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                                      nrow=4, byrow=TRUE)
-            if (!FALSE) { # FIXME: should we modify the transformation matrix?
-                if (metadata$orientation == "upward") {
+            ## FIXME: should we modify the transformation matrix?
+            if (metadata$orientation == "upward") {
+                warning("changed signs of row 1 and row 3 of transformation matrix, because instrument points upwards")
+                if (FALSE) {
                     metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
                     metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
-                } else if (metadata$orientation == "downward") {
-                } else warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
+                } else {
+                    warning("CODE PROBLEM: we *should* be changing signs of rows 1 and 3 of transformation matrix, but we are NOT")
+                }
+            } else if (metadata$orientation == "downward") {
+            } else {
+                warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
             }
             if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
             ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)

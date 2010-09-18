@@ -1630,7 +1630,8 @@ plot.adv <- function(x,
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                               asp=1, ...)
             }
-        } else if (which[w] == 29) {
+        } else if (which[w] == 29 || which[w] == 30) {
+            ## FIXME: not DRY enough; should combine 28, 29, and 30, as 29 and 30 are combined
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- length(x$data$ts$time)
             if (n < 2000) {
@@ -1647,12 +1648,15 @@ plot.adv <- function(x,
             major <- sqrt(e$values[1])
             minor <- sqrt(e$values[2])
             theta <- seq(0, 2*pi, length.out=100)
-            x <- major * cos(theta)
-            y <- minor * sin(theta)
+            xx <- major * cos(theta)
+            yy <- minor * sin(theta)
             theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
             rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
-            xy <- rotate %*% rbind(x, y)
-            lines(xy[1,], xy[2,], lwd=2*par("lwd"), col=if ("col" %in% dots) col else "red")
+            xxyy <- rotate %*% rbind(xx, yy)
+            col <- if ("col" %in% dots) col else "red"
+            lines(xxyy[1,], xxyy[2,], lwd=2*par("lwd"), col=col)
+            if (which[w] == 30)
+                arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE), lwd=2, length=1/10, col=col)
         } else {
             stop("unknown value of \"which\":", which[w])
         }

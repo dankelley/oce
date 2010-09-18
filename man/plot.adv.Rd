@@ -109,6 +109,9 @@
     \item \code{which=29} or \code{"uv+ellipse"} as the \code{"uv"}
       case, but with an added indication of the tidal ellipse,
       calculated from the eigen vectors of the covariance matrix.
+    \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
+      \code{"uv+ellipse"} case, but with an added arrow indicating the
+      mean current.
   }
 }
 
