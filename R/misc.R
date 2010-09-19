@@ -1,3 +1,20 @@
+unwrap.angle <- function(angle)
+{
+    to.rad <- atan2(1, 1) / 45
+    angle <- angle * to.rad
+    S <- sin(angle)
+    C <- cos(angle)
+    Smean <- mean(S, na.rm=TRUE)
+    Smedian <- median(S, na.rm=TRUE)
+    Cmean <- mean(C, na.rm=TRUE)
+    Cmedian <- median(C, na.rm=TRUE)
+    res.mean <- atan2(Smean, Cmean)/to.rad
+    res.median <- atan2(Smedian, Cmedian)/to.rad
+    res.mean <- if (res.mean < 0) res.mean + 360 else res.mean
+    res.median <- if (res.median < 0) res.median + 360 else res.median
+    list(mean=res.mean, median=res.median)
+}
+
 oce.spectrum <- function(x, ...)
 {
     args <- list(...)

@@ -8,7 +8,7 @@
 
 \usage{\method{window}{oce}(x, start = NULL, end = NULL,
      frequency = NULL, deltat = NULL, extend = FALSE,
-     which=c("time","distance"), \dots)}
+     which=c("time","distance"), debug=getOption("oce.debug"), \dots)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
@@ -25,6 +25,7 @@
     applies the windowing on \code{x$data$ss$distance} (for those
     objects, such as \code{adp}, that have a \code{data$ss$distance}
     component).}
+  \item{debug}{a flag that turns on debugging.}
   \item{\dots}{ignored}
 }
 

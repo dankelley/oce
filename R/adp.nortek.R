@@ -183,6 +183,7 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
 }
 
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                            latitude=NA, longitude=NA,
                             type=c("aquadopp high resolution"),
                             debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
@@ -389,6 +390,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      instrument.type="aquadopp-hr",
                      filename=filename,
                      manufacturer="nortek",
+                     latitude=latitude,
+                     longitude=longitude,
                      measurement.start=measurement.start,
                      measurement.end=measurement.end,
                      measurement.deltat=measurement.deltat,

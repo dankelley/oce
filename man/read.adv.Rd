@@ -13,23 +13,29 @@
 read.adv(file, from=1, to, by=1, tz=getOption("oce.tz"),
         type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
         header=TRUE,
+        latitude=NA, longitude=NA,
         start, deltat,
         debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                 type="vector",
                 header=TRUE,
+                latitude=NA, longitude=NA,
                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 type="default",
                 header=TRUE,
+                latitude=NA, longitude=NA,
                 start, deltat,
                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                    header=TRUE, type="",
+                    header=TRUE, 
+                    latitude=NA, longitude=NA,
+                    type="",
                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
                      coordinate.system="xyz",
                      transformation.matrix,
+                     latitude=NA, longitude=NA,
                      debug=getOption("oce.debug"), log.action)
 }
 
@@ -59,6 +65,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     header at the start.  (This will not be the case for files
     that are created by data loggers that chop the raw data up into a
     series of sub-files, e.g. once per hour.)}
+  \item{latitude}{optional signed number indicating the latitude in 
+    degrees North.}
+  \item{longitude}{optional signed number indicating the longitude in 
+    degrees East.}
   \item{start}{the time of the first sample, typically created with
     \code{\link{as.POSIXct}}.  This is mandatory if \code{header} is
     \code{FALSE}.}

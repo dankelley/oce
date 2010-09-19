@@ -11,48 +11,60 @@ as.coastline <- function(latitude, longitude)
 
 plot.coastline <- function (x,
                             asp,
+                            center, span,
                             mgp=getOption("oce.mgp"),
-                            mar=c(mgp[1], mgp[1], 2*par("cex"), 2*par("cex")),
+                            mar=c(mgp[1]+1,mgp[1]+1,1,1),
                             bg,
                             axes=TRUE,
                             expand=1.5,
                             debug=getOption("oce.debug"),
                             ...)
 {
-    if (!inherits(x, "coastline")) stop("method is only for coastline objects")
+    oce.debug(debug, "\b\bplot.coastline() {\n")
+    if (!inherits(x, "coastline"))
+        stop("method is only for coastline objects")
     par(mgp=mgp, mar=mar)
-    dots <- list(...)
-    names.dots <- names(dots)
-    if ("ylim" %in% names.dots || "ylim" %in% names.dots)
-        expand <- 1
-    if (missing(asp)) {
-        if ("ylim" %in% names(dots))
-            asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
-        else
+    gave.center <- !missing(center)
+    gave.span <- !missing(span)
+    if (gave.center != gave.span)
+        stop("must give both 'center' and 'span', or neither one")
+    if (gave.center) {
+        if (length(center) != 2)
+            stop("'center' must contain two values, latitude in deg N and longitude in deg E")
+        asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
+        yr <- center[1] + span * c(-1/2, 1/2) / 111.11
+        xr <- center[2] + span * c(-1/2, 1/2) / 111.11 / asp
+    } else {
+        if (missing(asp)) {
             asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+        }
+        ## Expand
+        xr0 <- range(x$data$longitude, na.rm=TRUE)
+        yr0 <- range(x$data$latitude, na.rm=TRUE)
+        if (expand >= 0) {
+            xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
+            yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
+        }
     }
-    ## Expand
-    xr <- range(x$data$longitude, na.rm=TRUE)
-    yr <- range(x$data$latitude, na.rm=TRUE)
-    if (expand >= 0) {
-        xr <- mean(xr) + expand * diff(xr) * c(-1/2, 1/2)
-        yr <- mean(yr) + expand * diff(yr) * c(-1/2, 1/2)
-    }
-
     ## The following is a somewhat provisional hack, to get around a
     ## tendency of plot() to produce latitudes past the poles.
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
+    oce.debug(debug, "asp=", asp, "\n")
     oce.debug(debug, "par('pin') is", par("pin"), "\n")
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
     oce.debug(debug, "asp.page=", asp.page, "\n")
     gamma <- asp / asp.page
     oce.debug(debug, "asp/asp.page=", asp / asp.page, "\n")
     if ((asp / asp.page) < 1) {
-        oce.debug(debug, "type 1\n")
-        xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
+        oce.debug(debug, "type 1 (will narrow x range)\n")
+        d <- asp / asp.page * diff(xr)
+        xr <- mean(xr) + d * c(-1/2, 1/2)
+        ## xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
     } else {
-        oce.debug(debug, "type 2\n")
-        yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
+        oce.debug(debug, "type 2 (will narrow y range)\n")
+        d <- asp / asp.page * diff(yr)
+        yr <- mean(yr) + d * c(-1/2, 1/2)
+        ##yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
     }
     if (!missing(bg)) {
         plot.window(xr, yr, asp=asp, xlab="", ylab="", xaxs="i", yaxs="i", log="", ...)
@@ -63,7 +75,7 @@ plot.coastline <- function (x,
     plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i",
          axes=axes, ...)
     if (debug > 0) {
-        points(xr, yr, col="blue", pch=20)
+        points(xr, yr, col="blue", pch=20, cex=3)
         abline(v=xr, col="red")
     }
     yaxp <- par("yaxp")
@@ -79,9 +91,9 @@ plot.coastline <- function (x,
     } else {
     	lines(x$data$longitude, x$data$latitude, asp=asp, yaxs="i", xaxs="i", xlab="", ylab="", ...)
     }
-    oce.debug(debug,
-        "lon lim:", range(x$data$longitude,na.rm=TRUE),
-        "lat lim:", range(x$data$latitude,na.rm=TRUE))
+    oce.debug(debug, "lat lim:", range(x$data$latitude,na.rm=TRUE), "\n")
+    oce.debug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
+    oce.debug(debug, "\b\b} # plot.coastline()\n")
 }
 
 read.coastline <- function(file,type=c("R","S","mapgen"),debug=getOption("oce.debug"),log.action)

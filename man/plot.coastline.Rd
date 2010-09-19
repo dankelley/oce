@@ -8,8 +8,9 @@
 
 \usage{\method{plot}{coastline}(x,
      asp,
+     center, span,
      mgp=getOption("oce.mgp"), 
-     mar=c(mgp[1], mgp[1], 2*par("cex"), 2*par("cex")),
+     mar=c(mgp[1]+1,mgp[1]+1,1,1),
      bg,
      axes=TRUE,
      expand=1.5,
@@ -28,6 +29,11 @@
     Note that the land mass is not symmetric about the equator, so
     to get good world views you should set \code{asp=1} or 
     set \code{ylim} to be symmetric about zero.}
+  \item{center}{optional center of map, a vector containing latitude in
+    degrees north, then longitude in degrees east. (Must be accompanied
+    by \code{span}.)}
+  \item{span}{optional suggested span of plot, in kilometers (must be
+    supplied, if \code{center} is supplied).}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the

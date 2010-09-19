@@ -50,17 +50,25 @@ ad.beam.name <- function(x, which)
 }
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                     type=c("rdi", "nortek", "sontek"), debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+                     latitude=NA, longitude=NA,
+                     type=c("rdi", "nortek", "sontek"),
+                     debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     oce.debug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)
     if (monitor) cat(file, "\n", ...)
     if (type == "rdi")
-        read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
+                     latitude=latitude, longitude=longitude,
+                     debug=debug-1, monitor=monitor, log.action=log.action, ...)
     else if (type == "nortek")
-        read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
+                        latitude=latitude, longitude=longitude,
+                        debug=debug-1, monitor=monitor, log.action=log.action, ...)
     else if (type == "sontek")
-        read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz, debug=debug-1, monitor=monitor, log.action=log.action, ...)
+        read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
+                        latitude=latitude, longitude=longitude,
+                        debug=debug-1, monitor=monitor, log.action=log.action, ...)
 }
 
 summary.adp <- function(object, ...)
@@ -105,6 +113,8 @@ summary.adp <- function(object, ...)
         have.data <- !is.null(object$data)
         res <- res.specific
         res$have.data <- have.data
+        res$latitude <- object$metadata$latitude
+        res$longitude <- object$metadata$longitude
         res$filename <- object$metadata$filename
         res$instrument.type <- object$metadata$instrument.type
         res$serial.number <- object$metadata$serial.number
@@ -169,7 +179,11 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("ADP Summary\n-----------\n\n", ...)
     cat(paste("* Instrument:         ", x$instrument.type, ", serial number ``", paste(x$metadata$serial.number, collapse=""), "``\n", sep=""), ...)
-    cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
+    cat(paste("* Source filename:   ``", x$filename, "``\n", sep=""), ...)
+    if ("latitude" %in% names(x)) {
+        cat(paste("* Location:           ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
+                  if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
+    }
     have.data <- x$have.data
     if (have.data) {
         cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
@@ -318,7 +332,8 @@ plot.adp <- function(x,
             else if (ww == "roll") which2[w] <- 18
             else if (ww == "progressive vector") which2[w] <- 23
             else if (ww == "uv") which2[w] <- 28
-            else if (ww == "uv+ellipse") which2[w] <- 28.1
+            else if (ww == "uv+ellipse") which2[w] <- 29
+            else if (ww == "uv+ellipse+arrow") which2[w] <- 30
             else stop("unknown 'which':", ww)
         }
     }
@@ -538,7 +553,7 @@ plot.adp <- function(x,
                 t <- try(eval(adorn[w]), silent=TRUE)
                 if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
             }
-        } else if (round(which[w], 1) == 28) {         # 28 or "uv"
+        } else if (which[w] %in% 28:30) { # "uv", "uv+ellipse", or "uv+ellipse+arrow"
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- prod(dim(x$data$ma$v)[1:2])
             if (!missing(control) && !is.null(control$bin)) {
@@ -561,40 +576,28 @@ plot.adp <- function(x,
             } else {
                 smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             }
-        } else if (round(which[w], 1) == 28.1) { # 28.1 or "uv+ellipse"
-            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- prod(dim(x$data$ma$v)[1:2])
-            if (!missing(control) && !is.null(control$bin)) {
-                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
-                max.bin <- dim(x$data$ma$v)[2]
-                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                u <- x$data$ma$v[,control$bin,1]
-                v <- x$data$ma$v[,control$bin,2]
-            } else {
-                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
-                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
-            }
-            if (n < 2000) {
-                if ("type" %in% names(dots)) {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
-                } else {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
-                    points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
+            if (which[w] >= 29) {
+                e <- eigen(cov(data.frame(u,v)))
+                major <- sqrt(e$values[1])  # major
+                minor <- sqrt(e$values[2])  # minor
+                theta <- seq(0, 2*pi, length.out=360/5)
+                xx <- major * cos(theta)
+                yy <- minor * sin(theta)
+                theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+                rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                xxyy <- rotate %*% rbind(xx, yy)
+                col <- if (!missing(col)) col else "darkblue"
+                lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
+                lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                if (which[w] >= 30) {
+                    arrows(0, 0, mean(x$data$ma$v[,,1], na.rm=TRUE), mean(x$data$ma$v[,,2], na.rm=TRUE),
+                           lwd=5, length=1/10, col="yellow")
+                    arrows(0, 0, mean(x$data$ma$v[,,1], na.rm=TRUE), mean(x$data$ma$v[,,2], na.rm=TRUE),
+                           lwd=2, length=1/10, col=col)
                 }
-            } else {
-                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
-                              ...)
             }
-            e <- eigen(cov(data.frame(u,v)))
-            major <- sqrt(e$values[1])  # major
-            minor <- sqrt(e$values[2])  # minor
-            theta <- seq(0, 2*pi, length.out=100)
-            x <- major * cos(theta)
-            y <- minor * sin(theta)
-            theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-            rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
-            xy <- rotate %*% rbind(x, y)
-            lines(xy[1,], xy[2,])
+        } else {
+            stop("unknown value of which (", which[w], ")")
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
@@ -645,6 +648,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,4] <- tm[4,1] * x$data$ma$v[,,1] + tm[4,2] * x$data$ma$v[,,2] + tm[4,3] * x$data$ma$v[,,3] + tm[4,4] * x$data$ma$v[,,4]
     } else if (inherits(x, "nortek")) {
+        warning("should perhaps flip the signs of rows 2 and 3 of nortek transformation matrix")
         if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from nortek")
         res <- x
         if (!is.null(x$metadata$transformation.matrix)) {
@@ -664,6 +668,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             stop("adp.beam2xyz() needs metadata$transformation.matrix")
         }
     } else if (inherits(x, "sontek")) {
+        warning("should perhaps flip the signs of rows 2 and 3 of sontek transformation matrix")
         if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from sontek")
         res <- x
         if (!is.null(x$metadata$transformation.matrix)) {
@@ -690,14 +695,14 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
-    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates")
+    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates; consider adp.2enu() if you do not know the coordinate system")
     res <- x
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
     if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) {
         if (res$metadata$orientation == "upward") {
-            oce.debug(debug, "adding 180deg to the roll of this RDI instrument, because it points upward\n")
+            warning("adding 180 deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
         }
     }
@@ -708,17 +713,14 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
         pitch <- - pitch
     }
-    ## FIXME need to check for sontek and nortek here, and
-    ## FIXME  1) add 90 degrees to heading
-    ## FIXME  2) multiply pitch by -1
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
     have.steady.angles <- length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1
-    to.radians <- atan2(1,1) / 45
-    h <- to.radians * heading
-    p <- to.radians * pitch
-    r <- to.radians * roll
+    radian.per.degree <- atan2(1,1) / 45
+    h <- heading * radian.per.degree
+    p <- pitch * radian.per.degree
+    r <- roll * radian.per.degree
     CH <- cos(h)
     SH <- sin(h)
     CP <- cos(p)

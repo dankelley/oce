@@ -1,5 +1,4 @@
 \name{section}
-\docType{section}
 \alias{section}
 \title{Seawater CTD section}
 \description{A CTD section running the length of Halifax Harbour}

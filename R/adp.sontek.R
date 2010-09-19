@@ -1,4 +1,5 @@
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                            latitude=NA, longitude=NA,
                             type=c("adp"),
                             debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
@@ -280,6 +281,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     metadata <- list(manufacturer="sontek",
                      filename=filename,
                      serial.number=if (exists('serial.number')) serial.number else "?",
+                     latitude=latitude,
+                     longitude=longitude,
                      measurement.start=measurement.start,
                      measurement.end=measurement.end,
                      measurement.deltat=measurement.deltat,
