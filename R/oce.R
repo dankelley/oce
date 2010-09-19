@@ -169,6 +169,8 @@ oce.plot.ts <- function(x,
 {
     debug <- min(debug, 4)
     oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", ...) {\n",sep="")
+    oce.debug(debug, "length(x)", length(x), "\n")
+    oce.debug(debug, "length(y)", length(y), "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     oce.debug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
@@ -205,7 +207,7 @@ oce.plot.ts <- function(x,
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
     }
-    oce.debug(debug, "\b\b}\n")
+    oce.debug(debug, "\b\b} # oce.plot.ts()\n")
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
@@ -420,33 +422,38 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         oce.debug(debug, "subset.string='", subset.string, "'\n")
         if (length(grep("time", subset.string))) {
             oce.debug(debug, "subsetting an adv object by time\n")
-            keep <- eval(substitute(subset), x$data$ts, parent.frame())
-            oce.debug(debug, "keeping", sum(keep), "of the", length(keep), "time slots\n")
-            oce.debug(debug, vector.show(keep, "keeping bins:"))
-            first.kept <- which(keep==TRUE)[1]
-            oce.debug(debug, "first kept data$ts bin is", first.kept, "which has data$ts$time", format(x$data$ts$time[first.kept]), attr(x$data$ts$time[1], "tzone"), "\n")
-            if (sum(keep) < 2)
+            oce.debug(debug, "Step 1: subset x$data$ts\n")
+            keep <- eval(substitute(subset), x$data$ts, parent.frame()) # used for $ts and $ma, but $ts.slow gets another
+            sum.keep <- sum(keep)
+            if (sum.keep < 2)
                 stop("must keep at least 2 profiles")
+            oce.debug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
+            oce.debug(debug, vector.show(keep, "keeping bins:"))
             rval <- x
             for (name in names(x$data$ts)) {
-                oce.debug(debug, "   subsetting data$ts[[", name, "]]\n", sep="")
-                if (1 == length(x$data[[name]])) { # no need to do anything for e.g. constant headings
+                oce.debug(debug, "   subsetting data$ts[[\"", name, "\"]] ", sep="")
+                if (1 == length(x$data$ts[[name]])) { # no need to do anything for e.g. constant headings
+                    rval$data$ts[[name]] <- x$data$ts[[name]]
+                } else {
                     rval$data$ts[[name]] <- x$data$ts[[name]][keep]
                 }
+                oce.debug(debug, "(kept", length(rval$data$ts[[name]]), "of the original", length(x$data$ts[[name]]), "data)\n")
             }
+            ##cat("    x:\n");print(str(x$data$ts))
+            ##cat("    rval:\n");print(str(rval$data$ts))
             oce.debug(debug, "after trimming time, first data$ts$time is", format(rval$data$ts$time[1]), attr(rval$data$ts$time[1], "tzone"), "\n")
+            oce.debug(debug, "Step 2: subset x$data$ts.slow (if there is such an item, which is only true for Nortek devices)\n")
             if ("ts.slow" %in% names(x$data)) {
                 oce.debug(debug, "   subsetting data$ts.slow[[", name, "]]\n", sep="")
-                if (1 == length(x$data[[name]])) { # no need to do anything for e.g. constant headings
+                if (1 == length(x$data$ts.slow[[name]])) { # no need to do anything for e.g. constant headings
                     keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
-                    first.kept <- which(keep.slow == TRUE)[1]
-                    oce.debug(debug, "first kept data$ts.slow bin is", first.kept, "which has data$ts.slow$time", format(rval$data$ts.slow$time[first.kept]), attr(rval$data$ts$time[1], "tzone"), "\n")
                     for (name in names(x$data$ts.slow)) {
                         rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
                     }
                 }
                 oce.debug(debug, "after trimming time, first data$ts.slow$time is", format(rval$data$ts.slow$time[1]), attr(rval$data$ts.slow$time[1], "tzone"), "\n")
             }
+            oce.debug(debug, "Step 3: subset x$data$ma (e.g. velocity)\n")
             for (name in names(x$data$ma)) {
                 oce.debug(debug, "   subsetting data$ma[[", name, "]]\n", sep="")
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
@@ -892,5 +899,5 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
     axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
-    oce.debug(debug, "\b\b}\n")
+    oce.debug(debug, "\b\b} # oce.axis.ts()\n")
 }

@@ -576,7 +576,7 @@ plot.adp <- function(x,
             } else {
                 smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             }
-            if (which[w] >= 28) {
+            if (which[w] >= 29) {
                 e <- eigen(cov(data.frame(u,v)))
                 major <- sqrt(e$values[1])  # major
                 minor <- sqrt(e$values[2])  # minor

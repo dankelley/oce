@@ -1355,6 +1355,7 @@ plot.adv <- function(x,
             else if (ww == "progressive vector") which2[w] <- 23
             else if (ww == "uv") which2[w] <- 28
             else if (ww == "uv+ellipse") which2[w] <- 29
+            else if (ww == "uv+ellipse+arrow") which2[w] <- 30
             else stop("unknown 'which':", ww)
         }
     }
@@ -1386,6 +1387,9 @@ plot.adv <- function(x,
                             ...)
                 points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=col.brush)
             } else {
+                print(str(x$data$ts))
+##                print(str(x$data$ts$time))
+##                print(str(y))
                 oce.plot.ts(x$data$ts$time, y, ylab=ad.beam.name(x, which[w]),
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
@@ -1617,7 +1621,7 @@ plot.adv <- function(x,
             plot(x.dist, y.dist, xlab="km", ylab="km", type=type,
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                  asp=1, ...)
-        } else if (which[w] == 28 || which[w] == "uv") {
+        } else if (which[w] >= 28) {
             oce.debug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- length(x$data$ts$time)
@@ -1630,33 +1634,22 @@ plot.adv <- function(x,
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                               asp=1, ...)
             }
-        } else if (which[w] == 29 || which[w] == 30) {
-            ## FIXME: not DRY enough; should combine 28, 29, and 30, as 29 and 30 are combined
-            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- length(x$data$ts$time)
-            if (n < 2000) {
-                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
-                     cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                     asp=1, ...)
-            } else {
-                smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
-                              cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                              asp=1, ...)
+            if (which[w] >= 29) {
+                uv <- data.frame(u=x$data$ma$v[,1], v=x$data$ma$v[,2])
+                e <- eigen(cov(uv))
+                major <- sqrt(e$values[1])
+                minor <- sqrt(e$values[2])
+                theta <- seq(0, 2*pi, length.out=360/5)
+                xx <- major * cos(theta)
+                yy <- minor * sin(theta)
+                theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+                rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                xxyy <- rotate %*% rbind(xx, yy)
+                col <- if ("col" %in% dots) col else "red"
+                lines(xxyy[1,], xxyy[2,], lwd=2*par("lwd"), col=col)
+                if (which[w] >= 30)
+                    arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE), lwd=2, length=1/10, col=col)
             }
-            uv <- data.frame(u=x$data$ma$v[,1], v=x$data$ma$v[,2])
-            e <- eigen(cov(uv))
-            major <- sqrt(e$values[1])
-            minor <- sqrt(e$values[2])
-            theta <- seq(0, 2*pi, length.out=360/5)
-            xx <- major * cos(theta)
-            yy <- minor * sin(theta)
-            theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-            rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
-            xxyy <- rotate %*% rbind(xx, yy)
-            col <- if ("col" %in% dots) col else "red"
-            lines(xxyy[1,], xxyy[2,], lwd=2*par("lwd"), col=col)
-            if (which[w] == 30)
-                arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE), lwd=2, length=1/10, col=col)
         } else {
             stop("unknown value of \"which\":", which[w])
         }
@@ -1669,7 +1662,7 @@ plot.adv <- function(x,
             par(mar=omar)
         }
     }
-    oce.debug(debug, "\b\b}\n")
+    oce.debug(debug, "\b\b} # plot.adv()\n")
 }
 
 adv.2enu <- function(x, debug=getOption("oce.debug"))
@@ -1685,7 +1678,7 @@ adv.2enu <- function(x, debug=getOption("oce.debug"))
     } else {
         warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oce.debug(debug, "\b\b}\n")
+    oce.debug(debug, "\b\b} # adv.2enu()\n")
     rval
 }
 
@@ -1716,7 +1709,7 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
     res$metadata$oce.coordinate <- "xyz"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b}\n")
+    oce.debug(debug, "\b\b} # adv.beam2xyz()\n")
     res
 }
 
@@ -1811,7 +1804,7 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
     res$metadata$oce.coordinate <- "enu"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b}\n")
+    oce.debug(debug, "\b\b} # adv.xyz2enu()\n")
     res
 }
 
@@ -1838,6 +1831,6 @@ adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
     res$metadata$oce.coordinate <- "other"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b}\n")
+    oce.debug(debug, "\b\b} # adv.enu2other()\n")
     res
 }
