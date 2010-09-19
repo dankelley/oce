@@ -37,7 +37,7 @@ par(mfrow=c(1,2))
 plot(adp, which="uv+ellipse+arrow")
 data(coastline.sle)
 # plot local area
-plot.coastline(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude), span=50)
+plot(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude), span=50)
 points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
 }
 
