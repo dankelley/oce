@@ -1645,10 +1645,15 @@ plot.adv <- function(x,
                 theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
                 rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
                 xxyy <- rotate %*% rbind(xx, yy)
-                col <- if ("col" %in% dots) col else "red"
-                lines(xxyy[1,], xxyy[2,], lwd=2*par("lwd"), col=col)
-                if (which[w] >= 30)
-                    arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE), lwd=2, length=1/10, col=col)
+                col <- if ("col" %in% names(dots)) col else "darkblue"
+                lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
+                lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                if (which[w] >= 30) {
+                    arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE),
+                           lwd=5, length=1/10, col="yellow")
+                    arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE),
+                           lwd=2, length=1/10, col=col)
+                }
             }
         } else {
             stop("unknown value of \"which\":", which[w])

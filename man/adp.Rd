@@ -26,18 +26,19 @@ adp <- adp.xyz2enu(xyz, declination=-18.1)
 library(oce)
 data(adp)
 
-# images of velocity components
+# Velocity components.  (Note: we should probably trim some bins at top.)
 plot(adp)
 
-# see if tides moved the mooring
+# Note that tides have moved the mooring.
 plot(adp, which=15:18)
 
-# horizontal velocity scattergram, and coastline
+# Do currents line up with bathymetry?
 par(mfrow=c(1,2))
-plot(adp, which=29)
+plot(adp, which="uv+ellipse+arrow")
 data(coastline.sle)
-plot(coastline.sle,xlim=c(-70,-69.5), ylim=c(47.7,48.1))
-points(-69.73433, 47.88126, col="red")
+# plot local area
+plot.coastline(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude), span=50)
+points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
 }
 
 \usage{data(adp)}
