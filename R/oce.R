@@ -174,6 +174,9 @@ oce.plot.ts <- function(x,
     oce.debug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
     par(mgp=mgp, mar=mar)
     args <- list(...)
+    if (length(y) == 1)
+        y <- rep(y, length(x))
+
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
@@ -421,28 +424,32 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             oce.debug(debug, "keeping", sum(keep), "of the", length(keep), "time slots\n")
             oce.debug(debug, vector.show(keep, "keeping bins:"))
             first.kept <- which(keep==TRUE)[1]
-            oce.debug(debug, "first kept data$ts bin is", first.kept, "which has data$ts$time", format(x$data$ts$time[first.kept]), "(zone=", attr(x$data$ts$time[1], "tzone"), ")\n")
+            oce.debug(debug, "first kept data$ts bin is", first.kept, "which has data$ts$time", format(x$data$ts$time[first.kept]), attr(x$data$ts$time[1], "tzone"), "\n")
             if (sum(keep) < 2)
                 stop("must keep at least 2 profiles")
             rval <- x
             for (name in names(x$data$ts)) {
-                oce.debug(debug, " subsetting data$ts[[", name, "]]\n", sep="")
-                rval$data$ts[[name]] <- x$data$ts[[name]][keep]
-            }
-            oce.debug(debug, "after trimming time, first data$ts$time is", format(rval$data$ts$time[1]), "(zone=", attr(rval$data$ts$time[1], "tzone"), ")\n")
-            for (name in names(x$data$ma)) {
-                oce.debug(debug, " subsetting data$ma[[", name, "]]\n", sep="")
-                rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
-            }
-            if ("ts.slow" %in% names(x$data)) {
-                keep <- eval(substitute(subset), x$data$ts.slow, parent.frame())
-                first.kept <- which(keep==TRUE)[1]
-                oce.debug(debug, "first kept data$ts.slow bin is", first.kept, "which has data$ts.slow$time", format(rval$data$ts.slow$time[first.kept]), "(zone=", attr(rval$data$ts$time[1], "tzone"), ")\n")
-                for (name in names(x$data$ts.slow)) {
-                    oce.debug(debug, " subsetting data$ts.slow[[", name, "]]\n", sep="")
-                    rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep]
+                oce.debug(debug, "   subsetting data$ts[[", name, "]]\n", sep="")
+                if (1 == length(x$data[[name]])) { # no need to do anything for e.g. constant headings
+                    rval$data$ts[[name]] <- x$data$ts[[name]][keep]
                 }
-                oce.debug(debug, "after trimming time, first data$ts.slow$time is", format(rval$data$ts.slow$time[1]), "(zone=", attr(rval$data$ts.slow$time[1], "tzone"), ")\n")
+            }
+            oce.debug(debug, "after trimming time, first data$ts$time is", format(rval$data$ts$time[1]), attr(rval$data$ts$time[1], "tzone"), "\n")
+            if ("ts.slow" %in% names(x$data)) {
+                oce.debug(debug, "   subsetting data$ts.slow[[", name, "]]\n", sep="")
+                if (1 == length(x$data[[name]])) { # no need to do anything for e.g. constant headings
+                    keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+                    first.kept <- which(keep.slow == TRUE)[1]
+                    oce.debug(debug, "first kept data$ts.slow bin is", first.kept, "which has data$ts.slow$time", format(rval$data$ts.slow$time[first.kept]), attr(rval$data$ts$time[1], "tzone"), "\n")
+                    for (name in names(x$data$ts.slow)) {
+                        rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
+                    }
+                }
+                oce.debug(debug, "after trimming time, first data$ts.slow$time is", format(rval$data$ts.slow$time[1]), attr(rval$data$ts.slow$time[1], "tzone"), "\n")
+            }
+            for (name in names(x$data$ma)) {
+                oce.debug(debug, "   subsetting data$ma[[", name, "]]\n", sep="")
+                rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
         } else {
             stop("only 'time' is permitted for subsetting")

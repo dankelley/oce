@@ -499,12 +499,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             ##            |
             ##    x <-----*   (z into page, or downward)
             ##
-            ## Thus, for the upwards-mounted orientation, we must transform
-            ## x to -x and z to -z.  The matrix below is from page 13 (section 5.30
-            ## of the ACT.  So, if the orientation is upwards, we need to
-            ## change the signs of rows 1 and 3.
-            ## NOTE: be careful on rows and columns, which differ in different codes.
-            ## check: http://currents.soest.hawaii.edu/hg/hgwebdir.cgi/pycurrents/file/tip/adcp/transform.py
+            ## The matrix below is from page 13 (section 5.30) of the ACT.  Later on,
+            ## in adp.beam2xyz(), we will change the sign of rows 1 and 3, if the
+            ## device is pointing upwards.
+            ##
+            ## As a check on coding, see the python software at
+            ##   http://currents.soest.hawaii.edu/hg/hgwebdir.cgi/pycurrents/file/tip/adcp/transform.py
             metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
                                                        0        ,          0, -tm.c*tm.a, tm.c*tm.a,
                                                        tm.b     ,       tm.b,       tm.b,      tm.b,
