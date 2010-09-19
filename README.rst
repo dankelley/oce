@@ -20,5 +20,11 @@ to switch to the ``develop`` branch and then do
 to pull the updates.  (If you stay on the develop branch, you will
 just need to do this final step, to get updates.)
 
+Please note that the ``develop`` branch is merged into the ``master``
+branch about once every few weeks, or whenever the developer convinces
+himself that there is a useful (and stable) change that needs broader
+dissemination.
+
+
 
 
