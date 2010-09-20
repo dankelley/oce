@@ -1635,8 +1635,8 @@ plot.adv <- function(x,
                               asp=1, ...)
             }
             if (which[w] >= 29) {
-                uv <- data.frame(u=x$data$ma$v[,1], v=x$data$ma$v[,2])
-                e <- eigen(cov(uv))
+                ok <- !is.na(x$data$ma$v[,1]) & !is.na(x$data$ma$v[,2])
+                e <- eigen(cov(data.frame(u=x$data$ma$v[ok,1], v=x$data$ma$v[ok,2])))
                 major <- sqrt(e$values[1])
                 minor <- sqrt(e$values[2])
                 theta <- seq(0, 2*pi, length.out=360/5)

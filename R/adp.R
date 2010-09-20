@@ -577,7 +577,8 @@ plot.adp <- function(x,
                 smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             }
             if (which[w] >= 29) {
-                e <- eigen(cov(data.frame(u,v)))
+                ok <- !is.na(u) & !is.na(v)
+                e <- eigen(cov(data.frame(u[ok],v[ok])))
                 major <- sqrt(e$values[1])  # major
                 minor <- sqrt(e$values[2])  # minor
                 theta <- seq(0, 2*pi, length.out=360/5)
