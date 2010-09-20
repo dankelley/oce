@@ -510,21 +510,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                                        tm.b     ,       tm.b,       tm.b,      tm.b,
                                                        tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                                      nrow=4, byrow=TRUE)
-            ## FIXME: should we modify the transformation matrix?
-            if (metadata$orientation == "upward") {
-                warning("changed signs of row 1 and row 3 of transformation matrix, because instrument points upwards")
-                if (FALSE) {
-                    metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
-                    metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
-                } else {
-                    warning("CODE PROBLEM: we *should* be changing signs of rows 1 and 3 of transformation matrix, but we are NOT")
-                }
-            } else if (metadata$orientation == "downward") {
-            } else {
-                warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
-            }
             if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
-            ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oce.tz")
             data <- list(ma=list(v=v, a=a, q=q, g=g),
