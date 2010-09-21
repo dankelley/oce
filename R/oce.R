@@ -488,10 +488,13 @@ magic <- function(file, debug=getOption("oce.debug"))
 {
     filename <- file
     if (is.character(file)) {
-        oce.debug(debug, "checking filename to see if it ends in .adr ...\n")
-        if (length(grep(".adr$", file))) {
-            oce.debug(debug, "yes, so this is adv/sontek/adr.\n")
+        oce.debug(debug, "checking filename to see if it matches known patterns\n")
+        if (length(grep(".adr$", filename))) {
+            oce.debug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
+        } else if (length(grep(".s4a.", filename))) {
+            oce.debug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
+            return("interocean/s4")
         }
         oce.debug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
@@ -614,6 +617,7 @@ read.oce <- function(file, ...)
     if (type == "adv/nortek/vector")      return(read.adv.nortek(file, log.action=log.action, ...))
     if (type == "adv/sontek/adr")         return(read.adv.sontek.adr(file, log.action=log.action, ...))
     ## FIXME need adv/sontek (non adr)
+    if (type == "interocean/s4")          return(read.cm.s4(file, log.action=log.action, ...))
     if (type == "ctd/sbe/19")             return(read.ctd.sbe(file, log.action=log.action, ...))
     if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, log.action=log.action, ...))
     if (type == "coastline")              return(read.coastline(file, type="mapgen", log.action=log.action, ...))
