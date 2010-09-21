@@ -2,7 +2,7 @@
 
 \alias{plot.cm}
 
-\title{Plot \code{cm} (current meter) data}
+\title{Plot cm (current meter) data}
 
 \description{Plot \code{cm} (current meter) data}
 

@@ -3,7 +3,7 @@
 \alias{summary.cm}
 \alias{print.summary.cm}
 
-\title{Summarize a \code{cm} (current meter) object}
+\title{Summarize a cm (current meter) object}
 
 \description{Summarize a \code{cm} (current meter) object}
 
