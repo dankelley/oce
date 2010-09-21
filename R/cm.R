@@ -1,8 +1,8 @@
 ## cm.R current-meter support (interocean S4)
 
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                    latitude=NA, longitude=NA,
                     type=c("s4"),
+                    latitude=NA, longitude=NA,
                     debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
     oce.debug(debug, "read.cm(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
@@ -148,15 +148,12 @@ print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 plot.cm <- function(x,
                     which=1:2,
-                    col="black",
-                    titles,
                     type="l",
                     adorn=NULL,
                     draw.time.range=getOption("oce.draw.time.range"),
+                    draw.zero.line=FALSE,
                     mgp=getOption("oce.mgp"),
-                    mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
-                    ##margins.as.image=FALSE,
-                    cex=1,
+                    mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                     debug=getOption("oce.debug"),
                     ...)
 {
@@ -171,10 +168,9 @@ plot.cm <- function(x,
     }
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
-    if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
     oce.debug(debug, "length(which) =", lw, "\n")
     if (lw > 1) on.exit(par(opar))
-    par(mgp=mgp, mar=mar, cex=cex)
+    par(mgp=mgp, mar=mar)
     dots <- list(...)
     gave.ylim <- "ylim" %in% names(dots)
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
@@ -211,11 +207,15 @@ plot.cm <- function(x,
     for (w in 1:lw) {
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] == 1) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$u, type=type, col=col, ...)
+            oce.plot.ts(x$data$ts$time, x$data$ts$u, type=type, ...)
+            if (draw.zero.line)
+                abline(h=0)
         } else if (which[w] == 2) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$v, type=type, col=col, ...)
+            oce.plot.ts(x$data$ts$time, x$data$ts$v, type=type, ...)
+            if (draw.zero.line)
+                abline(h=0)
         } else if (which[w] == 2) {
-            plot(x$data$ts$u, x$data$ts$v, type=type, col=col, ...)
+            plot(x$data$ts$u, x$data$ts$v, type=type, ...)
         } else {
             stop("unknown value of which (", which[w], ")")
         }

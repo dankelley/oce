@@ -50,7 +50,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     of that profile, as created with \code{\link{as.POSIXct}} (hint: use
     \code{tz="UTC"}).  This argument is ignored if
     \code{header==FALSE}. See \dQuote{Examples}.}
-  \item{to}{indication of the last profiel to read, in a format matching
+  \item{to}{indication of the last profile to read, in a format matching
     that of \code{from}.  This is ignored if \code{header==FALSE}.}
   \item{by}{an indication of the stride length to use while walking
     through the file.    This is ignored if \code{header==FALSE}.
