@@ -1,4 +1,5 @@
 0.1-81
+- add support for interocean 's4' current meters
 - add unwrap.angle()
 - read.adv.nortek(): detect the velocity range
 - add processing.log.add(), an alternative to processing.log.append()

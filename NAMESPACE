@@ -71,6 +71,7 @@ export(
        plot.adp,
        plot.adv,
        plot.TS,
+       plot.cm,
        plot.coastline,
        plot.ctd,
        plot.ctd.scan,
@@ -96,6 +97,7 @@ export(
        read.adv.sontek,
        read.adv.sontek.adr,
        read.adv.sontek.text,
+       read.cm,
        read.coastline,
        read.ctd,
        read.ctd.sbe,
@@ -149,6 +151,7 @@ export(
 
 S3method(plot, adp)
 S3method(plot, adv)
+S3method(plot, cm)
 S3method(plot, coastline)
 S3method(plot, ctd)
 S3method(plot, lobo)
@@ -161,6 +164,7 @@ S3method(plot, windrose)
 S3method(print, processing.log.summary)
 S3method(print, summary.adp)
 S3method(print, summary.adv)
+S3method(print, summary.cm)
 S3method(print, summary.coastline)
 S3method(print, summary.ctd)
 S3method(print, summary.lobo)
@@ -172,6 +176,7 @@ S3method(print, summary.topo)
 S3method(predict, tidem)
 S3method(summary, adp)
 S3method(summary, adv)
+S3method(summary, cm)
 S3method(summary, coastline)
 S3method(summary, ctd)
 S3method(summary, lobo)
