@@ -154,11 +154,11 @@ plot.cm <- function(x,
                     draw.zero.line=FALSE,
                     mgp=getOption("oce.mgp"),
                     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                    small=2000,
                     debug=getOption("oce.debug"),
                     ...)
 {
-    oce.debug(debug, "\n")
-    oce.debug(debug, "Entering plot.cm()\n")
+    oce.debug(debug, "\b\bplot.cm() {\n")
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!inherits(x, "cm")) stop("method is only for cm objects")
@@ -189,9 +189,12 @@ plot.cm <- function(x,
             if (     ww == "u") which2[w] <- 1
             else if (ww == "v") which2[w] <- 2
             else if (ww == "uv") which2[w] <- 3
+            else if (ww == "uv+ellipse") which2[w] <- 4
+            else if (ww == "uv+ellipse+arrow") which2[w] <- 5
             else stop("unknown 'which':", ww)
         }
     }
+    which <- which2
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
@@ -204,18 +207,43 @@ plot.cm <- function(x,
         par(mfrow=c(lw, 1))
         oce.debug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
     }
+    len <- length(x$data$ts$u)
     for (w in 1:lw) {
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] == 1) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$u, type=type, ...)
+            oce.plot.ts(x$data$ts$time, x$data$ts$u, type=type, xlab="", ylab="u [m/s]", ...)
             if (draw.zero.line)
                 abline(h=0)
         } else if (which[w] == 2) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$v, type=type, ...)
+            oce.plot.ts(x$data$ts$time, x$data$ts$v, type=type, xlab="", ylab="v [m/s]", ...)
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] == 2) {
-            plot(x$data$ts$u, x$data$ts$v, type=type, ...)
+        } else if (which[w] >= 3) {
+            if (len <= small)
+                plot(x$data$ts$u, x$data$ts$v, type=type, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+            else
+                smoothScatter(x$data$ts$u, x$data$ts$v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+            if (which[w] >= 4) {
+                ok <- !is.na(x$data$ts$u) & !is.na(x$data$ts$v)
+                e <- eigen(cov(data.frame(u=x$data$ts$u[ok], v=x$data$ts$v[ok])))
+                major <- sqrt(e$values[1])
+                minor <- sqrt(e$values[2])
+                theta <- seq(0, 2*pi, length.out=360/5)
+                xx <- major * cos(theta)
+                yy <- minor * sin(theta)
+                theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
+                rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                xxyy <- rotate %*% rbind(xx, yy)
+                col <- if ("col" %in% names(dots)) col else "darkblue"
+                lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
+                lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                if (which[w] >= 5) {
+                    umean <- mean(x$data$ts$u, na.rm=TRUE)
+                    vmean <- mean(x$data$ts$v, na.rm=TRUE)
+                    arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
+                    arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
+                }
+            }
         } else {
             stop("unknown value of which (", which[w], ")")
         }
@@ -224,4 +252,5 @@ plot.cm <- function(x,
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    oce.debug(debug, "\b\b} # plot.cm()\n")
 }

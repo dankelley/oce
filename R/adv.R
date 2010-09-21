@@ -1649,10 +1649,10 @@ plot.adv <- function(x,
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                 if (which[w] >= 30) {
-                    arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE),
-                           lwd=5, length=1/10, col="yellow")
-                    arrows(0, 0, mean(x$data$ma$v[,1], na.rm=TRUE), mean(x$data$ma$v[,2], na.rm=TRUE),
-                           lwd=2, length=1/10, col=col)
+                    umean <- mean(x$data$ma$v[,1], na.rm=TRUE)
+                    vmean <- mean(x$data$ma$v[,2], na.rm=TRUE)
+                    arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
+                    arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
             }
         } else {

@@ -14,6 +14,7 @@
      draw.zero.line=FALSE,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+     small=2000,
      debug=getOption("oce.debug"),
      \dots)}
 
@@ -36,6 +37,11 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{small}{an integer indicating the size of data set to be
+    considered "small", to be plotted with points or lines using the
+    standard \code{\link{plot}} function.  Data sets with more than
+    \code{small} points will be plotted with \code{\link{smoothScatter}}
+    instead.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
