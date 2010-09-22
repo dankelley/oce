@@ -167,7 +167,6 @@ print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 1 / x$subsample.deltat), ...)
     cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                 x$number.of.cells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
-    cat("* Frequency:         ", x$frequency, "kHz\n", ...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
     ##cat("\n* Processing log::\n\n", ...)
