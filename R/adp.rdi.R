@@ -368,7 +368,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 oce.debug(debug, vector.show(profile.start, "profile.start after indexing:"))
             }
             profiles.to.read <- length(profile.start)
-            oce.debug(debug, "number.of.beams=",header$number.of.beams,"\n")
+            oce.debug(debug, "profiles.to.read=",profiles.to.read,"\n")
+            oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
+            oce.debug(debug, "number.of.cells=",number.of.cells,"\n")
             items <- number.of.beams * number.of.cells
             v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
             a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
@@ -443,7 +445,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             ## Note that the heading.bias needs to be removed
             heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE) - header$heading.bias
             if (header$heading.bias != 0)
-                warning("subtracted a heading bias of", header$heading.bias, "degrees")
+                warning("subtracted a heading bias of ", header$heading.bias, " degrees")
             pitch <- 0.01 * readBin(buf[profile.start2 + 20], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             roll <- 0.01 * readBin(buf[profile.start2 + 22], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             ##tmp <- pitch
