@@ -889,6 +889,31 @@ integer2ascii <- function(i)
       "\xfe", "\xff")[i+1]
 }
 
+apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.debug"))
+{
+    oce.debug(debug, "\b\bapply.magnetic.declination(x,declination=", declination, ") {\n", sep="")
+    if (inherits(x, "cm")) {
+        oce.debug(debug, "object is of type 'cm'\n")
+        rval <- x
+        S <- sin(-declination * pi / 180)
+        C <- cos(-declination * pi / 180)
+        r <- matrix(c(C, S, -S, C), nrow=2)
+        uv.r <- r %*% rbind(x$data$ts$u, x$data$ts$v)
+        rval$data$ts$u <- uv.r[1,]
+        rval$data$ts$v <- uv.r[2,]
+        oce.debug(debug, "originally, first u:", x$data$ts$u[1:3], "\n")
+        oce.debug(debug, "originally, first v:", x$data$ts$v[1:3], "\n")
+        oce.debug(debug, "after application, first u:", rval$data$ts$u[1:3], "\n")
+        oce.debug(debug, "after application, first v:", rval$data$ts$v[1:3], "\n")
+    } else {
+        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
+    }
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # apply.magnetic.declination\n")
+    rval
+}
+
 magnetic.declination <- function(lat, lon, date)
 {
     if (missing(lat) || missing(lon) || missing(date)) stop("must provide lat, lon, and date")

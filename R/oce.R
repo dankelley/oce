@@ -28,6 +28,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     if (!is.null(deltat)) stop("cannot handle deltat yet")
     if (is.null(start)) stop("must provide start")
     if (is.null(end)) stop("must provide end")
+    oce.debug(debug, "class of (x) is: ", paste(class(x), collapse=","), "\n")
     res <- x
     which <- match.arg(which)
     if (which == "time") {
@@ -330,7 +331,40 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
 {
     oce.debug(debug, "\b\bsubset.oce() {\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
+    if (inherits(x, "cm")) {
+        if (!is.null(indices)) {
+            oce.debug(debug, vector.show(keep, "keeping indices"))
+            rval <- x
+            keep <- (1:length(x$data$ts$u))[indices]
+            for (name in names(rval$data$ts)) {
+                rval$data$ts[[name]] <- x$data$ts[[name]][keep]
+            }
+        } else if (!missing(subset)) {
+            subset.string <- deparse(substitute(subset))
+            oce.debug(debug, "subset.string='", subset.string, "'\n")
+            if (length(grep("time", subset.string))) {
+                oce.debug(debug, "subsetting a cm by time\n")
+                ## ts
+                keep <- eval(substitute(subset), x$data$ts, parent.frame())
+                oce.debug(debug, vector.show(keep, "keeping times at indices:"), "\n")
+            } else {
+                stop("it makes no sense to subset a \"cm\" object by anything other than time")
+            }
+        } else {
+            stop("must supply either 'subset' or 'indices'")
+        }
+        rval <- x
+        for (name in names(x$data$ts)) {
+            rval$data$ts[[name]] <- x$data$ts[[name]][keep]
+        }
+        if ("ts.slow" %in% names(x$data)) {
+            keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+            for (name in names(rval$data$ts.slow)) {
+                if (length(rval$data$ts.slow[[name]]) > 1)
+                    rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
+            }
+        }
+    } else if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x$metadata$number.of.profiles)[indices]

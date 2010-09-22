@@ -20,6 +20,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                        latitude=NA, longitude=NA,
                        debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
+    if (debug > 1)
+        debug <- 1
     oce.debug(debug, "\b\bread.cm(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,",...) {\n")
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -34,6 +36,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         on.exit(close(file))
     }
     metadata <- list(filename=filename)
+    ## Examine the first line of the file, to get serial number, etc.
     items <- scan(file, "character", nlines=1, sep="\t", quiet=TRUE)
     oce.debug(debug, "line 1 contains: ", paste(items, collapse=" "), "\n")
     metadata$manufacturer <- "interocean"
@@ -43,7 +46,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         else if (length(grep("Version", items[i]))) metadata$version <- items[i+1]
         else if (length(grep("Type", items[i]))) metadata$type <- items[i+1]
     }
-    ## find first line of data
+    ## Skip through the rest of the header, and start paying attention when
+    ## row number is 1, 2, and then 3.  These first rows give us the time
+    ## sequence.
     for (skip in 2:20) {
         items <- scan(file, "character",nlines=1,sep="\t", quiet=TRUE)
         oce.debug(debug, "line", skip, "contains: ", paste(items, collapse=" "), "\n")
@@ -53,21 +58,46 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         } else if (items[1] == "2") {
             start.hms <- items[3]
         } else if (items[1] == "3") {
-            metadata$measurement.start <- strptime(paste(start.day, start.hms), "%m/%d/%Y %H:%M:%s", tz=tz)
+            t0 <- strptime(paste(start.day, start.hms), "%m/%d/%Y %H:%M:%s", tz=tz)
             t1 <- strptime(paste(start.day, items[3]), "%m/%d/%Y %H:%M:%s", tz=tz)
-            metadata$measurement.deltat <- as.numeric(difftime(t1, metadata$measurement.start, units="secs"))
+            deltat <- as.numeric(difftime(t1, t0, units="secs"))
             break
         }
     }
-
-    d <- read.table(file, skip=skip, sep='\t',stringsAsFactors=FALSE) # FIXME: 16 just happens to work, for a file
+    ## NOTE: we *skip* the first 3 lines of data.  This is mainly because those lines
+    ## had a different number of TAB-separated elements than the rows below, which
+    ## thwarted the use of read.table() to read the data.  Besides, those first
+    ## 3 lines are likely to just be in-air measurements, anyway ... there is likely
+    ## to be little harm in skipping quite a lot more than just 3 points!
+    metadata$measurement.start <- t0 + 2 * deltat
+    metadata$measurement.deltat <- deltat
+    d <- read.table(file, skip=skip, sep='\t', stringsAsFactors=FALSE)
     u <- d[,6] / 100                    # eastward, in cm/s
     v <- d[,5] / 100                    # northward, in cm/s
     n <- length(u)
-    ts <- list(time=metadata$measurement.start+seq(0,n-1)*metadata$measurement.deltat, u=u, v=v)
-    metadata$measurement.end <- ts$time[n]
-    metadata$frequency <- 1 / metadata$deltat
+    time <- metadata$measurement.start + seq(0,n-1)*metadata$measurement.deltat
+    if (inherits(from, "POSIXt")) {
+        if (!inherits(to, "POSIXt"))
+            stop("if 'from' is POSIXt, then 'to' must be, also")
+        if (!is.numeric(by) || by != 1)
+            stop("sorry, 'by' must equal 1, in this (early) version of read.cm.s4()")
+        from.to.POSIX <- TRUE
+        from.index <- which(time >= from)[1]
+        to.index <- which(to <= time)[1]
+        oce.debug(debug, "Time-based trimming: from=", format(from), "to=", format(to), "yield from.index=", from.index, "and to.index=", to.index, "\n")
+        keep <- seq(from.index, to.index)
+    } else {
+        if (!is.numeric(from))
+            stop("'from' must be either POSIXt or numeric")
+        if (!is.numeric(to))
+            stop("'to' must be either POSIXt or numeric")
+        keep <- seq(from, to)
+    }
+    time <- time[keep]
+    ts <- list(time=time[keep], u=u[keep], v=v[keep])
+    metadata$measurement.end <- ts$time[length(ts$time)]
     data <- list(ts=ts)
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     rval <- list(metadata=metadata, data=data, processing.log=log.item)
     class(rval) <- c("cm", "s4", "oce")
@@ -120,9 +150,9 @@ summary.cm <- function(object, ...)
 
 print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("cm Summary\n-----------\n\n", ...)
+    cat("cm Summary\n----------\n\n", ...)
     cat(paste("* Instrument:         ", x$instrument.type, ", serial number ``", paste(x$serial.number, collapse=""), "``\n", sep=""), ...)
-    cat(paste("* Source filename:   ``", x$filename, "``\n", sep=""), ...)
+    cat(paste("* Source filename:    ``", x$filename, "``\n", sep=""), ...)
     if ("latitude" %in% names(x)) {
         cat(paste("* Location:           ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
                   if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
@@ -188,9 +218,10 @@ plot.cm <- function(x,
         } else {
             if (     ww == "u") which2[w] <- 1
             else if (ww == "v") which2[w] <- 2
-            else if (ww == "uv") which2[w] <- 3
-            else if (ww == "uv+ellipse") which2[w] <- 4
-            else if (ww == "uv+ellipse+arrow") which2[w] <- 5
+            else if (ww == "progressive vector") which2[w] <- 3
+            else if (ww == "uv") which2[w] <- 4
+            else if (ww == "uv+ellipse") which2[w] <- 5
+            else if (ww == "uv+ellipse+arrow") which2[w] <- 6
             else stop("unknown 'which':", ww)
         }
     }
@@ -218,12 +249,25 @@ plot.cm <- function(x,
             oce.plot.ts(x$data$ts$time, x$data$ts$v, type=type, xlab="", ylab="v [m/s]", ...)
             if (draw.zero.line)
                 abline(h=0)
-        } else if (which[w] >= 3) {
+        } else if (which[w] == 3) {     # or "progressive vector"
+            oce.debug(debug, "progressive vector plot\n")
+            dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec")) # FIXME: assuming equal dt
+            m.per.km <- 1000
+            u <- x$data$ts$u
+            v <- x$data$ts$v
+            u[is.na(u)] <- 0        # zero out missing
+            v[is.na(v)] <- 0
+            x.dist <- cumsum(u) * dt / m.per.km
+            y.dist <- cumsum(v) * dt / m.per.km
+            plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, ...)
+        } else if (which[w] >= 4) {     # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
+            oce.debug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
             if (len <= small)
                 plot(x$data$ts$u, x$data$ts$v, type=type, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             else
                 smoothScatter(x$data$ts$u, x$data$ts$v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
-            if (which[w] >= 4) {
+            if (which[w] >= 5) {
+                oce.debug(debug, "\"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
                 ok <- !is.na(x$data$ts$u) & !is.na(x$data$ts$v)
                 e <- eigen(cov(data.frame(u=x$data$ts$u[ok], v=x$data$ts$v[ok])))
                 major <- sqrt(e$values[1])
@@ -237,7 +281,8 @@ plot.cm <- function(x,
                 col <- if ("col" %in% names(dots)) col else "darkblue"
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
-                if (which[w] >= 5) {
+                if (which[w] >= 6) {
+                    oce.debug(debug, "\"uv+ellipse+arrow\" plot\n")
                     umean <- mean(x$data$ts$u, na.rm=TRUE)
                     vmean <- mean(x$data$ts$v, na.rm=TRUE)
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")

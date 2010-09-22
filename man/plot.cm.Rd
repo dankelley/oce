@@ -55,13 +55,15 @@
     eastward velocity, \code{u}, as a function of time.
     \item \code{which=2} or \code{which="v"} for a time-series graph of
     northward velocity, \code{u}, as a function of time.
-    \item \code{which=3} or \code{"uv"} for a plot of \code{v} versus
+    \item \code{which=3} or \code{"progressive vector"} for
+    progressive-vector plot
+    \item \code{which=4} or \code{"uv"} for a plot of \code{v} versus
     \code{u}.  (Dots are used for small datasets, and smoothScatter for
     large ones.)
-    \item \code{which=4} or \code{"uv+ellipse"} as the \code{"uv"}
+    \item \code{which=5} or \code{"uv+ellipse"} as the \code{"uv"}
       case, but with an added indication of the tidal ellipse,
       calculated from the eigen vectors of the covariance matrix.
-    \item \code{which=5} or \code{"uv+ellipse+arrow"} as the
+    \item \code{which=6} or \code{"uv+ellipse+arrow"} as the
       \code{"uv+ellipse"} case, but with an added arrow indicating the
       mean current.
   }
