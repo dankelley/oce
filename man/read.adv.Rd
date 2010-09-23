@@ -43,8 +43,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   \item{file}{a connection or a character string giving the name of the
     file to load.  It is also possble to supply a vector of filenames,
     for the case of data split into files by a data logger, and in that
-    case, \code{header} must be \code{FALSE} and \code{start} must be a
-    vector of times.}
+    case, \code{header} must be \code{FALSE}, \code{start} must be a
+    vector of times, and \code{deltat} must be provided.}
   \item{basefile}{character string giving the base name of files to load
     (used only by \code{read.adv.sontek.text}). The actual filenames are
     constructed by appending \code{".hd1"} and \code{".ts1"} to the base
@@ -111,20 +111,26 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   complicated, simply because information will have been lost.  For
   example, the serial number will be unknown, as well information about
   the beam geometry, etc.  There are two steps to dealing with such
-  files.  The \emph{first step} is to help the \code{read.adv} routine
-  to read the data.  This is accomplished by setting
-  \code{header=FALSE}, and providing both the start time, \code{start},
-  and the time interval between sequential samples, \code{deltat}.  This
-  will be enough to enable scanning of the file (or list of files) in a
-  nominal way.  If the file (or list of files) contains data gaps, the
-  user may have to do some extra work, perhaps filling in gaps with
-  linearly-interpolated values, or discarding chunks with gaps, etc.
-  The \emph{second step} is to fill in any missing metadata that are
-  required.  The most important thing is to check that the
-  transformation matrix (\code{metadata$transformation.matrix}) is
-  correct, for the beam geometry of the device being used.  For
-  completeness, it may also make sense to insert the serial number of
-  the instrument (\code{metaadata$serial.number}).
+  files.
+  
+  \enumerate{
+    \item The \emph{first step} is to help the \code{read.adv}
+    routine to read the data.  This is accomplished by setting
+    \code{header=FALSE}, and by providing both the start time,
+    \code{start}, and the time interval between sequential samples,
+    \code{deltat}.  This will be enough to enable scanning of the file,
+    or series of files, named in \code{file}.  (If \code{file} is a
+    vector, then \code{start} must be a vector of the same length,
+    indicating the (real) times at which the data logger started writing
+    to the individual files.)
+
+    \item The \emph{second step} is to fill in any missing metadata that
+    are required.  The most important thing is to check that the
+    transformation matrix (\code{metadata$transformation.matrix}) is
+    correct, for the beam geometry of the device being used.  For
+    completeness, it may also make sense to insert the serial number of
+    the instrument (\code{metaadata$serial.number}).
+  }
 
   The returned object is a list containing lists named \code{metadata},
   \code{data}, and \code{processing.log}.  The \code{data} list contains
