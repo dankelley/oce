@@ -41,7 +41,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
-    file to load.}
+    file to load.  It is also possble to supply a vector of filenames,
+    for the case of data split into files by a data logger, and in that
+    case, \code{header} must be \code{FALSE} and \code{start} must be a
+    vector of times.}
   \item{basefile}{character string giving the base name of files to load
     (used only by \code{read.adv.sontek.text}). The actual filenames are
     constructed by appending \code{".hd1"} and \code{".ts1"} to the base
@@ -71,7 +74,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     degrees East.}
   \item{start}{the time of the first sample, typically created with
     \code{\link{as.POSIXct}}.  This is mandatory if \code{header} is
-    \code{FALSE}.}
+    \code{FALSE}.  This may be a vector of times, if \code{filename} is
+    a vector of file names.}
   \item{deltat}{the time between samples. (This is mandatory if
     \code{header=FALSE}.)}
   \item{coordinate.system}{character string indicating coordinate system, one
@@ -99,14 +103,28 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 }
 
 \details{Reads a binary-format ADV file.  This is relatively
-  straightforward if there is a header.  If not, i.e. if
-  \code{header} is \code{FALSE}, then \code{read.adv} is forced
-  to make guesses about important things, and the wise user will
-  check on the elements of \code{metadata} in the return value,
-  rectifying any that are wrong, and adding any that are missing.  At a
-  bare minimum, cases with no header require the user to give the
-  \code{start} time and the time \code{deltat} between samples, since,
-  without these, no time base can be set up.
+  straightforward if the file is integral, starting with a header.  
+
+  However, if the file is \emph{not} integral, e.g. if it is the result
+  of the capture of a real-time data stream that started after the
+  instrument sent its header, then the processing will be more
+  complicated, simply because information will have been lost.  For
+  example, the serial number will be unknown, as well information about
+  the beam geometry, etc.  There are two steps to dealing with such
+  files.  The \emph{first step} is to help the \code{read.adv} routine
+  to read the data.  This is accomplished by setting
+  \code{header=FALSE}, and providing both the start time, \code{start},
+  and the time interval between sequential samples, \code{deltat}.  This
+  will be enough to enable scanning of the file (or list of files) in a
+  nominal way.  If the file (or list of files) contains data gaps, the
+  user may have to do some extra work, perhaps filling in gaps with
+  linearly-interpolated values, or discarding chunks with gaps, etc.
+  The \emph{second step} is to fill in any missing metadata that are
+  required.  The most important thing is to check that the
+  transformation matrix (\code{metadata$transformation.matrix}) is
+  correct, for the beam geometry of the device being used.  For
+  completeness, it may also make sense to insert the serial number of
+  the instrument (\code{metaadata$serial.number}).
 
   The returned object is a list containing lists named \code{metadata},
   \code{data}, and \code{processing.log}.  The \code{data} list contains

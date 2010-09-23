@@ -428,13 +428,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),      # FIXME (two timescales)
+read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="default", header=TRUE,
                             latitude=NA, longitude=NA,
                             start, deltat,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
-    oce.debug(debug, paste("\b\bread.adv.sontek(file=\"", file, "\", from=", from, ", to=(...)", ", by=", by, ", type=\"", type, "\", header=", header, ", start=", start, ", deltat=", deltat, ", debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n",sep=""))
+    oce.debug(debug, paste("\b\bread.adv.sontek(file=\"", file, "\", from=", from, ", to=(...)", ", by=", by, ", type=\"", type, "\", header=", header, ", start=", start, ", deltat=", deltat, "debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep=""))
     warning("read.adv.sontek() is VERY preliminary: times are wrong; pressure is wrong; to/from/by are ignored; orientation is guessed; beam coordinate is guessed")
     if (header) {
         stop("cannot handle the case with header=TRUE yet")
@@ -447,11 +447,17 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),     
             stop("'start' must be a string, or a POSIXt time")
         if (is.character(start))
             start <- as.POSIXct(start, tz=tz)
+        nstart <- length(start)
+        nfile <- length(file)
+        if (nstart != nfile)
+            stop("length of 'file' must equal length of 'start', but they are ", nfile, " and ", nstart, " respectively")
         oce.debug(debug, "time series is inferred to start at", format(start), "\n")
         if (is.character(deltat))
             deltat <- ctime.to.seconds(deltat)
         oce.debug(debug, "time series is inferred to have data every", deltat, "s\n")
     }
+    if (nstart > 1)
+        stop("cannot yet handle the case of multiple file names")
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "rb")
