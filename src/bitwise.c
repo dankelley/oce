@@ -15,6 +15,34 @@
 
 */
 
+SEXP unwrap_sequence_numbers(SEXP seq, SEXP mod)
+{
+  /* "unwrap" a vector of integers that are sequence numbers, modulo "mod", 
+   * returning a list that is strictly increasing.  This is done by detecting 
+   * likely spots of wrapping past the modulo boundary, and adding appropriate 
+   * multiples of "mod".
+   */
+  PROTECT(seq = AS_INTEGER(seq));
+  PROTECT(mod = AS_INTEGER(mod));
+  unsigned long int *pseq = INTEGER_POINTER(seq);
+  unsigned long int pmod = *INTEGER_POINTER(mod);
+  unsigned long int n = LENGTH(seq);
+  SEXP res;
+  PROTECT(res = NEW_INTEGER(n));
+  unsigned long int *pres = INTEGER_POINTER(res);
+  unsigned long int last = pseq[0];
+  unsigned long int cumulative = 0;
+  pres[0] = pseq[0];
+  for (int i = 1; i < n; i++) {
+    if ((pseq[i] - last) < 0)
+      cumulative += pmod;
+    pres[i] = pseq[i] + cumulative;
+    last = pseq[i];
+  }
+  UNPROTECT(3);
+  return(res);
+}
+
 SEXP ldc_sontek_adv_22(SEXP buf, SEXP max)
 {
 /* ldc = locate data chunk; _sontek_adv = for a SonTek ADV (with temperature and/or pressure installed; see p95 of sontek-adv-op-man-2001.pdf)
@@ -109,7 +137,7 @@ SEXP ldc_sontek_adv_22(SEXP buf, SEXP max)
     }
   }
   /* allocate space, then run through whole buffer again, noting the matches */
-  lres = matches - 1;
+  lres = matches;
   if (lres > 0) {
     /*#ifdef DEBUG*/
     PROTECT(res = NEW_INTEGER(lres));

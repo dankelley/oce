@@ -434,7 +434,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             start, deltat,
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
-    oce.debug(debug, paste("\b\bread.adv.sontek(file=\"", file, "\", from=", from, ", to=(...)", ", by=", by, ", type=\"", type, "\", header=", header, ", start=", start, ", deltat=", deltat, "debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep=""))
+    oce.debug(debug, paste("\b\bread.adv.sontek(file[1]=\"", file[1], "\", from=", from, if (!missing(to)) sprintf(", to=%s, ", format(to)), ", by=", by, ", type=\"", type, "\", header=", header, if (!missing(start)) sprintf(", start[1]=%s, ", start[1]), if (!missing(deltat)) sprintf(", deltat=%f, ", deltat), "debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep=""))
     warning("read.adv.sontek() is VERY preliminary: times are wrong; pressure is wrong; to/from/by are ignored; orientation is guessed; beam coordinate is guessed")
     if (header) {
         stop("cannot handle the case with header=TRUE yet")
@@ -451,30 +451,48 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         nfile <- length(file)
         if (nstart != nfile)
             stop("length of 'file' must equal length of 'start', but they are ", nfile, " and ", nstart, " respectively")
-        oce.debug(debug, "time series is inferred to start at", format(start), "\n")
+        oce.debug(debug, "time series is inferred to start at", format(start[1]), "\n")
         if (is.character(deltat))
             deltat <- ctime.to.seconds(deltat)
         oce.debug(debug, "time series is inferred to have data every", deltat, "s\n")
     }
-    if (nstart > 1)
-        stop("cannot yet handle the case of multiple file names")
-    if (is.character(file)) {
-        filename <- full.filename(file)
-        file <- file(file, "rb")
-        on.exit(close(file))
+    if (nstart > 1) {                   # handle multiple files
+        oce.debug(debug, "handling multiple files\n")
+        buf <- NULL
+        buf.pointer <- NULL
+        for (i in 1:nfile) {
+            oce.debug(debug, "loading \"", file[i], "\" (start.time ", format(start[i]), " ", attr(start[i], "tzone"), ")\n", sep="")
+            this.file <- file(file[i], "rb")
+            seek(this.file, 0, "end", rw="read")
+            file.size <- seek(this.file, 0, origin="start", rw="read")
+            oce.debug(debug, "file.size=",file.size,"\n")
+            buf <- c(buf, readBin(this.file, what="raw", n=file.size, endian="little"))
+            close(this.file)
+            buf.pointer <- c(buf.pointer, file.size)
+        }
+        .buf <<- buf
+        .buf.pointer <<- buf.pointer
+        warning("cannot yet handle the case of multiple file names")
+        return(NULL)
+    } else {                            # handle single file (which might be a connection, etc)
+        if (is.character(file)) {
+            filename <- full.filename(file)
+            file <- file(file, "rb")
+            on.exit(close(file))
+        }
+        if (!inherits(file, "connection"))
+            stop("argument `file' must be a character string or connection")
+        if (!isOpen(file)) {
+            filename <- "(connection)"
+            open(file, "rb")
+            on.exit(close(file))
+        }
+        ## read whole file into buffer
+        seek(file, 0, "end", rw="read")
+        file.size <- seek(file, 0, origin="start", rw="read")
+        oce.debug(debug, "filesize=",file.size,"\n")
+        buf <- readBin(file, what="raw", n=file.size, endian="little")
     }
-    if (!inherits(file, "connection"))
-        stop("argument `file' must be a character string or connection")
-    if (!isOpen(file)) {
-        filename <- "(connection)"
-        open(file, "rb")
-        on.exit(close(file))
-    }
-    ## read whole file into buffer
-    seek(file, 0, "end", rw="read")
-    file.size <- seek(file, 0, origin="start", rw="read")
-    oce.debug(debug, "filesize=",file.size,"\n")
-    buf <- readBin(file, what="raw", n=file.size, endian="little")
     ###if (debug) { debug.buf <<- buf }
     ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
     ## Technical Documentation (Sept 1, 2001)
