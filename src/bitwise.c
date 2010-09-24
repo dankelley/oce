@@ -15,28 +15,44 @@
 
 */
 
-SEXP unwrap_sequence_numbers(SEXP seq, SEXP mod)
+SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes)
 {
-  /* "unwrap" a vector of integers that are sequence numbers, modulo "mod", 
-   * returning a list that is strictly increasing.  This is done by detecting 
-   * likely spots of wrapping past the modulo boundary, and adding appropriate 
-   * multiples of "mod".
+  /* "unwrap" a vector of integers that are sequence numbers wrapping in 'bytes' bytes, 
+   * creating the sequence numbers that might have resulted, had 'seq' not been
+   * created module 'bytes' bytes.
    */
   PROTECT(seq = AS_INTEGER(seq));
-  PROTECT(mod = AS_INTEGER(mod));
-  unsigned long int *pseq = INTEGER_POINTER(seq);
-  unsigned long int pmod = *INTEGER_POINTER(mod);
-  unsigned long int n = LENGTH(seq);
+  int *pseq = INTEGER_POINTER(seq);
+  PROTECT(bytes = AS_INTEGER(bytes));
+  int pbytes = *INTEGER_POINTER(bytes);
+  long int pmod;
+  if (pbytes == 2) {
+    pmod = 65535 + 1;
+  } else {
+    error("only understand bytes=2 for now");
+  }
+  long int n = LENGTH(seq);
   SEXP res;
   PROTECT(res = NEW_INTEGER(n));
-  unsigned long int *pres = INTEGER_POINTER(res);
-  unsigned long int last = pseq[0];
-  unsigned long int cumulative = 0;
+  int *pres = INTEGER_POINTER(res);
+  long int last;
+  long int cumulative = 0;
+#ifdef DEBUG
+  Rprintf("n=%ld\n", n);
+#endif
   pres[0] = pseq[0];
+  last = pseq[0];
   for (int i = 1; i < n; i++) {
-    if ((pseq[i] - last) < 0)
+    if (pseq[i] < last) {
       cumulative += pmod;
+#ifdef DEBUG
+      Rprintf("pseq[%d]=%d and last=%d, so updated to cumulative=%ld\n", i, pseq[i], last, cumulative);
+#endif
+    }
     pres[i] = pseq[i] + cumulative;
+#ifdef DEBUG
+    Rprintf("i=%d seq=%d rval=%d\n", i, pseq[i], pres[i]);
+#endif
     last = pseq[i];
   }
   UNPROTECT(3);
