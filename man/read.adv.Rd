@@ -1,7 +1,7 @@
 \name{read.adv}
 \alias{read.adv}
 \alias{read.adv.nortek}
-\alias{read.adv.sontek}
+\alias{read.adv.sontek.realtime}
 \alias{read.adv.sontek.adr}
 \alias{read.adv.sontek.text}
 
@@ -21,12 +21,11 @@ read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 header=TRUE,
                 latitude=NA, longitude=NA,
                 debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                type="default",
-                header=TRUE,
-                latitude=NA, longitude=NA,
-                start, deltat,
-                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.realtime(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                         type="default",
+                         latitude=NA, longitude=NA,
+                         start, deltat,
+                         debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     header=TRUE, 
                     latitude=NA, longitude=NA,
@@ -283,7 +282,7 @@ library(oce)
 table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
                     from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
                     to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
-d <- read.adv.sontek(header=FALSE, file=table$filename, start=table$start.time, deltat=1/10)
+d <- read.adv.sontek.realtime(file=table$filename, start=table$start.time, deltat=1/10)
 d <- oce.edit(d, "coordinate.system", "xyz") # original coordinate
 d <- oce.edit(d, "oce.coordinate", "xyz")    # present coordinate
 # Note that the transformation matrix varies from instrument to instrument.

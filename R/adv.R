@@ -12,12 +12,11 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         header=header,
                         latitude=latitude, longitude=longitude,
                         debug=debug, monitor=monitor, log.action=log.action)
-    else if (type == "sontek")
-        read.adv.sontek(file=file, from=from, to=to, by=by, tz=tz,
-                        header=header,
-                        latitude=latitude, longitude=longitude,
-                        start=start, deltat=deltat,
-                        debug=debug, monitor=monitor, log.action=log.action)
+    else if (type == "sontek") # guess
+        read.adv.sontek.realtime(file=file, from=from, to=to, by=by, tz=tz,
+                                 latitude=latitude, longitude=longitude,
+                                 start=start, deltat=deltat,
+                                 debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
                             latitude=latitude, longitude=longitude,
@@ -428,34 +427,32 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                            type="default", header=TRUE,
-                            latitude=NA, longitude=NA,
-                            start, deltat,
-                            debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.realtime <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                                     type="default",
+                                     latitude=NA, longitude=NA,
+                                     start, deltat,
+                                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, paste("\b\bread.adv.sontek(file[1]=\"", file[1], "\", from=", from, if (!missing(to)) sprintf(", to=%s, ", format(to)), ", by=", by, ", type=\"", type, "\", header=", header, if (!missing(start)) sprintf(", start[1]=%s, ", start[1]), if (!missing(deltat)) sprintf(", deltat=%f, ", deltat), "debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep=""))
-    if (header) {
-        stop("cannot handle the case with header=TRUE yet")
-    } else {
-        if (missing(start))
-            stop("must supply start, since there is no header")
-        if (missing(deltat))
-            stop("must supply deltat, since there is no header")
-        if (is.numeric(start))
-            stop("'start' must be a string, or a POSIXt time")
-        if (is.character(start))
-            start <- as.POSIXct(start, tz=tz)
-        nstart <- length(start)
-        nfile <- length(file)
-        if (nstart != nfile)
-            stop("length of 'file' must equal length of 'start', but they are ", nfile, " and ", nstart, " respectively")
-        warning("cannot infer coordinate system, etc., since header=FALSE; see documentation.")
-        oce.debug(debug, "time series is inferred to start at", format(start[1]), "\n")
-        if (is.character(deltat))
-            deltat <- ctime.to.seconds(deltat)
-        oce.debug(debug, "time series is inferred to have data every", deltat, "s\n")
-    }
+
+    if (missing(start))
+        stop("must supply start, a POSIXct time (or suitable string for the time, in UTC) at which the first observation was made")
+    if (is.numeric(start))
+        stop("'start' must be a string, or a POSIXt time")
+    if (is.character(start))
+        start <- as.POSIXct(start, tz=tz)
+    if (missing(deltat))
+        stop("must supply deltat, the number of seconds between observations")
+    nstart <- length(start)
+    nfile <- length(file)
+    if (nstart != nfile)
+        stop("length of 'file' must equal length of 'start', but they are ", nfile, " and ", nstart, " respectively")
+    warning("cannot infer coordinate system, etc., since header=FALSE; see documentation.")
+    oce.debug(debug, "time series is inferred to start at", format(start[1]), "\n")
+    if (is.character(deltat))
+        deltat <- ctime.to.seconds(deltat)
+    oce.debug(debug, "time series is inferred to have data every", deltat, "s\n")
+
     if (nstart > 1) {                   # handle multiple files
         oce.debug(debug, "handling multiple files\n")
         buf <- NULL
@@ -1681,25 +1678,27 @@ adv.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     oce.debug(debug, "\b\badv.2enu() {\n")
     coord <- x$metadata$oce.coordinate
     if (coord == "beam") {
-        rval <- adv.xyz2enu(adv.beam2xyz(x, debug=debug-1), declination=declination, debug=debug-1)
+        x <- adv.xyz2enu(adv.beam2xyz(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
-        rval <- adv.xyz2enu(x, declination=declination, debug=debug-1)
+        x <- adv.xyz2enu(x, declination=declination, debug=debug-1)
     } else if (coord == "enu") {
-        rval <- x
+        ;
     } else {
         warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
     oce.debug(debug, "\b\b} # adv.2enu()\n")
-    rval
+    x
 }
 
 adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\badv.beam2xyz() {\n")
-    if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    res <- x
-    if (is.null(x$metadata$transformation.matrix)) stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
+    if (!inherits(x, "adv"))
+        stop("method is only for objects of class \"adv\"")
+    if (x$metadata$oce.coordinate != "beam")
+        stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    if (is.null(x$metadata$transformation.matrix))
+        stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
     tm <- x$metadata$transformation.matrix
     ## alter transformation matrix if pointing downward. FIXME: is this right?
     ##if (FALSE) {  # FIXME: should we modify the transformation matrix?
@@ -1708,20 +1707,25 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
     ##        tm[3,] <- -tm[3,]
     ##    }
     ##}
+    if (x$metadata$orientation == "downward")
+        warning("Q: since the instrument points downwards, should the sign of rows 2 and 3 of transformation matrix be altered?")
     oce.debug(debug, "Transformation matrix:\n")
     oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[1,1], tm[1,2], tm[1,3]))
     oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3]))
     oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[3,1], tm[3,2], tm[3,3]))
     ## Not using the matrix method because it might consume more memory, and measures no faster
     ## xyz <- tm %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
-    res$data$ma$v[,1] <- tm[1,1] * x$data$ma$v[,1] + tm[1,2] * x$data$ma$v[,2] + tm[1,3] * x$data$ma$v[,3]
-    res$data$ma$v[,2] <- tm[2,1] * x$data$ma$v[,1] + tm[2,2] * x$data$ma$v[,2] + tm[2,3] * x$data$ma$v[,3]
-    res$data$ma$v[,3] <- tm[3,1] * x$data$ma$v[,1] + tm[3,2] * x$data$ma$v[,2] + tm[3,3] * x$data$ma$v[,3]
-    res$metadata$oce.coordinate <- "xyz"
-    res$processing.log <- processing.log.add(res$processing.log,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    u <- tm[1,1] * x$data$ma$v[,1] + tm[1,2] * x$data$ma$v[,2] + tm[1,3] * x$data$ma$v[,3]
+    v <- tm[2,1] * x$data$ma$v[,1] + tm[2,2] * x$data$ma$v[,2] + tm[2,3] * x$data$ma$v[,3]
+    w <- tm[3,1] * x$data$ma$v[,1] + tm[3,2] * x$data$ma$v[,2] + tm[3,3] * x$data$ma$v[,3]
+    x$data$ma$v[,1] <- u
+    x$data$ma$v[,2] <- v
+    x$data$ma$v[,3] <- w
+    x$metadata$oce.coordinate <- "xyz"
+    x$processing.log <- processing.log.add(x$processing.log,
+                                           paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # adv.beam2xyz()\n")
-    res
+    x
 }
 
 adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
@@ -1729,7 +1733,6 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     oce.debug(debug, "\b\badv.xyz2enu() {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    res <- x
     have.ts.slow <- "ts.slow" %in% names(x$data)
     have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading) == 1 && length(x$data$ts.slow$pitch) == 1 && length(x$data$ts.slow$roll) == 1) || (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
     oce.debug(debug, "have.steady.angles=",have.steady.angles,"\n")
@@ -1791,10 +1794,13 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         R[3,1] <- -CP * SR
         R[3,2] <-  SP
         R[3,3] <-  CP * CR
-        res$data$ma$v[,1] <- R[1,1] * x$data$ma$v[,1] + R[1,2] * x$data$ma$v[,2] + R[1,3] * x$data$ma$v[,3]
-        res$data$ma$v[,2] <- R[2,1] * x$data$ma$v[,1] + R[2,2] * x$data$ma$v[,2] + R[2,3] * x$data$ma$v[,3]
-        res$data$ma$v[,3] <- R[3,1] * x$data$ma$v[,1] + R[3,2] * x$data$ma$v[,2] + R[3,3] * x$data$ma$v[,3]
-        ##(speed test; replace above 3 lines with this) res$data$ma$v <- t(R %*% t(x$data$ma$v))
+        u <- R[1,1] * x$data$ma$v[,1] + R[1,2] * x$data$ma$v[,2] + R[1,3] * x$data$ma$v[,3]
+        v <- R[2,1] * x$data$ma$v[,1] + R[2,2] * x$data$ma$v[,2] + R[2,3] * x$data$ma$v[,3]
+        w <- R[3,1] * x$data$ma$v[,1] + R[3,2] * x$data$ma$v[,2] + R[3,3] * x$data$ma$v[,3]
+        x$data$ma$v[,1] <- u
+        x$data$ma$v[,2] <- v
+        x$data$ma$v[,3] <- w
+        ##(speed test; replace above 3 lines with this) x$data$ma$v <- t(R %*% t(x$data$ma$v))
     } else {
         ## as with corresponding adp routine, construct single 3*3*np matrix
         tr.mat <- array(numeric(), dim=c(3, 3, np))
@@ -1809,15 +1815,15 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         tr.mat[3,3,] <-  CP * CR
         ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
         rotated <- matrix(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% x$data$ma$v[p,])), nrow=3)
-        res$data$ma$v[,1] <- rotated[1,]
-        res$data$ma$v[,2] <- rotated[2,]
-        res$data$ma$v[,3] <- rotated[3,]
+        x$data$ma$v[,1] <- rotated[1,]
+        x$data$ma$v[,2] <- rotated[2,]
+        x$data$ma$v[,3] <- rotated[3,]
     }
-    res$metadata$oce.coordinate <- "enu"
-    res$processing.log <- processing.log.add(res$processing.log,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    x$metadata$oce.coordinate <- "enu"
+    x$processing.log <- processing.log.add(x$processing.log,
+                                           paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # adv.xyz2enu()\n")
-    res
+    x
 }
 
 adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
@@ -1825,7 +1831,6 @@ adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
     oce.debug(debug, "\b\badv.enu2other() {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "enu") stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    res <- x
     to.radians <- atan2(1,1) / 45
     CH <- cos(to.radians * heading)
     SH <- sin(to.radians * heading)
@@ -1837,12 +1842,12 @@ adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
                        -SH * CR + CH * SP * SR,  CH * CP, -SH * SR - CH * SP * CR,
                        -CP * SR,                 SP,       CP * CR),               nrow=3, byrow=TRUE)
     other <- tr.mat %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
-    res$data$ma$v[,1] <- other[1,]
-    res$data$ma$v[,2] <- other[2,]
-    res$data$ma$v[,3] <- other[3,]
-    res$metadata$oce.coordinate <- "other"
-    res$processing.log <- processing.log.add(res$processing.log,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    x$data$ma$v[,1] <- other[1,]
+    x$data$ma$v[,2] <- other[2,]
+    x$data$ma$v[,3] <- other[3,]
+    x$metadata$oce.coordinate <- "other"
+    x$processing.log <- processing.log.add(x$processing.log,
+                                           paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # adv.enu2other()\n")
-    res
+    x
 }

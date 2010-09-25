@@ -96,7 +96,7 @@ export(
        read.adp.sontek,
        read.adv,
        read.adv.nortek,
-       read.adv.sontek,
+       read.adv.sontek.realtime,
        read.adv.sontek.adr,
        read.adv.sontek.text,
        read.cm,
