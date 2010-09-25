@@ -102,89 +102,81 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     a user.}
 }
 
-\details{Reads a binary-format ADV file.  This is relatively
-  straightforward if the file is integral, starting with a header.  
+\details{Reads a binary-format ADV file.  This is straightforward for
+  files with headers, since the headers contain all the information
+  required for further processing.  However, for files \emph{without}
+  headers, a considerable burden is placed on the user, since the data
+  file will lack such basic information as the times of observations,
+  the instrument orientation, the instrument coordinate system, etc.
 
-  However, if the file is \emph{not} integral, e.g. if it is the result
-  of the capture of a real-time data stream that started after the
-  instrument sent its header, then the processing will be more
-  complicated, simply because information will have been lost.  For
-  example, the serial number will be unknown, as well information about
-  the beam geometry, etc.  There are two steps to dealing with such
-  files.
+   There are two steps to dealing with header-less files.
   
-  \enumerate{
+   \enumerate{
 
-    \item Choose the variant of the \code{read.adv} function that
-    matches the instrument type.  Call the function with
-    \code{header=FALSE}, and with appropriate values for \code{start},
-    and \code{deltat}.  Note that if \code{file} is a vector, then
-    \code{start} must be a vector of the same length (see
-    \dQuote{Examples}), and, in that case, the routine will have enough
-    information to check on the \code{deltat} provided.
+     \item Choose the variant of the \code{read.adv} function that
+     matches the instrument type.  Call the function with
+     \code{header=FALSE}, and with appropriate values for \code{start},
+     and \code{deltat}.  Note that if \code{file} is a vector, then
+     \code{start} must be a vector of the same length (see
+     \dQuote{Examples}), and, in that case, the routine will have enough
+     information to check on the \code{deltat} provided.
 
-    \item Fill in any missing metadata that are required, based on notes
-    made in log-books, header files created by restarting the instrument
-    in the laboratory, etc.  For example, suppose object returned by the
-    \code{read.adv} variant is named \code{d}.
+     \item Fill in any missing metadata that are required, based on
+     notes made in log-books, header files created by restarting the
+     instrument in the laboratory, etc.  For example, suppose object
+     returned by the \code{read.adv} variant is named \code{d}.
 
-    \itemize{
+     \itemize{
 
-      \item Set up the coordinate system by
+       \item Set up the coordinate system by
 
-      \code{d$metadata$coordinate.system <- "xyz"} 
+       \code{d$metadata$coordinate.system <- "xyz"} 
 
-      \code{d$metadata$oce.coordinate <- "xyz"} 
+       \code{d$metadata$oce.coordinate <- "xyz"} 
 
+       (or \code{"beam"} or \code{"enu"}).  The first of these indicates
+       the system in the data file, while the second is modified by
+       functions that convert between coordinate systems.
 
-      (or \code{"beam"} or \code{"enu"}).  The first of these indicates
-      the system in the data file, while the second is modified by
-      functions that convert between coordinate systems.
+       \item If the coordinate system is \code{beam}, then it is likely
+       that conversion will be made to \code{"xyz"} and \code{"enu"}
+       systems.  For conversion \code{"xyz"}, the object must contain a
+       transformation matrix.  These vary from instrument to instrument;
+       below is how it might be set for one particular instrument:
 
-      \item If the coordinate system is \code{beam}, then it is likely
-      that conversion will be made to \code{"xyz"} and \code{"enu"}
-      systems.  For conversion \code{"xyz"}, the object must contain a
-      transformation matrix.  These vary from instrument to instrument;
-      below is how it might be set for one particular instrument:
-
-      \code{d$metadata$transformation.matrix <-
+       \code{d$metadata$transformation.matrix <-
         rbind(c(11033,-8503,-5238), c(347,-32767,9338), c(-1418, -1476,
         -1333)) / 4096}
 
-      Furthermore, to get from \code{"xyz"} to \code{"enu"} coordinates,
-      the instrument orientation will have to be set into the object:
+        Furthermore, to get from \code{"xyz"} to \code{"enu"}
+        coordinates, the instrument orientation will have to be set into
+        the object:
 
-      \code{d$metadata$orientation <- "up"}
+        \code{d$metadata$orientation <- "up"}
 
-      as well as time-series of heading, pitch, and roll.  If the
-      mooring is known not to have moved during the time interval of
-      interest, the time-series may consist of just one item, e.g. for a
-      Nortek instrument one might set
+        as well as time-series of heading, pitch, and roll.  If the
+        mooring is known not to have moved during the time interval of
+        interest, the time-series may consist of just one item, e.g. for
+        a Nortek instrument one might set
 
-      \code{d$data$ts.slow$heading <- 130}
+        \code{d$data$ts.slow$heading <- 130}
 
-      \code{d$data$ts.slow$pitch <- 0}
+        \code{d$data$ts.slow$pitch <- 0}
 
-      \code{d$data$ts.slow$roll <- 0}
+        \code{d$data$ts.slow$roll <- 0}
 
-      (with \code{d$data$ts} being the list to use for Sontek instruments).
+        (with \code{d$data$ts} being the list to use for Sontek instruments).
 
-      \item Of lesser importance, set values for anything that will be
-      used in later processing, e.g.  (\code{d$metadata$serial.number <-
-      "123"}), etc.
+        \item Of lesser importance, set values for anything that will be
+        used in later processing, e.g.  (\code{d$metadata$serial.number
+        <- "123"}), etc.
+
     }
+
   }
+}
 
-  The returned object is a list containing lists named \code{metadata},
-  \code{data}, and \code{processing.log}.  The \code{data} list contains
-  lists \code{ts}, potentially (for Nortek Vector units) \code{ts.slow},
-  and \code{ma} (matrices of velocity, etc).  These are as \code{adp}
-  objects, except for the presence of \code{ts.slow}, for timeseries
-  that vary on a slow timescale, e.g. on Nortek Vector units,
-  \code{ts.slow} holds \code{heading}, \code{pitch}, \code{roll}, and
-  \code{temperature}, while \code{ts} holds only \code{pressure}.
-
-  \emph{Notes on NorTek files.}
+\section{Special considerations for NorTek files.}{
 
   \enumerate{
 
@@ -214,8 +206,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     calling \code{\link{ISOdatetime}}.)
 
   }
+}
 
-  \emph{Notes on SonTek ADR files.}
+\section{Special considerations for Sontek files.}{
+
 
   The binary format is inferred from Appendix 2.2.3 of the Sontek ADV
   operation Manual, Firmware Version 4.0 (Oct 1997), with the following
@@ -253,8 +247,17 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
  }
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
-  contains measurements made with an ADV device.  For information on
-  data stored in the object, see \dQuote{Details}.}
+  contains measurements made with an ADV device.  As with all \code{oce}
+  objects, the returned value is a list containing lists named
+  \code{metadata}, \code{data}, and \code{processing.log}.  The
+  \code{data} list contains lists \code{ts}, potentially (for Nortek
+  Vector units) \code{ts.slow}, and \code{ma} (matrices of velocity,
+  etc).  These are as \code{adp} objects, except for the presence of
+  \code{ts.slow}, for timeseries that vary on a slow timescale, e.g. on
+  Nortek Vector units, \code{ts.slow} holds \code{heading},
+  \code{pitch}, \code{roll}, and \code{temperature}, while \code{ts}
+  holds only \code{pressure}.
+}
 
 \seealso{Objects of class \code{adv} may be plotted with
   \code{\link{plot.adv}} or summarized with \code{\link{summary.adv}}.
