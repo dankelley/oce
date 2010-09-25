@@ -104,76 +104,42 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 
 \details{Reads a binary-format ADV file.  This is straightforward for
   files with headers, since the headers contain all the information
-  required for further processing.  However, for files \emph{without}
-  headers, a considerable burden is placed on the user, since the data
-  file will lack such basic information as the times of observations,
-  the instrument orientation, the instrument coordinate system, etc.
+  required for further processing.
 
-   There are two steps to dealing with header-less files.
-  
-   \enumerate{
+  Files \emph{without} headers may be created in experiments in which a
+  data logger was set up to monitor the real-time data stream from an
+  instrument.  The lack of header information places a burden on the
+  user, who must supply such basic information as the times of
+  observations, the instrument orientation, the instrument coordinate
+  system, etc.  Example 3 below shows how to deal with such files.
+  Three things should be noted.
 
-     \item Choose the variant of the \code{read.adv} function that
-     matches the instrument type.  Call the function with
-     \code{header=FALSE}, and with appropriate values for \code{start},
-     and \code{deltat}.  Note that if \code{file} is a vector, then
-     \code{start} must be a vector of the same length (see
-     \dQuote{Examples}), and, in that case, the routine will have enough
-     information to check on the \code{deltat} provided.
+  \enumerate{
 
-     \item Fill in any missing metadata that are required, based on
-     notes made in log-books, header files created by restarting the
-     instrument in the laboratory, etc.  For example, suppose object
-     returned by the \code{read.adv} variant is named \code{d}.
+    \item The use must choose the appropriate \code{read.adv} variant
+    corresponding to the instrument in question.  (This is necessary
+    because \code{\link{magic}}, which is used by the generic
+    \code{\link{read.oce}} routine, cannot determine the type of
+    instrument by examining a file that lacks a header.)
 
-     \itemize{
+    \item The call to the \code{read} function must include a start time
+    (\code{start}) and the number of seconds between data
+    (\code{deltat}), again, because the instrument data stream may lack
+    those things when the device is set to a real-time mode.  Also, of
+    course, it is necessary to set \code{header=FALSE} in the function
+    call.
 
-       \item Set up the coordinate system by
-
-       \code{d$metadata$coordinate.system <- "xyz"} 
-
-       \code{d$metadata$oce.coordinate <- "xyz"} 
-
-       (or \code{"beam"} or \code{"enu"}).  The first of these indicates
-       the system in the data file, while the second is modified by
-       functions that convert between coordinate systems.
-
-       \item If the coordinate system is \code{beam}, then it is likely
-       that conversion will be made to \code{"xyz"} and \code{"enu"}
-       systems.  For conversion \code{"xyz"}, the object must contain a
-       transformation matrix.  These vary from instrument to instrument;
-       below is how it might be set for one particular instrument:
-
-       \code{d$metadata$transformation.matrix <-
-        rbind(c(11033,-8503,-5238), c(347,-32767,9338), c(-1418, -1476,
-        -1333)) / 4096}
-
-        Furthermore, to get from \code{"xyz"} to \code{"enu"}
-        coordinates, the instrument orientation will have to be set into
-        the object:
-
-        \code{d$metadata$orientation <- "up"}
-
-        as well as time-series of heading, pitch, and roll.  If the
-        mooring is known not to have moved during the time interval of
-        interest, the time-series may consist of just one item, e.g. for
-        a Nortek instrument one might set
-
-        \code{d$data$ts.slow$heading <- 130}
-
-        \code{d$data$ts.slow$pitch <- 0}
-
-        \code{d$data$ts.slow$roll <- 0}
-
-        (with \code{d$data$ts} being the list to use for Sontek instruments).
-
-        \item Of lesser importance, set values for anything that will be
-        used in later processing, e.g.  (\code{d$metadata$serial.number
-        <- "123"}), etc.
-
-    }
+    \item Once the file has been read in, the user will be obliged to
+    specify other information, for the object to be well-formed.  For
+    example, the \code{read} function will have no way of knowing the
+    instrument orientation, the coordinate system being used, the
+    transformation matrix to go from \code{"beam"} to \code{"xyz"}
+    coordinates, or the instrument heading, pitch, and roll, to go from
+    \code{"xyz"} coordinates to \code{"enu"} coordinates.  Such things
+    are illustrated in example 3 below.
 
   }
+
 }
 
 \section{Special considerations for NorTek files.}{
@@ -271,7 +237,8 @@ library(oce)
 opar <- par(no.readonly = TRUE)
 dir <- "/data/archive/sleiwex/2008/moorings/"
 
-## Nortek binary file, daily at 1/2 hour decimation
+# Example 1
+# Nortek binary file, daily at 1/2 hour decimation
 f <- paste(dir, "m05/adv/nortek_1943/raw/adv_nortek_1943.vec", sep="")
 from <- as.POSIXct("2008-06-26 00:00:00", tz="UTC")
 to <- as.POSIXct("2008-06-27 00:00:00", tz="UTC")
@@ -279,7 +246,8 @@ by <- "00:30:00"
 d <- read.adv.nortek(f, from=from, to=to, by=by)
 plot(d, which=c(1:3,15))      # beams plus pressure
 
-## Sontek adr file, with method to estimate turbulent dissipation
+# Example 2
+# Sontek adr file, with method to estimate turbulent dissipation
 f <- paste(dir, "m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr", sep="")
 d <- read.adv.sontek.adr(f, from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
                             to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
@@ -309,65 +277,25 @@ mtext(sprintf("\%.0e W/kg", epsilon), side=4, at=log10(alpha * epsilon^(2/3)))
 grid()
 par(opar)
 
-## Sontek file, chopped into hourly files with a data logger
-f <- paste(dir, "m05/adv/sontek_202h/raw/adv_sontek_202h.183.001", sep="")
-d <- read.adv.sontek(f, header=FALSE, start="2008-07-01 00:00:00", deltat=0.1)
-d$metadata$serial.number <- "B202H"
-d$metadata$orientation <- "up"
-summary(d)
-plot(d, which=c(1:3,14))      # skip pressure (not measured)
-
-# Example of a headerless Sontek ADV dataset, chopped into files by
-# a data logger that also creates a ".TBL" file that maps file names
-# to times of observation.
+# Example 3
+# Sontek ADV dataset, chopped into one-hour files by a data logger.
 library(oce)
-cf2.timetable <- function(path="/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
-                          from, to, debug=0)
-{
-    tbl.files <- list.files(path=path, pattern="*.TBL")
-    t0 <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary
-    for (tbl.file in tbl.files) {
-        if (debug > 0)
-            print(tbl.file)
-        lines <- readLines(paste(path, tbl.file, sep="/"))
-        # "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
-        file.code <- NULL       # numeric part of file name
-        start.time <- NULL
-        for (line in lines) {
-            s <- strsplit(line, "[ \t]+")[[1]]
-            if (length(s) > 2) {
-                filename <- s[2]
-                month <- s[6]
-                day <- s[7]
-                hms <- s[8]
-                year <- s[9]
-                t <- as.POSIXct(strptime(paste(year, month, day, hms),
-                                         "\%Y \%b \%d \%H:\%M:\%S", tz="UTC"))
-                len <- nchar(filename)
-                code <- substr(filename, len-6, len)
-                if (debug > 0)
-                    cat(s, "|", code, "|", format(t), "\n")
-                file.code <- c(file.code, code)
-                start.time <- c(start.time, as.numeric(tt) - as.numeric(t0))
-            }
-        }
-    }
-    prefix <- list.files(path, pattern=".*[0-9]$")[1]
-    lprefix <- nchar(prefix)
-    prefix <- substr(prefix, 1, lprefix-7)
-    filename <- paste(path, paste(prefix, file.code, sep=""), sep="/")
-    start.time <- as.POSIXct(start.time + t0)
-    if (!missing(from) && !missing(to)) {
-        from <- as.POSIXct(from, tz="UTC")
-        to <- as.POSIXct(to, tz="UTC")
-        ok <- from <= start.time & start.time <= to
-        filename <- filename[ok]
-        start.time <- start.time[ok]
-    }
-    list(filename=filename, start.time=start.time)
-}
-x <- cf2.timetable(from="2008-07-01 00:00:00", to="2008-07-02 00:00:00")
-adv <- read.adv.sontek(x$filename, start=x$start.time,header=F,deltat=1/8)
+table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
+                    from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
+                    to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
+d <- read.adv.sontek(header=FALSE, file=table$filename, start=table$start.time, deltat=1/10)
+d <- oce.edit(d, "coordinate.system", "xyz") # original coordinate
+d <- oce.edit(d, "oce.coordinate", "xyz")    # present coordinate
+# Note that the transformation matrix varies from instrument to instrument.
+d <- oce.edit(d, "transformation.matrix", rbind(c(11033,-8503,-5238),
+                                                c(347,-32767,9338),
+                                                c(-1418, -1476, -1333)) / 4096)
+d <- oce.edit(d, "orientation", "up")
+d <- oce.edit(d, "heading", 0)
+d <- oce.edit(d, "pitch", 0)
+d <- oce.edit(d, "roll", 0)
+d <- oce.edit(d, "serial.number", "202h")
+enu <- adv.xyz2enu(d, declination=-18)
 }
 }
 

@@ -282,7 +282,7 @@ oce.edit <- function(x, item, value, action, reason="", person="",
                 }
             } else {
                 if (item %in% names(x$metadata))
-                    x$metadata[item] <- value
+                    x$metadata[[item]] <- value
                 else
                     stop("do not know how to handle this item")
             }

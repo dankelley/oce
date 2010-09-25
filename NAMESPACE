@@ -45,6 +45,7 @@ export(
        is.enu,
        lat.format,
        latlon.format,
+       logger.toc,
        lon.format,
        magic,
        magnetic.declination,

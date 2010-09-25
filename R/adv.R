@@ -435,7 +435,6 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, paste("\b\bread.adv.sontek(file[1]=\"", file[1], "\", from=", from, if (!missing(to)) sprintf(", to=%s, ", format(to)), ", by=", by, ", type=\"", type, "\", header=", header, if (!missing(start)) sprintf(", start[1]=%s, ", start[1]), if (!missing(deltat)) sprintf(", deltat=%f, ", deltat), "debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep=""))
-    warning("read.adv.sontek() is VERY preliminary: times are wrong; pressure is wrong; to/from/by are ignored; orientation is guessed; beam coordinate is guessed")
     if (header) {
         stop("cannot handle the case with header=TRUE yet")
     } else {
@@ -451,6 +450,7 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         nfile <- length(file)
         if (nstart != nfile)
             stop("length of 'file' must equal length of 'start', but they are ", nfile, " and ", nstart, " respectively")
+        warning("cannot infer coordinate system, etc., since header=FALSE; see documentation.")
         oce.debug(debug, "time series is inferred to start at", format(start[1]), "\n")
         if (is.character(deltat))
             deltat <- ctime.to.seconds(deltat)
@@ -459,7 +459,6 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (nstart > 1) {                   # handle multiple files
         oce.debug(debug, "handling multiple files\n")
         buf <- NULL
-        buf.pointer <- NULL
         for (i in 1:nfile) {
             oce.debug(debug, "loading \"", file[i], "\" (start.time ", format(start[i]), " ", attr(start[i], "tzone"), ")\n", sep="")
             this.file <- file(file[i], "rb")
@@ -468,12 +467,8 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             oce.debug(debug, "file.size=",file.size,"\n")
             buf <- c(buf, readBin(this.file, what="raw", n=file.size, endian="little"))
             close(this.file)
-            buf.pointer <- c(buf.pointer, file.size)
         }
-        .buf <<- buf
-        .buf.pointer <<- buf.pointer
-        warning("cannot yet handle the case of multiple file names")
-        return(NULL)
+        filename <- paste("(\"", file[i], "\", ...)", sep="")
     } else {                            # handle single file (which might be a connection, etc)
         if (is.character(file)) {
             filename <- full.filename(file)
@@ -493,61 +488,51 @@ read.adv.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         oce.debug(debug, "filesize=",file.size,"\n")
         buf <- readBin(file, what="raw", n=file.size, endian="little")
     }
-    ###if (debug) { debug.buf <<- buf }
-    ## See page 95 of SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
-    ## Technical Documentation (Sept 1, 2001)
-    v.start.1 <- match.bytes(buf[1:min(2000, length(buf))], 0x85, 0x16)[1]
-    oce.debug(debug, "v.start.1=", v.start.1, "\n")
-    oce.debug(debug, "length(buf)=", length(buf), "\n")
-    v.start <- seq(v.start.1, length(buf) - v.start.1, as.numeric(0x16))
-    v.start <- v.start[-length(v.start)] # remove last, which may be partial
-    len <- length(v.start)
-    v.start2 <- sort(c(v.start, 1+v.start))
-    ## ByteOffset content
-    ## 0 Id
-    ## 1 NBytes
-    ## 2:3 SampleNum
-    ## 4:5 u
-    ## 6:7 v
-    ## 8:9 w
-    ## 10 a1
-    ## 11 a2
-    ## 12 a3
-    ## 13 cm1
-    ## 14 cm2
-    ## 15 cm3
-    ## 16:17 Temp
-    ## 18:19 Pressure
-    uu <- 0.1e-3 * readBin(buf[v.start2+4], "integer", size=2, n=len, signed=TRUE, endian="little")
-    vv <- 0.1e-3 * readBin(buf[v.start2+6], "integer", size=2, n=len, signed=TRUE, endian="little")
-    ww <- 0.1e-3 * readBin(buf[v.start2+8], "integer", size=2, n=len, signed=TRUE, endian="little")
-    v <- cbind(uu, vv, ww)
-    a1 <- readBin(buf[v.start+10], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a2 <- readBin(buf[v.start+11], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a3 <- readBin(buf[v.start+12], "integer", size=1, n=len, signed=FALSE, endian="little")
+
+    p <- .Call("ldc_sontek_adv_22", buf, 0) # the 0 means to get all pointers to data chunks
+    pp <- sort(c(p, p+1))
+    len <- length(p)
+    oce.debug(debug, "dp:", paste(unique(diff(p)), collapse=","), "\n")
+    serial.number <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
+    serial.number <- .Call("unwrap_sequence_numbers", serial.number, 2)
+    velocity.scale <- 0.1e-3
+    u1 <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little")
+    u2 <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little")
+    u3 <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little")
+    v <- cbind(u1, u2, u3) * velocity.scale
+    rm(u1, u2, u3)
+    a1 <- readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little")
+    a2 <- readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little")
+    a3 <- readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little")
     a <- cbind(a1, a2, a3)
-    c1 <- readBin(buf[v.start+13], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c2 <- readBin(buf[v.start+14], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c3 <- readBin(buf[v.start+15], "integer", size=1, n=len, signed=FALSE, endian="little")
+    rm(a1, a2, a3)
+    c1 <- readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little")
+    c2 <- readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little")
+    c3 <- readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little")
     c <- cbind(c1, c2, c3)
-    temperature <- 0.01 * readBin(buf[v.start2+16], "integer", size=2, n=len, signed=TRUE, endian="little")
-    pressure <- readBin(buf[v.start2+18], "integer", size=2, n=len, signed=FALSE, endian="little")
-    cat("pressures are wrong -- not sure why; here is fivenum:", paste(fivenum(pressure), collapse=" "), "\n")
+    rm(c1, c2, c3)
+    temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
+    pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
+
+    ## set up a dummy transformation matrix (which is correct for one particular sontek unit)
+    transformation.matrix <- rbind(c(11033,-8503,-5238),
+                                   c(347,-32767,9338),
+                                   c(-1418, -1476, -1333)) / 4096
     metadata <- list(manufacturer="sontek",
                      instrument.type="adv",
-                     serial.number="(unknown)",
+                     serial.number="?",
                      filename=filename,
                      latitude=latitude, longitude=longitude,
+                     transformation.matrix=transformation.matrix,
                      measurement.start=0, measurement.end=len, measurement.deltat=1,
                      subsample.start=0, subsample.end=len, subsample.deltat=1,
-                     coordinate.system="xyz",
-                     oce.coordinate="xyz",
-                     orientation="up")
-    time <- start + (0:(-1+len)) * deltat
+                     coordinate.system="xyz", # guess
+                     oce.coordinate="xyz",    # guess
+                     orientation="up")        # guess
+    time <- start[1] + (serial.number - serial.number[1]) * deltat
+
     data <- list(ts=list(time=time,
-                 heading=rep(0,len),
-                 pitch=rep(0,len),
-                 roll=rep(0,len),
+                 heading=0, pitch=0, roll=0, # this will have to be filled in later by the user
                  temperature=temperature,
                  pressure=pressure),
                  ##ss=list(distance=0),
@@ -1223,7 +1208,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n",sep=""))
     cat(paste("* Source filename:        ``", x$filename, "``\n", sep=""))
     if ("latitude" %in% names(x)) {
-        cat(paste("* Location:           ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
+        cat(paste("* Location:              ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
                   if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
     }
     cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
@@ -1411,9 +1396,6 @@ plot.adv <- function(x,
                             ...)
                 points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=col.brush)
             } else {
-                print(str(x$data$ts))
-##                print(str(x$data$ts$time))
-##                print(str(y))
                 oce.plot.ts(x$data$ts$time, y, ylab=ad.beam.name(x, which[w]),
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
@@ -1694,14 +1676,14 @@ plot.adv <- function(x,
     oce.debug(debug, "\b\b} # plot.adv()\n")
 }
 
-adv.2enu <- function(x, debug=getOption("oce.debug"))
+adv.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\badv.2enu() {\n")
     coord <- x$metadata$oce.coordinate
     if (coord == "beam") {
-        rval <- adv.xyz2enu(adv.beam2xyz(x, debug=debug-1), debug=debug-1)
+        rval <- adv.xyz2enu(adv.beam2xyz(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
-        rval <- adv.xyz2enu(x, debug=debug-1)
+        rval <- adv.xyz2enu(x, declination=declination, debug=debug-1)
     } else if (coord == "enu") {
         rval <- x
     } else {
@@ -1742,7 +1724,7 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
     res
 }
 
-adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
+adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\badv.xyz2enu() {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
@@ -1769,6 +1751,7 @@ adv.xyz2enu <- function(x, debug=getOption("oce.debug"))
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
     }
+    heading <- heading + declination
     ##print(x$metadata)
     if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
         1 == length(agrep("sontek", x$metadata$manufacturer))) {

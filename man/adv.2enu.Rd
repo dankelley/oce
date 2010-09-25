@@ -7,10 +7,12 @@
 \description{Convert ADV velocities to enu coordinates, from any other
 coordinates}
 
-\usage{adv.2enu(x, debug=getOption("oce.debug"))}
+\usage{adv.2enu(x, declination=0, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}
+  \item{declination}{magnetic declination to be added to the heading, to
+    get ENU with N as "true" north.}
   \item{debug}{a flag that, if non-zero, turns on debugging.  Higher
     values yield more extensive debugging.  This is passed to called
     functions, after subtracting 1.}

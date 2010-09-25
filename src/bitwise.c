@@ -155,11 +155,11 @@ SEXP ldc_sontek_adv_22(SEXP buf, SEXP max)
   /* allocate space, then run through whole buffer again, noting the matches */
   lres = matches;
   if (lres > 0) {
-    /*#ifdef DEBUG*/
     PROTECT(res = NEW_INTEGER(lres));
     int *pres = INTEGER_POINTER(res);
+#ifdef DEBUG
     Rprintf("getting space for %d matches\n", lres);
-    /*#endif*/
+#endif
     unsigned int ires = 0;
     for (int i = 0; i < lbuf - byte2; i++) { /* note that we don't look to the very end */
       check_sum = check_sum_start;
