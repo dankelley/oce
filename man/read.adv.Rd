@@ -238,21 +238,20 @@ dir <- "/data/archive/sleiwex/2008/moorings/"
 
 # Example 1
 # Nortek binary file, daily at 1/2 hour decimation
-f <- paste(dir, "m05/adv/nortek_1943/raw/adv_nortek_1943.vec", sep="")
-from <- as.POSIXct("2008-06-26 00:00:00", tz="UTC")
-to <- as.POSIXct("2008-06-27 00:00:00", tz="UTC")
-by <- "00:30:00"
-d <- read.adv.nortek(f, from=from, to=to, by=by)
+d <- read.oce(
+  "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",
+  from=as.POSIXct("2008-06-26 00:00:00", tz="UTC"),
+  to=as.POSIXct("2008-06-27 00:00:00", tz="UTC"),
+  by="00:30:00")
 plot(d, which=c(1:3,15))      # beams plus pressure
 
 # Example 2
 # Sontek adr file, with method to estimate turbulent dissipation
-f <- paste(dir, "m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr", sep="")
-d <- read.adv.sontek.adr(f, from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
-                            to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
-d$data$ma$v[,2] <- -d$data$ma$v[,2] # account for deployment setup
-d$data$ma$v[,3] <- -d$data$ma$v[,3] # account for deployment setup
-w <- ts(adv$data$ma$v[,3], deltat=1/adv$metadata$sampling.rate)
+d <- read.adv.sontek.adr(
+  "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr",
+  from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
+  to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
+w <- ts(d$data$ma$v[,3], deltat=1/d$metadata$sampling.rate) # z component
 par(mfrow=c(2,2))
 par(mgp=getOption("oce.mgp"))
 par(mar=c(3,3,2,1))
@@ -281,7 +280,7 @@ par(opar)
 library(oce)
 table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
                     from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
-                    to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
+                    to=as.POSIXct("2008-07-01 2:00:00", tz="UTC"))
 d <- read.adv.sontek.realtime(file=table$filename, start=table$start.time, deltat=1/10)
 d <- oce.edit(d, "coordinate.system", "xyz") # original coordinate
 d <- oce.edit(d, "oce.coordinate", "xyz")    # present coordinate
@@ -294,7 +293,8 @@ d <- oce.edit(d, "heading", 0)
 d <- oce.edit(d, "pitch", 0)
 d <- oce.edit(d, "roll", 0)
 d <- oce.edit(d, "serial.number", "202h")
-enu <- adv.xyz2enu(d, declination=-18)
+enu <- adv.xyz2enu(d)
+plot(enu, which=c("u1", "u2", "u3", "temperature"))
 }
 }
 

@@ -1441,9 +1441,8 @@ plot.adv <- function(x,
                             ...)
             }
             rm(y)                       # space may be tight
-        } else if (which[w] %in% 9:11) { # q1, q2, q3
-            ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
-            y <- as.numeric(x$data$ma$q[,which[w-8]])
+        } else if (which[w] %in% 9:11) { # q1, q2, q3 (named c1, c2, and c3 in the object)
+            y <- as.numeric(x$data$ma$c[,which[w]-8])
             if (have.brush.correlation && type == "p") {
                 good <- as.numeric(x$data$ma$c[,which[w]-8]) >= brush.correlation
                 oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(q[which[w-8]]),
