@@ -15,7 +15,7 @@
 }
 
 \details{This will eventually be a proper equation of state, but for now
-  it just returns the sealevel density of a standard atmosphere, 1.22
+  it just returns the sealevel density of a standard atmosphere, 1.225
   kg/m^3.}
 
 \value{\emph{In-situ} air density [kg/m\eqn{^3}{^3}].}
@@ -23,11 +23,9 @@
 \examples{rho <- air.rho() # 1.22}
 
 \references{
-
-  \url{http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770009539_1977009539.pdf}
-
-  \url{http://www.atmosculator.com/The\%20Standard\%20Atmosphere.html}
-}
+  National Oceanographic and Atmospheric Agency, 1976.  U.S. Standard
+  Atmosphere, 1976.  NOAA-S/T 76-1562.
+  (Available as of 2010-09-30 at \url{http://ntrs.nasa.gov/archive/nasa/casi.ntrs.nasa.gov/19770009539_1977009539.pdf}).}
 
 \author{Dan Kelley}
 
