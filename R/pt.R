@@ -2,8 +2,11 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      tlim, plim, Tlim,
                      xlab, ylab,
                      draw.time.range=getOption("oce.draw.time.range"),
+                     abbreviate.time.range=getOption("oce.abbreviate.time.range"),
+                     small=2000,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1], mgp[1]+1, 1, 1.5),
+                     debug=getOption("oce.debug"),
                      ...)
 {
     if (!inherits(x, "pt")) stop("method is only for pt objects")
@@ -23,6 +26,26 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      c(3,4)), widths=c(2,1))
     }
     par(mgp=mgp, mar=mar)
+
+    ## decode string values of 'which'
+    which2 <- vector("numeric", lw)
+    for (w in 1:lw) {
+        ww <- which[w]
+        if (is.numeric(ww)) {
+            which2[w] <- ww
+        } else {
+            if (     ww == "T") which2[w] <- 1
+            else if (ww == "text") which2[w] <- 2
+            else if (ww == "p") which2[w] <- 3
+            else if (ww == "pT") which2[w] <- 4
+            else stop("unknown 'which':", ww)
+        }
+    }
+    which <- which2
+    oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+
+
+
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$ts$time, x$data$ts$temperature,
@@ -33,8 +56,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                  ylim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
-            draw.time.range <- FALSE
+            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range, abbreviate.time.range=abbreviate.time.range)
+            draw.time.range <- FALSE    # only the first time panel gets the time indication
             axis(2)
         } else if (which[w] == 3) {     # pressure timeseries
             plot(x$data$ts$time, x$data$ts$pressure,
@@ -85,7 +108,13 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                          ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
-            do.call(plot, args)
+            np <- length(x$data$ts$pressure)
+            warning("**** HERE 1 **** (small=", small, " and np=", np, "\n")
+            if (np <= small)
+                do.call(plot, args)
+            else
+                do.call(smoothScatter, args)
+            warning("**** HERE 2 ****\n")
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
