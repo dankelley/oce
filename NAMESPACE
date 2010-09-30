@@ -3,6 +3,7 @@ export(
        "+.section",
        ad.beam.name,
        add.column,
+       air.rho,
        apply.magnetic.declination,
        as.coastline,
        as.ctd,

@@ -109,12 +109,12 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
             np <- length(x$data$ts$pressure)
-            warning("**** HERE 1 **** (small=", small, " and np=", np, "\n")
             if (np <= small)
                 do.call(plot, args)
-            else
+            else {
+                args <- args[names(args) != "type"]
                 do.call(smoothScatter, args)
-            warning("**** HERE 2 ****\n")
+            }
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
