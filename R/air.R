@@ -1,5 +1,10 @@
-air.rho <- function(temperature, pressure, humidity)
+air.rho <- function(temperature, pressure, humudity)
 {
-    ## FIXME: just using a constant value for now
-    1.225
+    Tkelvin <- temperature + 273.15
+    ## http://en.wikipedia.org/wiki/Density_of_air
+    M <- 0.0289644                      # kg/mol
+    R <- 287.058
+    R <- 8.31447
+    ##1.225
+    M * pressure / R / Tkelvin
 }

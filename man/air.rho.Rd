@@ -15,12 +15,16 @@
 }
 
 \details{This will eventually be a proper equation of state, but for now
-  it just returns the sealevel density of a standard atmosphere, 1.225
-  kg/m^3.}
+  it's just returns something from wikipedia (i.e. not trustworthy), and
+  not using humidity.}
 
 \value{\emph{In-situ} air density [kg/m\eqn{^3}{^3}].}
 
-\examples{rho <- air.rho() # 1.22}
+\examples{
+degC <- seq(0,30,length.out=100)
+p <- seq(98,102,length.out=100) * 1e3
+contour(x=degC, y=p, z=outer(degC,p,air.rho), labcex=1)
+}
 
 \references{
   National Oceanographic and Atmospheric Agency, 1976.  U.S. Standard
