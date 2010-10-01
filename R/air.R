@@ -1,4 +1,4 @@
-air.rho <- function(temperature, pressure, humudity)
+air.rho <- function(temperature, pressure, humidity)
 {
     Tkelvin <- temperature + 273.15
     ## http://en.wikipedia.org/wiki/Density_of_air
