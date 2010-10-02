@@ -378,10 +378,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
             bad.profiles <- NULL
             oce.debug(debug, "profiles.to.read=", profiles.to.read, "\n")
+            .buf<<-buf
+            have.bottom.track <- FALSE          # FIXME maybe we can determine this from the header
             for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
                 o <- profile.start[i] + 65      # FIXME: are we *sure* this will be 65?
-                oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
-                if (buf[o] == 0x00 && buf[o+1] == 0x01) {
+                oce.debug(debug, 'chunk',i,'at byte',o,'\n')
+                if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
                     ##cat(vector.show(buf[o + 1 + seq(1, 2*items)], "buf[...]:"))
                     vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                     ##cat(vector.show(vv, "vv:"))
@@ -392,7 +394,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     if (buf[o] != 0x00)
                         warning("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x02)
-                        warning("second byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+                        warning("second byte of correlation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+                    oce.debug(debug-1, "'q' (correlation) chunk at byte", o, "\n")
                     q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(q[i,,], "q:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
@@ -400,6 +403,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         warning("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x03)
                         warning("second byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
+                    oce.debug(debug-1, "'a' (amplitude) chunk at byte", o, "\n")
                     a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(a[i,,], "a:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
@@ -407,8 +411,30 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         warning("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x04)
                         warning("second byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
+                    oce.debug(debug-1, "'g' (percent good) chunk at byte", o, "\n")
                     g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
                     ##cat(vector.show(g[i,,], "g:"))
+                    o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+                    oce.debug(debug-1, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
+                    if (buf[o+1] == 0x06) {
+                        oce.debug(debug-1, "bottom track data start at byte", o, "\n")
+                        if (!have.bottom.track) {
+                            if (number.of.beams != 4)
+                                stop("expecting 4 beams, for this RDI adcp")
+                            bottom.range <- array(double(), dim=c(profiles.to.read, number.of.beams))
+                            bottom.velocity <- array(double(), dim=c(profiles.to.read, number.of.beams))
+                            have.bottom.track <- TRUE
+                        }
+                        ## FIXME: can we read these en-masse?
+                        bottom.range[i,1] <- 0.01*readBin(buf[o+c(16:18)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        bottom.range[i,2] <- 0.01*readBin(buf[o+c(19:20)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        bottom.range[i,3] <- 0.01*readBin(buf[o+c(21:22)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        bottom.range[i,4] <- 0.01*readBin(buf[o+c(23:24)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        bottom.velocity[i,1] <- 0.001*readBin(buf[o+c(25:26)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
+                        bottom.velocity[i,2] <- 0.001*readBin(buf[o+c(27:28)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
+                        bottom.velocity[i,3] <- 0.001*readBin(buf[o+c(29:30)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
+                        bottom.velocity[i,4] <- 0.001*readBin(buf[o+c(31:32)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
+                    }
                     if (monitor) {
                         cat(".", ...)
                         if (!(i %% 50)) cat(i, "\n", ...)
@@ -435,7 +461,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             if (length(bad.profiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fill.gap(as.numeric(time) - as.numeric(t0)) + t0
-                warning("Interpolated across ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), sep=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
+                nbad <- length(bad.profiles)
+                if (nbad == 1)
+                    warning("Interpolated across a bad profile at time ", format(time[bad.profiles]), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
+                else
+                    warning("Interpolated across ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), collapse=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
             }
 
             profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
@@ -515,7 +545,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oce.tz")
-            data <- list(ma=list(v=v, a=a, q=q, g=g),
+            if (have.bottom.track) {
+                ma <- list(v=v, a=a, q=q, g=g, bottom.range=bottom.range/100, bottom.velocity=bottom.velocity)
+            } else {
+                ma <- list(v=v, a=a, q=q, g=g)
+            }
+            data <- list(ma=ma,
                          ss=list(distance=seq(bin1.distance, by=cell.size, length.out=number.of.cells)),
                          ts=list(time=time,
                          pressure=pressure,
