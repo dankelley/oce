@@ -144,6 +144,7 @@ export(
        tidem,
        tidem.astron,
        tidem.vuf,
+       unabbreviate.year,
        undrift.time,
        unwrap.angle,
        use.heading,

@@ -92,7 +92,7 @@ summary.adp <- function(object, ...)
                                  deployment.name=object$metadata$deployment.name,
                                  velocity.scale=object$metadata$velocity.scale)
         } else if (1 == length(agrep("rdi", object$metadata$manufacturer, ignore.case=TRUE))) {
-            res.specific <- list(subtype=object$metadata[["instrument.subtype"]],
+            res.specific <- list(instrument.subtype=object$metadata[["instrument.subtype"]],
                                  manufacturer=object$metadata$manufacturer,
                                  number.of.data.types=object$metadata$number.of.data.types,
                                  heading.alignment=object$metadata$heading.alignment,
@@ -215,7 +215,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("\n")
         if (1 == length(agrep("rdi", x$manufacturer, ignore.case=TRUE))) {
             cat("* Teledyne-specific\n\n", ...)
-            cat("  * Instrument subtype:         ", x$subtype, "\n", ...)
+            cat("  * Instrument subtype:         ", x$instrument.subtype, "\n", ...)
             cat("  * System configuration:       ", x$metadata$system.configuration, "\n", ...)
             cat("  * Software version:           ", paste(x$metadata$program.version.major, x$metadata$program.version.minor, sep="."), "\n", ...)
             cat("  * CPU board serial number:    ", x$metadata$cpu.board.serial.number, "\n", ...)

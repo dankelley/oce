@@ -1,3 +1,13 @@
+unabbreviate.year <- function(year)
+{
+    ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
+    ##cat("year[1]=",year[1])
+    ##rval <- ifelse(year > 1800, year, ifelse(year > 100, year + 1900, year + 2000))
+    ##cat(" became ", rval[1], "\n")
+    ##rval
+    ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
+}
+
 logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
 {
     if (missing(dir))
