@@ -426,14 +426,17 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             have.bottom.track <- TRUE
                         }
                         ## FIXME: can we read these en-masse?
-                        bottom.range[i,1] <- 0.01*readBin(buf[o+c(16:18)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
-                        bottom.range[i,2] <- 0.01*readBin(buf[o+c(19:20)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
-                        bottom.range[i,3] <- 0.01*readBin(buf[o+c(21:22)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
-                        bottom.range[i,4] <- 0.01*readBin(buf[o+c(23:24)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
-                        bottom.velocity[i,1] <- 0.001*readBin(buf[o+c(25:26)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
-                        bottom.velocity[i,2] <- 0.001*readBin(buf[o+c(27:28)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
-                        bottom.velocity[i,3] <- 0.001*readBin(buf[o+c(29:30)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
-                        bottom.velocity[i,4] <- 0.001*readBin(buf[o+c(31:32)], "integer", n=1, size=2, signed=TRUE, endian="little") # FIXME: check if signed
+                        ## bottom range: p148 (this is not right, what I have ... I think it's just the lower bytes)
+                        ## scale this later (for speed)
+                        bottom.range[i,1] <- readBin(buf[o+c(16:18)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        bottom.range[i,2] <- readBin(buf[o+c(19:20)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        bottom.range[i,3] <- readBin(buf[o+c(21:22)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        bottom.range[i,4] <- readBin(buf[o+c(23:24)], "integer", n=1, size=2, signed=FALSE, endian="little") # FIXME: check if signed
+                        ## scale this later (for speed)
+                        bottom.velocity[i,1] <- readBin(buf[o+c(25:26)], "integer", n=1, size=2, signed=TRUE, endian="little")
+                        bottom.velocity[i,2] <- readBin(buf[o+c(27:28)], "integer", n=1, size=2, signed=TRUE, endian="little")
+                        bottom.velocity[i,3] <- readBin(buf[o+c(29:30)], "integer", n=1, size=2, signed=TRUE, endian="little")
+                        bottom.velocity[i,4] <- readBin(buf[o+c(31:32)], "integer", n=1, size=2, signed=TRUE, endian="little")
                     }
                     if (monitor) {
                         cat(".", ...)
@@ -546,7 +549,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oce.tz")
             if (have.bottom.track) {
-                ma <- list(v=v, a=a, q=q, g=g, bottom.range=bottom.range/100, bottom.velocity=bottom.velocity)
+                bottom.range.na <- bottom.range == 0.0
+                bottom.range[bottom.range.na] <- NA
+                ma <- list(v=v, a=a, q=q, g=g, bottom.range=bottom.range/100, bottom.velocity=bottom.velocity/1000)
             } else {
                 ma <- list(v=v, a=a, q=q, g=g)
             }
