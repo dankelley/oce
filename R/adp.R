@@ -52,7 +52,8 @@ ad.beam.name <- function(x, which)
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      latitude=NA, longitude=NA,
                      type=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+                     debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE,
+                     log.action, ...)
 {
     oce.debug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)
@@ -60,15 +61,18 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (type == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
                      latitude=latitude, longitude=longitude,
-                     debug=debug-1, monitor=monitor, log.action=log.action, ...)
+                     debug=debug-1, monitor=monitor, despike=despike,
+                     log.action=log.action, ...)
     else if (type == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
-                        debug=debug-1, monitor=monitor, log.action=log.action, ...)
+                        debug=debug-1, monitor=monitor, despike=despike,
+                        log.action=log.action, ...)
     else if (type == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
-                        debug=debug-1, monitor=monitor, log.action=log.action, ...)
+                        debug=debug-1, monitor=monitor, despike=despike,
+                        log.action=log.action, ...)
 }
 
 summary.adp <- function(object, ...)
@@ -312,7 +316,7 @@ plot.adp <- function(x,
     which2 <- vector("numeric", length(which))
     for (w in 1:lw) {
         ww <- which[w]
-        if (is.numeric(ww)) {
+        if (is.numeric(ww) || length(grep("^[0-9]*$", ww))) {
             which2[w] <- ww
         } else {
             if (     ww == "u1") which2[w] <- 1

@@ -1,4 +1,7 @@
 0.1-81
+- add range.limit()
+- add unabbreviate.time()
+- add provisional support for bottom-tracking RDI ADCPs
 - add support for interocean 's4' current meters
 - add unwrap.angle()
 - read.adv.nortek(): detect the velocity range

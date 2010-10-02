@@ -261,7 +261,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
-                         debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+                         debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE,
+                         log.action, ...)
 {
     bisect.rdi.adp <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.rdi.adv(t.find=", format(t.find), ", add=", add, "\n")
@@ -514,7 +515,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             ##rm(tmp)
             salinity <- readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+            ##temperature <- rangelimit(temperature, -3, 100)
+            oce.debug(debug, vector.show(temperature, "temperature"))
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
+            if (despike) {
+                temperature <- despike(temperature)
+                pressure <- despike(pressure)
+            }
             metadata <- header
             metadata$latitude <- latitude
             metadata$longitude <- longitude

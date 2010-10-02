@@ -1,3 +1,18 @@
+despike <- function(x, n=3)
+{
+    sd <- sqrt(var(x, na.rm=TRUE))
+    mean <- mean(x, na.rm=TRUE)
+    ifelse(abs(x - mean) / sd > n, mean, x) # not a good algorithm!
+}
+rangelimit <- function(x, min, max)
+{
+    if (missing(min) && missing(max)) {
+        minmax <- quantile(x, 0.005, 0.995)
+        min <- minmax[1]
+        max <- minmax[2]
+    }
+    ifelse(max < x | x < min, NA, x)
+}
 unabbreviate.year <- function(year)
 {
     ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
