@@ -20,7 +20,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     oce.debug(debug, "number.of.data.types=", number.of.data.types, "\n")
     have.actual.data <- number.of.data.types > 2 # will be 2 if just have headers
     oce.debug(debug, "have.actual.data=", have.actual.data, "\n")
-    data.offset <- readBin(buf[7+0:(2*number.of.data.types)], "integer", n=number.of.data.types, size=2, endian="little")
+    data.offset <- readBin(buf[7+0:(2*number.of.data.types)], "integer", n=number.of.data.types, size=2, endian="little", signed=FALSE)
+    .data.offset<<-data.offset
     oce.debug(debug, "data.offset=", paste(data.offset, sep=" "), "\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the data offset
@@ -135,13 +136,36 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n", ...)
     ##
-    ## VLD (variable leader data) 65 bytes
+    ## VLD (variable leader data)
+    ##   The VLD length varies (see below) so infer its position from data.offset[1].
     ##
-    ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p132: VLD length 65 bytes
-    ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p133: VLD length 65 bytes
-
-    nVLD <- 65
+    ## "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130):
+    ##       HEADER (6+2*num.types bytes) bytes
+    ##       FLD 59 bytes
+    ##       VLD 65 bytes
+    ## "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139):
+    ##       HEADER (6+2*num.types bytes) bytes
+    ##       FLD 50 bytes
+    ##       VLD 58 bytes
+    ## data.offset[1] = within-ensemble byte offset for FLD (e.g. Table D-1 of Surveyor manual)
+    ## data.offset[2] = within-ensemble byte offset for VLD (e.g. Table D-1 of Surveyor manual)
+    ## thus, length of FLD is data.offset[2]-data.offset[1]
+    FLD.length <- data.offset[2] - data.offset[1]
+    oce.debug(debug, "FLD.length", FLD.length, " (expect 59 for Workhorse, or 40 for Surveyor)\n")
+    ## There really seems to be nothing specific in the file to tell instrument type, so, in an act of
+    ## desparation (or is that hope) I'm going to flag on the one thing that was clearly stated, and
+    ## clearly different, in the two documentation entries.
+    if (FLD.length == 59)
+        subtype <- "workhorse" # "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130)
+    else if (FLD.length == 50)
+        subtype <- "surveyor" # "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
+    else {
+        subtype <- "unknown"
+        warning("unexpected length ", FLD.length, " of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for 'workhorse'.")
+    }
+    nVLD <- 65 # FIXME: should use data.offset[] to get VLD length, but we won't use it all, anyway
     VLD <- buf[data.offset[2]+1:nVLD]
+    .VLD<<-VLD
     oce.debug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
     ## ensure that header is not ill-formed
     if (VLD[1] != 0x80) stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
@@ -152,6 +176,10 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## FIXME: probably would save time to read all elements at once.  Instrument to check
 
     RTC.year <- readBin(VLD[5], "integer", n=1, size=1)
+    if (RTC.year > 100) {
+        RTC.year <- RTC.year - 100 # allow year to start at 1900 or 2000
+        warning("RTC year was ", RTC.year+100, " so subtracted 100 to get ", RTC.year, ", *then* added 2000")
+    }
     if (RTC.year < 1800) RTC.year <- RTC.year + 2000 # fix Y2K problem
     RTC.month <- readBin(VLD[6], "integer", n=1, size=1)
     RTC.day <- readBin(VLD[7], "integer", n=1, size=1)
@@ -160,9 +188,9 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
     RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
     time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
-    oce.debug(debug, "profile time=", format(time), "inferred from RTC.year=", RTC.year,
-              "RTC.month=", RTC.month, "RTC.day-", RTC.day, "RTC.hour=", RTC.hour,
-              "RTC.minute=", RTC.minute, "RTC.second=", RTC.second, "RTC.hundreds=", RTC.hundredths, "\n")
+    oce.debug(debug, "profile time=", format(time), "(year=", RTC.year,
+              "month=", RTC.month, "day-", RTC.day, "hour=", RTC.hour,
+              "minute=", RTC.minute, "second=", RTC.second, "hundreds=", RTC.hundredths, ")\n")
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
@@ -180,6 +208,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
 
     list(instrument.type="adcp",
+         instrument.subtype=subtype,
          program.version.major=program.version.major,
          program.version.minor=program.version.minor,
          program.version=program.version,
@@ -310,6 +339,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         xmit.pulse.length <- header$xmit.pulse.length
         cell.size <- header$cell.size
         profile.start <- .Call("match2bytes", buf, 0x80, 0x00, TRUE)
+        .profile.start<<-profile.start
         oce.debug(debug, vector.show(profile.start, "profile.start before trimming:"))
         profiles.in.file <- length(profile.start)
         oce.debug(debug, "profiles.in.file=", profiles.in.file, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
@@ -382,7 +412,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             have.bottom.track <- FALSE          # FIXME maybe we can determine this from the header
             for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
                 o <- profile.start[i] + 65      # FIXME: are we *sure* this will be 65?
-                oce.debug(debug, 'chunk',i,'at byte',o,'\n')
+                oce.debug(debug, 'chunk',i,'at byte',o,'; next 2 bytes are', as.raw(buf[o]), ' and ', as.raw(buf[o+1]),' (expecting 0x00 and 0x01 for velocity)\n')
                 if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
                     ##cat(vector.show(buf[o + 1 + seq(1, 2*items)], "buf[...]:"))
                     vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
