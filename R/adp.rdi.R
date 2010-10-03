@@ -515,13 +515,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             ##rm(tmp)
             salinity <- readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-            ##temperature <- rangelimit(temperature, -3, 100)
-            oce.debug(debug, vector.show(temperature, "temperature"))
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
             if (despike) {
-                temperature <- despike(temperature)
-                pressure <- despike(pressure)
+                temperature <- despike(temperature, physical.range=c(-3,101))
+                ##pressure <- despike(pressure, physical.range=c(1,10e3))
             }
+            oce.debug(debug, vector.show(temperature, "temperature"))
+            oce.debug(debug, vector.show(pressure, "pressure"))
             metadata <- header
             metadata$latitude <- latitude
             metadata$longitude <- longitude
