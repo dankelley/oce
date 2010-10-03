@@ -1356,8 +1356,10 @@ plot.adv <- function(x,
             else if (ww == "heading") which2[w] <- 16
             else if (ww == "pitch") which2[w] <- 17
             else if (ww == "roll") which2[w] <- 18
-            ## 19 allowed, but has no nickname
-            ## 20 allowed, but has no nickname
+            ## 19 beam-1 correlation-amplitude diagnostic plot
+            ## 20 beam-2 correlation-amplitude diagnostic plot
+            ## 21 beam-3 correlation-amplitude diagnostic plot
+            ## 22 not allowed, since ADVs have only 3 beams
             else if (ww == "progressive vector") which2[w] <- 23
             else if (ww == "uv") which2[w] <- 28
             else if (ww == "uv+ellipse") which2[w] <- 29

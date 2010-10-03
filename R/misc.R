@@ -7,8 +7,9 @@ despike <- function(x, method=1, n=4, k=7, physical.range)
     xx <- x
     small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
     large <- if (missing(physical.range)) max(x, na.rm=TRUE) else physical.range[2]
+    na <- is.na(x)
     unphysical <- xx < small | large < xx
-    xx[unphysical] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
+    xx[unphysical | na] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
     if (method == 1) {
         xxs <- runmed(xx, k=k)
     } else if (method == 2) {
@@ -18,10 +19,6 @@ despike <- function(x, method=1, n=4, k=7, physical.range)
     }
     deviant <- n < abs(normalize(xx - xxs))
     x[deviant | unphysical] <- NA
-    ##.deviant<<-deviant
-    ##.unphysical<<-unphysical
-    ##.xx<<-xx
-    ##.xxs<<-xxs
     x
 }
 rangelimit <- function(x, min, max)

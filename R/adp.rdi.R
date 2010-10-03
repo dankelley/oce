@@ -518,7 +518,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
             if (despike) {
                 temperature <- despike(temperature, physical.range=c(-3,101))
-                ##pressure <- despike(pressure, physical.range=c(1,10e3))
+                pressure <- despike(pressure, physical.range=c(1,10e3))
             }
             oce.debug(debug, vector.show(temperature, "temperature"))
             oce.debug(debug, vector.show(pressure, "pressure"))

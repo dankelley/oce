@@ -165,6 +165,7 @@ oce.plot.ts <- function(x,
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
                         type="l",
                         main="",
+                        despike=FALSE,
                         debug=getOption("oce.debug"),
                         ...)
 {
@@ -179,7 +180,8 @@ oce.plot.ts <- function(x,
     args <- list(...)
     if (length(y) == 1)
         y <- rep(y, length(x))
-
+    if (despike)
+        y <- despike(y)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)

@@ -1,4 +1,19 @@
 use.new.imagep <- TRUE
+
+remove.ship.motion <- function(x)
+{
+    rval <- x
+    if (!("bottom.range" %in% names(x$data$ma)))
+        return(rval)
+    number.of.beams <- dim(x$data$ma$v)[3] # could also get from metadata but this is less brittle
+    for (beam in 1:number.of.beams) {
+        rval$data$ma$v[,,beam] <- rval$data$ma$v[,,beam] - rval$data$ma$bottom.velocity[,beam]
+    }
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
+    rval
+}
+
 coordinate <- function(x)
 {
     if (inherits(x, "adp") || inherits(x, "adv"))
@@ -316,8 +331,8 @@ plot.adp <- function(x,
     which2 <- vector("numeric", length(which))
     for (w in 1:lw) {
         ww <- which[w]
-        if (is.numeric(ww) || length(grep("^[0-9]*$", ww))) {
-            which2[w] <- ww
+        if (is.numeric(ww) || 1 == length(grep("^[0-9]*$", ww))) {
+            which2[w] <- as.numeric(ww)
         } else {
             if (     ww == "u1") which2[w] <- 1
             else if (ww == "u2") which2[w] <- 2
@@ -337,10 +352,26 @@ plot.adp <- function(x,
             else if (ww == "heading") which2[w] <- 16
             else if (ww == "pitch") which2[w] <- 17
             else if (ww == "roll") which2[w] <- 18
+            ## 19 beam-1 correlation-amplitude diagnostic plot
+            ## 20 beam-2 correlation-amplitude diagnostic plot
+            ## 21 beam-3 correlation-amplitude diagnostic plot
+            ## 22 beam-4 correlation-amplitude diagnostic plot
             else if (ww == "progressive vector") which2[w] <- 23
             else if (ww == "uv") which2[w] <- 28
             else if (ww == "uv+ellipse") which2[w] <- 29
             else if (ww == "uv+ellipse+arrow") which2[w] <- 30
+            ## 40 to 44 only work for bottom-tracking devices
+            else if (ww == "bottom.range" ) which2[w] <- 40 # average of all beams
+            else if (ww == "bottom.range1") which2[w] <- 41 # beam1
+            else if (ww == "bottom.range2") which2[w] <- 42 # beam2
+            else if (ww == "bottom.range3") which2[w] <- 43 # beam3
+            else if (ww == "bottom.range4") which2[w] <- 44 # beam4
+            ## 50 to 54 only work for bottom-tracking devices
+            else if (ww == "bottom.u" ) which2[w] <- 50 # average of all beams
+            else if (ww == "bottom.u1") which2[w] <- 51 # beam1
+            else if (ww == "bottom.u2") which2[w] <- 52 # beam1
+            else if (ww == "bottom.u3") which2[w] <- 53 # beam1
+            else if (ww == "bottom.u4") which2[w] <- 54 # beam1
             else stop("unknown 'which':", ww)
         }
     }
@@ -365,6 +396,10 @@ plot.adp <- function(x,
         }
     }
     ##oce.debug(debug, "use.layout=", use.layout, "\n")
+    show.bottom <- ("bottom.range" %in% names(x$data$ma)) && !missing(control) && !is.null(control["draw.bottom"])
+    if (show.bottom)
+        bottom <- apply(x$data$ma$bottom.range, 1, mean)
+    oce.debug(debug, "show.bottom=", show.bottom, "\n")
     if (use.layout) {
         if (any(which %in% images) || margins.as.image) {
             w <- 1.5
@@ -451,6 +486,8 @@ plot.adp <- function(x,
                            debug=debug-1,
                            ...)
                 }
+                if (show.bottom)
+                    lines(x$data$ts$time, bottom)
                 draw.time.range <- FALSE
             }
         } else if (which[w] %in% timeseries) { # time-series types
@@ -603,6 +640,40 @@ plot.adp <- function(x,
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
+            }
+        } else if (which[w] %in% 40:44) { # bottom range
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            n <- prod(dim(x$data$ma$v)[1:2])
+            if ("bottom.range" %in% names(x$data$ma)) {
+                if (which[w] == 40)
+                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$bottom.range, 1, mean, na.rm=TRUE), ylab="Range [m]")
+                else if (which[w] == 41)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.range[,1], ylab="Beam 1 range [m]")
+                else if (which[w] == 42)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.range[,2], ylab="Beam 1 range [m]")
+                else if (which[w] == 43)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.range[,3], ylab="Beam 1 range [m]")
+                else if (which[w] == 44)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.range[,4], ylab="Beam 1 range [m]")
+            } else {
+                warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
+            }
+        } else if (which[w] %in% 50:54) { # bottom velocity
+            par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+            n <- prod(dim(x$data$ma$v)[1:2])
+            if ("bottom.velocity" %in% names(x$data$ma)) {
+                if (which[w] == 50)
+                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$bottom.velocity, 1, mean, na.rm=TRUE), ylab="Range [m]")
+                else if (which[w] == 51)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,1], ylab="Beam 1 velocity [m/s]")
+                else if (which[w] == 52)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,2], ylab="Beam 2 velocity [m/s]")
+                else if (which[w] == 53)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,3], ylab="Beam 3 velocity [m/s]")
+                else if (which[w] == 54)
+                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,4], ylab="Beam 4 velocity [m/s]")
+            } else {
+                warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
             }
         } else {
             stop("unknown value of which (", which[w], ")")
