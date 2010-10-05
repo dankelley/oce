@@ -67,12 +67,12 @@
 
 \details{Several plots are available.
   \itemize{
-    \item \code{which=1} or \code{"T"} for a time-series plot of
+    \item \code{which=1} or \code{"temperature"} for a time-series plot of
     temperature
     \item \code{which=2} or \code{"text"} for textual information about
     the dataset
-    \item \code{which=3} for a time-series plot of pressure
-    \item \code{which=4} for a temperature ``profile''
+    \item \code{which=3} or \code{"pressure"} for a time-series plot of pressure
+    \item \code{which=4} or \code{"profile"} for a temperature ``profile''
   }
 }
 

@@ -34,10 +34,10 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
         if (is.numeric(ww)) {
             which2[w] <- ww
         } else {
-            if (     ww == "T") which2[w] <- 1
+            if (     ww == "temperature") which2[w] <- 1
             else if (ww == "text") which2[w] <- 2
-            else if (ww == "p") which2[w] <- 3
-            else if (ww == "pT") which2[w] <- 4
+            else if (ww == "pressure") which2[w] <- 3
+            else if (ww == "profile") which2[w] <- 4
             else stop("unknown 'which':", ww)
         }
     }
