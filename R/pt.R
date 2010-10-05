@@ -3,7 +3,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      xlab, ylab,
                      draw.time.range=getOption("oce.draw.time.range"),
                      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
-                     small=2000,
+                     use.smoothscatter=FALSE,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1], mgp[1]+1, 1, 1.5),
                      debug=getOption("oce.debug"),
@@ -109,11 +109,11 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
             np <- length(x$data$ts$pressure)
-            if (np <= small)
-                do.call(plot, args)
-            else {
+            if (use.smoothscatter) {
                 args <- args[names(args) != "type"]
                 do.call(smoothScatter, args)
+            } else {
+                do.call(plot, args)
             }
         }
         if (w <= adorn.length) {

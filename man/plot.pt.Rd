@@ -12,7 +12,7 @@
      xlab, ylab,
      draw.time.range=getOption("oce.draw.time.range"),
      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
-     small=2000,
+     use.smoothscatter=FALSE,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1], mgp[1]+1, 1, 1.5),
      debug=getOption("oce.debug"),
@@ -51,11 +51,9 @@
     as the horizontal axis, indicating whether to abbreviate the second
     time in the time range (e.g. skipping the year, month, day, etc. if
     it's the same as the start time).}
-  \item{small}{an integer indicating the size of data set to be
-    considered "small", to be plotted with points or lines using the
-    standard \code{\link{plot}} function.  Data sets with more than
-    \code{small} points will be plotted with
-    \code{\link{smoothScatter}} instead.}
+  \item{use.smoothscatter}{a boolean to cause
+    \code{\link{smoothScatter}} to be used for profile plots, instead of
+    \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
