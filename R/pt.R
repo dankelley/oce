@@ -5,7 +5,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
                      use.smoothscatter=FALSE,
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1], mgp[1]+1, 1, 1.5),
+                     mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
                      debug=getOption("oce.debug"),
                      ...)
 {
@@ -99,7 +99,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                 text.item(paste("Sampled interval:", difftime(x$data$ts$time[2], x$data$ts$time[1], units="secs"), "s"),cex=cex)
             }
             par(mar=mar)
-        } else if (which[w] == 4) {     # temperature 'profile'
+        } else if (which[w] == 4) {     # "profile"
             args <- list(x=x$data$ts$temperature, y=x$data$ts$pressure,
                          xlab=resizable.label("T"),
                          ylab=resizable.label("p"),
@@ -107,7 +107,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                          ylim=if (missing(plim)) rev(range(x$data$ts$pressure, na.rm=TRUE)) else plim,
                          ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
-            if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
+            if (!("cex"  %in% names(list(...)))) args <- c(args, cex=1/2)
             np <- length(x$data$ts$pressure)
             if (use.smoothscatter) {
                 args <- args[names(args) != "type"]

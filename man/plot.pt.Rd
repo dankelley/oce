@@ -14,7 +14,7 @@
      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
      use.smoothscatter=FALSE,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1], mgp[1]+1, 1, 1.5),
+     mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
      debug=getOption("oce.debug"),
      \dots)}
 
