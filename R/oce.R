@@ -20,7 +20,9 @@ use.heading <- function(b, g, add=0)
     res
 }
 
-window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), debug=getOption("oce.debug"), ...)
+window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE,
+                       which=c("time","distance"), index.return=FALSE,
+                       debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\b\bwindow.oce() {\n")
     if (extend) stop("cannot handle extend=TRUE yet")
@@ -31,6 +33,9 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     oce.debug(debug, "class of (x) is: ", paste(class(x), collapse=","), "\n")
     res <- x
     which <- match.arg(which)
+    nstart <- length(start)
+    if (nstart != length(end))
+        stop("lengths of 'start' and 'end' must match")
     if (which == "time") {
         oce.debug(debug, "windowing by time\n")
         if (!("ts" %in% names(x$data))) {
@@ -48,18 +53,41 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         oce.debug(debug, "tz of start:", attr(start, "tzone"), "\n")
         oce.debug(debug, "tz of end:", attr(end, "tzone"), "\n")
         oce.debug(debug, "tz of data$ts$time:", attr(res$data$ts$time, "tzone"), "\n")
-        keep <- start <= res$data$ts$time & res$data$ts$time < end
-        for (name in names(res$data$ts)) {
-            res$data$ts[[name]] <- res$data$ts[[name]][keep]
+        nstart <- length(start)
+        ## data$ts (note: 'keep' will be re-used for data$ma)
+        ntime <- length(x$data$ts$time)
+        keep <- rep(FALSE, ntime)
+        for (w in 1:nstart) {
+            keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time < end[w])
+            oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
         }
-        if ("ts.slow" %in% names(res$data)) {
-        oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
-            keep.slow <- start <= res$data$ts.slow$time & res$data$ts.slow$time < end
-            for (name in names(res$data$ts.slow)) {
-                if (length(res$data$ts.slow[[name]]) > 1)
-                    res$data$ts.slow[[name]] <- res$data$ts.slow[[name]][keep.slow]
+        if (index.return) {
+            res <- list(index=keep)
+        } else {
+            for (name in names(res$data$ts)) {
+                res$data$ts[[name]] <- res$data$ts[[name]][keep]
             }
         }
+        ## data$ts.slow (if it exists)
+        if ("ts.slow" %in% names(res$data)) {
+            oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
+            keep.slow <- rep(FALSE, length(x$data$ts.slow$time)) # note that 'keep' is reserved for use with data$ma
+            for (w in 1:nstart) {
+                keep <- keep | (start[w] <= res$data$ts.slow$time & res$data$ts.slow$time < end[w])
+                oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
+            }
+            if (index.return) {
+                res$index.slow <- keep.slow
+            } else {
+                for (name in names(res$data$ts.slow)) {
+                    if (length(res$data$ts.slow[[name]]) > 1)
+                        res$data$ts.slow[[name]] <- res$data$ts.slow[[name]][keep.slow]
+                }
+            }
+        }
+        if (index.return)
+            return(res)
+        ## data$ma
         if ("ma" %in% names(res$data)) {
             for (maname in names(res$data$ma)) {
                 ldim <- length(dim(res$data$ma[[maname]]))
