@@ -236,8 +236,8 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     subsample.start <- measurement.start + (from - 1) * measurement.deltat # FIXME: check this
     subsample.deltat <- by * measurement.deltat
     if (nvar == 2) {
-        time <- subsample.start + seq(from=1, to=n) * subsample.deltat
-        oce.debug(debug, "nvar=2; setting time[1:2]=", time[1:2], "with subsample.deltat=", subsample.deltat,"\n")
+        time <- subsample.start + seq(from=0, to=n-1) * subsample.deltat
+        oce.debug(debug, "nvar=2; setting time[1]=", format(time[1]), "and time[2]=", format(time[2]), "with subsample.deltat=", subsample.deltat,"\n")
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {
