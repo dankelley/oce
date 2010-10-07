@@ -1285,7 +1285,8 @@ plot.adv <- function(x,
     lw <- length(which)
 
     if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
-    if (lw > 1) on.exit(par(opar))
+    if (lw > 1)
+        on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
 
