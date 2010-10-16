@@ -1,4 +1,5 @@
 plot.topo <- function(x,
+                      xlab="", ylab="",
                       water.z,
                       water.col,
                       water.lty,
@@ -40,7 +41,8 @@ plot.topo <- function(x,
     ## of plots, and also to prevent going past the poles
     lat.range <- range(x$data$latitude, na.rm=TRUE)
     lon.range <- range(x$data$longitude, na.rm=TRUE)
-    plot(lon.range, lat.range, asp=asp, xaxs="i", yaxs="i", type="n", xlab="", ylab="", axes=FALSE, ...)
+    plot(lon.range, lat.range, asp=asp, xaxs="i", yaxs="i", type="n",
+         xlab=xlab, ylab=ylab, axes=FALSE, ...)
 
     ## Kludge to prevent latitudes beyond poles
     usr <- par("usr")

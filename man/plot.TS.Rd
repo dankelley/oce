@@ -20,7 +20,7 @@
      Slim,
      Tlim,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1]+5/4,mgp[1]+1,mgp[1],mgp[1]),
+     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
      lwd.rho=par("lwd"), lty.rho=par("lty"),
      \dots)
 }
