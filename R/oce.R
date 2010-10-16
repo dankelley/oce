@@ -958,7 +958,9 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             time.range <- as.POSIXct(time.range)
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
-        label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
+        label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], sep="")
+        if (!is.na(1/deltat))
+            label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         oce.debug(debug, "label=", label, "\n")
         mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)
         oce.debug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")

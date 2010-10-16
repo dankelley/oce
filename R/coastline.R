@@ -21,12 +21,9 @@ plot.coastline <- function (x,
                             ...)
 {
     oce.debug(debug, "\b\bplot.coastline() {\n")
-    if (is.list(x)) {
-        n <- names(x)
-        if (!("longitude" %in% n))
+    if (is.list(x) && "latitude" %in% names(x)) {
+        if (!("longitude" %in% names(x)))
             stop("list must contain item named 'longitude'")
-        if (!("latitude" %in% n))
-            stop("list must contain item named 'latitude'")
         x <- as.coastline(x$latitude, x$longitude)
     } else {
         if (!inherits(x, "coastline"))
