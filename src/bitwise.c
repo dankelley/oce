@@ -15,6 +15,178 @@
 
 */
 
+SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes)
+{
+  /* "unwrap" a vector of integers that are sequence numbers wrapping in 'bytes' bytes, 
+   * creating the sequence numbers that might have resulted, had 'seq' not been
+   * created module 'bytes' bytes.
+   */
+  PROTECT(seq = AS_INTEGER(seq));
+  int *pseq = INTEGER_POINTER(seq);
+  PROTECT(bytes = AS_INTEGER(bytes));
+  int pbytes = *INTEGER_POINTER(bytes);
+  long int pmod;
+  if (pbytes == 2) {
+    pmod = 65535 + 1;
+  } else {
+    error("only understand bytes=2 for now");
+  }
+  long int n = LENGTH(seq);
+  SEXP res;
+  PROTECT(res = NEW_INTEGER(n));
+  int *pres = INTEGER_POINTER(res);
+  long int last;
+  long int cumulative = 0;
+#ifdef DEBUG
+  Rprintf("n=%ld\n", n);
+#endif
+  pres[0] = pseq[0];
+  last = pseq[0];
+  for (int i = 1; i < n; i++) {
+    if (pseq[i] < last) {
+      cumulative += pmod;
+#ifdef DEBUG
+      Rprintf("pseq[%d]=%d and last=%d, so updated to cumulative=%ld\n", i, pseq[i], last, cumulative);
+#endif
+    }
+    pres[i] = pseq[i] + cumulative;
+#ifdef DEBUG
+    Rprintf("i=%d seq=%d rval=%d\n", i, pseq[i], pres[i]);
+#endif
+    last = pseq[i];
+  }
+  UNPROTECT(3);
+  return(res);
+}
+
+SEXP ldc_sontek_adv_22(SEXP buf, SEXP max)
+{
+/* ldc = locate data chunk; _sontek_adv = for a SonTek ADV (with temperature and/or pressure installed; see p95 of sontek-adv-op-man-2001.pdf)
+ * BYTE   Contents
+ *   1    0x85 [call this key1 in code]
+ *   2    0x16 (length of record, 0x16 is 22 base 10) [ call this key2 in code]
+ *   3:4  SampleNum, a little-endian unsigned integer. This should increase by 1 from sample
+ *        to sample, and it wraps at value 65535
+ *   5:6  x velocity component, signed 2-byte integer, in 0.1 mm/s [QUESTION: is there a scale factor issue?]
+ *   7:8  y "
+ *  9:10  z "
+ *  11    beam 1 amplitude
+ *  12    beam 2 "
+ *  13    beam 3 "
+ *  14    beam 1 correlation
+ *  15    beam 2 "
+ *  16    beam 3 "
+ *  17:18 temperature (in 0.01 degC), signed little-endian integer
+ *  19:20 pressure (in counts), signed little-endian integer
+ *  21:22 checksum of bytes 1 to 20
+ */
+
+/*
+  # testing
+
+  R CMD SHLIB bitwise.o ; R --no-save < a.R
+
+  # with a.R as follows:
+
+  f <- file('~/m05_sontek_adv','rb')
+  seek(f,0,"end")
+  n <- seek(f,0,"start")
+  buf <- readBin(f, "raw", n)
+  dyn.load("bitwise.so")
+  p <- .Call("ldc_sontek_adv_22", buf, 10)
+  np <- length(p)
+  pp <- sort(c(p, p+1)) # for two-byte reading
+  sample.number <- readBin(buf[pp+2], "integer", signed=FALSE, size=2, endian="little",n=np)
+  u1 <- 1e-4 * readBin(buf[pp+4], "integer", signed=TRUE, size=2, endian="little",n=np)
+  u2 <- 1e-4 * readBin(buf[pp+6], "integer", signed=TRUE, size=2, endian="little",n=np)
+  u3 <- 1e-4 * readBin(buf[pp+8], "integer", signed=TRUE, size=2, endian="little",n=np)
+  a1 <- readBin(buf[p+10], "integer", signed=TRUE, size=1, n=np)
+  a2 <- readBin(buf[p+11], "integer", signed=TRUE, size=1, n=np)
+  a3 <- readBin(buf[p+12], "integer", signed=TRUE, size=1, n=np)
+  c1 <- readBin(buf[p+13], "integer", signed=TRUE, size=1, n=np)
+  c2 <- readBin(buf[p+14], "integer", signed=TRUE, size=1, n=np)
+  c3 <- readBin(buf[p+15], "integer", signed=TRUE, size=1, n=np)
+  temperature <- 0.01 * readBin(buf[sort(c(p, p+1))+16], "integer", signed=TRUE, size=2, endian="little",n=np)
+  pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, endian="little",n=np)
+ */
+  unsigned char *pbuf, *pmatch;
+  PROTECT(buf = AS_RAW(buf));
+  PROTECT(max = AS_INTEGER(max));
+  /* FIXME: check lengths of match and key */
+  pbuf = RAW_POINTER(buf);
+  int max_lres = *INTEGER_POINTER(max);
+  int lres;
+  int lbuf = LENGTH(buf);
+  SEXP res;
+#ifdef DEBUG
+  Rprintf("lbuf=%d, max=%d\n",lbuf,max_lres);
+#endif
+  /* Count matches, so we can allocate the right length */
+  unsigned char byte1 = 0x85;
+  unsigned char byte2 = 0x16; /* this equal 22 base 10, i.e. the number of bytes in record */
+  unsigned int matches = 0;
+  unsigned short int check_sum_start = ((unsigned short)0xa5<<8)  | ((unsigned short)0x96); /* manual p96 says 0xA596; assume little-endian */
+  unsigned short int check_sum, desired_check_sum, desired_check_sum2;
+  if (max_lres < 0)
+    max_lres = 0;
+  for (int i = 0; i < lbuf - byte2; i++) { /* note that we don't look to the very end */
+    check_sum = check_sum_start;
+    if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
+#ifdef DEBUG
+      Rprintf("tentative match %d at i = %d ... ", matches, i);
+#endif
+      for (int c = 0; c < 20; c++)
+        check_sum += (unsigned short int)pbuf[i + c];
+      desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
+      if (check_sum == desired_check_sum) {
+        matches++;
+#ifdef DEBUG
+        Rprintf("good match (check_sum=%d)\n", check_sum);
+#endif
+        if (max_lres != 0 && matches >= max_lres)
+          break;
+      } else {
+#ifdef DEBUG
+        Rprintf("bad checksum\n");
+#endif
+      }
+    }
+  }
+  /* allocate space, then run through whole buffer again, noting the matches */
+  lres = matches;
+  if (lres > 0) {
+    PROTECT(res = NEW_INTEGER(lres));
+    int *pres = INTEGER_POINTER(res);
+#ifdef DEBUG
+    Rprintf("getting space for %d matches\n", lres);
+#endif
+    unsigned int ires = 0;
+    for (int i = 0; i < lbuf - byte2; i++) { /* note that we don't look to the very end */
+      check_sum = check_sum_start;
+      if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
+        for (int c = 0; c < 20; c++)
+          check_sum += (unsigned short int)pbuf[i + c];
+        desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
+        if (check_sum == desired_check_sum) {
+          pres[ires++] = i + 1; /* the +1 is to get R pointers */
+        }
+        if (ires > lres)        /* FIXME: or +1? */
+          break;
+      }
+    }
+    UNPROTECT(3);
+    return(res);
+  } else {
+    PROTECT(res = NEW_INTEGER(1));
+    int *pres = INTEGER_POINTER(res);
+    pres[0] = 0;
+    UNPROTECT(3);
+    return(res);
+  }
+}
+
+
+
 /*#define DEBUG*/
 SEXP nortek_checksum(SEXP buf, SEXP key)
 {

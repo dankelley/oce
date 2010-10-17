@@ -3,6 +3,8 @@ export(
        "+.section",
        ad.beam.name,
        add.column,
+       air.rho,
+       apply.magnetic.declination,
        as.coastline,
        as.ctd,
        as.sealevel,
@@ -27,6 +29,7 @@ export(
        ctd.update.header,
        ctime.to.seconds,
        decimate,
+       despike,
        fill.gap,
        formatci,
        full.filename,
@@ -44,6 +47,7 @@ export(
        is.enu,
        lat.format,
        latlon.format,
+       logger.toc,
        lon.format,
        magic,
        magnetic.declination,
@@ -71,6 +75,7 @@ export(
        plot.adp,
        plot.adv,
        plot.TS,
+       plot.cm,
        plot.coastline,
        plot.ctd,
        plot.ctd.scan,
@@ -87,15 +92,17 @@ export(
        processing.log.summary,
        pt.patm,
        pt.trim,
+       rangelimit,
        read.adp,
        read.adp.rdi,
        read.adp.nortek,
        read.adp.sontek,
        read.adv,
        read.adv.nortek,
-       read.adv.sontek,
+       read.adv.sontek.realtime,
        read.adv.sontek.adr,
        read.adv.sontek.text,
+       read.cm,
        read.coastline,
        read.ctd,
        read.ctd.sbe,
@@ -139,6 +146,7 @@ export(
        tidem,
        tidem.astron,
        tidem.vuf,
+       unabbreviate.year,
        undrift.time,
        unwrap.angle,
        use.heading,
@@ -149,6 +157,7 @@ export(
 
 S3method(plot, adp)
 S3method(plot, adv)
+S3method(plot, cm)
 S3method(plot, coastline)
 S3method(plot, ctd)
 S3method(plot, lobo)
@@ -161,6 +170,7 @@ S3method(plot, windrose)
 S3method(print, processing.log.summary)
 S3method(print, summary.adp)
 S3method(print, summary.adv)
+S3method(print, summary.cm)
 S3method(print, summary.coastline)
 S3method(print, summary.ctd)
 S3method(print, summary.lobo)
@@ -172,6 +182,7 @@ S3method(print, summary.topo)
 S3method(predict, tidem)
 S3method(summary, adp)
 S3method(summary, adv)
+S3method(summary, cm)
 S3method(summary, coastline)
 S3method(summary, ctd)
 S3method(summary, lobo)

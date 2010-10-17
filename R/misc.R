@@ -1,3 +1,92 @@
+normalize <- function(x)
+{
+    (x - mean(x, na.rm=TRUE)) / sqrt(var(x, na.rm=TRUE))
+}
+despike <- function(x, method=1, n=4, k=7, physical.range)
+{
+    xx <- x
+    small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
+    large <- if (missing(physical.range)) max(x, na.rm=TRUE) else physical.range[2]
+    na <- is.na(x)
+    unphysical <- xx < small | large < xx
+    xx[unphysical | na] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
+    if (method == 1) {
+        xxs <- runmed(xx, k=k)
+    } else if (method == 2) {
+        xxs <- as.numeric(smooth(xx))
+    } else {
+        stop("unknown method ", method, "; try method=1 or method=2)")
+    }
+    deviant <- n < abs(normalize(xx - xxs))
+    x[deviant | unphysical] <- NA
+    x
+}
+rangelimit <- function(x, min, max)
+{
+    if (missing(min) && missing(max)) {
+        minmax <- quantile(x, 0.005, 0.995)
+        min <- minmax[1]
+        max <- minmax[2]
+    }
+    ifelse(max < x | x < min, NA, x)
+}
+unabbreviate.year <- function(year)
+{
+    ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
+    ##cat("year[1]=",year[1])
+    ##rval <- ifelse(year > 1800, year, ifelse(year > 100, year + 1900, year + 2000))
+    ##cat(" became ", rval[1], "\n")
+    ##rval
+    ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
+}
+
+logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
+{
+    if (missing(dir))
+        stop("need a 'dir', naming a directory containing a file with suffix .TBL, and also data files named in that file")
+    tbl.files <- list.files(path=dir, pattern="*.TBL")
+    if (length(tbl.files) < 1)
+        stop("could not locate a .TBL file in direcory ", dir)
+    t0 <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary time, to make integers
+    for (tbl.file in tbl.files) {
+        oce.debug(debug, tbl.file)
+        lines <- readLines(paste(dir, tbl.file, sep="/"))
+        if (length(lines) < 1)
+            stop("found no data in file ", paste(dir, tbl.file, sep="/"))
+        ## "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
+        file.code <- NULL
+        start.time <- NULL
+        for (line in lines) {
+            s <- strsplit(line, "[ \t]+")[[1]]
+            if (length(s) > 2) {
+                filename <- s[2]
+                month <- s[6]
+                day <- s[7]
+                hms <- s[8]
+                year <- s[9]
+                t <- as.POSIXct(strptime(paste(year, month, day, hms), "%Y %b %d %H:%M:%S", tz="UTC"))
+                len <- nchar(filename)
+                code <- substr(filename, len-6, len)
+                if (debug > 0)
+                    cat(s, "|", code, "|", format(t), "\n")
+                file.code <- c(file.code, code)
+                start.time <- c(start.time, as.numeric(t) - as.numeric(t0))
+            }
+        }
+    }
+    prefix <- list.files(dir, pattern=".*[0-9]$")[1]
+    lprefix <- nchar(prefix)
+    prefix <- substr(prefix, 1, lprefix-7)
+    filename <- paste(dir, paste(prefix, file.code, sep=""), sep="/")
+    start.time <- as.POSIXct(start.time + t0)
+    if (!missing(from) && !missing(to)) {
+        ok <- from <= start.time & start.time <= to
+        filename <- filename[ok]
+        start.time <- start.time[ok]
+    }
+    list(filename=filename, start.time=start.time)
+}
+
 unwrap.angle <- function(angle)
 {
     to.rad <- atan2(1, 1) / 45
@@ -887,6 +976,31 @@ integer2ascii <- function(i)
       "\xee", "\xef", "\xf0", "\xf1", "\xf2", "\xf3", "\xf4", "\xf5",
       "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
       "\xfe", "\xff")[i+1]
+}
+
+apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.debug"))
+{
+    oce.debug(debug, "\b\bapply.magnetic.declination(x,declination=", declination, ") {\n", sep="")
+    if (inherits(x, "cm")) {
+        oce.debug(debug, "object is of type 'cm'\n")
+        rval <- x
+        S <- sin(-declination * pi / 180)
+        C <- cos(-declination * pi / 180)
+        r <- matrix(c(C, S, -S, C), nrow=2)
+        uv.r <- r %*% rbind(x$data$ts$u, x$data$ts$v)
+        rval$data$ts$u <- uv.r[1,]
+        rval$data$ts$v <- uv.r[2,]
+        oce.debug(debug, "originally, first u:", x$data$ts$u[1:3], "\n")
+        oce.debug(debug, "originally, first v:", x$data$ts$v[1:3], "\n")
+        oce.debug(debug, "after application, first u:", rval$data$ts$u[1:3], "\n")
+        oce.debug(debug, "after application, first v:", rval$data$ts$v[1:3], "\n")
+    } else {
+        stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
+    }
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # apply.magnetic.declination\n")
+    rval
 }
 
 magnetic.declination <- function(lat, lon, date)

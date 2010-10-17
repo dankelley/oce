@@ -20,7 +20,9 @@ use.heading <- function(b, g, add=0)
     res
 }
 
-window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE, which=c("time","distance"), debug=getOption("oce.debug"), ...)
+window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE,
+                       which=c("time","distance"), index.return=FALSE,
+                       debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\b\bwindow.oce() {\n")
     if (extend) stop("cannot handle extend=TRUE yet")
@@ -28,8 +30,12 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     if (!is.null(deltat)) stop("cannot handle deltat yet")
     if (is.null(start)) stop("must provide start")
     if (is.null(end)) stop("must provide end")
+    oce.debug(debug, "class of (x) is: ", paste(class(x), collapse=","), "\n")
     res <- x
     which <- match.arg(which)
+    nstart <- length(start)
+    if (nstart != length(end))
+        stop("lengths of 'start' and 'end' must match")
     if (which == "time") {
         oce.debug(debug, "windowing by time\n")
         if (!("ts" %in% names(x$data))) {
@@ -47,18 +53,41 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         oce.debug(debug, "tz of start:", attr(start, "tzone"), "\n")
         oce.debug(debug, "tz of end:", attr(end, "tzone"), "\n")
         oce.debug(debug, "tz of data$ts$time:", attr(res$data$ts$time, "tzone"), "\n")
-        keep <- start <= res$data$ts$time & res$data$ts$time < end
-        for (name in names(res$data$ts)) {
-            res$data$ts[[name]] <- res$data$ts[[name]][keep]
+        nstart <- length(start)
+        ## data$ts (note: 'keep' will be re-used for data$ma)
+        ntime <- length(x$data$ts$time)
+        keep <- rep(FALSE, ntime)
+        for (w in 1:nstart) {
+            keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time < end[w])
+            oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
         }
-        if ("ts.slow" %in% names(res$data)) {
-        oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
-            keep.slow <- start <= res$data$ts.slow$time & res$data$ts.slow$time < end
-            for (name in names(res$data$ts.slow)) {
-                if (length(res$data$ts.slow[[name]]) > 1)
-                    res$data$ts.slow[[name]] <- res$data$ts.slow[[name]][keep.slow]
+        if (index.return) {
+            res <- list(index=keep)
+        } else {
+            for (name in names(res$data$ts)) {
+                res$data$ts[[name]] <- res$data$ts[[name]][keep]
             }
         }
+        ## data$ts.slow (if it exists)
+        if ("ts.slow" %in% names(res$data)) {
+            oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
+            keep.slow <- rep(FALSE, length(x$data$ts.slow$time)) # note that 'keep' is reserved for use with data$ma
+            for (w in 1:nstart) {
+                keep <- keep | (start[w] <= res$data$ts.slow$time & res$data$ts.slow$time < end[w])
+                oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
+            }
+            if (index.return) {
+                res$index.slow <- keep.slow
+            } else {
+                for (name in names(res$data$ts.slow)) {
+                    if (length(res$data$ts.slow[[name]]) > 1)
+                        res$data$ts.slow[[name]] <- res$data$ts.slow[[name]][keep.slow]
+                }
+            }
+        }
+        if (index.return)
+            return(res)
+        ## data$ma
         if ("ma" %in% names(res$data)) {
             for (maname in names(res$data$ma)) {
                 ldim <- length(dim(res$data$ma[[maname]]))
@@ -164,6 +193,7 @@ oce.plot.ts <- function(x,
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
                         type="l",
                         main="",
+                        despike=FALSE,
                         debug=getOption("oce.debug"),
                         ...)
 {
@@ -178,7 +208,8 @@ oce.plot.ts <- function(x,
     args <- list(...)
     if (length(y) == 1)
         y <- rep(y, length(x))
-
+    if (despike)
+        y <- despike(y)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
@@ -281,7 +312,7 @@ oce.edit <- function(x, item, value, action, reason="", person="",
                 }
             } else {
                 if (item %in% names(x$metadata))
-                    x$metadata[item] <- value
+                    x$metadata[[item]] <- value
                 else
                     stop("do not know how to handle this item")
             }
@@ -330,7 +361,40 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
 {
     oce.debug(debug, "\b\bsubset.oce() {\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
+    if (inherits(x, "cm")) {
+        if (!is.null(indices)) {
+            oce.debug(debug, vector.show(keep, "keeping indices"))
+            rval <- x
+            keep <- (1:length(x$data$ts$u))[indices]
+            for (name in names(rval$data$ts)) {
+                rval$data$ts[[name]] <- x$data$ts[[name]][keep]
+            }
+        } else if (!missing(subset)) {
+            subset.string <- deparse(substitute(subset))
+            oce.debug(debug, "subset.string='", subset.string, "'\n")
+            if (length(grep("time", subset.string))) {
+                oce.debug(debug, "subsetting a cm by time\n")
+                ## ts
+                keep <- eval(substitute(subset), x$data$ts, parent.frame())
+                oce.debug(debug, vector.show(keep, "keeping times at indices:"), "\n")
+            } else {
+                stop("it makes no sense to subset a \"cm\" object by anything other than time")
+            }
+        } else {
+            stop("must supply either 'subset' or 'indices'")
+        }
+        rval <- x
+        for (name in names(x$data$ts)) {
+            rval$data$ts[[name]] <- x$data$ts[[name]][keep]
+        }
+        if ("ts.slow" %in% names(x$data)) {
+            keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+            for (name in names(rval$data$ts.slow)) {
+                if (length(rval$data$ts.slow[[name]]) > 1)
+                    rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
+            }
+        }
+    } else if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x$metadata$number.of.profiles)[indices]
@@ -488,10 +552,13 @@ magic <- function(file, debug=getOption("oce.debug"))
 {
     filename <- file
     if (is.character(file)) {
-        oce.debug(debug, "checking filename to see if it ends in .adr ...\n")
-        if (length(grep(".adr$", file))) {
-            oce.debug(debug, "yes, so this is adv/sontek/adr.\n")
+        oce.debug(debug, "checking filename to see if it matches known patterns\n")
+        if (length(grep(".adr$", filename))) {
+            oce.debug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
+        } else if (length(grep(".s4a.", filename))) {
+            oce.debug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
+            return("interocean/s4")
         }
         oce.debug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
@@ -614,6 +681,7 @@ read.oce <- function(file, ...)
     if (type == "adv/nortek/vector")      return(read.adv.nortek(file, log.action=log.action, ...))
     if (type == "adv/sontek/adr")         return(read.adv.sontek.adr(file, log.action=log.action, ...))
     ## FIXME need adv/sontek (non adr)
+    if (type == "interocean/s4")          return(read.cm.s4(file, log.action=log.action, ...))
     if (type == "ctd/sbe/19")             return(read.ctd.sbe(file, log.action=log.action, ...))
     if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, log.action=log.action, ...))
     if (type == "coastline")              return(read.coastline(file, type="mapgen", log.action=log.action, ...))
@@ -890,9 +958,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             time.range <- as.POSIXct(time.range)
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
-        label <- paste(tr1, attr(time.range[1], "tzone")[1], "to", tr2,  attr(time.range[2], "tzone")[1], "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
+        label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
+        if (is.finite(1/deltat))
+            label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         oce.debug(debug, "label=", label, "\n")
-        mtext(label, side=if (side==1) 3 else 1, cex=0.7*cex.axis*par('cex'), adj=0)
+        mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)
         oce.debug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
     }
     if (nchar(main) > 0) {

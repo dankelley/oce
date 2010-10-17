@@ -20,7 +20,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     oce.debug(debug, "number.of.data.types=", number.of.data.types, "\n")
     have.actual.data <- number.of.data.types > 2 # will be 2 if just have headers
     oce.debug(debug, "have.actual.data=", have.actual.data, "\n")
-    data.offset <- readBin(buf[7+0:(2*number.of.data.types)], "integer", n=number.of.data.types, size=2, endian="little")
+    data.offset <- readBin(buf[7+0:(2*number.of.data.types)], "integer", n=number.of.data.types, size=2, endian="little", signed=FALSE)
     oce.debug(debug, "data.offset=", paste(data.offset, sep=" "), "\n")
     ##
     ## Fixed Leader Data, abbreviated FLD, pointed to by the data offset
@@ -65,7 +65,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     else if (bits == "11") beam.angle <- NA # means 'other'
     oce.debug(debug, "bits=", bits, "so beam.angle=", beam.angle, "\n")
     if (beam.angle < 19 || 21 < beam.angle)
-        warning("expecting a beam angle of 20deg [more-or-less standard for RDI] but got", beam.angle, "; using the latter in the transformation matrix")
+        warning("expecting a beam angle of 20 deg [more-or-less standard for RDI] but got ", beam.angle, "deg; using the latter in the transformation matrix")
     bits <- substr(system.configuration, 5, 5)
     if (bits == "0") beam.pattern <- "concave"
     else beam.pattern <- "convex"
@@ -131,16 +131,39 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p127: bytes 55:58 = serial number
     serial.number <- readBin(FLD[55:58], "integer", n=1, size=4, endian="little")
     oce.debug(debug, "SERIAL NUMBER", serial.number, "from bytes (", FLD[55:58], ")\n")
-    if (serial.number == 0) serial.number <- "unknown (not found at expected byte locations in file)"
+    if (serial.number == 0) serial.number <- "unknown"
     ##beam.angle <- readBin(FLD[59], "integer", n=1, size=1) # NB 0 in first test case
     ##cat("BEAM ANGLE=", FLD[59], "or", beam.angle, "\n", ...)
     ##
-    ## VLD (variable leader data) 65 bytes
+    ## VLD (variable leader data)
+    ##   The VLD length varies (see below) so infer its position from data.offset[1].
     ##
-    ## "WorkHorse Commands and Output Data Format_Mar05.pdf" p132: VLD length 65 bytes
-    ## "WorkHorse Commands and Output Data Format_Nov07.pdf" p133: VLD length 65 bytes
+    ## "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130):
+    ##       HEADER (6+2*num.types bytes) bytes
+    ##       FLD 59 bytes
+    ##       VLD 65 bytes
+    ## "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139):
+    ##       HEADER (6+2*num.types bytes) bytes
+    ##       FLD 50 bytes
+    ##       VLD 58 bytes
+    ## data.offset[1] = within-ensemble byte offset for FLD (e.g. Table D-1 of Surveyor manual)
+    ## data.offset[2] = within-ensemble byte offset for VLD (e.g. Table D-1 of Surveyor manual)
+    ## thus, length of FLD is data.offset[2]-data.offset[1]
+    FLD.length <- data.offset[2] - data.offset[1]
+    oce.debug(debug, "FLD.length", FLD.length, " (expect 59 for Workhorse, or 40 for Surveyor)\n")
+    ## There really seems to be nothing specific in the file to tell instrument type, so, in an act of
+    ## desparation (or is that hope) I'm going to flag on the one thing that was clearly stated, and
+    ## clearly different, in the two documentation entries.
+    if (FLD.length == 59) {
+        instrument.subtype <- "workhorse" # "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130)
 
-    nVLD <- 65
+    } else if (FLD.length == 50) {
+        instrument.subtype <- "surveyor" # "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
+    } else {
+        instrument.subtype <- "unknown"
+        warning("unexpected length ", FLD.length, " of fixed-leader-data header; expecting 50 for 'surveyor' or 59 for 'workhorse'.")
+    }
+    nVLD <- 65 # FIXME: should use the proper length, but we won't use it all anyway
     VLD <- buf[data.offset[2]+1:nVLD]
     oce.debug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
     ## ensure that header is not ill-formed
@@ -150,9 +173,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
 
     ## FIXME: probably would save time to read all elements at once.  Instrument to check
-
-    RTC.year <- readBin(VLD[5], "integer", n=1, size=1)
-    if (RTC.year < 1800) RTC.year <- RTC.year + 2000 # fix Y2K problem
+    RTC.year <- unabbreviate.year(readBin(VLD[5], "integer", n=1, size=1))
     RTC.month <- readBin(VLD[6], "integer", n=1, size=1)
     RTC.day <- readBin(VLD[7], "integer", n=1, size=1)
     RTC.hour <- readBin(VLD[8], "integer", n=1, size=1)
@@ -160,9 +181,9 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     RTC.second <- readBin(VLD[10], "integer", n=1, size=1)
     RTC.hundredths <- readBin(VLD[11], "integer", n=1, size=1)
     time <- ISOdatetime(RTC.year, RTC.month, RTC.day, RTC.hour, RTC.minute, RTC.second + RTC.hundredths / 100, tz=tz)
-    oce.debug(debug, "profile time=", format(time), "inferred from RTC.year=", RTC.year,
-              "RTC.month=", RTC.month, "RTC.day-", RTC.day, "RTC.hour=", RTC.hour,
-              "RTC.minute=", RTC.minute, "RTC.second=", RTC.second, "RTC.hundreds=", RTC.hundredths, "\n")
+    oce.debug(debug, "profile time=", format(time), "(year=", RTC.year,
+              "month=", RTC.month, "day-", RTC.day, "hour=", RTC.hour,
+              "minute=", RTC.minute, "second=", RTC.second, "hundreds=", RTC.hundredths, ")\n")
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
@@ -180,6 +201,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
 
     list(instrument.type="adcp",
+         instrument.subtype=instrument.subtype,
          program.version.major=program.version.major,
          program.version.minor=program.version.minor,
          program.version=program.version,
@@ -199,6 +221,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
          pings.per.ensemble=pings.per.ensemble,
          cell.size=cell.size,
          profiling.mode=profiling.mode,
+         data.offset=data.offset,
          low.corr.thresh=low.corr.thresh,
          number.of.code.reps=number.of.code.reps,
          percent.gd.minimum=percent.gd.minimum,
@@ -238,7 +261,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
-                         debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+                         debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE,
+                         log.action, ...)
 {
     bisect.rdi.adp <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.rdi.adv(t.find=", format(t.find), ", add=", add, "\n")
@@ -248,13 +272,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            year   <- 2000 + readBin(buf[profile.start[middle] +  4], what="integer", n=1, size=1, signed=FALSE)
-            month  <-        readBin(buf[profile.start[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
-            day    <-        readBin(buf[profile.start[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
-            hour   <-        readBin(buf[profile.start[middle] +  7], what="integer", n=1, size=1, signed=FALSE)
-            minute <-        readBin(buf[profile.start[middle] +  8], what="integer", n=1, size=1, signed=FALSE)
-            second <-        readBin(buf[profile.start[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
-            sec100 <-        readBin(buf[profile.start[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
+            year   <- unabbreviate.year(readBin(buf[profile.start[middle] +  4], what="integer", n=1, size=1, signed=FALSE))
+            month  <- readBin(buf[profile.start[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
+            day    <- readBin(buf[profile.start[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
+            hour   <- readBin(buf[profile.start[middle] +  7], what="integer", n=1, size=1, signed=FALSE)
+            minute <- readBin(buf[profile.start[middle] +  8], what="integer", n=1, size=1, signed=FALSE)
+            second <- readBin(buf[profile.start[middle] +  9], what="integer", n=1, size=1, signed=FALSE)
+            sec100 <- readBin(buf[profile.start[middle] + 10], what="integer", n=1, size=1, signed=FALSE)
             t <- ISOdatetime(year, month, day, hour, minute, second + sec100/100, tz=tz)
             oce.debug(debug, "t=", format(t), "| y=", year, " m=", month, " d=", format(day, width=2), " h=", format(hour, width=2), " m=", format(minute, width=2), "s=", format(second, width=2), "sec100=", sec100, "| pass", format(pass, width=2), "/", passes, "| middle=", middle, "(", format(middle/upper*100,digits=4), "%)\n")
             if (t.find < t)
@@ -265,9 +289,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 break
         }
         middle <- middle + add          # may use add to extend before and after window
-        if (middle < 1) middle <- 1
-        if (middle > len) middle <- len
-        t <- ISOdatetime(2000+readBin(buf[profile.start[middle]+4],"integer",size=1,signed=FALSE,endian="little"),  # year
+        if (middle < 1)
+            middle <- 1
+        if (middle > len)
+            middle <- len
+        t <- ISOdatetime(unabbreviate.year(readBin(buf[profile.start[middle]+4],"integer",size=1,signed=FALSE,endian="little")),
                          as.integer(buf[profile.start[middle]+5]), # month
                          as.integer(buf[profile.start[middle]+6]), # day
                          as.integer(buf[profile.start[middle]+7]), # hour
@@ -314,7 +340,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         profiles.in.file <- length(profile.start)
         oce.debug(debug, "profiles.in.file=", profiles.in.file, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
         if (profiles.in.file > 0)  {
-            measurement.start <- ISOdatetime(2000 + as.integer(buf[profile.start[1]+4]), # year
+            measurement.start <- ISOdatetime(unabbreviate.year(as.integer(buf[profile.start[1]+4])),
                                              as.integer(buf[profile.start[1]+5]), # month
                                              as.integer(buf[profile.start[1]+6]), # day
                                              as.integer(buf[profile.start[1]+7]), # hour
@@ -322,7 +348,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                              as.integer(buf[profile.start[1]+9]), # sec
                                              tz=tz)
             oce.debug(debug, "measurement.start:", format(measurement.start), "\n")
-            measurement.end <- ISOdatetime(2000 + as.integer(buf[profile.start[profiles.in.file]+4]), # year
+            measurement.end <- ISOdatetime(unabbreviate.year(as.integer(buf[profile.start[profiles.in.file]+4])),
                                            as.integer(buf[profile.start[profiles.in.file]+5]), # month
                                            as.integer(buf[profile.start[profiles.in.file]+6]), # day
                                            as.integer(buf[profile.start[profiles.in.file]+7]), # hour
@@ -331,7 +357,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                            tz=tz)
             oce.debug(debug, "measurement.end:", format(measurement.end), "\n")
             ## FIXME: assumes uniform time interval (ok, but document it)
-            measurement.deltat <- as.numeric(ISOdatetime(2000 + as.integer(buf[profile.start[2]+4]), # year
+            measurement.deltat <- as.numeric(ISOdatetime(unabbreviate.year(as.integer(buf[profile.start[2]+4])),
                                                          as.integer(buf[profile.start[2]+5]), # month
                                                          as.integer(buf[profile.start[2]+6]), # day
                                                          as.integer(buf[profile.start[2]+7]), # hour
@@ -367,8 +393,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                 profile.start <- profile.start[seq(from=from, to=to, by=by)]
                 oce.debug(debug, vector.show(profile.start, "profile.start after indexing:"))
             }
+            profile.start <- profile.start[!is.na(profile.start)]
             profiles.to.read <- length(profile.start)
-            oce.debug(debug, "number.of.beams=",header$number.of.beams,"\n")
+            oce.debug(debug, "profiles.to.read=",profiles.to.read,"\n")
+            oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
+            oce.debug(debug, "number.of.cells=",number.of.cells,"\n")
             items <- number.of.beams * number.of.cells
             v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
             a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
@@ -376,10 +405,15 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
             bad.profiles <- NULL
             oce.debug(debug, "profiles.to.read=", profiles.to.read, "\n")
+            have.bottom.track <- FALSE          # FIXME maybe we can determine this from the header
+            oce.debug(debug, "profiles.to.read = ", profiles.to.read, "\n")
+            oce.debug(debug, "length(profile.start) = ", length(profile.start), "\n")
+            if (profiles.to.read < 1)
+                stop("no profiles to read")
             for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
-                o <- profile.start[i] + 65      # FIXME: are we *sure* this will be 65?
-                oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
-                if (buf[o] == 0x00 && buf[o+1] == 0x01) {
+                o <- profile.start[i] + header$data.offset[3] - header$data.offset[2] # 65 for workhorse; 50 for surveyor
+                oce.debug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
+                if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
                     ##cat(vector.show(buf[o + 1 + seq(1, 2*items)], "buf[...]:"))
                     vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                     ##cat(vector.show(vv, "vv:"))
@@ -390,7 +424,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     if (buf[o] != 0x00)
                         warning("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x02)
-                        warning("second byte of corrleation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+                        warning("second byte of correlation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
+                    oce.debug(debug-1, "'q' (correlation) chunk at byte", o, "\n")
                     q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(q[i,,], "q:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
@@ -398,6 +433,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         warning("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x03)
                         warning("second byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
+                    oce.debug(debug-1, "'a' (amplitude) chunk at byte", o, "\n")
                     a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(a[i,,], "a:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
@@ -405,8 +441,25 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         warning("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x04)
                         warning("second byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
+                    oce.debug(debug-1, "'g' (percent good) chunk at byte", o, "\n")
                     g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
                     ##cat(vector.show(g[i,,], "g:"))
+                    o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
+                    ##oce.debug(debug-1, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
+                    if (buf[o+1] == 0x06) {
+                        oce.debug(debug-1, "bottom track (range and velocity) chunk at byte", o, "\n")
+                        if (!have.bottom.track) { # FIXME: maybe only 'surveyor' has bottom track ... if so, recode this
+                            if (number.of.beams != 4)
+                                stop("expecting 4 beams, for this RDI adcp")
+                            bottom.range <- array(double(), dim=c(profiles.to.read, number.of.beams))
+                            bottom.velocity <- array(double(), dim=c(profiles.to.read, number.of.beams))
+                            have.bottom.track <- TRUE
+                        }
+                        range.lsb <- readBin(buf[o+c(16:24)], "integer", n=4, size=2, signed=FALSE, endian="little")
+                        range.msb <- readBin(buf[o+78:81], "integer", n=4, size=1, signed=FALSE, endian="little")
+                        bottom.range[i,] <- (65536 * range.msb + range.lsb) / 100 # centimetres
+                        bottom.velocity[i,] <- readBin(buf[o+c(25:32)], "integer", n=4, size=2, signed=TRUE, endian="little") / 1000
+                    }
                     if (monitor) {
                         cat(".", ...)
                         if (!(i %% 50)) cat(i, "\n", ...)
@@ -417,13 +470,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         cat("X", ...)
                         if (!(i %% 50)) cat(i, "\n", ...)
                     }
-                    ##if (debug > 0) {
-                    ##    cat(buf[profile.start[i]+0:(o-1)], "[", buf[o], buf[o+1], "]", buf[o+2:27], "...\n")
-                    ##    cat("Warning: in the above, did not find 00 01 (to mark a velocity segment) at file position ", o, " trying to read profile ", i)
-                    ##}
+                }
+                if (o >= file.size) {
+                    warning("got to end of file")
+                    break
                 }
             }
-            time <- ISOdatetime(2000+as.integer(buf[profile.start+4]), # year
+            time <- ISOdatetime(unabbreviate.year(as.integer(buf[profile.start+4])), # year
                                 as.integer(buf[profile.start+5]),      # month
                                 as.integer(buf[profile.start+6]),      # day
                                 as.integer(buf[profile.start+7]),      # hour
@@ -433,7 +486,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             if (length(bad.profiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fill.gap(as.numeric(time) - as.numeric(t0)) + t0
-                warning("Interpolated across ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), sep=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
+                nbad <- length(bad.profiles)
+                if (nbad == 1)
+                    warning("Interpolated across a bad profile at time ", format(time[bad.profiles]), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
+                else
+                    warning("Interpolated across ", length(bad.profiles), " bad profile(s) at times: ", paste(format(time[bad.profiles]), collapse=", "), ".  (\"Bad\" means that the expected byte code for a velocity segment, 0x00 0x01, was not found 65 bytes after the start of a profile, the latter indicated by the byte sequence 0x80 0x00.)\n")
             }
 
             profile.start2 <- sort(c(profile.start, profile.start + 1)) # lets us index two-byte chunks
@@ -442,10 +499,14 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             depth.of.transducer <- 0.1 * readBin(buf[profile.start2 + 16], "integer", n=profiles.to.read, size=2, endian="little")
             ## Note that the heading.bias needs to be removed
             heading <- 0.01 * readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE) - header$heading.bias
+            oce.debug(debug, vector.show(heading, "heading"))
             if (header$heading.bias != 0)
-                warning("subtracted a heading bias of", header$heading.bias, "degrees")
+                warning("subtracted a heading bias of ", header$heading.bias, " degrees")
             pitch <- 0.01 * readBin(buf[profile.start2 + 20], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+            oce.debug(debug, vector.show(profile.start2, "profile.start2"))
+            oce.debug(debug, vector.show(pitch, "pitch"))
             roll <- 0.01 * readBin(buf[profile.start2 + 22], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
+            oce.debug(debug, vector.show(roll, "roll"))
             ##tmp <- pitch
             oce.debug(debug, vector.show(pitch, "pitch, before correction as on p14 of 'adcp coordinate transformation.pdf'"))
             pitch <- 180 / pi * atan(tan(pitch * pi / 180) / cos(roll * pi / 180)) # correct the pitch (see ACT page 14)
@@ -455,6 +516,12 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             salinity <- readBin(buf[profile.start2 + 24], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
+            if (despike) {
+                temperature <- despike(temperature, physical.range=c(-3,101))
+                pressure <- despike(pressure, physical.range=c(1,10e3))
+            }
+            oce.debug(debug, vector.show(temperature, "temperature"))
+            oce.debug(debug, vector.show(pressure, "pressure"))
             metadata <- header
             metadata$latitude <- latitude
             metadata$longitude <- longitude
@@ -510,24 +577,17 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                                        tm.b     ,       tm.b,       tm.b,      tm.b,
                                                        tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                                      nrow=4, byrow=TRUE)
-            ## FIXME: should we modify the transformation matrix?
-            if (metadata$orientation == "upward") {
-                warning("changed signs of row 1 and row 3 of transformation matrix, because instrument points upwards")
-                if (FALSE) {
-                    metadata$transformation.matrix[1,] <- -metadata$transformation.matrix[1,]
-                    metadata$transformation.matrix[3,] <- -metadata$transformation.matrix[3,]
-                } else {
-                    warning("CODE PROBLEM: we *should* be changing signs of rows 1 and 3 of transformation matrix, but we are NOT")
-                }
-            } else if (metadata$orientation == "downward") {
-            } else {
-                warning("the device orientation should be \"upward\" or \"downward\" but it is", metadata$orientation)
-            }
             if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
-            ##cat("\nfivenum(ei1,na.rm=TRUE)"); print(fivenum(ei1, na.rm=TRUE), ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oce.tz")
-            data <- list(ma=list(v=v, a=a, q=q, g=g),
+            if (have.bottom.track) {
+                bottom.range.na <- bottom.range == 0.0
+                bottom.range[bottom.range.na] <- NA
+                ma <- list(v=v, a=a, q=q, g=g, bottom.range=bottom.range, bottom.velocity=bottom.velocity)
+            } else {
+                ma <- list(v=v, a=a, q=q, g=g)
+            }
+            data <- list(ma=ma,
                          ss=list(distance=seq(bin1.distance, by=cell.size, length.out=number.of.cells)),
                          ts=list(time=time,
                          pressure=pressure,

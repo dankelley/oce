@@ -2,8 +2,11 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      tlim, plim, Tlim,
                      xlab, ylab,
                      draw.time.range=getOption("oce.draw.time.range"),
+                     abbreviate.time.range=getOption("oce.abbreviate.time.range"),
+                     use.smoothscatter=FALSE,
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1], mgp[1]+1, 1, 1.5),
+                     mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
+                     debug=getOption("oce.debug"),
                      ...)
 {
     if (!inherits(x, "pt")) stop("method is only for pt objects")
@@ -23,6 +26,26 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      c(3,4)), widths=c(2,1))
     }
     par(mgp=mgp, mar=mar)
+
+    ## decode string values of 'which'
+    which2 <- vector("numeric", lw)
+    for (w in 1:lw) {
+        ww <- which[w]
+        if (is.numeric(ww)) {
+            which2[w] <- ww
+        } else {
+            if (     ww == "temperature") which2[w] <- 1
+            else if (ww == "text") which2[w] <- 2
+            else if (ww == "pressure") which2[w] <- 3
+            else if (ww == "profile") which2[w] <- 4
+            else stop("unknown 'which':", ww)
+        }
+    }
+    which <- which2
+    oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+
+
+
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$ts$time, x$data$ts$temperature,
@@ -33,8 +56,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                  ylim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
                  axes=FALSE, ...)
             box()
-            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
-            draw.time.range <- FALSE
+            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range, abbreviate.time.range=abbreviate.time.range)
+            draw.time.range <- FALSE    # only the first time panel gets the time indication
             axis(2)
         } else if (which[w] == 3) {     # pressure timeseries
             plot(x$data$ts$time, x$data$ts$pressure,
@@ -76,7 +99,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                 text.item(paste("Sampled interval:", difftime(x$data$ts$time[2], x$data$ts$time[1], units="secs"), "s"),cex=cex)
             }
             par(mar=mar)
-        } else if (which[w] == 4) {     # temperature 'profile'
+        } else if (which[w] == 4) {     # "profile"
             args <- list(x=x$data$ts$temperature, y=x$data$ts$pressure,
                          xlab=resizable.label("T"),
                          ylab=resizable.label("p"),
@@ -84,8 +107,14 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                          ylim=if (missing(plim)) rev(range(x$data$ts$pressure, na.rm=TRUE)) else plim,
                          ...)
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
-            if (!("cex"  %in% names(list(...)))) args <- c(args, cex=3/4)
-            do.call(plot, args)
+            if (!("cex"  %in% names(list(...)))) args <- c(args, cex=1/2)
+            np <- length(x$data$ts$pressure)
+            if (use.smoothscatter) {
+                args <- args[names(args) != "type"]
+                do.call(smoothScatter, args)
+            } else {
+                do.call(plot, args)
+            }
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
@@ -207,8 +236,8 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     subsample.start <- measurement.start + (from - 1) * measurement.deltat # FIXME: check this
     subsample.deltat <- by * measurement.deltat
     if (nvar == 2) {
-        time <- subsample.start + seq(from=1, to=n) * subsample.deltat
-        oce.debug(debug, "nvar=2; setting time[1:2]=", time[1:2], "with subsample.deltat=", subsample.deltat,"\n")
+        time <- subsample.start + seq(from=0, to=n-1) * subsample.deltat
+        oce.debug(debug, "nvar=2; setting time[1]=", format(time[1]), "and time[2]=", format(time[2]), "with subsample.deltat=", subsample.deltat,"\n")
         temperature <- as.numeric(d[1,])
         pressure <- as.numeric(d[2,])
     } else if (nvar == 4) {

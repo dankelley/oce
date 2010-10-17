@@ -7,6 +7,7 @@
 \description{Plot contours of topographic data.}
 
 \usage{\method{plot}{topo}(x, 
+     xlab="", ylab="",
      water.z,
      water.col,
      water.lty,
@@ -24,6 +25,8 @@
 
 \arguments{
   \item{x}{an \code{topo} object, e.g. as read by \code{\link{read.topo}}.}
+  \item{xlab}{label for x axis}
+  \item{ylab}{label for y axis}
   \item{water.z}{depths at which to plot water contours.  If not
     provided, these are inferred from the data.}
   \item{water.col}{colors corresponding to \code{water.z} values.  If

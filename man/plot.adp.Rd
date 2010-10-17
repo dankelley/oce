@@ -72,15 +72,19 @@
     right of time-series plots, even if there are no images in the \code{which}
     list.  (The margin is made wide if there are some images in the sequence.)}
   \item{cex}{value for the character-expansion parameter, used by \code{\link{par}("cex")}.}
-  \item{control}{optional list of parameters that may be used for different plot types;}
+  \item{control}{optional list of parameters that may be used for
+    different plot types.  Possibilities are \code{draw.bottom} (which
+    means to draw the bottom, for downward-pointing units that track the
+    bottom) and \code{bin} (for selecting a bin on which to act, as
+    explained in \dQuote{Details}).}
   \item{use.layout}{set to \code{FALSE} to prevent using
     \code{\link{layout}} to set up the plot.  This is needed if the call
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
-
-  \item{\dots}{optional arguments passed to plotting functions.}
-
+  \item{\dots}{optional arguments passed to plotting functions,
+    e.g. supplying \code{despike=TRUE} will cause time-series panels to
+    be de-spiked with \code{\link{despike}}.}
 }
 
 \details{Creates a multi-panel summary plot of data measured by an ADP
@@ -175,6 +179,19 @@
     \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
       \code{"uv+ellipse"} case, but with an added arrow indicating the
       mean current.
+
+    \item \code{which=40} or \code{"bottom.range"} for average bottom range
+      from all beams of the instrument.
+
+    \item \code{which=41} to \code{44} (or \code{"bottom.range1"} to
+      \code{"bottom.range1"}) for bottom range from beams 1 to 4.
+
+    \item \code{which=50} or \code{"bottom.u"} for average bottom velocity
+      from all beams of the instrument.
+
+    \item \code{which=51} to \code{54} (or \code{"bottom.u1"} to
+      \code{"bottom.u4"}) for bottom velocity from beams 1 to 4.
+
     }
 
     The color scheme for image plots (\code{which} in 1:12) is provided

@@ -73,15 +73,17 @@ read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
 
 \seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  Objects of type \code{pt} can be plotted
-  with \code{\link{plot.pt}}, and summarized with
-  \code{\link{summary.pt}}, both of which are generic functions.
-  In-air samples (collected before and after deployment) may be removed
-  in a crude way with \code{\link{pt.trim}}, but the best scheme is
-  to use \code{\link{subset.oce}}, based on a temporal window (see
-  Examples).  Removal of the atmospheric component of pressure is left
-  up to the user; in many cases, it makes sense to treat this as a
-  constant (see Examples).}
+  alternative to this.  Objects of type \code{pt} can be plotted with
+  \code{\link{plot.pt}}, and summarized with \code{\link{summary.pt}},
+  both of which are generic functions.  In-air samples (collected before
+  and after deployment) may be removed in a crude way with
+  \code{\link{pt.trim}}, but the best scheme is to use
+  \code{\link{subset.oce}}, based on a temporal window.  Removal of the
+  atmospheric component of pressure is best done by the user, using
+  measured records of atmospheric pressure.  However, if such data are
+  unavailable, and if the p-T data set contains pre- and post-deployment
+  data, \code{\link{pt.patm}} may provide a useful estimate of
+  atmospheric pressure.}
 
 \examples{
 \dontrun{

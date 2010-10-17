@@ -11,15 +11,19 @@
      tlim, plim, Tlim, 
      xlab, ylab,
      draw.time.range=getOption("oce.draw.time.range"),
+     abbreviate.time.range=getOption("oce.abbreviate.time.range"),
+     use.smoothscatter=FALSE,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1], mgp[1]+1, 1, 1.5),
+     mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
+     debug=getOption("oce.debug"),
      \dots)}
 
 \arguments{
   \item{x}{\code{pt} object, typically result of \code{\link{read.pt}}.}
-  \item{which}{if a subset of the plots is required, specify a subset of
-    the numbers 1:4.  These are codes for the panels, which will be
-    drawn from top-left to bottom-right (see Details).}
+  \item{which}{list of desired plot types.  These are graphed in
+    panels running down from the top of the page.  See
+    \dQuote{Details} for the meanings of various values of
+    \code{which}.}
   \item{title}{character string to be used in the text-summary panel
     (\code{which}=2)}
   \item{adorn}{list of expressions to be executed for the panels in
@@ -43,21 +47,32 @@
   \item{draw.time.range}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
+  \item{abbreviate.time.range}{boolean that applies to panels with time
+    as the horizontal axis, indicating whether to abbreviate the second
+    time in the time range (e.g. skipping the year, month, day, etc. if
+    it's the same as the start time).}
+  \item{use.smoothscatter}{a boolean to cause
+    \code{\link{smoothScatter}} to be used for profile plots, instead of
+    \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{a flag that turns on debugging, if it exceeds 0.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Several plots are available: \code{which}=1 for a timeseries
-  plot of temperature, 
-  \code{which}=2 for textual information about the dataset,
-  \code{which}=3 for a timeseries plot of pressure,
-  and
-  \code{which}=4 for a scatterplot of the temperature profile, .  You
-  may supply a list of \code{which} values, to get multi-panel plots.}
+\details{Several plots are available.
+  \itemize{
+    \item \code{which=1} or \code{"temperature"} for a time-series plot of
+    temperature
+    \item \code{which=2} or \code{"text"} for textual information about
+    the dataset
+    \item \code{which=3} or \code{"pressure"} for a time-series plot of pressure
+    \item \code{which=4} or \code{"profile"} for a temperature ``profile''
+  }
+}
 
 \examples{
 data(pt)

@@ -7,24 +7,26 @@
 \description{Convert ADV velocity components from a xyz-based
   coordinate system to an enu-based coordinate system.}
 
-\usage{adv.xyz2enu(x, debug=getOption("oce.debug"))}
+\usage{adv.xyz2enu(x, declination=0, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}
+  \item{declination}{magnetic declination to be added to the heading, to
+    get ENU with N as "true" north.}
   \item{debug}{a flag that, if non-zero, turns on debugging.  Higher
     values yield more extensive debugging.}
 }
 
 \details{The coordinate transformation is done using the heading, pitch,
   and roll information contained within \code{x}.  The algorithm is
-  similar to that used for Teledyne/RDI ADCP units, except that the
-  heading is defined along the x axis.
+  similar to that used for Teledyne/RDI ADCP units, taking into account
+  the different definitions of heading in the two cases.
 
-  Normally, the transformation is done on a time-by-time basis, which is
-  a slow operation.  However, this function checks whether the vectors
-  for heading, pitch and roll, are all of unit length, and in that case,
-  the calculation time is reduced by an order of magnitude.  This
-  situation of singleton vectors is not uncommon, because the
+  Generally, the transformation must be done on a time-by-time basis,
+  which is a slow operation.  However, this function checks whether the
+  vectors for heading, pitch and roll, are all of unit length, and in
+  that case, the calculation time is reduced by an order of magnitude.
+  This situation of singleton vectors is not uncommon, because the
   orientation data can be noisy, requiring the user to substitute
   cleaned-up values, and if the instrument is moored on a steady
   platform, it makes sense to supply single values.  Note that the

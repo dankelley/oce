@@ -21,8 +21,14 @@ plot.coastline <- function (x,
                             ...)
 {
     oce.debug(debug, "\b\bplot.coastline() {\n")
-    if (!inherits(x, "coastline"))
-        stop("method is only for coastline objects")
+    if (is.list(x) && "latitude" %in% names(x)) {
+        if (!("longitude" %in% names(x)))
+            stop("list must contain item named 'longitude'")
+        x <- as.coastline(x$latitude, x$longitude)
+    } else {
+        if (!inherits(x, "coastline"))
+            stop("method is only for coastline objects, or lists that contain 'latitude' and 'longitude'")
+    }
     par(mgp=mgp, mar=mar)
     gave.center <- !missing(center)
     gave.span <- !missing(span)

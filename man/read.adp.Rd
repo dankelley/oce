@@ -10,21 +10,21 @@
 
 \usage{
 read.adp(file, from=1, to, by=1, tz=getOption("oce.tz"),
-          latitude=NA, longitude=NA,
-          type=c("rdi", "nortek", "sontek"),
-          debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
+  latitude=NA, longitude=NA,
+  type=c("rdi", "nortek", "sontek"),
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oce.tz"),
-             latitude=NA, longitude=NA,
-             type=c("workhorse"),
-             debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
+  latitude=NA, longitude=NA,
+  type=c("workhorse"),
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                latitude=NA, longitude=NA,
-                type=c("aquadopp high resolution"),
-                debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
+  latitude=NA, longitude=NA,
+  type=c("aquadopp high resolution"),
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                latitude=NA, longitude=NA,
-                type=c("adp"),
-                debug=getOption("oce.debug"), monitor=TRUE, log.action, \dots)
+  latitude=NA, longitude=NA,
+  type=c("adp"),
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
 }
 
 \arguments{
@@ -55,6 +55,8 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
     moderate amount of debugging information, or to 2 to get more.} 
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     (with numbers and dots) of every profile read.}
+  \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
+    to clean anomalous spikes in heading, etc.}
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}

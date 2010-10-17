@@ -18,9 +18,10 @@
      \dots)}
 
 \arguments{
-  \item{x}{A \code{coastline} object, e.g. as read by
+  \item{x}{A \code{coastline} object, as read by
     \code{\link{read.coastline}} or created by
-    \code{\link{as.coastline}}.}
+    \code{\link{as.coastline}}, or a list containing items named
+    \code{latitude} and \code{longitude}.} 
   \item{asp}{Aspect ratio for plot.  The default is for
     \code{plot.coastline} to set the aspect ratio to give natural
     latitude-longitude scaling somewhere near the centre latitude on the

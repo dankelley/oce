@@ -37,7 +37,7 @@ par(mfrow=c(1,2))
 plot(adp, which="uv+ellipse+arrow")
 data(coastline.sle)
 # plot local area
-plot.coastline(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude), span=50)
+plot(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude), span=50)
 points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
 }
 
@@ -46,7 +46,8 @@ points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
 \source{This file came from the SLEIWEX-2008 experiment.}
 
 \seealso{See \code{\link{read.adp}} for notes on the contents of
-  \code{adp} objects, and for functions to work with them.}
+  \code{adp} objects, and for functions to work with them.  Also, see
+  \code{\link{plot.adp}} to learn about plotting ADP objects.}
 
 \author{Dan Kelley}
 
