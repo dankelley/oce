@@ -25,6 +25,7 @@
      latlon.pch=20,
      latlon.cex=1.5,
      latlon.col="red",
+     use.smoothScatter=FALSE,
      adorn=NULL,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
@@ -79,6 +80,9 @@
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
+  \item{use.smoothScatter}{boolean, set to \code{TRUE} to use 
+    \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
+    the plot.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, 

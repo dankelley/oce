@@ -9,8 +9,8 @@
 \usage{plot.profile(x,
              xtype="S", 
              ytype=c("pressure", "z"),
-             col.S="darkgreen",
-             col.t="red",
+             col.salinity="darkgreen",
+             col.temperature="red",
              col.rho="blue",
              col.N2="brown",
              col.dpdt="darkgreen",
@@ -21,6 +21,7 @@
              Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
              lwd,
              xaxs="r", yaxs="r",
+             use.smoothScatter=FALSE,
              mgp=getOption("oce.mgp"),
              mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
 \dots)
@@ -56,8 +57,8 @@
     }
   }
   \item{ytype}{variable to use on y axis.}
-  \item{col.S}{Color for salinity profile.}
-  \item{col.t}{Color for temperature.}
+  \item{col.salinity}{Color for salinity profile.}
+  \item{col.temperature}{Color for temperature.}
   \item{col.rho}{Color for density.}
   \item{col.N2}{Color for square of buoyancy frequency.}
   \item{col.dpdt}{Color for dP/dt.}
@@ -75,6 +76,9 @@
   \item{lwd}{lwd value for data line}
   \item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
   \item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
+  \item{use.smoothScatter}{boolean, set to \code{TRUE} to use 
+    \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
+    the plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

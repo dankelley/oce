@@ -310,6 +310,7 @@ plot.ctd <- function (x, which = 1:4,
                       Slim, Tlim, plim, densitylim, dpdtlim, timelim,
                       lonlim, latlim,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
+                      use.smoothScatter=FALSE,
                       adorn=NULL,
                       mgp=getOption("oce.mgp"),
                       mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
@@ -382,42 +383,53 @@ plot.ctd <- function (x, which = 1:4,
     }
     for (w in 1:length(which)) {
         if (which[w] == 1 || which[w] == "temperature+salinity")
-            plot.profile(x, xtype = "S+T", Slim=Slim, Tlim=Tlim, plim=plim,
+            plot.profile(x, xtype = "S+T", Slim=Slim, Tlim=Tlim, ylim=plim,
+                         use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 2 || which[w] == "density+N2")
             plot.profile(x, xtype = "density+N2",
-                         plim=plim,
+                         ylim=plim,
+                         use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 6 || which[w] == "density+dpdt")
             plot.profile(x, xtype="density+dpdt",
-                         plim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                         ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                         use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 7 || which[w] == "density+time")
             plot.profile(x, xtype="density+time",
-                         plim=plim, densitylim=densitylim, timelim=timelim,
+                         ylim=plim, densitylim=densitylim, timelim=timelim,
+                         use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 8 || which[w] == "index")
             plot.profile(x, xtype="index",
-                         plim=plim,
+                         ylim=plim,
+                         use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 9 || which[w] == "salinity")
             plot.profile(x, xtype="salinity",
-                         plim=plim,
+                         ylim=plim,
+                         Slim=Slim,
+                         use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 10 || which[w] == "temperature") {
-            ##cat("plot.ctd() ctd.R:406 Tlim=", Tlim, "\n")
             plot.profile(x, xtype="temperature",
-                         ##plim=plim,
+                         ylim=plim,
                          Tlim=Tlim,
-                         grid=grid, col.t="black", col.grid=col.grid, lty.grid=lty.grid, ...)
+                         use.smoothScatter=use.smoothScatter,
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         } else if (which[w] == 11 || which[w] == "density")
             plot.profile(x, xtype="density",
-                         plim=plim,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         ylim=plim,
+                         grid=grid,
+                         use.smoothScatter=use.smoothScatter,
+                         col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 12 || which[w] == "N2")
             plot.profile(x, xtype="N2",
-                         plim=plim,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         ylim=plim,
+                         grid=grid,
+                         use.smoothScatter=use.smoothScatter,
+                         col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
             plot.TS(x, Slim=Slim, Tlim=Tlim,
@@ -1218,8 +1230,8 @@ draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE,
 plot.profile <- function (x,
                           xtype = "S",
                           ytype=c("pressure", "z"),
-                          col.S = "darkgreen",
-                          col.t = "red",
+                          col.salinity = "darkgreen",
+                          col.temperature = "red",
                           col.rho = "blue",
                           col.N2 = "brown",
                           col.dpdt = "darkgreen",
@@ -1231,11 +1243,13 @@ plot.profile <- function (x,
                           lwd=par("lwd"),
                           xaxs="r",
                           yaxs="r",
+                          use.smoothScatter=FALSE,
                           mgp=getOption("oce.mgp"),
                           mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
                           ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    dots <- list(...)
     ytype <- match.arg(ytype)
     pname <- if (ytype == "pressure") resizable.label("p", "y") else if (ytype == "z") resizable.label("z", "y")
     par(mgp=mgp, mar=mar)
@@ -1252,12 +1266,10 @@ plot.profile <- function (x,
             time <- time * x$metadata$sample.interval
         }
     }
-
     if (ytype == "pressure")
         y <- x$data$pressure
     else if (ytype == "z")
         y <- sw.z(x$data$pressure)
-
     if (xtype == "index") {
         index <- 1:length(x$data$pressure)
         plot(index, x$data$pressure, ylim=ylim, xlab = "index", ylab = pname, type='l', xaxs=xaxs, yaxs=yaxs)
@@ -1317,58 +1329,73 @@ plot.profile <- function (x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-    } else if (xtype == "S") {
-        if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
-        plot(x$data$salinity, y,
-             xlim=Slim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
-        mtext(resizable.label("S", "x"),
-              side = 3, line = axis.name.loc, col = col.S, cex=par("cex"))
-        axis(2)
-        axis(3, col = col.S, col.axis = col.S, col.lab = col.S)
-        box()
-        if (grid) {
-            at <- par("yaxp")
-            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-            at <- par("xaxp")
-            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-        }
-        lines(x$data$salinity, y, col = col.S, lwd=lwd)
-    } else if (xtype == "T" || xtype == "temperature") {
-        dots <- list(...)
-        ##print(dots)
+    } else if (xtype == "S" || xtype == "salinity") {
         type <- if ("type" %in% names(dots)) dots$type else 'l'
-        if (missing(Tlim)) {
-            ##cat("Tlim is missing\n")
-            if ("xlim" %in% names(dots))
-                Tlim <- range(x$data$temperature, na.rm=TRUE)
-            else
-                Tlim <- dots$xlim
-        }
-        ##cat("Tlim=", Tlim, "\n")
-        plot(x$data$temperature, y,
-             xlim=Tlim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
-        mtext(resizable.label("T", "x"),
-              side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
-        axis(2)
-        axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
-        box()
-        if (grid) {
-            at <- par("yaxp")
-            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-            at <- par("xaxp")
-            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
-        }
-        if (type == 'l') {
-            lines(x$data$temperature, y, col = col.t, lwd=lwd)
-        } else if (type == 'p') {
-            points(x$data$temperature, y, col = col.t)
-        } else if (type == 'b') {
-            lines(x$data$temperature, y, col = col.t, lwd=lwd)
-            points(x$data$temperature, y, col = col.t)
+        if (missing(Slim)) { if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(x$data$salinity, na.rm=TRUE) }
+        if (use.smoothScatter) {
+            smoothScatter(x$data$salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab=pname, axes=FALSE, ...)
+            axis(2)
+            axis(3)
+            box()
+            mtext(resizable.label("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
-            lines(x$data$temperature, y, col = col.t, lwd=lwd)
+            plot(x$data$salinity, y,
+                 xlim=Slim, ylim=ylim,
+                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+            mtext(resizable.label("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            axis(2)
+            axis(3)
+            box()
+            if (grid) {
+                at <- par("yaxp")
+                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                at <- par("xaxp")
+                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            }
+            if (type == 'l') {
+                lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
+            } else if (type == 'p') {
+                points(x$data$salinity, y, col = col.salinity)
+            } else if (type == 'b') {
+                lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
+                points(x$data$salinity, y, col = col.salinity)
+            } else {
+                lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
+            }
+        }
+    } else if (xtype == "T" || xtype == "temperature") {
+        type <- if ("type" %in% names(dots)) dots$type else 'l'
+        if (missing(Tlim)) { if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(x$data$temperature, na.rm=TRUE) }
+        if (use.smoothScatter) {
+            smoothScatter(x$data$temperature, y, xlim=Tlim, ylim=ylim, xlab="", ylab=pname, axes=FALSE, ...)
+            axis(2)
+            axis(3)
+            box()
+            mtext(resizable.label("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+        } else {
+            plot(x$data$temperature, y,
+                 xlim=Tlim, ylim=ylim,
+                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+            mtext(resizable.label("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            axis(2)
+            axis(3)
+            box()
+            if (grid) {
+                at <- par("yaxp")
+                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                at <- par("xaxp")
+                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            }
+            if (type == 'l') {
+                lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
+            } else if (type == 'p') {
+                points(x$data$temperature, y, col = col.temperature)
+            } else if (type == 'b') {
+                lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
+                points(x$data$temperature, y, col = col.temperature)
+            } else {
+                lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
+            }
         }
     } else if (xtype == "density") {
 	st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
@@ -1436,25 +1463,25 @@ plot.profile <- function (x,
         plot(x$data$temperature, y,
              xlim=Tlim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
-        axis(3, col = col.t, col.axis = col.t, col.lab = col.t)
+        axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
         mtext(resizable.label("T", "x"),
-              side = 3, line = axis.name.loc, col = col.t, cex=par("cex"))
+              side = 3, line = axis.name.loc, col = col.temperature, cex=par("cex"))
         axis(2)
         box()
-        lines(x$data$temperature, y, col = col.t, lwd=lwd)
+        lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
         par(new = TRUE)
         plot(x$data$salinity, y,
              xlim=Slim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
-        axis(1, col = col.S, col.axis = col.S, col.lab = col.S)
+        axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
         mtext(resizable.label("S", "x"),
-              side = 1, line = axis.name.loc, col = col.S, cex=par("cex"))
+              side = 1, line = axis.name.loc, col = col.salinity, cex=par("cex"))
         box()
         if (grid) {
             at <- par("yaxp")
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-        lines(x$data$salinity, y, col = col.S, lwd=lwd)
+        lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
     } else {
         w <- which(names(x$data) == xtype)
         if (length(w) < 1) stop("unknown type \"", xtype, "\"; try one of: ", paste(names(x$data), collapse=" "))
