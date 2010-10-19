@@ -21,6 +21,7 @@
              Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
              lwd,
              xaxs="r", yaxs="r",
+             cex=1,
              use.smoothScatter=FALSE,
              mgp=getOption("oce.mgp"),
              mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
@@ -76,6 +77,7 @@
   \item{lwd}{lwd value for data line}
   \item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
   \item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
+  \item{cex}{size of symbols}
   \item{use.smoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}

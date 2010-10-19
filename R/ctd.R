@@ -310,6 +310,7 @@ plot.ctd <- function (x, which = 1:4,
                       Slim, Tlim, plim, densitylim, dpdtlim, timelim,
                       lonlim, latlim,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
+                      cex=1,
                       use.smoothScatter=FALSE,
                       adorn=NULL,
                       mgp=getOption("oce.mgp"),
@@ -384,50 +385,59 @@ plot.ctd <- function (x, which = 1:4,
     for (w in 1:length(which)) {
         if (which[w] == 1 || which[w] == "temperature+salinity")
             plot.profile(x, xtype = "S+T", Slim=Slim, Tlim=Tlim, ylim=plim,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 2 || which[w] == "density+N2")
             plot.profile(x, xtype = "density+N2",
                          ylim=plim,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 6 || which[w] == "density+dpdt")
             plot.profile(x, xtype="density+dpdt",
                          ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 7 || which[w] == "density+time")
             plot.profile(x, xtype="density+time",
                          ylim=plim, densitylim=densitylim, timelim=timelim,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 8 || which[w] == "index")
             plot.profile(x, xtype="index",
                          ylim=plim,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 9 || which[w] == "salinity")
             plot.profile(x, xtype="salinity",
                          ylim=plim,
                          Slim=Slim,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 10 || which[w] == "temperature") {
             plot.profile(x, xtype="temperature",
                          ylim=plim,
                          Tlim=Tlim,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
         } else if (which[w] == 11 || which[w] == "density")
             plot.profile(x, xtype="density",
                          ylim=plim,
                          grid=grid,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 12 || which[w] == "N2")
             plot.profile(x, xtype="N2",
                          ylim=plim,
                          grid=grid,
+                         cex=cex,
                          use.smoothScatter=use.smoothScatter,
                          col.grid=col.grid, lty.grid=lty.grid, ...)
         else if (which[w] == 3 || which[w] == "TS") {
@@ -1243,6 +1253,7 @@ plot.profile <- function (x,
                           lwd=par("lwd"),
                           xaxs="r",
                           yaxs="r",
+                          cex=1,
                           use.smoothScatter=FALSE,
                           mgp=getOption("oce.mgp"),
                           mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
@@ -1355,10 +1366,10 @@ plot.profile <- function (x,
             if (type == 'l') {
                 lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
             } else if (type == 'p') {
-                points(x$data$salinity, y, col = col.salinity)
+                points(x$data$salinity, y, col = col.salinity, cex=cex)
             } else if (type == 'b') {
                 lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
-                points(x$data$salinity, y, col = col.salinity)
+                points(x$data$salinity, y, col = col.salinity, cex=cex)
             } else {
                 lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
             }
@@ -1389,10 +1400,10 @@ plot.profile <- function (x,
             if (type == 'l') {
                 lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
             } else if (type == 'p') {
-                points(x$data$temperature, y, col = col.temperature)
+                points(x$data$temperature, y, col = col.temperature, cex=cex)
             } else if (type == 'b') {
                 lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
-                points(x$data$temperature, y, col = col.temperature)
+                points(x$data$temperature, y, col = col.temperature, cex=cex)
             } else {
                 lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
             }

@@ -25,6 +25,7 @@
      latlon.pch=20,
      latlon.cex=1.5,
      latlon.col="red",
+     cex=1,
      use.smoothScatter=FALSE,
      adorn=NULL,
      mgp=getOption("oce.mgp"),
@@ -80,6 +81,7 @@
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
+  \item{cex}{size to be used for plot symbols}
   \item{use.smoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
