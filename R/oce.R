@@ -433,7 +433,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                     rval$data$ss[[name]] <- x$data$ss[[name]][keep]
                 }
                 for (name in names(x$data$ma)) {
-                    rval$data$ma[[name]] <- x$data$ma[[name]][,keep,]
+                    if (name != "bottom.range" && name != "bottom.velocity") {
+                        oce.debug(debug, "subsetting ma[[", name, "]] by distance\n")
+                        rval$data$ma[[name]] <- x$data$ma[[name]][,keep,]
+                    } else {
+                        oce.debug(debug, "skipping ma[[", name, "]] because it cannot be subsetted by distance\n")
+                    }
                 }
             } else {
                 stop("should express the subset in terms of distance or time")
