@@ -433,8 +433,16 @@ read.adv.sontek.realtime <- function(file, from=1, to, by=1, tz=getOption("oce.t
                                      start, deltat,
                                      debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
-    oce.debug(debug, paste("\b\bread.adv.sontek(file[1]=\"", file[1], "\", from=", from, if (!missing(to)) sprintf(", to=%s, ", format(to)), ", by=", by, ", type=\"", type, "\", header=", header, if (!missing(start)) sprintf(", start[1]=%s, ", start[1]), if (!missing(deltat)) sprintf(", deltat=%f, ", deltat), "debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep=""))
-
+    oce.debug(debug, paste("\b\bread.adv.sontek(file[1]=\"", file[1],
+                           "\", from=", format(from),
+                           if (!missing(to)) sprintf(", to=%s, ", format(to)),
+                           ", by=", by,
+                           ", type=\"", type,
+                           if (!missing(start)) sprintf(", start[1]=%s, ", format(start[1])),
+                           if (!missing(deltat)) sprintf(", deltat=%f, ", deltat),
+                           "debug=", debug,
+                           ", monitor=", monitor,
+                           ", log.action=(not shown)) {\n", sep=""))
     if (missing(start))
         stop("must supply start, a POSIXct time (or suitable string for the time, in UTC) at which the first observation was made")
     if (is.numeric(start))

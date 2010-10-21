@@ -57,8 +57,10 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         ## data$ts (note: 'keep' will be re-used for data$ma)
         ntime <- length(x$data$ts$time)
         keep <- rep(FALSE, ntime)
+        ##oce.debug(debug, "ntime=",ntime, "\n")
         for (w in 1:nstart) {
-            keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time < end[w])
+            ##oce.debug(debug, " start[", w, "]=", format(start[w]), "; end[", w, "]=", format(end[w]), "\n", sep="")
+            keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time <= end[w])
             oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
         }
         if (index.return) {
@@ -73,7 +75,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
             keep.slow <- rep(FALSE, length(x$data$ts.slow$time)) # note that 'keep' is reserved for use with data$ma
             for (w in 1:nstart) {
-                keep <- keep | (start[w] <= res$data$ts.slow$time & res$data$ts.slow$time < end[w])
+                keep.slow <- keep.slow | (start[w] <= res$data$ts.slow$time & res$data$ts.slow$time <= end[w])
                 oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
             }
             if (index.return) {
