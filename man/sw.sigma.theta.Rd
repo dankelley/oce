@@ -30,9 +30,9 @@
 
 \value{Potential density anomaly [kg/m\eqn{^3}{^3}].}
 
-\seealso{Related density routines include: \code{link{sw.rho}}, 
-  \code{link{sw.sigma}}, and
-  \code{link{sw.sigma.t}}.
+\seealso{Related density routines include: \code{\link{sw.rho}}, 
+  \code{\link{sw.sigma}}, and
+  \code{\link{sw.sigma.t}}.
 }
 
 \examples{

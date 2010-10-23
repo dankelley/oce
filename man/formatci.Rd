@@ -72,12 +72,12 @@ print(formatci(model=m))
 
 \author{Dan Kelley}
 
-\references{JCGM, 2008.  \emph{Evaluation of measurement data - Guide
-    to the expression of uncertainty in measurement (JCGM 100:2008)},
-  published by the Joint Committee for Guides in Metrology.
-  [\url{http://www.bipm.org/en/publications/guides/gum.html}]
-  (See section 7.2.2 for a summary of notation, which shows equal values
-    to the right of a \code{+-} sign and in parentheses.)
+\references{JCGM, 2008.  \emph{Evaluation of measurement data - Guide to
+    the expression of uncertainty in measurement (JCGM 100:2008)},
+    published by the Joint Committee for Guides in Metrology.
+    [\url{http://www.bipm.org/en/publications/guides/gum.html}] (See
+    section 7.2.2 for a summary of notation, which shows equal values to
+    the right of a \code{+-} sign and in parentheses.)
   
   I. Mills, T. Cvitas, K. Homann, N. Kallay, and K. Kuchitsu, 1993.
   \emph{Quantities, Units and Symbols in Physical Chemistry}, published

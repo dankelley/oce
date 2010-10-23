@@ -77,7 +77,7 @@
 \examples{
 data(pt)
 plot(pt, which=c(1,3), 
-    adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'),col='red')}))
+ adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'))}))
 }
 
 \seealso{See \code{\link{read.pt}} for more information on dealing

@@ -35,9 +35,9 @@ plot(adp.att, which=5) # beam 1 echo intensity
 
 # Profiles
 par(mar=c(4, 4, 1, 1))
-plot(apply(adp$data$ma$a, 2, mean), adp$data$ss$distance, type='l', xlim=c(0,256))
-lines(apply(adp.att$data$ma$a, 2, mean), adp$data$ss$distance, type='l', col='red')
-legend("topright", lwd=1, col=c("black", "red"), legend=c("original", "attenuated"))
+plot(apply(adp$data$ma$a,2,mean),adp$data$ss$distance,type='l',xlim=c(0,256))
+lines(apply(adp.att$data$ma$a,2,mean),adp$data$ss$distance,type='l',col='red')
+legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 }
 
 \references{The coefficient to convert to decibels is a personal

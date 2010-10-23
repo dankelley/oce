@@ -48,7 +48,8 @@ procedure, but it can be avoided as follows
 
 \preformatted{
 xd <- ctd.decimate(x)
-xd$data$sigma.theta <- sw.sigma.theta(xd$data$salinity, xd$data$temperature, xd$data$pressure)
+xd$data$sigma.theta <- sw.sigma.theta(xd$data$salinity, 
+  xd$data$temperature, xd$data$pressure)
 } % preformatted
 } %details
 

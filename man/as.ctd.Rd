@@ -4,10 +4,10 @@
 \description{Coerces a dataset into a ctd dataset.}
 
 \usage{
-as.ctd(salinity, temperature, pressure, ship=NA, scientist=NA, institute=NA,
-       address=NA, cruise=NA, station=NA, date=NA, start.time=NA, 
-       latitude=NA, longitude=NA, recovery=NA, water.depth=NA, 
-       sample.interval=NA, src="")
+as.ctd(salinity, temperature, pressure, ship=NA, scientist=NA,
+   institute=NA, address=NA, cruise=NA, station=NA, date=NA,
+   start.time=NA, latitude=NA, longitude=NA, recovery=NA,
+   water.depth=NA, sample.interval=NA, src="")
 }
 \arguments{
   \item{salinity}{Salinity through the water column, or a data frame

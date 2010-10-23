@@ -18,7 +18,7 @@
 	    data with negative pressures are deleted.  If there is a
 	    parameter named \code{pmin}, then that pressure (in
 	    decibars) is used instead as the lower limit.  This is a
-	    commonly-used setup, e.g. \code{ctd2 <- ctd.trim(ctd,
+	    commonly-used setup, e.g. \code{ctd.trim(ctd,
 	    parameters=list(pmin=1))} removes the top decibar
 	    (roughly 1m) from the data.}
 	  \item{Step 3.}{The maximum pressure is determined, and data
@@ -44,7 +44,7 @@
 	For example, \code{ctd2 <- ctd.trim(ctd, "range",
           list(item="scan", from=5))} 
 	starts at scan number 5 and continues to the end,
-	while \code{ctd3 <- ctd.trim(ctd, "range", list(item="scan",from=5,to=100))}
+	while \code{ctd.trim(ctd,"range",list(item="scan",from=5,to=100))}
 	also starts at scan 5, but extends only to scan 100.}
     }
   }

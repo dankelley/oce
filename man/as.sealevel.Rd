@@ -6,9 +6,9 @@
   a sealevel dataset.
 }
 \usage{as.sealevel(elevation,  time,  header=NULL,
-  station.number=NA, station.version=NA, station.name=NULL, region=NULL,
-  year=NA, latitude=NA, longitude=NA, GMT.offset=NA, decimation.method=NA,
-  reference.offset=NA, reference.code=NA, deltat)
+  station.number=NA, station.version=NA, station.name=NULL,
+  region=NULL, year=NA, latitude=NA, longitude=NA, GMT.offset=NA,
+  decimation.method=NA, reference.offset=NA, reference.code=NA, deltat)
 }
 \arguments{
   \item{elevation}{a list of sea-level heights in metres, in an hourly sequence.}
@@ -47,13 +47,12 @@
 \value{An object of \code{\link[base]{class}} \code{"sealevel"} (for
   details, see \code{\link{read.sealevel}}).}
 
-\seealso{
-  \code{\link{read.sealevel}} reads data, \code{\link{summary.sealevel}}
-  summarizes the information.  Use \code{\link{plot.sealevel}} to
-  produce a summary plot, and use \code{\link{tidem}} to fit a tidal
-  model to the data.  Sample sea-level data sets are provided with
-  \code{data(\link{sealevel.hal})} and \code{data(\link{sealevel.tuk})}.
-}
+\seealso{Sealevel data may be read with \code{\link{read.sealevel}} and
+  summarized with \code{\link{summary.sealevel}}.  Use Summary plots are
+  created with \code{\link{plot.sealevel}}.  Tidal models may be fitted
+  to sealevel data with \code{\link{tidem}}.  Sample sea-level data sets
+  are provided with \code{data(\link{sealevel.hal})} and
+  \code{data(\link{sealevel.tuk})}.  }
 
 \examples{
 library(oce)

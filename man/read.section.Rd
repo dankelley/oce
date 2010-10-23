@@ -2,7 +2,10 @@
 \alias{read.section}
 \title{Read a section containing multiple CTD profiles}
 \description{Read a file that contains a series of \code{ctd} profiles that make up an oceanographic section.}
-\usage{read.section(file, section.id="", debug=getOption("oce.debug"), log.action)}
+
+\usage{read.section(file, section.id="", debug=getOption("oce.debug"),
+  log.action)}
+
 \arguments{
   \item{file}{a file containing a set of CTD observations.  At present, only the \emph{exchange BOT} format is accepted (see Details).}
   \item{section.id}{optional string indicating the name for the section.  If not provided, the section ID is determined by examination of the file header.}

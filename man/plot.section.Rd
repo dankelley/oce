@@ -51,8 +51,8 @@
   \item{contour.labels}{if not \code{NULL}, and if a \code{field} was
     specified, this specifies contour labels (see details)}
   \item{station.indices}{optional list of the indices of stations to
-    use.  Note that these are indices, not the names of stations, e.g. to
-    focus on the first 4 stations, use \code{station.numbers=c(1,4)}.}
+    use.  Note that an index is \emph{not} a station number, e.g. to
+    show the first 4 stations, use \code{station.indices=1:4}.}
   \item{coastline}{optional \code{coastline} to be used in a station
     map}
   \item{xlim}{optional limit for x axis (only in sections, not map)}

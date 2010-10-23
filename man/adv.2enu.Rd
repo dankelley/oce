@@ -30,8 +30,7 @@ coordinates}
 
 \references{
 
-1. Nortek coordinate transformaton matlab script
-(\url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation})
+\url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
 
 }
 

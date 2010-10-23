@@ -11,31 +11,31 @@
 
 \usage{
 read.adv(file, from=1, to, by=1, tz=getOption("oce.tz"),
-        type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
-        header=TRUE,
-        latitude=NA, longitude=NA,
-        start, deltat,
-        debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
+  header=TRUE,
+  latitude=NA, longitude=NA,
+  start, deltat,
+  debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"), 
-                type="vector",
-                header=TRUE,
-                latitude=NA, longitude=NA,
-                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  type="vector",
+  header=TRUE,
+  latitude=NA, longitude=NA,
+  debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.realtime(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                         type="default",
-                         latitude=NA, longitude=NA,
-                         start, deltat,
-                         debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  type="default",
+  latitude=NA, longitude=NA,
+  start, deltat,
+  debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                    header=TRUE, 
-                    latitude=NA, longitude=NA,
-                    type="",
-                    debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  header=TRUE, 
+  latitude=NA, longitude=NA,
+  type="",
+  debug=getOption("oce.debug"), monitor=TRUE, log.action)
 read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
-                     coordinate.system="xyz",
-                     transformation.matrix,
-                     latitude=NA, longitude=NA,
-                     debug=getOption("oce.debug"), log.action)
+  coordinate.system="xyz",
+  transformation.matrix,
+  latitude=NA, longitude=NA,
+  debug=getOption("oce.debug"), log.action)
 }
 
 \arguments{
@@ -44,7 +44,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     for the case of data split into files by a data logger, and in that
     case, \code{header} must be \code{FALSE}, \code{start} must be a
     vector of times, and \code{deltat} must be provided.}
-  \item{basefile}{character string giving the base name of files to load
+  \item{basefile}{character string naming the base of filenames to load
     (used only by \code{read.adv.sontek.text}). The actual filenames are
     constructed by appending \code{".hd1"} and \code{".ts1"} to the base
     name.}
@@ -212,17 +212,15 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
  }
 
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
-  contains measurements made with an ADV device.  As with all \code{oce}
-  objects, the returned value is a list containing lists named
-  \code{metadata}, \code{data}, and \code{processing.log}.  The
-  \code{data} list contains lists \code{ts}, potentially (for Nortek
-  Vector units) \code{ts.slow}, and \code{ma} (matrices of velocity,
-  etc).  These are as \code{adp} objects, except for the presence of
-  \code{ts.slow}, for timeseries that vary on a slow timescale, e.g. on
-  Nortek Vector units, \code{ts.slow} holds \code{heading},
-  \code{pitch}, \code{roll}, and \code{temperature}, while \code{ts}
-  holds only \code{pressure}.
-}
+  contains measurements made with an ADV device.  This is a list
+  containing lists named \code{metadata}, \code{data}, and
+  \code{processing.log}.  The \code{data} list contains lists \code{ts},
+  potentially (for Nortek Vector units) \code{ts.slow}, and \code{ma}
+  (matrices of velocity, etc).  These are as \code{adp} objects, except
+  for the presence of \code{ts.slow}, for timeseries that vary on a slow
+  timescale, e.g. on Nortek Vector units, \code{ts.slow} holds
+  \code{heading}, \code{pitch}, \code{roll}, and \code{temperature},
+  while \code{ts} holds only \code{pressure}.  }
 
 \seealso{Objects of class \code{adv} may be plotted with
   \code{\link{plot.adv}} or summarized with \code{\link{summary.adv}}.

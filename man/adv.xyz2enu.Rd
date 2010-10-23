@@ -42,8 +42,8 @@
 
 \author{Dan Kelley}
 
-\references{Nortek coordinate transformaton matlab script
-(\url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation})
+\references{
+\url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
 }
 
 

@@ -9,12 +9,12 @@
 \description{Read a CTD data file, producing an object of type \code{ctd}.}
 
 \usage{
-read.ctd(file, type=NULL, columns=NULL, station=NULL, monitor=TRUE,
-         debug=getOption("oce.debug"), log.action, \dots)
-read.ctd.sbe(file, columns=NULL, station=NULL, missing.value, monitor=TRUE,
-             debug=getOption("oce.debug"), log.action, \dots)
-read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, monitor=TRUE,
-              debug=getOption("oce.debug"), log.action, \dots)
+read.ctd(file, type=NULL, columns=NULL, station=NULL, 
+  monitor=TRUE, debug=getOption("oce.debug"), log.action, \dots)
+read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
+  monitor=TRUE, debug=getOption("oce.debug"), log.action, \dots)
+read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=TRUE, debug=getOption("oce.debug"), log.action, \dots)
 }
 
 \arguments{
@@ -153,7 +153,8 @@ x <- read.oce(system.file("data", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
 plot.TS(x) # just the TS
 \dontrun{
-woce <- read.oce("http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")
+woce <- read.oce(
+  "http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")
 plot(woce)
 }
 }
