@@ -73,6 +73,7 @@ ctd.add.column <- function (x, column, name, label, debug = FALSE)
 ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"), e=1.5, debug=getOption("oce.debug"))
     ## SHOULD ADD: spline; supsmu; ...
 {
+    oce.debug(debug, "\bctd.decimate(x, p, method=\"", method, "\", ...) {\n", sep="")
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     res <- x
     n <- length(x$data$pressure)
@@ -100,9 +101,15 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
     if (method == "approx") {
         too.deep <- pt > max(x$data[["pressure"]], na.rm=TRUE)
         for (datum.name in data.names) {
+            oce.debug(debug, "decimating \"", datum.name, "\"\n", sep="")
             if (datum.name != "pressure") {
-                data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt, rule=2)$y
-                data.new[[datum.name]][too.deep] <- NA
+                good <- sum(!is.na(x$data[[datum.name]]))
+                if (good > 2) {
+                    data.new[[datum.name]] <- approx(x$data[["pressure"]], x$data[[datum.name]], pt, rule=2)$y
+                    data.new[[datum.name]][too.deep] <- NA
+                } else {
+                    oce.debug(debug, " note: fewer than 2 good data in the above\n")
+                }
             }
         }
     } else if ("reiniger-ross" == method) {
@@ -159,6 +166,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
     res$data <- data.new
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # ctd.decimate\n")
     res
 }
 

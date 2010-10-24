@@ -436,41 +436,27 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
     class(res) <- c("section", "oce")
     res
 }
-section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
+
+section.grid <- function(section, p, method=c("approx","boxcar","lm"),
+                         debug=getOption("oce.debug"), ...)
 {
+    oce.debug(debug, "\bsection.grid(section, p, method=\"", method, "\", ...) {\n", sep="")
     method <- match.arg(method)
     n <- length(section$data$station)
+    oce.debug(debug, "have", n, "stations in this section\n")
     dp.list <- NULL
     if (missing(p)) {
+        oce.debug(debug, "argument 'p' not given\n")
         p.max <- 0
         for (i in 1:n) {
             p <- section$data$station[[i]]$data$pressure
             dp.list <- c(dp.list, mean(diff(p)))
             p.max <- max(c(p.max, p))
         }
-        dp <- mean(dp.list) / 1.5 # make it a little smaller
-        ## cat("Mean pressure difference =", dp,"and max p =", p.max, "\n")
-        if (dp < 0.01) {
-            dp <- 0.01 # prevent scale less 1 cm.
-        } else if (dp < 5) { # to nearest 1 db
-            dp <- 1 * floor(0.5 + dp / 1)
-            p.max <- 1 * floor(1 + p.max / 1)
-        } else if (dp < 20) { # to nearest 5 db
-            dp <- 5 * floor(0.5 + dp / 5)
-            p.max <- 5 * floor(1 + p.max / 5)
-        } else if (dp < 100){ # to nearest 10 dbar
-            dp <- 10 * floor(0.5 + dp / 10)
-            p.max <- 10 * floor(1 + p.max / 10)
-        } else if (dp < 200){ # to nearest 10 dbar
-            dp <- 50 * floor(0.5 + dp / 50)
-            p.max <- 50 * floor(1 + p.max / 50)
-        } else { # to nearest 100 dbar
-            dp <- 100 * floor(0.5 + dp / 100)
-            p.max <- 100 * floor(1 + p.max / 100)
-        }
-        ## cat("Round to pressure difference =", dp,"and max p =", p.max, "\n")
-        pt <- seq(0, p.max, dp)
-        ## cat("Using auto-selected pressures: ", p, "\n");
+        dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
+        pt <- pretty(c(0, p.max), n=min(200, floor(p.max / dp)))
+        oce.debug(debug, "p.max=", p.max, "; dp=", dp, "\n")
+        oce.debug(debug, "pt=", pt, "\n")
     } else {
         if (length(p) == 1) {
             if (p=="levitus") {
@@ -494,12 +480,13 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"), ...)
     res <- section
     for (i in 1:n) {
         ##cat("BEFORE:");print(res$data$station[[i]]$data$temperature[1:6])
-        res$data$station[[i]] <- ctd.decimate(section$data$station[[i]], p=pt, method=method, ...)
+        res$data$station[[i]] <- ctd.decimate(section$data$station[[i]], p=pt, method=method, debug=debug-1, ...)
         ##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
         ##cat("\n")
     }
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # section.grid\n")
     res
 }
 ## bugs: should ensure that every station has identical pressures
