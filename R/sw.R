@@ -6,7 +6,7 @@ sw.N2 <- function(pressure, sigma.theta=NULL, ...) # BUG: think more about best 
     }
     args <- list(...)
     ## df <- if (is.null(args$df)) length(p)/5 else args$df;
-    df <- if (is.null(args$df)) min(length(pressure)/5, 10) else args$df;
+    df <- if (is.null(args$df)) min(floor(length(pressure)/10), 15) else args$df;
     ok <- !is.na(pressure) & !is.na(sigma.theta)
     sigma.theta.smooth <- smooth.spline(pressure[ok], sigma.theta[ok], df=df)
     sigma.theta.deriv <- rep(NA, length(pressure))

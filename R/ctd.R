@@ -593,7 +593,7 @@ plot.ctd.scan <- function(x,
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=TRUE, debug=getOption("oce.debug"), log.action, ...)
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oce.debug"), log.action, ...)
 {
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     ofile <- file
@@ -628,7 +628,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=TRUE, 
            )
 }
 
-read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=TRUE,
+read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oce.debug"), log.action, ...)
 {
     if (is.character(file)) {
@@ -719,19 +719,22 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     }
     ##CTDPRS,CTDPRS_FLAG_W,CTDTMP,CTDTMP_FLAG_W,CTDSAL,CTDSAL_FLAG_W,CTDOXY,CTDOXY_FLAG_W,
     var.names <- strsplit(line, split=",")[[1]]
-    oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "\n")
+    oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "[line722]\n")
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     var.units <- strsplit(line, split=",")[[1]]
     pcol <- pmatch("CTDPRS", var.names)
-    if (is.na(pcol)) stop("cannot find pressure column in list", paste(var.names,","))
+    if (is.na(pcol))
+        stop("cannot find pressure column in list", paste(var.names,","))
     Scol <- pmatch("CTDSAL", var.names)
-    if (is.na(Scol)) stop("cannot find salinity column in list", paste(var.names,","))
+    if (is.na(Scol))
+        stop("cannot find salinity column in list", paste(var.names,","))
     Tcol <- pmatch("CTDTMP", var.names)
-    if (is.na(Tcol)) stop("cannot find temperature column in list", paste(var.names,","))
+    if (is.na(Tcol))
+        stop("cannot find temperature column in list", paste(var.names,","))
     Ocol <- pmatch("CTDOXY", var.names)
     oce.debug(debug, "pcol=", pcol, "Scol=", Scol, "Tcol=", Tcol, "Ocol=", Ocol, "\n")
-    var.names <- strsplit(line, split=",")[[1]]
-    oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "\n")
+    ##var.names <- strsplit(line, split=",")[[1]]
+    ##oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "[line737]\n")
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     var.units <- strsplit(line, split=",")[[1]]
     pressure <- NULL
@@ -763,14 +766,11 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     sigma.theta <- sw.sigma.theta(salinity, temperature, pressure)
 
     data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta)
-    names <- c("pressure", "salinity", "temperature", "sigma.theta")
-    labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta")
+    names <- c("pressure", "salinity", "temperature", "sigma.theta", "oxygen")
+    labels <- c("Pressure", "Salinity", "Temperature", "Sigma Theta", "Oxygen")
     if (length(oxygen) > 0) {
         oxygen[oxygen == missing.value] <- NA
         data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta, oxygen=oxygen)
-        data <- transform(data, oyxgen=oxygen)
-        names <- c(names, "oxygen")
-        labels <- c(labels, "Oxygen")
     }
     metadata <- list(header=header,
                      filename=filename, # provided to this routine
@@ -835,7 +835,7 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
     x
 }
 
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=TRUE, debug=getOption("oce.debug"), log.action, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oce.debug"), log.action, ...)
 {
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
@@ -912,9 +912,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                 name <- "depth"
                 found.depth <- TRUE
             }
-            if (0 < regexpr("fluorometer", lline)) name <- "fluorometer"
-            if (0 < regexpr("oxygen, current", lline)) name <- "oxygen.current"
-            if (0 < regexpr("oxygen, temperature", lline)) name <- "oxygen.temperature"
+            if (0 < regexpr("fluorometer", lline))
+                name <- "fluorometer"
+            ## Used to have oxygen.temperature and oxygen.current here (why??)
+            if (0 < regexpr("oxygen", lline))
+                name <- "oxygen"
             if (0 < regexpr("flag", lline)) name <- "flag"
             if (0 < regexpr("sigma-theta", lline)) {
                 name <- "sigma.theta"

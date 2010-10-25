@@ -10,11 +10,11 @@
 
 \usage{
 read.ctd(file, type=NULL, columns=NULL, station=NULL, 
-  monitor=TRUE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
 read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
-  monitor=TRUE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
-  monitor=TRUE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
 }
 
 \arguments{
