@@ -545,19 +545,15 @@ The commands
 <<label=ptplot,eval=FALSE>>=
 library(oce)
 data(pt)
-plot(pt)
+plot(pt, use.smoothScatter=TRUE)
 @
-produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder
-(pt) measurements made during St Lawrence Estuary Internal Wave
-Experiment, a CFCAS-funded research program in which the \texttt{oce}
-author was a principal investigator.  The device was mounted on
-a mooring that tilted significantly with the tide, yielding
-strong tidal signals in pressure as well as temperature, thus
-providing a rough indication of the temperature  profile.
-
-This graph is trimmed of the in-air data; access to the raw data is
-part of a worked example.
-
+produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
+measurements made during St Lawrence Estuary Internal Wave Experiment, a
+CFCAS-funded research program in which the \texttt{oce} author was a principal
+investigator.  The device was mounted on a mooring that tilted significantly
+with the tide, yielding strong tidal signals in pressure as well as temperature,
+thus providing a rough indication of the temperature profile.  Note that this
+graph contains in-air as well as in-water data.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.66\textwidth}
