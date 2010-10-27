@@ -1,4 +1,6 @@
 0.1-82
+- read.ctd.woce(): infer water depth as max(pressure) if it's not in the header
+- plot.section(): allow strings for 'which'
 - plot.ctd() and plot.profile(): add 'use.smoothScatter' argument
 0.1-81
 - add despike()

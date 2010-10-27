@@ -31,13 +31,15 @@
 \arguments{
   \item{x}{a \code{section} object, e.g. as created by
     \code{\link{make.section}}.}
-  \item{which}{list of desired plot types.  There may be up to four panels in
-    total, and the desired plots are placed in these panels, in
-    reading order. Set \code{which} to 1 to contour temperature, to 2
-    to contour salinity, to 3 to contour sigma.theta, or to 4 to plot
-    a map of station locations.  If only one panel is plotted,
-    \code{par} is not adjusted, which makes it easy to add to the plot
-    with subsequent plotting commands.}
+  \item{which}{list of desired plot types.  There may be up to four
+    panels in total, and the desired plots are placed in these panels,
+    in reading order. Set \code{which=1} or \code{"temperature"} to
+    contour temperature, to \code{2} or \code{"salinity"} to contour
+    salinity, to \code{3} or \code{"sigma.theta"} to contour
+    sigma.theta, or to \code{4} or \code{"map"} to plot a map of station
+    locations.  If only one panel is plotted, \code{par} is not
+    adjusted, which makes it easy to add to the plot with subsequent
+    plotting commands.}
   \item{at}{if \code{NULL} (the default), the x axis will indicate the
     distance of the stations from the first in the section.  (This may
     give errors in the contouring routine, if the stations are not present

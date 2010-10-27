@@ -678,7 +678,15 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
         oce.debug(debug, paste("examining header line '",line,"'\n"))
-        header <- c(header, line);
+        if ((0 < (r<-regexpr("FILE_NAME", line)))) {
+            ##  #CTDFILE_NAME:     KB51D003.WCT
+            oce.debug(debug, "infer filename from:", line, "\n")
+            filename.orig <- sub("^.*NAME:[ ]*", "", line)
+            oce.debug(debug, "trim to '", filename.orig, "'\n")
+            filename.orig <- sub("[ ]*$", "", filename.orig)
+            oce.debug(debug, "trim to '", filename.orig, "'\n", sep='')
+        }
+        header <- c(header, line)
         ## SAMPLE:
         ##      EXPOCODE = 31WTTUNES_3
         ##      SECTION_ID = P16C
@@ -689,12 +697,13 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         ##      LATITUDE = -17.5053
         ##      LONGITUDE = -150.4812
         ##      BOTTOM = 3600
-        if (!(0 < (r<-regexpr("^#", line)))) {
+        if (!(0 < (r<-regexpr("^[ ]*#", line)))) {
             ## NUMBER_HEADERS = 10
             nh <- as.numeric(sub("(.*)NUMBER_HEADERS = ", "", ignore.case=TRUE, line))
             for (i in 2:nh) {
                 line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
                 header <- c(header, line)
+                oce.debug(debug, line)
                 if ((0 < (r<-regexpr("LATITUDE",  line))))
                     latitude  <- as.numeric(sub("[a-zA-Z =]*","", line))
                 if ((0 < (r<-regexpr("LONGITUDE", line))))
@@ -1109,6 +1118,7 @@ summary.ctd <- function(object, ...)
                 fives=fives,
                 processing.log=processing.log.summary(object))
     res$filename <- if (!is.null(object$metadata$filename)) object$metadata$filename else "?"
+    res$filename.orig <- if (!is.null(object$metadata$filename.orig)) object$metadata$filename.orig else "?"
     res$hexfilename <- if (!is.null(object$metadata$hexfilename)) object$metadata$hexfilename else "?"
     if (!is.null(object$metadata$system.upload.time)) res$upload.time <- object$metadata$system.upload.time
     if (!is.null(object$metadata$date))               res$date <- object$metadata$date
@@ -1140,6 +1150,7 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("CTD Summary\n-----------\n\n", ...)
     cat(paste("* Instrument:          ", x$type, ", serial number ", x$serial.number, "\n",sep=""))
     cat("* Source:              ``",     x$filename, "``\n",sep="", ...)
+    cat("* Original source:     ``",     x$filename.orig, "``\n",sep="", ...)
     cat("* Hex source:          ``",     x$hexfilename, "``\n",sep="", ...)
     cat(paste("* System upload time: ", x$system.upload.time, "\n"), ...)
     cat(paste("* Date:               ", x$date, "\n"), ...)

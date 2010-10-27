@@ -5,15 +5,19 @@ make.section <- function(item, ...)
         num.stations <- 1 + length(extra.args)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
+        filename.orig <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
         stn[1] <- item$metadata$station
+        filename.orig[1] <- if (!is.null(item$metadata$filename.orig)) item$metadata$filename.orig else ""
         lat[1] <- item$metadata$latitude
         lon[1] <- item$metadata$longitude
         station[[1]] <- item
         if (num.stations > 1)
             for (i in 2:num.stations) {
                 stn[i] <- extra.args[[i-1]]$metadata$station
+                filename.orig[i] <- if (!is.null(extra.args[[i-1]]$metadata$filename.orig))
+                    extra.args[[i-1]]$metadata$filename.orig else "?"
                 lat[i] <- extra.args[[i-1]]$metadata$latitude
                 lon[i] <- extra.args[[i-1]]$metadata$longitude
                 station[[i]] <- extra.args[[i-1]]
@@ -22,11 +26,14 @@ make.section <- function(item, ...)
         num.stations <- length(item)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
+        filename.orig <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
         if (num.stations > 1)
             for (i in 1:num.stations) {
                 stn[i] <- item[[i]]$metadata$station
+                filename.orig[i] <- if (!is.null(extra.args[[i-1]]$metadata$filename.orig))
+                    extra.args[[i-1]]$metadata$filename.orig else "?"
                 lat[i] <- item[[i]]$metadata$latitude
                 lon[i] <- item[[i]]$metadata$longitude
                 station[[i]] <- item[[i]]
@@ -83,7 +90,7 @@ plot.section <- function(x,
                          ...)
 {
     debug <- if (debug > 2) 2 else floor(0.5 + debug)
-    oce.debug(debug, "\bplot.section() {\n")
+    oce.debug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), ...) {\n")
     plot.subsection <- function(variable="temperature", title="Temperature",
                                 indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL,
                                 xlim=NULL,
@@ -91,7 +98,7 @@ plot.section <- function(x,
                                 debug=0,
                                 ...)
     {
-        oce.debug(debug, "\bplot.subsection() {\n")
+        oce.debug(debug, "\bplot.subsection(variable=", variable, ",...) {\n")
         if (variable == "map") {
             lat <- array(NA, num.stations)
             lon <- array(NA, num.stations)
@@ -262,8 +269,6 @@ plot.section <- function(x,
     opar <- par(no.readonly = TRUE)
     if (length(which) > 1) on.exit(par(opar))
 
-    if (any(!which %in% 1:4)) stop("which must be between 1 and 4")
-
     which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
     which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
 
@@ -318,10 +323,25 @@ plot.section <- function(x,
     else if (which.ytype == 2) yy <- rev(-sw.depth(x$data$station[[station.indices[1]]]$data$pressure))
     else stop("unknown ytype")
 
+    oce.debug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     lw <- length(which)
-
+    which2 <- vector("numeric", lw)
+    for (w in 1:lw) {
+        ww <- which[w]
+        if (is.numeric(ww)) {
+            which2[w] <- ww
+        } else {
+            if (     ww == "temperature") which2[w] <- 1
+            else if (ww == "salinity") which2[w] <- 2
+            else if (ww == "sigma.theta") which2[w] <- 3
+            else if (ww == "map") which2[w] <- 4
+            else stop("unknown 'which':", ww)
+        }
+    }
+    which <- which2
+    if (any(!which %in% 1:4)) stop("which must be between 1 and 4")
+    oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     par(mgp=mgp, mar=mar)
-
     if (lw > 1) {
         if (lw > 2)
             layout(matrix(1:4, nrow=2, byrow=TRUE))
