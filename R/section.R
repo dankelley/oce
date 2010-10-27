@@ -202,7 +202,7 @@ plot.section <- function(x,
                         wdi <- len - which(!is.na(rev(temp)))[1] + 1
                         ##cat("BOTTOM T:");print(temp[wdi])
                         ##cat("BOTTOM p:");print(x$data$station[[station.indices[i]]]$data$pressure[wdi])
-                        wd <- x$data$station[[station.indices[i]]]$data$pressure[wdi]
+                        wd <- max(x$data$station[[station.indices[i]]]$data$pressure, na.rm=TRUE)
                     }
                 }
                 in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature[-3])) # skip first 3 points
@@ -216,6 +216,8 @@ plot.section <- function(x,
                     water.depth <- c(water.depth, max(x$data$station[[station.indices[i]]]$data$pressure, na.rm=TRUE))
                 }
             }
+            oce.debug(debug, "water.depth=c(", paste(water.depth, collapse=","), ")\n")
+            ##water.depth <- -water.depth
             if (!grid)
                 Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
             bottom.x <- c(xx[1], xx, xx[length(xx)])
@@ -256,8 +258,8 @@ plot.section <- function(x,
                             ...)
                 }
             }
-#            if (length(bottom.x) == length(bottom.y))
-#                polygon(bottom.x, bottom.y, col="gray")
+            if (length(bottom.x) == length(bottom.y))
+                polygon(bottom.x, bottom.y, col="gray")
             box()
             axis(1)
             legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
