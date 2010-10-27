@@ -24,6 +24,7 @@
      adorn=NULL,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
+     debug=getOption("oce.debug"),
      \dots)
 }
 
@@ -80,6 +81,8 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }

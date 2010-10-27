@@ -79,14 +79,19 @@ plot.section <- function(x,
                          adorn=NULL,
                          mgp=getOption("oce.mgp"),
                          mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
+                         debug=getOption("oce.debug"),
                          ...)
 {
+    debug <- if (debug > 2) 2 else floor(0.5 + debug)
+    oce.debug(debug, "\bplot.section() {\n")
     plot.subsection <- function(variable="temperature", title="Temperature",
                                 indicate.stations=TRUE, contour.levels=NULL, contour.labels=NULL,
                                 xlim=NULL,
                                 ylim=NULL,
+                                debug=0,
                                 ...)
     {
+        oce.debug(debug, "\bplot.subsection() {\n")
         if (variable == "map") {
             lat <- array(NA, num.stations)
             lon <- array(NA, num.stations)
@@ -139,7 +144,8 @@ plot.section <- function(x,
             if (any(xx[ox] != xx)) {
                 xx <- xx[ox]
                 zz <- zz[ox,]
-                message("NOTE: plot.section() reordered the stations to make x monotonic\n")
+                message("plot.section() reordered the stations to make x monotonic")
+                warning("FIXME: am I reording the data or just x?")
             }
             ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
             par(xaxs="i", yaxs="i")
@@ -216,6 +222,7 @@ plot.section <- function(x,
             ##par(xaxs="i", yaxs="i")
 
             if (!is.null(contour.levels) && !is.null(contour.labels)) {
+                oce.debug(debug, "user-supplied contour levels: ", contour.levels, "\n")
                 if (!("labcex" %in% dots$labcex)) {
                     contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
                             levels=contour.levels,
@@ -230,9 +237,11 @@ plot.section <- function(x,
                             ...)
                 }
             } else {
+                oce.debug(debug, "automatically-calculated contour levels\n")
                 ##cat("yy=");print(yy)
                 ##cat("xx=");print(xx)
                 ##cat("zz=");print(zz)
+.xx<<-xx;.yy<<-yy;.zz<<-zz
                 if (is.null(dots$labcex)) {
                     contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
                             add=TRUE,
@@ -245,12 +254,13 @@ plot.section <- function(x,
                             ...)
                 }
             }
-            if (length(bottom.x) == length(bottom.y))
-                polygon(bottom.x, bottom.y, col="gray")
+#            if (length(bottom.x) == length(bottom.y))
+#                polygon(bottom.x, bottom.y, col="gray")
             box()
             axis(1)
             legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
         }
+        oce.debug(debug, "\b} # plot.subsection()\n")
     }                                   # plot.subsection
 
     if (!inherits(x, "section")) stop("method is only for section objects")
@@ -328,23 +338,30 @@ plot.section <- function(x,
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
-
     for (w in 1:length(which)) {
         if (!missing(contour.levels)) {
-            if (which[w] == 1) plot.subsection("temperature", "T", nlevels=contour.levels, xlim=xlim, ylim=ylim, ...)
-            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, xlim=xlim, ylim=ylim, ...)
-            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), nlevels=contour.levels, xlim=xlim, ylim=ylim, ...)
+            if (which[w] == 1)
+                plot.subsection("temperature", "T", nlevels=contour.levels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+            if (which[w] == 2)
+                plot.subsection("salinity",    "S", ylab="", nlevels=contour.levels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+            if (which[w] == 3)
+                plot.subsection("sigma.theta",  expression(sigma[theta]), nlevels=contour.levels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
         } else {
-            if (which[w] == 1) plot.subsection("temperature", "T", xlim=xlim, ylim=ylim, ...)
-            if (which[w] == 2) plot.subsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, ...)
-            if (which[w] == 3) plot.subsection("sigma.theta",  expression(sigma[theta]), xlim=xlim, ylim=ylim, ...)
+            if (which[w] == 1)
+                plot.subsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+            if (which[w] == 2)
+                plot.subsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+            if (which[w] == 3)
+                plot.subsection("sigma.theta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
         }
-        if (which[w] == 4) plot.subsection("map", indicate.stations=FALSE)
+        if (which[w] == 4)
+            plot.subsection("map", indicate.stations=FALSE, debug=debug-1, ...)
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    oce.debug(debug, "\b} # plot.section()\n")
 }
 
 read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.action)
