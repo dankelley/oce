@@ -237,10 +237,6 @@ plot.section <- function(x,
                 }
             } else {
                 oce.debug(debug, "automatically-calculated contour levels\n")
-                ##cat("yy=");print(yy)
-                ##cat("xx=");print(xx)
-                ##cat("zz=");print(zz)
-.xx<<-xx;.yy<<-yy;.zz<<-zz
                 if (is.null(dots$labcex)) {
                     contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
                             add=TRUE,
