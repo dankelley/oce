@@ -631,6 +631,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oce.debug"), log.action, ...)
 {
+    oce.debug(debug, "\b\bread.ctd.woce() {\n")
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "r")
@@ -651,7 +652,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     system.upload.time <- NULL
     latitude <- longitude <- NaN
     start.time <- NULL
-    water.depth <- NaN
+    water.depth <- NA
     date <- recovery <- NULL
     header <- c();
     col.names.inferred <- NULL
@@ -663,7 +664,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     ## http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
     ## First line
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
-    if(debug) cat(paste("examining header line '",line,"'\n"));
+    oce.debug(debug, paste("examining header line '",line,"'\n"))
     header <- line
     ## CTD, 20000718WHPOSIOSCD
     if ("CTD" != substr(line, 1, 3)) stop("Can only read WOCE files of type CTD")
@@ -772,6 +773,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         oxygen[oxygen == missing.value] <- NA
         data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigma.theta=sigma.theta, oxygen=oxygen)
     }
+    ## catch e.g. -999 sometimes used for water depth's missing value
+    if (water.depth < 0)
+        water.depth <- max(pressure, na.rm=TRUE)
     metadata <- list(header=header,
                      filename=filename, # provided to this routine
                      filename.orig=filename.orig, # from instrument
@@ -796,6 +800,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
+    oce.debug(debug, "\b\b} # read.ctd.woce()\n")
     res
 }
 
@@ -837,6 +842,7 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
 
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oce.debug"), log.action, ...)
 {
+    oce.debug(debug, "\read.ctd.sbe() {\n")
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
     if (is.character(file)) {
@@ -1087,7 +1093,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     }
     res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta",
                           "Sigma Theta", "kg/m^3")
-    res
+     oce.debug(debug, "} # read.ctd.sbe()\n")
+   res
 }
 
 summary.ctd <- function(object, ...)

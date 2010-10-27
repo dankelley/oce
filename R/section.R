@@ -144,8 +144,7 @@ plot.section <- function(x,
             if (any(xx[ox] != xx)) {
                 xx <- xx[ox]
                 zz <- zz[ox,]
-                message("plot.section() reordered the stations to make x monotonic")
-                warning("FIXME: am I reording the data or just x?")
+                warning("plot.section() reordered the stations to make x monotonic")
             }
             ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
             par(xaxs="i", yaxs="i")
