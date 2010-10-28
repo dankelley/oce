@@ -108,7 +108,6 @@ plot.section <- function(x,
             lonm <- mean(lon, na.rm=TRUE)
             lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
             latr <- latm + 1.2 * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
-cat("here\n")
             if (!is.null(map.xlim)) {
                 map.xlim <- sort(map.xlim)
                 plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
