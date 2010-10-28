@@ -710,7 +710,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                     longitude <- as.numeric(sub("(.*) =","", line))
                 if ((0 < (r<-regexpr("DATE", line)))) {
                     d <- sub("[ ]*DATE[ ]*=[ ]*", "", line)
-                    date <- oce.as.POSIXlt(d, "%Y%m%d")
+                    date <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
                 }
                 if ((0 < (r<-regexpr("DEPTH", line))))
                     water.depth <- as.numeric(sub("[a-zA-Z =]*","", line))
@@ -948,13 +948,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             serial.number <- gsub("[ ].*$","",gsub(".*sn[ ]*","",lline))
         if (0 < (r<-regexpr("date:", lline))) {
             d <- sub("(.*)date:([ ])*", "", lline);
-            date <- oce.as.POSIXlt(d)
+            date <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
         }
         if (0 < (r<-regexpr("filename", lline)))
             hexfilename <- sub("(.*)FileName =([ ])*", "", ignore.case=TRUE, lline);
         if (0 < (r<-regexpr("system upload time", lline))) {
             d <- sub("([^=]*)[ ]*=[ ]*", "", ignore.case=TRUE, lline);
-            system.upload.time <- oce.as.POSIXlt(d)
+            system.upload.time <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
         }
         ## Styles:
         ## * NMEA Latitude = 47 54.760 N
@@ -969,7 +969,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (0 < (r<-regexpr("start_time =", lline))) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
-            start.time <- oce.as.POSIXlt(d)
+            start.time <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
             ##cat("START TIME '", d, "'\n", sep="")
         }
         if (0 < (r<-regexpr("ship:", lline))) {

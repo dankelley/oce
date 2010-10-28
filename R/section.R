@@ -5,19 +5,15 @@ make.section <- function(item, ...)
         num.stations <- 1 + length(extra.args)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
-        filename.orig <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
         stn[1] <- item$metadata$station
-        filename.orig[1] <- if (!is.null(item$metadata$filename.orig)) item$metadata$filename.orig else ""
         lat[1] <- item$metadata$latitude
         lon[1] <- item$metadata$longitude
         station[[1]] <- item
         if (num.stations > 1)
             for (i in 2:num.stations) {
                 stn[i] <- extra.args[[i-1]]$metadata$station
-                filename.orig[i] <- if (!is.null(extra.args[[i-1]]$metadata$filename.orig))
-                    extra.args[[i-1]]$metadata$filename.orig else "?"
                 lat[i] <- extra.args[[i-1]]$metadata$latitude
                 lon[i] <- extra.args[[i-1]]$metadata$longitude
                 station[[i]] <- extra.args[[i-1]]
@@ -26,14 +22,11 @@ make.section <- function(item, ...)
         num.stations <- length(item)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
-        filename.orig <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
         if (num.stations > 1)
             for (i in 1:num.stations) {
                 stn[i] <- item[[i]]$metadata$station
-                filename.orig[i] <- if (!is.null(extra.args[[i-1]]$metadata$filename.orig))
-                    extra.args[[i-1]]$metadata$filename.orig else "?"
                 lat[i] <- item[[i]]$metadata$latitude
                 lon[i] <- item[[i]]$metadata$longitude
                 station[[i]] <- item[[i]]
@@ -42,7 +35,10 @@ make.section <- function(item, ...)
         stop("first argument must be of class \"ctd\" or a \"list\"")
     }
     data <- list(station=station)
-    metadata <- list(header="",section.id="",station.id=stn,latitude=lat,longitude=lon)
+    metadata <- list(section.id="",
+                     station.id=stn,
+                     latitude=lat,
+                     longitude=lon)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")
