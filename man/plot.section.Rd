@@ -18,6 +18,7 @@
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
+     map.ylim=NULL,
      xtype="distance",
      ytype="depth",
      legend.loc="bottomright",
@@ -61,6 +62,10 @@
   \item{xlim}{optional limit for x axis (only in sections, not map)}
   \item{ylim}{optional limit for y axis (only in sections, not map)}
   \item{map.xlim}{optional xlim for station location, which can be
+    helpful in ensuring that a recognizable coastline can be seen.
+    (This value is used instead of \code{map.ylim}, if both are
+    supplied.)}
+  \item{map.ylim}{optional ylim for station location, which can be
     helpful in ensuring that a recognizable coastline can be seen}
   \item{xtype}{type of x axis, for contour plots, either
     \code{"distance"} for distance (in km) to the first point in the

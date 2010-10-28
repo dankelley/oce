@@ -79,7 +79,7 @@ plot.section <- function(x,
                          station.indices,
                          coastline=NULL,
                          xlim=NULL, ylim=NULL,
-                         map.xlim=NULL,
+                         map.xlim=NULL, map.ylim=NULL,
                          xtype="distance",
                          ytype="depth",
                          legend.loc="bottomright",
@@ -112,10 +112,16 @@ plot.section <- function(x,
             lonm <- mean(lon, na.rm=TRUE)
             lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
             latr <- latm + 1.2 * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
-            if (!is.null(map.xlim))
+cat("here\n")
+            if (!is.null(map.xlim)) {
+                map.xlim <- sort(map.xlim)
                 plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
-            else
+            } else if (!is.null(map.ylim)) {
+                map.ylim <- sort(map.ylim)
+                plot(lonr, latr, ylim=map.ylim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+            } else {
                 plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+            }
             if (!is.null(coastline)) {
                 lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
                 lines(coastline$data$longitude + 360, coastline$data$latitude, col="darkgray")
