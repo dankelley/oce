@@ -1,4 +1,6 @@
 0.1-82
+- section.plot(): avoid a contouring error if two stations at same distance coordinate
+- section.smooth(): improve handling of missing values
 - read.ctd.woce(): infer water depth as max(pressure) if it's not in the header
 - plot.section(): allow strings for 'which'
 - plot.ctd() and plot.profile(): add 'use.smoothScatter' argument

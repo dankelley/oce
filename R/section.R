@@ -5,19 +5,15 @@ make.section <- function(item, ...)
         num.stations <- 1 + length(extra.args)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
-        filename.orig <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
         stn[1] <- item$metadata$station
-        filename.orig[1] <- if (!is.null(item$metadata$filename.orig)) item$metadata$filename.orig else ""
         lat[1] <- item$metadata$latitude
         lon[1] <- item$metadata$longitude
         station[[1]] <- item
         if (num.stations > 1)
             for (i in 2:num.stations) {
                 stn[i] <- extra.args[[i-1]]$metadata$station
-                filename.orig[i] <- if (!is.null(extra.args[[i-1]]$metadata$filename.orig))
-                    extra.args[[i-1]]$metadata$filename.orig else "?"
                 lat[i] <- extra.args[[i-1]]$metadata$latitude
                 lon[i] <- extra.args[[i-1]]$metadata$longitude
                 station[[i]] <- extra.args[[i-1]]
@@ -26,14 +22,11 @@ make.section <- function(item, ...)
         num.stations <- length(item)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
-        filename.orig <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
         if (num.stations > 1)
             for (i in 1:num.stations) {
                 stn[i] <- item[[i]]$metadata$station
-                filename.orig[i] <- if (!is.null(extra.args[[i-1]]$metadata$filename.orig))
-                    extra.args[[i-1]]$metadata$filename.orig else "?"
                 lat[i] <- item[[i]]$metadata$latitude
                 lon[i] <- item[[i]]$metadata$longitude
                 station[[i]] <- item[[i]]
@@ -42,7 +35,10 @@ make.section <- function(item, ...)
         stop("first argument must be of class \"ctd\" or a \"list\"")
     }
     data <- list(station=station)
-    metadata <- list(header="",section.id="",station.id=stn,latitude=lat,longitude=lon)
+    metadata <- list(section.id="",
+                     station.id=stn,
+                     latitude=lat,
+                     longitude=lon)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("section", "oce")
@@ -235,17 +231,21 @@ cat("here\n")
 
             ##par(xaxs="i", yaxs="i")
 
+            ## cannot contour with duplicates in x or y; the former is the only problem
+            xx.unique <- 0 != diff(xx)
             if (!is.null(contour.levels) && !is.null(contour.labels)) {
                 oce.debug(debug, "user-supplied contour levels: ", contour.levels, "\n")
                 if (!("labcex" %in% dots$labcex)) {
-                    contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
+                    contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                            axes=FALSE, labcex=0.8,
                             levels=contour.levels,
                             labels=contour.labels,
                             add=TRUE,
                             xaxs="i", yaxs="i",
                             ...)
                 } else {
-                    contour(x=xx, y=yy, z=zz, axes=FALSE,
+                    contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                            axes=FALSE,
                             add=TRUE,
                             xaxs="i", yaxs="i",
                             ...)
@@ -253,12 +253,14 @@ cat("here\n")
             } else {
                 oce.debug(debug, "automatically-calculated contour levels\n")
                 if (is.null(dots$labcex)) {
-                    contour(x=xx, y=yy, z=zz, axes=FALSE, labcex=0.8,
+                    contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                            axes=FALSE, labcex=0.8,
                             add=TRUE,
                             xaxs="i", yaxs="i",
                             ...)
                 } else {
-                    contour(x=xx, y=yy, z=zz, axes=FALSE,
+                    contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                            axes=FALSE,
                             add=TRUE,
                             xaxs="i", yaxs="i",
                             ...)
@@ -529,15 +531,18 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"),
     oce.debug(debug, "\b\b} # section.grid\n")
     res
 }
-## bugs: should ensure that every station has identical pressures
-## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-section.smooth <- function(section, ...)
+section.smooth <- function(section, debug=getOption("oce.debug"), ...)
 {
+    ## bugs: should ensure that every station has identical pressures
+    ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
+    oce.debug(debug, "\b\bsection.smooth(section,debug=", debug, "...) {\n")
     if (!inherits(section, "section")) stop("method is only for section objects")
     nstn <- length(section$data$station)
     nprs <- length(section$data$station[[1]]$data$pressure)
     supplied.df <- "df" %in% names(list(...))
-    if (!supplied.df) df <- nstn / 5
+    if (!supplied.df)
+        df <- nstn / 5
+    oce.debug(debug, "nstn=", nstn, "nprs=", nprs, "df=", df, "\n")
     res <- section
     x <- geod.dist(section)
     temperature.mat <- array(dim=c(nprs, nstn))
@@ -549,17 +554,22 @@ section.smooth <- function(section, ...)
         sigma.theta.mat[,s] <- section$data$station[[s]]$data$sigma.theta
     }
     for (p in 1:nprs) {
-        ok <- !is.na(temperature.mat[p,])
-        if (sum(ok) > 4) {              # can only fit spline if have 4 or more values
+        ok <- !is.na(temperature.mat[p,]) ## FIXME: ok to infer missingness from temperature alone?
+        nok <- sum(ok)
+        iok <- (1:nstn)[ok]
+        if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
             if (supplied.df) {
-                temperature.mat[p,ok] <- predict(smooth.spline(x[ok], temperature.mat[p,ok], ...))$y
-                salinity.mat[p,ok] <- predict(smooth.spline(x[ok], salinity.mat[p,ok], ...))$y
-                sigma.theta.mat[p,ok] <- predict(smooth.spline(x[ok], sigma.theta.mat[p,ok], ...))$y
+                temperature.mat[p,] <- predict(smooth.spline(x[ok], temperature.mat[p,ok], ...), x)$y
+                salinity.mat[p,]    <- predict(smooth.spline(x[ok],    salinity.mat[p,ok], ...), x)$y
+                sigma.theta.mat[p,] <- predict(smooth.spline(x[ok], sigma.theta.mat[p,ok], ...), x)$y
             } else {
-                temperature.mat[p,ok] <- predict(smooth.spline(x[ok], temperature.mat[p,ok], df=df, ...))$y
-                salinity.mat[p,ok] <- predict(smooth.spline(x[ok], salinity.mat[p,ok], df=df, ...))$y
-                sigma.theta.mat[p,ok] <- predict(smooth.spline(x[ok], sigma.theta.mat[p,ok], df=df, ...))$y
+                temperature.mat[p,] <- predict(smooth.spline(x[ok], temperature.mat[p,ok], df=df, ...), x)$y
+                salinity.mat[p,]    <- predict(smooth.spline(x[ok],    salinity.mat[p,ok], df=df, ...), x)$y
+                sigma.theta.mat[p,] <- predict(smooth.spline(x[ok], sigma.theta.mat[p,ok], df=df, ...), x)$y
             }
+            oce.debug(debug, p, "dbar: smoothing, based on", nok, "good values\n")
+        } else {
+            oce.debug(debug, p, "dbar: not smoothing, since have only", nok, "good values\n")
         }
     }
     for (s in 1:nstn) {
@@ -570,6 +580,7 @@ section.smooth <- function(section, ...)
     class(res) <- c("section", "oce")
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # section.smooth()\n")
     res
 }
 
