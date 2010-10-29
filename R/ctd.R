@@ -170,7 +170,9 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
     res
 }
 
-ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debug=getOption("oce.debug"))
+ctd.trim <- function(x, method=c("downcast", "index", "range"),
+                     infer.water.depth=TRUE,
+                     parameters, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\bctd.trim() {\n")
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
@@ -264,7 +266,7 @@ ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debu
         }
     }
     res$data <- subset(x$data, keep)
-    if (!is.finite(res$metadata$water.depth)) {
+    if (infer.water.depth && !is.finite(res$metadata$water.depth)) {
         res$metadata$water.depth <- max(res$data$pressure, na.rm=TRUE)
         oce.debug(debug, "inferred water depth of", res$metadata$water.depth, "from pressure\n")
     }

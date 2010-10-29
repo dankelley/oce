@@ -143,9 +143,11 @@ abline(v=130)
 abline(v=350)
 # The range 130 to 350 seems good, but you can narrow in
 # by repeating the command below, with differing ranges.
-plot(ctd.trim(ctd.raw, "range", list(item="index", from=130, to=350)), which=8)
+plot(ctd.trim(ctd.raw, "range",
+  parameters=list(item="index", from=130, to=350)), which=8)
 # See results
-ctd.trimmed <- ctd.trim(ctd.raw, "range", list(item="index", from=130, to=350))
+ctd.trimmed <- ctd.trim(ctd.raw, "range",
+  parameters=list(item="index", from=130, to=350))
 plot(ctd.trimmed)
 }
 \author{Dan Kelley}

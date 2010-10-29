@@ -253,8 +253,10 @@ is a convenient index for extraction of the downcast portion of the profile by
 an essentially manual method, e.g. proceeding with a sequence of commands such
 as
 <<ctdscaneg,eval=false>>=
-plot.ctd.scan(ctd.trim(ctd.raw, "range", list(item="scan", from=140, to=250)))
-plot.ctd.scan(ctd.trim(ctd.raw, "range", list(item="scan", from=150, to=250)))
+plot.ctd.scan(ctd.trim(ctd.raw, "range",
+                       parameters=list(item="scan", from=140, to=250)))
+plot.ctd.scan(ctd.trim(ctd.raw, "range",
+                       parameters=list(item="scan", from=150, to=250)))
 @
 This is the ``gold standard'' method, which is recommended for detailed
 work. However, for quick work, you may find that the automatic downcast
@@ -671,7 +673,8 @@ Although one may argue as to the limits of the pycnocline, for illustration let 
 <<>>=
 library(oce)
 data(ctd)
-pycnocline <- ctd.trim(ctd, "range", list(item="pressure", from=5, to=12))
+pycnocline <- ctd.trim(ctd, "range",
+                       parameters=list(item="pressure", from=5, to=12))
 plot.profile(pycnocline, type="density+N2")
 @
 and another is
