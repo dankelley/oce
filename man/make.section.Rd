@@ -14,8 +14,8 @@ make.section(item, \dots)
   \item{item}{either a \code{ctd} object, in which case the rest of the
     arguments are other \code{ctd} objects, or a list of \code{ctd}
     objects.} 
-  \item{\dots}{a list of \code{ctd} objects, either given as separate
-    arguments (the normal procedure) or as a list.}
+  \item{\dots}{one or more \code{ctd} objects, either given as separate
+    arguments, or a list of such objects.}
   \item{section}{a section to which a station is to be added.}
   \item{station}{a station to be added to a section.}
 }
