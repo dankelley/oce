@@ -195,6 +195,7 @@ plot.section <- function(x,
                 len <- length(temp)
                 if (is.finite(x$data$station[[station.indices[i]]]$metadata$water.depth)) {
                     wd <- x$data$station[[station.indices[i]]]$metadata$water.depth
+                    oce.debug(debug, "known water depth", wd, "for station i=", i, "\n")
                 } else {
                     wd <- NA
                     if (is.na(temp[len])) {
@@ -204,6 +205,9 @@ plot.section <- function(x,
                         ##cat("BOTTOM T:");print(temp[wdi])
                         ##cat("BOTTOM p:");print(x$data$station[[station.indices[i]]]$data$pressure[wdi])
                         wd <- max(x$data$station[[station.indices[i]]]$data$pressure, na.rm=TRUE)
+                        oce.debug(debug, "inferred water depth", wd, "for station i=", i, "\n")
+                    } else {
+                        oce.debug(debug, "cannot infer water depth for station i=", i, "\n")
                     }
                 }
                 in.land <- which(is.na(x$data$station[[station.indices[i]]]$data$temperature[-3])) # skip first 3 points

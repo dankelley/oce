@@ -172,6 +172,7 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
 
 ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debug=getOption("oce.debug"))
 {
+    oce.debug(debug, "\b\bctd.trim() {\n")
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     res <- x
     n <- length(x$data$pressure)
@@ -208,7 +209,7 @@ ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debu
             max.spot <- which.max(smooth(x$data$pressure[trim.top:trim.bottom],kind="3R"))
             max.location <- trim.top + max.spot
             keep[max.location:n] <- FALSE
-            oce.debug(debug, "pressure maximum at index=", max.spot, "\n")
+            oce.debug(debug, "pressure maximum of", x$data$pressure[max.spot], "dbar, at index=", max.spot, "\n")
             if (FALSE) {
                                         # deleted method: slowly-falling data
                 delta.p.sorted <- sort(delta.p)
@@ -263,8 +264,13 @@ ctd.trim <- function(x, method=c("downcast", "index", "range"), parameters, debu
         }
     }
     res$data <- subset(x$data, keep)
+    if (!is.finite(res$metadata$water.depth)) {
+        res$metadata$water.depth <- max(res$data$pressure, na.rm=TRUE)
+        oce.debug(debug, "inferred water depth of", res$metadata$water.depth, "from pressure\n")
+    }
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # ctd.trim()\n")
     res
 }
 
@@ -784,7 +790,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     }
     ## catch e.g. -999 sometimes used for water depth's missing value
     if (water.depth < 0)
-        water.depth <- max(pressure, na.rm=TRUE)
+        water.depth <- NA
     metadata <- list(header=header,
                      filename=filename, # provided to this routine
                      filename.orig=filename.orig, # from instrument
@@ -851,7 +857,7 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
 
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oce.debug"), log.action, ...)
 {
-    oce.debug(debug, "\read.ctd.sbe() {\n")
+    oce.debug(debug, "\b\bread.ctd.sbe() {\n")
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
     if (is.character(file)) {
@@ -882,7 +888,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     serial.number <- "?"
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
-        if(debug) cat(paste("examining header line '",line,"'\n"));
+        oce.debug(debug, paste("examining header line '",line,"'\n"))
         header <- c(header, line);
         ##if (length(grep("\*END\*", line))) #BUG# why is this regexp no good (new with R-2.1.0)
         aline <- iconv(line, from="UTF-8", to="ASCII", sub="?");
@@ -1042,6 +1048,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (!found.temperature) stop("cannot find 'temperature' in this file")
     if (!found.pressure && !found.depth)    stop("no column named 'pressure', 'depth' or 'depSM'")
 
+    ## If no water depth found, guess it from the maximum depth
+
     ## Read the data as a table.
     ## FIXME: should we match to standardized names?
     ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigma.theta.unused","depth","flag");
@@ -1057,6 +1065,13 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         names(data) <- newnames
         warning("data file lacked a 'scan' column, so one was created");
     }
+    ###
+    ###    if (is.na(water.depth)) {
+    ###        water.depth <- max(data$pressure, na.rm=TRUE)
+    ###        print(data$pressure)
+    ###        oce.debug(debug, "file header has no water depth, so inferring", water.depth, "from the pressure")
+    ###    }
+    ###
     metadata <- list(header=header,
                      type="SBE",
                      hexfilename=hexfilename, # from instrument
@@ -1102,8 +1117,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     }
     res <- ctd.add.column(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigma.theta",
                           "Sigma Theta", "kg/m^3")
-     oce.debug(debug, "} # read.ctd.sbe()\n")
-   res
+    oce.debug(debug, "} # read.ctd.sbe()\n")
+    res
 }
 
 summary.ctd <- function(object, ...)
