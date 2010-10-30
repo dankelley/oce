@@ -35,13 +35,18 @@ section <- make.section(stn08,stn09,stn10,stn01,stn11,stn12,stn13,stn15)
 section <- oce.edit(section, "section.id",  "Halifax-Harbour-2003-oct",
                    person="Dan Kelley")
 section <- section.grid(section, p=seq(0,60,2))
-data(coastline.hal)
-plot(section, coastline=coastline.hal, grid=TRUE)
+save(section, file="section.rda")
 }
 The stations cover a 14 km region running from station 308, near the
 Sackville River, seaward to station 315, at the entrance to the general
 Harbour, offshore of the aptly-named Point Pleasant Park.
 } 
+
+\examples{
+data(section)
+data(coastline.hal)
+plot(section, coastline=coastline.hal, grid=TRUE)
+}
 
 \references{A summary of the stations can be obtained from \code{\link{summary.section}},
 and a plot can be created with \code{\link{plot.section}}.}

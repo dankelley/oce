@@ -1,4 +1,5 @@
 0.1-82
+- improve resolution of coastline.world by about a factor of 4
 - section.plot(): avoid a contouring error if two stations at same distance coordinate
 - section.smooth(): improve handling of missing values
 - read.ctd.woce(): infer water depth as max(pressure) if it's not in the header

@@ -118,8 +118,13 @@ plot.section <- function(x,
                 plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
             }
             if (!is.null(coastline)) {
-                lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
-                lines(coastline$data$longitude + 360, coastline$data$latitude, col="darkgray")
+                if (!is.null(coastline$metadata$fillable) && coastline$metadata$fillable) {
+                    polygon(coastline$data$longitude, coastline$data$latitude, col="lightgray")
+                    polygon(coastline$data$longitude+360, coastline$data$latitude, col="lightgray")
+                } else {
+                    lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
+                    lines(coastline$data$longitude + 360, coastline$data$latitude, col="darkgray")
+                }
             }
             lines(lon, lat, col="lightgray")
             ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
@@ -270,7 +275,7 @@ plot.section <- function(x,
                 }
             }
             if (length(bottom.x) == length(bottom.y))
-                polygon(bottom.x, bottom.y, col="gray")
+                polygon(bottom.x, bottom.y, col="lightgray")
             box()
             axis(1)
             legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
