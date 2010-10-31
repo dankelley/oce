@@ -639,7 +639,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oce.debug"), log.action, ...)
 {
-    oce.debug(debug, "\b\bread.ctd.woce() {\n")
+    oce.debug(debug, "\b\bread.ctd.woce() {\n") # FIXME: should use readLines to slurp whole file, for speed
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "r")
