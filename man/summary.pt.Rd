@@ -3,9 +3,9 @@
 \alias{summary.pt}
 \alias{print.summary.pt}
 
-\title{Summarize a pT object}
+\title{Summarize a pt object}
 
-\description{Summarize a pT object}
+\description{Summarize a pt object}
 
 \usage{
 \method{summary}{pt}(object, \dots)

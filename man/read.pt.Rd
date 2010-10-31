@@ -4,7 +4,7 @@
 
 \title{Read an TDR temperature-depth recorder data file}
 
-\description{Read an pT temperature-depth recorder file, producing an object of type \code{pt}.}
+\description{Read an pt temperature-depth recorder file, producing an object of type \code{pt}.}
 
 \usage{
 read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"), 
