@@ -33,10 +33,8 @@
 
 \examples{
 library(oce)
-data(pt)
-plot(pt)
-pt.trimmed <- pt.trim(pt)
-plot(pt.trimmed)
+data(ptr)
+summary(ptr)
 }
 
 \author{Dan Kelley}

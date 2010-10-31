@@ -79,7 +79,7 @@ export(
        plot.coastline,
        plot.ctd,
        plot.ctd.scan,
-       plot.pT,
+       plot.pt,
        plot.topo,
        plot.profile,
        plot.sealevel,
@@ -90,8 +90,8 @@ export(
        processing.log.append,
        processing.log.item,
        processing.log.summary,
-       pT.patm,
-       pT.trim,
+       pt.patm,
+       pt.trim,
        rangelimit,
        read.adp,
        read.adp.rdi,
@@ -111,7 +111,7 @@ export(
        read.lobo,
        read.topo,
        read.oce,
-       read.pT,
+       read.pt,
        read.sealevel,
        read.section,
        seconds.to.ctime,
@@ -177,7 +177,7 @@ S3method(print, summary.ctd)
 S3method(print, summary.lobo)
 S3method(print, summary.sealevel)
 S3method(print, summary.section)
-S3method(print, summary.pT)
+S3method(print, summary.pt)
 S3method(print, summary.tidem)
 S3method(print, summary.topo)
 S3method(predict, tidem)

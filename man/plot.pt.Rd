@@ -2,9 +2,9 @@
 
 \alias{plot.pt}
 
-\title{Plot pT (pressure-temperature) recorder data}
+\title{Plot pt (pressure-temperature) recorder data}
 
-\description{Plot pT temperature-depth recorder data}
+\description{Plot pt temperature-depth recorder data}
 
 \usage{\method{plot}{pt}(x,
      which=1:4, title=deparse(substitute(x)), adorn=NULL,
@@ -75,8 +75,8 @@
 }
 
 \examples{
-data(pt)
-plot(pt, which=c(1,3), 
+data(ptr)
+plot(ptr, which=c(1,3), 
  adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'))}))
 }
 

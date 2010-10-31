@@ -10,7 +10,6 @@ processing.log.add <- function(pl, action="")
 processing.log.append <- function(x, action="")
 {
     res <- x
-    print(str(res$processing.log))
     res$processing.log$time <- c(res$processing.log$time, as.POSIXct(Sys.time(), tz="GMT"))
     res$processing.log$action <- c(res$processing.log$action, action)
     res

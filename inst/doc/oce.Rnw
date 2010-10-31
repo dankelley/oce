@@ -547,8 +547,8 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 The commands
 <<label=ptplot,eval=FALSE>>=
 library(oce)
-data(pt)
-plot(pt, use.smoothScatter=TRUE)
+data(ptr)
+plot(ptr, use.smoothScatter=TRUE)
 @
 produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
 measurements made during St Lawrence Estuary Internal Wave Experiment, a
@@ -753,39 +753,25 @@ mtext("M2",at=1/12.42,side=3)
 
 \workedanswer{7}{Pressure-temperature Recorder plot}
 \index{subset!using with pt data}
-\index{data!TDR}
+\index{data!tdr}
 
-The accuracy of automatic removal of the atmospheric component done with
-\verb@pt.trim()@ is often quite good, but data are so valuable that it always
-makes sense to investigate the data by eye, in order to select a time window.
-Manual selection of a time window is also important when a researcher is dealing
-with a set of instruments whose measuremnts are to be combined and so need a
-uniform time base (e.g. to make a matrix to be contoured).
+The accuracy of automatic removal of the atmospheric component done
+with \verb@pt.trim()@ can be quite good if the instrument has recorded
+in the air at the start and end of the record.  Even so, it always
+makes sense to investigate the data by eye, in order to select a time
+window.  Manual selection of a time window is also important when a
+researcher is dealing with a set of instruments whose measuremnts are
+to be combined and so need a uniform time base (e.g. to make a matrix
+to be contoured).
 
-In the code, the automatic method is used first, and then a series of time
-indicators is drawn on the plot, to determine proper cutoff times.
-
-Hint: be careful on timezones!
+The best plan is simply to plot the data interactively, and then to
+narrow in on start and end times by plotting trial values, e.g.
 <<>>=
-library(oce)
-data(pt)
-# First, get an idea for the data
-plot(pt, which=c(1,3))
-
-ptt <- pt.trim(pt)
-plot(ptt)
-print(range(ptt$data$ts$time)) # gives a starting point
 abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
-abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
-abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
-abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
-abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
-abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-
-ptt <- subset(pt, as.POSIXct("2008-07-01 00:00:00") <= time & time <= as.POSIXct("2008-07-02 00:00::00"))
-ptt <- oce.edit(ptt, action="x$data$ts$pressure <- x$data$ts$pressure - 10.2", reason="remove atm pressure", person="DK")
-plot(ptt)
 @
+with arrow keys being used to repeat commands that get edited as the
+key times are located.
+
 
 \printindex
 \end{document}
