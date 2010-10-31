@@ -588,12 +588,12 @@ plot(adp, which=1:2,
      adorn=expression({
        lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green') }))
 @
-produce a plot (Figure~\ref{fig:adp}) of ADP measurements made
-during St Lawrence Estuary Internal Wave Experiment.
+produce Figure~\ref{fig:adp}, showing currents made
+in the St Lawrence Estuary Internal Wave Experiment.
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.8\textwidth}
-<<label=adpfig ,fig=TRUE, width=12, height=7, echo=FALSE>>=
+\setkeys{Gin}{width=\textwidth}
+<<label=adpfig ,fig=TRUE, width=8, height=5, echo=FALSE>>=
 <<adpplot>>
 @
 \end{center}
@@ -614,34 +614,29 @@ arises in that work, but the author would also be happy to add other data types
 that are likely to prove useful to the Oceanographic community.  (The data types
 need not be restricted to Physical Oceanography, but the author will need some
 help in dealing with other types of data, given his research focus.)
-
-As for algorithms, there are plenty of gaps in \verb@oce@.  Dealing
-with measurements of turbulence is a high priority for the author, for
-example, as is improving the functions for processing data from
-pressure-temperature sensors and acoustic Doppler current profilers.
-
 Two principles will guide the addition of data types and functions:
 (a) the need, as perceived by the author or by other contributors and
 (b) the ease with which the additions can be made.
 
+% As for algorithms, there are plenty of gaps in \verb@oce@.  Dealing
+% with measurements of turbulence is a high priority for the author, for
+% example, as is improving the functions for processing data from
+% pressure-temperature sensors and acoustic Doppler current profilers.
+
+
 \section{Development website}
 
-The site \url{http://code.google.com/p/r-oce/} provides a window on the
+The site \url{http://github.com/dankelley/oce} provides a window on the
 development that goes on between the CRAN releases of the package. Please visit
 the site to report bugs, to suggest new features, or just to see how \verb@oce@
-development is coming along.
-
-Oce versions are only made official, i.e. released to the CRAN package system,
-when they are considered to be of a high quality.  However, you may also get the
-bleeding-edge version from the development website, perhaps to see whether the
-author has successfully addressed a deficiency that you reported.  You will need
-to have subversion installed on you machine, and then can do e.g.
-
-\verb@svn checkout http://r-oce.googlecode.com/svn/trunk/ -r 835 r-oce-read-only@
-
-\noindent to retrieve the intermediate version number 835. Naturally, you should
-rename the directory from \verb@r-oce-read-only@ to \verb@oce@ before attempting
-to check, build, or install the package.
+development is coming along.  Note that the \verb@development@ branch is used by
+the author in his work, and is updated so frequently that it must be considered
+unstable, at least in those spots being changed on a given day.  Every week or
+so, as the \verb@development@ branch stabilizes, the changes are merged back
+into the \verb@master@ branch.  Official CRAN releases derive from the
+\verb@master@ branch, and are done when the code is considered to be of
+reasonable stability and quality.  This is all in a common pattern for
+open-source software.
 
 %\begin{center}
 %\vspace{2cm}
