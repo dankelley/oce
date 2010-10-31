@@ -548,7 +548,7 @@ The commands
 <<label=ptplot,eval=FALSE>>=
 library(oce)
 data(ptr)
-plot(ptr, use.smoothScatter=TRUE)
+plot(ptr)
 @
 produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
 measurements made during St Lawrence Estuary Internal Wave Experiment, a
