@@ -398,7 +398,7 @@ data(a03)
 Gulf.Stream <- subset(a03, indices=124:102)
 Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 1600, 25))
 data(coastline.world)
-plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
+plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-85,-(64+13/60)))
 @
 produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was
 travelling westward from the Mediterranean towards North America, taking 124
@@ -410,12 +410,13 @@ right angles.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=1\textwidth}
-<<label=sectionfiga03,fig=TRUE,width=9, height=5, echo=FALSE>>=
+<<label=sectionfiga03,fig=TRUE,width=8, height=9.5, echo=FALSE>>=
 <<sectionplota03>>
 @
 \end{center}
 \caption{\label{fig:sectiona03}
-Portion of the CTD section designated A03, showing the Gulf Sream region.
+  Portion of the CTD section designated A03, showing the Gulf Sream region.  The
+  square on the cruise track corresponds to zero distance on the sections.
 }
 \end{figure}
 
@@ -444,7 +445,7 @@ plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50),
 @
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.5\textwidth}
+\setkeys{Gin}{width=0.7\textwidth}
 <<label=topofig,fig=TRUE,width=7, height=5, echo=FALSE>>=
 <<topoplot>>
 @
