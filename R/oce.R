@@ -467,11 +467,22 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
             class(rval) <- c("section", "oce")
         } else {                        # subset within the stations
+            subset.string <- deparse(substitute(subset))
+            oce.debug(debug, "subset.string='", subset.string, "'\n")
             rval <- x
-            n <- length(x$data$station)
-            r <- eval(substitute(subset), x$data$station[[1]]$data, parent.frame())
-            for (i in 1:n) {
-                rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
+            if (length(grep("distance", subset.string))) {
+                l <- list(distance=geod.dist(rval))
+                keep <- eval(substitute(subset), l, parent.frame())
+                rval$metadata$latitude <- rval$metadata$latitude[keep]
+                rval$metadata$longitude <- rval$metadata$longitude[keep]
+                rval$metadata$station.id <- rval$metadata$station.id[keep]
+                rval$data$station <- rval$data$station[keep]
+            } else {
+                n <- length(x$data$station)
+                r <- eval(substitute(subset), x$data$station[[1]]$data, parent.frame())
+                for (i in 1:n) {
+                    rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
+                }
             }
         }
         rval$processing.log <- processing.log.add(rval$processing.log,
