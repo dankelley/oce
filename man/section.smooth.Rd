@@ -6,10 +6,13 @@
 
 \description{Smooth a section in the lateral (alpha version that may change)}
 
-\usage{section.smooth(section, debug=getOption("oce.debug"), ...)}
+\usage{section.smooth(section, df, debug=getOption("oce.debug"), ...)}
 
 \arguments{
   \item{section}{a \code{section} object containing the section to be gridded.}
+  \item{df}{optional value for \code{df}, used by
+    \code{\link{smooth.spline}}.  If not supplied, this is set to the
+    number of stations, divided by 5.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.}
   \item{...}{optional arguments to be supplied to \code{\link{smooth.spline}}.}

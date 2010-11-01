@@ -1,4 +1,5 @@
 0.1-82
+- section.smooth(): handle misordered stations
 - improve resolution of coastline.world by a factor of 4 or so
 - section.plot(): avoid a contouring error if two stations at same distance coordinate
 - section.smooth(): improve handling of missing values
