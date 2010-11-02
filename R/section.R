@@ -11,28 +11,69 @@ make.section <- function(item, ...)
         lat[1] <- item$metadata$latitude
         lon[1] <- item$metadata$longitude
         station[[1]] <- item
-        if (num.stations > 1)
+        if (num.stations > 1) {
             for (i in 2:num.stations) {
                 stn[i] <- extra.args[[i-1]]$metadata$station
                 lat[i] <- extra.args[[i-1]]$metadata$latitude
                 lon[i] <- extra.args[[i-1]]$metadata$longitude
                 station[[i]] <- extra.args[[i-1]]
             }
+        }
     } else if (inherits(item, "list")) {
         num.stations <- length(item)
         station <- vector("list", num.stations)
         stn <- vector("character", num.stations)
         lon <- vector("numeric", num.stations)
         lat <- vector("numeric", num.stations)
-        if (num.stations > 1)
+        if (num.stations > 1) {
             for (i in 1:num.stations) {
                 stn[i] <- item[[i]]$metadata$station
                 lat[i] <- item[[i]]$metadata$latitude
                 lon[i] <- item[[i]]$metadata$longitude
                 station[[i]] <- item[[i]]
             }
+        } else {
+            stop("need more than 1 station to make a section")
+        }
+    } else if (class(item) == "character") {
+        num.stations <- length(item)
+        station <- vector("list", num.stations)
+        stn <- vector("character", num.stations)
+        lon <- vector("numeric", num.stations)
+        lat <- vector("numeric", num.stations)
+        if (num.stations <= 1)
+            stop("need more than 1 station to make a section")
+        if (exists(item[1])) {
+            ## ctd objects
+            ##oce.debug(1, "ctd objects\n")
+            for (i in 1:num.stations) {
+                stn[i] <- get(item[[i]])$metadata$station
+                lat[i] <- get(item[[i]])$metadata$latitude
+                lon[i] <- get(item[[i]])$metadata$longitude
+                station[[i]] <- get(item[[i]])
+            }
+        } else {
+            ## ctd filenames
+            ##oce.debug(1, "ctd files\n")
+            for (i in 1:num.stations) {
+                ##oce.debug(1, "file named", item[i], "\n")
+                ctd <- read.ctd(item[i])
+                stn[i] <- ctd$metadata$station
+                lat[i] <- ctd$metadata$latitude
+                lon[i] <- ctd$metadata$longitude
+                station[[i]] <- ctd
+            }
+        }
     } else {
-        stop("first argument must be of class \"ctd\" or a \"list\"")
+        stop("first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
+    }
+    ## order by station number, if possible
+    if (!is.null(stn[1])) {
+        o <- order(as.numeric(stn))
+        stn <- stn[o]
+        lat <- lat[o]
+        lon <- lon[o]
+        station <- station[o]
     }
     data <- list(station=station)
     metadata <- list(section.id="",

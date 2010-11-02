@@ -6,22 +6,24 @@
 
 \usage{
 make.section(item, \dots)
-
 \special{section + station}
 }
 
 \arguments{
-  \item{item}{either a \code{ctd} object, in which case the rest of the
-    arguments are other \code{ctd} objects, or a list of \code{ctd}
-    objects.} 
+  \item{item}{either (1) a \code{ctd} object, in which case the rest of the
+    arguments are other \code{ctd} objects, (2) a list of \code{ctd}
+    objects, (3) a list of names of \code{ctd} objects, or (4) a list of
+    names of files containing \code{ctd} data.}
   \item{\dots}{one or more \code{ctd} objects, either given as separate
     arguments, or a list of such objects.}
   \item{section}{a section to which a station is to be added.}
   \item{station}{a station to be added to a section.}
 }
 
-\details{The \code{ctd} stations must share identical pressure values;
-  use \code{\link{section.grid}} to do that.}
+\details{The stations are stored in order of the station
+  identification number (stored as \code{metadata$station} in the ctd
+  object), if possible.  The \code{ctd} stations must share identical
+  pressure values; use \code{\link{section.grid}} to do that.}
 
 \value{An object of \code{\link[base]{class}} "\code{section}" (for
   details, see \code{\link{read.section}}).}
@@ -41,7 +43,9 @@ summary(section)
 s2 <- make.section(ctd)
 s2 <- s2 + ctd.warmed
 plot(s2)
-
+\dontrun{
+plot(section.smooth(section.grid(make.section(dir("*.csv")))))
+}
 }
 \author{Dan Kelley}
 \keyword{misc}

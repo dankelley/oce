@@ -478,7 +478,7 @@ plot.ctd <- function (x, which = 1:4,
             text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
             yloc <- yloc - d.yloc
             xm <- x$metadata
-            if (!is.null(xm$filename))    	text.item(xm$filename,    " File:     ", cex=cex)
+            if (!is.null(xm$filename) && nchar(xm$filename) > 0)    	text.item(xm$filename,    " File:     ", cex=cex)
             if (!is.null(xm$scientist))	text.item(xm$scientist,   " Scientist:", cex=cex)
             if (!is.null(xm$institute))	text.item(xm$institute,   " Institute:", cex=cex)
             if (!is.null(xm$date))    	text.item(xm$date,        " Date:     ", cex=cex)
@@ -645,7 +645,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         file <- file(file, "r")
         on.exit(close(file))
     } else {
-        filename <- "filename unknown"
+        filename <- ""
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
@@ -867,7 +867,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         file <- file(file, "r")
         on.exit(close(file))
     } else {
-        filename <- "filename unknown"
+        filename <- ""
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
