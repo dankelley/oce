@@ -160,8 +160,8 @@ plot.section <- function(x,
             }
             if (!is.null(coastline)) {
                 if (!is.null(coastline$metadata$fillable) && coastline$metadata$fillable) {
-                    polygon(coastline$data$longitude, coastline$data$latitude, col="lightgray")
-                    polygon(coastline$data$longitude+360, coastline$data$latitude, col="lightgray")
+                    polygon(coastline$data$longitude, coastline$data$latitude, col="lightgray", lwd=3/4)
+                    polygon(coastline$data$longitude+360, coastline$data$latitude, col="lightgray", lwd=3/4)
                 } else {
                     lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
                     lines(coastline$data$longitude + 360, coastline$data$latitude, col="darkgray")
@@ -169,10 +169,10 @@ plot.section <- function(x,
             }
             lines(lon, lat, col="lightgray")
             ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
-            points(lon, lat, pch=20)
-            points(lon - 360, lat, pch=20)
-            points(lon[1], lat[1], pch=22, cex=2*par("cex"))
-            points(lon[1] - 360, lat[1], pch=22, cex=2*par("cex"))
+            points(lon, lat, pch=3, lwd=1/2)
+            points(lon - 360, lat, pch=3, lwd=1/2)
+            points(lon[1], lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
+            points(lon[1] - 360, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
             if (indicate.stations) {
                 dx <- 5 * mean(diff(sort(x$metadata$longitude)),na.rm=TRUE)
                 dy <- 5 * mean(diff(sort(x$metadata$latitude)),na.rm=TRUE)
