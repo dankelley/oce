@@ -639,7 +639,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oce.debug"), log.action, ...)
 {
-    oce.debug(debug, "\b\bread.ctd.woce() {\n") # FIXME: should use readLines to slurp whole file, for speed
+    oce.debug(debug, "\b\bread.ctd.woce() {\n")
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "r")
@@ -755,27 +755,33 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     ##oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "[line737]\n")
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     var.units <- strsplit(line, split=",")[[1]]
-    pressure <- NULL
-    temperature <- NULL
-    salinity <- NULL
-    oxygen <- NULL
-    b <- 1
-    while (TRUE) {
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        if (0 < (r<-regexpr("END_DATA", line)))
+    lines <- readLines(file)
+    nlines <- length(lines)
+    pressure <- vector("numeric", nlines)
+    temperature <- vector("numeric", nlines)
+    salinity <- vector("numeric", nlines)
+    oxygen <- vector("numeric", nlines)
+    b <- 0
+    for (iline in 1:nlines) {
+        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+        if (0 < (length(grep("END_DATA", lines[iline]))))
             break
-        items <- strsplit(line, ",")[[1]]
-        pressure    <- c(pressure,    as.numeric(items[pcol]))
-        salinity    <- c(salinity,    as.numeric(items[Scol]))
-        temperature <- c(temperature, as.numeric(items[Tcol]))
-        oxygen <- c(oxygen, as.numeric(items[Ocol]))
+        items <- strsplit(lines[iline], ",")[[1]]
+        pressure[iline] <- as.numeric(items[pcol])
+        salinity[iline] <- as.numeric(items[Scol])
+        temperature[iline] <- as.numeric(items[Tcol])
+        oxygen[iline] <- as.numeric(items[Ocol])
         if (monitor) {
             cat(".")
-            if (!(b %% 50))
-                cat(b, "\n")
-            b <- b + 1
+            if (!((b+1) %% 50))
+                cat(b+1, "\n")
         }
+        b <- b + 1
     }
+    pressure <- pressure[1:b]
+    temperature <- temperature[1:b]
+    salinity <- salinity[1:b]
+    oxygen <- oxygen[1:b]
     if (monitor)
         cat("\nRead", b-1, "lines of data\n")
     pressure[pressure == missing.value] <- NA
@@ -817,6 +823,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
+.ctd<<-res
     oce.debug(debug, "\b\b} # read.ctd.woce()\n")
     res
 }

@@ -542,7 +542,7 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"),
         for (i in 1:n) {
             p <- section$data$station[[i]]$data$pressure
             dp.list <- c(dp.list, mean(diff(p)))
-            p.max <- max(c(p.max, p))
+            p.max <- max(c(p.max, p), na.rm=TRUE)
         }
         dp <- mean(dp.list, na.rm=TRUE) / 1.5 # make it a little smaller
         pt <- pretty(c(0, p.max), n=min(200, floor(p.max / dp)))
