@@ -823,7 +823,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("ctd", "oce")
-.ctd<<-res
     oce.debug(debug, "\b\b} # read.ctd.woce()\n")
     res
 }
