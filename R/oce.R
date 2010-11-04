@@ -57,8 +57,10 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         ## data$ts (note: 'keep' will be re-used for data$ma)
         ntime <- length(x$data$ts$time)
         keep <- rep(FALSE, ntime)
+        ##oce.debug(debug, "ntime=",ntime, "\n")
         for (w in 1:nstart) {
-            keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time < end[w])
+            ##oce.debug(debug, " start[", w, "]=", format(start[w]), "; end[", w, "]=", format(end[w]), "\n", sep="")
+            keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time <= end[w])
             oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
         }
         if (index.return) {
@@ -73,7 +75,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
             keep.slow <- rep(FALSE, length(x$data$ts.slow$time)) # note that 'keep' is reserved for use with data$ma
             for (w in 1:nstart) {
-                keep <- keep | (start[w] <= res$data$ts.slow$time & res$data$ts.slow$time < end[w])
+                keep.slow <- keep.slow | (start[w] <= res$data$ts.slow$time & res$data$ts.slow$time <= end[w])
                 oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
             }
             if (index.return) {
@@ -433,7 +435,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                     rval$data$ss[[name]] <- x$data$ss[[name]][keep]
                 }
                 for (name in names(x$data$ma)) {
-                    rval$data$ma[[name]] <- x$data$ma[[name]][,keep,]
+                    if (name != "bottom.range" && name != "bottom.velocity") {
+                        oce.debug(debug, "subsetting ma[[", name, "]] by distance\n")
+                        rval$data$ma[[name]] <- x$data$ma[[name]][,keep,]
+                    } else {
+                        oce.debug(debug, "skipping ma[[", name, "]] because it cannot be subsetted by distance\n")
+                    }
                 }
             } else {
                 stop("should express the subset in terms of distance or time")
@@ -460,11 +467,22 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
             class(rval) <- c("section", "oce")
         } else {                        # subset within the stations
+            subset.string <- deparse(substitute(subset))
+            oce.debug(debug, "subset.string='", subset.string, "'\n")
             rval <- x
-            n <- length(x$data$station)
-            r <- eval(substitute(subset), x$data$station[[1]]$data, parent.frame())
-            for (i in 1:n) {
-                rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
+            if (length(grep("distance", subset.string))) {
+                l <- list(distance=geod.dist(rval))
+                keep <- eval(substitute(subset), l, parent.frame())
+                rval$metadata$latitude <- rval$metadata$latitude[keep]
+                rval$metadata$longitude <- rval$metadata$longitude[keep]
+                rval$metadata$station.id <- rval$metadata$station.id[keep]
+                rval$data$station <- rval$data$station[keep]
+            } else {
+                n <- length(x$data$station)
+                r <- eval(substitute(subset), x$data$station[[1]]$data, parent.frame())
+                for (i in 1:n) {
+                    rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
+                }
             }
         }
         rval$processing.log <- processing.log.add(rval$processing.log,

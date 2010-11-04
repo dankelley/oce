@@ -6,7 +6,8 @@
 
 \description{Compute \eqn{\alpha/\beta}{alpha/beta} using McDougall's (1987) algorithm.}
 
-\usage{sw.alpha.over.beta(salinity, temperature=NULL, pressure=NULL, is.theta=FALSE)}
+\usage{sw.alpha.over.beta(salinity, temperature=NULL, pressure=NULL,
+                   is.theta=FALSE)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case

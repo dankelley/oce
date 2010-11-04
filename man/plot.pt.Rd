@@ -2,9 +2,9 @@
 
 \alias{plot.pt}
 
-\title{Plot pT (pressure-temperature) recorder data}
+\title{Plot pt (pressure-temperature) recorder data}
 
-\description{Plot pT temperature-depth recorder data}
+\description{Plot pt temperature-depth recorder data}
 
 \usage{\method{plot}{pt}(x,
      which=1:4, title=deparse(substitute(x)), adorn=NULL,
@@ -12,7 +12,7 @@
      xlab, ylab,
      draw.time.range=getOption("oce.draw.time.range"),
      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
-     use.smoothscatter=FALSE,
+     use.smoothScatter=FALSE,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
      debug=getOption("oce.debug"),
@@ -51,7 +51,7 @@
     as the horizontal axis, indicating whether to abbreviate the second
     time in the time range (e.g. skipping the year, month, day, etc. if
     it's the same as the start time).}
-  \item{use.smoothscatter}{a boolean to cause
+  \item{use.smoothScatter}{a boolean to cause
     \code{\link{smoothScatter}} to be used for profile plots, instead of
     \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
@@ -75,9 +75,9 @@
 }
 
 \examples{
-data(pt)
-plot(pt, which=c(1,3), 
-    adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'),col='red')}))
+data(ptr)
+plot(ptr, which=c(1,3), 
+ adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'))}))
 }
 
 \seealso{See \code{\link{read.pt}} for more information on dealing

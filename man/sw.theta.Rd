@@ -4,9 +4,11 @@
 
 \title{Seawater potential temperature}
 
-\description{Compute \eqn{\theta}{theta}, the potential temperature of seawater. }
+\description{Compute \eqn{\theta}{theta}, the potential temperature of
+  seawater.}
 
-\usage{sw.theta(salinity, temperature=NULL, pressure=NULL, pref=0, method=c("UNESCO1983","Bryden1973"))}
+\usage{sw.theta(salinity, temperature=NULL, pressure=NULL, pref=0,
+         method=c("UNESCO1983","Bryden1973"))}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case

@@ -14,11 +14,12 @@
 \examples{
 \dontrun{
 # How data were created
-beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
-                 from=as.POSIXct("2008-06-26", tz="UTC"), 
-                 to=as.POSIXct("2008-06-27", tz="UTC"),
-                 by="10:00", 
-                 latitude=47.88126, longitude=-69.73433)
+beam <- read.oce(
+  "/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_rdi_2615.000",
+  from=as.POSIXct("2008-06-26", tz="UTC"), 
+  to=as.POSIXct("2008-06-27", tz="UTC"),
+  by="10:00", 
+  latitude=47.88126, longitude=-69.73433)
 xyz <- adp.beam2xyz(beam)
 adp <- adp.xyz2enu(xyz, declination=-18.1)
 }
@@ -37,7 +38,8 @@ par(mfrow=c(1,2))
 plot(adp, which="uv+ellipse+arrow")
 data(coastline.sle)
 # plot local area
-plot(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude), span=50)
+plot(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude),
+  span=50)
 points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
 }
 

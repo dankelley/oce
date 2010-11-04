@@ -24,8 +24,10 @@ library(oce)
 # 1. tidal anomaly
 data(sealevel.tuk)
 tide <- tidem(sealevel.tuk)
-oce.plot.ts(sealevel.tuk$data$time, sealevel.tuk$data$elevation, type='l', ylim=c(-2,5))
-lines(sealevel.tuk$data$time, sealevel.tuk$data$elevation - predict(tide), col="red")
+oce.plot.ts(sealevel.tuk$data$time, sealevel.tuk$data$elevation,
+  type='l', ylim=c(-2,5))
+lines(sealevel.tuk$data$time, sealevel.tuk$data$elevation - predict(tide),
+  col="red")
 abline(h=0, col="red")
 #
 # 2. prediction at specified times
@@ -34,7 +36,8 @@ m <- tidem(sealevel.hal)
 look <- 1:24                          # examine first day
 oce.plot.ts(sealevel.hal$data$time[look], sealevel.hal$data$elevation[look])
 # Notice that t is at a 10-minute interval
-t <- seq(from=sealevel.hal$data$time[1], to=sealevel.hal$data$time[max(look)], by=360)
+t <- seq(from=sealevel.hal$data$time[1], 
+  to=sealevel.hal$data$time[max(look)], by=360)
 lines(t, predict(m,newdata=t), col='red')
 legend("topright", col=c("black","red"),legend=c("data","model"),lwd=1)
 }

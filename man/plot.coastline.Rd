@@ -12,6 +12,7 @@
      mgp=getOption("oce.mgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
      bg,
+     fill='lightgray',
      axes=TRUE,
      expand=1.5,
      debug=getOption("oce.debug"),
@@ -42,6 +43,10 @@
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{bg}{optional colour to be used for the background of the map.
     This comes in handy for drawing insets (see \dQuote{details}).}
+  \item{fill}{colour to be used to fill land regions.  This is ignored
+    unless the coastline object is fillable (e.g. for a "shapefile" read
+    by \code{\link{read.coastline}}).  Set to \code{NULL} to turn off
+    filling.} 
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a

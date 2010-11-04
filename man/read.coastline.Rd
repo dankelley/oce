@@ -1,19 +1,29 @@
 \name{read.coastline}
 
 \alias{read.coastline}
+\alias{read.coastline.shapefile}
 
 \title{Scan a coastline data file}
 
 \description{Read a coastline file in mapgen, matlab, or Splus format}
 
 \usage{
-read.coastline(file, type=c("R","S","mapgen"),
-               debug=getOption("oce.debug"), log.action)}
+read.coastline(file, type=c("R","S","mapgen","shapefile"),
+  debug=getOption("oce.debug"), monitor=FALSE, log.action)
+read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
+  debug=getOption("oce.debug"), monitor=FALSE, log.action)
+
+}
 
 \arguments{
   \item{file}{name of file containing coastline data.}
   \item{type}{type of file, one of "R", "S", or "mapgen"}
   \item{debug}{set to TRUE to print information about the header, etc.}
+  \item{latlim}{range of (signed) latitudes, used only for shapefiles.
+    Regions that do not intersect this range are skipped.}
+  \item{lonlim}{as \code{latlim}, but a signed longitude.}
+  \item{monitor}{print a dot for every coastline segment read (ignored
+    except for reading "shapefile" type)}
   \item{log.action}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}

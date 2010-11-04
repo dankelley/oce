@@ -3,7 +3,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      xlab, ylab,
                      draw.time.range=getOption("oce.draw.time.range"),
                      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
-                     use.smoothscatter=FALSE,
+                     use.smoothScatter=FALSE,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
                      debug=getOption("oce.debug"),
@@ -109,7 +109,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!("type" %in% names(list(...)))) args <- c(args, type="p")
             if (!("cex"  %in% names(list(...)))) args <- c(args, cex=1/2)
             np <- length(x$data$ts$pressure)
-            if (use.smoothscatter) {
+            if (use.smoothScatter) {
                 args <- args[names(args) != "type"]
                 do.call(smoothScatter, args)
             } else {
@@ -331,12 +331,13 @@ pt.patm <- function(x, dp=0.5)
 
 pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oce.debug"))
 {
+    oce.debug(debug, "\b\bpt.trim() {\n")
     if (!inherits(x, "pt")) stop("method is only for pt objects")
     res <- x
     n <- length(x$data$ts$temperature)
-    oce.debug(debug, "pt.trim() working on dataset with", n, "points\n")
+    oce.debug(debug, "dataset has", n, "points\n")
     if (n < 2) {
-        warning("too few data to pt.trim()")
+        warning("too few data to trim pt record")
     } else {
         which.method <- pmatch(method, c("water", "time", "index"), nomatch=0)
         oce.debug(debug, "using method", which.method, "\n")
@@ -370,5 +371,6 @@ pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oce.deb
     res$data$ts$pressure <- res$data$ts$pressure - 10.1325 # remove avg sealevel pressure
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # pt.trim()n")
     res
 }

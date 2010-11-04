@@ -18,25 +18,29 @@
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
+     map.ylim=NULL,
      xtype="distance",
      ytype="depth",
      legend.loc="bottomright",
      adorn=NULL,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
+     debug=getOption("oce.debug"),
      \dots)
 }
 
 \arguments{
   \item{x}{a \code{section} object, e.g. as created by
     \code{\link{make.section}}.}
-  \item{which}{list of desired plot types.  There may be up to four panels in
-    total, and the desired plots are placed in these panels, in
-    reading order. Set \code{which} to 1 to contour temperature, to 2
-    to contour salinity, to 3 to contour sigma.theta, or to 4 to plot
-    a map of station locations.  If only one panel is plotted,
-    \code{par} is not adjusted, which makes it easy to add to the plot
-    with subsequent plotting commands.}
+  \item{which}{list of desired plot types.  There may be up to four
+    panels in total, and the desired plots are placed in these panels,
+    in reading order. Set \code{which=1} or \code{"temperature"} to
+    contour temperature, to \code{2} or \code{"salinity"} to contour
+    salinity, to \code{3} or \code{"sigma.theta"} to contour
+    sigma.theta, or to \code{4} or \code{"map"} to plot a map of station
+    locations.  If only one panel is plotted, \code{par} is not
+    adjusted, which makes it easy to add to the plot with subsequent
+    plotting commands.}
   \item{at}{if \code{NULL} (the default), the x axis will indicate the
     distance of the stations from the first in the section.  (This may
     give errors in the contouring routine, if the stations are not present
@@ -51,13 +55,17 @@
   \item{contour.labels}{if not \code{NULL}, and if a \code{field} was
     specified, this specifies contour labels (see details)}
   \item{station.indices}{optional list of the indices of stations to
-    use.  Note that these are indices, not the names of stations, e.g. to
-    focus on the first 4 stations, use \code{station.numbers=c(1,4)}.}
+    use.  Note that an index is \emph{not} a station number, e.g. to
+    show the first 4 stations, use \code{station.indices=1:4}.}
   \item{coastline}{optional \code{coastline} to be used in a station
     map}
   \item{xlim}{optional limit for x axis (only in sections, not map)}
   \item{ylim}{optional limit for y axis (only in sections, not map)}
   \item{map.xlim}{optional xlim for station location, which can be
+    helpful in ensuring that a recognizable coastline can be seen.
+    (This value is used instead of \code{map.ylim}, if both are
+    supplied.)}
+  \item{map.ylim}{optional ylim for station location, which can be
     helpful in ensuring that a recognizable coastline can be seen}
   \item{xtype}{type of x axis, for contour plots, either
     \code{"distance"} for distance (in km) to the first point in the
@@ -80,6 +88,8 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.}
   \item{\dots}{optional arguments passed to the contouring function,
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }

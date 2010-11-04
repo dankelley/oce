@@ -27,8 +27,8 @@
   \code{EB} command in the RDI setup system), then this will be
   subtracted from the heading, as the file is read.}
 
-\value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
-  and with \code{metadata$oce.orientation} changed from \code{xyz} to
+\value{An object with \code{data$ma$v[,1:3,]} altered appropriately,
+  and \code{metadata$oce.orientation} changed from \code{xyz} to
   \code{enu}.}
 
 \references{RD Instruments, 1998.

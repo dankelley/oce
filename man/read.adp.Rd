@@ -12,19 +12,23 @@
 read.adp(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("rdi", "nortek", "sontek"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("aquadopp high resolution"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("adp"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, \dots)
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  \dots)
 }
 
 \arguments{

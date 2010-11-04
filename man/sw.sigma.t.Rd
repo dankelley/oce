@@ -30,9 +30,9 @@
 
 \value{Quasi-potential density anomaly [kg/m\eqn{^3}{^3}].}
 
-\seealso{Related density routines include: \code{link{sw.rho}}, 
-  \code{link{sw.sigma}}, and
-  \code{link{sw.sigma.theta}}.
+\seealso{Related density routines include: \code{\link{sw.rho}}, 
+  \code{\link{sw.sigma}}, and
+  \code{\link{sw.sigma.theta}}.
 }
 
 \examples{sigma.t <- sw.sigma.t(35, 13, 1000)}

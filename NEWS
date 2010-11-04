@@ -1,3 +1,9 @@
+0.1-82
+- coastline.world: improve resolution by a factor of 4 or so
+- read.ctd.woce(): infer water depth as max(pressure) if it's not in the header
+- section.smooth(): handle misordered stations; handle missing values better
+- plot.section(): allow strings for 'which'; avoid contouring error if two stations at same distance 
+- plot.ctd() and plot.profile(): add 'use.smoothScatter' argument
 0.1-81
 - add despike()
 - add range.limit()

@@ -25,6 +25,8 @@
      latlon.pch=20,
      latlon.cex=1.5,
      latlon.col="red",
+     cex=1,
+     use.smoothScatter=FALSE,
      adorn=NULL,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
@@ -79,6 +81,10 @@
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
+  \item{cex}{size to be used for plot symbols}
+  \item{use.smoothScatter}{boolean, set to \code{TRUE} to use 
+    \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
+    the plot.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, 
@@ -137,9 +143,11 @@ abline(v=130)
 abline(v=350)
 # The range 130 to 350 seems good, but you can narrow in
 # by repeating the command below, with differing ranges.
-plot(ctd.trim(ctd.raw, "range", list(item="index", from=130, to=350)), which=8)
+plot(ctd.trim(ctd.raw, "range",
+  parameters=list(item="index", from=130, to=350)), which=8)
 # See results
-ctd.trimmed <- ctd.trim(ctd.raw, "range", list(item="index", from=130, to=350))
+ctd.trimmed <- ctd.trim(ctd.raw, "range",
+  parameters=list(item="index", from=130, to=350))
 plot(ctd.trimmed)
 }
 \author{Dan Kelley}

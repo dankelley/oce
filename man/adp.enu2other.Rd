@@ -37,8 +37,8 @@
   obeyed, regardless of whether the instrument points up or down,
   because enu coordinates already account for instrument alignment.}
 
-\value{An object with the \code{data$ma$v[,1:3,]} altered appropriately,
- and with \code{metadata$oce.coordinate} changed from \code{enu} to
+\value{An object with code{data$ma$v[,1:3,]} altered appropriately,
+ and \code{metadata$oce.coordinate} changed from \code{enu} to
   \code{other}.}
 
 \examples{

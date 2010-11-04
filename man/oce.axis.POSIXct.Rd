@@ -7,9 +7,11 @@
 \description{Modified version of axis.POSIXct}
 
 \usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE,
-                 draw.time.range=TRUE, abbreviate.time.range=FALSE,
-                 cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), 
-                 main="", debug=getOption("oce.debug"), ...)}
+  draw.time.range=TRUE, abbreviate.time.range=FALSE,
+  cex=par("cex"),
+  cex.axis=par("cex.axis"),
+  cex.main=par("cex.main"), 
+  main="", debug=getOption("oce.debug"), ...)}
 
 \arguments{
   \item{side}{as for \code{\link{axis.POSIXct}}.}

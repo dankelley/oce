@@ -7,17 +7,17 @@
 
 \usage{
 oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="r", grid=TRUE, adorn=NULL,
-            fill=FALSE,
-            xlab="", ylab="", 
-            cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
-            mgp=getOption("oce.mgp"),
-            mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
-            mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
-            type="l",
-            main="",
-            despike=FALSE,
-            debug=getOption("oce.debug"),
-            \dots)}
+  fill=FALSE,
+  xlab="", ylab="", 
+  cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+  mgp=getOption("oce.mgp"),
+  mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
+  mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
+  type="l",
+  main="",
+  despike=FALSE,
+  debug=getOption("oce.debug"),
+  \dots)}
 
 \arguments{
 \item{x}{the times of observations.}

@@ -16,10 +16,10 @@ plot(lobo)
   as noted below (which may not work in the future):
 \preformatted{
 uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
-  "min_date=20090301&max_date=20090401",
-  "&x=date&",
-  "y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
-  "data_format=text",sep="")
+"min_date=20090301&max_date=20090401",
+"&x=date&",
+"y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
+"data_format=text",sep="")
 lobo <- read.lobo(uri)
 save(lobo, file="oce/data/lobo.rda")
 }

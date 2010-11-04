@@ -23,8 +23,8 @@
       2 indicates a cutoff frequency of \code{1/m}, where \code{m} is as
       given below.
       \item \code{"rectangular"} for a flat filter.  (This is just for
-      convenience; \code{\link{kernel}("daniell",....)} would give the
-      same, in kernel form.)
+      convenience.  Note that \code{\link{kernel}("daniell",....)} gives the
+      same result, in kernel form.)
       \code{"hamming"} for a Hamming filter (a raised-cosine that does
       not taper to zero at the ends)
       \item \code{"hann"} (a raised cosine that tapers to zero at the
@@ -71,46 +71,44 @@ legend("topright", lwd=1, col=c("red", "blue"), legend=c("m=5", "m=11"))
 # Power response
 fr <- function(coef, a, b)
 {
-    postpad <- function (x, n)
-    {
-        nx <- length(x)
-        if (n > nx)
-            c(x, rep(0, n - nx))
-        else x[1:n]
-    }
-    n <- 10000
-    omega <- seq(1e-5, pi, length.out=n)
-    if (missing(coef)) {
-        if (missing(a) || missing(b))
-            stop("must give a and b, if coef not given")
-        p <- Mod(fft(postpad(b, 2*n))[1:n] / fft(postpad(a, 2*n))[1:n])^2
-        pp <- p
-    } else {
-        if (class(coef) == "tskernel")
-            coef <- coef[(-coef$m):coef$m]
-        p <- Mod(fft(postpad(coef, 2*n))[1:n])^2 # check if need to double coef
-    }
-    res <- list(f=omega/(2*pi), p=p)
-    class(res) <- "fr"
-    res
+  postpad <- function (x, n)
+  {
+    nx <- length(x)
+    if (n > nx) c(x, rep(0, n - nx)) else x[1:n]
+  }
+  n <- 10000
+  omega <- seq(1e-5, pi, length.out=n)
+  if (missing(coef)) {
+    if (missing(a) || missing(b))
+      stop("must give a and b, if coef not given")
+    p <- Mod(fft(postpad(b, 2*n))[1:n] / fft(postpad(a, 2*n))[1:n])^2
+    pp <- p
+  } else {
+    if (class(coef) == "tskernel")
+      coef <- coef[(-coef$m):coef$m]
+    p <- Mod(fft(postpad(coef, 2*n))[1:n])^2 # check if need to double coef
+  }
+  res <- list(f=omega/(2*pi), p=p)
+  class(res) <- "fr"
+  res
 }
 
 plot.fr <- function(x, add=FALSE, xtype="log", ...)
 {
-    if (add) {
-        lines(log10(x$f), 10*log10(x$p), ...)
-    } else {
-        if (xtype=="log")
-            plot(log10(x$f), 10*log10(x$p), xlab=expression(log[10](frequency)), ylab="dB", type='l', ...)
-        else
-            plot(x$f, 10*log10(x$p), xlab=expression(frequency), ylab="dB", type='l', ...)
-        grid()
-    }
+  if (add) {
+    lines(log10(x$f), 10*log10(x$p), ...)
+  } else {
+     if (xtype=="log")
+       plot(log10(x$f), 10*log10(x$p), xlab=expression(log[10](frequency)), ylab="dB", type='l', ...)
+     else
+       plot(x$f, 10*log10(x$p), xlab=expression(frequency), ylab="dB", type='l', ...)
+    grid()
+  }
 }
 
 make.butterworth <- function(n, W, type, sampling.frequency)
 {
-    butter <- butter(n=n, W=W/(0.5*sampling.frequency), type=type)
+  butter <- butter(n=n, W=W/(0.5*sampling.frequency), type=type)
 }
 
 
@@ -164,8 +162,9 @@ legend("topright", col=c("black", "blue"), lwd=c(2,1), legend=c("Response", "6db
 par(mfrow=c(2,1))
 # library(signal)
 # ab <- make.butterworth(n=2, W=c(0.01,0.1), type="pass", sampling.frequency=1)
-ab <- list(a=c(1,-3.1594633021,3.7926844229,-2.0825733172,0.45044543006),
-           b=c(0.056448462261,0,-0.11289692452,0,0.056448462261))
+ab <- list(
+  a=c(1,-3.1594633021,3.7926844229,-2.0825733172,0.45044543006),
+  b=c(0.056448462261,0,-0.11289692452,0,0.056448462261))
 par(mgp=getOption("oce.mgp"))
 par(mar=c(3,3,1,1))
 plot(fr(a=ab$a, b=ab$b), ylim=c(-20,0), xlim=c(-3, 0))

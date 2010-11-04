@@ -25,8 +25,8 @@
 
 \examples{
 library(oce)
-data(pt)
-s <- summary(pt)
+data(ptr)
+s <- summary(ptr)
 show.fives(s)
 }
 

@@ -253,8 +253,10 @@ is a convenient index for extraction of the downcast portion of the profile by
 an essentially manual method, e.g. proceeding with a sequence of commands such
 as
 <<ctdscaneg,eval=false>>=
-plot.ctd.scan(ctd.trim(ctd.raw, "range", list(item="scan", from=140, to=250)))
-plot.ctd.scan(ctd.trim(ctd.raw, "range", list(item="scan", from=150, to=250)))
+plot.ctd.scan(ctd.trim(ctd.raw, "range",
+                       parameters=list(item="scan", from=140, to=250)))
+plot.ctd.scan(ctd.trim(ctd.raw, "range",
+                       parameters=list(item="scan", from=150, to=250)))
 @
 This is the ``gold standard'' method, which is recommended for detailed
 work. However, for quick work, you may find that the automatic downcast
@@ -396,7 +398,7 @@ data(a03)
 Gulf.Stream <- subset(a03, indices=124:102)
 Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 1600, 25))
 data(coastline.world)
-plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
+plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-85,-(64+13/60)))
 @
 produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was
 travelling westward from the Mediterranean towards North America, taking 124
@@ -408,12 +410,13 @@ right angles.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=1\textwidth}
-<<label=sectionfiga03,fig=TRUE,width=9, height=5, echo=FALSE>>=
+<<label=sectionfiga03,fig=TRUE,width=8, height=9.5, echo=FALSE>>=
 <<sectionplota03>>
 @
 \end{center}
 \caption{\label{fig:sectiona03}
-Portion of the CTD section designated A03, showing the Gulf Sream region.
+  Portion of the CTD section designated A03, showing the Gulf Sream region.  The
+  square on the cruise track corresponds to zero distance on the sections.
 }
 \end{figure}
 
@@ -442,7 +445,7 @@ plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50),
 @
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.5\textwidth}
+\setkeys{Gin}{width=0.7\textwidth}
 <<label=topofig,fig=TRUE,width=7, height=5, echo=FALSE>>=
 <<topoplot>>
 @
@@ -544,20 +547,16 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 The commands
 <<label=ptplot,eval=FALSE>>=
 library(oce)
-data(pt)
-plot(pt)
+data(ptr)
+plot(ptr)
 @
-produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder
-(pt) measurements made during St Lawrence Estuary Internal Wave
-Experiment, a CFCAS-funded research program in which the \texttt{oce}
-author was a principal investigator.  The device was mounted on
-a mooring that tilted significantly with the tide, yielding
-strong tidal signals in pressure as well as temperature, thus
-providing a rough indication of the temperature  profile.
-
-This graph is trimmed of the in-air data; access to the raw data is
-part of a worked example.
-
+produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
+measurements made during St Lawrence Estuary Internal Wave Experiment, a
+CFCAS-funded research program in which the \texttt{oce} author was a principal
+investigator.  The device was mounted on a mooring that tilted significantly
+with the tide, yielding strong tidal signals in pressure as well as temperature,
+thus providing a rough indication of the temperature profile.  Note that this
+graph contains in-air as well as in-water data.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.66\textwidth}
@@ -589,12 +588,12 @@ plot(adp, which=1:2,
      adorn=expression({
        lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='green') }))
 @
-produce a plot (Figure~\ref{fig:adp}) of ADP measurements made
-during St Lawrence Estuary Internal Wave Experiment.
+produce Figure~\ref{fig:adp}, showing currents made
+in the St Lawrence Estuary Internal Wave Experiment.
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.8\textwidth}
-<<label=adpfig ,fig=TRUE, width=12, height=7, echo=FALSE>>=
+\setkeys{Gin}{width=\textwidth}
+<<label=adpfig ,fig=TRUE, width=8, height=5, echo=FALSE>>=
 <<adpplot>>
 @
 \end{center}
@@ -615,34 +614,29 @@ arises in that work, but the author would also be happy to add other data types
 that are likely to prove useful to the Oceanographic community.  (The data types
 need not be restricted to Physical Oceanography, but the author will need some
 help in dealing with other types of data, given his research focus.)
-
-As for algorithms, there are plenty of gaps in \verb@oce@.  Dealing
-with measurements of turbulence is a high priority for the author, for
-example, as is improving the functions for processing data from
-pressure-temperature sensors and acoustic Doppler current profilers.
-
 Two principles will guide the addition of data types and functions:
 (a) the need, as perceived by the author or by other contributors and
 (b) the ease with which the additions can be made.
 
+% As for algorithms, there are plenty of gaps in \verb@oce@.  Dealing
+% with measurements of turbulence is a high priority for the author, for
+% example, as is improving the functions for processing data from
+% pressure-temperature sensors and acoustic Doppler current profilers.
+
+
 \section{Development website}
 
-The site \url{http://code.google.com/p/r-oce/} provides a window on the
+The site \url{http://github.com/dankelley/oce} provides a window on the
 development that goes on between the CRAN releases of the package. Please visit
 the site to report bugs, to suggest new features, or just to see how \verb@oce@
-development is coming along.
-
-Oce versions are only made official, i.e. released to the CRAN package system,
-when they are considered to be of a high quality.  However, you may also get the
-bleeding-edge version from the development website, perhaps to see whether the
-author has successfully addressed a deficiency that you reported.  You will need
-to have subversion installed on you machine, and then can do e.g.
-
-\verb@svn checkout http://r-oce.googlecode.com/svn/trunk/ -r 835 r-oce-read-only@
-
-\noindent to retrieve the intermediate version number 835. Naturally, you should
-rename the directory from \verb@r-oce-read-only@ to \verb@oce@ before attempting
-to check, build, or install the package.
+development is coming along.  Note that the \verb@development@ branch is used by
+the author in his work, and is updated so frequently that it must be considered
+unstable, at least in those spots being changed on a given day.  Every week or
+so, as the \verb@development@ branch stabilizes, the changes are merged back
+into the \verb@master@ branch.  Official CRAN releases derive from the
+\verb@master@ branch, and are done when the code is considered to be of
+reasonable stability and quality.  This is all in a common pattern for
+open-source software.
 
 %\begin{center}
 %\vspace{2cm}
@@ -675,7 +669,8 @@ Although one may argue as to the limits of the pycnocline, for illustration let 
 <<>>=
 library(oce)
 data(ctd)
-pycnocline <- ctd.trim(ctd, "range", list(item="pressure", from=5, to=12))
+pycnocline <- ctd.trim(ctd, "range",
+                       parameters=list(item="pressure", from=5, to=12))
 plot.profile(pycnocline, type="density+N2")
 @
 and another is
@@ -753,39 +748,25 @@ mtext("M2",at=1/12.42,side=3)
 
 \workedanswer{7}{Pressure-temperature Recorder plot}
 \index{subset!using with pt data}
-\index{data!TDR}
+\index{data!tdr}
 
-The accuracy of automatic removal of the atmospheric component done with
-\verb@pt.trim()@ is often quite good, but data are so valuable that it always
-makes sense to investigate the data by eye, in order to select a time window.
-Manual selection of a time window is also important when a researcher is dealing
-with a set of instruments whose measuremnts are to be combined and so need a
-uniform time base (e.g. to make a matrix to be contoured).
+The accuracy of automatic removal of the atmospheric component done
+with \verb@pt.trim()@ can be quite good if the instrument has recorded
+in the air at the start and end of the record.  Even so, it always
+makes sense to investigate the data by eye, in order to select a time
+window.  Manual selection of a time window is also important when a
+researcher is dealing with a set of instruments whose measuremnts are
+to be combined and so need a uniform time base (e.g. to make a matrix
+to be contoured).
 
-In the code, the automatic method is used first, and then a series of time
-indicators is drawn on the plot, to determine proper cutoff times.
-
-Hint: be careful on timezones!
+The best plan is simply to plot the data interactively, and then to
+narrow in on start and end times by plotting trial values, e.g.
 <<>>=
-library(oce)
-data(pt)
-# First, get an idea for the data
-plot(pt, which=c(1,3))
-
-ptt <- pt.trim(pt)
-plot(ptt)
-print(range(ptt$data$ts$time)) # gives a starting point
 abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
-abline(v=as.POSIXct("2008-06-26 00:00:00"),col="red")
-abline(v=as.POSIXct("2008-06-25 15:00:00"),col="red")
-abline(v=as.POSIXct("2008-07-04 00:00:00"),col="blue")
-abline(v=as.POSIXct("2008-07-05 10:00:00"),col="blue")
-abline(v=as.POSIXct("2008-07-04 12:00:00"),col="blue")
-
-ptt <- subset(pt, as.POSIXct("2008-07-01 00:00:00") <= time & time <= as.POSIXct("2008-07-02 00:00::00"))
-ptt <- oce.edit(ptt, action="x$data$ts$pressure <- x$data$ts$pressure - 10.2", reason="remove atm pressure", person="DK")
-plot(ptt)
 @
+with arrow keys being used to repeat commands that get edited as the
+key times are located.
+
 
 \printindex
 \end{document}

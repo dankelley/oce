@@ -41,12 +41,13 @@ lines(sealevel.tuk$data$time, detided, col="red")
 # Note: the data file is not supplied with the package,
 # and the 7h offset is to convert from Mountain Standard Time.
 tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
-time <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT")+7*3600, tz="GMT")
+time <- as.POSIXlt(
+  strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT") + 7*3600, tz="GMT")
 eta <- tuk$V2
 sealevel.tuk <- as.sealevel(eta=eta, time=time,
-                            station.name="Tuktoyaktuk", region="NWT", station.number=6485,
-                            longitude=133.0292, latitude=69.43889,
-                            year=1975, GMT.offset=0)
+  station.name="Tuktoyaktuk", region="NWT", station.number=6485,
+  longitude=133.0292, latitude=69.43889,
+  year=1975, GMT.offset=0)
 #save(sealevel.tuk, file="oce/data/sealevel.tuk.rda")
 } % preformatted
 } % source

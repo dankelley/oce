@@ -28,7 +28,8 @@
 \value{Value in 1/psu.}
 
 \examples{
-sw.beta(40, 10, 4000, is.theta=TRUE)  # 0.72088e-3 (from p1964 of McDougall 1987)
+# 0.72088e-3 (from p1964 of McDougall 1987)
+sw.beta(40, 10, 4000, is.theta=TRUE)  
 }
 
 \references{McDougall, T.J. 1987. "Neutral Surfaces" Journal of Physical

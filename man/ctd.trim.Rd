@@ -2,8 +2,8 @@
 \alias{ctd.trim}
 \title{Trim start/end portions of a CTD cast}
 \description{Trim start/end portions of a CTD cast.}
-\usage{ctd.trim(x, method=c("downcast","index","range"), parameters,
-         debug=getOption("oce.debug"))}
+\usage{ctd.trim(x, method=c("downcast","index","range"), 
+  infer.water.depth=TRUE, parameters, debug=getOption("oce.debug"))}
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{method}{Various methods exist, some of which use parameters:
@@ -18,7 +18,7 @@
 	    data with negative pressures are deleted.  If there is a
 	    parameter named \code{pmin}, then that pressure (in
 	    decibars) is used instead as the lower limit.  This is a
-	    commonly-used setup, e.g. \code{ctd2 <- ctd.trim(ctd,
+	    commonly-used setup, e.g. \code{ctd.trim(ctd,
 	    parameters=list(pmin=1))} removes the top decibar
 	    (roughly 1m) from the data.}
 	  \item{Step 3.}{The maximum pressure is determined, and data
@@ -42,12 +42,16 @@
         lower limit) and \code{parameters$to} (the upper limit)
         By critical value: select if the named column exceeds the value.
 	For example, \code{ctd2 <- ctd.trim(ctd, "range",
-          list(item="scan", from=5))} 
+          parameters=list(item="scan", from=5))} 
 	starts at scan number 5 and continues to the end,
-	while \code{ctd3 <- ctd.trim(ctd, "range", list(item="scan",from=5,to=100))}
-	also starts at scan 5, but extends only to scan 100.}
+	while
+        \code{ctd.trim(ctd,"range",parameters=list(item="scan",from=5,to=100))} 	also starts at scan 5, but extends only to scan 100.}
     }
   }
+  \item{infer.water.depth}{boolean, set to \code{TRUE} if the water
+    depth (\code{metadata$water.depth}) is to be determined from the
+    maximum of the trimmed pressure.  (This is ignored if the original
+    data file contained the water depth in the header.)}
   \item{parameters}{A list whose elemetns depend on the method; see above.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 

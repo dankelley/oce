@@ -8,8 +8,9 @@
   instead of Temperature.}
 
 \usage{
-resizable.label(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"),
-                axis=c("x", "y"))}
+resizable.label(item=c("S", "T", "p", "z", "distance",
+  "heading", "pitch", "roll"),
+  axis=c("x", "y"))}
 
 \arguments{
   \item{item}{code for the label.}

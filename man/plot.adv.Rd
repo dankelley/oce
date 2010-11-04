@@ -121,10 +121,9 @@
 \examples{
 \dontrun{
 library(oce)
-adv <- read.oce("/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr",
-               from=as.POSIXct("2008-07-01"),
-               to=as.POSIXct("2008-07-02"),
-               by="00:05:00")
+adv <- read.oce(
+ "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr",
+  from=as.POSIXct("2008-07-01"), to=as.POSIXct("2008-07-02"), by="00:05:00")
 plot(adv)
 }
 }

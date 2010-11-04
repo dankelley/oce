@@ -19,7 +19,8 @@ library(oce)
 f <- file("~/data/etopo5.dat", "rb")
 nx <- 12 * 360
 ny <- 12 * 180
-d <- t(matrix(readBin(f, "integer", size=2, endian="big", n=nx*ny), byrow=TRUE, nrow=ny))
+d <- t(matrix(readBin(f, "integer", size=2, endian="big", n=nx*ny), 
+              byrow=TRUE, nrow=ny))
 z <- d[seq(1, nx, by=6), seq(ny, 1, by=-6)]
 topo.world  <- as.topo(seq(0.25,359.75,1/2),seq(-89.75,89.75,1/2),z)
 }
