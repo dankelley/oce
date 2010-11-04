@@ -618,7 +618,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
             open(file, "r")
             on.exit(close(file))
         }
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
+        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
         pushBack(line, file)
         if ("CTD" == substr(line, 1, 3))              type <- "WOCE"
         else if ("* Sea-Bird" == substr(line, 1, 10)) type <- "SBE19"
@@ -671,7 +671,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     conductivity.standard <- 4.2914
     ## http://www.nodc.noaa.gov/woce_V2/disk02/exchange/exchange_format_desc.htm
     ## First line
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
+    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, but just one line
     oce.debug(debug, paste("examining header line '",line,"'\n"))
     header <- line
     ## CTD, 20000718WHPOSIOSCD
@@ -684,7 +684,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                                         # Kludge: recognize some institutes
     if (0 < regexpr("SIO", diw)) institute <- "SIO"
     while (TRUE) {
-        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
+        line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # slow, for perhaps 20 lines of header
         oce.debug(debug, paste("examining header line '",line,"'\n"))
         if ((0 < (r<-regexpr("FILE_NAME", line)))) {
             ##  #CTDFILE_NAME:     KB51D003.WCT
@@ -763,7 +763,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     oxygen <- vector("numeric", nlines)
     b <- 0
     for (iline in 1:nlines) {
-        #line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
         if (0 < (length(grep("END_DATA", lines[iline]))))
             break
         items <- strsplit(lines[iline], ",")[[1]]

@@ -37,7 +37,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     }
     metadata <- list(filename=filename)
     ## Examine the first line of the file, to get serial number, etc.
-    items <- scan(file, "character", nlines=1, sep="\t", quiet=TRUE)
+    items <- scan(file, "character", nlines=1, sep="\t", quiet=TRUE) # slow, but just one line
     oce.debug(debug, "line 1 contains: ", paste(items, collapse=" "), "\n")
     metadata$manufacturer <- "interocean"
     metadata$instrument.type <- "s4"
@@ -50,7 +50,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## row number is 1, 2, and then 3.  These first rows give us the time
     ## sequence.
     for (skip in 2:20) {
-        items <- scan(file, "character",nlines=1,sep="\t", quiet=TRUE)
+        items <- scan(file, "character",nlines=1,sep="\t", quiet=TRUE) # slow, but just 20 lines, max
         oce.debug(debug, "line", skip, "contains: ", paste(items, collapse=" "), "\n")
         if (items[1] == "1") {
             #start.day <- strptime("6/25/2008","%m/%d/%Y", tz=tz)

@@ -166,7 +166,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
         data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
         res <- list(data=data, metadata=list(fillable=FALSE), processing.log=log.item)
     } else if (type == "mapgen") {
-        header <- scan(file, what=character(0), nlines=1, quiet=TRUE);
+        header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oce.debug(debug, "method is mapgen\nheader:", header, "\n")
         separator <- NULL
                                         # mapgen    # -b
@@ -180,13 +180,13 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
                                         #   ...
                                         #   END
         if (all.equal(header, c("#","-b"))) {
-            lonlat <- scan(file,what=double(0),na.strings=c("#","-b"), quiet=TRUE)
+            lonlat <- scan(file,what=double(0),na.strings=c("#","-b"), quiet=TRUE) # slow, but just one line
         } else {
             if (all.equal(header, c("nan","nan"))) {
-                lonlat <- scan(file,what=double(0),na.strings=c("nan","nan"), quiet=TRUE)
+                lonlat <- scan(file,what=double(0),na.strings=c("nan","nan"), quiet=TRUE) # fast because whole file
             } else {
                 if (all.equal(header, c("NA","NA"))) {
-                    lonlat <- scan(file,what=double(0), quiet=TRUE)
+                    lonlat <- scan(file,what=double(0), quiet=TRUE) # fast because whole file
                 } else {
                     stop(cat("Unknown file type; the unrecognized header line is '",header,"'\n",sep=" "))
                 }
