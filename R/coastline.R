@@ -125,7 +125,7 @@ plot.coastline <- function (x,
         ##opin <- par("pin")
         oce.debug(debug, "inside pin=", par("pin"), " yaxp=",yaxp,"\n")
         yscale <- 180 / (yaxp[2] - yaxp[1])
-        oce.debug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
+        ##oce.debug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
         ##        par(pin=c(opin[1], yscale*opin[2]))
         if (!is.null(fill) && !is.null(x$metadata$fillable) && x$metadata$fillable)
             polygon(x$data$longitude, x$data$latitude, col=fill, ...)

@@ -21,7 +21,7 @@ plot.topo <- function(x,
     oce.debug(debug, "\b\bplot.topo() {\n")
 
     opar <- par(no.readonly = TRUE)
-#    on.exit(par(opar))
+    ##on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
 
@@ -68,9 +68,6 @@ plot.topo <- function(x,
     if (!is.null(dots$xlim) && !is.null(dots$ylim)) {
         xr <- dots$xlim
         yr <- dots$ylim
-    } else {
-        xr <- range(x$data$longitude)
-        yr <- range(x$data$latitude)
     }
 
     ## The following is a somewhat provisional hack, to get around a
@@ -78,7 +75,7 @@ plot.topo <- function(x,
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
     oce.debug(debug, "par('pin')=",par('pin'), "asp=",asp,"asp.page=", asp.page, "\n")
-    if (asp < asp.page) {               # FIXME: this seems to have x and y mixed up (asp=dy/dx)
+    if (asp > asp.page) {               # FIXME: this seems to have x and y mixed up (asp=dy/dx)
         oce.debug(debug, "type 1 (will narrow x range)\n")
         d <- asp / asp.page * diff(xr)
         xr <- mean(xr) + d * c(-1/2, 1/2)
@@ -233,7 +230,9 @@ if (0){
         legend(legend.loc, lwd=lwd[o], lty=lty[o],
                bg="white", legend=legend[o], col=col[o])
     }
-   oce.debug(debug, "\b\b} # plot.topo()\n")
+    if (debug && !missing(center))
+        points(center[2],center[1],cex=10,col='red')
+    oce.debug(debug, "\b\b} # plot.topo()\n")
 }
 
 read.topo <- function(file, log.action, ...)
