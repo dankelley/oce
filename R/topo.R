@@ -1,5 +1,8 @@
 plot.topo <- function(x,
                       xlab="", ylab="",
+                      asp,
+                      center, span,
+                      expand=1.5,
                       water.z,
                       water.col,
                       water.lty,
@@ -9,74 +12,154 @@ plot.topo <- function(x,
                       land.lty,
                       land.lwd,
                       legend.loc="topright",
-                      asp,
                       mgp=getOption("oce.mgp"),
                       mar=c(mgp[1]+1,mgp[1]+1,1,1),
-                      debug=FALSE,
+                      debug=getOption("oce.debug"),
                       ...)
 {
     if (!inherits(x, "topo")) stop("method is only for topo objects")
+    oce.debug(debug, "\b\bplot.topo() {\n")
+
     opar <- par(no.readonly = TRUE)
 #    on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
-    if (missing(asp)) {
-        if ("ylim" %in% names(dots))
-            asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
-        else
-            asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+
+    ######
+    gave.center <- !missing(center)
+    gave.span <- !missing(span)
+    if (gave.center != gave.span)
+        stop("must give both 'center' and 'span', or neither one")
+    if (gave.center) {
+        if (length(center) != 2)
+            stop("'center' must contain two values, latitude in deg N and longitude in deg E")
+        if (!missing(asp))
+            warning("argument 'asp' being ignored, because argument 'center' was given")
+        asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
+        yr <- center[1] + span * c(-1/2, 1/2) / 111.11
+        xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
+        oce.debug(debug, "gave center; calculated xr=",xr," yr=", yr, " asp=", asp, "\n")
+    } else {
+        if (missing(asp)) {
+            if ("ylim" %in% names(dots))
+                asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
+            else
+                asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+        }
+        ## Expand
+        xr0 <- range(x$data$longitude, na.rm=TRUE)
+        yr0 <- range(x$data$latitude, na.rm=TRUE)
+        oce.debug(debug, "xr0=", xr0, "\n")
+        oce.debug(debug, "yr0=", yr0, "\n")
+        if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
+            xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
+            yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
+        } else {
+            xr <- xr0
+            yr <- yr0
+        }
     }
     zr <- range(x$data$z, na.rm=TRUE)
-
+    if (gave.center && !is.null(dots$xlim))
+        stop("cannot give 'xlim' argument if the 'center' argument was given")
+    if (gave.center && !is.null(dots$ylim))
+        stop("cannot give 'ylim' argument if the 'center' argument was given")
     ## auto-scale based on data in window, if window provided
     if (!is.null(dots$xlim) && !is.null(dots$ylim)) {
-        xf <- (dots$xlim[1] <= x$data$longitude) & (x$data$longitude <= dots$xlim[2])
-        yf <- (dots$ylim[1] <= x$data$latitude) & (x$data$latitude <= dots$ylim[2])
-        zr <- range(x$data$z[xf, yf], na.rm=TRUE)
+        xr <- dots$xlim
+        yr <- dots$ylim
     } else {
-        zr <- range(x$data$z, na.rm=TRUE)
+        xr <- range(x$data$longitude)
+        yr <- range(x$data$latitude)
     }
 
-    ## kludge to prevent whitespace above/below or to the left/right
-    ## of plots, and also to prevent going past the poles
-    lat.range <- range(x$data$latitude, na.rm=TRUE)
+    ## The following is a somewhat provisional hack, to get around a
+    ## tendency of plot() to produce latitudes past the poles.
+    ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
+    asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
+    oce.debug(debug, "par('pin')=",par('pin'), "asp=",asp,"asp.page=", asp.page, "\n")
+    if (asp < asp.page) {               # FIXME: this seems to have x and y mixed up (asp=dy/dx)
+        oce.debug(debug, "type 1 (will narrow x range)\n")
+        d <- asp / asp.page * diff(xr)
+        xr <- mean(xr) + d * c(-1/2, 1/2)
+        oce.debug(debug, "xr narrowed to:", xr, "\n")
+        ## xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
+    } else {
+        oce.debug(debug, "type 2 (will narrow y range)\n")
+        d <- asp / asp.page * diff(yr)
+        yr <- mean(yr) + d * c(-1/2, 1/2)
+        oce.debug(debug, "yr narrowed to:", yr, "\n")
+        ##yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
+    }
+
+    oce.debug(debug, "xr:", xr, "(before trimming)\n")
+    oce.debug(debug, "yr:", yr, "(before trimming)\n")
+#    if (xr[1] < -180) xr[1] <- -180
+#    if (xr[2] >  180) xr[2] <- 180
+    if (yr[1] < -90)  yr[1] <- -90
+    if (yr[2] >  90)  yr[2] <-  90
+    oce.debug(debug, "xr:", xr, "(after trimming)\n")
+    oce.debug(debug, "yr:", yr, "(after trimming)\n")
+
+    ## Data may not extend across plot region
     lon.range <- range(x$data$longitude, na.rm=TRUE)
-    plot(lon.range, lat.range, asp=asp, xaxs="i", yaxs="i", type="n",
-         xlab=xlab, ylab=ylab, axes=FALSE, ...)
+    lat.range <- range(x$data$latitude, na.rm=TRUE)
+    if (xr[1] < lon.range[1]) xr[1] <- lon.range[1]
+    if (xr[2] > lon.range[2]) xr[2] <- lon.range[2]
+    if (yr[1] < lat.range[1]) yr[1] <- lat.range[1]
+    if (yr[2] > lat.range[2]) yr[2] <- lat.range[2]
 
-    ## Kludge to prevent latitudes beyond poles
-    usr <- par("usr")
-    if (usr[3] < -90) usr[3] <- -90
-    if (usr[4] > 90) usr[4] <- 90
-    if (usr[3] < lat.range[1]) usr[3] <- lat.range[1]
-    if (usr[4] > lat.range[2]) usr[4] <- lat.range[2]
-    if (usr[1] < lon.range[1]) usr[1] <- lon.range[1]
-    if (usr[2] > lon.range[2]) usr[2] <- lon.range[2]
+    plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
+    if (debug > 0)
+        points(xr, yr, col="blue", pch=20, cex=3)
 
-    lines(usr[1:2], rep(usr[3],2))
-    lines(usr[1:2], rep(usr[4],2))
-    lines(rep(usr[1],2), usr[3:4])
-    lines(rep(usr[2],2), usr[3:4])
+    xr.pretty <- pretty(xr)
+    yr.pretty <- pretty(yr)
+    oce.debug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
+    oce.debug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
 
-    xlab <- pretty(usr[1:2])
-    oce.debug(debug, "xlab=", xlab, "\n")
-    oce.debug(debug, "lon.range=", lon.range, "\n")
-    xlab[xlab > lon.range[2]] <- NA
-    xlab[xlab < lon.range[1]] <- NA
-    oce.debug(debug, "xlab=", xlab, "after trimming\n")
-    axis(1, at=xlab, pos=usr[3])
-    axis(3, at=xlab, pos=usr[4], labels=FALSE)
+if (0){
+    if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
+        yr.pretty <- seq(-90, 90, 45)
+    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1])
+    yr.pretty <- subset(yr.pretty, yr.pretty <= yr[2])
+    if (!(min(xr.pretty) > 0 && max(xr.pretty) < 360))
+        xr.pretty <- seq(0, 360, 45)
+    oce.debug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
+    oce.debug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
+}
 
-    ylab <- pretty(usr[3:4])
-    ylab[abs(ylab) > 90] <- NA
-    ylab[ylab > lat.range[2]] <- NA
-    ylab[ylab < lat.range[1]] <- NA
-    axis(2, at=ylab, pos=usr[1])
-    axis(4, at=ylab, pos=usr[2], labels=FALSE)
 
-    contour(x$data$longitude, x$data$latitude, x$data$z,
+    oce.debug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
+    oce.debug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
+    xr.pretty <- subset(xr.pretty, xr.pretty >= xr[1] & xr.pretty <= xr[2])
+    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1] & yr.pretty <= yr[2])
+    oce.debug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
+    oce.debug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
+
+    lines(c(xr[1], xr[2], xr[2], xr[1], xr[1]), c(yr[1], yr[1], yr[2], yr[2], yr[1])) # axis box
+    axis(1, at=xr.pretty, pos=yr[1])
+    axis(3, at=xr.pretty, pos=max(yr), labels=FALSE)
+    axis(2, at=yr.pretty, pos=xr[1])
+    axis(4, at=yr.pretty, pos=max(xr), labels=FALSE)
+
+    oce.debug(debug, "xr=", xr, "yr=",yr,"\n")
+    yaxp <- par("yaxp")
+    oce.debug(debug, "par(yaxp)",par("yaxp"),"\n")
+    oce.debug(debug, "par(pin)",par("pin"),"\n")
+
+    ## need to clip because contour() does not do so
+    xclip <- x$data$longitude < xr[1] | xr[2] < x$data$longitude
+    yclip <- x$data$latitude < yr[1] | yr[2] < x$data$latitude
+    xx <- x$data$longitude[!xclip]
+    yy <- x$data$latitude[!yclip]
+    zz <- x$data$z[!xclip, !yclip]
+    zr <- range(zz)
+
+    contour(xx, yy, zz,
             levels=0, drawlabels=FALSE, add=TRUE,
             col="black")                # coastline is always black
+
     legend <- lwd <- lty <- col <- NULL
     if (zr[1] < 0) {
         if (missing(water.z)) {
@@ -110,7 +193,8 @@ plot.topo <- function(x,
         lwd    <- c(lwd,    water.lwd)
         lty    <- c(lty,    water.lty)
         col    <- c(col,    water.col)
-        contour(x$data$longitude, x$data$latitude, x$data$z,
+        #contour(x$data$longitude, x$data$latitude, x$data$z,
+        contour(xx, yy, zz,
                 levels=water.z, lwd=water.lwd, lty=water.lty, col=water.col,
                 drawlabels=FALSE, add=TRUE, ...)
     }
@@ -139,7 +223,7 @@ plot.topo <- function(x,
             lwd    <- c(lwd,    land.lwd)
             lty    <- c(lty,    land.lty)
             col    <- c(col,    land.col)
-            contour(x$data$longitude, x$data$latitude, x$data$z,
+            contour(xx, yy, zz,
                     levels=land.z, lwd=land.lwd, lty=land.lty, col=land.col,
                     drawlabels=FALSE, add=TRUE, ...)
         }
@@ -149,6 +233,7 @@ plot.topo <- function(x,
         legend(legend.loc, lwd=lwd[o], lty=lty[o],
                bg="white", legend=legend[o], col=col[o])
     }
+   oce.debug(debug, "\b\b} # plot.topo()\n")
 }
 
 read.topo <- function(file, log.action, ...)
