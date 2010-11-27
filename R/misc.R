@@ -561,8 +561,9 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
 
 coriolis <- function(lat, degrees=TRUE)
 {
+    ## Siderial day 86164.1 s.
     if (degrees) lat <- lat * 0.0174532925199433
-    1.4544410433286078e-4 * sin(lat)
+    1.458423010785138e-4 * sin(lat)
 }
 
 undrift.time <- function(x, slow.end = 0, tname="time")
