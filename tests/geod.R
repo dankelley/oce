@@ -9,7 +9,7 @@ stopifnot(all.equal(xy$x,     0, 1e-4))
 stopifnot(all.equal(xy$y, 111.1, 1e-3))
 
 f <- coriolis(45)
-stopifnot(all.equal.numeric(f, 1.028445e-4, 1e-6))
+stopifnot(all.equal.numeric(f, 1.031261e-4, 1e-6))
 
 g <- gravity(45)
 stopifnot(all.equal.numeric(g, 9.8, 1e-2))
