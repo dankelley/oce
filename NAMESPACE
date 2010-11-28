@@ -93,6 +93,7 @@ export(
        processing.log.summary,
        pt.patm,
        pt.trim,
+       pwelch,
        rangelimit,
        read.adp,
        read.adp.rdi,
