@@ -11,6 +11,7 @@ export(
        as.topo,
        as.windrose,
        draw.isopycnals,
+       adp.2enu,
        adp.beam2xyz,
        adp.xyz2enu,
        adp.enu2other,

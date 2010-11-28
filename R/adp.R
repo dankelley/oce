@@ -686,6 +686,23 @@ plot.adp <- function(x,
     }
 }
 
+adp.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
+{
+    oce.debug(debug, "\b\badp.2enu() {\n")
+    coord <- x$metadata$oce.coordinate
+    if (coord == "beam") {
+        x <- adp.xyz2enu(adp.beam2xyz(x, debug=debug-1), declination=declination, debug=debug-1)
+    } else if (coord == "xyz") {
+        x <- adp.xyz2enu(x, declination=declination, debug=debug-1)
+    } else if (coord == "enu") {
+        ;
+    } else {
+        warning("adp.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
+    }
+    oce.debug(debug, "\b\b} # adp.2enu()\n")
+    x
+}
+
 adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
 {
     if (!inherits(x, "adp")) stop("method is only for adp objects")
