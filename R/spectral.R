@@ -59,13 +59,28 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype,
     while (end < (x.len - window.len)) {
         oce.debug(debug, "start:end = ", start, ":", end, "\n")
         xx <- ts(window * x[start:end], frequency=fs)
-        spectrum <- spectrum(xx, plot=FALSE) # FIXME: check the args!
-        psd <- c(psd, spectrum$spec) # FIXME: this is slow; should pre-allocate
+        ##f <- fft(xts)
+        ##power <- abs(f * Conj(f)) / x.len / fs # avoid fanciness
+        s <- spectrum(xx, plot=FALSE, taper=FALSE)
+        if (nrow == 0)
+            freq <- s$freq
+        psd <- c(psd, s$spec)
         start <- start + step
         end <- end + step
         nrow <- nrow + 1
     }
     psd <- matrix(psd, nrow=nrow, byrow=TRUE)
-    list(freq=spectrum$freq, spec=apply(psd, 2, mean), nwindow=nrow)
+    list(freq=freq, spec=apply(psd, 2, mean), nwindow=nrow)
 }
+
+##n<-4;source('R/spectral.R');w<-pwelch(xts,window=n,debug=2);sum(w$spec)/var(xts);spectrum(xts,spans=c(5,3),log='no',main='');lines(w$freq,w$spec,col='red')
+
+
+## power <- f * Conj(f) / x.len / fs
+##
+## (sum(abs(power)) / length(power))
+## [1] 487.0991
+##
+## sum(xts^2)
+## [1] 487.0991
 
