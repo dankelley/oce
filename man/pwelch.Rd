@@ -28,7 +28,7 @@
   \item{esttype}{not used (yet)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.}
-  \item{dots}{optional extra arguments to be passed to
+  \item{\dots}{optional extra arguments to be passed to
     \code{\link{spectrum}}. Unless specified in this list,
     \code{\link{spectrum}} is called with \code{plot=FALSE} to prevent
     plotting the separate spectra, and with \code{taper=0}, 
