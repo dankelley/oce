@@ -45,14 +45,13 @@ Fs <- 1000
 t <- seq(0, 0.296, 1/Fs)
 x <- cos(2 * pi * t * 200) + rnorm(n=length(t))
 xts <- ts(x, frequency=Fs)
-s <- spectrum(xts, spans=c(3,2), main="random + 200 Hz",
-              log='no', ylim=c(1e-4,0.1))
+s <- spectrum(xts, spans=c(3,2), main="random + 200 Hz", log='no')
 w <- pwelch(xts)
 lines(w$freq, w$spec, col="red")
 abline(v=200, col="blue", lty="dotted")
-cat("var(x)", var(x), "\n")
-cat("sum(w$spec^2)*Fs", sum(w$spec^2)*Fs, "\n")
-cat("sum(s$spec^2)*Fs", sum(s$spec^2)*Fs, "\n")
+cat("var(x)", sum((x-mean(x))^2), "\n")
+cat("sum(w$spec)", sum(w$spec), "\n")
+cat("sum(s$spec)", sum(s$spec), "\n")
 }
 
 \references{
