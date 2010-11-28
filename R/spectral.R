@@ -1,5 +1,5 @@
-pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype,
-	esttype, debug=getOption("oce.debug"))
+pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
+                   debug=getOption("oce.debug"), ...)
 {
     hanning.local <- function(n) # avoid having to pull in the signal library
     {
@@ -57,12 +57,16 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype,
     nrow <- 0
     start <- 1
     end <- window.len
+    args <- list(...)
+    if (!("taper" %in% names(args)))
+        args$taper <- 0
+    if (!("plot" %in% names(args)))
+        args$plot <- FALSE
     while (end < (x.len - window.len)) {
         oce.debug(debug, "start:end = ", start, ":", end, "\n")
         xx <- ts(window * x[start:end], frequency=fs)
-        ##f <- fft(xts)
-        ##power <- abs(f * Conj(f)) / x.len / fs # avoid fanciness
-        s <- spectrum(xx, plot=FALSE, taper=FALSE)
+        args$x <- xx
+        s <- do.call(spectrum, args=args)
         if (nrow == 0)
             freq <- s$freq
         psd <- c(psd, s$spec)

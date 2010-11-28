@@ -7,27 +7,36 @@
 \description{Compute periodogram using the Welch (1967) method}
 
 \usage{pwelch(x, window, noverlap, nfft, fs, spectrumtype, esttype,
-     debug=getOption("oce.debug"))}
+     debug=getOption("oce.debug"), \dots)}
+
 \arguments{
   \item{x}{a vector or timeseries to be analyzed.  If a timeseries,
     then there is no need to specify \code{fs}.}
   \item{window}{window specification, either a single value giving the
-     number of windows to use, or a vector of values, specifying the
-     window coefficients.  If not specified, then 8 Hanning-shaped
-     windows are used. BUG: in the present version of the code, the only
-     working possibility is to provide a single value, or no value.}
+    number of windows to use, or a vector of values, specifying the
+    window coefficients.  If not specified, then 8 windows are used,
+    each with a Hanning (half-cosine) window.
+    BUG: in the present version of the code, the only
+    working possibility is to provide a single value, or no value.}
   \item{noverlap}{number of points to overlap between windows.  If not
     specified, this will be set to half the window length.}
   \item{nfft}{not used (yet)}
-  \item{fs}{frequency of time-series.  (If \code{x} is a time-series,
-     and if \code{fs} is supplied, then time-series is altered to have
-     frequency \code{fs}.}
+  \item{fs}{frequency of time-series.  If \code{x} is a time-series,
+    and if \code{fs} is supplied, then time-series is altered to have
+    frequency \code{fs}.}
   \item{spectrumtype}{not used (yet)}
   \item{esttype}{not used (yet)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.}
+  \item{dots}{optional extra arguments to be passed to
+    \code{\link{spectrum}}. Unless specified in this list,
+    \code{\link{spectrum}} is called with \code{plot=FALSE} to prevent
+    plotting the separate spectra, and with \code{taper=0}, 
+    which is not needed with the default Hanning window.  However, the
+    other defaults of \code{\link{spectrum}} are used,
+    e.g. \code{detrend=TRUE}.}
 }
-
+ 
 \details{The Welch (1967) method is used.}
 
 \examples{
@@ -37,7 +46,7 @@ t <- seq(0, 0.296, 1/Fs)
 x <- cos(2 * pi * t * 200) + rnorm(n=length(t))
 xts <- ts(x, frequency=Fs)
 s <- spectrum(xts, spans=c(3,2), main="random + 200 Hz",
-              log='yes', ylim=c(1e-4,0.1))
+              log='no', ylim=c(1e-4,0.1))
 w <- pwelch(xts)
 lines(w$freq, w$spec, col="red")
 abline(v=200, col="blue", lty="dotted")
