@@ -42,6 +42,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype,
             stop("for now, 'window' may only be a list of numbers, or a single number")
         }
     }
+    normalization <- mean(window^2)
     window.len <- length(window)
     if (missing(noverlap)) {
         noverlap <- floor(window.len / 2)
@@ -69,11 +70,11 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype,
         end <- end + step
         nrow <- nrow + 1
     }
-    psd <- matrix(psd, nrow=nrow, byrow=TRUE)
+    psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     list(freq=freq, spec=apply(psd, 2, mean), nwindow=nrow)
 }
 
-##n<-4;source('R/spectral.R');w<-pwelch(xts,window=n,debug=2);sum(w$spec)/var(xts);spectrum(xts,spans=c(5,3),log='no',main='');lines(w$freq,w$spec,col='red')
+##n<-4;source('R/spectral.R');w<-pwelch(xts,window=n,debug=2);sum(w$spec)/var(xts);spectrum(xts,spans=c(5,3),log='yes',main='');lines(w$freq,w$spec,col='red');abline(v=200,lty='dotted')
 
 
 ## power <- f * Conj(f) / x.len / fs

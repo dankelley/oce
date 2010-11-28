@@ -36,9 +36,9 @@ Fs <- 1000
 t <- seq(0, 0.296, 1/Fs)
 x <- cos(2 * pi * t * 200) + rnorm(n=length(t))
 xts <- ts(x, frequency=Fs)
-s <- spectrum(xts, spans=c(5,3),
-  main="why the scale factor?",log='yes',ylim=c(1e-4,0.1))
-w <- pwelch(xts, window=8)
+s <- spectrum(xts, spans=c(3,2), main="random + 200 Hz",
+              log='yes', ylim=c(1e-4,0.1))
+w <- pwelch(xts)
 lines(w$freq, w$spec, col="red")
 abline(v=200, col="blue", lty="dotted")
 cat("var(x)", var(x), "\n")
