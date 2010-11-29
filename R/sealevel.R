@@ -55,9 +55,9 @@ plot.sealevel <- function(x, which=1:4,
                           mgp=getOption("oce.mgp"),
                           mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
                           margins.as.image=FALSE,
+                          debug=getOption("oce.debug"),
                           ...)
 {
-    debug <- FALSE
     dots <- list(...)
     title.plot <- function(x)
     {
@@ -78,7 +78,7 @@ plot.sealevel <- function(x, which=1:4,
     draw.constituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
     {
         abline(v=frequency, col=col)
-        mtext(label, side=side, at=frequency, col=col,cex=2/3)
+        mtext(label, side=side, at=frequency, col=col, cex=3/4*par("cex"))
     }
     draw.constituents <- function()
     {
@@ -117,18 +117,23 @@ plot.sealevel <- function(x, which=1:4,
     par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
 
     MSL <- mean(x$data$elevation, na.rm=TRUE)
-    tmp <- (pretty(max(x$data$elevation-MSL,na.rm=TRUE)-min(x$data$elevation-MSL,na.rm=TRUE))/2)[2]
+    if ("xlim" %in% names(dots)) {
+        xtmp <- subset(x$data$elevation, dots$xlim[1] <= x$data$time & x$data$time <= dots$xlim[2])
+        tmp <- max(abs(range(xtmp-MSL,na.rm=TRUE)))
+    } else {
+        tmp <- max(abs(range(x$data$elevation-MSL,na.rm=TRUE)))
+    }
     ylim <- c(-tmp,tmp)
+    oce.debug(debug, "ylim=", ylim, "\n")
     n <- length(x$data$elevation) # do not trust value in metadata
     for (w in 1:length(which)) {
         if (which[w] == 1) {
             plot(x$data$time, x$data$elevation-MSL,
                  xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
                  lwd=0.5, axes=FALSE, ...)
-            tics <- oce.axis.POSIXct(1, x$data$time, draw.time.range=draw.time.range)
+            tics <- oce.axis.POSIXct(1, x$data$time, draw.time.range=draw.time.range, cex.axis=1, debug=debug-1)
             box()
             title.plot(x)
-            draw.time.range <- FALSE
             yax <- axis(2)
             abline(h=yax, col="darkgray", lty="dotted")
             abline(v=tics, col="darkgray", lty="dotted")
@@ -146,8 +151,7 @@ plot.sealevel <- function(x, which=1:4,
             plot(xx$data$time, xx$data$elevation - MSL,
                  xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
                  axes=FALSE)
-            oce.axis.POSIXct(1, xx$data$time)
-            draw.time.range <- FALSE
+            oce.axis.POSIXct(1, xx$data$time, draw.time.range=draw.time.range, cex.axis=1, debug=debug-1)
             yax <- axis(2)
             abline(h=yax, col="lightgray", lty="dotted")
             box()
@@ -158,7 +162,8 @@ plot.sealevel <- function(x, which=1:4,
         } else if (which[w] == 3) {
             if (num.NA == 0) {
                 Elevation <- ts(x$data$elevation, start=1, deltat=x$metadata$deltat)
-                s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
+                #s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
+                s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                 par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
                 plot(s$freq,s$spec,xlim=c(0,0.1),
                      xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),

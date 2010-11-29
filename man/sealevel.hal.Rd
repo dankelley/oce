@@ -22,6 +22,12 @@
   An entry to the literature about Hurricane Juan is at
   \url{http://www.atl.ec.gc.ca/weather/hurricane/juan/}.}
 
+\examples{
+data(sealevel.hal)
+plot(sealevel.hal)
+plot(sealevel.hal, which=1, xlim=as.POSIXct(c("2003-01-01","2003-02-01")))
+}
+
 \author{Dan Kelley}
 
 \keyword{misc}
