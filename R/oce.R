@@ -793,7 +793,11 @@ oce.colors.palette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), main="", debug=getOption("oce.debug"), ...)
+oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
+                              draw.time.range=TRUE, abbreviate.time.range=FALSE, draw.frequency=FALSE,
+                              cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              main="",
+                              debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
     oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
@@ -852,6 +856,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
 
     rr <- range + as.POSIXct("2000-01-20") - as.numeric(as.POSIXct("2000-01-20"))
     attr(rr, "tzone") <- attr(x, "tzone")
+    ##print(round(rr[1],"day"))
+    ##print(rr[1])
     oce.debug(debug, "range=",
               format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
               "UTC to ",
@@ -978,7 +984,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
-        if (is.finite(1/deltat))
+        if (draw.frequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         oce.debug(debug, "label=", label, "\n")
         mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)
