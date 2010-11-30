@@ -58,6 +58,7 @@ plot.sealevel <- function(x, which=1:4,
                           debug=getOption("oce.debug"),
                           ...)
 {
+    oce.debug(debug, "\bplot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
     dots <- list(...)
     title.plot <- function(x)
     {
@@ -208,6 +209,7 @@ plot.sealevel <- function(x, which=1:4,
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    oce.debug(debug, "\b\b} # plot.sealevel()\n")
     invisible()
 }
 

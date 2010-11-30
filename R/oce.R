@@ -200,7 +200,8 @@ oce.plot.ts <- function(x,
                         ...)
 {
     debug <- min(debug, 4)
-    oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", ...) {\n",sep="")
+    oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
+    oce.debug(debug, "mar=",mar,"\n")
     oce.debug(debug, "length(x)", length(x), "\n")
     oce.debug(debug, "length(y)", length(y), "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
