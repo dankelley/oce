@@ -561,5 +561,5 @@ predict.tidem <- function(object, newdata, ...)
     } else {
         rval <- predict(object$model, ...)
     }
-    rval
+    as.numeric(rval)
 }
