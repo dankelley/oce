@@ -982,18 +982,19 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         ## only show timezone if hours are shown
-        print(time.range[1])
-        print(round(time.range[1],"days"))
-        print(time.range[2])
-        print(round(time.range[2],"days"))
-# The below fails, and I think it's because of an R bug, as reported at
-#    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
-# by me.
-#	if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
-#            label <- paste(tr1, tr2, sep=" to ")
-#        } else {
+        if (debug > 0) {
+            print(time.range[1])
+            print(round(time.range[1],"days"))
+            print(time.range[2])
+            print(round(time.range[2],"days"))
+        }
+        ## The below is not fool-proof, depending on how xlim might have been supplied; see
+        ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
+	if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
+            label <- paste(tr1, tr2, sep=" to ")
+        } else {
             label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
-#        }
+        }
         if (draw.frequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         oce.debug(debug, "label=", label, "\n")
