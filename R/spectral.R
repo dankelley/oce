@@ -14,6 +14,13 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         }
         c
     }
+    gave.window <- !missing(window)
+    gave.nfft <- !missing(nfft)
+    gave.fs <- !missing(fs)
+    oce.debug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, ...) {\n",
+                             if (gave.window) window else "(not given)",
+                             if (gave.nfft) nfft else "(not given)",
+                             if (gave.fs) fs else "(not given)"))
     if (is.ts(x)) {
         if (missing(fs))
             fs <- frequency(x)
@@ -27,19 +34,27 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     x.len <- length(x)
     if (x.len < 1)
         stop("need more than one data point")
-    if (!missing(nfft))
-        warning("'nfft' is ignored at present")
     if (!missing(spectrumtype))
         warning("'spectrumtype' is ignored at present")
     if (!missing(esttype))
         warning("'esttype' is ignored at present")
-    if (missing(window)) {
-        window <- hanning.local(floor(x.len / 8))
-    } else {
+    if (gave.window) {
+        if (gave.nfft && (length(window) != nfft))
+            stop("if both 'window' and 'nfft' are given, then length(window) must equal nfft")
         if (length(window) == 1) {
             window <- hanning.local(floor(x.len / window))
         } else {
             stop("for now, 'window' may only be a list of numbers, or a single number")
+        }
+    } else {
+        if (gave.nfft) {
+            if (nfft < 1)
+                stop("'nfft' must be a positive integer")
+            if (nfft > 0.5 * x.len)
+                nfft <- x.len
+            window <- hanning.local(nfft)
+        } else {
+            window <- hanning.local(floor(x.len / 8))
         }
     }
     normalization <- mean(window^2)
@@ -62,8 +77,8 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         args$taper <- 0
     if (!("plot" %in% names(args)))
         args$plot <- FALSE
-    while (end < (x.len - window.len)) {
-        oce.debug(debug, "start:end = ", start, ":", end, "\n")
+    while (TRUE) {
+        oce.debug(debug, "  subspectrum at indices ", start, "to", end, "\n")
         xx <- ts(window * x[start:end], frequency=fs)
         args$x <- xx
         s <- do.call(spectrum, args=args)
@@ -73,8 +88,13 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         start <- start + step
         end <- end + step
         nrow <- nrow + 1
+        if (end > x.len)
+            break
     }
+    nrow <- max(1, nrow)
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
+    oce.debug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
+    oce.debug(debug, "\b\b} # pwelch()\n")
     list(freq=freq, spec=apply(psd, 2, mean), nwindow=nrow)
 }
 

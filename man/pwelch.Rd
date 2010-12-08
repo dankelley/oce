@@ -20,7 +20,8 @@
     working possibility is to provide a single value, or no value.}
   \item{noverlap}{number of points to overlap between windows.  If not
     specified, this will be set to half the window length.}
-  \item{nfft}{not used (yet)}
+  \item{nfft}{length of FFT.  This cannot be given if \code{window} is
+    given, and the latter is a single integer.}
   \item{fs}{frequency of time-series.  If \code{x} is a time-series,
     and if \code{fs} is supplied, then time-series is altered to have
     frequency \code{fs}.}
@@ -48,10 +49,13 @@ xts <- ts(x, frequency=Fs)
 s <- spectrum(xts, spans=c(3,2), main="random + 200 Hz", log='no')
 w <- pwelch(xts)
 lines(w$freq, w$spec, col="red")
+w2 <- pwelch(xts, nfft=75)
+lines(w2$freq, w2$spec, col='green')
 abline(v=200, col="blue", lty="dotted")
 cat("var(x)", sum((x-mean(x))^2), "\n")
-cat("sum(w$spec)", sum(w$spec), "\n")
 cat("sum(s$spec)", sum(s$spec), "\n")
+cat("sum(w$spec)", sum(w$spec), "\n")
+cat("sum(w2$spec)", sum(w2$spec), "\n")
 }
 
 \references{
