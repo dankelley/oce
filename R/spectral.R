@@ -1,6 +1,19 @@
 pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                    debug=getOption("oce.debug"), ...)
 {
+    hamming.local <- function (n) # avoid having to pull in the signal library
+    {
+        if (!(n == round(n) && n > 0))
+            stop("n must be a positive integer > 0")
+        if (n == 1)
+            c = 1
+        else {
+            n = n - 1
+            pi <- 4 * atan2(1, 1) # avoid problems if user redefined this
+            c = 0.54 - 0.46 * cos(2 * pi * (0:n)/n)
+        }
+        c
+    }
     hanning.local <- function(n) # avoid having to pull in the signal library
     {
         if (!(length(n) == 1 && (n == round(n)) && (n > 0)))
@@ -42,7 +55,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         if (gave.nfft && (length(window) != nfft))
             stop("if both 'window' and 'nfft' are given, then length(window) must equal nfft")
         if (length(window) == 1) {
-            window <- hanning.local(floor(x.len / window))
+            window <- hamming.local(floor(x.len / window))
         } else {
             stop("for now, 'window' may only be a list of numbers, or a single number")
         }
@@ -52,9 +65,9 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                 stop("'nfft' must be a positive integer")
             if (nfft > 0.5 * x.len)
                 nfft <- x.len
-            window <- hanning.local(nfft)
+            window <- hamming.local(nfft)
         } else {
-            window <- hanning.local(floor(x.len / 8))
+            window <- hamming.local(floor(x.len / 8))
         }
     }
     normalization <- mean(window^2)
@@ -95,17 +108,5 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oce.debug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
     oce.debug(debug, "\b\b} # pwelch()\n")
-    list(freq=freq, spec=apply(psd, 2, mean), nwindow=nrow)
+    list(freq=freq, spec=2*apply(psd, 2, mean), nwindow=nrow)
 }
-
-##n<-4;source('R/spectral.R');w<-pwelch(xts,window=n,debug=2);sum(w$spec)/var(xts);spectrum(xts,spans=c(5,3),log='yes',main='');lines(w$freq,w$spec,col='red');abline(v=200,lty='dotted')
-
-
-## power <- f * Conj(f) / x.len / fs
-##
-## (sum(abs(power)) / length(power))
-## [1] 487.0991
-##
-## sum(xts^2)
-## [1] 487.0991
-

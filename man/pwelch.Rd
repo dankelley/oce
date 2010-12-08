@@ -15,7 +15,7 @@
   \item{window}{window specification, either a single value giving the
     number of windows to use, or a vector of values, specifying the
     window coefficients.  If not specified, then 8 windows are used,
-    each with a Hanning (half-cosine) window.
+    each with a Hamming (raised half-cosine) window.
     BUG: in the present version of the code, the only
     working possibility is to provide a single value, or no value.}
   \item{noverlap}{number of points to overlap between windows.  If not
@@ -52,10 +52,11 @@ lines(w$freq, w$spec, col="red")
 w2 <- pwelch(xts, nfft=75)
 lines(w2$freq, w2$spec, col='green')
 abline(v=200, col="blue", lty="dotted")
-cat("var(x)", sum((x-mean(x))^2), "\n")
-cat("sum(s$spec)", sum(s$spec), "\n")
-cat("sum(w$spec)", sum(w$spec), "\n")
-cat("sum(w2$spec)", sum(w2$spec), "\n")
+cat("Checking spectral levels with Parseval's theorem:\n")
+cat("var(x)                              = ", var(x), "\n")
+cat("2 * sum(s$spec) * diff(s$freq[1:2]) = ", 2 * sum(s$spec) * diff(s$freq[1:2]), "\n")
+cat("sum(w$spec) * diff(s$freq[1:2])     = ", sum(w$spec) * diff(w$freq[1:2]), "\n")
+cat("sum(w2$spec) * diff(s$freq[1:2])    = ", sum(w2$spec) * diff(w2$freq[1:2]), "\n")
 }
 
 \references{
