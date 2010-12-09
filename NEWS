@@ -1,4 +1,5 @@
 0.1-82
+- read.ctd(): fix bug in getting start.time for some time formats
 - pwelch() added
 - plot.sealevel(): make y axis obey range in data subset, if xlim is given
 - adp.2enu() added

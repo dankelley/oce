@@ -862,6 +862,8 @@ parse.latlon <- function(line, debug=getOption("oce.debug"))
     x
 }
 
+time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
+
 read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oce.debug"), log.action, ...)
 {
     oce.debug(debug, "\b\bread.ctd.sbe() {\n")
@@ -982,8 +984,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (0 < (r<-regexpr("start_time =", lline))) {
             d <- sub("#[ ]*start_time[ ]*=[ ]*", "", lline)
-            start.time <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
-            ##cat("START TIME '", d, "'\n", sep="")
+            for (format in time.formats) {
+                if (!is.na(start.time <-  as.POSIXct(d, format=format, tz="UTC")))
+                    break
+            }
+            oce.debug(debug, "start.time '", start, "' inferred from substring '", d, "'\n", sep="")
         }
         if (0 < (r<-regexpr("ship:", lline))) {
             ship <- sub("(.*)ship:([ \t])*", "", ignore.case=TRUE, line); # note: using full string
