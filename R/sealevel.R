@@ -245,24 +245,27 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
     reference.code <- NA
     if (substr(first.line, 1, 12) == "Station_Name") { # type 2
         oce.debug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
-                                        # Station_Name,HALIFAX
-                                        # Station_Number,490
-                                        # Latitude_Decimal_Degrees,44.666667
-                                        # Longitude_Decimal_Degrees,63.583333
-                                        # Datum,CD
-                                        # Time_Zone,AST
-                                        # SLEV=Observed Water Level
-                                        # Obs_date,SLEV
-                                        # 01/01/2001 12:00 AM,1.82,
+        ## Station_Name,HALIFAX
+        ## Station_Number,490
+        ## Latitude_Decimal_Degrees,44.666667
+        ## Longitude_Decimal_Degrees,63.583333
+        ## Datum,CD
+        ## Time_Zone,AST
+        ## SLEV=Observed Water Level
+        ## Obs_date,SLEV
+        ## 01/01/2001 12:00 AM,1.82,
         header.length <- 8
         header <- readLines(file, n = header.length)
+        if (debug > 0) {
+            print(header)
+        }
         station.name   <- strsplit(header[1], ",")[[1]][2]
         station.number <- as.numeric(strsplit(header[2], ",")[[1]][2])
         latitude       <- as.numeric(strsplit(header[3], ",")[[1]][2])
         longitude      <- as.numeric(strsplit(header[4], ",")[[1]][2])
         tz             <- strsplit(header[6], ",")[[1]][2] # needed for get GMT offset
         GMT.offset     <- GMT.offset.from.tz(tz)
-        x <- read.csv(file, header=FALSE)
+        x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE, skip=header.length)
         if (length(grep("[0-9]{4}/", x$V1[1])) > 0) {
             oce.debug(debug, "Date format is year/month/day hour:min with hour in range 1:24\n")
             time <- strptime(as.character(x$V1), "%Y/%m/%d %H:%M", "UTC") + 3600 * GMT.offset
@@ -298,6 +301,7 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
         reference.offset  <- substr(header, 72, 76) # add to values
         reference.code    <- substr(header, 77, 77) # add to values
         units             <- substr(header, 79, 80)
+        oce.debug(debug, "units=", units, "\n")
         if (tolower(units) != "mm") stop("require units to be 'mm' or 'MM', not '", units, "'")
         elevation <- array(NA, 12*(n-1))
         first.twelve.hours  <- 3600 * (0:11)
