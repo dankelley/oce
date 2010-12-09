@@ -720,12 +720,17 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                     d <- sub("[ ]*DATE[ ]*=[ ]*", "", line)
                     date <- as.POSIXct(d, format="%Y%m%d", tz="UTC")
                 }
-                if ((0 < (r<-regexpr("DEPTH", line))))
+                if ((0 < (r<-regexpr(pattern="DEPTH", text=line, ignore.case=TRUE))))
+                    water.depth <- as.numeric(sub("[a-zA-Z =:]*","", line))
+                if ((0 < (r<-regexpr(pattern="Profondeur", text=line, ignore.case=TRUE))))
                     water.depth <- as.numeric(sub("[a-zA-Z =]*","", line))
-                if ((0 < (r<-regexpr("DEPTH", line))))
-                    water.depth <- as.numeric(sub("[a-zA-Z =]*","", line))
-                if ((0 < (r<-regexpr("STNNBR", line))))
+                if ((0 < (r<-regexpr(pattern="STNNBR", text=line, ignore.case=TRUE))))
                     station <- as.numeric(sub("[a-zA-Z =]*","", line))
+                if ((0 < (r<-regexpr(pattern="Station", text=line, ignore.case=TRUE))))
+                    station <- as.numeric(sub("[a-zA-Z =]*","", line))
+                if ((0 < (r<-regexpr(pattern="Mission", text=line, ignore.case=TRUE)))) {
+                    scientist <- sub(".*:", "", line)
+                }
             }
             break
         }
@@ -996,6 +1001,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (0 < (r<-regexpr("scientist:", lline)))
             scientist <- sub("(.*)scientist:([ ])*", "", ignore.case=TRUE, line); # full string
+        if (0 < (r<-regexpr("chef", lline)))
+            scientist <- sub("(.*):([ ])*", "", ignore.case=TRUE, line); # full string
         if (0 < (r<-regexpr("institute:", lline)))
             institute <- sub("(.*)institute:([ ])*", "", ignore.case=TRUE, line); # full string
         if (0 < (r<-regexpr("address:", lline)))
@@ -1008,20 +1015,31 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         }
         if (0 < (r<-regexpr("recovery:", lline)))
             recovery <- sub("(.*)recovery:([ ])*", "", lline);
-        if (0 < (r<-regexpr("water depth:", lline))) {
-            linesplit <- strsplit(line," ")
-            if (length(linesplit[[1]]) != 7)
-                warning("cannot parse water depth in `",line,"' (expecting 7 tokens)");
-            value <- linesplit[[1]][6]
-            unit <- strsplit(lline," ")[[1]][7]
-            if (!is.na(unit)) {
-                if (unit == "m") {
-                    water.depth <- as.numeric(value)
-                } else {
-                    if (rtmp[[1]][2] == "km") {
-                        water.depth <- as.numeric(value) * 1000
-                    }
-                }
+        if (0 < (r<-regexpr("water depth:", lline))
+            || 0 < (r<-regexpr(pattern="profondeur", text=lline))) {
+            ## Examples from files in use by author:
+            ##** Profondeur: 76
+            ##** Water Depth:   40 m
+            look <- sub(".*:[ ]*", "", lline)
+            linesplit <- strsplit(look," ")
+            nitems <- length(linesplit[[1]])
+            if (nitems == 1) {
+                water.depth <- as.numeric(linesplit[[1]][1])
+            } else if (nitems == 2) {
+                water.depth <- as.numeric(linesplit[[1]][1])
+                warning("ignoring unit on water depth")
+                ## FIXME: work the following old code into present code:
+                ##unit <- strsplit(lline," ")[[1]][7]
+                ##if (!is.na(unit)) {
+                ##    if (unit == "m") {
+                ##        water.depth <- as.numeric(value)
+                ##    } else {
+                ##        if (rtmp[[1]][2] == "km") {
+                ##            water.depth <- as.numeric(value) * 1000
+                ##        }
+                ##    }
+            } else {
+                stop("cannot interpret water depth from '", lline, "'")
             }
         }
         if (0 < (r<-regexpr("^. sample rate =", lline))) {
