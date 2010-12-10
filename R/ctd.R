@@ -1020,24 +1020,20 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             ## Examples from files in use by author:
             ##** Profondeur: 76
             ##** Water Depth:   40 m
-            look <- sub(".*:[ ]*", "", lline)
-            linesplit <- strsplit(look," ")
-            nitems <- length(linesplit[[1]])
+            look <- sub("[ ]*$", "", sub(".*:[ ]*", "", lline))
+            linesplit <- strsplit(look," ")[[1]]
+            nitems <- length(linesplit)
             if (nitems == 1) {
-                water.depth <- as.numeric(linesplit[[1]][1])
+                water.depth <- as.numeric(linesplit[1])
             } else if (nitems == 2) {
-                water.depth <- as.numeric(linesplit[[1]][1])
-                warning("ignoring unit on water depth")
-                ## FIXME: work the following old code into present code:
-                ##unit <- strsplit(lline," ")[[1]][7]
-                ##if (!is.na(unit)) {
-                ##    if (unit == "m") {
-                ##        water.depth <- as.numeric(value)
-                ##    } else {
-                ##        if (rtmp[[1]][2] == "km") {
-                ##            water.depth <- as.numeric(value) * 1000
-                ##        }
-                ##    }
+                unit <- linesplit[2]
+                if (unit == "m") {
+                    water.depth <- as.numeric(linesplit[1])
+                } else if (unit == "km") {
+                    water.depth <- 1000 * as.numeric(linesplit[1])
+                } else {
+                    warning("ignoring unit on water depth '", look, "'")
+                }
             } else {
                 stop("cannot interpret water depth from '", lline, "'")
             }
