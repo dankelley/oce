@@ -6,7 +6,7 @@
 
 \title{WOCE section a03}
 
-\description{This is line A03 (ExpoCode 90CT40\_1, with nominal sampling
+\description{This is line A03 (ExpoCode 90CT40_1, with nominal sampling
   date 1993-09-11).  The chief scientist was Tereschenkov of SOI,
   working aboard the Russian ship Multanovsky, undertaking a westward
   transect from the Mediterranean outflow region across to North
@@ -29,8 +29,10 @@ plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 This is based on a WOCE file downloaded from a server, as below:
 \preformatted{
 a03 <- read.section("http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv")
-}}
-
+a03 <- oce.edit(a03, "section.id", "a03", person="Dan Kelley")
+save(a03, file="oce/data/a03.rda")
+}
+}
 
 \seealso{See \code{\link{read.section}} for more on section-related
   functions and data sets.}
