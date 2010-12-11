@@ -25,11 +25,15 @@ plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 
 \usage{data(a03)}
 
-\source{\url{http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1} (use
-  the \emph{BOT} link in the \emph{Exchange} section of this page.)}
+\source{
+This is based on a WOCE file downloaded from a server, as below:
+\preformatted{
+a03 <- read.section("http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv")
+}}
 
-\seealso{This was read with \code{\link{read.section}("a03_hy1.csv")},
-  working a data file downloaded from the CCHDO site mentioned above.}
+
+\seealso{See \code{\link{read.section}} for more on section-related
+  functions and data sets.}
 
 \author{Dan Kelley}
 

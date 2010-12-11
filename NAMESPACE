@@ -120,6 +120,7 @@ export(
        resizable.label,
        section.grid,
        section.smooth,
+       section.sort,
        show.fives,
        stickplot,
        subset.oce,

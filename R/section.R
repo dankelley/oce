@@ -1,3 +1,22 @@
+section.sort <- function(section, by=c("station.id", "distance"))
+{
+    by <- match.arg(by)
+    rval <- section
+    if (by == "station.id") {
+        o <- order(section$metadata$station.id)
+        rval$metadata$station.id <- rval$metadata$station.id[o]
+        rval$metadata$latitude <- rval$metadata$latitude[o]
+        rval$metadata$longitude <- rval$metadata$longitude[o]
+        rval$data$station <- rval$data$station[o]
+    } else if (by == "distance") {
+        warning("sort.section() cannot yet handle argument by=\"distance\"")
+    } else {
+        stop("argument 'by' is incorrect")
+    }
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
+    rval
+}
 make.section <- function(item, ...)
 {
     if (inherits(item, "ctd")) {
@@ -66,14 +85,6 @@ make.section <- function(item, ...)
         }
     } else {
         stop("first argument must be of a \"ctd\" object, a \"list\" of ctd objects, or a vector of character strings naming ctd objects")
-    }
-    ## order by station number, if possible
-    if (!is.null(stn[1])) {
-        o <- order(as.numeric(stn))
-        stn <- stn[o]
-        lat <- lat[o]
-        lon <- lon[o]
-        station <- station[o]
     }
     data <- list(station=station)
     metadata <- list(section.id="",
