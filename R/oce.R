@@ -503,6 +503,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             stop("must specify a 'subset'")
         subset.string <- deparse(substitute(subset))
         oce.debug(debug, "subset.string='", subset.string, "'\n")
+        if (debug > 0) {
+            cat("\nORIGINALLY:\n\n")
+            print(str(x$data$ts))
+            cat("\n\n")
+            print(str(x$data$ma))
+            cat("\n\n\n")
+        }
         if (length(grep("time", subset.string))) {
             oce.debug(debug, "subsetting an adv object by time\n")
             oce.debug(debug, "Step 1: subset x$data$ts\n")
@@ -541,6 +548,16 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 oce.debug(debug, "   subsetting data$ma[[", name, "]]\n", sep="")
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
+
+            if (debug > 0) {
+                cat("\nAFTER SUBSET:\n\n")
+                print(str(x$data$ts))
+                cat("\n\n")
+                print(str(x$data$ma))
+                cat("\n\n\n")
+            }
+
+
         } else {
             stop("only 'time' is permitted for subsetting")
         }
