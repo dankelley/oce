@@ -39,8 +39,8 @@ TT <- sw.T.freeze(40, 500)
 stopifnot(all.equal.numeric(TT, -2.588567, 1e-6))
 
 ctd <- as.ctd(40, 10, 4000)
-stopifnot(all.equal.numeric(sw.theta(40,10,4000,0,"UNESCO1983"), 9.42648, 1e-5))
-stopifnot(all.equal.numeric(sw.theta(ctd,0,"UNESCO1983"), 9.42648, 1e-5))
+stopifnot(all.equal.numeric(sw.theta(40,10,4000,0,"unesco"), 9.42648, 1e-5))
+stopifnot(all.equal.numeric(sw.theta(ctd,0,"unesco"), 9.42648, 1e-5))
 
 ab <- sw.alpha.over.beta(40, 10, 4000, is.theta=TRUE)
 stopifnot(all.equal.numeric(ab, 0.34763, 0.00005))
