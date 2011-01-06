@@ -1,4 +1,5 @@
 0.1-82
+- oce.debug(): flush the console after printing a message
 - sw.theta(): rename the method possibilities, to be lower case, without dates
 - in some sw functions, rename 'pref' as 'reference.pressure'
 - read.ctd(): fix bug in getting start.time for some time formats

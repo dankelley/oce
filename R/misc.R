@@ -1094,4 +1094,5 @@ oce.debug <- function(debug=0, ...)
     if (debug > 0) {
         cat(paste(rep("  ", 5 - debug), collapse=""), ...)
     }
+    flush.console()
 }
