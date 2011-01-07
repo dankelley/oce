@@ -50,7 +50,8 @@
 
 \examples{
 library(oce)
-print(sw.theta(35, 13, 1000)) # 12.858
+cat("unesco example:",sw.theta(35, 13, 1000),"\n")
+cat("bryden example:",sw.theta(35, 13, 1000, "bryden"),"\n")
 
 print(sw.theta(40,40,10000,0,"unesco")) # 36.89073 (Fofonoff et al., 1983)
 	
@@ -58,7 +59,7 @@ print(sw.theta(40,40,10000,0,"unesco")) # 36.89073 (Fofonoff et al., 1983)
 # millidegrees over a typical span of values
 S <- c(30,30,38,38)
 T <- c(-2,-2,30,30)
-p <- rep(1000,4)                                   
+p <- 1000 * runif(n=4)
 print(max(abs(sw.theta(S,T,p) - sw.theta(S,T,p,0,"bryden"))))
 }
 
