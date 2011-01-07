@@ -59,7 +59,7 @@ print(sw.theta(40,40,10000,0,"unesco")) # 36.89073 (Fofonoff et al., 1983)
 S <- c(30,30,38,38)
 T <- c(-2,-2,30,30)
 p <- rep(1000,4)                                   
-print(max(abs(sw.theta(S,T,p) - sw.theta(S,T,p,0,"unesco"))))
+print(max(abs(sw.theta(S,T,p) - sw.theta(S,T,p,0,"bryden"))))
 }
 
 \references{Bryden, H. L., 1973. New polynomials for thermal expansion,
