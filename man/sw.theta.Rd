@@ -32,18 +32,14 @@
   a location with pressure \code{reference.pressure}. This quantity is
   commonly denoted \eqn{\theta}{theta} in the oceanographic literature.
 
-  The \code{"bryden"} method is based on Bryden (1973), and does not use
-  the reference pressure, since it is set up to approximate potential
-  temperature referenced to the surface.
-
-  For general use, the \code{"unesco"} method, based on Fofonoff
-  \emph{et al.} (1983), is preferable, since it permits calculation for
-  arbitrary reference pressure. The UNESCO formula is derived from
-  Bryden's earlier method, as Fofonoff \emph{et al.}  (1983) explain.
-
-  This is not the place to discuss the two methods in detail, but users
-  may note from the example that the two typically yield values that
-  agree to a few millidegrees.}
+  The \code{"bryden"} method, based on Bryden (1973), calculates
+  potential temperature referenced to the surface, ignoring the
+  reference pressure.  The \code{"unesco"} method, based on Fofonoff
+  \emph{et al.} (1983), generalizes Bryden's method, permitting
+  calculation for arbitrary reference pressure.  For normal use, the
+  \code{"unesco"} method is preferred.  (The example given below
+  illustrates that the two methods yield similar results for
+  surface-referenced calculations.)}
 
 \value{Potential temperature [\eqn{^\circ}{deg}C] of seawater.}
 
