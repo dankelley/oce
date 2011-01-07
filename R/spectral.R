@@ -86,10 +86,15 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     start <- 1
     end <- window.len
     args <- list(...)
-    if (!("taper" %in% names(args)))
+    names.args <- names(args)
+    if (!("taper" %in% names.args))
         args$taper <- 0
-    if (!("plot" %in% names(args)))
+    if (!("plot" %in% names.args))
         args$plot <- FALSE
+    if (!("demean" %in% names.args))
+        args$demean <- TRUE
+    if (!("detrend" %in% names.args))
+        args$detrend <- TRUE
     while (TRUE) {
         oce.debug(debug, "  subspectrum at indices ", start, "to", end, "\n")
         xx <- ts(window * x[start:end], frequency=fs)
