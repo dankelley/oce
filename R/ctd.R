@@ -23,6 +23,8 @@ as.ctd <- function(salinity, temperature, pressure,
         salinity <- rep(salinity[1], depths)
     if (length(temperature) < depths)
         temperature <- rep(temperature[1], depths)
+    salinity <- as.vector(salinity)
+    temperature <- as.vector(temperature)
     data <- data.frame(salinity=salinity,
         temperature=temperature,
         pressure=pressure,
