@@ -1,4 +1,5 @@
 0.1-82
+- as.ctd(): make temperature and salinity into vectors, if not already
 - plot.TS(): add argument use.smoothScatter
 - oce.debug(): flush the console after printing a message
 - sw.theta(): rename the method possibilities, to be lower case, without dates

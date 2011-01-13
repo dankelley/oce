@@ -13,9 +13,12 @@ as.ctd(salinity, temperature, pressure, ship=NA, scientist=NA,
   \item{salinity}{Salinity through the water column, or a data frame
     containing columns named \code{salinity}, \code{temperature}, and
     \code{pressure}, in which case these values are extracted from the
-    data frame, and the next two arguments are ignored.} 
-  \item{temperature}{Temperature through the water column.}
-  \item{pressure}{pressure through the water column.}
+    data frame, and the next two arguments are ignored.  Otherwise, 
+    if it is numeric, it is first converted to a vector before proceeding.} 
+  \item{temperature}{Temperature through the water column. (This is converted to a vector,
+     if it is not one already.}
+  \item{pressure}{pressure through the water column. (If just a single value 
+     is given, then it is repeated to match the length of the temperature and salinity.}
   \item{ship}{optional string containing the ship from which the observations were made.}
   \item{scientist}{optional string containing the chief scientist on the cruise.}
   \item{institute}{optional string containing the institute behind the work.}
