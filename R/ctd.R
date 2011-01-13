@@ -329,6 +329,7 @@ plot.ctd <- function (x, which = 1:4,
     lonlim, latlim,
     latlon.pch=20, latlon.cex=1.5, latlon.col="red",
     cex=1,
+    use.smoothScatter=FALSE,
     adorn=NULL,
     mgp=getOption("oce.mgp"),
     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
@@ -460,7 +461,8 @@ plot.ctd <- function (x, which = 1:4,
             else if (which[w] == 3 || which[w] == "TS") {
                 ##par(mar=c(3.5,3,2,2))
                 plot.TS(x, Slim=Slim, Tlim=Tlim,
-                    grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                    grid=grid, col.grid=col.grid, lty.grid=lty.grid, 
+                    use.smoothScatter=use.smoothScatter, ...)
             }
             else if (which[w] == 4 || which[w] == "text") {
                 text.item <- function(item, label, cex=0.8) {

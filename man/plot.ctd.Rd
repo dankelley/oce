@@ -26,6 +26,7 @@
      latlon.cex=1.5,
      latlon.col="red",
      cex=1,
+     use.smoothScatter=FALSE,
      adorn=NULL,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
