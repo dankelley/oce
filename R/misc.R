@@ -48,14 +48,14 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
     if (length(tbl.files) < 1)
         stop("could not locate a .TBL file in direcory ", dir)
     t0 <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary time, to make integers
+    file.code <- NULL
+    start.time <- NULL
     for (tbl.file in tbl.files) {
         oce.debug(debug, tbl.file)
         lines <- readLines(paste(dir, tbl.file, sep="/"))
         if (length(lines) < 1)
             stop("found no data in file ", paste(dir, tbl.file, sep="/"))
         ## "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
-        file.code <- NULL
-        start.time <- NULL
         for (line in lines) {
             s <- strsplit(line, "[ \t]+")[[1]]
             if (length(s) > 2) {
@@ -67,8 +67,7 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
                 t <- as.POSIXct(strptime(paste(year, month, day, hms), "%Y %b %d %H:%M:%S", tz="UTC"))
                 len <- nchar(filename)
                 code <- substr(filename, len-6, len)
-                if (debug > 0)
-                    cat(s, "|", code, "|", format(t), "\n")
+                oce.debug(debug, s, "(", code, format(t), ")\n")
                 file.code <- c(file.code, code)
                 start.time <- c(start.time, as.numeric(t) - as.numeric(t0))
             }
@@ -79,10 +78,14 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
     prefix <- substr(prefix, 1, lprefix-7)
     filename <- paste(dir, paste(prefix, file.code, sep=""), sep="/")
     start.time <- as.POSIXct(start.time + t0)
+    oce.debug(debug, "from=", format(from), "\n")
+    oce.debug(debug, "to=", format(to), "\n")
     if (!missing(from) && !missing(to)) {
+        oce.debug(debug, "got", length(file.code), "candidate files")
         ok <- from <= start.time & start.time <= to
         filename <- filename[ok]
         start.time <- start.time[ok]
+        oce.debug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
     }
     list(filename=filename, start.time=start.time)
 }
