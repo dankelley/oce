@@ -1681,6 +1681,7 @@ plot.adv <- function(x,
         }
     }
     oce.debug(debug, "\b\b} # plot.adv()\n")
+    invisible()
 }
 
 adv.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
