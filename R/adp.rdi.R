@@ -395,18 +395,18 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             }
             profile.start <- profile.start[!is.na(profile.start)]
             profiles.to.read <- length(profile.start)
+            oce.debug(debug, "filename=",filename,"\n")
             oce.debug(debug, "profiles.to.read=",profiles.to.read,"\n")
             oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
             oce.debug(debug, "number.of.cells=",number.of.cells,"\n")
             items <- number.of.beams * number.of.cells
-            v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
+            v <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
             a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
             q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
             g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
             bad.profiles <- NULL
-            oce.debug(debug, "profiles.to.read=", profiles.to.read, "\n")
+            oce.debug(debug, "did allocation; dim(v)=", dim(v), "\n")
             have.bottom.track <- FALSE          # FIXME maybe we can determine this from the header
-            oce.debug(debug, "profiles.to.read = ", profiles.to.read, "\n")
             oce.debug(debug, "length(profile.start) = ", length(profile.start), "\n")
             if (profiles.to.read < 1)
                 stop("no profiles to read")
