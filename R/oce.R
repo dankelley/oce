@@ -242,6 +242,7 @@ oce.plot.ts <- function(x,
         if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
     }
     oce.debug(debug, "\b\b} # oce.plot.ts()\n")
+    invisible()
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
