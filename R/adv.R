@@ -1741,18 +1741,21 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
 
 adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "\b\badv.xyz2enu() {\n")
+    oce.debug(debug, "\b\badv.xyz2enu(x, declination=", declination, ",debug) {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     have.ts.slow <- "ts.slow" %in% names(x$data)
     have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading) == 1 && length(x$data$ts.slow$pitch) == 1 && length(x$data$ts.slow$roll) == 1) || (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
     oce.debug(debug, "have.steady.angles=",have.steady.angles,"\n")
     if (have.ts.slow) {
+        oce.debug(debug, "adv data has data$ts.slow\n")
         if (have.steady.angles) {
+            oce.debug(debug, "adv data has constant heading, pitch, and roll\n")
             heading <- x$data$ts.slow$heading
             pitch <- x$data$ts.slow$pitch
             roll <- x$data$ts.slow$roll
         } else {
+            oce.debug(debug, "adv data has time-varying heading, pitch, and roll\n")
             t0 <- as.numeric(x$data$ts.slow$time[1])    # arbitrary; done in case approx hates large x values
             t.fast <- as.numeric(x$data$ts$time) - t0
             t.slow <- as.numeric(x$data$ts.slow$time) - t0
@@ -1761,6 +1764,7 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             roll <- approx(t.slow, x$data$ts.slow$roll, xout=t.fast)$y
         }
     } else {
+        oce.debug(debug, "adv data does not have data$ts.slow; time-series data are data$ts\n")
         heading <- x$data$ts$heading
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
@@ -1814,6 +1818,7 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         ##(speed test; replace above 3 lines with this) x$data$ma$v <- t(R %*% t(x$data$ma$v))
     } else {
         ## as with corresponding adp routine, construct single 3*3*np matrix
+        oce.debug(debug, "the heading, pitch, and roll vary with time\n")
         tr.mat <- array(numeric(), dim=c(3, 3, np))
         tr.mat[1,1,] <-  CH * CR + SH * SP * SR
         tr.mat[1,2,] <-  SH * CP

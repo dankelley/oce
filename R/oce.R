@@ -307,17 +307,21 @@ oce.edit <- function(x, item, value, action, reason="", person="",
             stop("must supply a 'value' for this 'item'")
         ##if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
         if (inherits(x, "adv")) {
+            oce.debug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
             if (hpr) {
                 if (inherits(x, "nortek")) {
+                    oce.debug(debug, "changing data$ts.slow[[", item, "]] of a nortek\n")
                     x$data$ts.slow[[item]] <- value
                 } else {
+                    oce.debug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
                     x$data$ts[[item]] <- value
                 }
             } else {
-                if (item %in% names(x$metadata))
+                if (item %in% names(x$metadata)) {
+                    oce.debug(debug, "changing metadata[[", item, "]]\n")
                     x$metadata[[item]] <- value
-                else
+                } else
                     stop("do not know how to handle this item")
             }
         } else if ("instrument.type" %in% names(x$metadata) && x$metadata$instrument.type == "aquadopp-hr") {
