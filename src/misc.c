@@ -2,33 +2,53 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
+//#define debug
+
 /*
  * bisect_d (bisection search vector of doubles)
  * x = vector of doubles (must be in increasing order)
- * f = vector of doubles whose index to find
+ * find = vector of doubles whose index to find
+ * side = vector of 0 or 1 (to look to the left, or right, of find)
  * returns a vector of indices, or NA values
  *
  * TESTING:
 
- system("R CMD SHLIB misc.c")
- dyn.load("misc.so")
- .Call("bisect_d", 1:1e8, c(10,5e4,33))
+ system("R CMD SHLIB misc.c") ; dyn.load("misc.so")
 
- * SPEED: above takes 0.842s; below, more direct, is 3 times slower:
- * system.time({i<-(1:1e8)<1e4;j<-(1:1e8)>1e3})
- *  user  system elapsed 
- * 2.469   2.735   9.108 
- * 
+ x <- 0.1 + 1:1e7
+ find <- c(10, 5e4)
+ side <- c(0, 1)
+
+ system.time({
+ loc <- .Call("bisect_d", x, find, side);
+ xx <- x[loc[1]:loc[2]]
+ })
+
+ user  system elapsed 
+ 0.021   0.000   0.021 
+
+ system.time(xxx <- x[(find[1] < x) & (x < find[2])])
+
+ user  system elapsed 
+ 0.266   0.001   0.264 
+
+CONCLUSION: about 10 times faster than the straightforward method.
+The latter might be an issue for deep use in loops, for large objects.
 
 */
-SEXP bisect_d(SEXP x, SEXP find)
+SEXP bisect_d(SEXP x, SEXP find, SEXP side)
 {
     PROTECT(x = AS_NUMERIC(x));
     double *px = NUMERIC_POINTER(x);
     PROTECT(find = AS_NUMERIC(find));
     double *pfind = NUMERIC_POINTER(find);
+    PROTECT(side = AS_INTEGER(side));
+    int *pside = INTEGER_POINTER(side);
     int nx = length(x);
     int nfind = length(find);
+    int nside = length(side);
+    if (nfind != nside)
+        error("need length(find) = length(side)");
     char buf[1024]; /* for error messages */
     int i;
     SEXP res;
@@ -44,53 +64,76 @@ SEXP bisect_d(SEXP x, SEXP find)
     int *pres = INTEGER_POINTER(res);
     int left, right, middle, ifind;
     for (ifind = 0; ifind < nfind; ifind++) {
-        double this_find = *(pfind + ifind);
-        //Rprintf("find[%d]=%f (%f <= x <= %f)\n", ifind, this_find, *(px), *(px+nx-1));
+        double this_find = pfind[ifind];
+#ifdef debug
+        Rprintf("find[%d]=%f (%f <= x <= %f)\n", ifind, this_find, *(px), *(px+nx-1));
+#endif
         /* trim indices to those of x (R notation) */
-        if (this_find <= *(px)) {
+        if (this_find <= px[0]) {
             pres[ifind] = 1;
             continue;
         }
-        if (this_find >= *(px+nx-1)) {
+        if (this_find >= px[nx-1]) {
             pres[ifind] = nx;
             continue;
         }
         int p;
         left = 0;
         right = nx - 1;
-        int halves = (int)(3 + log(0.0+nx) / log(2.0)); /* prevent inf loop from poor coding */
+        int halves = (int)(10 + log(0.0+nx) / log(2.0)); /* prevent inf loop from poor coding */
         pres[ifind] = NA_INTEGER;
         for (int half = 0; half < halves; half++) {
             middle = (int)floor(0.5 * (left + right));
             /* exact match to middle? */
-            if (*(px + middle) == pfind[ifind]) {
-                //Rprintf("exact match at middle=%d\n", middle);
-                pres[ifind] = middle - 1;
+            if (px[middle] == pfind[ifind]) {
+#ifdef debug
+                Rprintf("exact match at middle=%d\n", middle);
+#endif
+                pres[ifind] = middle;
                 break;
             }
             /* in left half */
-            if (px[left] <= this_find & this_find <= px[middle]) {
-                //Rprintf("LEFT %d - %d\n", left, middle);
+            if (px[left] <= this_find & this_find < px[middle]) {
+#ifdef debug
+                Rprintf("L %d %d\n", left, middle);
+#endif
                 right = middle;
                 if (2 > (middle - left)) {
-                    //Rprintf("narrowed to left=%d and middle=%d\n", left, middle);
-                    pres[ifind] = middle - 1;
+#ifdef debug
+                    Rprintf("narrowed to left=%d and middle=%d\n", left, middle);
+#endif
+                    pres[ifind] = middle;
+                    if (pside[ifind] == 0)
+                        pres[ifind] = left + 1;
+                    else
+                        pres[ifind] = middle + 1;
                     break;
                 }
             }
             /* in right half */
-            if (px[middle] <= this_find & this_find <= px[right]) {
-                //Rprintf("RIGHT %d - %d\n", middle, right);
+            if (px[middle] < this_find & this_find <= px[right]) {
+#ifdef debug
+                Rprintf("R %d %d %f %f\n", middle, right, px[middle], px[right]);
+#endif
                 left = middle;
                 if (2 > (right - middle)) {
-                    //Rprintf("narrowed to middle=%d and right=%d\n", middle, right);
-                    pres[ifind] = middle - 1;
+#ifdef debug
+                    Rprintf("narrowed to middle=%d and right=%d\n", middle, right);
+                    Rprintf("pside=%d\n", pside[ifind]);
+#endif
+                    if (pside[ifind] == 0)
+                        pres[ifind] = middle + 1;
+                    else
+                        pres[ifind] = right + 1;
+#ifdef debug
+                    Rprintf("pres[ifind]=%d\n",pres[ifind]);
+#endif
                     break;
                 }
             }
         }
     }
-    UNPROTECT(3);
+    UNPROTECT(4);
     return(res);
 }
 
