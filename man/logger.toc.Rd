@@ -36,7 +36,7 @@
   \code{from} and \code{to} be in the \code{UTC} time zone, because that
   time zone is used in decoding the lines in the \code{.TBL} file.}
 
-\examples {
+\examples{
 \dontrun{
 table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
 from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
