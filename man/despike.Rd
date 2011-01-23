@@ -6,11 +6,12 @@
 
 \description{Remove spikes from a time series}
 
-\usage{despike(x, method=1, n=4, k=7, physical.range)}
+\usage{despike(x, method=c("median","smooth"), n=4, k=7, physical.range)}
 
 \arguments{
   \item{x}{a vector}
-  \item{method}{number indicating the method; see \sQuote{Details}.}
+  \item{method}{number indicating the method used to develop the
+      smoothed estimate of \code{x}; see \sQuote{Details}.}
   \item{n}{number of standard-deviation increments to tolerate}
   \item{k}{length of running median used in algorithm}
   \item{physical.range}{optional two-element vector holding the smallest
@@ -27,9 +28,9 @@
   with the overall \code{\link{median}}.
 
   The next step is to create a smoothed version of this series.  If
-  \code{method=1}, a running median is used, calculated with
-  \code{\link{runmed}}, with the running length given by \code{k}.  If
-  \code{method=2}, \code{\link{smooth}} is used.
+  \code{method="median"}, then a running median is used, calculated
+  with \code{\link{runmed}}, with the running length given by \code{k}.
+  If \code{method="smooth"}, then \code{\link{smooth}} is used.
 
   Finally, the difference between this smoothed series and the gapless,
   physically-realistic series is calculated.  Any spots at which this
@@ -37,7 +38,7 @@
   flagged as spikes.}
 
 \value{A new vector that is identical to the original one, except that
-  spikes and unphysical values are replace with \code{NA}.}
+  spikes and unphysical values are replaced with \code{NA}.}
 
 \examples{
 n <- 100

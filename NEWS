@@ -1,7 +1,8 @@
 0.1-82
+- despike(): use string value for argument 'method'
 - logger.toc(): fix bug in discovering files ranging over days
 - as.ctd(): make temperature and salinity into vectors, if not already
-- plot.TS(): add argument use.smoothScatter
+- plot.TS(): add argument 'use.smoothScatter'
 - oce.debug(): flush the console after printing a message
 - sw.theta(): rename the method possibilities, to be lower case, without dates
 - in some sw functions, rename 'pref' as 'reference.pressure'

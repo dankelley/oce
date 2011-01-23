@@ -2,7 +2,7 @@ normalize <- function(x)
 {
     (x - mean(x, na.rm=TRUE)) / sqrt(var(x, na.rm=TRUE))
 }
-despike <- function(x, method=1, n=4, k=7, physical.range)
+despike <- function(x, method=c("median","smooth"), n=4, k=7, physical.range)
 {
     xx <- x
     small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
@@ -10,9 +10,10 @@ despike <- function(x, method=1, n=4, k=7, physical.range)
     na <- is.na(x)
     unphysical <- xx < small | large < xx
     xx[unphysical | na] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
-    if (method == 1) {
+    method  <- match.arg(method)
+    if (method == "median") {
         xxs <- runmed(xx, k=k)
-    } else if (method == 2) {
+    } else if (method == "smooth") {
         xxs <- as.numeric(smooth(xx))
     } else {
         stop("unknown method ", method, "; try method=1 or method=2)")
