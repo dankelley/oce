@@ -501,21 +501,18 @@ read.adv.sontek.realtime <- function(file, from=1, to, by=1, tz=getOption("oce.t
     serial.number <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serial.number <- .Call("unwrap_sequence_numbers", serial.number, 2)
     velocity.scale <- 0.1e-3
-    u1 <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little")
-    u2 <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little")
-    u3 <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little")
-    v <- cbind(u1, u2, u3) * velocity.scale
-    rm(u1, u2, u3)
-    a1 <- readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a2 <- readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a3 <- readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a <- cbind(a1, a2, a3)
-    rm(a1, a2, a3)
-    c1 <- readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c2 <- readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c3 <- readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c <- cbind(c1, c2, c3)
-    rm(c1, c2, c3)
+    v <- array(numeric(), dim=c(len, 3))
+    v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
+    v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
+    v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
+    a <- array(raw(), dim=c(len, 3))
+    a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    a[,3] <- as.raw(readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    c <- array(raw(), dim=c(len, 3))
+    c[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    c[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    c[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
     temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
     pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
 
