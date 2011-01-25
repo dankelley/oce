@@ -2,40 +2,46 @@
 
 \alias{retime}
 
-\title{Retime an Oce object}
+\title{Adjust the time within Oce object}
 
-\description{Retime an Oce object}
+\description{Adjust the time within Oce object}
 
-\usage{retime(x,a,b,t0,debug=getOption("oce.debug"))}
+\usage{retime(x, a, b, t0, debug=getOption("oce.debug"))}
 
 \arguments{
-    \item{x}{an \code{oce} object (presently, only works for type
+    \item{x}{an \code{oce} object (presently, this must be of class
             \code{adv})}
-    \item{a}{intercept in linear model of time drift (see
+    \item{a}{intercept [in seconds] in linear model of time drift (see
             \dQuote{Details}).}
-    \item{b}{slope in linear model of time drift (see \dQuote{Details}).}
-    \item{t0}{a POSIXct time offset in linear model of time drift (see
-            \dQuote{Details}).}
+    \item{b}{slope [unitless] in linear model of time drift [unitless]
+        (see \dQuote{Details}).}
+    \item{t0}{reference time [in POSIXct format] used in linear model
+        of time drift (see \dQuote{Details}).}
     \item{debug}{a flag that, if nonzero, turns on debugging.}
 }
 
-\details{The new time is defined by \eqn{a + b * (t-t0)}{a + b*(t-t0)}
-where \eqn{t}{t} is the time in the object.  For example, a simple
-time offset has a non-zero value of \code{a}, a zero value of
-\code{b}, and an arbitrary value of \code{t0}.
+\details{This function compensates for drifting instrument clocks,
+according to \eqn{t'=t + a + b (t-t0)}{t'=t + a + b*(t-t0)}, where
+\eqn{t'}{t'} is the true time and \eqn{t}{t} is the time stored in the
+object.  A single check on time mismatch can be described by a simple
+time offset, with a non-zero value of \code{a}, a zero value of
+\code{b}, and an arbitrary value of \code{t0}.   Checking the mismatch
+before and after an experiment yields sufficient information to
+specify a linear drift, via \code{a}, \code{b}, and \code{t0}.  Note
+that \code{t0} is just a convenience parameter, which avoids the user
+having to know the "zero time" used in R and clarifies the values of
+the other two parameters.  It makes sense for \code{t0} to have the
+same timezone as the time within \code{x}.}
 
-The retimed object is computed by linear interpolation, using
+The returned object is computed by linear interpolation, using
 \code{\link{approx}} with \code{rule=2}, to avoid \code{NA} values at
 the start or end.  The new time will be as given by the formula above.
 Note that if the drift is large enough, the sampling rate will be
 changed.  It is a good idea to start with an object that has an
 extended time range, so that, after this is called,
-\code{\link{subset.oce}} can be used to trim to a desired time range.
+\code{\link{subset.oce}} can be used to trim to a desired time range.}
 
-Hint: match the timezone of \code{t0} to the data, e.g.  with
-\code{tz="UTC"} for both.}
-
-\value{Retimed object.}
+\value{A new object, with time and other data adjusted.}
 
 \examples{
 \dontrun{
