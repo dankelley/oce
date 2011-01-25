@@ -1,3 +1,64 @@
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
+{
+    if (!inherits(x, "adv"))  {
+        stop("method only works for 'adv' objects")
+    }
+    if (missing(x))
+        stop("must give argument 'x'")
+    if (missing(a))
+        stop("must give argument 'a'")
+    if (missing(b))
+        stop("must give argument 'b'")
+    if (missing(t0))
+        stop("must give argument 't0'")
+    oce.debug(debug, "\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n")
+    rval <- x
+    time <- as.numeric(x$data$ts$time)
+    retime <- time + a + b * (time - as.numeric(t0))
+    str(time)
+    str(retime-time)
+    oce.debug(debug, vector.show(time, "as.numeric(x$data$ts$time)"))
+    oce.debug(debug, vector.show(retime, "retime"))
+    for (name in names(x$data$ts)) {
+        if (name != "time") {
+            oce.debug(debug, paste("retiming data$ts$", name, "\n", sep=""))
+            if (length(x$data$ts[[name]]) > 1) {
+                rval$data$ts[[name]] <- approx(retime, x$data$ts[[name]], time)$y
+            }
+        }
+    }
+    if ("ts.slow" %in% names(x$data)) {
+        time.slow <- as.numeric(x$data$ts.slow$time)
+        retime.slow <- time.slow + a + b * (time.slow - as.numeric(t0))
+        if (name != "time" && length(x$data$ts.slow[[name]]) > 1) {
+            oce.debug(debug, paste("retiming data$ts.slow$", name, "\n", sep=""))
+            rval$data$ts.slow[[name]] <- approx(retime.slow, x$data$ts.slow[[name]], time.slow)$y
+        }
+        rval$data$ts.slow$time  <- retime.slow + t0
+    }
+    for (name in names(x$data$ma)) {
+        cols <- dim(x$data$ma[[name]])[2]
+        for (col in 1:cols) {
+            class <- class(x$data$ma[[name]][1,1])
+            if (class == "raw") {
+                oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"] (as type 'raw')\n", sep=""))
+                tmp <- approx(retime, as.numeric(x$data$ma[[name]][,col]), time)$y
+                rval$data$ma[[name]][,col] <- as.raw(max(0,min(255,tmp)))
+            } else {
+                oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"]\n", sep=""))
+                rval$data$ma[[name]][,col] <- approx(retime, x$data$ma[[name]][,col], time)$y
+            }
+        }
+    }
+    rval$data$ts$time  <- retime + t0
+    rval$processing.log <- processing.log.add(rval$processing.log,
+        paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # retime.adv()\n")
+    rval
+}
+
+
 normalize <- function(x)
 {
     (x - mean(x, na.rm=TRUE)) / sqrt(var(x, na.rm=TRUE))

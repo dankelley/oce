@@ -116,6 +116,7 @@ export(
        read.pt,
        read.sealevel,
        read.section,
+       retime,
        seconds.to.ctime,
        resizable.label,
        section.grid,
@@ -197,3 +198,4 @@ S3method(summary, pt)
 S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
+

@@ -1,4 +1,5 @@
 0.1-82
+- retime(): added
 - read.adv.sontek.realtime(): correct error in class of 'a' and 'c'
 - despike(): use string value for argument 'method'
 - logger.toc(): fix bug in discovering files ranging over days
