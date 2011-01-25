@@ -12,19 +12,15 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         stop("must give argument 'b'")
     if (missing(t0))
         stop("must give argument 't0'")
-    oce.debug(debug, "\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n")
+    oce.debug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
     rval <- x
     time <- as.numeric(x$data$ts$time)
     retime <- time + a + b * (time - as.numeric(t0))
-    str(time)
-    str(retime-time)
-    oce.debug(debug, vector.show(time, "as.numeric(x$data$ts$time)"))
-    oce.debug(debug, vector.show(retime, "retime"))
     for (name in names(x$data$ts)) {
         if (name != "time") {
             oce.debug(debug, paste("retiming data$ts$", name, "\n", sep=""))
             if (length(x$data$ts[[name]]) > 1) {
-                rval$data$ts[[name]] <- approx(retime, x$data$ts[[name]], time)$y
+                rval$data$ts[[name]] <- approx(retime, x$data$ts[[name]], time, rule=2)$y
             }
         }
     }
@@ -33,7 +29,7 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         retime.slow <- time.slow + a + b * (time.slow - as.numeric(t0))
         if (name != "time" && length(x$data$ts.slow[[name]]) > 1) {
             oce.debug(debug, paste("retiming data$ts.slow$", name, "\n", sep=""))
-            rval$data$ts.slow[[name]] <- approx(retime.slow, x$data$ts.slow[[name]], time.slow)$y
+            rval$data$ts.slow[[name]] <- approx(retime.slow, x$data$ts.slow[[name]], time.slow, rule=2)$y
         }
         rval$data$ts.slow$time  <- retime.slow + t0
     }
@@ -43,11 +39,11 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
             class <- class(x$data$ma[[name]][1,1])
             if (class == "raw") {
                 oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"] (as type 'raw')\n", sep=""))
-                tmp <- approx(retime, as.numeric(x$data$ma[[name]][,col]), time)$y
-                rval$data$ma[[name]][,col] <- as.raw(max(0,min(255,tmp)))
+                tmp <- floor(approx(retime, as.numeric(x$data$ma[[name]][,col]), time, rule=2)$y)
+                rval$data$ma[[name]][,col] <- as.raw(ifelse(tmp<0, 0, ifelse(tmp>255, 255, tmp)))
             } else {
                 oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"]\n", sep=""))
-                rval$data$ma[[name]][,col] <- approx(retime, x$data$ma[[name]][,col], time)$y
+                rval$data$ma[[name]][,col] <- approx(retime, x$data$ma[[name]][,col], time, rule=2)$y
             }
         }
     }
