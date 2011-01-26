@@ -31,7 +31,7 @@ specify a linear drift, via \code{a}, \code{b}, and \code{t0}.  Note
 that \code{t0} is just a convenience parameter, which avoids the user
 having to know the "zero time" used in R and clarifies the values of
 the other two parameters.  It makes sense for \code{t0} to have the
-same timezone as the time within \code{x}.}
+same timezone as the time within \code{x}.
 
 The returned object is computed by linear interpolation, using
 \code{\link{approx}} with \code{rule=2}, to avoid \code{NA} values at

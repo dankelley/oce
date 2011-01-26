@@ -31,7 +31,7 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
             oce.debug(debug, paste("retiming data$ts.slow$", name, "\n", sep=""))
             rval$data$ts.slow[[name]] <- approx(retime.slow, x$data$ts.slow[[name]], time.slow, rule=2)$y
         }
-        rval$data$ts.slow$time  <- retime.slow + t0
+        rval$data$ts.slow$time  <- retime.slow + t0 - as.numeric(t0)
     }
     for (name in names(x$data$ma)) {
         cols <- dim(x$data$ma[[name]])[2]
@@ -47,7 +47,7 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
             }
         }
     }
-    rval$data$ts$time  <- retime + t0
+    rval$data$ts$time  <- retime + t0 - as.numeric(t0)
     rval$processing.log <- processing.log.add(rval$processing.log,
         paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # retime.adv()\n")
