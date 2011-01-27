@@ -216,8 +216,10 @@ matrix.smooth <- function(m)
 
 match.bytes <- function(input, b1, ...)
 {
-    if (missing(input)) stop("must provide \"input\"")
-    if (missing(b1)) stop("must provide at least one byte to match")
+    if (missing(input)) 
+        stop("must provide \"input\"")
+    if (missing(b1)) 
+        stop("must provide at least one byte to match")
     n <- length(input)
     dots <- list(...)
     lb <- 1 + length(dots)
@@ -225,7 +227,8 @@ match.bytes <- function(input, b1, ...)
         .Call("match2bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
     else if (lb == 3)
     .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
-    else stop("must provide 2 or 3 bytes")
+    else
+        stop("must provide 2 or 3 bytes")
 }
 
 resizable.label <- function(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
