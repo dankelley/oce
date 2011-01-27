@@ -226,7 +226,7 @@ match.bytes <- function(input, b1, ...)
     if (lb == 2)
         .Call("match2bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
     else if (lb == 3)
-    .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
+        .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
     else
         stop("must provide 2 or 3 bytes")
 }
@@ -740,8 +740,8 @@ add.column <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
+    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
     if (missing(to))
