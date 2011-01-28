@@ -740,8 +740,8 @@ add.column <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
     oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
+    if (!inherits(x, "oce")) stop("method is only for oce objects")
     res <- x
     do.filter <- !missing(filter)
     if (missing(to))
