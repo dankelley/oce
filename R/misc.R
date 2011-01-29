@@ -1,9 +1,6 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "adv"))  {
-        stop("method only works for 'adv' objects")
-    }
     if (missing(x))
         stop("must give argument 'x'")
     if (missing(a))
@@ -14,40 +11,12 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         stop("must give argument 't0'")
     oce.debug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
     rval <- x
-    time <- as.numeric(x$data$ts$time)
-    retime <- time + a + b * (time - as.numeric(t0))
-    for (name in names(x$data$ts)) {
-        if (name != "time") {
-            oce.debug(debug, paste("retiming data$ts$", name, "\n", sep=""))
-            if (length(x$data$ts[[name]]) > 1) {
-                rval$data$ts[[name]] <- approx(retime, x$data$ts[[name]], time, rule=2)$y
-            }
-        }
+    if ("ts" %in% names(x$data)) {
+        rval$data$ts$time <- x$data$ts$time + a + b * (x$data$ts$time - as.numeric(t0))
     }
     if ("ts.slow" %in% names(x$data)) {
-        time.slow <- as.numeric(x$data$ts.slow$time)
-        retime.slow <- time.slow + a + b * (time.slow - as.numeric(t0))
-        if (name != "time" && length(x$data$ts.slow[[name]]) > 1) {
-            oce.debug(debug, paste("retiming data$ts.slow$", name, "\n", sep=""))
-            rval$data$ts.slow[[name]] <- approx(retime.slow, x$data$ts.slow[[name]], time.slow, rule=2)$y
-        }
-        rval$data$ts.slow$time  <- retime.slow + t0 - as.numeric(t0)
+        rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (x$data$ts.slow$time - as.numeric(t0))
     }
-    for (name in names(x$data$ma)) {
-        cols <- dim(x$data$ma[[name]])[2]
-        for (col in 1:cols) {
-            class <- class(x$data$ma[[name]][1,1])
-            if (class == "raw") {
-                oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"] (as type 'raw')\n", sep=""))
-                tmp <- floor(approx(retime, as.numeric(x$data$ma[[name]][,col]), time, rule=2)$y)
-                rval$data$ma[[name]][,col] <- as.raw(ifelse(tmp<0, 0, ifelse(tmp>255, 255, tmp)))
-            } else {
-                oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"]\n", sep=""))
-                rval$data$ma[[name]][,col] <- approx(retime, x$data$ma[[name]][,col], time, rule=2)$y
-            }
-        }
-    }
-    rval$data$ts$time  <- retime + t0 - as.numeric(t0)
     rval$processing.log <- processing.log.add(rval$processing.log,
         paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # retime.adv()\n")
@@ -275,10 +244,10 @@ latlon.format <- function(lat, lon, digits=max(6, getOption("digits") - 1))
             rval[i] <- ""
         else
             rval[i] <- paste(format(abs(lat[i]), digits=digits),
-            if (lat[i] > 0) "N  " else "S  ",
-            format(abs(lon[i]), digits=digits),
-            if (lon[i] > 0) "E" else "W",
-            sep="")
+                if (lat[i] > 0) "N  " else "S  ",
+                format(abs(lon[i]), digits=digits),
+                if (lon[i] > 0) "E" else "W",
+                sep="")
     }
     rval
 }
@@ -293,8 +262,8 @@ lat.format <- function(lat, digits=max(6, getOption("digits") - 1))
             rval[i] <-  ""
     else
         rval[i] <- paste(format(abs(lat[i]), digits=digits),
-        if (lat[i] > 0) "N" else "S",
-        sep="")
+            if (lat[i] > 0) "N" else "S",
+            sep="")
     rval
 }
 
@@ -308,8 +277,8 @@ lon.format <- function(lon, digits=max(6, getOption("digits") - 1))
             rval[i] <-  ""
     else
         rval[i] <- paste(format(abs(lon[i]), digits=digits),
-        if (lon[i] > 0) "E" else "S",
-        sep="")
+            if (lon[i] > 0) "E" else "S",
+            sep="")
     rval
 }
 
@@ -687,12 +656,12 @@ oce.colors.gebco <- function(n=9, region=c("water", "land", "both"), type=c("fil
             "#C79652","#BD9248","#B38E3E","#A98A34")
         water <- c("#E1FCF7","#BFF2EC","#A0E8E4","#83DEDE","#68CDD4",
             "#4FBBC9","#38A7BF","#2292B5","#0F7CAB")
-    } else {
-        land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
-            "#C79652","#BD9248","#B38E3E","#A98A34")
-        water <- c("#A4FCE3","#72EFE9","#4FE3ED","#47DCF2","#46D7F6",
-            "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3","#3194B4",
-            "#2A7CA4","#205081","#16255E","#100C2F")
+        } else {
+            land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
+                "#C79652","#BD9248","#B38E3E","#A98A34")
+            water <- c("#A4FCE3","#72EFE9","#4FE3ED","#47DCF2","#46D7F6",
+                "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3","#3194B4",
+                "#2A7CA4","#205081","#16255E","#100C2F")
     }
     if (region == "water") {
         rgb.list <- col2rgb(water) / 255
@@ -740,8 +709,8 @@ add.column <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
+    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
     if (missing(to))
@@ -821,10 +790,10 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
                 res$data <- x$data[select,]
             } else if (inherits(x, "pt")) {
                 if (do.filter) stop("cannot (yet) filter pt data during decimation") # FIXME
-                for (name in names(res$data$ts))
+                for (name in names(res$data$ts)) 
                     res$data[[name]] <- x$data[[name]][select]
-            } else {
-                stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
+                } else {
+                    stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
@@ -864,8 +833,8 @@ oce.smooth <- function(x, ...)
         } else if (inherits(x, "ctd")) {
             for (name in names(x$data))
                 x$data[[name]] <- smooth(x$data[[name]], ...)
-        } else {
-            stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
+            } else {
+                stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     res$processing.log <- processing.log.add(res$processing.log,
         paste(deparse(match.call()), sep="", collapse=""))
@@ -968,25 +937,25 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
                 paste(format(sign * x, digits=getOption("digits")), "+/-", format(pm, digits=getOption("digits")), sep="")
             else
                 paste(format(sign * x, digits=digits), "+/-", format(pm, digits=digits), sep="")
-        } else {
-            pm <- abs(diff(ci)/2)
-            scale <- 10^floor(log10(pm))
-            pmr <- round(pm / scale)
-            if (pmr == 10) {
-                pmr <- 1
-                scale <- scale * 10
-            }
-            ##scale <- 10^floor(log10(x))
-            x0 <- x / scale
-            ci0 <- ci / scale
-            if (pm > x) return(paste(sign*x, "+/-", pm, sep=""))
-            digits <- floor(log10(scale) + 0.1)
-            if (digits < 0)
-                fmt <- paste("%.", abs(digits), "f", sep="")
-            else
-                fmt <- "%.f"
-            oce.debug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
-            paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
+            } else {
+                pm <- abs(diff(ci)/2)
+                scale <- 10^floor(log10(pm))
+                pmr <- round(pm / scale)
+                if (pmr == 10) {
+                    pmr <- 1
+                    scale <- scale * 10
+                }
+                ##scale <- 10^floor(log10(x))
+                x0 <- x / scale
+                ci0 <- ci / scale
+                if (pm > x) return(paste(sign*x, "+/-", pm, sep=""))
+                digits <- floor(log10(scale) + 0.1)
+                if (digits < 0)
+                    fmt <- paste("%.", abs(digits), "f", sep="")
+                else
+                    fmt <- "%.f"
+                oce.debug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
+                paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
         }
     }
     style <- match.arg(style)
