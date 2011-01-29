@@ -415,7 +415,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 oce.debug(debug, "subsetting an adp by time\n")
                 ##stop("cannot understand the subset; it should be e.g. 'time < as.POSIXct(\"2008-06-26 12:00:00\", tz = \"UTC\")'")
                 keep <- eval(substitute(subset), x$data$ts, parent.frame())
-                oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
+                oce.debug(debug, vector.show(keep, "keeping bins:"))
 		oce.debug(debug, "number of kept bins:", sum(keep), "\n")
                 if (sum(keep) < 2) stop("must keep at least 2 profiles")
                 rval <- x
@@ -436,7 +436,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
 			rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
 		    else if (numdim == 2)
 			rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
-		    else stop(paste("can only handle 2 or 3 dimensions to data$ma$", name, sep=""))
+		    else stop(paste("can only handle 2 or 3 dimensions in data$ma$", name, sep=""))
 		}
             } else if (length(grep("distance", subset.string))) {
                 oce.debug(debug, "subsetting an adp by distance\n")
