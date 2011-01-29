@@ -1,9 +1,6 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "adv"))  {
-        stop("method only works for 'adv' objects")
-    }
     if (missing(x))
         stop("must give argument 'x'")
     if (missing(a))
@@ -14,40 +11,12 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         stop("must give argument 't0'")
     oce.debug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
     rval <- x
-    time <- as.numeric(x$data$ts$time)
-    retime <- time + a + b * (time - as.numeric(t0))
-    for (name in names(x$data$ts)) {
-        if (name != "time") {
-            oce.debug(debug, paste("retiming data$ts$", name, "\n", sep=""))
-            if (length(x$data$ts[[name]]) > 1) {
-                rval$data$ts[[name]] <- approx(retime, x$data$ts[[name]], time, rule=2)$y
-            }
-        }
+    if ("ts" %in% names(x$data)) {
+        rval$data$ts$time <- x$data$ts$time + a + b * (x$data$ts$time - as.numeric(t0))
     }
     if ("ts.slow" %in% names(x$data)) {
-        time.slow <- as.numeric(x$data$ts.slow$time)
-        retime.slow <- time.slow + a + b * (time.slow - as.numeric(t0))
-        if (name != "time" && length(x$data$ts.slow[[name]]) > 1) {
-            oce.debug(debug, paste("retiming data$ts.slow$", name, "\n", sep=""))
-            rval$data$ts.slow[[name]] <- approx(retime.slow, x$data$ts.slow[[name]], time.slow, rule=2)$y
-        }
-        rval$data$ts.slow$time  <- retime.slow + t0 - as.numeric(t0)
+        rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (x$data$ts.slow$time - as.numeric(t0))
     }
-    for (name in names(x$data$ma)) {
-        cols <- dim(x$data$ma[[name]])[2]
-        for (col in 1:cols) {
-            class <- class(x$data$ma[[name]][1,1])
-            if (class == "raw") {
-                oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"] (as type 'raw')\n", sep=""))
-                tmp <- floor(approx(retime, as.numeric(x$data$ma[[name]][,col]), time, rule=2)$y)
-                rval$data$ma[[name]][,col] <- as.raw(ifelse(tmp<0, 0, ifelse(tmp>255, 255, tmp)))
-            } else {
-                oce.debug(debug, paste("retiming data$ma$", name, "[,",col,"]\n", sep=""))
-                rval$data$ma[[name]][,col] <- approx(retime, x$data$ma[[name]][,col], time, rule=2)$y
-            }
-        }
-    }
-    rval$data$ts$time  <- retime + t0 - as.numeric(t0)
     rval$processing.log <- processing.log.add(rval$processing.log,
                                               paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # retime.adv()\n")
@@ -740,8 +709,8 @@ add.column <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
+    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
     if (missing(to))
@@ -968,25 +937,25 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
                 paste(format(sign * x, digits=getOption("digits")), "+/-", format(pm, digits=getOption("digits")), sep="")
             else
                 paste(format(sign * x, digits=digits), "+/-", format(pm, digits=digits), sep="")
-        } else {
-            pm <- abs(diff(ci)/2)
-            scale <- 10^floor(log10(pm))
-            pmr <- round(pm / scale)
-            if (pmr == 10) {
-                pmr <- 1
-                scale <- scale * 10
-            }
-            ##scale <- 10^floor(log10(x))
-            x0 <- x / scale
-            ci0 <- ci / scale
-            if (pm > x) return(paste(sign*x, "+/-", pm, sep=""))
-            digits <- floor(log10(scale) + 0.1)
-            if (digits < 0)
-                fmt <- paste("%.", abs(digits), "f", sep="")
-            else
-                fmt <- "%.f"
-            oce.debug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
-            paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
+            } else {
+                pm <- abs(diff(ci)/2)
+                scale <- 10^floor(log10(pm))
+                pmr <- round(pm / scale)
+                if (pmr == 10) {
+                    pmr <- 1
+                    scale <- scale * 10
+                }
+                ##scale <- 10^floor(log10(x))
+                x0 <- x / scale
+                ci0 <- ci / scale
+                if (pm > x) return(paste(sign*x, "+/-", pm, sep=""))
+                digits <- floor(log10(scale) + 0.1)
+                if (digits < 0)
+                    fmt <- paste("%.", abs(digits), "f", sep="")
+                else
+                    fmt <- "%.f"
+                oce.debug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
+                paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
         }
     }
     style <- match.arg(style)
