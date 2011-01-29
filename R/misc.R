@@ -275,10 +275,10 @@ latlon.format <- function(lat, lon, digits=max(6, getOption("digits") - 1))
             rval[i] <- ""
         else
             rval[i] <- paste(format(abs(lat[i]), digits=digits),
-            if (lat[i] > 0) "N  " else "S  ",
-            format(abs(lon[i]), digits=digits),
-            if (lon[i] > 0) "E" else "W",
-            sep="")
+                if (lat[i] > 0) "N  " else "S  ",
+                format(abs(lon[i]), digits=digits),
+                if (lon[i] > 0) "E" else "W",
+                sep="")
     }
     rval
 }
@@ -293,8 +293,8 @@ lat.format <- function(lat, digits=max(6, getOption("digits") - 1))
             rval[i] <-  ""
     else
         rval[i] <- paste(format(abs(lat[i]), digits=digits),
-        if (lat[i] > 0) "N" else "S",
-        sep="")
+            if (lat[i] > 0) "N" else "S",
+            sep="")
     rval
 }
 
@@ -308,8 +308,8 @@ lon.format <- function(lon, digits=max(6, getOption("digits") - 1))
             rval[i] <-  ""
     else
         rval[i] <- paste(format(abs(lon[i]), digits=digits),
-        if (lon[i] > 0) "E" else "S",
-        sep="")
+            if (lon[i] > 0) "E" else "S",
+            sep="")
     rval
 }
 
@@ -539,40 +539,40 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
             }
             res[i] <- dist
         }
+    } else {
+        n1 <- length(lat1)
+        if (length(lon1) != n1)	stop("lat1 and lon1 must be vectors of the same length")
+        n2 <- length(lat2)
+        if (length(lon2) != n2)	stop("lat2 and lon2 must be vectors of the same length")
+        if (n2 < n1) { # take only first one
+            if (n2 != 1) warning("Using just the first element of lat2 and lon2, even though it contains more elements")
+            llat2 <- rep(lat2[1], n1)
+            llon2 <- rep(lon2[1], n1)
         } else {
-            n1 <- length(lat1)
-            if (length(lon1) != n1)	stop("lat1 and lon1 must be vectors of the same length")
-            n2 <- length(lat2)
-            if (length(lon2) != n2)	stop("lat2 and lon2 must be vectors of the same length")
-            if (n2 < n1) { # take only first one
-                if (n2 != 1) warning("Using just the first element of lat2 and lon2, even though it contains more elements")
-                llat2 <- rep(lat2[1], n1)
-                llon2 <- rep(lon2[1], n1)
+            llat2 <- lat2
+            llon2 <- lon2
+        }
+        #subroutine geoddist(DLAT1,DLON1,DLAT2,DLON2,A,F,FAZ,BAZ,S)
+        res <- vector("numeric", n1)
+        for (i in 1:n1) {
+            #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
+            if (is.finite(lat1[i]) && is.finite(lon1[i]) && is.finite(llat2[i]) && is.finite(llon2[i])) {
+                ## res[i] <- .Fortran("geoddist",
+                res[i] <- .C("geoddist",
+                    as.double(lat1[i]),
+                    as.double(lon1[i]),
+                    as.double(llat2[i]),
+                    as.double(llon2[i]),
+                    as.double(a),
+                    as.double(f),
+                    as.double(1),
+                    as.double(1),
+                    dist = double(1),
+                    PACKAGE = "oce")$dist
             } else {
-                llat2 <- lat2
-                llon2 <- lon2
+                res[i] <- NA
             }
-            #subroutine geoddist(DLAT1,DLON1,DLAT2,DLON2,A,F,FAZ,BAZ,S)
-            res <- vector("numeric", n1)
-            for (i in 1:n1) {
-                #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
-                if (is.finite(lat1[i]) && is.finite(lon1[i]) && is.finite(llat2[i]) && is.finite(llon2[i])) {
-                    ## res[i] <- .Fortran("geoddist",
-                    res[i] <- .C("geoddist",
-                        as.double(lat1[i]),
-                        as.double(lon1[i]),
-                        as.double(llat2[i]),
-                        as.double(llon2[i]),
-                        as.double(a),
-                        as.double(f),
-                        as.double(1),
-                        as.double(1),
-                        dist = double(1),
-                        PACKAGE = "oce")$dist
-                } else {
-                    res[i] <- NA
-                }
-            }
+        }
     }
     res / 1000
 }
@@ -784,47 +784,47 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
             }
             res$data$ma[[ma]] <- res$data$ma[[ma]][select,,]
         }
-        } else if (inherits(x, "adv")) { # FIXME: the (newer) adp code is probably better than this ADV code
-            oce.debug(debug, "decimate() on an ADV object\n")
-            nts <- length(x$data$ts)
-            for (its in 1:nts) {
-                oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
-                if (names(x$data$ts)[[its]] == "time" || !do.filter)
-                    res$data$ts[[its]] <- x$data$ts[[its]][select]
-                else
-                    res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE)[select]
-                oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
-            }
-            num.ma <- length(x$data$ma)
-            for (v in 1:num.ma) {
-                num.beam <- dim(x$data$ma[[v]])[2] # probably always 3, but let's not guess
-                if (do.filter) {
-                    raw <- is.raw(x$data$ma[[v]])
-                    for (beam in 1:num.beam) {
-                        if (raw) {
-                            tmp <- filter(as.numeric(x$data$ma[[v]][,beam]), filter, circular=TRUE)
-                            tmp[tmp < 0] <- 0
-                            tmp[tmp > 255] <- 255
-                            res$data$ma[[v]][,beam] <- as.raw(tmp)
-                        } else {
-                            res$data$ma[[v]][,beam] <- filter(x$data$ma[[v]][,beam], filter, circular=TRUE)
-                        }
+    } else if (inherits(x, "adv")) { # FIXME: the (newer) adp code is probably better than this ADV code
+        oce.debug(debug, "decimate() on an ADV object\n")
+        nts <- length(x$data$ts)
+        for (its in 1:nts) {
+            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+            if (names(x$data$ts)[[its]] == "time" || !do.filter)
+                res$data$ts[[its]] <- x$data$ts[[its]][select]
+            else
+                res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE)[select]
+            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+        }
+        num.ma <- length(x$data$ma)
+        for (v in 1:num.ma) {
+            num.beam <- dim(x$data$ma[[v]])[2] # probably always 3, but let's not guess
+            if (do.filter) {
+                raw <- is.raw(x$data$ma[[v]])
+                for (beam in 1:num.beam) {
+                    if (raw) {
+                        tmp <- filter(as.numeric(x$data$ma[[v]][,beam]), filter, circular=TRUE)
+                        tmp[tmp < 0] <- 0
+                        tmp[tmp > 255] <- 255
+                        res$data$ma[[v]][,beam] <- as.raw(tmp)
+                    } else {
+                        res$data$ma[[v]][,beam] <- filter(x$data$ma[[v]][,beam], filter, circular=TRUE)
                     }
-                    res$data$ma[[v]] <- res$data$ma[[v]][select,]
-                } else {
-                    res$data$ma[[v]] <- res$data$ma[[v]][select,]
                 }
-            }
-            } else if (inherits(x, "ctd")) {
-                if (do.filter) stop("cannot (yet) filter ctd data during decimation") # FIXME
-                select <- seq(1, dim(x$data)[1], by=by)
-                res$data <- x$data[select,]
-            } else if (inherits(x, "pt")) {
-                if (do.filter) stop("cannot (yet) filter pt data during decimation") # FIXME
-                for (name in names(res$data$ts))
-                    res$data[[name]] <- x$data[[name]][select]
+                res$data$ma[[v]] <- res$data$ma[[v]][select,]
             } else {
-                stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
+                res$data$ma[[v]] <- res$data$ma[[v]][select,]
+            }
+        }
+    } else if (inherits(x, "ctd")) {
+        if (do.filter) stop("cannot (yet) filter ctd data during decimation") # FIXME
+        select <- seq(1, dim(x$data)[1], by=by)
+        res$data <- x$data[select,]
+    } else if (inherits(x, "pt")) {
+        if (do.filter) stop("cannot (yet) filter pt data during decimation") # FIXME
+        for (name in names(res$data$ts))
+            res$data[[name]] <- x$data[[name]][select]
+    } else {
+        stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
@@ -861,11 +861,11 @@ oce.smooth <- function(x, ...)
                 }
             }
         }
-        } else if (inherits(x, "ctd")) {
-            for (name in names(x$data))
-                x$data[[name]] <- smooth(x$data[[name]], ...)
-        } else {
-            stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
+    } else if (inherits(x, "ctd")) {
+        for (name in names(x$data))
+            x$data[[name]] <- smooth(x$data[[name]], ...)
+    } else {
+        stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     res$processing.log <- processing.log.add(res$processing.log,
         paste(deparse(match.call()), sep="", collapse=""))
