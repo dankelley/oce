@@ -49,7 +49,7 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
     }
     rval$data$ts$time  <- retime + t0 - as.numeric(t0)
     rval$processing.log <- processing.log.add(rval$processing.log,
-        paste(deparse(match.call()), sep="", collapse=""))
+                                              paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # retime.adv()\n")
     rval
 }
@@ -275,10 +275,10 @@ latlon.format <- function(lat, lon, digits=max(6, getOption("digits") - 1))
             rval[i] <- ""
         else
             rval[i] <- paste(format(abs(lat[i]), digits=digits),
-                if (lat[i] > 0) "N  " else "S  ",
-                format(abs(lon[i]), digits=digits),
-                if (lon[i] > 0) "E" else "W",
-                sep="")
+                             if (lat[i] > 0) "N  " else "S  ",
+                             format(abs(lon[i]), digits=digits),
+                             if (lon[i] > 0) "E" else "W",
+                             sep="")
     }
     rval
 }
@@ -293,8 +293,8 @@ lat.format <- function(lat, digits=max(6, getOption("digits") - 1))
             rval[i] <-  ""
     else
         rval[i] <- paste(format(abs(lat[i]), digits=digits),
-            if (lat[i] > 0) "N" else "S",
-            sep="")
+                         if (lat[i] > 0) "N" else "S",
+                         sep="")
     rval
 }
 
@@ -308,8 +308,8 @@ lon.format <- function(lon, digits=max(6, getOption("digits") - 1))
             rval[i] <-  ""
     else
         rval[i] <- paste(format(abs(lon[i]), digits=digits),
-            if (lon[i] > 0) "E" else "S",
-            sep="")
+                         if (lon[i] > 0) "E" else "S",
+                         sep="")
     rval
 }
 
@@ -483,16 +483,16 @@ geod.xy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     if (length(lon) != n) stop("lat and lon must be vectors of the same length")
     x <- y <- vector("numeric", n)
     xy  <- .C("geod_xy",
-        as.integer(n),
-        as.double(lat),
-        as.double(lon),
-        as.double(lat.ref),
-        as.double(lon.ref),
-        as.double(a),
-        as.double(f),
-        x = double(n),
-        y = double(n),
-        PACKAGE = "oce")
+              as.integer(n),
+              as.double(lat),
+              as.double(lon),
+              as.double(lat.ref),
+              as.double(lon.ref),
+              as.double(a),
+              as.double(f),
+              x = double(n),
+              y = double(n),
+              PACKAGE = "oce")
     x <- xy$x
     y <- xy$y
     if (rotate != 0) {
@@ -524,16 +524,16 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
             if (is.finite(lat1[1]) && is.finite(lon1[1]) && is.finite(lat1[i]) && is.finite(lon1[i])) {
                 ## dist <- .Fortran("geoddist",
                 dist <- .C("geoddist",
-                    as.double(lat1[1]),
-                    as.double(lon1[1]),
-                    as.double(lat1[i]),
-                    as.double(lon1[i]),
-                    as.double(a),
-                    as.double(f),
-                    as.double(1),
-                    as.double(1),
-                    dist = double(1),
-                    PACKAGE = "oce")$dist
+                           as.double(lat1[1]),
+                           as.double(lon1[1]),
+                           as.double(lat1[i]),
+                           as.double(lon1[i]),
+                           as.double(a),
+                           as.double(f),
+                           as.double(1),
+                           as.double(1),
+                           dist = double(1),
+                           PACKAGE = "oce")$dist
             } else {
                 dist <- NA
             }
@@ -559,16 +559,16 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
             if (is.finite(lat1[i]) && is.finite(lon1[i]) && is.finite(llat2[i]) && is.finite(llon2[i])) {
                 ## res[i] <- .Fortran("geoddist",
                 res[i] <- .C("geoddist",
-                    as.double(lat1[i]),
-                    as.double(lon1[i]),
-                    as.double(llat2[i]),
-                    as.double(llon2[i]),
-                    as.double(a),
-                    as.double(f),
-                    as.double(1),
-                    as.double(1),
-                    dist = double(1),
-                    PACKAGE = "oce")$dist
+                             as.double(lat1[i]),
+                             as.double(lon1[i]),
+                             as.double(llat2[i]),
+                             as.double(llon2[i]),
+                             as.double(a),
+                             as.double(f),
+                             as.double(1),
+                             as.double(1),
+                             dist = double(1),
+                             PACKAGE = "oce")$dist
             } else {
                 res[i] <- NA
             }
@@ -578,7 +578,7 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
 }
 
 interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
-    xr=NULL, yr=NULL, gamma=0.5, iterations=2)
+                          xr=NULL, yr=NULL, gamma=0.5, iterations=2)
 {
     n <- length(x)
     if (length(y) != n) stop("lengths of x and y disagree; they are ", n, " and ", length(y))
@@ -611,16 +611,16 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
         cat("interp.barnes using calculated value yr =", yr, "\n")
     }
     zg <- .Call("interp_barnes",
-        as.double(x),
-        as.double(y),
-        as.double(z),
-        as.double(w),
-        as.double(xg),
-        as.double(yg),
-        as.double(xr),
-        as.double(yr),
-        as.double(gamma),
-        as.integer(iterations))
+                as.double(x),
+                as.double(y),
+                as.double(z),
+                as.double(w),
+                as.double(xg),
+                as.double(yg),
+                as.double(xr),
+                as.double(yr),
+                as.double(gamma),
+                as.integer(iterations))
     list(xg=xg, yg=yg, zg=zg)
 }
 
@@ -659,7 +659,7 @@ undrift.time <- function(x, slow.end = 0, tname="time")
         rval$data <- out
     }
     rval$processing.log <- processing.log.add(rval$processing.log,
-        paste(deparse(match.call()), sep="", collapse=""))
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -684,15 +684,15 @@ oce.colors.gebco <- function(n=9, region=c("water", "land", "both"), type=c("fil
     if (type == "fill") {
         ## generate land colors by e.g. rgb(t(col2rgb(land[5])-1*c(10,4,10))/255)
         land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
-            "#C79652","#BD9248","#B38E3E","#A98A34")
+                  "#C79652","#BD9248","#B38E3E","#A98A34")
         water <- c("#E1FCF7","#BFF2EC","#A0E8E4","#83DEDE","#68CDD4",
-            "#4FBBC9","#38A7BF","#2292B5","#0F7CAB")
+                   "#4FBBC9","#38A7BF","#2292B5","#0F7CAB")
     } else {
         land <- c("#FBC784","#F1C37A","#E6B670","#DCA865","#D19A5C",
-            "#C79652","#BD9248","#B38E3E","#A98A34")
+                  "#C79652","#BD9248","#B38E3E","#A98A34")
         water <- c("#A4FCE3","#72EFE9","#4FE3ED","#47DCF2","#46D7F6",
-            "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3","#3194B4",
-            "#2A7CA4","#205081","#16255E","#100C2F")
+                   "#3FC0DF","#3FC0DF","#3BB7D3","#36A5C3","#3194B4",
+                   "#2A7CA4","#205081","#16255E","#100C2F")
     }
     if (region == "water") {
         rgb.list <- col2rgb(water) / 255
@@ -734,7 +734,7 @@ add.column <- function (x, data, name)
     rval$data <- data.frame(x$data, data)
     names(rval$data) <- c(names(x$data), name)
     rval$processing.log <- processing.log.add(rval$processing.log,
-        paste(deparse(match.call()), sep="", collapse=""))
+                                              paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -829,7 +829,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
     res$processing.log <- processing.log.add(res$processing.log,
-        paste(deparse(match.call()), sep="", collapse=""))
+                                             paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -868,7 +868,7 @@ oce.smooth <- function(x, ...)
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     res$processing.log <- processing.log.add(res$processing.log,
-        paste(deparse(match.call()), sep="", collapse=""))
+                                             paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -914,9 +914,9 @@ byte2binary <- function(x, endian=c("little", "big"))
     onebyte2binary <- function(x)
     {
         c("0000","0001","0010","0011",
-            "0100","0101","0110","0111",
-            "1000","1001","1010","1011",
-            "1100","1101","1110","1111")[x+1]
+          "0100","0101","0110","0111",
+          "1000","1001","1010","1011",
+          "1100","1101","1110","1111")[x+1]
     }
     endian <- match.arg(endian)
     rval <- NULL
@@ -1015,33 +1015,33 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 integer2ascii <- function(i)
 {
     c("", "\001", "\002", "\003", "\004", "\005", "\006", "\a", "\b",
-        "\t", "\n", "\v", "\f", "\r", "\016", "\017", "\020", "\021",
-        "\022", "\023", "\024", "\025", "\026", "\027", "\030", "\031",
-        "\032", "\033", "\034", "\035", "\036", "\037", " ", "!", "\"",
-        "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<",
-        "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I",
-        "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
-        "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b",
-        "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
-        "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|",
-        "}", "~", "\177", "\x80", "\x81", "\x82", "\x83", "\x84", "\x85",
-        "\x86", "\x87", "\x88", "\x89", "\x8a", "\x8b", "\x8c", "\x8d",
-        "\x8e", "\x8f", "\x90", "\x91", "\x92", "\x93", "\x94", "\x95",
-        "\x96", "\x97", "\x98", "\x99", "\x9a", "\x9b", "\x9c", "\x9d",
-        "\x9e", "\x9f", "\xa0", "\xa1", "\xa2", "\xa3", "\xa4", "\xa5",
-        "\xa6", "\xa7", "\xa8", "\xa9", "\xaa", "\xab", "\xac", "\xad",
-        "\xae", "\xaf", "\xb0", "\xb1", "\xb2", "\xb3", "\xb4", "\xb5",
-        "\xb6", "\xb7", "\xb8", "\xb9", "\xba", "\xbb", "\xbc", "\xbd",
-        "\xbe", "\xbf", "\xc0", "\xc1", "\xc2", "\xc3", "\xc4", "\xc5",
-        "\xc6", "\xc7", "\xc8", "\xc9", "\xca", "\xcb", "\xcc", "\xcd",
-        "\xce", "\xcf", "\xd0", "\xd1", "\xd2", "\xd3", "\xd4", "\xd5",
-        "\xd6", "\xd7", "\xd8", "\xd9", "\xda", "\xdb", "\xdc", "\xdd",
-        "\xde", "\xdf", "\xe0", "\xe1", "\xe2", "\xe3", "\xe4", "\xe5",
-        "\xe6", "\xe7", "\xe8", "\xe9", "\xea", "\xeb", "\xec", "\xed",
-        "\xee", "\xef", "\xf0", "\xf1", "\xf2", "\xf3", "\xf4", "\xf5",
-        "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
-        "\xfe", "\xff")[i+1]
+      "\t", "\n", "\v", "\f", "\r", "\016", "\017", "\020", "\021",
+      "\022", "\023", "\024", "\025", "\026", "\027", "\030", "\031",
+      "\032", "\033", "\034", "\035", "\036", "\037", " ", "!", "\"",
+      "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
+      "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ":", ";", "<",
+      "=", ">", "?", "@", "A", "B", "C", "D", "E", "F", "G", "H", "I",
+      "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V",
+      "W", "X", "Y", "Z", "[", "\\", "]", "^", "_", "`", "a", "b",
+      "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+      "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "{", "|",
+      "}", "~", "\177", "\x80", "\x81", "\x82", "\x83", "\x84", "\x85",
+      "\x86", "\x87", "\x88", "\x89", "\x8a", "\x8b", "\x8c", "\x8d",
+      "\x8e", "\x8f", "\x90", "\x91", "\x92", "\x93", "\x94", "\x95",
+      "\x96", "\x97", "\x98", "\x99", "\x9a", "\x9b", "\x9c", "\x9d",
+      "\x9e", "\x9f", "\xa0", "\xa1", "\xa2", "\xa3", "\xa4", "\xa5",
+      "\xa6", "\xa7", "\xa8", "\xa9", "\xaa", "\xab", "\xac", "\xad",
+      "\xae", "\xaf", "\xb0", "\xb1", "\xb2", "\xb3", "\xb4", "\xb5",
+      "\xb6", "\xb7", "\xb8", "\xb9", "\xba", "\xbb", "\xbc", "\xbd",
+      "\xbe", "\xbf", "\xc0", "\xc1", "\xc2", "\xc3", "\xc4", "\xc5",
+      "\xc6", "\xc7", "\xc8", "\xc9", "\xca", "\xcb", "\xcc", "\xcd",
+      "\xce", "\xcf", "\xd0", "\xd1", "\xd2", "\xd3", "\xd4", "\xd5",
+      "\xd6", "\xd7", "\xd8", "\xd9", "\xda", "\xdb", "\xdc", "\xdd",
+      "\xde", "\xdf", "\xe0", "\xe1", "\xe2", "\xe3", "\xe4", "\xe5",
+      "\xe6", "\xe7", "\xe8", "\xe9", "\xea", "\xeb", "\xec", "\xed",
+      "\xee", "\xef", "\xf0", "\xf1", "\xf2", "\xf3", "\xf4", "\xf5",
+      "\xf6", "\xf7", "\xf8", "\xf9", "\xfa", "\xfb", "\xfc", "\xfd",
+      "\xfe", "\xff")[i+1]
 }
 
 apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.debug"))
@@ -1064,7 +1064,7 @@ apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.de
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
     rval$processing.log <- processing.log.add(rval$processing.log,
-        paste(deparse(match.call()), sep="", collapse=""))
+                                              paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # apply.magnetic.declination\n")
     rval
 }
@@ -1091,7 +1091,7 @@ magnetic.declination <- function(lat, lon, date)
     colat <- 90 - lat
     elong <- ifelse(lon < 0, 360 + lon, lon)
     r <- .Fortran("md_driver", as.double(colat), as.double(elong), as.double(date),
-        as.integer(n), dev=double(n))
+                  as.integer(n), dev=double(n))
     rval <- r$dev
     if (!is.null(dim))
         dim(rval) <- dim
