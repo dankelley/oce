@@ -23,7 +23,7 @@
   the calculation.
 
   Based on matlab code on
-  \url{ftp://acourstics.whoi.edu/pub/Matlab/oceans}, which was in turn
+  \url{ftp://acoustics.whoi.edu/pub/Matlab/oceans}, which was in turn
   based on Millero et al (1973, 1981).  }
 
 \value{Specific heat \eqn{J kg^{-1}\,^\circ C^{-1}}{J/(kg degC)}}

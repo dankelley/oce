@@ -447,9 +447,12 @@ plot.section <- function(x,
         }
     }
     oce.debug(debug, "\b} # plot.section()\n")
+    invisible()
 }
 
-read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.action)
+read.section <- function(file, section.id="", flags, 
+			 ship="", scientist="", institute="",
+			 debug=getOption("oce.debug"), log.action)
 {
     if (is.character(file)) {
         filename <- file
@@ -464,6 +467,9 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
         open(file, "r")
         on.exit(close(file))
     }
+    ## flag=2 for good data [WOCE]
+    if (missing(flags)) 
+	flags <- c(2)
                                         # Skip header
     lines <- readLines(file)
     if ("BOTTLE" != substr(lines[1], 1, 6))
@@ -492,20 +498,56 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
     data <- array(dim=c(nd, nv - 2))
     stn.section.id <- vector("character", nd)
     stn.id <- vector("character", nd)
+    col.start <- 3
     for (l in ((header.length + 1):(n-1))) { # last line is END_DATA
         contents <- strsplit(lines[l], split=",")[[1]]
         stn.section.id[l - header.length] <- sub(" *","", contents[2])
         stn.id[l - header.length] <- sub("^ *","", contents[3])
-        data[l - header.length,] <- contents[3:nv]
+        data[l - header.length,] <- contents[col.start:nv]
         ## FIXME: maybe should just scan this thing; it might work better anyway
     }
-    p <- as.numeric(data[,which(var.names=="CTDPRS") - 2])
-    t <- as.numeric(data[,which(var.names=="CTDTMP") - 2])
-    S <- as.numeric(data[,which(var.names=="CTDSAL") - 2])
-    water.depth  <- as.numeric(data[,which(var.names=="DEPTH") - 2])
-    latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - 2])
-    longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - 2])
-    station.id <- data[,which(var.names=="STNNBR") - 2]
+    if (length(which(var.names=="CTDPRS"))) 
+	pressure <- as.numeric(data[,which(var.names=="CTDPRS") - col.start + 1])
+    else
+       	stop("no column named \"CTDPRS\"")
+    if (length(which(var.names=="CTDTMP"))) 
+	temperature <- as.numeric(data[,which(var.names=="CTDTMP") - col.start + 1])
+    else
+       	stop("no column named \"CTDTMP\"")
+    ## Salinity is tricky.  There are two possibilities, in WOCE
+    ## files, and each has a flag.  Here, we prefer CTDSAL, but if it
+    ## has a bad flag value, we try SALNTY as a second option.  But
+    ## if both CTDSAL and SALNTY are flagged, we just give up on the 
+    ## depth.
+    if (length(which(var.names=="CTDSAL"))) 
+	ctdsal <- as.numeric(data[,which(var.names=="CTDSAL") - col.start + 1])
+    else
+       	stop("no column named \"CTDSAL\"")
+    if (length(which(var.names=="CTDSAL_FLAG_W"))) 
+	ctdsal.flag <- as.numeric(data[,which(var.names=="CTDSAL_FLAG_W") - col.start + 1])
+    else
+       	stop("no column named \"CTDSAL_FLAG_W\"")
+    if (length(which(var.names=="SALNTY"))) 
+	salnty <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
+    else
+       	stop("no column named \"SALNTY\"")
+    if (length(which(var.names=="SALNTY_FLAG_W"))) 
+	salnty.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
+    else
+       	stop("no column named \"SALNTY_FLAG_W\"")
+    if (length(which(var.names=="DATE")))
+	stn.date <- as.character(data[,which(var.names=="DATE") - col.start + 1])
+    else
+	stop("no column named \"DATE\"")
+    if (length(which(var.names=="TIME")))
+	stn.time <- as.character(data[,which(var.names=="TIME") - col.start + 1])
+    else
+	stop("no column named \"TIME\"")
+    water.depth  <- as.numeric(data[,which(var.names=="DEPTH") - col.start + 1])
+    ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
+    latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - col.start + 1])
+    longitude <- as.numeric(data[,which(var.names=="LONGITUDE") - col.start + 1])
+    station.id <- data[,which(var.names=="STNNBR") - col.start + 1]
     station.id <- sub(" *$","",sub("^ *","",station.id)) #remove blanks
     station.list <- unique(station.id)
     num.stations <- length(station.list)
@@ -513,24 +555,54 @@ read.section <- function(file, section.id="", debug=getOption("oce.debug"), log.
     stn <- vector("character", num.stations)
     lon <- vector("numeric", num.stations)
     lat <- vector("numeric", num.stations)
+    time <- vector("numeric", num.stations)
+    tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC")
+    trefn <- as.numeric(tref)
     for (i in 1:num.stations) {
         oce.debug(debug, "procession station ", i, "\n")
         select <- which(station.id == station.list[i])
-        stn[i] <- sub("^ *", "", station.id[select[1]])
-        lat[i] <- latitude[select[1]]
-        lon[i] <- longitude[select[1]]
-        select.depths <- select[(S[select] >= 0) & (t[select] >= -2) & (p[select] >= 0)]
-        this.station <- as.ctd(S[select.depths], t[select.depths], p[select.depths],
+	thedate <- stn.date[select[1]] # e.g. 19930923
+	thetime <- stn.time[select[1]] # e. g. 2222
+	time[i] <- as.numeric(as.POSIXct(paste(substr(thedate,1,4),
+			      "-",
+			      substr(thedate,5,6),
+			      "-",
+			      substr(thedate,7,8),
+			      " ",
+			      substr(thetime,1,2),
+			      ":",
+			      substr(thetime,3,4),
+			      ":00",sep=""),tz="UTC")) - trefn
+	stn[i] <- sub("^ *", "", station.id[select[1]])
+	lat[i] <- latitude[select[1]]
+	lon[i] <- longitude[select[1]]
+	## Prefer CTDSAL, but also try SALNTY if no CTDSAL is ok
+	good.salinity <- ifelse(ctdsal.flag[select] %in% flags,
+				ctdsal[select],
+				ifelse(salnty.flag[select] %in% flags,
+				       salnty[select], NA))
+	ok <- !is.na(good.salinity)
+	ok <- ok & pressure[select] >= 0
+        this.station <- as.ctd(salinity=good.salinity[ok],
+			       temperature=temperature[select[ok]],
+			       pressure=pressure[select[ok]],
+			       quality=ctdsal.flag[select[ok]],
+			       ship=ship,
+			       date=time[i] + tref,
+			       scientist=scientist,
+			       institute=institute,
                                latitude=lat[i],
                                longitude=lon[i],
                                cruise=stn.section.id[select[1]],
                                station=stn[i],
-                               water.depth=water.depth[select[1]])
+                               water.depth=water.depth[select[1]],
+			       src=filename)
         oce.debug(debug, "station at ", lat[i], "N and ", lon[i], "W\n")
         station[[i]] <- this.station
     }
     data <- list(station=station)
-    metadata <- list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon)
+    metadata <-
+    list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon,date=time+tref)
     if (missing(log.action))
         log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)

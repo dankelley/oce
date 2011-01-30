@@ -5,12 +5,17 @@ sw.N2 <- function(pressure, sigma.theta=NULL, ...) # BUG: think more about best 
         pressure <- pressure$data$pressure # over-writes pressure
     }
     args <- list(...)
-    ## df <- if (is.null(args$df)) length(p)/5 else args$df;
+    depths <- length(pressure)
     df <- if (is.null(args$df)) min(floor(length(pressure)/10), 15) else args$df;
     ok <- !is.na(pressure) & !is.na(sigma.theta)
-    sigma.theta.smooth <- smooth.spline(pressure[ok], sigma.theta[ok], df=df)
-    sigma.theta.deriv <- rep(NA, length(pressure))
-    sigma.theta.deriv[ok] <- predict(sigma.theta.smooth, pressure[ok], deriv = 1)$y
+    if (depths > 4) {
+	sigma.theta.smooth <- smooth.spline(pressure[ok], sigma.theta[ok], df=df)
+	sigma.theta.deriv <- rep(NA, length(pressure))
+	sigma.theta.deriv[ok] <- predict(sigma.theta.smooth, pressure[ok], deriv = 1)$y
+    } else {
+	sigma.theta.smooth <- as.numeric(smooth(sigma.theta[ok]))
+	sigma.theta.deriv <- c(0, diff(sigma.theta.smooth) / diff(pressure))
+    }
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigma.theta.deriv, NA)
 }
 

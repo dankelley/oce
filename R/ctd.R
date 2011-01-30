@@ -1,11 +1,11 @@
-as.ctd <- function(salinity, temperature, pressure,
-    ship=NA,scientist=NA,institute=NA,address=NA,
-    cruise=NA,station=NA,date=NA,start.time=NA,
-    latitude=NA, longitude=NA,
-    recovery=NA,
-    water.depth=NA,
-    sample.interval=NA,
-    src="")
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+as.ctd <- function(salinity, temperature, pressure, quality,
+                   ship="",scientist="",institute="",address="", cruise="",station="",
+                   date="", start.time="", recovery="",
+                   latitude=NA, longitude=NA,
+                   water.depth=NA,
+                   sample.interval=NA,
+                   src="")
 {
     if (class(salinity) == "data.frame") {
         df <- salinity
@@ -15,6 +15,9 @@ as.ctd <- function(salinity, temperature, pressure,
             temperature <- df$temperature
             pressure <- df$pressure
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
+    } else {
+        if (missing(temperature)) stop("must give temperature")
+        if (missing(pressure)) stop("must give pressure")
     }
     depths <- max(length(salinity), length(temperature), length(pressure))
     if (length(pressure) < depths)
@@ -23,11 +26,14 @@ as.ctd <- function(salinity, temperature, pressure,
         salinity <- rep(salinity[1], depths)
     if (length(temperature) < depths)
         temperature <- rep(temperature[1], depths)
+    if (missing(quality))
+        quality <- rep(2, depths)
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     data <- data.frame(salinity=salinity,
         temperature=temperature,
         pressure=pressure,
+        quality=quality,
         sigma.theta=sw.sigma.theta(salinity, temperature, pressure))
     metadata <- list(
         header=NULL,
@@ -625,7 +631,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         pushBack(line, file)
         if ("CTD" == substr(line, 1, 3))              type <- "WOCE"
         else if ("* Sea-Bird" == substr(line, 1, 10)) type <- "SBE19"
-        else stop("Cannot discover type in line", line, "\n")
+        else stop("Cannot discover type in line '", line, "'\n")
     } else {
         if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
         else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
@@ -642,6 +648,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
     debug=getOption("oce.debug"), log.action, ...)
 {
+    ## FIXME: should have an argument that selects CTDSAL or SALNTY
     oce.debug(debug, "\b\bread.ctd.woce() {\n")
     if (is.character(file)) {
         filename <- full.filename(file)
@@ -743,10 +750,12 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         if (!(0 < (r<-regexpr("^#", line)))) break
         header <- c(header, line)
     }
-    ##CTDPRS,CTDPRS_FLAG_W,CTDTMP,CTDTMP_FLAG_W,CTDSAL,CTDSAL_FLAG_W,CTDOXY,CTDOXY_FLAG_W,
+    ## 2 more header lines, one giving quantities, the next units, e.g.
+    ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+    ## ,,,,,,,,,,,,DBAR,IPTS-68,PSS-78,,PSS-78,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,,UMOL/KG,
     var.names <- strsplit(line, split=",")[[1]]
     oce.debug(debug, "var.names=", paste(var.names, collapse=" "), "[line722]\n")
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE) # skip the units line
     var.units <- strsplit(line, split=",")[[1]]
     pcol <- pmatch("CTDPRS", var.names)
     if (is.na(pcol))
@@ -754,6 +763,9 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     Scol <- pmatch("CTDSAL", var.names)
     if (is.na(Scol))
         stop("cannot find salinity column in list", paste(var.names,","))
+    Sflagcol <- pmatch("CTDSAL_FLAG_W", var.names)
+    if (is.na(Sflagcol))
+        stop("cannot find salinity-flag column in list", paste(var.names,","))
     Tcol <- pmatch("CTDTMP", var.names)
     if (is.na(Tcol))
         stop("cannot find temperature column in list", paste(var.names,","))
@@ -902,7 +914,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     found.temperature <- found.salinity <- found.pressure <- found.depth <- found.scan <- found.time <- found.sigma.theta <- found.sigma.t <- found.sigma <- found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
-    serial.number <- "?"
+    serial.number <- ""
     while (TRUE) {
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE);
         oce.debug(debug, paste("examining header line '",line,"'\n"))
@@ -1155,15 +1167,15 @@ summary.ctd <- function(object, ...)
     if (!inherits(object, "ctd")) stop("method is only for ctd objects")
     dim <- dim(object$data)
     fives <- matrix(nrow=dim[2], ncol=5)
-    res <- list(filename="?", system.upload.time="?", date="?", institute="?",
-        scientist="?", ship="?", cruise="?", latitude=NA, longitude=NA,
-        station="?", start.time=NULL, deployed="?", recovery="?", water.depth="?",
+    res <- list(filename="", system.upload.time="", date="", institute="",
+        scientist="", ship="", cruise="", latitude=NA, longitude=NA,
+        station="?", start.time=NULL, deployed="", recovery="", water.depth="",
         levels="?",
         fives=fives,
         processing.log=processing.log.summary(object))
-    res$filename <- if (!is.null(object$metadata$filename)) object$metadata$filename else "?"
-    res$filename.orig <- if (!is.null(object$metadata$filename.orig)) object$metadata$filename.orig else "?"
-    res$hexfilename <- if (!is.null(object$metadata$hexfilename)) object$metadata$hexfilename else "?"
+    res$filename <- if (!is.null(object$metadata$filename)) object$metadata$filename else ""
+    res$filename.orig <- if (!is.null(object$metadata$filename.orig)) object$metadata$filename.orig else ""
+    res$hexfilename <- if (!is.null(object$metadata$hexfilename)) object$metadata$hexfilename else ""
     if (!is.null(object$metadata$system.upload.time)) res$upload.time <- object$metadata$system.upload.time
     if (!is.null(object$metadata$date))               res$date <- object$metadata$date
     if (!is.null(object$metadata$institute))          res$institute <- object$metadata$institute
@@ -1177,8 +1189,9 @@ summary.ctd <- function(object, ...)
     if (!is.null(object$metadata$deployed))           res$deployed<- object$metadata$date
     if (!is.null(object$metadata$recovery))           res$recovery <- object$metadata$recovery
     if (!is.null(object$metadata$water.depth))        res$water.depth <- object$metadata$water.depth
-    res$type <- object$metadata$type
-    res$serial.number <- object$metadata$serial.number
+    res$src <- if (is.null(object$metadata$src)) "" else object$metadata$src
+    res$type <- if (is.null(object$metadata$type)) "" else object$metadata$type
+    res$serial.number <- if (is.null(object$metadata$serial.number)) "" else object$metadata$serial.number
     res$levels <- dim[1]
     for (v in 1:dim[2])
         fives[v,] <- fivenum(object$data[,v], na.rm=TRUE)
@@ -1192,22 +1205,53 @@ summary.ctd <- function(object, ...)
 print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("CTD Summary\n-----------\n\n", ...)
-    cat(paste("* Instrument:          ", x$type, ", serial number ", x$serial.number, "\n",sep=""))
-    cat("* Source:              ``",     x$filename, "``\n",sep="", ...)
-    cat("* Original source:     ``",     x$filename.orig, "``\n",sep="", ...)
-    cat("* Hex source:          ``",     x$hexfilename, "``\n",sep="", ...)
-    cat(paste("* System upload time: ", x$system.upload.time, "\n"), ...)
-    cat(paste("* Date:               ", x$date, "\n"), ...)
-    cat("* Institute:          ",       x$institute, "\n", ...)
-    cat("* Scientist:          ",       x$scientist, "\n", ...)
-    cat("* Ship:               ",       x$ship, "\n", ...)
-    cat("* Cruise:             ",       x$cruise, "\n", ...)
+    if ("" != x$type)
+        cat(paste("* Instrument:          ", x$type, "\n",sep=""))
+    if ("" != x$serial.number)
+        cat(paste("* Serial number:       ", x$serial.number, "\n",sep=""))
+    if ("" != x$filename)
+        cat("* Source:              \"",     x$filename, "\"\n",sep="", ...)
+    if ("" != x$src)
+        cat("* Source:              \"",     x$src, "\"\n",sep="", ...)
+    if ("" != x$filename.orig)
+        cat("* Original source:     \"",     x$filename.orig, "\"\n",sep="", ...)
+    if ("" != x$hexfilename)
+        cat("* Hex source:          \"",     x$hexfilename, "\"\n",sep="", ...)
+    if ("" != x$system.upload.time)
+        cat(paste("* System upload time: ", x$system.upload.time, "\n"), ...)
+    if (!is.null(x$date) && is.finite(x$date) && x$date != "")
+        cat(paste("* Date:               ", format(x$date), "\n"), ...)
+    if ("" != x$institute)
+        cat("* Institute:          ",       x$institute, "\n", ...)
+    if ("" != x$scientist)
+        cat("* Scientist:          ",       x$scientist, "\n", ...)
+    if ("" != x$ship)
+        cat("* Ship:               ",       x$ship, "\n", ...)
+    if ("" != x$cruise)
+        cat("* Cruise:             ",       x$cruise, "\n", ...)
     cat("* Location:           ",       latlon.format(x$latitude, x$longitude, digits=digits), "\n", ...)
-    cat("* Station:            ",       x$station, "\n", ...)
-    cat(paste("* Start time:         ", if (!is.null(x$start.time)) as.POSIXct(x$start.time) else "?", "\n"), ...)
-    cat(paste("* Deployed:           ", x$date, "\n"), ...)
-    cat(paste("* Recovered:          ", x$recovery, "\n"), ...)
-    cat("* Water depth:        ",       x$water.depth, "m\n", ...)
+    if ("" != x$station)
+        cat("* Station:            ",       x$station, "\n", ...)
+    if (!is.null(x$start.time)) {
+        if ("character" == class(x$start.time)[1]) 
+            cat(paste("* Start time:         ", x$start.time, "\n", ...))
+        else if ("POSIXt" %in% class(x$start.time))
+            cat(paste("* Start time:         ", format(x$start.time), "\n"), ...)
+    }
+    if (!is.null(x$deployed)) {
+        if ("character" == class(x$deployed)[1]) 
+            cat(paste("* Deployed:           ", x$deployed, "\n"), ...)
+        else if ("POSIXt" %in% class(x$deployed))
+            cat(paste("* Deployed:           ", format(x$deployed), "\n"), ...)
+    }
+    if (!is.null(x$recovery)) {
+        if ("character" == class(x$recovery)[1])
+            cat(paste("* Recovered:          ", x$recovery, "\n"), ...)
+        else if ("POSIXt" %in% class(x$recovery))
+            cat(paste("* Recovered:          ", format(x$recovery), "\n"), ...)
+    }
+    if (is.finite(x$water.depth))
+        cat("* Water depth:        ",       x$water.depth, "m\n", ...)
     cat("* No. of levels:      ",       x$levels,  "\n", ...)
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)

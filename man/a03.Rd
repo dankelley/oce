@@ -28,8 +28,11 @@ plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 \source{
 This is based on a WOCE file downloaded from a server, as below:
 \preformatted{
-a03 <- read.section("http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv")
-a03 <- oce.edit(a03, "section.id", "a03", person="Dan Kelley")
+a03 <- read.section("http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv", 
+	            section.id="a03",
+                    ship="R/V Professor Multanovskiy", 
+		    scientist="Vladimir Tereschenkov",
+		    institute="SIO")
 save(a03, file="oce/data/a03.rda")
 }
 }
