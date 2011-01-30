@@ -562,17 +562,17 @@ read.section <- function(file, section.id="", flags,
         oce.debug(debug, "procession station ", i, "\n")
         select <- which(station.id == station.list[i])
 	thedate <- stn.date[select[1]] # e.g. 19930923
-	thetime <- stn.time[select[1]] # e. g. 2222
+	thetime <- stn.time[select[1]] # e.g. 2222
 	time[i] <- as.numeric(as.POSIXct(paste(substr(thedate,1,4),
-			      "-",
-			      substr(thedate,5,6),
-			      "-",
-			      substr(thedate,7,8),
-			      " ",
-			      substr(thetime,1,2),
-			      ":",
-			      substr(thetime,3,4),
-			      ":00",sep=""),tz="UTC")) - trefn
+					       "-",
+					       substr(thedate,5,6),
+					       "-",
+					       substr(thedate,7,8),
+					       " ",
+					       substr(thetime,1,2),
+					       ":",
+					       substr(thetime,3,4),
+					       ":00",sep=""),tz="UTC")) - trefn
 	stn[i] <- sub("^ *", "", station.id[select[1]])
 	lat[i] <- latitude[select[1]]
 	lon[i] <- longitude[select[1]]
