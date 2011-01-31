@@ -1233,19 +1233,19 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     if ("" != x$station)
         cat("* Station:            ",       x$station, "\n", ...)
     if (!is.null(x$start.time)) {
-        if ("character" == class(x$start.time)[1]) 
+        if ("character" == class(x$start.time)[1] && x$start.time[1] != "")
             cat(paste("* Start time:         ", x$start.time, "\n", ...))
         else if ("POSIXt" %in% class(x$start.time))
             cat(paste("* Start time:         ", format(x$start.time), "\n"), ...)
     }
     if (!is.null(x$deployed)) {
-        if ("character" == class(x$deployed)[1]) 
+        if ("character" == class(x$deployed)[1] && x$deployed[1] != "") 
             cat(paste("* Deployed:           ", x$deployed, "\n"), ...)
         else if ("POSIXt" %in% class(x$deployed))
             cat(paste("* Deployed:           ", format(x$deployed), "\n"), ...)
     }
     if (!is.null(x$recovery)) {
-        if ("character" == class(x$recovery)[1])
+        if ("character" == class(x$recovery)[1] && x$recovery[1] != "")
             cat(paste("* Recovered:          ", x$recovery, "\n"), ...)
         else if ("POSIXt" %in% class(x$recovery))
             cat(paste("* Recovered:          ", format(x$recovery), "\n"), ...)
