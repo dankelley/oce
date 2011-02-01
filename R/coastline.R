@@ -100,25 +100,29 @@ plot.coastline <- function (x,
     plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i",
          axes=FALSE, ...)
     if (axes) {
-	## Construct axes "manually" because axis() does not know the physical range
-	if (debug > 0) {
-	    points(xr, yr, col="blue", pch=20, cex=3)
-	}
-	xr.pretty <- pretty(xr)
-	yr.pretty <- pretty(yr)
-	if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
-	    yr.pretty <- seq(-90, 90, 45)
-	if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
-	    xr.pretty <- seq(-180, 180, 45)
-	oce.debug(debug, "xr.pretty=", xr.pretty, "\n")
-	oce.debug(debug, "yr.pretty=", yr.pretty, "\n")
-	axis(1, at=xr.pretty, pos=yr.pretty[1])
-	axis(3, at=xr.pretty, pos=max(yr.pretty), labels=FALSE)
-	axis(2, at=yr.pretty, pos=xr.pretty[1])
-	axis(4, at=yr.pretty, pos=max(xr.pretty), labels=FALSE)
+        if (1 == prod(par('mfrow')) * prod(par('mfcol'))) {
+            ## Construct axes "manually" because axis() does not know the physical range
+            if (debug > 0) {
+                points(xr, yr, col="blue", pch=20, cex=3)
+            }
+            xr.pretty <- pretty(xr)
+            yr.pretty <- pretty(yr)
+            if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
+                yr.pretty <- seq(-90, 90, 45)
+            if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
+                xr.pretty <- seq(-180, 180, 45)
+            oce.debug(debug, "xr.pretty=", xr.pretty, "\n")
+            oce.debug(debug, "yr.pretty=", yr.pretty, "\n")
+            axis(1, at=xr.pretty, pos=yr.pretty[1])
+            axis(3, at=xr.pretty, pos=max(yr.pretty), labels=FALSE)
+            axis(2, at=yr.pretty, pos=xr.pretty[1])
+            axis(4, at=yr.pretty, pos=max(xr.pretty), labels=FALSE)
+        } else {
+            box()
+            axis(1)
+            axis(2)
+        }
     }
-    axis(1, at=xr.pretty,pos=yr.pretty[1])
-    axis(1);axis(2);box()
     yaxp <- par("yaxp")
     oce.debug(debug, "par(yaxp)",par("yaxp"),"\n")
     oce.debug(debug, "par(pin)",par("pin"),"\n")
