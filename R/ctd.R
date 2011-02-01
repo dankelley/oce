@@ -510,7 +510,14 @@ plot.ctd <- function (x, which = 1:4,
                     lonlim.c <- x$metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
                     if (missing(latlim)) {
                         latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
-                        plot(coastline, xlim=lonlim.c, ylim=latlim.c, debug=debug)
+                        # Prevent plot.coastline() from drawing axes, because that will
+                        # fail since it's a multi-panel plot, and so the page geometry will
+                        # not match the plot.
+                        # FIXME: this is a basically bug in plot.coastline()
+                        plot(coastline, xlim=lonlim.c, ylim=latlim.c, axes=FALSE, debug=debug)
+                        box()
+                        axis(1)
+                        axis(2)
                         oce.debug(debug, "CASE 1 (neither lonlim nor latlim given)\n")
                     } else {
                         plot(coastline, xlim=lonlim.c, ylim=latlim, debug=debug)

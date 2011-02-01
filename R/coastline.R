@@ -117,6 +117,8 @@ plot.coastline <- function (x,
 	axis(2, at=yr.pretty, pos=xr.pretty[1])
 	axis(4, at=yr.pretty, pos=max(xr.pretty), labels=FALSE)
     }
+    axis(1, at=xr.pretty,pos=yr.pretty[1])
+    axis(1);axis(2);box()
     yaxp <- par("yaxp")
     oce.debug(debug, "par(yaxp)",par("yaxp"),"\n")
     oce.debug(debug, "par(pin)",par("pin"),"\n")
