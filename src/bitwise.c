@@ -20,7 +20,8 @@ SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes)
 {
   /* "unwrap" a vector of integers that are sequence numbers wrapping in 'bytes' bytes, 
    * creating the sequence numbers that might have resulted, had 'seq' not been
-   * created module 'bytes' bytes.
+   * created modulo 'bytes' bytes.
+   *
    */
   PROTECT(seq = AS_INTEGER(seq));
   int *pseq = INTEGER_POINTER(seq);
