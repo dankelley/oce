@@ -92,22 +92,19 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
   for (int i = 0; i < lbuf - 3 - chunk_length; i++) { // FIXME is 3 right, or needed?
     check_sum = check_sum_start;
     if (pbuf[i] == byte1 && pbuf[i+1] == byte2 && pbuf[i+2] == byte3) {
-#ifdef DEBUG
-      Rprintf("tentative match %d at i = %d ... ", matches, i);
-#endif
       for (int c = 0; c < chunk_length; c++)
 	check_sum += (unsigned short int)pbuf[i + c];
       desired_check_sum = ((unsigned short)pbuf[i+chunk_length]) | ((unsigned short)pbuf[i+chunk_length+1] << 8);
       if (check_sum == desired_check_sum) {
 	matches++;
 #ifdef DEBUG
-	Rprintf("good match (check_sum=%d)\n", check_sum);
+	Rprintf("good match i=%d check_sum=%d\n", i, check_sum);
 #endif
 	if (max != 0 && matches >= max)
 	  break;
       } else {
 #ifdef DEBUG
-	Rprintf("bad checksum\n");
+	Rprintf("bad checksum i=%d\n", i);
 #endif
       }
     }
@@ -127,20 +124,17 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
 	for (int c = 0; c < chunk_length; c++)
 	  check_sum += (unsigned short int)pbuf[i + c];
 	desired_check_sum = ((unsigned short)pbuf[i+chunk_length]) | ((unsigned short)pbuf[i+chunk_length+1] << 8);
-	if (check_sum == desired_check_sum) {
+	if (check_sum == desired_check_sum)
 	  pres[ires++] = i + 1; /* the +1 is to get R pointers */
-	}
 	if (ires > lres)        /* FIXME: or +1? */
 	  break;
       }
     }
-    UNPROTECT(6);
-    return(res);
   } else {
     PROTECT(res = NEW_INTEGER(1));
     int *pres = INTEGER_POINTER(res);
     pres[0] = 0;
-    UNPROTECT(6);
-    return(res);
   }
+  UNPROTECT(6);
+  return(res);
 }
