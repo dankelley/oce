@@ -13,10 +13,10 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         latitude=latitude, longitude=longitude,
                         debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek") # guess
-        read.adv.sontek.realtime(file=file, from=from, to=to, by=by, tz=tz,
-                                 latitude=latitude, longitude=longitude,
-                                 start=start, deltat=deltat,
-                                 debug=debug, monitor=monitor, log.action=log.action)
+        read.adv.sontek.serial(file=file, from=from, to=to, by=by, tz=tz,
+                               latitude=latitude, longitude=longitude,
+                               start=start, deltat=deltat,
+                               debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
                             latitude=latitude, longitude=longitude,
@@ -427,13 +427,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-read.adv.sontek.realtime <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                      type="default",
                                      latitude=NA, longitude=NA,
                                      start, deltat,
                                      debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
-    oce.debug(debug, paste("\b\bread.adv.sontek(file[1]=\"", file[1],
+    oce.debug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
                            ", by=", by,

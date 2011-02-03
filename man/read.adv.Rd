@@ -1,7 +1,7 @@
 \name{read.adv}
 \alias{read.adv}
 \alias{read.adv.nortek}
-\alias{read.adv.sontek.realtime}
+\alias{read.adv.sontek.serial}
 \alias{read.adv.sontek.adr}
 \alias{read.adv.sontek.text}
 
@@ -21,7 +21,7 @@ read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   header=TRUE,
   latitude=NA, longitude=NA,
   debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek.realtime(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
   type="default",
   latitude=NA, longitude=NA,
   start, deltat,
@@ -106,7 +106,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   required for further processing.
 
   Files \emph{without} headers may be created in experiments in which a
-  data logger was set up to monitor the real-time data stream from an
+  data logger was set up to monitor the serial data stream from an
   instrument.  The lack of header information places a burden on the
   user, who must supply such basic information as the times of
   observations, the instrument orientation, the instrument coordinate
@@ -124,7 +124,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     \item The call to the \code{read} function must include a start time
     (\code{start}) and the number of seconds between data
     (\code{deltat}), again, because the instrument data stream may lack
-    those things when the device is set to a real-time mode.  Also, of
+    those things when the device is set to a serial mode.  Also, of
     course, it is necessary to set \code{header=FALSE} in the function
     call.
 
@@ -279,7 +279,7 @@ library(oce)
 table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
                     from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
                     to=as.POSIXct("2008-07-01 2:00:00", tz="UTC"))
-d <- read.adv.sontek.realtime(file=table$filename, start=table$start.time, deltat=1/10)
+d <- read.adv.sontek.serial(file=table$filename, start=table$start.time, deltat=1/10)
 d <- oce.edit(d, "coordinate.system", "xyz") # original coordinate
 d <- oce.edit(d, "oce.coordinate", "xyz")    # present coordinate
 # Note that the transformation matrix varies from instrument to instrument.

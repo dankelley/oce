@@ -1,3 +1,4 @@
+## vim: tw=100:
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             latitude=NA, longitude=NA,
                             type=c("adp"),
@@ -334,3 +335,159 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
     milliseconds <- readBin(t[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
     ISOdatetime(year, month, day, hour, minute, second+milliseconds/1000, tz=tz)
 }
+
+read.adp.sontek.serial <- function(file, from=1, to, by=1,
+                                   latitude=NA, longitude=NA,
+                                   monitor=TRUE, log.action,
+                                   debug=getOption("oce.debug")) 
+{
+    oce.debug(debug, paste("\b\bread.adp.sontek.serial(file[1]=\"", file[1],
+                           "\", from=", from,
+                           if (missing(to)) "to," else sprintf(", to=%s, ", format(to)),
+                           ", by=", by,
+                           ", latitude=", latitude, ", longitude=", longitude,
+                           ", monitor=", monitor,
+                           ", log.action=(not shown), debug=", debug, ") {\n", sep=""))
+    if (!missing(to))
+        warning("argument 'to' is being ignored")
+    if (!missing(by))
+        warning("argument 'by' is being ignored")
+    nfile <- length(file)
+    if (nfile > 1) {                   # handle multiple files
+        oce.debug(debug, "handling multiple files\n")
+        buf <- NULL
+        for (i in 1:nfile) {
+            if (monitor)
+                cat("\"", file[i], "\" ", sep="")
+            this.file <- file(file[i], "rb")
+            seek(this.file, 0, "end", rw="read")
+            file.size <- seek(this.file, 0, origin="start", rw="read")
+            if (monitor)
+                cat(file.size,"bytes\n") else cat("\n")
+            buf <- c(buf, readBin(this.file, what="raw", n=file.size, endian="little"))
+            close(this.file)
+        }
+        filename <- paste("(\"", file[i], "\", ...)", sep="")
+    } else {                            # handle single file (which might be a connection, etc)
+        if (is.character(file)) {
+            filename <- full.filename(file)
+            file <- file(file, "rb")
+            on.exit(close(file))
+        }
+        if (!inherits(file, "connection"))
+            stop("argument `file' must be a character string or connection")
+        if (!isOpen(file)) {
+            filename <- "(connection)"
+            open(file, "rb")
+            on.exit(close(file))
+        }
+        ## read whole file into buffer
+        seek(file, 0, "end", rw="read")
+        file.size <- seek(file, 0, origin="start", rw="read")
+        oce.debug(debug, "filesize=",file.size,"\n")
+        buf <- readBin(file, what="raw", n=file.size, endian="little")
+    }
+    p <- .Call("ldc_sontek_adp", buf, 0, 0, 0, -1) # no ctd, no gps, no bottom-track; all data
+    np <- length(p)
+    pp <- sort(c(p, p+1)) # for 2-byte addressing ('int' in the Sontek docs)
+    pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
+    ## read some unchanging things from the first profile only
+    serial.number <- paste(readBin(buf[p[1]+4:13], "character", n=10, size=1),collapse="")
+    number.of.beams <- readBin(buf[p[1]+26], "integer", n=1, size=1, signed=FALSE)
+    orientation <- readBin(buf[p[1]+27], "integer", n=1, size=1, signed=FALSE)
+    if (orientation == 0) orientation <- "upward"
+    else if (orientation == 1) orientation  <- "downward"
+    else if (orientation == 2) orientation <- "sideward"
+    else stop("orientation=", orientation, "but must be 0 (up), 1 (down), or 2 (side)")
+    # 28 is tempmode
+    # coord.system 0=beam 1=XYZ 2=ENU
+    coordinate.system <- readBin(buf[p[1]+29], "integer", n=1, size=1, signed=FALSE) 
+    if (coordinate.system== 0) coordinate.system <- "beam"
+    else if (coordinate.system == 1) coordinate.system <- "xyz"
+    else if (coordinate.system == 2) coordinate.system <- "enu"
+    else stop("coordinate.system=", coordinate.system, "but must be 0 (beam), 1 (xyz), or 2 (enu)")
+    # orientation 0=down 1=up 2=side
+    number.of.cells <- readBin(buf[p[1]+30:31], "integer", n=1, size=2, signed=FALSE)
+    cell.size <- 0.01*readBin(buf[p[1]+32:33], what="integer", n=1, size=2, signed=FALSE)
+    blanking.distance <- 0.01*readBin(buf[p[1]+34:35], what="integer", n=1, size=2, signed=FALSE)
+    distance <- blanking.distance + cell.size * seq(from=0.5, by=cell.size, length.out=number.of.cells)
+    ## read profile-specific things profile by profile
+    profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4, signed=FALSE)
+    ## FIXME: should check that profile number is monotonic ... it may
+    ## help us with daily blank-outs, also!
+    year <- readBin(buf[pp+18],"integer",n=np,size=2,signed=FALSE)
+    day <- readBin(buf[p+20],"integer",n=np,size=1,signed=FALSE)
+    month <- readBin(buf[p+21],"integer",n=np,size=1,signed=FALSE)
+    minute <- readBin(buf[p+22],"integer",n=np,size=1,signed=FALSE)
+    hour <- readBin(buf[p+23],"integer",n=np,size=1,signed=FALSE)
+    sec100 <- readBin(buf[p+24],"integer",n=np,size=1,signed=FALSE)
+    sec <- readBin(buf[p+25],"integer",n=np,size=1,signed=FALSE)
+    time <- ISOdatetime(year, month, day, hour, minute, sec+0.01*sec100)
+    rm(year, day, month, minute, hour, sec100, sec)
+    heading <- 0.1 * readBin(buf[pp+40], "integer", n=np, size=2, signed=TRUE)
+    pitch <- 0.1 * readBin(buf[pp+42], "integer", n=np, size=2, signed=TRUE)
+    roll <- 0.1 * readBin(buf[pp+44], "integer", n=np, size=2, signed=TRUE)
+    temperature <- 0.01 * readBin(buf[pp+46], "integer", n=np, size=2, signed=TRUE)
+    v <- array(numeric(), dim=c(np, number.of.cells, number.of.beams))
+    vstd <- array(numeric(), dim=c(np, number.of.cells, number.of.beams))
+    amp <- array(numeric(), dim=c(np, number.of.cells, number.of.beams))
+    ndata <- number.of.cells * number.of.beams
+    i1 <- seq(1, ndata)
+    i2 <- seq(1, 2*ndata)
+    for (ip in 1:np) {
+        p0 <- p[ip] + 79
+        v_ <- matrix(0.001*readBin(buf[p0 + i2], 
+                                   "integer", endian="little", n=ndata, size=2, signed=TRUE),
+                     ncol=number.of.beams, byrow=FALSE)
+        p0 <- p0 + 2 * ndata
+        vstd_ <- matrix(0.001*readBin(buf[p0 + i1],
+                                      "integer", endian="little", n=ndata, size=1, signed=FALSE),
+                        ncol=number.of.beams, byrow=FALSE)
+        p0 <- p0 + ndata
+        amp_ <- matrix(readBin(buf[p0 + i1],
+                               "integer", endian="little", n=ndata, size=1, signed=FALSE),
+                       ncol=number.of.beams, byrow=FALSE)
+        for (b in 1:number.of.beams) {
+            v[ip,,b] <- v_[,b]
+            vstd[ip,,b] <- vstd_[,b]
+            amp[ip,,b] <- amp_[,b]
+        } 
+        if (monitor) {
+            if ((ip %% 50)) 
+                cat(".")
+            else
+                cat(".", ip, "\n")            
+        }
+    }
+    if (monitor) 
+        cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
+
+    metadata <- list(manufacturer="sontek",
+                     instrument.type="adp",
+                     serial.number=serial.number,
+                     filename=filename,
+                     latitude=latitude, longitude=longitude,
+                     transformation.matrix=NULL,# FIXME transformation.matrix,
+                     measurement.start=0, measurement.end=np, measurement.deltat=1,
+                     subsample.start=0, subsample.end=np, subsample.deltat=1,
+                     frequency=NA, # FIXME
+                     number.of.samples=np,
+                     number.of.beams=number.of.beams,
+                     coordinate.system="xyz", # FIXME guess
+                     oce.coordinate="xyz",    # FIXME guess
+                     beam.angle=NA, # FIXME
+                     oce.beam.attenuated=FALSE,
+                     orientation="up")        # FIXME guess
+    data <- list(ts=list(time=time,
+                         heading=heading, pitch=pitch, roll=roll,
+                         temperature=temperature,
+                         pressure=rep(0, length(temperature))),
+                 ss=list(distance=distance),
+                 ma=list(v=v,vstd=vstd,amp=amp)) # velo, velo stddev, amplitude
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("sontek", "adp", "oce")
+    res
+}
+

@@ -129,7 +129,9 @@ summary.adp <- function(object, ...)
                                  adp.type=object$metadata$adp.type,
                                  slant.angle=object$metadata$slant.angle,
                                  orientation=object$metadata$orientation)
-        } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+        } else {
+            stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+        }
 
         ## start building res from the header information
         have.data <- !is.null(object$data)
@@ -446,11 +448,20 @@ plot.adp <- function(x,
                 zlim <- range(as.numeric(x$data$ma$a[,y.look,]), na.rm=TRUE)
                 zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
             } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation
-                z <- as.numeric(x$data$ma$q[,,which[w]-8])
-                dim(z) <- dim(x$data$ma$q)[1:2]
-                zlim <- c(0, 100)
-                zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
-            } else skip <- TRUE
+                if ("q" %in% names(x$data$ma)) {
+                    z <- as.numeric(x$data$ma$q[,,which[w]-8])
+                    dim(z) <- dim(x$data$ma$q)[1:2]
+                    zlim <- c(0, 100)
+                    zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
+                } else if ("amp" %in% names(x$data$ma)) {
+                    z <- as.numeric(x$data$ma$amp[,,which[w]-8])
+                    dim(z) <- dim(x$data$ma$amp)[1:2]
+                    zlim <- c(0, max(x$data$ma$amp))
+                    zlab <- c(expression(amp[1]),expression(amp[2]),expression(amp[3]))[which[w]-8]
+                }
+            } else {
+                skip <- TRUE
+            }
             if (!skip) {
                 ##oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, " (just about to plot)\n")
                 if (use.new.imagep) {
@@ -755,8 +766,9 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
                     ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
                     tm[2,] <- -tm[2,]       # FIXME: shouldn't this be done in read.adp.nortek() ?
                     tm[3,] <- -tm[3,]
-                } else if (x$metadata$orientation != "upward")
+                } else if (x$metadata$orientation != "upward") {
                     stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
+                }
             }
             res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
             res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]

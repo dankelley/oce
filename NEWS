@@ -1,7 +1,8 @@
 0.1-82
+- read.adp.sontek.serial(): added
 - read.section(): handle WOCE quality flags for salinity
 - retime(): added
-- read.adv.sontek.realtime(): correct error in class of 'a' and 'c'
+- read.adv.sontek.serial(): correct error in class of 'a' and 'c'
 - despike(): use string value for argument 'method'
 - logger.toc(): fix bug in discovering files ranging over days
 - as.ctd(): make temperature and salinity into vectors, if not already
