@@ -432,6 +432,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     serial.number <- paste(readBin(buf[p[1]+4:13], "character", n=10, size=1),collapse="")
     number.of.beams <- readBin(buf[p[1]+26], "integer", n=1, size=1, signed=FALSE)
     orientation <- readBin(buf[p[1]+27], "integer", n=1, size=1, signed=FALSE)
+    oce.debug(debug, "orientation=",orientation,"0 for up, 1 for down, 2 for side\n")
     if (orientation == 0)
         orientation <- "upward"
     else if (orientation == 1)
@@ -543,28 +544,14 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     }
     if (monitor)
         cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
-
-    ## FIXME: using 25 degrees, which is FLAT-OUT wrong
-    ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
-    ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
-    ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
-    beam.angle <- 25
-    S  <- 1 / (3 * sin(beam.angle * pi / 180))             # 0.7887339
-    CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
-    C  <- 1 / (3 * cos(beam.angle * pi / 180))             # 0.3677926
+    beam.angle <- 25 ## FIXME: can we assume this for all instruments??
+    S  <- 1 / (3 * sin(beam.angle * pi / 180))
+    CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2
+    C  <- 1 / (3 * cos(beam.angle * pi / 180))
     transformation.matrix <- matrix(c(2*S,  -S,  -S,
                                       0  , -CS,  CS,
                                       C  ,   C,   C),
                                     nrow=3, byrow=TRUE)
-    if (debug > 0) {
-        cat("transformation.matrix:\n")
-        print(transformation.matrix)
-    }
-    ## For later use, RC says that the PC-ADP uses
-    ## T =  2.576  -1.288  -1.288
-    ##      0.000  -2.230   2.230
-    ##      0.345   0.345   0.345
-    ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
     metadata <- list(manufacturer="sontek",
                      instrument.type="adp",
                      serial.number=serial.number,
