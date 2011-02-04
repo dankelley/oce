@@ -817,10 +817,9 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     }
     if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
         1 == length(agrep("sontek", x$metadata$manufacturer))) {
-        warning("detected nortek-vector or sontek-adv, and subtracting 90 from heading")
         heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
-        warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
         pitch <- - pitch
+        warning("since nortek-adp or sontek-adp, changed sign of pitch and subtracted 90 from heading")
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))

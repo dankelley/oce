@@ -324,6 +324,19 @@ oce.edit <- function(x, item, value, action, reason="", person="",
                 } else
                     stop("do not know how to handle this item")
             }
+        } else if (inherits(x, "adp")) {
+            oce.debug(debug, "object is an ADP\n")
+            hpr <- 0 < length(grep("heading|pitch|roll", item))
+            if (hpr) {
+                oce.debug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
+                x$data$ts[[item]] <- value
+            } else {
+                if (item %in% names(x$metadata)) {
+                    oce.debug(debug, "changing metadata[[", item, "]]\n")
+                    x$metadata[[item]] <- value
+                } else
+                    stop("do not know how to handle this item")
+            }
         } else if ("instrument.type" %in% names(x$metadata) && x$metadata$instrument.type == "aquadopp-hr") {
             oce.debug(debug, "About to try editing AQUADOPP ...\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item)) # FIXME: possibly aquadopp should have ts.slow
@@ -416,7 +429,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 ##stop("cannot understand the subset; it should be e.g. 'time < as.POSIXct(\"2008-06-26 12:00:00\", tz = \"UTC\")'")
                 keep <- eval(substitute(subset), x$data$ts, parent.frame())
                 oce.debug(debug, vector.show(keep, "keeping bins:"))
-		oce.debug(debug, "number of kept bins:", sum(keep), "\n")
+                oce.debug(debug, "number of kept bins:", sum(keep), "\n")
                 if (sum(keep) < 2) stop("must keep at least 2 profiles")
                 rval <- x
                 for (name in names(x$data$ts)) {
@@ -430,14 +443,14 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                     }
                 }
                 for (name in names(x$data$ma)) {
-		    oce.debug(debug, "subsetting x$data$", name, "\n")
-		    numdim <- length(dim(rval$data$ma[[name]]))
-		    if (numdim == 3)
-			rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
-		    else if (numdim == 2)
-			rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
-		    else stop(paste("can only handle 2 or 3 dimensions in data$ma$", name, sep=""))
-		}
+                    oce.debug(debug, "subsetting x$data$", name, "\n")
+                    numdim <- length(dim(rval$data$ma[[name]]))
+                    if (numdim == 3)
+                        rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
+                    else if (numdim == 2)
+                        rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
+                    else stop(paste("can only handle 2 or 3 dimensions in data$ma$", name, sep=""))
+                }
             } else if (length(grep("distance", subset.string))) {
                 oce.debug(debug, "subsetting an adp by distance\n")
                 keep <- eval(substitute(subset), x$data$ss, parent.frame())
@@ -613,7 +626,7 @@ magic <- function(file, debug=getOption("oce.debug"))
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file))
-    	open(file, "r")
+        open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
@@ -667,13 +680,13 @@ magic <- function(file, debug=getOption("oce.debug"))
             oce.debug(debug, "this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
         } else
-        stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
-    ##} else if (as.integer(bytes[1]) == 81) {
-    ##    warning("possibly this file is a sontek ADV (first byte is 81)")
-    ##} else if (as.integer(bytes[1]) == 83) {
-    ##    warning("possibly this file is a sontek ADV (first byte is 83)")
-    ##} else if (as.integer(bytes[1]) == 87) {
-    ##    warning("possibly this file is a sontek ADV (first byte is 87)")
+            stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
+        ##} else if (as.integer(bytes[1]) == 81) {
+        ##    warning("possibly this file is a sontek ADV (first byte is 81)")
+        ##} else if (as.integer(bytes[1]) == 83) {
+        ##    warning("possibly this file is a sontek ADV (first byte is 83)")
+        ##} else if (as.integer(bytes[1]) == 87) {
+        ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
@@ -1019,7 +1032,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         }
         ## The below is not fool-proof, depending on how xlim might have been supplied; see
         ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
-	if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
+        if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
             label <- paste(tr1, tr2, sep=" to ")
         } else {
             label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
