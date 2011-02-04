@@ -817,7 +817,8 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     }
     if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
         1 == length(agrep("sontek", x$metadata$manufacturer))) {
-        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
+        ## Adjust the heading, so that the formulae (based on RDI) will work here
+        heading <- heading - 90
         pitch <- - pitch
         warning("since nortek-adp or sontek-adp, changed sign of pitch and subtracted 90 from heading")
     }

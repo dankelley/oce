@@ -385,7 +385,6 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
         oce.debug(debug, "result: t=", format(t), " at d[", middle, "]=", p[middle], "\n")
         return(list(index=middle, time=t))
     }
-
     oce.debug(debug, paste("\b\bread.adp.sontek.serial(file[1]=\"", file[1],
                            "\", from=", from,
                            if (missing(to)) "to," else sprintf(", to=%s, ", format(to)),

@@ -64,7 +64,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (!header) stop("header must be TRUE")
     oce.debug(debug, "  read.adv.nortek() about to read header\n")
     oce.debug(debug, "  read.adv.nortek() finished reading header\n")
-    # find file length
+                                        # find file length
     seek(file, 0, "end")
     file.size <- seek(file, 0, "start")
     oce.debug(debug, "  file.size=", file.size, "\n")
@@ -416,8 +416,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##print(attributes(time)) # is time out somehow?
     ##print(time[1])
     data <- list(ts=list(time=time,
-                 ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
-                 pressure=pressure),
+                         ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
+                         pressure=pressure),
                  ts.slow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
                  ##ss=list(distance=0),   # FIXME: why even have this?
                  ma=list(v=v, a=a, c=c))
@@ -428,10 +428,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 }
 
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                                     type="default",
-                                     latitude=NA, longitude=NA,
-                                     start, deltat,
-                                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                                   type="default",
+                                   latitude=NA, longitude=NA,
+                                   start, deltat,
+                                   debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
     oce.debug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
@@ -534,9 +534,9 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     time <- start[1] + (serial.number - serial.number[1]) * deltat
 
     data <- list(ts=list(time=time,
-                 heading=0, pitch=0, roll=0, # this will have to be filled in later by the user
-                 temperature=temperature,
-                 pressure=pressure),
+                         heading=0, pitch=0, roll=0, # this will have to be filled in later by the user
+                         temperature=temperature,
+                         pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v,a=a,c=c))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -982,11 +982,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     heading <- heading[iii]
     roll <- roll[iii]
     data <- list(ts=list(time=time,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll,
-                 temperature=temperature,
-                 pressure=pressure),
+                         heading=heading,
+                         pitch=pitch,
+                         roll=roll,
+                         temperature=temperature,
+                         pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -1079,7 +1079,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
     oce.debug(debug, "seek from:", from.byte, "\n", "seek to:", to.byte, "\n")
     seek(ts.file, where=from.byte, origin="start")
     ts <- matrix(scan(ts.file, n=items.per.sample*(to.burst - from.burst + 1)*samples.per.burst, quiet=TRUE),
-                      ncol=items.per.sample, byrow=TRUE)
+                 ncol=items.per.sample, byrow=TRUE)
     len <- dim(ts)[1]
     v <- array(numeric(), dim=c(len, 3))
     v[,1] <- ts[,3] / 100
@@ -1100,11 +1100,11 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
     ## trim to the requested interval
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
     data <- list(ts=list(time=tt[ok],
-                 heading=approx(t, heading, xout=tt, rule=2)$y[ok],
-                 pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
-                 roll=approx(t, roll, xout=tt, rule=2)$y[ok],
-                 temperature=temperature,
-                 pressure=pressure),
+                         heading=approx(t, heading, xout=tt, rule=2)$y[ok],
+                         pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
+                         roll=approx(t, roll, xout=tt, rule=2)$y[ok],
+                         temperature=temperature,
+                         pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
     metadata <- list(manufacturer="sontek",
@@ -1285,7 +1285,7 @@ plot.adv <- function(x,
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     dots <- names(list(...))
-    #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
+                                        #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -1770,14 +1770,10 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ##print(x$metadata)
     if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
         1 == length(agrep("sontek", x$metadata$manufacturer))) {
-        warning("detected nortek-vector or sontek-adv, and subtracting 90 from heading")
-        # Notes on the next line of code:
-        #  * 2 people agreed on 2010-08-24 that it should read "+90"
-        #  * 3 people agreed on 2010-08-25 that it should read "-90"
-        #  * 3 people agreed on 2011-01-20 that it should read "-90"
-        heading <- heading - 90 # See note above
-        warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
+        ## Adjust the heading, so that the formulae (based on RDI) will work here
+        heading <- heading - 90
         pitch <- - pitch
+        warning("since nortek-adv or sontek-adv, changed sign of pitch and subtracted 90 from heading")
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
