@@ -1,3 +1,4 @@
+## vim: tw=100 shiftwidth=4 softtabstop=4 expandtab:
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
@@ -264,8 +265,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE,
                          log.action, ...)
 {
-    bisect.rdi.adp <- function(t.find, add=0, debug=0) {
-        oce.debug(debug, "bisect.rdi.adv(t.find=", format(t.find), ", add=", add, "\n")
+    bisect.adp.rdi <- function(t.find, add=0, debug=0) {
+        oce.debug(debug, "bisect.adp.rdi(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profile.start)
         lower <- 1
         upper <- len
@@ -367,9 +368,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             oce.debug(debug, "measurement.deltat:", measurement.deltat, "\n")
             if (inherits(from, "POSIXt")) {
                 if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
-                from.pair <- bisect.rdi.adp(from, add=-1, debug=debug-1)
+                from.pair <- bisect.adp.rdi(from, add=-1, debug=debug-1)
                 from <- from.index <- from.pair$index
-                to.pair <- bisect.rdi.adp(to, add=1, debug=debug-1)
+                to.pair <- bisect.adp.rdi(to, add=1, debug=debug-1)
                 to <- to.index <- to.pair$index
                 oce.debug(debug, "from=", format(from.pair$t), " yields profile.start[", from.index, "]\n",
                           "  to  =", format(to.pair$t), "yields profile.start[", to.index, "]\n",
