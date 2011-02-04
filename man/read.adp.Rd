@@ -30,7 +30,7 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   type=c("adp"),
   debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
   \dots)
-read.adp.sontek.serial(file, from=1, to, by=1,
+read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
                       latitude=NA, longitude=NA,
                       monitor=TRUE, log.action,
                       debug=getOption("oce.debug")) 
