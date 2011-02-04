@@ -451,8 +451,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
         coordinate.system <- "enu"
     else
         stop("coordinate.system=", coordinate.system, "but must be 0 (beam), 1 (xyz), or 2 (enu)")
-    number.of.cells <- readBin(buf[p[1]+30:31], "integer", n=1, size=2, signed=FALSE)
-    cell.size <- 0.01*readBin(buf[p[1]+32:33], what="integer", n=1, size=2, signed=FALSE)
+    number.of.cells <- readBin(buf[p[1]+30:31], "integer", n=1, size=2, signed=FALSE, endian="little")
+    cell.size <- 0.01*readBin(buf[p[1]+32:33], what="integer", n=1, size=2, signed=FALSE, endian="little")
     blanking.distance <- 0.01*readBin(buf[p[1]+34:35], what="integer", n=1, size=2, signed=FALSE)
     distance <- blanking.distance + cell.size * seq(from=0.5, by=cell.size, length.out=number.of.cells)
     ## trim, if from and to are integers
