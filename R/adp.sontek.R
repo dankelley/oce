@@ -1,4 +1,4 @@
-## vim: tw=100 shiftwidth=4 softtabstop=4 expandtab:
+## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             latitude=NA, longitude=NA,
                             type=c("adp"),
@@ -339,7 +339,7 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                    latitude=NA, longitude=NA,
                                    monitor=TRUE, log.action,
-                                   debug=getOption("oce.debug")) 
+                                   debug=getOption("oce.debug"))
 {
     bisect.adp.sontek.serial <- function(t.find, add=0, tz="UTC", debug=0) {
         oce.debug(debug, "bisect.adp.sontek.serial(t.find=", format(t.find), ", add=", add, "\n")
@@ -357,9 +357,9 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
             sec100 <- readBin(buf[p[middle] + 24], what="integer", n=1, size=1, signed=FALSE)
             sec    <- readBin(buf[p[middle] + 25], what="integer", n=1, size=1, signed=FALSE)
             t <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=min, sec=sec + sec100/100, tz=tz)
-            oce.debug(debug, "t=", format(t), " y=", year, " m=", month, " d=", format(day, width=2), 
+            oce.debug(debug, "t=", format(t), " y=", year, " m=", month, " d=", format(day, width=2),
                       " h=", format(hour, width=2),
-                      " m=", format(min, width=2), 
+                      " m=", format(min, width=2),
                       " s=", format(sec+sec100/100, width=4),
                       "| pass", format(pass, width=2), "/", passes, "| middle=", middle,
                       "(", format(middle/upper*100,digits=4), "%)\n", sep="")
@@ -442,7 +442,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
         stop("orientation=", orientation, "but must be 0 (upward), 1 (downward), or 2 (sideward)")
     ## 28 is tempmode
     ## coord.system 0=beam 1=XYZ 2=ENU
-    coordinate.system <- readBin(buf[p[1]+29], "integer", n=1, size=1, signed=FALSE) 
+    coordinate.system <- readBin(buf[p[1]+29], "integer", n=1, size=1, signed=FALSE)
     if (coordinate.system == 0)
         coordinate.system <- "beam"
     else if (coordinate.system == 1)
@@ -471,7 +471,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
             if (inherits(from, "POSIXt")) {
                 if (!inherits(to, "POSIXt"))
                     stop("if 'from' is POSIXt, then 'to' must be, also")
-                if (!is.numeric(by)) { 
+                if (!is.numeric(by)) {
                     warning("'by' must be numeric")
                     by <- 1
                 }
@@ -518,7 +518,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     i2 <- seq(1, 2*ndata)
     for (ip in 1:np) {
         p0 <- p[ip] + 79
-        v_ <- matrix(0.001*readBin(buf[p0 + i2], 
+        v_ <- matrix(0.001*readBin(buf[p0 + i2],
                                    "integer", endian="little", n=ndata, size=2, signed=TRUE),
                      ncol=number.of.beams, byrow=FALSE)
         p0 <- p0 + 2 * ndata
@@ -533,33 +533,54 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
             v[ip,,b] <- v_[,b]
             vstd[ip,,b] <- vstd_[,b]
             amp[ip,,b] <- amp_[,b]
-        } 
+        }
         if (monitor) {
-            if ((ip %% 50)) 
+            if ((ip %% 50))
                 cat(".")
             else
-                cat(".", ip, "\n")            
+                cat(".", ip, "\n")
         }
     }
-    if (monitor) 
+    if (monitor)
         cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
 
+    ## FIXME: using 25 degrees, which is FLAT-OUT wrong
+    ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
+    ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
+    ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
+    beam.angle <- 25
+    S  <- 1 / (3 * sin(beam.angle * pi / 180))             # 0.7887339
+    CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
+    C  <- 1 / (3 * cos(beam.angle * pi / 180))             # 0.3677926
+    transformation.matrix <- matrix(c(2*S,  -S,  -S,
+                                      0  , -CS,  CS,
+                                      C  ,   C,   C),
+                                    nrow=3, byrow=TRUE)
+    if (debug > 0) {
+        cat("transformation.matrix:\n")
+        print(transformation.matrix)
+    }
+    ## For later use, RC says that the PC-ADP uses
+    ## T =  2.576  -1.288  -1.288
+    ##      0.000  -2.230   2.230
+    ##      0.345   0.345   0.345
+    ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
     metadata <- list(manufacturer="sontek",
                      instrument.type="adp",
                      serial.number=serial.number,
                      filename=filename,
                      latitude=latitude, longitude=longitude,
-                     transformation.matrix=NULL,# FIXME transformation.matrix,
+                     transformation.matrix=transformation.matrix,
                      measurement.start=0, measurement.end=np, measurement.deltat=1,
                      subsample.start=0, subsample.end=np, subsample.deltat=1,
                      frequency=NA, # FIXME
                      number.of.samples=np,
                      number.of.beams=number.of.beams,
-                     coordinate.system="xyz", # FIXME guess
-                     oce.coordinate="xyz",    # FIXME guess
-                     beam.angle=NA, # FIXME
+                     coordinate.system=coordinate.system,
+                     oce.coordinate=coordinate.system,
+                     beam.angle=beam.angle,
                      oce.beam.attenuated=FALSE,
-                     orientation="up")        # FIXME guess
+                     orientation=orientation)
     data <- list(ts=list(time=time,
                          heading=heading, pitch=pitch, roll=roll,
                          temperature=temperature,
