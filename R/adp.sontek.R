@@ -251,10 +251,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             }
             if (monitor) {
                 cat(".")
-                if (!(i %% 50)) cat(i, "\n")
+                if (!(i %% 50))
+                    cat(i, "\n")
             }
         }
-        if (monitor) cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n")
+        if (monitor)
+            cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n")
         ma <- list(v=v, a=a, q=q)
     } else {
         ma <- NULL
@@ -432,7 +434,6 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     serial.number <- paste(readBin(buf[p[1]+4:13], "character", n=10, size=1),collapse="")
     number.of.beams <- readBin(buf[p[1]+26], "integer", n=1, size=1, signed=FALSE)
     orientation <- readBin(buf[p[1]+27], "integer", n=1, size=1, signed=FALSE)
-    oce.debug(debug, "orientation=",orientation,"0 for up, 1 for down, 2 for side\n")
     if (orientation == 0)
         orientation <- "upward"
     else if (orientation == 1)
