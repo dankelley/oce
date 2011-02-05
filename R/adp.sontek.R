@@ -106,12 +106,6 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##profile.start <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
     profile.start <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
-
-    ##dan.profile.start<<-profile.start  # FIXME-DEBUG
-    ##dan.buf<<-buf                      # FIXME-DEBUG
-    ##dan.byte1<<-parameters$profile.byte1 # FIXME-DEBUG
-    ##dan.byte2<<-parameters$profile.byte2 # FIXME-DEBUG
-
     oce.debug(debug, "first 10 profile.start:", profile.start[1:10], "\n")
     oce.debug(debug, "first 100 bytes of first profile:", paste(buf[profile.start[1]:(99+profile.start[1])], collapse=" "), "\n")
     ## Examine the first profile to get number of beams, etc.
@@ -215,7 +209,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     month  <- as.integer(buf[profile.start + 21])
     minute <- as.integer(buf[profile.start + 22])
     hour   <- as.integer(buf[profile.start + 23])
-    sec100 <- as.integer(buf[profile.start + 24])     # FIXME: determine whether this is 1/100th second
+    sec100 <- as.integer(buf[profile.start + 24])
     second <- as.integer(buf[profile.start + 25])
     time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
     rm(year, day, month, minute, hour, sec100, second)
@@ -265,6 +259,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         }
         if (monitor)
             cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n")
+        if (type == "pcadp")
+            v <- v / 10                # it seems pcadp is in 0.1mm/s
         ma <- list(v=v, a=a, q=q)
     } else {
         ma <- NULL
@@ -288,6 +284,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          temperature=temperature,
                          pressure=pressure,
                          heading=heading, pitch=pitch, roll=roll))
+    oce.debug(1,"slant.angle=",slant.angle,"; type=", type, "\n")
     beam.angle <- if (slant.angle == "?") 25 else slant.angle
     metadata <- list(manufacturer="sontek",
                      filename=filename,
