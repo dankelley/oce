@@ -1,11 +1,19 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
-/* REFERENCE: see ADPManual_710.pdf, logical pages 82-86. */
+/*
+ cd("/Users/kelley/internal-beach/work/data/R")
+ source("m07_pcadp.R")
+ dyn.load("~/src/R-kelley/oce/src/sontek_adp.so");.Call("ldc_sontek_adp", dan.buf, 0, 0, 0, 1, 10);print(dan.profile.start[1:10])
+*/ 
+/* REFERENCES
+ *   1. see ADPManual_710.pdf, logical pages 82-86.
+ *   2. hydratools20apr06/adp2cdf.m line 1360 re PCADP's extra header.
+ */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
 //#define DEBUG
 
-SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_track, SEXP Smax)
+SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_track, SEXP Spcadp, SEXP Smax)
 {
   /* ldc = locate data chunk; _sontek_adp = for a SonTek ADV.
    * Arguments: 
@@ -13,6 +21,7 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
    *   Shave_ctd = 1 if have CTD data (must be 0, for this version)
    *   Shave_gps = 1 if have GPS data (must be 0, for this version)
    *   Shave_bottom_track = 1 if have bottom-track data (must be 0, for this version)
+   *   Spcadp = 1 if device is a PCADP (which has longer headers)
    *   Smax = number of profiles to get (set to <0 to get all)
    * 
    * Method:
@@ -36,10 +45,12 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
   PROTECT(Shave_ctd = AS_INTEGER(Shave_ctd));
   PROTECT(Shave_gps = AS_INTEGER(Shave_gps));
   PROTECT(Shave_bottom_track = AS_INTEGER(Shave_bottom_track));
+  PROTECT(Spcadp = AS_INTEGER(Spcadp));
   PROTECT(Smax = AS_INTEGER(Smax));
   int have_ctd = *INTEGER_POINTER(Shave_ctd);
   int have_bottom_track = *INTEGER_POINTER(Shave_bottom_track);
   int have_gps = *INTEGER_POINTER(Shave_gps);
+  int pcadp = *INTEGER_POINTER(Spcadp);
   int max = *INTEGER_POINTER(Smax);
 #ifdef DEBUG
   Rprintf("have_ctd=%d, have_bottom_track=%d, have_gps=%d, max=%d\n",have_ctd,have_bottom_track,have_gps,max);
@@ -88,6 +99,11 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
     error("cannot determine #beams or #cells, based on first 1000 bytes in buffer");
   // The next line envisions more data streams, e.g. ctd.
   int chunk_length = 80 + (have_ctd?16:0) + (have_gps?40:0) + (have_bottom_track?18:0) + 4 * ncell * nbeam;
+  // Next 2 lines acount for extra header in each PCADP profile; see ref 2.
+  int max_beams = 4;
+  int pcadp_extra_header_length = 2*(8+max_beams) + 2*max_beams + max_beams;
+  if (pcadp)
+    chunk_length += pcadp_extra_header_length;
 #ifdef DEBUG
   Rprintf("bytes: 0x%x 0x%x 0x%x\n", byte1, byte2, byte3);
   Rprintf("chunk_length: %d\n", chunk_length);
@@ -141,6 +157,6 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
     int *pres = INTEGER_POINTER(res);
     pres[0] = 0;
   }
-  UNPROTECT(6);
+  UNPROTECT(7);
   return(res);
 }

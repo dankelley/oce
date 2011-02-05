@@ -27,7 +27,7 @@ read.adp.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
-  type=c("adp"),
+  type=c("adp","pcadp"),
   debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),

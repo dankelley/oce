@@ -1,7 +1,7 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             latitude=NA, longitude=NA,
-                            type=c("adp"),
+                            type=c("adp", "pcadp"),
                             debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, ...)
 {
     missing.to <- missing(to)
@@ -103,13 +103,14 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             adp.type <- nbeams <- slant.angle <- orientation <-
                 compass.installed <- recorder.installed <- temp.installed <- press.installed <- "?"
     }
-    profile.start <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
+    ##profile.start <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
+    profile.start <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
 
-    dan.profile.start<<-profile.start  # FIXME-DEBUG
-    dan.buf<<-buf                      # FIXME-DEBUG
-    dan.byte1<<-parameters$profile.byte1 # FIXME-DEBUG
-    dan.byte2<<-parameters$profile.byte2 # FIXME-DEBUG
+    ##dan.profile.start<<-profile.start  # FIXME-DEBUG
+    ##dan.buf<<-buf                      # FIXME-DEBUG
+    ##dan.byte1<<-parameters$profile.byte1 # FIXME-DEBUG
+    ##dan.byte2<<-parameters$profile.byte2 # FIXME-DEBUG
 
     oce.debug(debug, "first 10 profile.start:", profile.start[1:10], "\n")
     oce.debug(debug, "first 100 bytes of first profile:", paste(buf[profile.start[1]:(99+profile.start[1])], collapse=" "), "\n")
@@ -217,15 +218,6 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     sec100 <- as.integer(buf[profile.start + 24])     # FIXME: determine whether this is 1/100th second
     second <- as.integer(buf[profile.start + 25])
     time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
-    ## remove bad data
-    bad.times <- is.na(time)
-    if (any(bad.times)) {
-        warning("bad data at time indices:", paste(which(bad.times), collapse=","))
-        time <- time[!bad.times]
-        profile.start <- profile.start[!bad.times]
-        profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
-        profiles.to.read <- length(profile.start)
-    }
     rm(year, day, month, minute, hour, sec100, second)
     temperature <- readBin(buf[profile.start2 + 46], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 100
     oce.debug(debug, "temperature[1:10]=",temperature[1:10],"\n")
@@ -242,6 +234,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     q <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
     nd <- number.of.cells * number.of.beams
     oce.debug(debug, "nd=",nd,";  header.length=", header.length,"\n")
+    if (type == "pcadp") {
+        nbeam.max <- 4                 # Max number of beams, not actual number
+        header.length <- header.length + 2 * (8 + nbeam.max) + 2 * nbeam.max + nbeam.max
+    }
     if (profiles.to.read > 0) {
         for (i in 1:profiles.to.read) {
             ## DS does:
@@ -441,7 +437,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
         oce.debug(debug, "filesize=",file.size,"\n")
         buf <- readBin(file, what="raw", n=file.size, endian="little")
     }
-    p <- .Call("ldc_sontek_adp", buf, 0, 0, 0, -1) # no ctd, no gps, no bottom-track; all data
+    p <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 0, -1) # no ctd, no gps, no bottom-track; all data
     ## read some unchanging things from the first profile only
     serial.number <- paste(readBin(buf[p[1]+4:13], "character", n=10, size=1),collapse="")
     number.of.beams <- readBin(buf[p[1]+26], "integer", n=1, size=1, signed=FALSE)
