@@ -1,3 +1,4 @@
+## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 use.new.imagep <- TRUE
 
 remove.ship.motion <- function(x)
@@ -274,8 +275,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adp <- function(x,
-                     which=1:dim(x$data$ma$v)[3],
+plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      col,
                      zlim,
                      titles,
@@ -291,8 +291,7 @@ plot.adp <- function(x,
                      debug=getOption("oce.debug"),
                      ...)
 {
-    oce.debug(debug, "\n")
-    oce.debug(debug, "Entering plot.adp()\n")
+    oce.debug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!inherits(x, "adp")) stop("method is only for adp objects")

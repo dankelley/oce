@@ -21,13 +21,14 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             year <- readBin(buf[profile.start[middle]+18:19], "integer", size=2, signed=FALSE, endian="little")
             day <- as.integer(buf[profile.start[middle]+20])
             month <- as.integer(buf[profile.start[middle]+21])
-            minute <- as.integer(buf[profile.start[middle]+22])
+            min <- as.integer(buf[profile.start[middle]+22])
             hour <- as.integer(buf[profile.start[middle]+23])
             ## SIG p82 C code suggests sec100 comes before second.
             sec100 <- as.integer(buf[profile.start[middle]+24])     # FIXME: determine whether this is 1/100th second
-            second <- as.integer(buf[profile.start[middle]+25])
-            t <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
-            oce.debug(debug, "t=", format(t), " inferred from year=", year, " month=", month, " day=", day, " hour=", hour, " second=", second, "sec100=", sec100, "\n")
+            sec <- as.integer(buf[profile.start[middle]+25])
+            t <- ISOdatetime(year, month, day, hour, min, sec+sec100/100, tz=tz)
+            oce.debug(debug, "t=", format(t), 
+                      " [year=", year, " month=", month, " day=", day, " hour=", hour, " sec=", second, "sec100=", sec100, "]\n")
             if (t.find < t)
                 upper <- middle
             else
@@ -85,7 +86,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         nbeams <- as.integer(buf[27])
         oce.debug(debug, "nbeams=", nbeams, "\n")
         beam.geometry <- as.integer(buf[28])
-        oce.debug(debug, "beam.geometry=", beam.geometry, "; 0 means 2 beams; 1 means 3 beams, 2 means 4 beams with 1 verticl; 3 means 4 beams, Janus\n")
+        oce.debug(debug, "beam.geometry=", beam.geometry, 
+                  "; 0 (2 beams); 1 (3 beams), 2 (4 beams with 1 vertical), 3 (4 beams, Janus)\n")
         slant.angle <- readBin(buf[29:30], "integer", n=1, size=2, signed=FALSE) / 10
         oce.debug(debug, "slant.angle=",slant.angle,"\n")
         orientation <- switch(as.integer(buf[31]) + 1, "down", "up", "side")
@@ -103,6 +105,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     }
     profile.start <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
+
+    dan.profile.start<<-profile.start  # FIXME-DEBUG
+    dan.buf<<-buf                      # FIXME-DEBUG
+    dan.byte1<<-parameters$profile.byte1 # FIXME-DEBUG
+    dan.byte2<<-parameters$profile.byte2 # FIXME-DEBUG
+
     oce.debug(debug, "first 10 profile.start:", profile.start[1:10], "\n")
     oce.debug(debug, "first 100 bytes of first profile:", paste(buf[profile.start[1]:(99+profile.start[1])], collapse=" "), "\n")
     ## Examine the first profile to get number of beams, etc.
@@ -201,14 +209,6 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     profiles.to.read <- length(profile.start)
     oce.debug(debug, "profiles.in.file=",profiles.in.file,"; profiles.to.read=",profiles.to.read,"\n")
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
-    temperature <- readBin(buf[profile.start2 + 46], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 100
-    oce.debug(debug, "temperature[1:10]=",temperature[1:10],"\n")
-    pressure <- readBin(buf[profile.start2 + 48], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE) / 100
-    ## FIXME: pressure (+else?) is wrong.  Need to count bytes on p84 of ADPManual to figure out where to look [UGLY]
-    oce.debug(debug, "pressure[1:10]=",pressure[1:10],"\n")
-    heading <- readBin(buf[profile.start2 + 40], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
-    pitch <- readBin(buf[profile.start2 + 42], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
-    roll <- readBin(buf[profile.start2 + 44], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
     year   <- readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
     day    <- as.integer(buf[profile.start + 20])
     month  <- as.integer(buf[profile.start + 21])
@@ -217,6 +217,25 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     sec100 <- as.integer(buf[profile.start + 24])     # FIXME: determine whether this is 1/100th second
     second <- as.integer(buf[profile.start + 25])
     time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
+    ## remove bad data
+    bad.times <- is.na(time)
+    if (any(bad.times)) {
+        warning("bad data at time indices:", paste(which(bad.times), collapse=","))
+        time <- time[!bad.times]
+        profile.start <- profile.start[!bad.times]
+        profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
+        profiles.to.read <- length(profile.start)
+    }
+    rm(year, day, month, minute, hour, sec100, second)
+    temperature <- readBin(buf[profile.start2 + 46], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 100
+    oce.debug(debug, "temperature[1:10]=",temperature[1:10],"\n")
+    pressure <- readBin(buf[profile.start2 + 48], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE) / 100
+    ## FIXME: pressure (+else?) is wrong.  Need to count bytes on p84 of ADPManual to figure out where to look [UGLY]
+    oce.debug(debug, "pressure[1:10]=",pressure[1:10],"\n")
+    heading <- readBin(buf[profile.start2 + 40], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
+    pitch <- readBin(buf[profile.start2 + 42], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
+    roll <- readBin(buf[profile.start2 + 44], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
+
     oce.debug(debug, "time[1:10]=",format(time[1:10]),"\n")
     v <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
     a <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
@@ -225,29 +244,22 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     oce.debug(debug, "nd=",nd,";  header.length=", header.length,"\n")
     if (profiles.to.read > 0) {
         for (i in 1:profiles.to.read) {
-            ## Doug does:
+            ## DS does:
             ##   fseek(fid,adpProfiles(1)-1+18+8+58+(ii-1)*numCells(1)*2+(jj-1)*2,'bof');
             ##   v = fread(fid,numSamples,'int16=>double',adpPacketSize-1)/10;
-            ## (he offsets by 83 ... but he also says the profile chunk size is 80+4*Nb*Nc+2-1,
+            ## Note that DS offsets by 83, but says the profile chunk size is 80+4*Nb*Nc+2-1,
             ## or 561, but I see repeats on length 562, so I think the formula should be 80+4*Nb*Nc+2.
             ## From that, I infer that there are 2 bytes after the profile data.
-            ## I've tried (note using 1000 to get m/s)
-            ##vv <- matrix(readBin(buf[profile.start[i] + header.length + 1:(2*nd)],
-            ##                    "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
-            vv <- matrix(readBin(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],
+            v_ <- matrix(readBin(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],
                                  "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
-            ##if (i == 1) {
-            ##    print(t(matrix(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],ncol=number.of.beams,byrow=FALSE)))
-            ##    print(t(vv))
-            ##}
-            aa <- matrix(as.numeric(buf[profile.start[i] + header.length + 2*nd + seq(0, nd-1)]),
+            a_ <- matrix(as.numeric(buf[profile.start[i] + header.length + 2*nd + seq(0, nd-1)]),
                          ncol=number.of.beams, byrow=FALSE)
-            qq <- matrix(as.numeric(buf[profile.start[i] + header.length + 3*nd + seq(0, nd-1)]),
+            q_ <- matrix(as.numeric(buf[profile.start[i] + header.length + 3*nd + seq(0, nd-1)]),
                          ncol=number.of.beams, byrow=FALSE)
-            for (b in 1:number.of.beams) {
-                v[i,,b] <- vv[,b]
-                a[i,,b] <- aa[,b]
-                q[i,,b] <- qq[,b]
+            for (b in 1:number.of.beams) { # FIXME: probably could be speeded up
+                v[i,,b] <- v_[,b]
+                a[i,,b] <- a_[,b]
+                q[i,,b] <- q_[,b]
             }
             if (monitor) {
                 cat(".")

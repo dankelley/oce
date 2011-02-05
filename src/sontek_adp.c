@@ -1,4 +1,5 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+/* REFERENCE: see ADPManual_710.pdf, logical pages 82-86. */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -38,7 +39,7 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
   PROTECT(Smax = AS_INTEGER(Smax));
   int have_ctd = *INTEGER_POINTER(Shave_ctd);
   int have_bottom_track = *INTEGER_POINTER(Shave_bottom_track);
-  int have_gps= *INTEGER_POINTER(Shave_gps);
+  int have_gps = *INTEGER_POINTER(Shave_gps);
   int max = *INTEGER_POINTER(Smax);
 #ifdef DEBUG
   Rprintf("have_ctd=%d, have_bottom_track=%d, have_gps=%d, max=%d\n",have_ctd,have_bottom_track,have_gps,max);
@@ -49,7 +50,6 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
     error("cannot read SonTek ADP files with bottom-track data");
   if (have_gps != 0)
     error("cannot read SonTek ADP files with GPS data");
-  /* FIXME: check lengths of match and key */
   pbuf = RAW_POINTER(buf);
   int lbuf = LENGTH(buf);
   SEXP res;
@@ -62,7 +62,7 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
   unsigned short int check_sum, desired_check_sum, desired_check_sum2;
   if (max < 0)
     max = 0;
-  /* scan first profile to determine number_of_cells and number_of_beams */
+  /* scan first profile to determine ncell and nbeam */
   int first_look = 1000;
   if (first_look > lbuf)
     error("cannot read Sontek ADP from a buffer with fewer than 1000 bytes");
@@ -74,11 +74,13 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
       nbeam = (int)pbuf[i + 26];
       ncell = ((unsigned short)pbuf[i+30]) | ((unsigned short)pbuf[i+31] << 8);
 #ifdef DEBUG
-      Rprintf("tentative first-profile at buf[%d], yielding number_of_beams=%d and number_of_cells=%d\n",
+      Rprintf("tentative first-profile at buf[%d], yielding nbeam=%d and ncell=%d\n",
 	  i, nbeam, ncell);
 #endif
       if (nbeam < 2 || nbeam > 3)
 	error("number of beams must be 2 or 3, but it is %d", nbeam);
+      if (ncell < 1)
+	error("number of cells cannot be less than 1, but it is %d", ncell);
       break;
     }
   }
@@ -87,7 +89,9 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
   // The next line envisions more data streams, e.g. ctd.
   int chunk_length = 80 + (have_ctd?16:0) + (have_gps?40:0) + (have_bottom_track?18:0) + 4 * ncell * nbeam;
 #ifdef DEBUG
-  Rprintf("chunk_length = %d\n", chunk_length);
+  Rprintf("bytes: 0x%x 0x%x 0x%x\n", byte1, byte2, byte3);
+  Rprintf("chunk_length: %d\n", chunk_length);
+  int bad, maxbad = 10;
 #endif
   for (int i = 0; i < lbuf - 3 - chunk_length; i++) { // FIXME is 3 right, or needed?
     check_sum = check_sum_start;
@@ -104,6 +108,8 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
 	  break;
       } else {
 #ifdef DEBUG
+	if (bad++ > maxbad)
+	  error("max bad\n");
 	Rprintf("bad checksum i=%d\n", i);
 #endif
       }
