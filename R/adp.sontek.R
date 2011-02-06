@@ -231,6 +231,28 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (type == "pcadp") {
         nbeam.max <- 4                 # Max number of beams, not actual number
         header.length <- header.length + 2 * (8 + nbeam.max) + 2 * nbeam.max + nbeam.max
+        ## Below is C code from Sontek, for pulse-coherent adp (2-byte little-endian 
+        ## integers).  FIXME: should perhaps read these things, but this is not a 
+        ## high priority, since in the data file for which the code was originally
+        ## developed, all distances were set to 123 mm and all velocities to 
+        ## 9999 mm/s, suggestive of insignificant, place-holder values.
+        ##
+        ##typedef struct
+        ##{
+        ##  unsigned int  ResLag;             /* in mm     Used for single cell    */
+        ##  unsigned int  ResUa;              /* in mm/s   Ambiguity resolution    */
+        ##  unsigned int  ResStart;           /* in mm     Position of resolve     */
+        ##  unsigned int  ResLength;          /* in mm     cell                    */
+        ##  unsigned int  PrfLag;             /* in mm     Used for full profile   */
+        ##  unsigned int  PrfUa;              /* in mm/s                           */
+        ##  unsigned int  PrfStart;           /* in mm     Position/Length of first*/
+        ##  unsigned int  PrfLength;          /* in mm     cell in profile         */
+        ##  unsigned int  Range[MAX_BEAMS];   /* in mm     Range to boundary       */
+        ##           int  Ures[MAX_BEAMS];    /* in mm/s   Velocities from Resolve */
+        ##                                    /*           lag                     */
+        ##  unsigned char Cres[MAX_BEAMS];    /* in %      Correlations from       */
+        ##                                    /*           resolve lag             */
+        ##} PCrecordType;
     }
     if (profiles.to.read > 0) {
         for (i in 1:profiles.to.read) {
