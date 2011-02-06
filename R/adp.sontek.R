@@ -284,7 +284,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          temperature=temperature,
                          pressure=pressure,
                          heading=heading, pitch=pitch, roll=roll))
-    oce.debug(1,"slant.angle=",slant.angle,"; type=", type, "\n")
+    oce.debug(debug, "slant.angle=",slant.angle,"; type=", type, "\n")
     beam.angle <- if (slant.angle == "?") 25 else slant.angle
     metadata <- list(manufacturer="sontek",
                      filename=filename,
