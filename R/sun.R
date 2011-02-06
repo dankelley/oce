@@ -1,40 +1,62 @@
 sun.angle <- function(t, lat, lon)
 {
-    if (missing(t)) stop("must provide t")
+    if (missing(t))
+        stop("must provide t")
+    if (missing(lat))
+        stop("must provide lat")
+    if (missing(lon))
+        stop("must provide lon")
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
-            t <- t - as.numeric(as.POSIXct("2000-01-01 00:00:00", tz="UTC")) + as.POSIXct("2000-01-01 00:00:00", tz="UTC") 
+            tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
+            t <- t - as.numeric(tref) + tref
         } else {
             stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
         }
     }
-    if (missing(lat)) stop("must provide lat")
-    if (missing(lon)) stop("must provide lon")
     dim <- dim(t)
     nt <- length(t)
     nlat <- length(lat)
     nlon <- length(lon)
-    if (nlon != nlat) stop("lengths of lon and lat must match")
+    if (nlon != nlat)
+        stop("lengths of lon and lat must match")
     if (nlon == 1) {
         lon <- rep(lon, nt)             # often, give a time vector but just on location
         lat <- rep(lat, nt)
     } else {
-        if (nt != nlon) stop("lengths of t and lon must match")
+        if (nt != nlon)
+            stop("lengths of t and lon must match")
     }
     ## the code below is derived from fortran code, downloaded 2009-11-1 from
     ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
-    t <- as.POSIXlt(t)
-    if ("UTC" != attr(t, "tzone")) stop("t must be in UTC")
+    t <- as.POSIXlt(t)                 # use this so we can work on hours, etc
+    if ("UTC" != attr(t, "tzone"))
+        stop("t must be in UTC")
     year <- t$year + 1900
-    if (any(year < 1950) || any(year > 2050)) stop("year outside acceptable range")
+    if (any(year < 1950) || any(year > 2050))
+        stop("year=", year, " is outside acceptable range")
     day <- t$yday + 1
-    if (any(day < 1) || any(day > 366)) stop("day is not in range 1 to 366")
+    if (any(day < 1) || any(day > 366))
+        stop("day is not in range 1 to 366")
     hour <- t$hour + t$min / 60 + t$sec / 3600
-    if (any(hour < -13) || any(hour > 36)) stop("hour outside range -13 to 36")
-    if (any(lat <  -90)) lat[lat <  -90] <- -90
-    if (any(lat >   90)) lat[lat >   90] <-  90
-    if (any(lon < -180)) lon[lon < -180] <- -180
-    if (any(lon >  180)) lon[lon >  180] <-  180
+    if (any(hour < -13) || any(hour > 36))
+        stop("hour outside range -13 to 36")
+    if (any(lat <  -90)) {
+        warning("latitude(s) trimmed to range -90 to 90")
+        lat[lat <  -90] <- -90
+    }
+    if (any(lat >   90)) {
+        warning("latitude(s) trimmed to range -90 to 90")
+        lat[lat >   90] <-  90
+    }
+    if (any(lon < -180)) {
+        warning("longitude(s) trimmed to range -180 to 180")
+        lon[lon < -180] <- -180
+    }
+    if (any(lon >  180)) {
+        warning("longitude(s) trimmed to range -180 to 180")
+        lon[lon >  180] <-  180
+    }
     delta <- year - 1949
     leap <- delta %/% 4
     ## FIXME: using fortran-style int and mod here; must check for leap-year cases
