@@ -1,8 +1,13 @@
 sun.angle <- function(t, lat, lon)
 {
     if (missing(t)) stop("must provide t")
-    if (!inherits(t, "POSIXt")) stop("t must be POSIXt")
-    ## should check GMT, too.
+    if (!inherits(t, "POSIXt")) {
+        if (is.numeric(t)) {
+            t <- t - as.numeric(as.POSIXct("2000-01-01 00:00:00", tz="UTC")) + as.POSIXct("2000-01-01 00:00:00", tz="UTC") 
+        } else {
+            stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
+        }
+    }
     if (missing(lat)) stop("must provide lat")
     if (missing(lon)) stop("must provide lon")
     dim <- dim(t)
@@ -26,8 +31,10 @@ sun.angle <- function(t, lat, lon)
     if (any(day < 1) || any(day > 366)) stop("day is not in range 1 to 366")
     hour <- t$hour + t$min / 60 + t$sec / 3600
     if (any(hour < -13) || any(hour > 36)) stop("hour outside range -13 to 36")
-    if (any(lat < -90) || any(lat > 90)) stop("lat is not in range -90 to 90")
-    if (any(lon < -180) || any(lat > 180)) stop("lat is not in range -180 to 180")
+    if (any(lat <  -90)) lat[lat <  -90] <- -90
+    if (any(lat >   90)) lat[lat >   90] <-  90
+    if (any(lon < -180)) lon[lon < -180] <- -180
+    if (any(lon >  180)) lon[lon >  180] <-  180
     delta <- year - 1949
     leap <- delta %/% 4
     ## FIXME: using fortran-style int and mod here; must check for leap-year cases
