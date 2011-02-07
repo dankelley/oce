@@ -1,4 +1,4 @@
-                                        # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 as.ctd <- function(salinity, temperature, pressure, quality,
                    ship="",scientist="",institute="",address="", cruise="",station="",
                    date="", start.time="", recovery="",
@@ -343,6 +343,7 @@ plot.ctd <- function (x, which = 1:4,
                       ...)
 {
     if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    oce.debug(debug, "\b\bplot.ctd() {\n")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (lw > 1) on.exit(par(opar))
@@ -505,24 +506,35 @@ plot.ctd <- function (x, which = 1:4,
                 yloc <- yloc - d.yloc
             }
         } else if (which[w] == 5 || which[w] == "map") {
-            if (missing(coastline)) stop("need a coastline to draw a map")
+            if (missing(coastline))
+                stop("need a coastline to draw a map")
             if (missing(lonlim)) {
                 lonlim.c <- x$metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
+                clon <- mean(lonlim.c)
                 if (missing(latlim)) {
                     latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
-                    plot(coastline, xlim=lonlim.c, ylim=latlim.c, debug=debug)
+                    span <- diff(range(latlim.c)) / 1.5 * 111
+                    plot(coastline, center=c(mean(latlim.c), clon), span=span, debug=debug-1)
+                    oce.debug(debug, "CASE 1: both latlim and lonlim missing\n")
                 } else {
-                    plot(coastline, xlim=lonlim.c, ylim=latlim, debug=debug)
-                    oce.debug(debug, "CASE 2 (should infer xlim from ylim)\n")
+                    clat <- mean(latlim)
+                    span <- diff(range(latlim)) / 1.5 * 111
+                    plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                    oce.debug(debug, "CASE 2: latlim given, lonlim missing\n")
                 }
             } else {
+                clon <- mean(lonlim)
                 if (missing(latlim)) {
                     latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
-                    plot(coastline, xlim=lonlim, ylim=latlim.c, debug=debug)
-                    oce.debug(debug, "CASE 3 (should infer lonlim from latlim)\n")
+                    clat <- mean(latlim.c)
+                    span <- diff(range(latlim.c)) / 1.5 * 111
+                    plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                    oce.debug(debug, "CASE 3: lonlim given, latlim missing\n")
                 } else {
-                    plot(coastline, xlim=lonlim, ylim=latlim, debug=debug)
-                    oce.debug(debug, "CASE 4 (using provided lonlim and latlim)\n")
+                    clat <- mean(latlim)
+                    span <- diff(range(latlim)) / 1.5 * 111
+                    plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                    oce.debug(debug, "CASE 4: both latlim and lonlim given\n")
                 }
             }
             points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
@@ -535,6 +547,7 @@ plot.ctd <- function (x, which = 1:4,
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    oce.debug(debug, "\b\b} # plot.ctd()\n")
     invisible()
 }
 

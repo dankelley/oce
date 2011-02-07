@@ -1,7 +1,8 @@
 as.coastline <- function(latitude, longitude)
 {
     n <- length(latitude)
-    if (n != length(longitude)) stop("Lengths of longitude and latitude must be equal")
+    if (n != length(longitude))
+        stop("Lengths of longitude and latitude must be equal")
     data <- data.frame(longitude=longitude, latitude=latitude)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=NULL, processing.log=log.item)
@@ -23,7 +24,9 @@ plot.coastline <- function (x,
                             ...)
 {
     opar <- par(no.readonly = TRUE)
-    oce.debug(debug, "\b\bplot.coastline() {\n")
+    oce.debug(debug, "\b\bplot.coastline(...,",
+              "center=", if(missing(center)) "(missing)" else paste("c(", paste(center, collapse=","), ")"),
+              "span=", if(missing(span)) "(missing)" else span, ", ...) {\n")
     if (is.list(x) && "latitude" %in% names(x)) {
         if (!("longitude" %in% names(x)))
             stop("list must contain item named 'longitude'")
@@ -33,7 +36,14 @@ plot.coastline <- function (x,
             stop("method is only for coastline objects, or lists that contain 'latitude' and 'longitude'")
     }
     dots <- list(...)
-#    par(mgp=mgp, mar=mar)
+    names.dots <- names(dots)
+    ##  par(mgp=mgp, mar=mar)
+    if ("xlim" %in% names.dots) {
+        stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
+    }
+    if ("ylim" %in% names.dots) {
+        stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
+    }
     gave.center <- !missing(center)
     gave.span <- !missing(span)
     if (gave.center != gave.span)
@@ -46,6 +56,7 @@ plot.coastline <- function (x,
         asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
         yr <- center[1] + span * c(-1/2, 1/2) / 111.11
         xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
+        oce.debug(debug, "gave center and span; calculated xr=",xr," and yr=",yr,"\n")  
     } else {
         if (missing(asp)) {
             if ("ylim" %in% names(dots))
@@ -84,10 +95,14 @@ plot.coastline <- function (x,
         oce.debug(debug, "yr narrowed to:", yr, "\n")
         ##yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
     }
-    if (xr[1] < -180) xr[1] <- -180
-    if (xr[2] >  180) xr[2] <-  180
-    if (yr[1] < -90)  yr[1] <- -90
-    if (yr[2] >  90)  yr[2] <-  90
+    if (xr[1] < (-180))
+        xr[1] <- (-180)
+    if (xr[2] >  180)
+        xr[2] <- 180
+    if (yr[1] <  (-90))
+        yr[1] <- (-90)
+    if (yr[2] >  90)
+        yr[2] <- 90
     oce.debug(debug, "xr:", xr, "\n")
     oce.debug(debug, "yr:", yr, "\n")
     if (!missing(bg)) {
@@ -101,22 +116,28 @@ plot.coastline <- function (x,
          axes=FALSE, ...)
     if (axes) {
         if (1 == prod(par('mfrow')) * prod(par('mfcol'))) {
-            ## Construct axes "manually" because axis() does not know the physical range
-            if (debug > 0) {
-                points(xr, yr, col="blue", pch=20, cex=3)
+            if (FALSE) { ## FIXME: why does this not work?
+                ## Construct axes "manually" because axis() does not know the physical range
+                if (debug > 0) {
+                    points(xr, yr, col="blue", pch=20, cex=3)
+                }
+                xr.pretty <- pretty(xr)
+                yr.pretty <- pretty(yr)
+                if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
+                    yr.pretty <- seq(-90, 90, 45)
+                if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
+                    xr.pretty <- seq(-180, 180, 45)
+                oce.debug(debug, "xr.pretty=", xr.pretty, "\n")
+                oce.debug(debug, "yr.pretty=", yr.pretty, "\n")
+                axis(1, at=xr.pretty, pos=yr.pretty[1])
+                axis(3, at=xr.pretty, pos=max(yr.pretty), labels=FALSE)
+                axis(2, at=yr.pretty, pos=xr.pretty[1])
+                axis(4, at=yr.pretty, pos=max(xr.pretty), labels=FALSE)
+            } else {
+                box()
+                axis(1)
+                axis(2)
             }
-            xr.pretty <- pretty(xr)
-            yr.pretty <- pretty(yr)
-            if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
-                yr.pretty <- seq(-90, 90, 45)
-            if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
-                xr.pretty <- seq(-180, 180, 45)
-            oce.debug(debug, "xr.pretty=", xr.pretty, "\n")
-            oce.debug(debug, "yr.pretty=", yr.pretty, "\n")
-            axis(1, at=xr.pretty, pos=yr.pretty[1])
-            axis(3, at=xr.pretty, pos=max(yr.pretty), labels=FALSE)
-            axis(2, at=yr.pretty, pos=xr.pretty[1])
-            axis(4, at=yr.pretty, pos=max(xr.pretty), labels=FALSE)
         } else {
             box()
             axis(1)
@@ -147,7 +168,7 @@ plot.coastline <- function (x,
     oce.debug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
     oce.debug(debug, "\b\b} # plot.coastline()\n")
     invisible()
- #   par(opar)
+    ## par(opar)
 }
 
 read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
