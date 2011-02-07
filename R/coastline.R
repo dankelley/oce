@@ -146,6 +146,7 @@ plot.coastline <- function (x,
     oce.debug(debug, "lat lim:", range(x$data$latitude,na.rm=TRUE), "\n")
     oce.debug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
     oce.debug(debug, "\b\b} # plot.coastline()\n")
+    invisible()
  #   par(opar)
 }
 
