@@ -1,4 +1,4 @@
-sun.angle <- function(t, lat, lon)
+sun.angle <- function(t, lat, lon, use.refraction=TRUE)
 {
     if (missing(t))
         stop("must provide t")
@@ -99,16 +99,20 @@ sun.angle <- function(t, lat, lon)
                   pi - az)
     el <- el / rpd
     az <- az / rpd
-    refrac <- ifelse(el >= 19.225,
-                     0.00452 * 3.51823 / tan(el * rpd),
-                     ifelse (el > (-0.766) & el < 19.225,
-                             3.51823 * (0.1594 + el * (0.0196 + 0.00002 * el)) / (1. + el * (0.505 + 0.0845 * el)),
-                             0))
-    el <- el + refrac
+    if (use.refraction) {
+        refrac <- ifelse(el >= 19.225,
+                         0.00452 * 3.51823 / tan(el * rpd),
+                         ifelse (el > (-0.766) & el < 19.225,
+                                 3.51823 * (0.1594 + el * (0.0196 + 0.00002 * el)) / (1. + el * (0.505 + 0.0845 * el)),
+                                 0))
+        el  <- el + refrac
+    }
     soldst <- 1.00014 - 0.01671 * cos(mnanom) - 0.00014 * cos(2 * mnanom)
     soldia <- 0.5332 / soldst
-    if (any(el < (-90.0)) || any(el > 90)) stop("output argument el out of range")
-    if (any(az < 0) || any(az > 360)) stop("output argument az out of range")
+    if (any(el < (-90.0)) || any(el > 90))
+        stop("output argument el out of range")
+    if (any(az < 0) || any(az > 360))
+        stop("output argument az out of range")
     data.frame(azimuth=az, elevation=el, solar.diameter=soldia, solar.distance=soldst)
 }
 
