@@ -14,18 +14,17 @@ sun.angle <- function(t, lat, lon, use.refraction=TRUE)
             stop("t must be POSIXt or a number corresponding to POSIXt (in UTC)")
         }
     }
-    dim <- dim(t)
     nt <- length(t)
     nlat <- length(lat)
     nlon <- length(lon)
     if (nlon != nlat)
         stop("lengths of lon and lat must match")
     if (nlon == 1) {
-        lon <- rep(lon, nt)             # often, give a time vector but just on location
+        lon <- rep(lon, nt)             # often, give a time vector but just one location
         lat <- rep(lat, nt)
     } else {
         if (nt != nlon)
-            stop("lengths of t and lon must match")
+            stop("lengths of t, lat and lon must match, unless last two are of length 1")
     }
     ## the code below is derived from fortran code, downloaded 2009-11-1 from
     ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
@@ -103,7 +102,7 @@ sun.angle <- function(t, lat, lon, use.refraction=TRUE)
         refrac <- ifelse(el >= 19.225,
                          0.00452 * 3.51823 / tan(el * rpd),
                          ifelse (el > (-0.766) & el < 19.225,
-                                 3.51823 * (0.1594 + el * (0.0196 + 0.00002 * el)) / (1. + el * (0.505 + 0.0845 * el)),
+                                 3.51823 * (0.1594 + el * (0.0196 + 0.00002 * el)) / (1 + el * (0.505 + 0.0845 * el)),
                                  0))
         el  <- el + refrac
     }
@@ -115,5 +114,3 @@ sun.angle <- function(t, lat, lon, use.refraction=TRUE)
         stop("output argument az out of range")
     data.frame(azimuth=az, elevation=el, solar.diameter=soldia, solar.distance=soldst)
 }
-
-
