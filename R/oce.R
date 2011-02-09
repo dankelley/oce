@@ -25,11 +25,16 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                        debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\b\bwindow.oce() {\n")
-    if (extend) stop("cannot handle extend=TRUE yet")
-    if (!is.null(frequency)) stop("cannot handle frequency yet")
-    if (!is.null(deltat)) stop("cannot handle deltat yet")
-    if (is.null(start)) stop("must provide start")
-    if (is.null(end)) stop("must provide end")
+    if (extend)
+        stop("cannot handle extend=TRUE yet")
+    if (!is.null(frequency))
+        stop("cannot handle frequency yet")
+    if (!is.null(deltat))
+        stop("cannot handle deltat yet")
+    if (is.null(start))
+        stop("must provide start")
+    if (is.null(end))
+        stop("must provide end")
     oce.debug(debug, "class of (x) is: ", paste(class(x), collapse=","), "\n")
     res <- x
     which <- match.arg(which)
@@ -67,7 +72,8 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             res <- list(index=keep)
         } else {
             for (name in names(res$data$ts)) {
-                res$data$ts[[name]] <- res$data$ts[[name]][keep]
+                if (length(res$data$ts[[name]]) > 1) 
+                    res$data$ts[[name]] <- res$data$ts[[name]][keep]
             }
         }
         ## data$ts.slow (if it exists)
