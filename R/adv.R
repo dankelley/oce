@@ -516,29 +516,39 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
     pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
 
-    ## set up a dummy transformation matrix (which is correct for one particular sontek unit)
-    transformation.matrix <- rbind(c(11033,-8503,-5238),
-                                   c(347,-32767,9338),
-                                   c(-1418, -1476, -1333)) / 4096
+    ## FIXME: Sontek ADV transformation matrix equal for all units?  (Nortek Vector is not.)
+    transformation.matrix <- rbind(c(11033,  -8503, -5238),
+                                   c(  347, -32767,  9338),
+                                   c(-1418,  -1476, -1333)) / 4096
+    time <- start[1] + (serial.number - serial.number[1]) * deltat
+    deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
                      instrument.type="adv",
                      serial.number="?",
                      filename=filename,
-                     latitude=latitude, longitude=longitude,
+                     latitude=latitude,
+                     longitude=longitude,
                      transformation.matrix=transformation.matrix,
-                     measurement.start=0, measurement.end=len, measurement.deltat=1,
-                     subsample.start=0, subsample.end=len, subsample.deltat=1,
+                     measurement.start=time[1],
+                     measurement.end=time[length(time)],
+                     measurement.deltat=deltat,
+                     subsample.start=time[1],
+                     subsample.end=mean(diff(as.numeric(time))),
+                     subsample.deltat=deltat,
                      coordinate.system="xyz", # guess
                      oce.coordinate="xyz",    # guess
                      orientation="up")        # guess
-    time <- start[1] + (serial.number - serial.number[1]) * deltat
 
+    nt <- length(time)
     data <- list(ts=list(time=time,
-                         heading=0, pitch=0, roll=0, # this will have to be filled in later by the user
+                         heading=rep(0, nt), # user will need to fill this in
+                         pitch=rep(0, nt), #  user will need to fill this in
+                         roll=rep(0, nt),  # user will need to fill this in
                          temperature=temperature,
                          pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v,a=a,c=c))
+    warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)

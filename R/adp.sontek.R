@@ -586,8 +586,12 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                      filename=filename,
                      latitude=latitude, longitude=longitude,
                      transformation.matrix=transformation.matrix,
-                     measurement.start=0, measurement.end=np, measurement.deltat=1,
-                     subsample.start=0, subsample.end=np, subsample.deltat=1,
+                     measurement.start=0, # FIXME: should fill in
+                     measurement.end=np, # FIXME: should fill in
+                     measurement.deltat=mean(diff(as.numeric(time))),
+                     subsample.start=0, # FIXME: should fill in
+                     subsample.end=np, 
+                     subsample.deltat=mean(diff(as.numeric(time))),
                      frequency=NA, # FIXME
                      number.of.samples=np,
                      number.of.beams=number.of.beams,
