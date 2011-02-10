@@ -638,9 +638,11 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- prod(dim(x$data$ma$v)[1:2])
             if (!missing(control) && !is.null(control$bin)) {
-                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                if (control$bin < 1)
+                    stop("cannot have control$bin less than 1, but got ", control$bin)
                 max.bin <- dim(x$data$ma$v)[2]
-                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                if (control$bin > max.bin)
+                    stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
                 u <- x$data$ma$v[,control$bin,1]
                 v <- x$data$ma$v[,control$bin,2]
             } else {
@@ -673,8 +675,18 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                 if (which[w] >= 30) {
-                    umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)
-                    vmean <- mean(x$data$ma$v[,,2], na.rm=TRUE)
+                    if (!missing(control) && !is.null(control$bin)) {
+                        if (control$bin < 1)
+                            stop("cannot have control$bin less than 1, but got ", control$bin)
+                        max.bin <- dim(x$data$ma$v)[2]
+                        if (control$bin > max.bin)
+                            stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                        umean <- mean(x$data$ma$v[,control$bin,1], na.rm=TRUE)
+                        vmean <- mean(x$data$ma$v[,control$bin,2], na.rm=TRUE)
+                    } else {
+                        umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)
+                        vmean <- mean(x$data$ma$v[,,2], na.rm=TRUE)
+                    }
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
