@@ -1648,11 +1648,11 @@ plot.adv <- function(x,
             if (n < 2000) {
                 plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                     asp=1, ...)
+                     asp=1, xlim=xlim, ylim=ylim, ...)
             } else {
                 smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                              asp=1, ...)
+                              asp=1, xlim=xlim, ylim=ylim, ...)
             }
             if (which[w] >= 29) {
                 ok <- !is.na(x$data$ma$v[,1]) & !is.na(x$data$ma$v[,2])

@@ -285,15 +285,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
-                     cex=1,
+                     cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                     xlim, ylim, 
                      control,
                      use.layout=FALSE,  # FIXME: remove from arg list if imagep gets working
                      debug=getOption("oce.debug"),
                      ...)
 {
     oce.debug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
-    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oce.debug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (!(is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data)) {
         warning("there are no profiles in this dataset")
@@ -307,7 +308,32 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
     ytype <- match.arg(ytype)
-    ytype <- match.arg(ytype)
+    ## user may specify a matrix for xlim and ylim
+    gave.ylim <- !missing(ylim)
+    if (gave.ylim) {
+        if (is.matrix(ylim)) {
+            if (dim(ylim)[2] != lw) {
+                ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            }
+        } else {
+            ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+        }
+        class(ylim2) <- class(ylim)
+        ylim <- ylim2
+    }
+    gave.xlim <- !missing(xlim)
+    if (gave.xlim) {
+        if (is.matrix(xlim)) {
+            if (dim(xlim)[2] != lw) {
+                xlim2 <- matrix(xlim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            }
+        } else {
+            if (length(xlim) != 2)
+                stop("xlim must be a vector of length 2, or a 2-column matrix")
+            xlim2 <- matrix(xlim[1:2], ncol=2, nrow=lw, byrow=TRUE)
+        }
+        xlim <- xlim2
+    }
     if (missing(zlim)) {
         gave.zlim <- FALSE
         zlim.given <- NULL
@@ -326,8 +352,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     oce.debug(debug, "later on in plot.adp:\n")
-    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oce.debug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
     ## Translate word-style (FIXME: ugly coding)
     which2 <- vector("numeric", length(which))
@@ -623,13 +649,14 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (n < 2000) {
                 if ("type" %in% names(dots)) {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col,
+                         xlim=xlim, ylim=ylim, ...)
                 } else {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, xlim=xlim, ylim=ylim, ...)
                     points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
             } else {
-                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, xlim=xlim, ylim=ylim, ...)
             }
             if (which[w] >= 29) {
                 ok <- !is.na(u) & !is.na(v)
@@ -694,6 +721,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    oce.debug(debug, "\b\b} # plot.adp\n")
+    invisible()
 }
 
 adp.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
