@@ -26,6 +26,19 @@ normalize <- function(x)
 {
     (x - mean(x, na.rm=TRUE)) / sqrt(var(x, na.rm=TRUE))
 }
+
+detrend <- function(x,y)
+{
+    if (missing(x))
+        stop("must give x")
+    if (missing(y))
+        stop("must give y")
+    n <- length(x)
+    if (length(y) != n)
+        stop("x and y must be of same length, but they are ", n, " and ", length(y))
+    y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
+}
+
 despike <- function(x, method=c("median","smooth"), n=4, k=7, physical.range)
 {
     xx <- x
