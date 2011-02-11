@@ -1,3 +1,4 @@
+## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 use.new.imagep <- TRUE
 
 remove.ship.motion <- function(x)
@@ -129,7 +130,9 @@ summary.adp <- function(object, ...)
                                  adp.type=object$metadata$adp.type,
                                  slant.angle=object$metadata$slant.angle,
                                  orientation=object$metadata$orientation)
-        } else stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+        } else {
+            stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
+        }
 
         ## start building res from the header information
         have.data <- !is.null(object$data)
@@ -272,8 +275,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adp <- function(x,
-                     which=1:dim(x$data$ma$v)[3],
+plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      col,
                      zlim,
                      titles,
@@ -283,16 +285,16 @@ plot.adp <- function(x,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
-                     cex=1,
+                     cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                     xlim, ylim, 
                      control,
                      use.layout=FALSE,  # FIXME: remove from arg list if imagep gets working
                      debug=getOption("oce.debug"),
                      ...)
 {
-    oce.debug(debug, "\n")
-    oce.debug(debug, "Entering plot.adp()\n")
-    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oce.debug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
+    oce.debug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!inherits(x, "adp")) stop("method is only for adp objects")
     if (!(is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data)) {
         warning("there are no profiles in this dataset")
@@ -306,7 +308,32 @@ plot.adp <- function(x,
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
     ytype <- match.arg(ytype)
-    ytype <- match.arg(ytype)
+    ## user may specify a matrix for xlim and ylim
+    gave.ylim <- !missing(ylim)
+    if (gave.ylim) {
+        if (is.matrix(ylim)) {
+            if (dim(ylim)[2] != lw) {
+                ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            }
+        } else {
+            ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+        }
+        class(ylim2) <- class(ylim)
+        ylim <- ylim2
+    }
+    gave.xlim <- !missing(xlim)
+    if (gave.xlim) {
+        if (is.matrix(xlim)) {
+            if (dim(xlim)[2] != lw) {
+                xlim2 <- matrix(xlim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            }
+        } else {
+            if (length(xlim) != 2)
+                stop("xlim must be a vector of length 2, or a 2-column matrix")
+            xlim2 <- matrix(xlim[1:2], ncol=2, nrow=lw, byrow=TRUE)
+        }
+        xlim <- xlim2
+    }
     if (missing(zlim)) {
         gave.zlim <- FALSE
         zlim.given <- NULL
@@ -325,8 +352,8 @@ plot.adp <- function(x,
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     oce.debug(debug, "later on in plot.adp:\n")
-    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oce.debug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
     ## Translate word-style (FIXME: ugly coding)
     which2 <- vector("numeric", length(which))
@@ -446,11 +473,20 @@ plot.adp <- function(x,
                 zlim <- range(as.numeric(x$data$ma$a[,y.look,]), na.rm=TRUE)
                 zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
             } else if (which[w] %in% 9:(8+x$metadata$number.of.beams)) { # correlation
-                z <- as.numeric(x$data$ma$q[,,which[w]-8])
-                dim(z) <- dim(x$data$ma$q)[1:2]
-                zlim <- c(0, 100)
-                zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
-            } else skip <- TRUE
+                if ("q" %in% names(x$data$ma)) {
+                    z <- as.numeric(x$data$ma$q[,,which[w]-8])
+                    dim(z) <- dim(x$data$ma$q)[1:2]
+                    zlim <- c(0, 100)
+                    zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
+                } else if ("amp" %in% names(x$data$ma)) {
+                    z <- as.numeric(x$data$ma$amp[,,which[w]-8])
+                    dim(z) <- dim(x$data$ma$amp)[1:2]
+                    zlim <- c(0, max(x$data$ma$amp))
+                    zlab <- c(expression(amp[1]),expression(amp[2]),expression(amp[3]))[which[w]-8]
+                }
+            } else {
+                skip <- TRUE
+            }
             if (!skip) {
                 ##oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, " (just about to plot)\n")
                 if (use.new.imagep) {
@@ -602,9 +638,11 @@ plot.adp <- function(x,
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- prod(dim(x$data$ma$v)[1:2])
             if (!missing(control) && !is.null(control$bin)) {
-                if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                if (control$bin < 1)
+                    stop("cannot have control$bin less than 1, but got ", control$bin)
                 max.bin <- dim(x$data$ma$v)[2]
-                if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                if (control$bin > max.bin)
+                    stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
                 u <- x$data$ma$v[,control$bin,1]
                 v <- x$data$ma$v[,control$bin,2]
             } else {
@@ -613,13 +651,14 @@ plot.adp <- function(x,
             }
             if (n < 2000) {
                 if ("type" %in% names(dots)) {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col, ...)
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col,
+                         xlim=xlim, ylim=ylim, ...)
                 } else {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, ...)
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, xlim=xlim, ylim=ylim, ...)
                     points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
             } else {
-                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, xlim=xlim, ylim=ylim, ...)
             }
             if (which[w] >= 29) {
                 ok <- !is.na(u) & !is.na(v)
@@ -636,8 +675,18 @@ plot.adp <- function(x,
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                 if (which[w] >= 30) {
-                    umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)
-                    vmean <- mean(x$data$ma$v[,,2], na.rm=TRUE)
+                    if (!missing(control) && !is.null(control$bin)) {
+                        if (control$bin < 1)
+                            stop("cannot have control$bin less than 1, but got ", control$bin)
+                        max.bin <- dim(x$data$ma$v)[2]
+                        if (control$bin > max.bin)
+                            stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                        umean <- mean(x$data$ma$v[,control$bin,1], na.rm=TRUE)
+                        vmean <- mean(x$data$ma$v[,control$bin,2], na.rm=TRUE)
+                    } else {
+                        umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)
+                        vmean <- mean(x$data$ma$v[,,2], na.rm=TRUE)
+                    }
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
@@ -684,6 +733,25 @@ plot.adp <- function(x,
             if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    oce.debug(debug, "\b\b} # plot.adp\n")
+    invisible()
+}
+
+adp.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
+{
+    oce.debug(debug, "\b\badp.2enu() {\n")
+    coord <- x$metadata$oce.coordinate
+    if (coord == "beam") {
+        x <- adp.xyz2enu(adp.beam2xyz(x, debug=debug-1), declination=declination, debug=debug-1)
+    } else if (coord == "xyz") {
+        x <- adp.xyz2enu(x, declination=declination, debug=debug-1)
+    } else if (coord == "enu") {
+        ;
+    } else {
+        warning("adp.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
+    }
+    oce.debug(debug, "\b\b} # adp.2enu()\n")
+    x
 }
 
 adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
@@ -738,8 +806,9 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
                     ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
                     tm[2,] <- -tm[2,]       # FIXME: shouldn't this be done in read.adp.nortek() ?
                     tm[3,] <- -tm[3,]
-                } else if (x$metadata$orientation != "upward")
+                } else if (x$metadata$orientation != "upward") {
                     stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
+                }
             }
             res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
             res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
@@ -788,10 +857,10 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     }
     if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
         1 == length(agrep("sontek", x$metadata$manufacturer))) {
-        warning("detected nortek-vector or sontek-adv, and subtracting 90 from heading")
-        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
-        warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
+        ## Adjust the heading, so that the formulae (based on RDI) will work here
+        heading <- heading - 90
         pitch <- - pitch
+        warning("since nortek-adp or sontek-adp, changed sign of pitch and subtracted 90 from heading")
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))

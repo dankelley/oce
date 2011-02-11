@@ -1,3 +1,4 @@
+## vim: tw=100 shiftwidth=4 softtabstop=4 expandtab:
 ## byte sequences at start of items
 ## FLH 00 00; VLH 00 80; vel 00 01; Cor 00 02;  echo 00 03; percent 00 04; bottom-track 00 06
 
@@ -192,10 +193,11 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## Comment out some things not needed here (may be wrong, too)
     ##depth.of.transducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
     ##oce.debug(debug, "depth of transducer:", depth.of.transducer, "\n")
-    heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01 - heading.bias
-    pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
-    roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
-    oce.debug(debug, "VLD header has: heading=", heading, " pitch=", pitch, " roll=", roll, "\n")
+    ##heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01 - heading.bias
+    ##pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
+    ##roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
+    ##oce.debug(debug, "VLD header has: heading=", heading, "(after subtracting a bias of",
+    ##heading.bias, "deg), pitch=", pitch, " roll=", roll, "\n")
 
     ## Skipping a lot ...
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
@@ -253,8 +255,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
          ##pitch=pitch,
          ##roll=roll,
          ##salinity=salinity
-         heading.alignment,
-         heading.bias,
+         ##heading.alignment,
+         ##heading.bias,
          have.actual.data=have.actual.data)
 }                                       # read.header.rdi()
 
@@ -264,8 +266,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                          debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE,
                          log.action, ...)
 {
-    bisect.rdi.adp <- function(t.find, add=0, debug=0) {
-        oce.debug(debug, "bisect.rdi.adv(t.find=", format(t.find), ", add=", add, "\n")
+    bisect.adp.rdi <- function(t.find, add=0, debug=0) {
+        oce.debug(debug, "bisect.adp.rdi(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profile.start)
         lower <- 1
         upper <- len
@@ -367,9 +369,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             oce.debug(debug, "measurement.deltat:", measurement.deltat, "\n")
             if (inherits(from, "POSIXt")) {
                 if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
-                from.pair <- bisect.rdi.adp(from, add=-1, debug=debug-1)
+                from.pair <- bisect.adp.rdi(from, add=-1, debug=debug-1)
                 from <- from.index <- from.pair$index
-                to.pair <- bisect.rdi.adp(to, add=1, debug=debug-1)
+                to.pair <- bisect.adp.rdi(to, add=1, debug=debug-1)
                 to <- to.index <- to.pair$index
                 oce.debug(debug, "from=", format(from.pair$t), " yields profile.start[", from.index, "]\n",
                           "  to  =", format(to.pair$t), "yields profile.start[", to.index, "]\n",
@@ -395,24 +397,24 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             }
             profile.start <- profile.start[!is.na(profile.start)]
             profiles.to.read <- length(profile.start)
+            oce.debug(debug, "filename=",filename,"\n")
             oce.debug(debug, "profiles.to.read=",profiles.to.read,"\n")
             oce.debug(debug, "number.of.beams=",number.of.beams,"\n")
             oce.debug(debug, "number.of.cells=",number.of.cells,"\n")
             items <- number.of.beams * number.of.cells
-            v <- array(double(), dim=c(profiles.to.read, number.of.cells, number.of.beams))
+            v <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
             a <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # echo amplitude
             q <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # correlation
             g <- array(raw(), dim=c(profiles.to.read, number.of.cells, number.of.beams)) # percent good
             bad.profiles <- NULL
-            oce.debug(debug, "profiles.to.read=", profiles.to.read, "\n")
+            oce.debug(debug, "did allocation; dim(v)=", dim(v), "\n")
             have.bottom.track <- FALSE          # FIXME maybe we can determine this from the header
-            oce.debug(debug, "profiles.to.read = ", profiles.to.read, "\n")
             oce.debug(debug, "length(profile.start) = ", length(profile.start), "\n")
             if (profiles.to.read < 1)
                 stop("no profiles to read")
             for (i in 1:profiles.to.read) {     # recall: these start at 0x80 0x00
                 o <- profile.start[i] + header$data.offset[3] - header$data.offset[2] # 65 for workhorse; 50 for surveyor
-                oce.debug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
+                ##oce.debug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
                 if (buf[o] == 0x00 && buf[o+1] == 0x01) { # velocity
                     ##cat(vector.show(buf[o + 1 + seq(1, 2*items)], "buf[...]:"))
                     vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
@@ -425,7 +427,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         warning("first byte of correlation segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x02)
                         warning("second byte of correlation segment should be 0x02 but is ", buf[o+1], " at file position ", o+1)
-                    oce.debug(debug-1, "'q' (correlation) chunk at byte", o, "\n")
+                    ##oce.debug(debug-1, "'q' (correlation) chunk at byte", o, "\n")
                     q[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(q[i,,], "q:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
@@ -433,7 +435,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         warning("first byte of intensity segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x03)
                         warning("second byte of intensity segment should be 0x03 but is ", buf[o+1], " at file position ", o+1)
-                    oce.debug(debug-1, "'a' (amplitude) chunk at byte", o, "\n")
+                    ##oce.debug(debug-1, "'a' (amplitude) chunk at byte", o, "\n")
                     a[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE)
                     ##cat(vector.show(a[i,,], "a:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
@@ -441,13 +443,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         warning("first byte of percent-good segment should be 0x00 but is ", buf[o], " at file position ", o)
                     if (buf[o+1] != 0x04)
                         warning("second byte of percent-good segment should be 0x04 but is ", buf[o+1], " at file position ", o+1)
-                    oce.debug(debug-1, "'g' (percent good) chunk at byte", o, "\n")
+                    ##oce.debug(debug-1, "'g' (percent good) chunk at byte", o, "\n")
                     g[i,,] <- matrix(buf[o + 1 + seq(1, items)], ncol=number.of.beams, byrow=TRUE) # FIXME: not using this
                     ##cat(vector.show(g[i,,], "g:"))
                     o <- o + items + 2              # skip over the one-byte data plus a checkum; FIXME: use the checksum
                     ##oce.debug(debug-1, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
                     if (buf[o+1] == 0x06) {
-                        oce.debug(debug-1, "bottom track (range and velocity) chunk at byte", o, "\n")
+                        ##oce.debug(debug-1, "bottom track (range and velocity) chunk at byte", o, "\n")
                         if (!have.bottom.track) { # FIXME: maybe only 'surveyor' has bottom track ... if so, recode this
                             if (number.of.beams != 4)
                                 stop("expecting 4 beams, for this RDI adcp")

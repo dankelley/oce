@@ -6,11 +6,11 @@
 
 \description{Compute the dynamic height of a column of seawater.}
 
-\usage{sw.dynamic.height(x, pref=2000)}
+\usage{sw.dynamic.height(x, reference.pressure=2000)}
 
 \arguments{
   \item{x}{a \code{section} object, \strong{or} a \code{ctd} object.}
-  \item{pref}{reference pressure [dbar]}
+  \item{reference.pressure}{reference pressure [dbar]}
 }
 
 \details{If the first argument is a \code{section}, then dynamic height
@@ -30,11 +30,11 @@
   0\eqn{^\circ}{deg}C, and pressure as in the \code{ctd}. The reciprocal
   difference of these densities is then integrated using
   \code{\link[stats]{integrate}} with pressure limits \code{0} to
-  \code{pref}, and divided by the acceleration due to gravity, to
+  \code{reference.pressure}, and divided by the acceleration due to gravity, to
   calculate the dynamic height.
 
   If the water column is too short to have bottom pressure exceeding
-  \code{pref}, a missing value is reported.}
+  \code{reference.pressure}, a missing value is reported.}
 
 \value{In the first form, a list containing \code{distance}, the
   distance [km] from the first station in the section and \code{height},

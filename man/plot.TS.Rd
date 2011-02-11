@@ -15,6 +15,7 @@
      pch = 21,
      rotate.rho.labels = FALSE,
      connect.points = FALSE,
+     use.smoothScatter = FALSE,
      xlab,
      ylab,
      Slim,
@@ -40,6 +41,7 @@
   \item{pch}{code for symbols on graph.}
   \item{rotate.rho.labels}{if TRUE, labels in right-hand margin are written vertically}
   \item{connect.points}{if TRUE, the points are connected with line segments, in sequence}
+  \item{use.smoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}
   \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
   \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
   \item{Slim}{optional limits for salinity axis, otherwise inferred from data.}

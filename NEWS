@@ -1,9 +1,27 @@
 0.1-82
+- detrend(): added
+- read.adp.sontek(): handle PCADP type
+- read.adp.sontek.serial(): added
+- read.section(): handle WOCE quality flags for salinity
+- retime(): added
+- read.adv.sontek.serial(): correct error in class of 'a' and 'c'
+- despike(): use string value for argument 'method'
+- logger.toc(): fix bug in discovering files ranging over days
+- as.ctd(): make temperature and salinity into vectors, if not already
+- plot.TS(): add argument 'use.smoothScatter'
+- oce.debug(): flush the console after printing a message
+- sw.theta(): rename the method possibilities, to be lower case, without dates
+- in some sw functions, rename 'pref' as 'reference.pressure'
+- read.ctd(): fix bug in getting start.time for some time formats
+- pwelch() added
+- plot.sealevel(): make y axis obey range in data subset, if xlim is given
+- adp.2enu() added
 - coastline.world: improve resolution by a factor of 4 or so
 - read.ctd.woce(): infer water depth as max(pressure) if it's not in the header
 - section.smooth(): handle misordered stations; handle missing values better
 - plot.section(): allow strings for 'which'; avoid contouring error if two stations at same distance 
 - plot.ctd() and plot.profile(): add 'use.smoothScatter' argument
+- coriolis(): improve omega value
 0.1-81
 - add despike()
 - add range.limit()

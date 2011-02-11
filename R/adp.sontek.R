@@ -1,12 +1,13 @@
+## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             latitude=NA, longitude=NA,
-                            type=c("adp"),
+                            type=c("adp", "pcadp"),
                             debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, ...)
 {
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
     bisect.sontek.adp <- function(t.find, add=0, debug=0) {
-        oce.debug(debug, "bisect.sontek.adv(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
+        oce.debug(debug, "bisect.sontek.adp(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
         len <- length(profile.start)
         lower <- 1
         upper <- len
@@ -20,13 +21,14 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             year <- readBin(buf[profile.start[middle]+18:19], "integer", size=2, signed=FALSE, endian="little")
             day <- as.integer(buf[profile.start[middle]+20])
             month <- as.integer(buf[profile.start[middle]+21])
-            minute <- as.integer(buf[profile.start[middle]+22])
+            min <- as.integer(buf[profile.start[middle]+22])
             hour <- as.integer(buf[profile.start[middle]+23])
             ## SIG p82 C code suggests sec100 comes before second.
             sec100 <- as.integer(buf[profile.start[middle]+24])     # FIXME: determine whether this is 1/100th second
-            second <- as.integer(buf[profile.start[middle]+25])
-            t <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
-            oce.debug(debug, "t=", format(t), " inferred from year=", year, " month=", month, " day=", day, " hour=", hour, " second=", second, "sec100=", sec100, "\n")
+            sec <- as.integer(buf[profile.start[middle]+25])
+            t <- ISOdatetime(year, month, day, hour, min, sec+sec100/100, tz=tz)
+            oce.debug(debug, "t=", format(t), 
+                      " [year=", year, " month=", month, " day=", day, " hour=", hour, " sec=", second, "sec100=", sec100, "]\n")
             if (t.find < t)
                 upper <- middle
             else
@@ -84,7 +86,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         nbeams <- as.integer(buf[27])
         oce.debug(debug, "nbeams=", nbeams, "\n")
         beam.geometry <- as.integer(buf[28])
-        oce.debug(debug, "beam.geometry=", beam.geometry, "; 0 means 2 beams; 1 means 3 beams, 2 means 4 beams with 1 verticl; 3 means 4 beams, Janus\n")
+        oce.debug(debug, "beam.geometry=", beam.geometry, 
+                  "; 0 (2 beams); 1 (3 beams), 2 (4 beams with 1 vertical), 3 (4 beams, Janus)\n")
         slant.angle <- readBin(buf[29:30], "integer", n=1, size=2, signed=FALSE) / 10
         oce.debug(debug, "slant.angle=",slant.angle,"\n")
         orientation <- switch(as.integer(buf[31]) + 1, "down", "up", "side")
@@ -100,7 +103,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             adp.type <- nbeams <- slant.angle <- orientation <-
                 compass.installed <- recorder.installed <- temp.installed <- press.installed <- "?"
     }
-    profile.start <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
+    ##profile.start <- .Call("match2bytes", buf, parameters$profile.byte1, parameters$profile.byte2, FALSE)
+    profile.start <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 1, -1) # no ctd, no gps, no bottom-track; pcadp; all data
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
     oce.debug(debug, "first 10 profile.start:", profile.start[1:10], "\n")
     oce.debug(debug, "first 100 bytes of first profile:", paste(buf[profile.start[1]:(99+profile.start[1])], collapse=" "), "\n")
@@ -132,12 +136,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
     ## File time range and deltat
     measurement.start <- ISOdatetime(readBin(buf[profile.start[1]+18:19],"integer",n=1,size=2,signed=FALSE,endian="little"), # year
-                                  as.integer(buf[profile.start[1]+21]), # month
-                                  as.integer(buf[profile.start[1]+20]), # day
-                                  as.integer(buf[profile.start[1]+23]), # hour
-                                  as.integer(buf[profile.start[1]+22]), # min
-                                  as.integer(buf[profile.start[1]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
-                                  tz=tz)
+                                     as.integer(buf[profile.start[1]+21]), # month
+                                     as.integer(buf[profile.start[1]+20]), # day
+                                     as.integer(buf[profile.start[1]+23]), # hour
+                                     as.integer(buf[profile.start[1]+22]), # min
+                                     as.integer(buf[profile.start[1]+25])+0.01*as.integer(buf[profile.start[1]+24]), # sec (decimal)
+                                     tz=tz)
     oce.debug(debug, "measurement.start=", format(measurement.start), "\n")
     oce.debug(debug, "length(profile.start)=", length(profile.start), " [FIXME: if to not given, use this??]\n")
 
@@ -200,6 +204,15 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     profiles.to.read <- length(profile.start)
     oce.debug(debug, "profiles.in.file=",profiles.in.file,"; profiles.to.read=",profiles.to.read,"\n")
     profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
+    year   <- readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
+    day    <- as.integer(buf[profile.start + 20])
+    month  <- as.integer(buf[profile.start + 21])
+    minute <- as.integer(buf[profile.start + 22])
+    hour   <- as.integer(buf[profile.start + 23])
+    sec100 <- as.integer(buf[profile.start + 24])
+    second <- as.integer(buf[profile.start + 25])
+    time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
+    rm(year, day, month, minute, hour, sec100, second)
     temperature <- readBin(buf[profile.start2 + 46], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 100
     oce.debug(debug, "temperature[1:10]=",temperature[1:10],"\n")
     pressure <- readBin(buf[profile.start2 + 48], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE) / 100
@@ -208,52 +221,68 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     heading <- readBin(buf[profile.start2 + 40], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
     pitch <- readBin(buf[profile.start2 + 42], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
     roll <- readBin(buf[profile.start2 + 44], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE) / 10
-    year   <- readBin(buf[profile.start2 + 18], "integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
-    day    <- as.integer(buf[profile.start + 20])
-    month  <- as.integer(buf[profile.start + 21])
-    minute <- as.integer(buf[profile.start + 22])
-    hour   <- as.integer(buf[profile.start + 23])
-    sec100 <- as.integer(buf[profile.start + 24])     # FIXME: determine whether this is 1/100th second
-    second <- as.integer(buf[profile.start + 25])
-    time <- ISOdatetime(year, month, day, hour, minute, second+sec100/100, tz=tz)
+
     oce.debug(debug, "time[1:10]=",format(time[1:10]),"\n")
     v <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
     a <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
     q <- array(dim=c(profiles.to.read, number.of.cells, number.of.beams))
     nd <- number.of.cells * number.of.beams
     oce.debug(debug, "nd=",nd,";  header.length=", header.length,"\n")
+    if (type == "pcadp") {
+        nbeam.max <- 4                 # Max number of beams, not actual number
+        header.length <- header.length + 2 * (8 + nbeam.max) + 2 * nbeam.max + nbeam.max
+        ## Below is C code from Sontek, for pulse-coherent adp (2-byte little-endian 
+        ## integers).  FIXME: should perhaps read these things, but this is not a 
+        ## high priority, since in the data file for which the code was originally
+        ## developed, all distances were set to 123 mm and all velocities to 
+        ## 9999 mm/s, suggestive of insignificant, place-holder values.
+        ##
+        ##typedef struct
+        ##{
+        ##  unsigned int  ResLag;             /* in mm     Used for single cell    */
+        ##  unsigned int  ResUa;              /* in mm/s   Ambiguity resolution    */
+        ##  unsigned int  ResStart;           /* in mm     Position of resolve     */
+        ##  unsigned int  ResLength;          /* in mm     cell                    */
+        ##  unsigned int  PrfLag;             /* in mm     Used for full profile   */
+        ##  unsigned int  PrfUa;              /* in mm/s                           */
+        ##  unsigned int  PrfStart;           /* in mm     Position/Length of first*/
+        ##  unsigned int  PrfLength;          /* in mm     cell in profile         */
+        ##  unsigned int  Range[MAX_BEAMS];   /* in mm     Range to boundary       */
+        ##           int  Ures[MAX_BEAMS];    /* in mm/s   Velocities from Resolve */
+        ##                                    /*           lag                     */
+        ##  unsigned char Cres[MAX_BEAMS];    /* in %      Correlations from       */
+        ##                                    /*           resolve lag             */
+        ##} PCrecordType;
+    }
     if (profiles.to.read > 0) {
         for (i in 1:profiles.to.read) {
-            ## Doug does:
+            ## DS does:
             ##   fseek(fid,adpProfiles(1)-1+18+8+58+(ii-1)*numCells(1)*2+(jj-1)*2,'bof');
             ##   v = fread(fid,numSamples,'int16=>double',adpPacketSize-1)/10;
-            ## (he offsets by 83 ... but he also says the profile chunk size is 80+4*Nb*Nc+2-1,
+            ## Note that DS offsets by 83, but says the profile chunk size is 80+4*Nb*Nc+2-1,
             ## or 561, but I see repeats on length 562, so I think the formula should be 80+4*Nb*Nc+2.
             ## From that, I infer that there are 2 bytes after the profile data.
-            ## I've tried (note using 1000 to get m/s)
-            ##vv <- matrix(readBin(buf[profile.start[i] + header.length + 1:(2*nd)],
-            ##                    "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
-            vv <- matrix(readBin(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],
+            v_ <- matrix(readBin(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],
                                  "integer", n=nd, size=2, signed=TRUE, endian="little"), ncol=number.of.beams, byrow=FALSE)/1000
-            ##if (i == 1) {
-            ##    print(t(matrix(buf[profile.start[i] + header.length + seq(0, 2*nd-1)],ncol=number.of.beams,byrow=FALSE)))
-            ##    print(t(vv))
-            ##}
-            aa <- matrix(as.numeric(buf[profile.start[i] + header.length + 2*nd + seq(0, nd-1)]),
+            a_ <- matrix(as.numeric(buf[profile.start[i] + header.length + 2*nd + seq(0, nd-1)]),
                          ncol=number.of.beams, byrow=FALSE)
-            qq <- matrix(as.numeric(buf[profile.start[i] + header.length + 3*nd + seq(0, nd-1)]),
+            q_ <- matrix(as.numeric(buf[profile.start[i] + header.length + 3*nd + seq(0, nd-1)]),
                          ncol=number.of.beams, byrow=FALSE)
-            for (b in 1:number.of.beams) {
-                v[i,,b] <- vv[,b]
-                a[i,,b] <- aa[,b]
-                q[i,,b] <- qq[,b]
+            for (b in 1:number.of.beams) { # FIXME: probably could be speeded up
+                v[i,,b] <- v_[,b]
+                a[i,,b] <- a_[,b]
+                q[i,,b] <- q_[,b]
             }
             if (monitor) {
                 cat(".")
-                if (!(i %% 50)) cat(i, "\n")
+                if (!(i %% 50))
+                    cat(i, "\n")
             }
         }
-        if (monitor) cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n")
+        if (monitor)
+            cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n")
+        if (type == "pcadp")
+            v <- v / 10                # it seems pcadp is in 0.1mm/s
         ma <- list(v=v, a=a, q=q)
     } else {
         ma <- NULL
@@ -274,9 +303,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     data <- list(ma=ma,
                  ss=list(distance=seq(blanking.distance, by=cell.size, length.out=number.of.cells)),
                  ts=list(time=time,
-                 temperature=temperature,
-                 pressure=pressure,
-                 heading=heading, pitch=pitch, roll=roll))
+                         temperature=temperature,
+                         pressure=pressure,
+                         heading=heading, pitch=pitch, roll=roll))
+    oce.debug(debug, "slant.angle=",slant.angle,"; type=", type, "\n")
     beam.angle <- if (slant.angle == "?") 25 else slant.angle
     metadata <- list(manufacturer="sontek",
                      filename=filename,
@@ -334,3 +364,252 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
     milliseconds <- readBin(t[7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
     ISOdatetime(year, month, day, hour, minute, second+milliseconds/1000, tz=tz)
 }
+
+read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                                   latitude=NA, longitude=NA,
+                                   monitor=TRUE, log.action,
+                                   debug=getOption("oce.debug"))
+{
+    bisect.adp.sontek.serial <- function(t.find, add=0, tz="UTC", debug=0) {
+        oce.debug(debug, "bisect.adp.sontek.serial(t.find=", format(t.find), ", add=", add, "\n")
+        len <- length(p)
+        lower <- 1
+        upper <- len
+        passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
+        for (pass in 1:passes) {
+            middle <- floor((upper + lower) / 2)
+            year   <- readBin(buf[p[middle] + 18:19], what="integer", n=1, size=2, signed=FALSE, endian="little")
+            day    <- readBin(buf[p[middle] + 20], what="integer", n=1, size=1, signed=FALSE)
+            month  <- readBin(buf[p[middle] + 21], what="integer", n=1, size=1, signed=FALSE)
+            min    <- readBin(buf[p[middle] + 22], what="integer", n=1, size=1, signed=FALSE)
+            hour   <- readBin(buf[p[middle] + 23], what="integer", n=1, size=1, signed=FALSE)
+            sec100 <- readBin(buf[p[middle] + 24], what="integer", n=1, size=1, signed=FALSE)
+            sec    <- readBin(buf[p[middle] + 25], what="integer", n=1, size=1, signed=FALSE)
+            t <- ISOdatetime(year=year, month=month, day=day, hour=hour, min=min, sec=sec + sec100/100, tz=tz)
+            oce.debug(debug, "t=", format(t), " y=", year, " m=", month, " d=", format(day, width=2),
+                      " h=", format(hour, width=2),
+                      " m=", format(min, width=2),
+                      " s=", format(sec+sec100/100, width=4),
+                      "| pass", format(pass, width=2), "/", passes, "| middle=", middle,
+                      "(", format(middle/upper*100,digits=4), "%)\n", sep="")
+            if (t.find < t)
+                upper <- middle
+            else
+                lower <- middle
+            if (upper - lower < 2)
+                break
+        }
+        middle <- middle + add          # may use add to extend before and after window
+        if (middle < 1)
+            middle <- 1
+        if (middle > len)
+            middle <- len
+        t <- ISOdatetime(readBin(buf[p[middle]+18:19],"integer",size=2,signed=FALSE,endian="little"),
+                         as.integer(buf[p[middle]+21]), # month
+                         as.integer(buf[p[middle]+20]), # day
+                         as.integer(buf[p[middle]+23]), # hour
+                         as.integer(buf[p[middle]+22]), # min
+                         as.integer(buf[p[middle]+25])+0.01*as.integer(buf[p[middle]+24]),
+                         tz=tz)
+        oce.debug(debug, "result: t=", format(t), " at d[", middle, "]=", p[middle], "\n")
+        return(list(index=middle, time=t))
+    }
+    oce.debug(debug, paste("\b\bread.adp.sontek.serial(file[1]=\"", file[1],
+                           "\", from=", from,
+                           if (missing(to)) "to," else sprintf(", to=%s, ", format(to)),
+                           ", by=", by,
+                           ", latitude=", latitude, ", longitude=", longitude,
+                           ", monitor=", monitor,
+                           ", log.action=(not shown), debug=", debug, ") {\n", sep=""))
+    nfile <- length(file)
+    if (nfile > 1) {                   # handle multiple files
+        oce.debug(debug, "handling multiple files\n")
+        buf <- NULL
+        for (i in 1:nfile) {
+            if (monitor)
+                cat("\"", file[i], "\" ", sep="")
+            this.file <- file(file[i], "rb")
+            seek(this.file, 0, "end", rw="read")
+            file.size <- seek(this.file, 0, origin="start", rw="read")
+            if (monitor)
+                cat(file.size,"bytes\n")
+            buf <- c(buf, readBin(this.file, what="raw", n=file.size, endian="little"))
+            close(this.file)
+        }
+        filename <- paste("(\"", file[i], "\", ...)", sep="")
+    } else {                            # handle single file (which might be a connection, etc)
+        if (is.character(file)) {
+            filename <- full.filename(file)
+            file <- file(file, "rb")
+            on.exit(close(file))
+        }
+        if (!inherits(file, "connection"))
+            stop("argument `file' must be a character string or connection")
+        if (!isOpen(file)) {
+            filename <- "(connection)"
+            open(file, "rb")
+            on.exit(close(file))
+        }
+        ## read whole file into buffer
+        seek(file, 0, "end", rw="read")
+        file.size <- seek(file, 0, origin="start", rw="read")
+        oce.debug(debug, "filesize=",file.size,"\n")
+        buf <- readBin(file, what="raw", n=file.size, endian="little")
+    }
+    p <- .Call("ldc_sontek_adp", buf, 0, 0, 0, 0, -1) # no ctd, no gps, no bottom-track; all data
+    ## read some unchanging things from the first profile only
+    serial.number <- paste(readBin(buf[p[1]+4:13], "character", n=10, size=1),collapse="")
+    number.of.beams <- readBin(buf[p[1]+26], "integer", n=1, size=1, signed=FALSE)
+    orientation <- readBin(buf[p[1]+27], "integer", n=1, size=1, signed=FALSE)
+    if (orientation == 0)
+        orientation <- "upward"
+    else if (orientation == 1)
+        orientation  <- "downward"
+    else if (orientation == 2)
+        orientation <- "sideward"
+    else
+        stop("orientation=", orientation, "but must be 0 (upward), 1 (downward), or 2 (sideward)")
+    ## 28 is tempmode
+    ## coord.system 0=beam 1=XYZ 2=ENU
+    coordinate.system <- readBin(buf[p[1]+29], "integer", n=1, size=1, signed=FALSE)
+    if (coordinate.system == 0)
+        coordinate.system <- "beam"
+    else if (coordinate.system == 1)
+        coordinate.system <- "xyz"
+    else if (coordinate.system == 2)
+        coordinate.system <- "enu"
+    else
+        stop("coordinate.system=", coordinate.system, "but must be 0 (beam), 1 (xyz), or 2 (enu)")
+    number.of.cells <- readBin(buf[p[1]+30:31], "integer", n=1, size=2, signed=FALSE, endian="little")
+    cell.size <- 0.01*readBin(buf[p[1]+32:33], what="integer", n=1, size=2, signed=FALSE, endian="little")
+    blanking.distance <- 0.01*readBin(buf[p[1]+34:35], what="integer", n=1, size=2, signed=FALSE)
+    distance <- blanking.distance + cell.size * seq(from=0.5, by=cell.size, length.out=number.of.cells)
+    ## trim, if from and to are integers
+    if (!missing(to)) {
+        if (is.numeric(from) && is.numeric(to) && is.numeric(by)) {
+            if (from < 1)
+                stop("from=", from, " but must exceed 1")
+            if (to < 1)
+                stop("to=", to, " but must exceed 1")
+            if (by < 1)
+                stop("by=", by, " but must exceed 1")
+            if (to <= from)
+                stop("from=", from, " must exceed to=", to)
+            p <- p[seq(from=from, to=to, by=by)]
+        } else {
+            if (inherits(from, "POSIXt")) {
+                if (!inherits(to, "POSIXt"))
+                    stop("if 'from' is POSIXt, then 'to' must be, also")
+                if (!is.numeric(by)) {
+                    warning("'by' must be numeric")
+                    by <- 1
+                }
+                from.pair <- bisect.adp.sontek.serial(from, add=-1, tz=tz, debug=debug-1)
+                from <- from.index <- from.pair$index
+                to.pair <- bisect.adp.sontek.serial(to, add=1, tz=tz, debug=debug-1)
+                to <- to.index <- to.pair$index
+                oce.debug(debug, "from=", format(from.pair$t), " yields p[", from.index, "]\n",
+                          "  to  =", format(to.pair$t), "yields p[", to.index, "]\n",
+                          "  by=", by, "(not yet decoded)\n",
+                          vector.show(p, "p:"),
+                          "  p[",from.pair$index, "]=", p[from.pair$index], "at time", format(from.pair$t), "\n",
+                          "  p[",  to.pair$index, "]=", p[  to.pair$index], "at time", format(  to.pair$t), "\n")
+                p <- p[seq(from=from, to=to, by=by)]
+            }
+        }
+    }
+    np <- length(p)
+    pp <- sort(c(p, p+1)) # for 2-byte addressing ('int' in the Sontek docs)
+    pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
+
+    ## read profile-specific things profile by profile
+    profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4, signed=FALSE)
+    ## FIXME: should check that profile number is monotonic ... it may
+    ## help us with daily blank-outs, also!
+    year <- readBin(buf[pp+18],"integer",n=np,size=2,signed=FALSE)
+    day <- readBin(buf[p+20],"integer",n=np,size=1,signed=FALSE)
+    month <- readBin(buf[p+21],"integer",n=np,size=1,signed=FALSE)
+    min <- readBin(buf[p+22],"integer",n=np,size=1,signed=FALSE)
+    hour <- readBin(buf[p+23],"integer",n=np,size=1,signed=FALSE)
+    sec100 <- readBin(buf[p+24],"integer",n=np,size=1,signed=FALSE)
+    sec <- readBin(buf[p+25],"integer",n=np,size=1,signed=FALSE)
+    time <- ISOdatetime(year, month, day, hour, min, sec+0.01*sec100, tz=tz)
+    rm(year, day, month, min, hour, sec100, sec) # possibly this space will come in handy
+    heading <- 0.1 * readBin(buf[pp+40], "integer", n=np, size=2, signed=TRUE)
+    pitch <- 0.1 * readBin(buf[pp+42], "integer", n=np, size=2, signed=TRUE)
+    roll <- 0.1 * readBin(buf[pp+44], "integer", n=np, size=2, signed=TRUE)
+    temperature <- 0.01 * readBin(buf[pp+46], "integer", n=np, size=2, signed=TRUE)
+    v <- array(numeric(), dim=c(np, number.of.cells, number.of.beams))
+    vstd <- array(numeric(), dim=c(np, number.of.cells, number.of.beams))
+    amp <- array(numeric(), dim=c(np, number.of.cells, number.of.beams))
+    ndata <- number.of.cells * number.of.beams
+    i1 <- seq(1, ndata)
+    i2 <- seq(1, 2*ndata)
+    for (ip in 1:np) {
+        p0 <- p[ip] + 79
+        v_ <- matrix(0.001*readBin(buf[p0 + i2],
+                                   "integer", endian="little", n=ndata, size=2, signed=TRUE),
+                     ncol=number.of.beams, byrow=FALSE)
+        p0 <- p0 + 2 * ndata
+        vstd_ <- matrix(0.001*readBin(buf[p0 + i1],
+                                      "integer", endian="little", n=ndata, size=1, signed=FALSE),
+                        ncol=number.of.beams, byrow=FALSE)
+        p0 <- p0 + ndata
+        amp_ <- matrix(readBin(buf[p0 + i1],
+                               "integer", endian="little", n=ndata, size=1, signed=FALSE),
+                       ncol=number.of.beams, byrow=FALSE)
+        for (b in 1:number.of.beams) {
+            v[ip,,b] <- v_[,b]
+            vstd[ip,,b] <- vstd_[,b]
+            amp[ip,,b] <- amp_[,b]
+        }
+        if (monitor) {
+            if ((ip %% 50))
+                cat(".")
+            else
+                cat(".", ip, "\n")
+        }
+    }
+    if (monitor)
+        cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
+    beam.angle <- 25 ## FIXME: can we assume this for all instruments??
+    S  <- 1 / (3 * sin(beam.angle * pi / 180))
+    CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2
+    C  <- 1 / (3 * cos(beam.angle * pi / 180))
+    transformation.matrix <- matrix(c(2*S,  -S,  -S,
+                                      0  , -CS,  CS,
+                                      C  ,   C,   C),
+                                    nrow=3, byrow=TRUE)
+    metadata <- list(manufacturer="sontek",
+                     instrument.type="adp",
+                     serial.number=serial.number,
+                     filename=filename,
+                     latitude=latitude, longitude=longitude,
+                     transformation.matrix=transformation.matrix,
+                     measurement.start=0, # FIXME: should fill in
+                     measurement.end=np, # FIXME: should fill in
+                     measurement.deltat=mean(diff(as.numeric(time))),
+                     subsample.start=0, # FIXME: should fill in
+                     subsample.end=np, 
+                     subsample.deltat=mean(diff(as.numeric(time))),
+                     frequency=NA, # FIXME
+                     number.of.samples=np,
+                     number.of.beams=number.of.beams,
+                     coordinate.system=coordinate.system,
+                     oce.coordinate=coordinate.system,
+                     beam.angle=beam.angle,
+                     oce.beam.attenuated=FALSE,
+                     orientation=orientation)
+    data <- list(ts=list(time=time,
+                         heading=heading, pitch=pitch, roll=roll,
+                         temperature=temperature,
+                         pressure=rep(0, length(temperature))),
+                 ss=list(distance=distance),
+                 ma=list(v=v,vstd=vstd,amp=amp)) # velo, velo stddev, amplitude
+    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(res) <- c("sontek", "adp", "oce")
+    res
+}
+

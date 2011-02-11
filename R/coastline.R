@@ -1,7 +1,8 @@
 as.coastline <- function(latitude, longitude)
 {
     n <- length(latitude)
-    if (n != length(longitude)) stop("Lengths of longitude and latitude must be equal")
+    if (n != length(longitude))
+        stop("Lengths of longitude and latitude must be equal")
     data <- data.frame(longitude=longitude, latitude=latitude)
     log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
     res <- list(data=data, metadata=NULL, processing.log=log.item)
@@ -10,19 +11,22 @@ as.coastline <- function(latitude, longitude)
 }
 
 plot.coastline <- function (x,
+                            xlab="", ylab="",
                             asp,
                             center, span,
+                            expand=1.5,
                             mgp=getOption("oce.mgp"),
                             mar=c(mgp[1]+1,mgp[1]+1,1,1),
                             bg,
                             fill='lightgray',
                             axes=TRUE,
-                            expand=1.5,
                             debug=getOption("oce.debug"),
                             ...)
 {
     opar <- par(no.readonly = TRUE)
-    oce.debug(debug, "\b\bplot.coastline() {\n")
+    oce.debug(debug, "\b\bplot.coastline(...,",
+              "center=", if(missing(center)) "(missing)" else paste("c(", paste(center, collapse=","), ")"),
+              "span=", if(missing(span)) "(missing)" else span, ", ...) {\n")
     if (is.list(x) && "latitude" %in% names(x)) {
         if (!("longitude" %in% names(x)))
             stop("list must contain item named 'longitude'")
@@ -31,7 +35,15 @@ plot.coastline <- function (x,
         if (!inherits(x, "coastline"))
             stop("method is only for coastline objects, or lists that contain 'latitude' and 'longitude'")
     }
-#    par(mgp=mgp, mar=mar)
+    dots <- list(...)
+    names.dots <- names(dots)
+    ##  par(mgp=mgp, mar=mar)
+    if ("xlim" %in% names.dots) {
+        stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
+    }
+    if ("ylim" %in% names.dots) {
+        stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
+    }
     gave.center <- !missing(center)
     gave.span <- !missing(span)
     if (gave.center != gave.span)
@@ -39,12 +51,18 @@ plot.coastline <- function (x,
     if (gave.center) {
         if (length(center) != 2)
             stop("'center' must contain two values, latitude in deg N and longitude in deg E")
+        if (!missing(asp))
+            warning("argument 'asp' being ignored, because argument 'center' was given")
         asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
         yr <- center[1] + span * c(-1/2, 1/2) / 111.11
-        xr <- center[2] + span * c(-1/2, 1/2) / 111.11 / asp
+        xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
+        oce.debug(debug, "gave center and span; calculated xr=",xr," and yr=",yr,"\n")  
     } else {
         if (missing(asp)) {
-            asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+            if ("ylim" %in% names(dots))
+                asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
+            else
+                asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
         }
         ## Expand
         xr0 <- range(x$data$longitude, na.rm=TRUE)
@@ -62,65 +80,78 @@ plot.coastline <- function (x,
     ## The following is a somewhat provisional hack, to get around a
     ## tendency of plot() to produce latitudes past the poles.
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
-    oce.debug(debug, "asp=", asp, "\n")
-    oce.debug(debug, "par('pin') is", par("pin"), "\n")
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
-    oce.debug(debug, "asp.page=", asp.page, "\n")
-    gamma <- asp / asp.page
-    oce.debug(debug, "asp/asp.page=", asp / asp.page, "\n")
-    if ((asp / asp.page) < 1) {
+    oce.debug(debug, "par('pin')=",par('pin'), "asp=",asp,"asp.page=", asp.page, "\n")
+    if (asp < asp.page) {
         oce.debug(debug, "type 1 (will narrow x range)\n")
         d <- asp / asp.page * diff(xr)
         xr <- mean(xr) + d * c(-1/2, 1/2)
+        oce.debug(debug, "xr narrowed to:", xr, "\n")
         ## xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
     } else {
         oce.debug(debug, "type 2 (will narrow y range)\n")
         d <- asp / asp.page * diff(yr)
         yr <- mean(yr) + d * c(-1/2, 1/2)
+        oce.debug(debug, "yr narrowed to:", yr, "\n")
         ##yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
     }
-    if (xr[1] < -180) xr[1] <- -180
-    if (xr[2] >  180) xr[2] <-  180
-    if (yr[1] < -90)  yr[1] <- -90
-    if (yr[2] >  90)  yr[2] <-  90
+    if (xr[1] < (-180))
+        xr[1] <- (-180)
+    if (xr[2] >  180)
+        xr[2] <- 180
+    if (yr[1] <  (-90))
+        yr[1] <- (-90)
+    if (yr[2] >  90)
+        yr[2] <- 90
     oce.debug(debug, "xr:", xr, "\n")
     oce.debug(debug, "yr:", yr, "\n")
     if (!missing(bg)) {
-        plot.window(xr, yr, asp=asp, xlab="", ylab="", xaxs="i", yaxs="i", log="", ...)
+        plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
         usr <- par("usr")
         polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
         par(new=TRUE)
     }
-    oce.debug(debug, "xr=",xr,"\n")
-    oce.debug(debug, "yr=",yr,"\n")
-    plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i",
-         axes=FALSE, ...)
-    ## Construct axes "manually" because axis() does not know the physical range
-    if (debug > 0) {
-        points(xr, yr, col="blue", pch=20, cex=3)
-    }
-    xr.pretty <- pretty(xr)
-    yr.pretty <- pretty(yr)
-    if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
-        yr.pretty <- seq(-90, 90, 45)
-    if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
-        xr.pretty <- seq(-180, 180, 45)
-    oce.debug(debug, "xr.pretty=", xr.pretty, "\n")
-    oce.debug(debug, "yr.pretty=", yr.pretty, "\n")
-    axis(1, at=xr.pretty, pos=yr.pretty[1])
-    axis(3, at=xr.pretty, pos=max(yr.pretty), labels=FALSE)
-    axis(2, at=yr.pretty, pos=xr.pretty[1])
-    axis(4, at=yr.pretty, pos=max(xr.pretty), labels=FALSE)
-
     oce.debug(debug, "xr=", xr, "yr=",yr,"\n")
+    plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i",
+         axes=FALSE, ...)
+    if (axes) {
+        if (1 == prod(par('mfrow')) * prod(par('mfcol'))) {
+            if (FALSE) { ## FIXME: why does this not work?
+                ## Construct axes "manually" because axis() does not know the physical range
+                if (debug > 0) {
+                    points(xr, yr, col="blue", pch=20, cex=3)
+                }
+                xr.pretty <- pretty(xr)
+                yr.pretty <- pretty(yr)
+                if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
+                    yr.pretty <- seq(-90, 90, 45)
+                if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
+                    xr.pretty <- seq(-180, 180, 45)
+                oce.debug(debug, "xr.pretty=", xr.pretty, "\n")
+                oce.debug(debug, "yr.pretty=", yr.pretty, "\n")
+                axis(1, at=xr.pretty, pos=yr.pretty[1])
+                axis(3, at=xr.pretty, pos=max(yr.pretty), labels=FALSE)
+                axis(2, at=yr.pretty, pos=xr.pretty[1])
+                axis(4, at=yr.pretty, pos=max(xr.pretty), labels=FALSE)
+            } else {
+                box()
+                axis(1)
+                axis(2)
+            }
+        } else {
+            box()
+            axis(1)
+            axis(2)
+        }
+    }
     yaxp <- par("yaxp")
     oce.debug(debug, "par(yaxp)",par("yaxp"),"\n")
     oce.debug(debug, "par(pin)",par("pin"),"\n")
     if (yaxp[1] < -90 | yaxp[2] > 90) {
-        opin <- par("pin")
+        ##opin <- par("pin")
         oce.debug(debug, "inside pin=", par("pin"), " yaxp=",yaxp,"\n")
         yscale <- 180 / (yaxp[2] - yaxp[1])
-        oce.debug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
+        ##oce.debug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
         ##        par(pin=c(opin[1], yscale*opin[2]))
         if (!is.null(fill) && !is.null(x$metadata$fillable) && x$metadata$fillable)
             polygon(x$data$longitude, x$data$latitude, col=fill, ...)
@@ -136,7 +167,8 @@ plot.coastline <- function (x,
     oce.debug(debug, "lat lim:", range(x$data$latitude,na.rm=TRUE), "\n")
     oce.debug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
     oce.debug(debug, "\b\b} # plot.coastline()\n")
- #   par(opar)
+    invisible()
+    ## par(opar)
 }
 
 read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),

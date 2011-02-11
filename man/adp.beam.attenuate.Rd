@@ -2,9 +2,9 @@
 
 \alias{adp.beam.attenuate}
 
-\title{Convert ADP from beam to velocity}
+\title{Attenuate ADP beam signal strength}
 
-\description{Convert ADP from beam to velocity}
+\description{Attenuate ADP beam signal strength}
 
 \usage{adp.beam.attenuate(x, count2db=c(0.45, 0.45, 0.45, 0.45))}
 

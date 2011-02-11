@@ -1,3 +1,4 @@
+/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -6,9 +7,9 @@
  * 1. compile from commandline:
 
  R CMD SHLIB bitwise.c
-   
+
  * 2. test R code:
-   
+
  buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
  dyn.load("bitwise.so"); m <- .Call("matchcheck2bytes", buf, c(as.raw(0xa5), as.raw(0x11)), 22, c(as.raw(0xb5), as.raw(0x8c)))
  print(m)
@@ -19,7 +20,8 @@ SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes)
 {
   /* "unwrap" a vector of integers that are sequence numbers wrapping in 'bytes' bytes, 
    * creating the sequence numbers that might have resulted, had 'seq' not been
-   * created module 'bytes' bytes.
+   * created modulo 'bytes' bytes.
+   *
    */
   PROTECT(seq = AS_INTEGER(seq));
   int *pseq = INTEGER_POINTER(seq);
@@ -61,54 +63,54 @@ SEXP unwrap_sequence_numbers(SEXP seq, SEXP bytes)
 
 SEXP ldc_sontek_adv_22(SEXP buf, SEXP max)
 {
-/* ldc = locate data chunk; _sontek_adv = for a SonTek ADV (with temperature and/or pressure installed; see p95 of sontek-adv-op-man-2001.pdf)
- * BYTE   Contents
- *   1    0x85 [call this key1 in code]
- *   2    0x16 (length of record, 0x16 is 22 base 10) [ call this key2 in code]
- *   3:4  SampleNum, a little-endian unsigned integer. This should increase by 1 from sample
- *        to sample, and it wraps at value 65535
- *   5:6  x velocity component, signed 2-byte integer, in 0.1 mm/s [QUESTION: is there a scale factor issue?]
- *   7:8  y "
- *  9:10  z "
- *  11    beam 1 amplitude
- *  12    beam 2 "
- *  13    beam 3 "
- *  14    beam 1 correlation
- *  15    beam 2 "
- *  16    beam 3 "
- *  17:18 temperature (in 0.01 degC), signed little-endian integer
- *  19:20 pressure (in counts), signed little-endian integer
- *  21:22 checksum of bytes 1 to 20
- */
+  /* ldc = locate data chunk; _sontek_adv = for a SonTek ADV (with temperature and/or pressure installed; see p95 of sontek-adv-op-man-2001.pdf)
+   * BYTE   Contents
+   *   1    0x85 [call this key1 in code]
+   *   2    0x16 (length of record, 0x16 is 22 base 10) [ call this key2 in code]
+   *   3:4  SampleNum, a little-endian unsigned integer. This should increase by 1 from sample
+   *        to sample, and it wraps at value 65535
+   *   5:6  x velocity component, signed 2-byte integer, in 0.1 mm/s [QUESTION: is there a scale factor issue?]
+   *   7:8  y "
+   *  9:10  z "
+   *  11    beam 1 amplitude
+   *  12    beam 2 "
+   *  13    beam 3 "
+   *  14    beam 1 correlation
+   *  15    beam 2 "
+   *  16    beam 3 "
+   *  17:18 temperature (in 0.01 degC), signed little-endian integer
+   *  19:20 pressure (in counts), signed little-endian integer
+   *  21:22 checksum of bytes 1 to 20
+   */
 
-/*
-  # testing
+  /*
+# testing
 
-  R CMD SHLIB bitwise.o ; R --no-save < a.R
+R CMD SHLIB bitwise.o ; R --no-save < a.R
 
-  # with a.R as follows:
+# with a.R as follows:
 
-  f <- file('~/m05_sontek_adv','rb')
-  seek(f,0,"end")
-  n <- seek(f,0,"start")
-  buf <- readBin(f, "raw", n)
-  dyn.load("bitwise.so")
-  p <- .Call("ldc_sontek_adv_22", buf, 10)
-  np <- length(p)
-  pp <- sort(c(p, p+1)) # for two-byte reading
-  sample.number <- readBin(buf[pp+2], "integer", signed=FALSE, size=2, endian="little",n=np)
-  u1 <- 1e-4 * readBin(buf[pp+4], "integer", signed=TRUE, size=2, endian="little",n=np)
-  u2 <- 1e-4 * readBin(buf[pp+6], "integer", signed=TRUE, size=2, endian="little",n=np)
-  u3 <- 1e-4 * readBin(buf[pp+8], "integer", signed=TRUE, size=2, endian="little",n=np)
-  a1 <- readBin(buf[p+10], "integer", signed=TRUE, size=1, n=np)
-  a2 <- readBin(buf[p+11], "integer", signed=TRUE, size=1, n=np)
-  a3 <- readBin(buf[p+12], "integer", signed=TRUE, size=1, n=np)
-  c1 <- readBin(buf[p+13], "integer", signed=TRUE, size=1, n=np)
-  c2 <- readBin(buf[p+14], "integer", signed=TRUE, size=1, n=np)
-  c3 <- readBin(buf[p+15], "integer", signed=TRUE, size=1, n=np)
-  temperature <- 0.01 * readBin(buf[sort(c(p, p+1))+16], "integer", signed=TRUE, size=2, endian="little",n=np)
-  pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, endian="little",n=np)
- */
+f <- file('~/m05_sontek_adv','rb')
+seek(f,0,"end")
+n <- seek(f,0,"start")
+buf <- readBin(f, "raw", n)
+dyn.load("bitwise.so")
+p <- .Call("ldc_sontek_adv_22", buf, 10)
+np <- length(p)
+pp <- sort(c(p, p+1)) # for two-byte reading
+sample.number <- readBin(buf[pp+2], "integer", signed=FALSE, size=2, endian="little",n=np)
+u1 <- 1e-4 * readBin(buf[pp+4], "integer", signed=TRUE, size=2, endian="little",n=np)
+u2 <- 1e-4 * readBin(buf[pp+6], "integer", signed=TRUE, size=2, endian="little",n=np)
+u3 <- 1e-4 * readBin(buf[pp+8], "integer", signed=TRUE, size=2, endian="little",n=np)
+a1 <- readBin(buf[p+10], "integer", signed=TRUE, size=1, n=np)
+a2 <- readBin(buf[p+11], "integer", signed=TRUE, size=1, n=np)
+a3 <- readBin(buf[p+12], "integer", signed=TRUE, size=1, n=np)
+c1 <- readBin(buf[p+13], "integer", signed=TRUE, size=1, n=np)
+c2 <- readBin(buf[p+14], "integer", signed=TRUE, size=1, n=np)
+c3 <- readBin(buf[p+15], "integer", signed=TRUE, size=1, n=np)
+temperature <- 0.01 * readBin(buf[sort(c(p, p+1))+16], "integer", signed=TRUE, size=2, endian="little",n=np)
+pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, endian="little",n=np)
+*/
   unsigned char *pbuf, *pmatch;
   PROTECT(buf = AS_RAW(buf));
   PROTECT(max = AS_INTEGER(max));
@@ -136,18 +138,18 @@ SEXP ldc_sontek_adv_22(SEXP buf, SEXP max)
       Rprintf("tentative match %d at i = %d ... ", matches, i);
 #endif
       for (int c = 0; c < 20; c++)
-        check_sum += (unsigned short int)pbuf[i + c];
+	check_sum += (unsigned short int)pbuf[i + c];
       desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
       if (check_sum == desired_check_sum) {
-        matches++;
+	matches++;
 #ifdef DEBUG
-        Rprintf("good match (check_sum=%d)\n", check_sum);
+	Rprintf("good match (check_sum=%d)\n", check_sum);
 #endif
-        if (max_lres != 0 && matches >= max_lres)
-          break;
+	if (max_lres != 0 && matches >= max_lres)
+	  break;
       } else {
 #ifdef DEBUG
-        Rprintf("bad checksum\n");
+	Rprintf("bad checksum\n");
 #endif
       }
     }
@@ -164,14 +166,14 @@ SEXP ldc_sontek_adv_22(SEXP buf, SEXP max)
     for (int i = 0; i < lbuf - byte2; i++) { /* note that we don't look to the very end */
       check_sum = check_sum_start;
       if (pbuf[i] == byte1 && pbuf[i+1] == byte2) { /* match first 2 bytes, now check the checksum */
-        for (int c = 0; c < 20; c++)
-          check_sum += (unsigned short int)pbuf[i + c];
-        desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
-        if (check_sum == desired_check_sum) {
-          pres[ires++] = i + 1; /* the +1 is to get R pointers */
-        }
-        if (ires > lres)        /* FIXME: or +1? */
-          break;
+	for (int c = 0; c < 20; c++)
+	  check_sum += (unsigned short int)pbuf[i + c];
+	desired_check_sum = ((unsigned short)pbuf[i+20]) | ((unsigned short)pbuf[i+21] << 8);
+	if (check_sum == desired_check_sum) {
+	  pres[ires++] = i + 1; /* the +1 is to get R pointers */
+	}
+	if (ires > lres)        /* FIXME: or +1? */
+	  break;
       }
     }
     UNPROTECT(3);
@@ -194,11 +196,11 @@ SEXP nortek_checksum(SEXP buf, SEXP key)
   /* 
      R CMD SHLIB bitwise.c 
      library(oce)
-f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
-buf <- readBin(f, what="raw", n=1e4)
-vvd.start <- match.bytes(buf, 0xa5, 0x10)
-ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- c(ok, .Call("nortek_checksum",buf[vvd.start[i]+0:23], c(0xb5, 0x8c)))}
-  */
+     f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
+     buf <- readBin(f, what="raw", n=1e4)
+     vvd.start <- match.bytes(buf, 0xa5, 0x10)
+     ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- c(ok, .Call("nortek_checksum",buf[vvd.start[i]+0:23], c(0xb5, 0x8c)))}
+     */
   int i, n;
   short check_value;
   int *resp;
@@ -272,20 +274,20 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
   for (i = 0; i < n - 1; i++) {
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
-        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
-        // if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
-          n_match++;
-          ++i;			// skip
-          seq_last = seq_this;
-          // if (nnn > 0) Rprintf("KEEP\n");
-        } else {
-           // if (nnn > 0) Rprintf("DISCARD\n");
-        }
-        //nnn--;
+	seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+	// if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+	if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+	  n_match++;
+	  ++i;			// skip
+	  seq_last = seq_this;
+	  // if (nnn > 0) Rprintf("KEEP\n");
+	} else {
+	  // if (nnn > 0) Rprintf("DISCARD\n");
+	}
+	//nnn--;
       } else {
-        n_match++;
-        ++i;			// skip
+	n_match++;
+	++i;			// skip
       }
     }
   }
@@ -303,21 +305,21 @@ SEXP match2bytes(SEXP buf, SEXP m1, SEXP m2, SEXP demand_sequential)
     //    Rprintf("[%d]:", i);
     if (bufp[i] == *m1p && bufp[i + 1] == *m2p) {
       if (ds) {
-        seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
-        //if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
-        if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
-          n_match++;
-          resp[j++] = i + 1;	/* the 1 is to offset from C to R */
-          ++i;			/* skip */
-          seq_last = seq_this;
-          //if (nnn > 0) Rprintf("KEEP\n");
-        } else {
-          //if (nnn > 0) Rprintf("DISCARD\n");
-        }
-        nnn--;
+	seq_this = (((unsigned short)bufp[i + 3]) << 8) | (unsigned short)bufp[i + 2];
+	//if (nnn > 0) Rprintf("i=%d seq_this=%d seq_last=%d ... ",i,seq_this,seq_last);
+	if (!n_match || (seq_this == (seq_last + 1)) || (seq_this == 1 && seq_last == 65535)) { /* is second needed, given short type? */
+	  n_match++;
+	  resp[j++] = i + 1;	/* the 1 is to offset from C to R */
+	  ++i;			/* skip */
+	  seq_last = seq_this;
+	  //if (nnn > 0) Rprintf("KEEP\n");
+	} else {
+	  //if (nnn > 0) Rprintf("DISCARD\n");
+	}
+	nnn--;
       } else {
-        resp[j++] = i + 1;	/* the 1 is to offset from C to R */
-        ++i;			/* skip */
+	resp[j++] = i + 1;	/* the 1 is to offset from C to R */
+	++i;			/* skip */
       }
     }
   }
@@ -338,18 +340,18 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max)
    */
 
   /* 
-R CMD SHLIB bitwise.c 
-  */
+     R CMD SHLIB bitwise.c 
+     */
   /*
-library(oce)
-f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
-buf <- readBin(f, what="raw", n=1e6)
-vvd.start <- match.bytes(buf, 0xa5, 0x10)
-dyn.load("~/src/R-kelley/oce/src/bitwise.so")
-s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
-print(s)
-print(vvd.start)
-  */
+     library(oce)
+     f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
+     buf <- readBin(f, what="raw", n=1e6)
+     vvd.start <- match.bytes(buf, 0xa5, 0x10)
+     dyn.load("~/src/R-kelley/oce/src/bitwise.so")
+     s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
+     print(s)
+     print(vvd.start)
+     */
   unsigned char *pbuf, *pmatch, *pkey;
   PROTECT(buf = AS_RAW(buf));
   PROTECT(match = AS_RAW(match));
@@ -386,28 +388,28 @@ print(vvd.start)
     int found = 0;
     for (int m = 0; m < lmatch; m++) {
       if (pbuf[i+m] == pmatch[m]) 
-        found++;
+	found++;
       else
-        break;
+	break;
     }
     if (found == lmatch) {
       /* FIXME: should bit-twiddle this to work on all endian types */
       short *check = (short*)(pbuf+i);
       /*Rprintf(" %d", check_value);*/
       for (int cc = 0; cc < lsequence2 - 1; cc++) { /* last 2-byte chunk is the test value */
-        check_value += *check++;
-        /*Rprintf(" %d", check_value);*/
+	check_value += *check++;
+	/*Rprintf(" %d", check_value);*/
       }
       short check_sum = (((short)pbuf[i+lsequence-1]) << 8) | (short)pbuf[i+lsequence-2];
 #ifdef DEBUG
       Rprintf("i=%d lbuf=%d ires=%d  lres=%d  check_value=%d vs check_sum %d match=%d\n", i, lbuf, ires, lres, check_value, check_sum, check_value==check_sum);
 #endif
       if (check_value == check_sum) {
-        pres[ires++] = i + 1;
-        i += lsequence - lmatch; /* no need to check within sequence */
+	pres[ires++] = i + 1;
+	i += lsequence - lmatch; /* no need to check within sequence */
       }
       if (ires >= lres)
-        break;
+	break;
     }
     i += lmatch - 1;           /* skip over matched bytes */
     if (i > (lbuf - lsequence)) 

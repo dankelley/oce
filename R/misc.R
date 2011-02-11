@@ -1,8 +1,48 @@
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
+{
+    if (missing(x))
+        stop("must give argument 'x'")
+    if (missing(a))
+        stop("must give argument 'a'")
+    if (missing(b))
+        stop("must give argument 'b'")
+    if (missing(t0))
+        stop("must give argument 't0'")
+    oce.debug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
+    rval <- x
+    if ("ts" %in% names(x$data))
+        rval$data$ts$time <- x$data$ts$time + a + b * (as.numeric(x$data$ts$time) - as.numeric(t0))
+    if ("ts.slow" %in% names(x$data))
+        rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (as.numeric(x$data$ts.slow$time) - as.numeric(t0))
+    rval$processing.log <- processing.log.add(rval$processing.log,
+                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # retime.adv()\n")
+    rval
+}
+
+
 normalize <- function(x)
 {
     (x - mean(x, na.rm=TRUE)) / sqrt(var(x, na.rm=TRUE))
 }
-despike <- function(x, method=1, n=4, k=7, physical.range)
+
+detrend <- function(x,y)
+{
+    if (missing(x))
+        stop("must give x")
+    n <- length(x)
+    if (missing(y)) {
+        y <- x
+        x <- 1:length(y)
+    } else {
+        if (length(y) != n)
+            stop("x and y must be of same length, but they are ", n, " and ", length(y))
+    }
+    y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
+}
+
+despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.range)
 {
     xx <- x
     small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
@@ -10,15 +50,24 @@ despike <- function(x, method=1, n=4, k=7, physical.range)
     na <- is.na(x)
     unphysical <- xx < small | large < xx
     xx[unphysical | na] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
-    if (method == 1) {
+    method  <- match.arg(method)
+    if (method == "median") {
         xxs <- runmed(xx, k=k)
-    } else if (method == 2) {
+        deviant <- n < abs(normalize(xx - xxs))
+        x[deviant | unphysical] <- NA
+    } else if (method == "smooth") {
         xxs <- as.numeric(smooth(xx))
+        deviant <- n < abs(normalize(xx - xxs))
+        x[deviant | unphysical] <- NA
+    } else if (method == "mean") {
+        mean <- mean(x)
+        stdev <- sqrt(var(x))
+        good <- (mean - n * stdev < x) & (x < mean + n * stdev)
+        x[!good] <- NA
+        x
     } else {
         stop("unknown method ", method, "; try method=1 or method=2)")
     }
-    deviant <- n < abs(normalize(xx - xxs))
-    x[deviant | unphysical] <- NA
     x
 }
 rangelimit <- function(x, min, max)
@@ -44,18 +93,18 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
 {
     if (missing(dir))
         stop("need a 'dir', naming a directory containing a file with suffix .TBL, and also data files named in that file")
-    tbl.files <- list.files(path=dir, pattern="*.TBL")
+    tbl.files <- list.files(path=dir, pattern="*.TBL$")
     if (length(tbl.files) < 1)
         stop("could not locate a .TBL file in direcory ", dir)
-    t0 <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary time, to make integers
+    tref <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary time, to make integers
+    file.code <- NULL
+    start.time <- NULL
     for (tbl.file in tbl.files) {
         oce.debug(debug, tbl.file)
         lines <- readLines(paste(dir, tbl.file, sep="/"))
         if (length(lines) < 1)
             stop("found no data in file ", paste(dir, tbl.file, sep="/"))
         ## "File \\day179\\SL08A179.023 started at Fri Jun 27 22:00:00 2008"
-        file.code <- NULL
-        start.time <- NULL
         for (line in lines) {
             s <- strsplit(line, "[ \t]+")[[1]]
             if (length(s) > 2) {
@@ -67,10 +116,9 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
                 t <- as.POSIXct(strptime(paste(year, month, day, hms), "%Y %b %d %H:%M:%S", tz="UTC"))
                 len <- nchar(filename)
                 code <- substr(filename, len-6, len)
-                if (debug > 0)
-                    cat(s, "|", code, "|", format(t), "\n")
+                oce.debug(debug, s, "(", code, format(t), ")\n")
                 file.code <- c(file.code, code)
-                start.time <- c(start.time, as.numeric(t) - as.numeric(t0))
+                start.time <- c(start.time, as.numeric(t) - as.numeric(tref))
             }
         }
     }
@@ -78,11 +126,16 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
     lprefix <- nchar(prefix)
     prefix <- substr(prefix, 1, lprefix-7)
     filename <- paste(dir, paste(prefix, file.code, sep=""), sep="/")
-    start.time <- as.POSIXct(start.time + t0)
+    start.time <- as.POSIXct(start.time + tref)
+    oce.debug(debug, "from=", format(from), "\n")
+    oce.debug(debug, "to=", format(to), "\n")
     if (!missing(from) && !missing(to)) {
+        oce.debug(debug, "got", length(file.code), "candidate files")
         ok <- from <= start.time & start.time <= to
+        oce.debug(debug, "ok=", ok, "\n")
         filename <- filename[ok]
         start.time <- start.time[ok]
+        oce.debug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
     }
     list(filename=filename, start.time=start.time)
 }
@@ -154,8 +207,10 @@ matrix.smooth <- function(m)
 
 match.bytes <- function(input, b1, ...)
 {
-    if (missing(input)) stop("must provide \"input\"")
-    if (missing(b1)) stop("must provide at least one byte to match")
+    if (missing(input))
+        stop("must provide \"input\"")
+    if (missing(b1))
+        stop("must provide at least one byte to match")
     n <- length(input)
     dots <- list(...)
     lb <- 1 + length(dots)
@@ -163,7 +218,8 @@ match.bytes <- function(input, b1, ...)
         .Call("match2bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), FALSE)
     else if (lb == 3)
         .Call("match3bytes", as.raw(input), as.raw(b1), as.raw(dots[[1]]), as.raw(dots[[2]]))
-    else stop("must provide 2 or 3 bytes")
+    else
+        stop("must provide 2 or 3 bytes")
 }
 
 resizable.label <- function(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
@@ -223,13 +279,13 @@ lat.format <- function(lat, digits=max(6, getOption("digits") - 1))
     n <- length(lat)
     if (n < 1) return("")
     rval <- vector("character", n)
-    for (i in 1:n)
+    for (i in 1:n) {
         if (is.na(lat[i]))
             rval[i] <-  ""
         else
             rval[i] <- paste(format(abs(lat[i]), digits=digits),
-                             if (lat[i] > 0) "N" else "S",
-                             sep="")
+                             if (lat[i] > 0) "N" else "S", sep="")
+    }
     rval
 }
 
@@ -240,11 +296,11 @@ lon.format <- function(lon, digits=max(6, getOption("digits") - 1))
     rval <- vector("character", n)
     for (i in 1:n)
         if (is.na(lon[i]))
-            rval[i] <-  ""
-        else
-            rval[i] <- paste(format(abs(lon[i]), digits=digits),
-                             if (lon[i] > 0) "E" else "S",
-                             sep="")
+            rval[i] <- ""
+    else
+        rval[i] <- paste(format(abs(lon[i]), digits=digits),
+                         if (lon[i] > 0) "E" else "S",
+                         sep="")
     rval
 }
 
@@ -257,93 +313,93 @@ GMT.offset.from.tz <- function(tz)
     ## will come up most rarely in use, but perhaps something better should
     ## be devised.  (Maybe this is not a problem.  Maybe only MEDS uses these,
     ## as opposed to GMT offsets, and maybe they only work in 5 zones, anyway...)
-    if (tz == "A"   )  	return( -1  ) # Alpha Time Zone	Military	UTC + 1 hour
-    if (tz == "ACDT") 	return(-10.5) # Australian Central Daylight Time   Australia	UTC + 10:30 hours
-    if (tz == "ACST")	return( -9.5) # Australian Central Standard Time  Australia	UTC + 9:30 hours
-    if (tz == "ADT" )  	return( 3   ) # Atlantic Daylight Time	North America	UTC - 3 hours
-    if (tz == "AEDT")	return(-11  ) # Aus. East. Day. Time or Aus. East Summer Time Aus. UTC + 11 hours
-    if (tz == "AEST")	return(-10  ) # Australian Eastern Standard Time  Australia UTC + 10 hours
-    if (tz == "AKDT")	return(  8  ) # Alaska Daylight Time	North America	UTC - 8 hours
-    if (tz == "AKST")	return(  9  ) # Alaska Standard Time	North America	UTC - 9 hours
-    if (tz == "AST" )	return(  4  ) # Atlantic Standard Time	North America	UTC - 4 hours
-    if (tz == "AWDT") 	return( -9  ) # Australian Western Daylight Time	Australia	UTC + 9 hours
-    if (tz == "AWST") 	return( -8  ) # Australian Western Standard Time	Australia	UTC + 8 hours
-    if (tz == "B"   )	return( -2  ) # Bravo Time Zone	Military	UTC + 2 hours
-    if (tz == "BST" )	return( -1  ) # British Summer Time	Europe	UTC + 1 hour
-    if (tz == "C"   )	return( -3  ) # Charlie Time Zone	Military	UTC + 3 hours
-    ##if (tz == "CDT")  return(-10.5) # Central Daylight Time	Australia	UTC + 10:30 hours
-    if (tz == "CDT" )	return(  5  ) # Central Daylight Time	North America	UTC - 5 hours
-    if (tz == "CEDT")	return( -2  ) # Central European Daylight Time	Europe	UTC + 2 hours
-    if (tz == "CEST")	return( -2  ) # Central European Summer Time	Europe	UTC + 2 hours
-    if (tz == "CET" )	return( -1  ) # Central European Time	Europe	UTC + 1 hour
-    ##if (tz == "CST" ) return(-10.5) # Central Summer Time	Australia	UTC + 10:30 hours
-    ##if (tz == "CST" ) return( -9.5) # Central Standard Time	Australia	UTC + 9:30 hours
-    if (tz == "CST" )	return(  6  ) # Central Standard Time	North America	UTC - 6 hours
-    if (tz == "CXT" )	return( -7  ) # Christmas Island Time	Australia	UTC + 7 hours
-    if (tz == "D"   )	return( -4  ) # Delta Time Zone	Military	UTC + 4 hours
-    if (tz == "E"   )	return( -5  ) # Echo Time Zone	Military	UTC + 5 hours
-    ##if (tz == "EDT" ) return( -11 ) # Eastern Daylight Time	Australia	UTC + 11 hours
-    if (tz == "EDT" )	return(  4  ) # Eastern Daylight Time	North America	UTC - 4 hours
-    if (tz == "EEDT") 	return( -3  ) # Eastern European Daylight Time	Europe	UTC + 3 hours
-    if (tz == "EEST") 	return( -3  ) # Eastern European Summer Time	Europe	UTC + 3 hours
-    if (tz == "EET")	return( -2  ) # Eastern European Time	Europe	UTC + 2 hours
-    ##if (tz == "EST")  return( -11 ) # Eastern Summer Time	Australia	UTC + 11 hours
-    ##if (tz == "EST")  return( -10 ) # Eastern Standard Time	Australia	UTC + 10 hours
-    if (tz == "EST" )	return(  5  ) # Eastern Standard Time	North America	UTC - 5 hours
-    if (tz == "F"   )	return( -6  ) # Foxtrot Time Zone	Military	UTC + 6 hours
-    if (tz == "G"   )	return( -7  ) # Golf Time Zone	Military	UTC + 7 hours
-    if (tz == "GMT" )	return(  0  ) # Greenwich Mean Time	Europe	UTC
-    if (tz == "H"   )	return( -8  ) # Hotel Time Zone	Military	UTC + 8 hours
-    if (tz == "HAA" )	return(  3  ) # Heure Avancée de l'Atlantique	North America	UTC - 3 hours
-    if (tz == "HAC" )	return(  5  ) # Heure Avancée du Centre	North America	UTC - 5 hours
-    if (tz == "HADT")	return(  9  ) # Hawaii-Aleutian Daylight Time	North America	UTC - 9 hours
-    if (tz == "HAE" )	return(  4  ) # Heure Avancée de l'Est	North America	UTC - 4 hours
-    if (tz == "HAP" )	return(  7  ) # Heure Avancée du Pacifique	North America	UTC - 7 hours
-    if (tz == "HAR" )	return(  6  ) # Heure Avancée des Rocheuses	North America	UTC - 6 hours
-    if (tz == "HAST")	return( 10  ) # Hawaii-Aleutian Standard Time	North America	UTC - 10 hours
-    if (tz == "HAT" )	return(  2.5) # Heure Avancée de Terre-Neuve	North America	UTC - 2:30 hours
-    if (tz == "HAY" )	return(  8  ) # Heure Avancée du Yukon	North America	UTC - 8 hours
-    if (tz == "HNA" )	return(  4  ) # Heure Normale de l'Atlantique	North America	UTC - 4 hours
-    if (tz == "HNC" )	return(  6  ) # Heure Normale du Centre	North America	UTC - 6 hours
-    if (tz == "HNE" )	return(  5  ) # Heure Normale de l'Est	North America	UTC - 5 hours
-    if (tz == "HNP" )	return(  8  ) # Heure Normale du Pacifique	North America	UTC - 8 hours
-    if (tz == "HNR" )	return(  7  ) # Heure Normale des Rocheuses	North America	UTC - 7 hours
-    if (tz == "HNT" )	return(  3.5) # Heure Normale de Terre-Neuve	North America	UTC - 3:30 hours
-    if (tz == "HNY" )	return(  9  ) # Heure Normale du Yukon	North America	UTC - 9 hours
-    if (tz == "I"   )	return( -9  ) # India Time Zone	Military	UTC + 9 hours
-    if (tz == "IST" )	return( -1  ) # Irish Summer Time	Europe	UTC + 1 hour
-    if (tz == "K"   )	return(-10  ) # Kilo Time Zone	Military	UTC + 10 hours
-    if (tz == "L"   )	return(-11  ) # Lima Time Zone	Military	UTC + 11 hours
-    if (tz == "M"   )	return(-12  ) # Mike Time Zone	Military	UTC + 12 hours
-    if (tz == "MDT" )	return(  6  ) # Mountain Daylight Time	North America	UTC - 6 hours
-    if (tz == "MESZ") 	return( -2  ) # Mitteleuroäische Sommerzeit	Europe	UTC + 2 hours
-    if (tz == "MEZ" )	return( -1  ) # Mitteleuropäische Zeit	Europe	UTC + 1 hour
-    if (tz == "MST" )	return(  7  ) # Mountain Standard Time	North America	UTC - 7 hours
-    if (tz == "N"   )	return(  1  ) # November Time Zone	Military	UTC - 1 hour
-    if (tz == "NDT" )	return(  2.5) # Newfoundland Daylight Time	North America	UTC - 2:30 hours
-    if (tz == "NFT" )	return(-11.5) # Norfolk (Island) Time	Australia	UTC + 11:30 hours
-    if (tz == "NST" )	return(  3.5) # Newfoundland Standard Time	North America	UTC - 3:30 hours
-    if (tz == "O"   )	return(  1  ) # Oscar Time Zone	Military	UTC - 2 hours
-    if (tz == "P"   )	return(  3  ) # Papa Time Zone	Military	UTC - 3 hours
-    if (tz == "PDT" )	return(  7  ) # Pacific Daylight Time	North America	UTC - 7 hours
-    if (tz == "PST" )	return(  8  ) # Pacific Standard Time	North America	UTC - 8 hours
-    if (tz == "Q"   )	return(  4  ) # Quebec Time Zone	Military	UTC - 4 hours
-    if (tz == "R"   )	return(  4  ) # Romeo Time Zone	Military	UTC - 5 hours
-    if (tz == "S"   )	return(  6  ) # Sierra Time Zone	Military	UTC - 6 hours
-    if (tz == "T"   )	return(  7  ) # Tango Time Zone	Military	UTC - 7 hours
-    if (tz == "U"   )	return(  8  ) # Uniform Time Zone	Military	UTC - 8 hours
-    if (tz == "UTC" )	return(  0  ) # Coordinated Universal Time	Europe	UTC
-    if (tz == "V"   )	return(  9  ) # Victor Time Zone	Military	UTC - 9 hours
-    if (tz == "W"   )	return( 10  ) # Whiskey Time Zone	Military	UTC - 10 hours
-    if (tz == "WDT" )	return( -9  ) # Western Daylight Time	Australia	UTC + 9 hours
-    if (tz == "WEDT") 	return( -1  ) # Western European Daylight Time	Europe	UTC + 1 hour
-    if (tz == "WEST") 	return( -1  ) # Western European Summer Time	Europe	UTC + 1 hour
-    if (tz == "WET")	return(  0  ) # Western European Time	Europe	UTC
-    ##if (tz == "WST")  return( -9  ) # Western Summer Time	Australia	UTC + 9 hours
-    if (tz == "WST")	return( -8  ) # Western Standard Time	Australia	UTC + 8 hours
-    if (tz == "X"  )	return( 11  ) # X-ray Time Zone	Military	UTC - 11 hours
-    if (tz == "Y"  )	return( 12  ) # Yankee Time Zone	Military	UTC - 12 hours
-    if (tz == "Z"  )	return(  0  ) # Zulu Time Zone	Military	UTC
+    if (tz == "A"   )   return( -1  ) # Alpha Time Zone Military        UTC + 1 hour
+    if (tz == "ACDT")   return(-10.5) # Australian Central Daylight Time   Australia    UTC + 10:30 hours
+    if (tz == "ACST")   return( -9.5) # Australian Central Standard Time  Australia     UTC + 9:30 hours
+    if (tz == "ADT" )   return( 3   ) # Atlantic Daylight Time  North America   UTC - 3 hours
+    if (tz == "AEDT")   return(-11  ) # Aus. East. Day. Time or Aus. East Summer Time Aus. UTC + 11 hours
+    if (tz == "AEST")   return(-10  ) # Australian Eastern Standard Time  Australia UTC + 10 hours
+    if (tz == "AKDT")   return(  8  ) # Alaska Daylight Time    North America   UTC - 8 hours
+    if (tz == "AKST")   return(  9  ) # Alaska Standard Time    North America   UTC - 9 hours
+    if (tz == "AST" )   return(  4  ) # Atlantic Standard Time  North America   UTC - 4 hours
+    if (tz == "AWDT")   return( -9  ) # Australian Western Daylight Time        Australia       UTC + 9 hours
+    if (tz == "AWST")   return( -8  ) # Australian Western Standard Time        Australia       UTC + 8 hours
+    if (tz == "B"   )   return( -2  ) # Bravo Time Zone Military        UTC + 2 hours
+    if (tz == "BST" )   return( -1  ) # British Summer Time     Europe  UTC + 1 hour
+    if (tz == "C"   )   return( -3  ) # Charlie Time Zone       Military        UTC + 3 hours
+    ##if (tz == "CDT")  return(-10.5) # Central Daylight Time   Australia       UTC + 10:30 hours
+    if (tz == "CDT" )   return(  5  ) # Central Daylight Time   North America   UTC - 5 hours
+    if (tz == "CEDT")   return( -2  ) # Central European Daylight Time  Europe  UTC + 2 hours
+    if (tz == "CEST")   return( -2  ) # Central European Summer Time    Europe  UTC + 2 hours
+    if (tz == "CET" )   return( -1  ) # Central European Time   Europe  UTC + 1 hour
+    ##if (tz == "CST" ) return(-10.5) # Central Summer Time     Australia       UTC + 10:30 hours
+    ##if (tz == "CST" ) return( -9.5) # Central Standard Time   Australia       UTC + 9:30 hours
+    if (tz == "CST" )   return(  6  ) # Central Standard Time   North America   UTC - 6 hours
+    if (tz == "CXT" )   return( -7  ) # Christmas Island Time   Australia       UTC + 7 hours
+    if (tz == "D"   )   return( -4  ) # Delta Time Zone Military        UTC + 4 hours
+    if (tz == "E"   )   return( -5  ) # Echo Time Zone  Military        UTC + 5 hours
+    ##if (tz == "EDT" ) return( -11 ) # Eastern Daylight Time   Australia       UTC + 11 hours
+    if (tz == "EDT" )   return(  4  ) # Eastern Daylight Time   North America   UTC - 4 hours
+    if (tz == "EEDT")   return( -3  ) # Eastern European Daylight Time  Europe  UTC + 3 hours
+    if (tz == "EEST")   return( -3  ) # Eastern European Summer Time    Europe  UTC + 3 hours
+    if (tz == "EET")    return( -2  ) # Eastern European Time   Europe  UTC + 2 hours
+    ##if (tz == "EST")  return( -11 ) # Eastern Summer Time     Australia       UTC + 11 hours
+    ##if (tz == "EST")  return( -10 ) # Eastern Standard Time   Australia       UTC + 10 hours
+    if (tz == "EST" )   return(  5  ) # Eastern Standard Time   North America   UTC - 5 hours
+    if (tz == "F"   )   return( -6  ) # Foxtrot Time Zone       Military        UTC + 6 hours
+    if (tz == "G"   )   return( -7  ) # Golf Time Zone  Military        UTC + 7 hours
+    if (tz == "GMT" )   return(  0  ) # Greenwich Mean Time     Europe  UTC
+    if (tz == "H"   )   return( -8  ) # Hotel Time Zone Military        UTC + 8 hours
+    if (tz == "HAA" )   return(  3  ) # Heure Avancée de l'Atlantique   North America   UTC - 3 hours
+    if (tz == "HAC" )   return(  5  ) # Heure Avancée du Centre North America   UTC - 5 hours
+    if (tz == "HADT")   return(  9  ) # Hawaii-Aleutian Daylight Time   North America   UTC - 9 hours
+    if (tz == "HAE" )   return(  4  ) # Heure Avancée de l'Est  North America   UTC - 4 hours
+    if (tz == "HAP" )   return(  7  ) # Heure Avancée du Pacifique      North America   UTC - 7 hours
+    if (tz == "HAR" )   return(  6  ) # Heure Avancée des Rocheuses     North America   UTC - 6 hours
+    if (tz == "HAST")   return( 10  ) # Hawaii-Aleutian Standard Time   North America   UTC - 10 hours
+    if (tz == "HAT" )   return(  2.5) # Heure Avancée de Terre-Neuve    North America   UTC - 2:30 hours
+    if (tz == "HAY" )   return(  8  ) # Heure Avancée du Yukon  North America   UTC - 8 hours
+    if (tz == "HNA" )   return(  4  ) # Heure Normale de l'Atlantique   North America   UTC - 4 hours
+    if (tz == "HNC" )   return(  6  ) # Heure Normale du Centre North America   UTC - 6 hours
+    if (tz == "HNE" )   return(  5  ) # Heure Normale de l'Est  North America   UTC - 5 hours
+    if (tz == "HNP" )   return(  8  ) # Heure Normale du Pacifique      North America   UTC - 8 hours
+    if (tz == "HNR" )   return(  7  ) # Heure Normale des Rocheuses     North America   UTC - 7 hours
+    if (tz == "HNT" )   return(  3.5) # Heure Normale de Terre-Neuve    North America   UTC - 3:30 hours
+    if (tz == "HNY" )   return(  9  ) # Heure Normale du Yukon  North America   UTC - 9 hours
+    if (tz == "I"   )   return( -9  ) # India Time Zone Military        UTC + 9 hours
+    if (tz == "IST" )   return( -1  ) # Irish Summer Time       Europe  UTC + 1 hour
+    if (tz == "K"   )   return(-10  ) # Kilo Time Zone  Military        UTC + 10 hours
+    if (tz == "L"   )   return(-11  ) # Lima Time Zone  Military        UTC + 11 hours
+    if (tz == "M"   )   return(-12  ) # Mike Time Zone  Military        UTC + 12 hours
+    if (tz == "MDT" )   return(  6  ) # Mountain Daylight Time  North America   UTC - 6 hours
+    if (tz == "MESZ")   return( -2  ) # Mitteleuroäische Sommerzeit     Europe  UTC + 2 hours
+    if (tz == "MEZ" )   return( -1  ) # Mitteleuropäische Zeit  Europe  UTC + 1 hour
+    if (tz == "MST" )   return(  7  ) # Mountain Standard Time  North America   UTC - 7 hours
+    if (tz == "N"   )   return(  1  ) # November Time Zone      Military        UTC - 1 hour
+    if (tz == "NDT" )   return(  2.5) # Newfoundland Daylight Time      North America   UTC - 2:30 hours
+    if (tz == "NFT" )   return(-11.5) # Norfolk (Island) Time   Australia       UTC + 11:30 hours
+    if (tz == "NST" )   return(  3.5) # Newfoundland Standard Time      North America   UTC - 3:30 hours
+    if (tz == "O"   )   return(  1  ) # Oscar Time Zone Military        UTC - 2 hours
+    if (tz == "P"   )   return(  3  ) # Papa Time Zone  Military        UTC - 3 hours
+    if (tz == "PDT" )   return(  7  ) # Pacific Daylight Time   North America   UTC - 7 hours
+    if (tz == "PST" )   return(  8  ) # Pacific Standard Time   North America   UTC - 8 hours
+    if (tz == "Q"   )   return(  4  ) # Quebec Time Zone        Military        UTC - 4 hours
+    if (tz == "R"   )   return(  4  ) # Romeo Time Zone Military        UTC - 5 hours
+    if (tz == "S"   )   return(  6  ) # Sierra Time Zone        Military        UTC - 6 hours
+    if (tz == "T"   )   return(  7  ) # Tango Time Zone Military        UTC - 7 hours
+    if (tz == "U"   )   return(  8  ) # Uniform Time Zone       Military        UTC - 8 hours
+    if (tz == "UTC" )   return(  0  ) # Coordinated Universal Time      Europe  UTC
+    if (tz == "V"   )   return(  9  ) # Victor Time Zone        Military        UTC - 9 hours
+    if (tz == "W"   )   return( 10  ) # Whiskey Time Zone       Military        UTC - 10 hours
+    if (tz == "WDT" )   return( -9  ) # Western Daylight Time   Australia       UTC + 9 hours
+    if (tz == "WEDT")   return( -1  ) # Western European Daylight Time  Europe  UTC + 1 hour
+    if (tz == "WEST")   return( -1  ) # Western European Summer Time    Europe  UTC + 1 hour
+    if (tz == "WET")    return(  0  ) # Western European Time   Europe  UTC
+    ##if (tz == "WST")  return( -9  ) # Western Summer Time     Australia       UTC + 9 hours
+    if (tz == "WST")    return( -8  ) # Western Standard Time   Australia       UTC + 8 hours
+    if (tz == "X"  )    return( 11  ) # X-ray Time Zone Military        UTC - 11 hours
+    if (tz == "Y"  )    return( 12  ) # Yankee Time Zone        Military        UTC - 12 hours
+    if (tz == "Z"  )    return(  0  ) # Zulu Time Zone  Military        UTC
 }
 
 gravity <- function(latitude=45, degrees=TRUE)
@@ -476,9 +532,9 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
         }
     } else {
         n1 <- length(lat1)
-        if (length(lon1) != n1)	stop("lat1 and lon1 must be vectors of the same length")
+        if (length(lon1) != n1) stop("lat1 and lon1 must be vectors of the same length")
         n2 <- length(lat2)
-        if (length(lon2) != n2)	stop("lat2 and lon2 must be vectors of the same length")
+        if (length(lon2) != n2) stop("lat2 and lon2 must be vectors of the same length")
         if (n2 < n1) { # take only first one
             if (n2 != 1) warning("Using just the first element of lat2 and lon2, even though it contains more elements")
             llat2 <- rep(lat2[1], n1)
@@ -487,10 +543,10 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
             llat2 <- lat2
             llon2 <- lon2
         }
-                                        #subroutine geoddist(DLAT1,DLON1,DLAT2,DLON2,A,F,FAZ,BAZ,S)
+        #subroutine geoddist(DLAT1,DLON1,DLAT2,DLON2,A,F,FAZ,BAZ,S)
         res <- vector("numeric", n1)
         for (i in 1:n1) {
-                                        #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
+            #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
             if (is.finite(lat1[i]) && is.finite(lon1[i]) && is.finite(llat2[i]) && is.finite(llon2[i])) {
                 ## res[i] <- .Fortran("geoddist",
                 res[i] <- .C("geoddist",
@@ -561,8 +617,9 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
 
 coriolis <- function(lat, degrees=TRUE)
 {
+    ## Siderial day 86164.1 s.
     if (degrees) lat <- lat * 0.0174532925199433
-    1.4544410433286078e-4 * sin(lat)
+    1.458423010785138e-4 * sin(lat)
 }
 
 undrift.time <- function(x, slow.end = 0, tname="time")
@@ -674,8 +731,8 @@ add.column <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     if (!inherits(x, "oce")) stop("method is only for oce objects")
+    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
     if (missing(to))
@@ -1093,4 +1150,5 @@ oce.debug <- function(debug=0, ...)
     if (debug > 0) {
         cat(paste(rep("  ", 5 - debug), collapse=""), ...)
     }
+    flush.console()
 }

@@ -5,12 +5,17 @@ sw.N2 <- function(pressure, sigma.theta=NULL, ...) # BUG: think more about best 
         pressure <- pressure$data$pressure # over-writes pressure
     }
     args <- list(...)
-    ## df <- if (is.null(args$df)) length(p)/5 else args$df;
+    depths <- length(pressure)
     df <- if (is.null(args$df)) min(floor(length(pressure)/10), 15) else args$df;
     ok <- !is.na(pressure) & !is.na(sigma.theta)
-    sigma.theta.smooth <- smooth.spline(pressure[ok], sigma.theta[ok], df=df)
-    sigma.theta.deriv <- rep(NA, length(pressure))
-    sigma.theta.deriv[ok] <- predict(sigma.theta.smooth, pressure[ok], deriv = 1)$y
+    if (depths > 4) {
+	sigma.theta.smooth <- smooth.spline(pressure[ok], sigma.theta[ok], df=df)
+	sigma.theta.deriv <- rep(NA, length(pressure))
+	sigma.theta.deriv[ok] <- predict(sigma.theta.smooth, pressure[ok], deriv = 1)$y
+    } else {
+	sigma.theta.smooth <- as.numeric(smooth(sigma.theta[ok]))
+	sigma.theta.deriv <- c(0, diff(sigma.theta.smooth) / diff(pressure))
+    }
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigma.theta.deriv, NA)
 }
 
@@ -208,9 +213,9 @@ sw.z <- function(pressure, latitude=45, degrees=TRUE)
     -sw.depth(pressure=pressure, latitude=latitude, degrees=degrees)
 }
 
-sw.dynamic.height <- function(x, pref=2000)
+sw.dynamic.height <- function(x, reference.pressure=2000)
 {
-    height <- function(ctd, pref)
+    height <- function(ctd, reference.pressure)
     {
         if (sum(!is.na(ctd$data$pressure)) < 2) return(NA) # cannot integrate then
         g <- if (is.na(ctd$metadata$latitude)) 9.8 else gravity(ctd$metadata$latitude)
@@ -221,7 +226,7 @@ sw.dynamic.height <- function(x, pref=2000)
         dzdp <- ((1/rho - 1/sw.rho(rep(35,np),rep(0,np),ctd$data$pressure))/g)*1e4
 ##        print(summary(ctd))
         integrand <- approxfun(ctd$data$pressure, dzdp, rule=2)
-        integrate(integrand, 0, pref)$value
+        integrate(integrand, 0, reference.pressure)$value
     }
     if (inherits(x, "section")) {
         lon0 <- x$data$station[[1]]$metadata$longitude
@@ -232,11 +237,11 @@ sw.dynamic.height <- function(x, pref=2000)
         for (i in 1:ns) {               # FIXME: avoid loops
 ##            cat("i=",i,"\n")
             d[i] <- geod.dist(x$data$station[[i]]$metadata$latitude, x$data$station[[i]]$metadata$longitude, lat0, lon0)
-            h[i] <- height(x$data$station[[i]], pref)
+            h[i] <- height(x$data$station[[i]], reference.pressure)
         }
         return(list(distance=d, height=h))
     } else if (inherits(x, "ctd")) {
-        return(height(x, pref))
+        return(height(x, reference.pressure))
     } else {
         stop("method only works for 'section' or 'ctd' objects")
     }
@@ -445,7 +450,7 @@ sw.spice <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-sw.theta <- function(salinity, temperature=NULL, pressure=NULL, pref=0, method=c("UNESCO1983", "Bryden1973"))
+sw.theta <- function(salinity, temperature=NULL, pressure=NULL, reference.pressure=0, method=c("unesco", "bryden"))
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -470,20 +475,20 @@ sw.theta <- function(salinity, temperature=NULL, pressure=NULL, pref=0, method=c
         p <- rep(pressure[1], np)
     }
     method <- match.arg(method)
-    if (method == "Bryden1973") {
+    if (method == "bryden") {
         rval <- .C("theta_Bryden_1973",
                    as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure),
                    value = double(nS),
                    NAOK=TRUE,
                    PACKAGE = "oce")$value
     } else {
-        if (method == "UNESCO1983") {
+        if (method == "unesco") {
                                         # sometimes have just a single value
-            npref <- length(pref)
+            npref <- length(reference.pressure)
             if (npref == 1)
-                pref <- rep(pref[1], nS)
+                reference.pressure <- rep(reference.pressure[1], nS)
             rval <- .C("theta_UNESCO_1983",
-                       as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure), as.double(pref),
+                       as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure), as.double(reference.pressure),
                        value = double(nS),
                        NAOK=TRUE, PACKAGE = "oce")$value
         } else {

@@ -36,7 +36,7 @@ lonm <- matrix(rep(lon,length(lat)),ncol=length(lat),byrow=TRUE)
 latm <- matrix(rep(lat,length(lon)),nrow=length(lon),byrow=FALSE)
 dec <- magnetic.declination(latm, lonm, 2008 + 7 / 12)
 data(coastline.sle)
-plot(coastline.sle, ylim=range(lat), xlim=range(lon))
+plot(coastline.sle)
 contour(x=lon, y=lat, z=dec, add=TRUE)
 }
 

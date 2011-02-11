@@ -25,11 +25,16 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                        debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\b\bwindow.oce() {\n")
-    if (extend) stop("cannot handle extend=TRUE yet")
-    if (!is.null(frequency)) stop("cannot handle frequency yet")
-    if (!is.null(deltat)) stop("cannot handle deltat yet")
-    if (is.null(start)) stop("must provide start")
-    if (is.null(end)) stop("must provide end")
+    if (extend)
+        stop("cannot handle extend=TRUE yet")
+    if (!is.null(frequency))
+        stop("cannot handle frequency yet")
+    if (!is.null(deltat))
+        stop("cannot handle deltat yet")
+    if (is.null(start))
+        stop("must provide start")
+    if (is.null(end))
+        stop("must provide end")
     oce.debug(debug, "class of (x) is: ", paste(class(x), collapse=","), "\n")
     res <- x
     which <- match.arg(which)
@@ -67,7 +72,8 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             res <- list(index=keep)
         } else {
             for (name in names(res$data$ts)) {
-                res$data$ts[[name]] <- res$data$ts[[name]][keep]
+                if (length(res$data$ts[[name]]) > 1) 
+                    res$data$ts[[name]] <- res$data$ts[[name]][keep]
             }
         }
         ## data$ts.slow (if it exists)
@@ -200,7 +206,8 @@ oce.plot.ts <- function(x,
                         ...)
 {
     debug <- min(debug, 4)
-    oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", ...) {\n",sep="")
+    oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
+    oce.debug(debug, "mar=",mar,"\n")
     oce.debug(debug, "length(x)", length(x), "\n")
     oce.debug(debug, "length(y)", length(y), "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
@@ -241,6 +248,7 @@ oce.plot.ts <- function(x,
         if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
     }
     oce.debug(debug, "\b\b} # oce.plot.ts()\n")
+    invisible()
 }
 
 oce.as.POSIXlt <- function (x, tz = "")
@@ -305,17 +313,34 @@ oce.edit <- function(x, item, value, action, reason="", person="",
             stop("must supply a 'value' for this 'item'")
         ##if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
         if (inherits(x, "adv")) {
+            oce.debug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
             if (hpr) {
                 if (inherits(x, "nortek")) {
+                    oce.debug(debug, "changing data$ts.slow[[", item, "]] of a nortek\n")
                     x$data$ts.slow[[item]] <- value
                 } else {
+                    oce.debug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
                     x$data$ts[[item]] <- value
                 }
             } else {
-                if (item %in% names(x$metadata))
+                if (item %in% names(x$metadata)) {
+                    oce.debug(debug, "changing metadata[[", item, "]]\n")
                     x$metadata[[item]] <- value
-                else
+                } else
+                    stop("do not know how to handle this item")
+            }
+        } else if (inherits(x, "adp")) {
+            oce.debug(debug, "object is an ADP\n")
+            hpr <- 0 < length(grep("heading|pitch|roll", item))
+            if (hpr) {
+                oce.debug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
+                x$data$ts[[item]] <- value
+            } else {
+                if (item %in% names(x$metadata)) {
+                    oce.debug(debug, "changing metadata[[", item, "]]\n")
+                    x$metadata[[item]] <- value
+                } else
                     stop("do not know how to handle this item")
             }
         } else if ("instrument.type" %in% names(x$metadata) && x$metadata$instrument.type == "aquadopp-hr") {
@@ -409,7 +434,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 oce.debug(debug, "subsetting an adp by time\n")
                 ##stop("cannot understand the subset; it should be e.g. 'time < as.POSIXct(\"2008-06-26 12:00:00\", tz = \"UTC\")'")
                 keep <- eval(substitute(subset), x$data$ts, parent.frame())
-                oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
+                oce.debug(debug, vector.show(keep, "keeping bins:"))
+                oce.debug(debug, "number of kept bins:", sum(keep), "\n")
                 if (sum(keep) < 2) stop("must keep at least 2 profiles")
                 rval <- x
                 for (name in names(x$data$ts)) {
@@ -423,7 +449,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                     }
                 }
                 for (name in names(x$data$ma)) {
-                    rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
+                    oce.debug(debug, "subsetting x$data$", name, "\n")
+                    numdim <- length(dim(rval$data$ma[[name]]))
+                    if (numdim == 3)
+                        rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
+                    else if (numdim == 2)
+                        rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
+                    else stop(paste("can only handle 2 or 3 dimensions in data$ma$", name, sep=""))
                 }
             } else if (length(grep("distance", subset.string))) {
                 oce.debug(debug, "subsetting an adp by distance\n")
@@ -502,6 +534,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             stop("must specify a 'subset'")
         subset.string <- deparse(substitute(subset))
         oce.debug(debug, "subset.string='", subset.string, "'\n")
+        if (debug > 0) {
+            cat("\nORIGINALLY:\n\n")
+            print(str(x$data$ts))
+            cat("\n\n")
+            print(str(x$data$ma))
+            cat("\n\n\n")
+        }
         if (length(grep("time", subset.string))) {
             oce.debug(debug, "subsetting an adv object by time\n")
             oce.debug(debug, "Step 1: subset x$data$ts\n")
@@ -540,6 +579,16 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 oce.debug(debug, "   subsetting data$ma[[", name, "]]\n", sep="")
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
+
+            if (debug > 0) {
+                cat("\nAFTER SUBSET:\n\n")
+                print(str(x$data$ts))
+                cat("\n\n")
+                print(str(x$data$ma))
+                cat("\n\n\n")
+            }
+
+
         } else {
             stop("only 'time' is permitted for subsetting")
         }
@@ -583,7 +632,7 @@ magic <- function(file, debug=getOption("oce.debug"))
     }
     if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
     if (!isOpen(file))
-    	open(file, "r")
+        open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
@@ -637,13 +686,13 @@ magic <- function(file, debug=getOption("oce.debug"))
             oce.debug(debug, "this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
         } else
-        stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
-    ##} else if (as.integer(bytes[1]) == 81) {
-    ##    warning("possibly this file is a sontek ADV (first byte is 81)")
-    ##} else if (as.integer(bytes[1]) == 83) {
-    ##    warning("possibly this file is a sontek ADV (first byte is 83)")
-    ##} else if (as.integer(bytes[1]) == 87) {
-    ##    warning("possibly this file is a sontek ADV (first byte is 87)")
+            stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
+        ##} else if (as.integer(bytes[1]) == 81) {
+        ##    warning("possibly this file is a sontek ADV (first byte is 81)")
+        ##} else if (as.integer(bytes[1]) == 83) {
+        ##    warning("possibly this file is a sontek ADV (first byte is 83)")
+        ##} else if (as.integer(bytes[1]) == 87) {
+        ##    warning("possibly this file is a sontek ADV (first byte is 87)")
     }
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
@@ -792,7 +841,11 @@ oce.colors.palette <- function(n, which=1)
     else character(0)
 }
 
-oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.range=TRUE, abbreviate.time.range=FALSE, cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), main="", debug=getOption("oce.debug"), ...)
+oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
+                              draw.time.range=TRUE, abbreviate.time.range=FALSE, draw.frequency=FALSE,
+                              cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              main="",
+                              debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
     oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
@@ -976,8 +1029,21 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE, draw.time.rang
             time.range <- as.POSIXct(time.range)
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
-        label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
-        if (is.finite(1/deltat))
+        ## only show timezone if hours are shown
+        if (debug > 0) {
+            print(time.range[1])
+            print(round(time.range[1],"days"))
+            print(time.range[2])
+            print(round(time.range[2],"days"))
+        }
+        ## The below is not fool-proof, depending on how xlim might have been supplied; see
+        ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
+        if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
+            label <- paste(tr1, tr2, sep=" to ")
+        } else {
+            label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
+        }
+        if (draw.frequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         oce.debug(debug, "label=", label, "\n")
         mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)

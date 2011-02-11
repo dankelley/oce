@@ -4,18 +4,26 @@
 \description{Coerces a dataset into a ctd dataset.}
 
 \usage{
-as.ctd(salinity, temperature, pressure, ship=NA, scientist=NA,
-   institute=NA, address=NA, cruise=NA, station=NA, date=NA,
-   start.time=NA, latitude=NA, longitude=NA, recovery=NA,
+as.ctd(salinity, temperature, pressure, quality, 
+   ship="", scientist="", institute="", address="", cruise="", station="", 
+   date="", start.time="", recovery="",
+   latitude=NA, longitude=NA, 
    water.depth=NA, sample.interval=NA, src="")
 }
 \arguments{
   \item{salinity}{Salinity through the water column, or a data frame
     containing columns named \code{salinity}, \code{temperature}, and
     \code{pressure}, in which case these values are extracted from the
-    data frame, and the next two arguments are ignored.} 
-  \item{temperature}{Temperature through the water column.}
-  \item{pressure}{pressure through the water column.}
+    data frame, and the next two arguments are ignored.  Otherwise, 
+    if it is numeric, it is first converted to a vector before proceeding.} 
+  \item{temperature}{Temperature through the water column. (This is converted to a vector,
+     if it is not one already.}
+  \item{pressure}{pressure through the water column. (If just a single value 
+     is given, then it is repeated to match the length of the temperature and salinity.}
+  \item{quality}{quality flag, e.g. from the salinity quality flag in WOCE
+     data.  (In WOCE, \code{quality=2} indicates good data, 
+     \code{quality=3} means questionable data, and \code{quality=4}
+     means bad data.}
   \item{ship}{optional string containing the ship from which the observations were made.}
   \item{scientist}{optional string containing the chief scientist on the cruise.}
   \item{institute}{optional string containing the institute behind the work.}
@@ -24,9 +32,9 @@ as.ctd(salinity, temperature, pressure, ship=NA, scientist=NA,
   \item{station}{optional string containing a station identifier.}
   \item{date}{optional string containing the date at which the profile was started.}
   \item{start.time}{optional string containing the start time.}
+  \item{recovery}{optional string indicating the recovery time.}
   \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
   \item{longitude}{optional numerical value containing longitude in decimal degrees, positive in the eastern hemisphere.}
-  \item{recovery}{optional string indicating the recovery time.}
   \item{water.depth}{optional numerical value indicating the water depth in metres.}
   \item{sample.interval}{optional numerical value indicating the time
     between samples in the profile.}
@@ -67,6 +75,11 @@ salinity <- 34 + 0.5*tanh((pressure - 20) / 5) + 0.01*rnorm(50)
 ctd <- as.ctd(salinity, temperature, pressure)
 summary(ctd)
 plot(ctd)
+}
+
+\references{
+\url{http://cchdo.ucsd.edu/CCHDO_DataSubmitGuide.pdf}
+\url{http://cchdo.ucsd.edu/manuals/pdf/90_1/chap4.pdf}
 }
 
 \author{Dan Kelley}

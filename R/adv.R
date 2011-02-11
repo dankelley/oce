@@ -13,10 +13,10 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         latitude=latitude, longitude=longitude,
                         debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek") # guess
-        read.adv.sontek.realtime(file=file, from=from, to=to, by=by, tz=tz,
-                                 latitude=latitude, longitude=longitude,
-                                 start=start, deltat=deltat,
-                                 debug=debug, monitor=monitor, log.action=log.action)
+        read.adv.sontek.serial(file=file, from=from, to=to, by=by, tz=tz,
+                               latitude=latitude, longitude=longitude,
+                               start=start, deltat=deltat,
+                               debug=debug, monitor=monitor, log.action=log.action)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
                             latitude=latitude, longitude=longitude,
@@ -64,7 +64,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (!header) stop("header must be TRUE")
     oce.debug(debug, "  read.adv.nortek() about to read header\n")
     oce.debug(debug, "  read.adv.nortek() finished reading header\n")
-    # find file length
+                                        # find file length
     seek(file, 0, "end")
     file.size <- seek(file, 0, "start")
     oce.debug(debug, "  file.size=", file.size, "\n")
@@ -416,8 +416,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##print(attributes(time)) # is time out somehow?
     ##print(time[1])
     data <- list(ts=list(time=time,
-                 ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
-                 pressure=pressure),
+                         ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
+                         pressure=pressure),
                  ts.slow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
                  ##ss=list(distance=0),   # FIXME: why even have this?
                  ma=list(v=v, a=a, c=c))
@@ -427,13 +427,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     res
 }
 
-read.adv.sontek.realtime <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
-                                     type="default",
-                                     latitude=NA, longitude=NA,
-                                     start, deltat,
-                                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
+read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                                   type="default",
+                                   latitude=NA, longitude=NA,
+                                   start, deltat,
+                                   debug=getOption("oce.debug"), monitor=TRUE, log.action)
 {
-    oce.debug(debug, paste("\b\bread.adv.sontek(file[1]=\"", file[1],
+    oce.debug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
                            ", by=", by,
@@ -501,47 +501,54 @@ read.adv.sontek.realtime <- function(file, from=1, to, by=1, tz=getOption("oce.t
     serial.number <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serial.number <- .Call("unwrap_sequence_numbers", serial.number, 2)
     velocity.scale <- 0.1e-3
-    u1 <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little")
-    u2 <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little")
-    u3 <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little")
-    v <- cbind(u1, u2, u3) * velocity.scale
-    rm(u1, u2, u3)
-    a1 <- readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a2 <- readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a3 <- readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little")
-    a <- cbind(a1, a2, a3)
-    rm(a1, a2, a3)
-    c1 <- readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c2 <- readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c3 <- readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little")
-    c <- cbind(c1, c2, c3)
-    rm(c1, c2, c3)
+    v <- array(numeric(), dim=c(len, 3))
+    v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
+    v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
+    v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
+    a <- array(raw(), dim=c(len, 3))
+    a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    a[,3] <- as.raw(readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    c <- array(raw(), dim=c(len, 3))
+    c[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    c[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    c[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
     temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
     pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
 
-    ## set up a dummy transformation matrix (which is correct for one particular sontek unit)
-    transformation.matrix <- rbind(c(11033,-8503,-5238),
-                                   c(347,-32767,9338),
-                                   c(-1418, -1476, -1333)) / 4096
+    ## FIXME: Sontek ADV transformation matrix equal for all units?  (Nortek Vector is not.)
+    transformation.matrix <- rbind(c(11033,  -8503, -5238),
+                                   c(  347, -32767,  9338),
+                                   c(-1418,  -1476, -1333)) / 4096
+    time <- start[1] + (serial.number - serial.number[1]) * deltat
+    deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
                      instrument.type="adv",
                      serial.number="?",
                      filename=filename,
-                     latitude=latitude, longitude=longitude,
+                     latitude=latitude,
+                     longitude=longitude,
                      transformation.matrix=transformation.matrix,
-                     measurement.start=0, measurement.end=len, measurement.deltat=1,
-                     subsample.start=0, subsample.end=len, subsample.deltat=1,
+                     measurement.start=time[1],
+                     measurement.end=time[length(time)],
+                     measurement.deltat=deltat,
+                     subsample.start=time[1],
+                     subsample.end=mean(diff(as.numeric(time))),
+                     subsample.deltat=deltat,
                      coordinate.system="xyz", # guess
                      oce.coordinate="xyz",    # guess
                      orientation="up")        # guess
-    time <- start[1] + (serial.number - serial.number[1]) * deltat
 
+    nt <- length(time)
     data <- list(ts=list(time=time,
-                 heading=0, pitch=0, roll=0, # this will have to be filled in later by the user
-                 temperature=temperature,
-                 pressure=pressure),
+                         heading=rep(0, nt), # user will need to fill this in
+                         pitch=rep(0, nt), #  user will need to fill this in
+                         roll=rep(0, nt),  # user will need to fill this in
+                         temperature=temperature,
+                         pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v,a=a,c=c))
+    warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
@@ -985,11 +992,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     heading <- heading[iii]
     roll <- roll[iii]
     data <- list(ts=list(time=time,
-                 heading=heading,
-                 pitch=pitch,
-                 roll=roll,
-                 temperature=temperature,
-                 pressure=pressure),
+                         heading=heading,
+                         pitch=pitch,
+                         roll=roll,
+                         temperature=temperature,
+                         pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -1082,7 +1089,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
     oce.debug(debug, "seek from:", from.byte, "\n", "seek to:", to.byte, "\n")
     seek(ts.file, where=from.byte, origin="start")
     ts <- matrix(scan(ts.file, n=items.per.sample*(to.burst - from.burst + 1)*samples.per.burst, quiet=TRUE),
-                      ncol=items.per.sample, byrow=TRUE)
+                 ncol=items.per.sample, byrow=TRUE)
     len <- dim(ts)[1]
     v <- array(numeric(), dim=c(len, 3))
     v[,1] <- ts[,3] / 100
@@ -1103,11 +1110,11 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
     ## trim to the requested interval
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
     data <- list(ts=list(time=tt[ok],
-                 heading=approx(t, heading, xout=tt, rule=2)$y[ok],
-                 pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
-                 roll=approx(t, roll, xout=tt, rule=2)$y[ok],
-                 temperature=temperature,
-                 pressure=pressure),
+                         heading=approx(t, heading, xout=tt, rule=2)$y[ok],
+                         pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
+                         roll=approx(t, roll, xout=tt, rule=2)$y[ok],
+                         temperature=temperature,
+                         pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
     metadata <- list(manufacturer="sontek",
@@ -1288,7 +1295,7 @@ plot.adv <- function(x,
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     dots <- names(list(...))
-    #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
+                                        #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -1641,11 +1648,11 @@ plot.adv <- function(x,
             if (n < 2000) {
                 plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                     asp=1, ...)
+                     asp=1, xlim=xlim, ylim=ylim, ...)
             } else {
                 smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                              asp=1, ...)
+                              asp=1, xlim=xlim, ylim=ylim, ...)
             }
             if (which[w] >= 29) {
                 ok <- !is.na(x$data$ma$v[,1]) & !is.na(x$data$ma$v[,2])
@@ -1681,6 +1688,7 @@ plot.adv <- function(x,
         }
     }
     oce.debug(debug, "\b\b} # plot.adv()\n")
+    invisible()
 }
 
 adv.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
@@ -1740,18 +1748,21 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
 
 adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "\b\badv.xyz2enu() {\n")
+    oce.debug(debug, "\b\badv.xyz2enu(x, declination=", declination, ",debug) {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     have.ts.slow <- "ts.slow" %in% names(x$data)
     have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading) == 1 && length(x$data$ts.slow$pitch) == 1 && length(x$data$ts.slow$roll) == 1) || (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
     oce.debug(debug, "have.steady.angles=",have.steady.angles,"\n")
     if (have.ts.slow) {
+        oce.debug(debug, "adv data has data$ts.slow\n")
         if (have.steady.angles) {
+            oce.debug(debug, "adv data has constant heading, pitch, and roll\n")
             heading <- x$data$ts.slow$heading
             pitch <- x$data$ts.slow$pitch
             roll <- x$data$ts.slow$roll
         } else {
+            oce.debug(debug, "adv data has time-varying heading, pitch, and roll\n")
             t0 <- as.numeric(x$data$ts.slow$time[1])    # arbitrary; done in case approx hates large x values
             t.fast <- as.numeric(x$data$ts$time) - t0
             t.slow <- as.numeric(x$data$ts.slow$time) - t0
@@ -1760,6 +1771,7 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             roll <- approx(t.slow, x$data$ts.slow$roll, xout=t.fast)$y
         }
     } else {
+        oce.debug(debug, "adv data does not have data$ts.slow; time-series data are data$ts\n")
         heading <- x$data$ts$heading
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
@@ -1768,10 +1780,10 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ##print(x$metadata)
     if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
         1 == length(agrep("sontek", x$metadata$manufacturer))) {
-        warning("detected nortek-vector or sontek-adv, and subtracting 90 from heading")
-        heading <- heading - 90 # CAUTION 20100825: 3-to-0 vote for -90 (but +90 got 2-to-0 vote yesterday!)
-        warning("detected nortek-vector or sontek-adv, and changing sign of pitch")
+        ## Adjust the heading, so that the formulae (based on RDI) will work here
+        heading <- heading - 90
         pitch <- - pitch
+        warning("since nortek-adv or sontek-adv, changed sign of pitch and subtracted 90 from heading")
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
@@ -1813,6 +1825,7 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         ##(speed test; replace above 3 lines with this) x$data$ma$v <- t(R %*% t(x$data$ma$v))
     } else {
         ## as with corresponding adp routine, construct single 3*3*np matrix
+        oce.debug(debug, "the heading, pitch, and roll vary with time\n")
         tr.mat <- array(numeric(), dim=c(3, 3, np))
         tr.mat[1,1,] <-  CH * CR + SH * SP * SR
         tr.mat[1,2,] <-  SH * CP

@@ -2,6 +2,7 @@
 \alias{read.adp}
 \alias{read.adp.nortek}
 \alias{read.adp.sontek}
+\alias{read.adp.sontek.serial}
 \alias{read.adp.rdi}
 
 \title{Read an ADP data file}
@@ -26,14 +27,19 @@ read.adp.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
-  type=c("adp"),
+  type=c("adp","pcadp"),
   debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
   \dots)
+read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
+                      latitude=NA, longitude=NA,
+                      monitor=TRUE, log.action,
+                      debug=getOption("oce.debug")) 
 }
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
-    file to load.}
+    file to load.  (For \code{read.adp.sontek.serial}, this is
+    generally a list of files, which will be concatenated.}
   \item{from}{indication of the first profile to read.  This can be an
     integer, the sequence number of the first profile to read, or a
     POSIXt time before which profiles should be skipped, or a character

@@ -6,22 +6,26 @@
 
 \description{Solar angle as function of space and time.}
 
-\usage{sun.angle(t, lat, lon)}
+\usage{sun.angle(t, lat, lon, use.refraction=TRUE)}
 
 \arguments{
-  \item{t}{Time, a POSIXt object (must be in GMT).}
-  \item{lat}{latitude in degrees north}
-  \item{lon}{longitude in degrees east}
+    \item{t}{Time, a POSIXt object (must be in timezone UTC), or a numeric value that corresponds to
+        such a time.}
+    \item{lat}{latitude in degrees north}
+    \item{lon}{longitude in degrees east}
+    \item{use.refraction}{boolean, set to \code{TRUE} to apply a correction for atmospheric
+        refraction}
 }
 
 \details{Based on NASA-provided fortran program, in turn (according to
-  comments in the code) based on "The Astromincal Almanac".}
+    comments in the code) based on "The Astromincal Almanac".}
 
 \value{A data frame containing
-\item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
-\item{elevation}{elevation, in degrees from -90 to 90}
-\item{solar.diameter}{solar diameter, in degrees}
-\item{solar.distance}{distance to sun, in astronomical units}}
+    \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
+    \item{elevation}{elevation, in degrees from -90 to 90}
+    \item{solar.diameter}{solar diameter, in degrees}
+    \item{solar.distance}{distance to sun, in astronomical units}
+}
 
 \examples{
 dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60),
@@ -51,34 +55,34 @@ dayplot(trunc(Sys.time(),"days"), add=TRUE, col="red")
 }
 
 \references{Based on Fortran code retrieved from
-ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
-2009-11-1.  Comments in that code list as references:
+    ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f on
+    2009-11-1.  Comments in that code list as references:
 
-Michalsky, J., 1988: The Astronomical Almanac's algorithm for
-approximate solar position (1950-2050), Solar Energy 40, 227-235
+    Michalsky, J., 1988: The Astronomical Almanac's algorithm for
+    approximate solar position (1950-2050), Solar Energy 40, 227-235
 
-The Astronomical Almanac, U.S. Gov't Printing Office, Washington,
-D.C. (published every year).
+    The Astronomical Almanac, U.S. Gov't Printing Office, Washington,
+    D.C. (published every year).
 
-The code comments suggest that the appendix in Michalsky (1988)
-contains errors, and declares the use of the following formulae in the
-1995 version the Almanac:
-\itemize{
-\item        p. A12: approximation to sunrise/set times;
-\item        p. B61: solar elevation ("altitude") and azimuth;
-\item        p. B62: refraction correction;
-\item        p. C24: mean longitude, mean anomaly, ecliptic longitude,
-                obliquity of ecliptic, right ascension, declination,
-                Earth-Sun distance, angular diameter of Sun;
-\item        p. L2:  Greenwich mean sidereal time (ignoring T^2, T^3 terms).
-}
+    The code comments suggest that the appendix in Michalsky (1988)
+    contains errors, and declares the use of the following formulae in the
+    1995 version the Almanac:
+    \itemize{
+        \item        p. A12: approximation to sunrise/set times;
+        \item        p. B61: solar elevation ("altitude") and azimuth;
+        \item        p. B62: refraction correction;
+        \item        p. C24: mean longitude, mean anomaly, ecliptic longitude,
+        obliquity of ecliptic, right ascension, declination,
+        Earth-Sun distance, angular diameter of Sun;
+        \item        p. L2:  Greenwich mean sidereal time (ignoring T^2, T^3 terms).
+    }
 
-The code lists authors as 
-Dr. Joe Michalsky
-and 
-Dr. Lee Harrison (State University of New York), 
-with modifications by 
-Dr. Warren Wiscombe (NASA Goddard Space Flight Center).
+    The code lists authors as 
+    Dr. Joe Michalsky
+    and 
+    Dr. Lee Harrison (State University of New York), 
+    with modifications by 
+    Dr. Warren Wiscombe (NASA Goddard Space Flight Center).
 }
 
 \author{Dan Kelley}
