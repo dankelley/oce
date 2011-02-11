@@ -42,7 +42,7 @@ detrend <- function(x,y)
     y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
 }
 
-despike <- function(x, method=c("median","smooth"), n=4, k=7, physical.range)
+despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.range)
 {
     xx <- x
     small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
@@ -53,13 +53,21 @@ despike <- function(x, method=c("median","smooth"), n=4, k=7, physical.range)
     method  <- match.arg(method)
     if (method == "median") {
         xxs <- runmed(xx, k=k)
+        deviant <- n < abs(normalize(xx - xxs))
+        x[deviant | unphysical] <- NA
     } else if (method == "smooth") {
         xxs <- as.numeric(smooth(xx))
+        deviant <- n < abs(normalize(xx - xxs))
+        x[deviant | unphysical] <- NA
+    } else if (method == "mean") {
+        mean <- mean(x)
+        stdev <- sqrt(var(x))
+        good <- (mean - n * stdev < x) & (x < mean + n * stdev)
+        x[!good] <- NA
+        x
     } else {
         stop("unknown method ", method, "; try method=1 or method=2)")
     }
-    deviant <- n < abs(normalize(xx - xxs))
-    x[deviant | unphysical] <- NA
     x
 }
 rangelimit <- function(x, min, max)
