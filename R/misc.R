@@ -31,11 +31,14 @@ detrend <- function(x,y)
 {
     if (missing(x))
         stop("must give x")
-    if (missing(y))
-        stop("must give y")
     n <- length(x)
-    if (length(y) != n)
-        stop("x and y must be of same length, but they are ", n, " and ", length(y))
+    if (missing(y)) {
+        y <- x
+        x <- 1:length(y)
+    } else {
+        if (length(y) != n)
+            stop("x and y must be of same length, but they are ", n, " and ", length(y))
+    }
     y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
 }
 
