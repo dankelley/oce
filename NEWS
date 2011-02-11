@@ -1,4 +1,5 @@
 0.1-82
+- detrend(): added
 - read.adp.sontek(): handle PCADP type
 - read.adp.sontek.serial(): added
 - read.section(): handle WOCE quality flags for salinity
