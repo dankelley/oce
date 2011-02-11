@@ -6,7 +6,7 @@
 
 \description{Remove spikes from a time series}
 
-\usage{despike(x, method=c("median","smooth"), n=4, k=7, physical.range)}
+\usage{despike(x, method=c("median","smooth", "mean"), n=4, k=7, physical.range)}
 
 \arguments{
   \item{x}{a vector}
@@ -27,15 +27,19 @@
   (if \code{physical.range} is given).  All such values are replaced
   with the overall \code{\link{median}}.
 
-  The next step is to create a smoothed version of this series.  If
-  \code{method="median"}, then a running median is used, calculated
-  with \code{\link{runmed}}, with the running length given by \code{k}.
-  If \code{method="smooth"}, then \code{\link{smooth}} is used.
+  If \code{method="median"}, then a running median is calculated with \code{\link{runmed}}, with the
+  running length given by \code{k}.  This is taken as a reference series.  Then the absolute value
+  of the difference between this reference series and the original is divided by the overall
+  standard deviation of the original series, and if the result exceeds \code{n}, the point is
+  flagged as suspect.  
 
-  Finally, the difference between this smoothed series and the gapless,
-  physically-realistic series is calculated.  Any spots at which this
-  difference exceeds its mean value by \code{n} standard deviations are
-  flagged as spikes.}
+  If \code{method="smooth"}, then \code{\link{smooth}} is used to create the reference series, and
+  the other steps are as for \code{"median"}.
+
+  if \code{method="stats"}, then the overall mean of the series is used as the reference series, and
+  the other steps are as for \code{"median"}.
+
+  Finally, in all methods, flagged points are replaced with code{NA} values.}
 
 \value{A new vector that is identical to the original one, except that
   spikes and unphysical values are replaced with \code{NA}.}
