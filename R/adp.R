@@ -754,19 +754,29 @@ adp.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     x
 }
 
-adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
+adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "adp")) stop("method is only for adp objects")
-    if (x$metadata$oce.beam.attenuated) stop("the beams are already attenuated in this dataset")
+    oce.debug(debug, "\b\badp.beam.attenuate(...) {\n")
+    if (!inherits(x, "adp"))
+        stop("method is only for adp objects")
+    if (x$metadata$oce.beam.attenuated)
+        stop("the beams are already attenuated in this dataset")
     res <- x
     num.profiles <- dim(x$data$ma$a)[1]
+    oce.debug(debug, "num.profiles=", num.profiles, "\n")
     correction <- matrix(rep(20 * log10(x$data$ss$distance), num.profiles),
                          nrow=num.profiles, byrow=TRUE)
-    for (beam in 1:x$metadata$number.of.beams)
-        res$data$ma$a[,,beam] <- as.raw(count2db[1] * as.numeric(x$data$ma$a[,,beam]) + correction)
+    for (beam in 1:x$metadata$number.of.beams) {
+        oce.debug(debug, "beam=",beam,"\n")
+        tmp <- floor(count2db[beam] * as.numeric(x$data$ma$a[,,beam]) + correction)
+        tmp[tmp < 0] <- 0
+        tmp[tmp > 255] <- 255
+        res$data$ma$a[,,beam] <- as.raw(tmp)
+    }
     res$metadata$oce.beam.attenuated <- TRUE
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # adp.beam.attenuate()\n")
     res
 }
 

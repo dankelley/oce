@@ -464,13 +464,15 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     }
                     if (monitor) {
                         cat(".", ...)
-                        if (!(i %% 50)) cat(i, "\n", ...)
+                        if (!(i %% 50))
+                            cat(i, "\n", ...)
                     }
                 } else {
                     bad.profiles <- c(bad.profiles, i)
                     if (monitor) {
                         cat("X", ...)
-                        if (!(i %% 50)) cat(i, "\n", ...)
+                        if (!(i %% 50))
+                            cat(i, "\n", ...)
                     }
                 }
                 if (o >= file.size) {
