@@ -27,22 +27,27 @@
   (if \code{physical.range} is given).  All such values are replaced
   with the overall \code{\link{median}}.
 
-  If \code{method="median"}, then a running median is calculated with \code{\link{runmed}}, with the
-  running length given by \code{k}.  This is taken as a reference series.  Then the absolute value
-  of the difference between this reference series and the original is divided by the overall
-  standard deviation of the original series, and if the result exceeds \code{n}, the point is
-  flagged as suspect.  
+  If \code{method="median"}, then a running median is calculated with
+  \code{\link{runmed}}, with the running length given by \code{k}.  This is
+  taken as a reference series.  Then the absolute value of the difference
+  between this reference series and the original is divided by the overall
+  standard deviation of the original series, and if the result exceeds
+  \code{n}, the point is flagged as suspect.  
 
-  If \code{method="smooth"}, then \code{\link{smooth}} is used to create the reference series, and
-  the other steps are as for \code{"median"}.
+  If \code{method="smooth"}, then \code{\link{smooth}} is used to create the
+  reference series, and the other steps are as for \code{"median"}.
 
-  if \code{method="stats"}, then the overall mean of the series is used as the reference series, and
-  the other steps are as for \code{"median"}.
+  if \code{method="mean"}, then the overall mean of the series is used as the
+  reference series, and the other steps are as for \code{"median"}.
 
   Finally, in all methods, flagged points are replaced with code{NA} values.}
 
-\value{A new vector that is identical to the original one, except that
-  spikes and unphysical values are replaced with \code{NA}.}
+\value{A new vector that is identical to the original one, except that spikes
+    and unphysical values are replaced with \code{NA}.}
+
+\note{This is a preliminary verson of the function, and it may change.  In
+    particular, either \code{mean} should refer to a running mean, or
+    \code{median} should be renamed \code{runmed}.}
 
 \examples{
 n <- 100

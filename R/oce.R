@@ -139,19 +139,26 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
 oce.approx <- function(x, y, xout, method=c("reiniger-ross"))
 {
     method <- match.arg(method)
-    if (method != "reiniger-ross") stop("only available method is \"reiniger-ross\"")
-    if (missing(x)) stop("must supply x")
-    if (missing(y)) stop("must supply y")
+    if (method != "reiniger-ross")
+        stop("only available method is \"reiniger-ross\"")
+    if (missing(x))
+        stop("must supply x")
+    if (missing(y))
+        stop("must supply y")
     lx <- length(x)
     ly <- length(y)
-    if (lx != ly) stop("length of x (", lx, ") and y (", ly, ") must agree")
-    if (any(is.na(x))) stop("must not have any NA values in x")
-    if (any(is.na(y))) stop("must not have any NA values in y")
+    if (lx != ly)
+        stop("length of x (", lx, ") and y (", ly, ") must agree")
+    if (any(is.na(x)))
+        stop("must not have any NA values in x")
+    if (any(is.na(y)))
+        stop("must not have any NA values in y")
     o <- order(x)
     if (missing(xout))
         xout <- seq(min(x), max(x), length.out=lx)
     else
-        if (any(is.na(xout))) stop("must not have any NA values in xout")
+        if (any(is.na(xout)))
+            stop("must not have any NA values in xout")
     .Call("oce_approx", x=x[o], y=y[o], xout=xout)
 }
 
@@ -162,14 +169,21 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
-    if (missing(x)) stop("must supply x")
-    if (missing(y)) stop("must supply y")
-    if (missing(u)) stop("must supply u")
-    if (missing(v)) stop("must supply v")
+    if (missing(x))
+        stop("must supply x")
+    if (missing(y))
+        stop("must supply y")
+    if (missing(u))
+        stop("must supply u")
+    if (missing(v))
+        stop("must supply v")
     n <- length(x)
-    if (length(y) != n) stop("lengths of x and y must match, but they are ", n, " and ", length(y))
-    if (length(u) != n) stop("lengths of x and u must match, but they are ", n, " and ", length(u))
-    if (length(v) != n) stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
+    if (length(y) != n)
+        stop("lengths of x and y must match, but they are ", n, " and ", length(y))
+    if (length(u) != n)
+        stop("lengths of x and u must match, but they are ", n, " and ", length(u))
+    if (length(v) != n)
+        stop("lenghts of x and v must match, but they are ", n, " and ", length(v))
     par(mar=mar, mgp=mgp)
     if (!add)
         plot(range(x), range(y), type='n', ...)
@@ -296,7 +310,8 @@ oce.as.POSIXlt <- function (x, tz = "")
         return(fromchar(as.character(x)))
     if (is.logical(x) && all(is.na(x)))
         x <- as.POSIXct.default(x)
-    if (!inherits(x, "POSIXct")) stop(gettextf("do not know how to convert '%s' to class \"POSIXlt\"", deparse(substitute(x))))
+    if (!inherits(x, "POSIXct"))
+        stop(gettextf("do not know how to convert '%s' to class \"POSIXlt\"", deparse(substitute(x))))
     if (missing(tz) && !is.null(tzone))
         tz <- tzone[1]
     .Internal(as.POSIXlt(x, tz))
@@ -379,15 +394,19 @@ oce.edit <- function(x, item, value, action, reason="", person="",
 
 oce.write.table <- function (x, file="", ...)
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (!("row.names" %in% names(list(...)))) write.table(x$data, file, row.names=FALSE, ...)
-    else write.table(x$data, file, ...)
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
+    if (!("row.names" %in% names(list(...))))
+        write.table(x$data, file, row.names=FALSE, ...)
+    else
+        write.table(x$data, file, ...)
 }
 
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\b\bsubset.oce() {\n")
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
     if (inherits(x, "cm")) {
         if (!is.null(indices)) {
             oce.debug(debug, vector.show(keep, "keeping indices"))
@@ -436,7 +455,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 keep <- eval(substitute(subset), x$data$ts, parent.frame())
                 oce.debug(debug, vector.show(keep, "keeping bins:"))
                 oce.debug(debug, "number of kept bins:", sum(keep), "\n")
-                if (sum(keep) < 2) stop("must keep at least 2 profiles")
+                if (sum(keep) < 2)
+                    stop("must keep at least 2 profiles")
                 rval <- x
                 for (name in names(x$data$ts)) {
                     rval$data$ts[[name]] <- x$data$ts[[name]][keep]
@@ -461,7 +481,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 oce.debug(debug, "subsetting an adp by distance\n")
                 keep <- eval(substitute(subset), x$data$ss, parent.frame())
                 oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
-                if (sum(keep) < 2) stop("must keep at least 2 bins")
+                if (sum(keep) < 2)
+                    stop("must keep at least 2 bins")
                 rval <- x
                 for (name in names(x$data$ss)) {
                     rval$data$ss[[name]] <- x$data$ss[[name]][keep]
@@ -606,7 +627,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
 
 summary.oce <- function(object, ...)
 {
-    if (!inherits(object, "oce")) stop("method is only for oce objects")
+    if (!inherits(object, "oce"))
+        stop("method is only for oce objects")
     cat("Data summary:\n")
     print(summary(object$data))
     cat("\nMetadata:\n")
@@ -630,7 +652,8 @@ magic <- function(file, debug=getOption("oce.debug"))
         oce.debug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
     }
-    if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
     if (!isOpen(file))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)

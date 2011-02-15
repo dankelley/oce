@@ -23,6 +23,7 @@ imagepnew <- function(x, y, z,
                       cex=par("cex"),
                       adorn,
                       axes=TRUE,
+                      main="",
                       debug=getOption("oce.debug"),
                       ...)
 {
@@ -180,6 +181,8 @@ imagepnew <- function(x, y, z,
             axis(2, cex.axis=cex, cex.lab=cex)
         }
     }
+    if (main != "")
+        mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
     if (draw.contours)
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)

@@ -289,6 +289,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      xlim, ylim, 
                      control,
                      use.layout=FALSE,  # FIXME: remove from arg list if imagep gets working
+                     main="",
                      debug=getOption("oce.debug"),
                      ...)
 {
@@ -453,6 +454,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:lw) {
+        if (w > 1)
+            main <- ""
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
@@ -503,6 +506,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                               mgp=mgp,
                               mar=mar,
                               cex=cex*(1 - min(lw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                              main=main,
                               debug=debug-1,
                               ...)
                 } else {
@@ -520,6 +524,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                            mgp=mgp,
                            mar=mar,
                            cex=1,
+                           main=main,
                            debug=debug-1,
                            ...)
                 }
@@ -754,19 +759,29 @@ adp.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     x
 }
 
-adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45))
+adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "adp")) stop("method is only for adp objects")
-    if (x$metadata$oce.beam.attenuated) stop("the beams are already attenuated in this dataset")
+    oce.debug(debug, "\b\badp.beam.attenuate(...) {\n")
+    if (!inherits(x, "adp"))
+        stop("method is only for adp objects")
+    if (x$metadata$oce.beam.attenuated)
+        stop("the beams are already attenuated in this dataset")
     res <- x
     num.profiles <- dim(x$data$ma$a)[1]
+    oce.debug(debug, "num.profiles=", num.profiles, "\n")
     correction <- matrix(rep(20 * log10(x$data$ss$distance), num.profiles),
                          nrow=num.profiles, byrow=TRUE)
-    for (beam in 1:x$metadata$number.of.beams)
-        res$data$ma$a[,,beam] <- as.raw(count2db[1] * as.numeric(x$data$ma$a[,,beam]) + correction)
+    for (beam in 1:x$metadata$number.of.beams) {
+        oce.debug(debug, "beam=",beam,"\n")
+        tmp <- floor(count2db[beam] * as.numeric(x$data$ma$a[,,beam]) + correction)
+        tmp[tmp < 0] <- 0
+        tmp[tmp > 255] <- 255
+        res$data$ma$a[,,beam] <- as.raw(tmp)
+    }
     res$metadata$oce.beam.attenuated <- TRUE
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # adp.beam.attenuate()\n")
     res
 }
 
