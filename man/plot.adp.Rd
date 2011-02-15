@@ -20,6 +20,7 @@
      xlim, ylim, 
      control,
      use.layout=FALSE,
+     main="",
      debug=getOption("oce.debug"),
      \dots)}
 
@@ -87,6 +88,7 @@
   \item{use.layout}{set to \code{FALSE} to prevent using
     \code{\link{layout}} to set up the plot.  This is needed if the call
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
+  \item{main}{main title for plot, used just on the top panel, if there are several panels.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions,

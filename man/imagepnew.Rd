@@ -20,6 +20,7 @@
       cex=par("cex"),
       adorn,
       axes=TRUE,
+      main="",
       debug=getOption("oce.debug"),
       \dots)
 }
@@ -61,6 +62,7 @@
   \item{adorn}{optional \code{\link{expression}} to be performed immediately after
     drawing the data panel.}     
   \item{axes}{logical, set \code{TRUE} to get axes on the main image.}
+  \item{main}{title for plot.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
