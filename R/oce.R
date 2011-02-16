@@ -431,9 +431,11 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         }
         rval <- x
         for (name in names(x$data$ts)) {
+            oce.debug(debug, "subsetting x$data$ts[[", name, "]]", sep="")
             rval$data$ts[[name]] <- x$data$ts[[name]][keep]
         }
         if ("ts.slow" %in% names(x$data)) {
+            oce.debug(debug, "subsetting x$data$ts.slow[[", name, "]]", sep="")
             keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
             for (name in names(rval$data$ts.slow)) {
                 if (length(rval$data$ts.slow[[name]]) > 1)
@@ -555,7 +557,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             stop("must specify a 'subset'")
         subset.string <- deparse(substitute(subset))
         oce.debug(debug, "subset.string='", subset.string, "'\n")
-        if (debug > 0) {
+        if (debug > 10) {
             cat("\nORIGINALLY:\n\n")
             print(str(x$data$ts))
             cat("\n\n")
@@ -586,12 +588,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             oce.debug(debug, "after trimming time, first data$ts$time is", format(rval$data$ts$time[1]), attr(rval$data$ts$time[1], "tzone"), "\n")
             oce.debug(debug, "Step 2: subset x$data$ts.slow (if there is such an item, which is only true for Nortek devices)\n")
             if ("ts.slow" %in% names(x$data)) {
-                oce.debug(debug, "   subsetting data$ts.slow[[", name, "]]\n", sep="")
-                if (1 == length(x$data$ts.slow[[name]])) { # no need to do anything for e.g. constant headings
-                    keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
-                    for (name in names(x$data$ts.slow)) {
+                keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
+                for (name in names(x$data$ts.slow)) {
+                    oce.debug(debug, "   subsetting data$ts.slow[[", name, "]]\n", sep="")
+                    if (1 == length(x$data$ts.slow[[name]])) # no need to do anything for e.g. constant headings
+                        rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]]
+                    else
                         rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
-                    }
                 }
                 oce.debug(debug, "after trimming time, first data$ts.slow$time is", format(rval$data$ts.slow$time[1]), attr(rval$data$ts.slow$time[1], "tzone"), "\n")
             }
@@ -601,15 +604,13 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
 
-            if (debug > 0) {
+            if (debug > 10) {
                 cat("\nAFTER SUBSET:\n\n")
                 print(str(x$data$ts))
                 cat("\n\n")
                 print(str(x$data$ma))
                 cat("\n\n\n")
             }
-
-
         } else {
             stop("only 'time' is permitted for subsetting")
         }
