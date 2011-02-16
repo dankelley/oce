@@ -1282,6 +1282,7 @@ plot.adv <- function(x,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim,
                      brush.correlation, col.brush="red",
+                     main="",
                      debug=getOption("oce.debug"),
                      ...)
 {
@@ -1392,6 +1393,8 @@ plot.adv <- function(x,
     if (have.ts.slow)
         tslim <- range(x$data$ts.slow$time, na.rm=TRUE)
     for (w in 1:lw) {
+        if (w > 1)
+            main <- ""
         oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar)
         if (which[w] %in% 1:3) {        # u1, u2, u3
@@ -1408,6 +1411,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
                 points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=col.brush)
             } else {
@@ -1420,6 +1424,7 @@ plot.adv <- function(x,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            main=main,
                             debug=debug-1,
                             ...)
             }
@@ -1443,6 +1448,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
                 points(x$data$ts$time[!good], y[!good], col=col.brush)
             } else {
@@ -1456,6 +1462,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             }
             rm(y)                       # space may be tight
@@ -1473,6 +1480,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
                 points(x$data$ts$time[!good], y[!good], col=col.brush)
             } else {
@@ -1501,6 +1509,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             } else {
                 oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab=resizable.label("T", "y"),
@@ -1513,6 +1522,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             }
         } else if (which[w] == 15 || which[w] == "pressure") {
@@ -1526,6 +1536,7 @@ plot.adv <- function(x,
                         mgp=mgp,
                         mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                         debug=debug-1,
+                        main=main,
                         ...)
         } else if (which[w] == 16 || which[w] == "heading") {
             if (have.ts.slow) {
@@ -1539,6 +1550,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             } else {
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading, ylab="heading",
@@ -1551,6 +1563,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             }
         } else if (which[w] == 17 || which[w] == "pitch") {    # pitch
@@ -1565,6 +1578,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             } else {
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch, ylab="pitch",
@@ -1576,6 +1590,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             }
         } else if (which[w] == 18 || which[w] == "roll") {
@@ -1590,6 +1605,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             } else {
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll, ylab="roll",
@@ -1602,6 +1618,7 @@ plot.adv <- function(x,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             debug=debug-1,
+                            main=main,
                             ...)
             }
             ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
@@ -1610,21 +1627,24 @@ plot.adv <- function(x,
             c <- as.numeric(x$data$ma$c[,1])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,] else range(a),
-                          ylim=if (gave.ylim) ylim[w,] else range(c))
+                          ylim=if (gave.ylim) ylim[w,] else range(c),
+                          main=main)
             mtext("beam 1")
         } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
             a <- as.numeric(x$data$ma$a[,2])
             c <- as.numeric(x$data$ma$c[,2])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,] else range(a),
-                          ylim=if (gave.ylim) ylim[w,] else range(c))
+                          ylim=if (gave.ylim) ylim[w,] else range(c),
+                          main=main)
             mtext("beam 2")
         } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
             a <- as.numeric(x$data$ma$a[,3])
             c <- as.numeric(x$data$ma$c[,3])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,] else range(a),
-                          ylim=if (gave.ylim) ylim[w,] else range(c))
+                          ylim=if (gave.ylim) ylim[w,] else range(c),
+                          main=main)
             mtext("beam 3")
         } else if (which[w] == 23 || which[w] == "progressive vector") {    # progressive vector
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -1640,7 +1660,7 @@ plot.adv <- function(x,
             y.dist <- cumsum(v) * dt / m.per.km
             plot(x.dist, y.dist, xlab="km", ylab="km", type=type,
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                 asp=1, ...)
+                 asp=1, main=main, ...)
         } else if (which[w] >= 28) {
             oce.debug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -1648,7 +1668,7 @@ plot.adv <- function(x,
             if (n < 2000) {
                 plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                     asp=1, xlim=xlim, ylim=ylim, ...)
+                     asp=1, xlim=xlim, ylim=ylim, main=main, ...)
             } else {
                 smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,

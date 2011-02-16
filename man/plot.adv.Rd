@@ -20,6 +20,7 @@
      xlim,
      ylim,
      brush.correlation, col.brush="red",
+     main="",
      debug=getOption("oce.debug"),
      \dots)}
 
@@ -65,6 +66,7 @@
     coloured red; otherwise, this argument is ignored.}
   \item{col.brush}{colour to use for brushed (bad) data, if
     \code{brush.correlation} is active.}
+  \item{main}{main title for plot, used just on the top panel, if there are several panels.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
