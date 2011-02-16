@@ -1296,7 +1296,7 @@ plot.adv <- function(x,
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
     dots <- names(list(...))
-                                        #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
+    ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
 
@@ -1438,7 +1438,8 @@ plot.adv <- function(x,
             oce.debug(debug, "range(y):", paste(range(y, na.rm=TRUE), sep="-"), "\n")
             if (have.brush.correlation && type == "p") {
                 good <- as.numeric(x$data$ma$c[,which[w]-4]) >= brush.correlation
-                oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(a[which[w]-4]),
+                oce.plot.ts(x$data$ts$time[good], y[good],
+                            ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
@@ -1452,7 +1453,8 @@ plot.adv <- function(x,
                             ...)
                 points(x$data$ts$time[!good], y[!good], col=col.brush)
             } else {
-                oce.plot.ts(x$data$ts$time, y, ylab=expression(a[which[w]-4]),
+                oce.plot.ts(x$data$ts$time, y,
+                            ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
@@ -1470,7 +1472,8 @@ plot.adv <- function(x,
             y <- as.numeric(x$data$ma$c[,which[w]-8])
             if (have.brush.correlation && type == "p") {
                 good <- as.numeric(x$data$ma$c[,which[w]-8]) >= brush.correlation
-                oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(q[which[w-8]]),
+                oce.plot.ts(x$data$ts$time[good], y[good],
+                            ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
@@ -1484,7 +1487,8 @@ plot.adv <- function(x,
                             ...)
                 points(x$data$ts$time[!good], y[!good], col=col.brush)
             } else {
-                oce.plot.ts(x$data$ts$time, y, ylab=expression(q[which[w-8]]),
+                oce.plot.ts(x$data$ts$time, y,
+                            ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
