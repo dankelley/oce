@@ -9,7 +9,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      debug=getOption("oce.debug"),
                      ...)
 {
-    if (!inherits(x, "pt")) stop("method is only for pt objects")
+    if (!inherits(x, "pt"))
+        stop("method is only for pt objects")
     lw <- length(which)
     opar <- par(no.readonly = TRUE)
     if (lw > 1)
@@ -22,8 +23,7 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
     if (lw == 2) {
         layout(cbind(c(1,2)))
     } else if (lw==3 || lw==4) {
-        layout(rbind(c(1,2),
-                     c(3,4)), widths=c(2,1))
+        layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
     }
     par(mgp=mgp, mar=mar)
 
@@ -34,18 +34,20 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
         if (is.numeric(ww)) {
             which2[w] <- ww
         } else {
-            if (     ww == "temperature") which2[w] <- 1
-            else if (ww == "text") which2[w] <- 2
-            else if (ww == "pressure") which2[w] <- 3
-            else if (ww == "profile") which2[w] <- 4
-            else stop("unknown 'which':", ww)
+            if (     ww == "temperature")
+                which2[w] <- 1
+            else if (ww == "text")
+                which2[w] <- 2
+            else if (ww == "pressure")
+                which2[w] <- 3
+            else if (ww == "profile")
+                which2[w] <- 4
+            else
+                stop("unknown 'which':", ww)
         }
     }
     which <- which2
     oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-
-
-
     for (w in 1:lw) {
         if (which[w] == 1) {
             plot(x$data$ts$time, x$data$ts$temperature,
@@ -106,9 +108,12 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                          xlim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
                          ylim=if (missing(plim)) rev(range(x$data$ts$pressure, na.rm=TRUE)) else plim,
                          ...)
-            if (!("type" %in% names(list(...)))) args <- c(args, type="p")
-            if (!("cex"  %in% names(list(...)))) args <- c(args, cex=1/2)
+            if (!("type" %in% names(list(...))))
+                args <- c(args, type="p")
+            if (!("cex"  %in% names(list(...))))
+                args <- c(args, cex=1/2)
             np <- length(x$data$ts$pressure)
+            print(args$cex)
             if (use.smoothScatter) {
                 args <- args[names(args) != "type"]
                 do.call(smoothScatter, args)
@@ -118,7 +123,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            if (class(t) == "try-error")
+                warning("cannot evaluate adorn[", w, "]\n")
         }
     }
     invisible()
@@ -198,7 +204,8 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     oce.debug(debug, "serial.number=", serial.number,"\n")
     ## Now that we know the logging times, we can work with 'from 'and 'to'
     if (inherits(from, "POSIXt") || inherits(from, "character")) {
-        if (!inherits(to, "POSIXt") && !inherits(to, "character")) stop("if 'from' is POSIXt or character, then 'to' must be, also")
+        if (!inherits(to, "POSIXt") && !inherits(to, "character"))
+            stop("if 'from' is POSIXt or character, then 'to' must be, also")
         from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurement.start, units="secs")) / measurement.deltat
         oce.debug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
         to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurement.start, units="secs")) / measurement.deltat
@@ -273,7 +280,8 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
 
 summary.pt <- function(object, ...)
 {
-    if (!inherits(object, "pt")) stop("method is only for pt objects")
+    if (!inherits(object, "pt"))
+        stop("method is only for pt objects")
     time.range <- range(object$data$ts$time, na.rm=TRUE)
     fives <- matrix(nrow=2, ncol=5)
     fives[1,] <- fivenum(object$data$ts$temperature, na.rm=TRUE)
@@ -318,9 +326,10 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 pt.patm <- function(x, dp=0.5)
 {
-    if (inherits(x, "pt")) p <- x$data$ts$pressure else p <- x
+    p <- if (inherits(x, "pt")) x$data$ts$pressure else x
     sap <- 10.1325                      # standard atm pressure
-    if (length(p) < 1) return(rep(sap, 4))
+    if (length(p) < 1)
+        return(rep(sap, 4))
     p <- p[(sap - dp) <= p & p <= (sap + dp)] # window near sap
     w <- exp(-2*((p - sap) / dp)^2)
     if (length(p) < 4)
@@ -332,7 +341,8 @@ pt.patm <- function(x, dp=0.5)
 pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\bpt.trim() {\n")
-    if (!inherits(x, "pt")) stop("method is only for pt objects")
+    if (!inherits(x, "pt"))
+        stop("method is only for pt objects")
     res <- x
     n <- length(x$data$ts$temperature)
     oce.debug(debug, "dataset has", n, "points\n")
