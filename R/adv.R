@@ -1435,7 +1435,7 @@ plot.adv <- function(x,
             ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
             oce.debug(debug, "plotting a1, a2, or a3 since which[w] == ", which[w], "\n")
             y <- as.numeric(x$data$ma$a[,which[w]-4])
-            oce.debug("range(y):", range(y, na.rm=TRUE), "\n")
+            oce.debug(debug, "range(y):", paste(range(y, na.rm=TRUE), sep="-"), "\n")
             if (have.brush.correlation && type == "p") {
                 good <- as.numeric(x$data$ma$c[,which[w]-4]) >= brush.correlation
                 oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(a[which[w]-4]),

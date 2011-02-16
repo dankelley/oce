@@ -1053,12 +1053,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         ## only show timezone if hours are shown
-        if (debug > 0) {
-            print(time.range[1])
-            print(round(time.range[1],"days"))
-            print(time.range[2])
-            print(round(time.range[2],"days"))
-        }
+        oce.debug(debug, "time.range[1]:", format(time.range[1]))
+        oce.debug(debug, "round(time.range[1], 'days'):", format(round(time.range[1],'days')))
+        oce.debug(debug, "time.range[2]:", format(time.range[2]))
+        oce.debug(debug, "round(time.range[2], 'days'):", format(round(time.range[1],'days')))
         ## The below is not fool-proof, depending on how xlim might have been supplied; see
         ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
         if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
