@@ -15,6 +15,7 @@ imagep <- function(x, y, z,
                    debug=getOption("oce.debug"),
                    ...)
 {
+    stop("do not use imagep().  Use imagepnew() instead.")
     if (missing(x))
         stop("must supply x")
     if (missing(y))
