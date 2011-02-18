@@ -11,10 +11,14 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         stop("must give argument 't0'")
     oce.debug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
     rval <- x
-    if ("ts" %in% names(x$data))
+    if ("ts" %in% names(x$data)) {
+        oce.debug(debug, "retiming x$data$ts$time")
         rval$data$ts$time <- x$data$ts$time + a + b * (as.numeric(x$data$ts$time) - as.numeric(t0))
-    if ("ts.slow" %in% names(x$data))
+    }
+    if ("ts.slow" %in% names(x$data)) {
+        oce.debug(debug, "retiming x$data$ts.slow$time")
         rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (as.numeric(x$data$ts.slow$time) - as.numeric(t0))
+    }
     rval$processing.log <- processing.log.add(rval$processing.log,
                                               paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # retime.adv()\n")
@@ -148,6 +152,12 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
         oce.debug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
     }
     list(filename=filename, start.time=start.time)
+}
+
+angle.remap <- function(theta)
+{
+    to.rad <- atan2(1, 1) / 45
+    atan2(sin(to.rad * theta), cos(to.rad * theta)) / to.rad
 }
 
 unwrap.angle <- function(angle)

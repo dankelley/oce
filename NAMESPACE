@@ -4,6 +4,7 @@ export(
        ad.beam.name,
        add.column,
        air.rho,
+       angle.remap,
        apply.magnetic.declination,
        as.coastline,
        as.ctd,
