@@ -1,4 +1,5 @@
 0.1-82
+- despike(): add argument 'action'
 - detrend(): added
 - read.adp.sontek(): handle PCADP type
 - read.adp.sontek.serial(): added

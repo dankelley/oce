@@ -42,7 +42,8 @@ detrend <- function(x,y)
     y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
 }
 
-despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.range)
+despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.range,
+                    action=c("replace","NA"))
 {
     xx <- x
     small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
@@ -50,21 +51,30 @@ despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.ra
     na <- is.na(x)
     unphysical <- xx < small | large < xx
     xx[unphysical | na] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
-    method  <- match.arg(method)
+    method <- match.arg(method)
+    action <- match.arg(action)
     if (method == "median") {
         xxs <- runmed(xx, k=k)
         deviant <- n < abs(normalize(xx - xxs))
-        x[deviant | unphysical] <- NA
+        if (method == "NA")
+            x[deviant | unphysical] <- NA
+        else
+            x[deviant | unphysical] <- xxs[deviant | unphysical]
     } else if (method == "smooth") {
         xxs <- as.numeric(smooth(xx))
         deviant <- n < abs(normalize(xx - xxs))
-        x[deviant | unphysical] <- NA
+        if (method == "NA")
+            x[deviant | unphysical] <- NA
+        else
+            x[deviant | unphysical] <- xxs[deviant | unphysical]
     } else if (method == "mean") {
         mean <- mean(x)
         stdev <- sqrt(var(x))
         good <- (mean - n * stdev < x) & (x < mean + n * stdev)
-        x[!good] <- NA
-        x
+        if (method == "NA")
+            x[!good] <- NA
+        else
+            x[!good] <- xxs[!good]
     } else {
         stop("unknown method ", method, "; try method=1 or method=2)")
     }
