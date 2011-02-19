@@ -10,6 +10,7 @@
      col,
      zlim,
      titles,
+     type='l',
      ytype=c("profile", "distance"),
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
@@ -48,6 +49,9 @@
     placed in the right hand side of the top margin.  For timeseries,
     these strings are ignored.
     If this is provided, its length must equal that of \code{which}.}
+  \item{type}{if the plot is of a time-series or scattergraph format, this is
+      used in the usual way, e.g. \code{"l"} for lines, etc.; otherwise, as for
+      image formats, this is ignored.}
   \item{ytype}{character string controlling the type of the y axis for
     images (ignored for time series).  If \code{"distance"}, then the y
     axis will be distance from the sensor head, with smaller distances

@@ -16,7 +16,7 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         rval$data$ts$time <- x$data$ts$time + a + b * (as.numeric(x$data$ts$time) - as.numeric(t0))
     }
     if ("ts.slow" %in% names(x$data)) {
-        oce.debug(debug, "retiming x$data$ts.slow$time")
+        oce.debug(debug, "retiming x$data$ts.slow$time\n")
         rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (as.numeric(x$data$ts.slow$time) - as.numeric(t0))
     }
     rval$processing.log <- processing.log.add(rval$processing.log,

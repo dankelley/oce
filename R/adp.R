@@ -279,6 +279,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      col,
                      zlim,
                      titles,
+                     type='l',
                      ytype=c("profile", "distance"),
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
@@ -296,21 +297,27 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     oce.debug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
     oce.debug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
-    if (!inherits(x, "adp")) stop("method is only for adp objects")
+    if (!missing(ylim))
+        oce.debug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
+    if (!inherits(x, "adp"))
+        stop("method is only for adp objects")
     if (!(is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data)) {
         warning("there are no profiles in this dataset")
         return
     }
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
-    if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
+    if (!missing(titles) && length(titles) != lw)
+        stop("length of 'titles' must equal length of 'which'")
     oce.debug(debug, "length(which) =", lw, "\n")
-    if (lw > 1) on.exit(par(opar))
+    if (lw > 1)
+        on.exit(par(opar))
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
     ytype <- match.arg(ytype)
     ## user may specify a matrix for xlim and ylim
     gave.ylim <- !missing(ylim)
+    oce.debug(debug, 'gave.ylim=', gave.ylim)
     if (gave.ylim) {
         if (is.matrix(ylim)) {
             if (dim(ylim)[2] != lw) {
@@ -349,7 +356,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         }
         zlim.given <- zlim
     }
-    gave.ylim <- "ylim" %in% names(dots)
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
 
     oce.debug(debug, "later on in plot.adp:\n")
@@ -533,54 +539,81 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 draw.time.range <- FALSE
             }
         } else if (which[w] %in% timeseries) { # time-series types
+            oce.debug(debug, "graph", w, "is a timeseries; which=", which[w], "\n")
             par(mgp=mgp, mar=mar, cex=cex)
+            tlim <- range(x$data$ts$time)
             if (which[w] == 13)
-                oce.plot.ts(x$data$ts$time, x$data$ts$salinity,    ylab=resizable.label("S"),       type='l',
+                oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
+                            xlim=if(gave.xlim) xlim[w,] else tlim,
+                            ylim=if(gave.ylim) ylim[w,],
+                            ylab=resizable.label("S"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 14)
-                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab= expression(paste("T [ ", degree, "C ]")), type='l',
+                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylim=if(gave.ylim) ylim[w,],
+                            ylab= expression(paste("T [ ", degree, "C ]")), type='l',
                             draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 15)
-                oce.plot.ts(x$data$ts$time, x$data$ts$pressure,    ylab=resizable.label("p"),       type='l',
+            if (which[w] == 15) {
+                oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
+                            xlim=if(gave.xlim) xlim[w,] else tlim,
+                            ylim=if(gave.ylim) ylim[w,],
+                            ylab=resizable.label("p"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
+            }
             if (which[w] == 16)
-                oce.plot.ts(x$data$ts$time, x$data$ts$heading,     ylab=resizable.label("heading"), type='l',
+                oce.plot.ts(x$data$ts$time, x$data$ts$heading,
+                            xlim=if(gave.xlim) xlim[w,] else tlim,
+                            ylim=if(gave.ylim) ylim[w,],
+                            ylab=resizable.label("heading"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 17)
-                oce.plot.ts(x$data$ts$time, x$data$ts$pitch,       ylab=resizable.label("pitch"),   type='l',
+                oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
+                            xlim=if(gave.xlim) xlim[w,] else tlim,
+                            ylim=if(gave.ylim) ylim[w,],
+                            ylab=resizable.label("pitch"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 18)
-                oce.plot.ts(x$data$ts$time, x$data$ts$roll,        ylab=resizable.label("roll"),    type='l',
+                oce.plot.ts(x$data$ts$time, x$data$ts$roll,
+                            xlim=if(gave.xlim) xlim[w,] else tlim,
+                            ylim=if(gave.ylim) ylim[w,],
+                            ylab=resizable.label("roll"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 19) {
                 if (x$metadata$number.of.beams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
-                                ylab=ad.beam.name(x, 1),
-                                type='l', draw.time.range=draw.time.range, cex.axis=cex,
+                                xlim=if(gave.xlim) xlim[w,] else tlim,
+                                ylim=if(gave.ylim) ylim[w,],
+                                ylab=ad.beam.name(x, 1), type=type,
+                                draw.time.range=draw.time.range, cex.axis=cex,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
                 if (x$metadata$number.of.beams > 1)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
-                                ylab=ad.beam.name(x, 2),
-                                type='l', draw.time.range=draw.time.range,
+                                xlim=if(gave.xlim) xlim[w,] else tlim,
+                                ylim=if(gave.ylim) ylim[w,],
+                                ylab=ad.beam.name(x, 2), type=type,
+                                draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
             }
             if (which[w] == 21) {
                 if (x$metadata$number.of.beams > 2)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
-                                ylab=ad.beam.name(x, 3),
-                                type='l', draw.time.range=draw.time.range,
+                                xlim=if(gave.xlim) xlim[w,] else tlim,
+                                ylim=if(gave.ylim) ylim[w,],
+                                ylab=ad.beam.name(x, 3), type=type,
+                                draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] == 22) {
                 if (x$metadata$number.of.beams > 3)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
-                                ylab=ad.beam.name(x, 4),
-                                type='l', draw.time.range=draw.time.range,
+                                xlim=if(gave.xlim) xlim[w,] else tlim,
+                                ylim=if(gave.ylim) ylim[w,],
+                                ylab=ad.beam.name(x, 4), type=type,
+                                draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
@@ -654,16 +687,25 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
                 v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
             }
+            oce.debug(debug, "uv type plot; gave.ylim=", gave.ylim, '\n')
             if (n < 2000) {
                 if ("type" %in% names(dots)) {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col,
-                         xlim=xlim, ylim=ylim, ...)
+                         xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
+                         ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
+                         ...)
                 } else {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1, xlim=xlim, ylim=ylim, ...)
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", type='n', asp=1,
+                         xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
+                         ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
+                         ...)
                     points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
                 }
             } else {
-                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, xlim=xlim, ylim=ylim, ...)
+                smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
+                              xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
+                              ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
+                              ...)
             }
             if (which[w] >= 29) {
                 ok <- !is.na(u) & !is.na(v)
