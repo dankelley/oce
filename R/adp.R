@@ -469,8 +469,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
     for (w in 1:nw) {
-        if (w > 1)
-            main <- ""
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
@@ -520,7 +518,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                               mgp=mgp,
                               mar=mar,
                               cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
-                              main=main,
+                              main=main[w],
                               debug=debug-1,
                               ...)
                 } else {
@@ -539,7 +537,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                            mar=mar,
                            cex=1,
                            lwd=lwd[w],
-                           main=main,
+                           main=main[w],
                            debug=debug-1,
                            ...)
                 }
