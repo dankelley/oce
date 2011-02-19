@@ -279,6 +279,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      col,
                      zlim,
                      titles,
+                     lwd=par('lwd'),
                      type='l',
                      ytype=c("profile", "distance"),
                      adorn=NULL,
@@ -295,8 +296,9 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      ...)
 {
     oce.debug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
-    oce.debug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oce.debug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oce.debug(debug, "early in plot.adp:\n")
+    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!missing(ylim))
         oce.debug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
     if (!inherits(x, "adp"))
@@ -306,26 +308,25 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         return
     }
     opar <- par(no.readonly = TRUE)
-    lw <- length(which)
-    if (!missing(titles) && length(titles) != lw)
+    nw <- length(which)
+    if (!missing(titles) && length(titles) != nw)
         stop("length of 'titles' must equal length of 'which'")
-    oce.debug(debug, "length(which) =", lw, "\n")
-    if (lw > 1)
+    oce.debug(debug, "length(which) =", nw, "\n")
+    if (nw > 1)
         on.exit(par(opar))
     par(mgp=mgp, mar=mar, cex=cex)
     dots <- list(...)
     ytype <- match.arg(ytype)
     ## user may specify a matrix for xlim and ylim
-    col <- vector(col, ncol=lw)
     gave.ylim <- !missing(ylim)
-    oce.debug(debug, 'gave.ylim=', gave.ylim)
+    oce.debug(debug, 'gave.ylim=', gave.ylim, '\n')
     if (gave.ylim) {
         if (is.matrix(ylim)) {
-            if (dim(ylim)[2] != lw) {
-                ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            if (dim(ylim)[2] != nw) {
+                ylim2 <- matrix(ylim, ncol=2, nrow=nw) # FIXME: is this what I want?
             }
         } else {
-            ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            ylim2 <- matrix(ylim, ncol=2, nrow=nw) # FIXME: is this what I want?
         }
         class(ylim2) <- class(ylim)
         ylim <- ylim2
@@ -333,13 +334,13 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     gave.xlim <- !missing(xlim)
     if (gave.xlim) {
         if (is.matrix(xlim)) {
-            if (dim(xlim)[2] != lw) {
-                xlim2 <- matrix(xlim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            if (dim(xlim)[2] != nw) {
+                xlim2 <- matrix(xlim, ncol=2, nrow=nw) # FIXME: is this what I want?
             }
         } else {
             if (length(xlim) != 2)
                 stop("xlim must be a vector of length 2, or a 2-column matrix")
-            xlim2 <- matrix(xlim[1:2], ncol=2, nrow=lw, byrow=TRUE)
+            xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
         }
         xlim <- xlim2
     }
@@ -358,14 +359,17 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         zlim.given <- zlim
     }
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
-
+    if (missing(lwd))
+        lwd <- rep(par('lwd'), length.out=nw)
+    else
+        lwd <- rep(lwd, length.out=nw)
     oce.debug(debug, "later on in plot.adp:\n")
-    oce.debug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oce.debug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
 
     ## Translate word-style (FIXME: ugly coding)
     which2 <- vector("numeric", length(which))
-    for (w in 1:lw) {
+    for (w in 1:nw) {
         ww <- which[w]
         if (is.numeric(ww) || 1 == length(grep("^[0-9]*$", ww))) {
             which2[w] <- as.numeric(ww)
@@ -419,8 +423,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
-        adorn <- rep(adorn, lw)
-        adorn.length <- lw
+        adorn <- rep(adorn, nw)
+        adorn.length <- nw
     }
 
     tt <- x$data$ts$time
@@ -439,28 +443,28 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     if (use.layout) {
         if (any(which %in% images) || margins.as.image) {
             w <- 1.5
-            lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+            lay <- layout(matrix(1:(2*nw), nrow=nw, byrow=TRUE), widths=rep(c(1, lcm(w)), nw))
             oce.debug(debug, "calling layout(matrix...)\n")
             oce.debug(debug, "using layout, since this is an image, or has margins as image\n")
         } else {
-            if (lw != 1 || which != 23) {
-                lay <- layout(cbind(1:lw))
-                oce.debug(debug, "calling layout(cbind(1:", lw, ")\n")
+            if (nw != 1 || which != 23) {
+                lay <- layout(cbind(1:nw))
+                oce.debug(debug, "calling layout(cbind(1:", nw, ")\n")
                 oce.debug(debug, "using layout\n")
             }
         }
     } else {
         if (use.new.imagep) {
-            if (lw > 1) {
-                par(mfrow=c(lw, 1))
-                oce.debug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
+            if (nw > 1) {
+                par(mfrow=c(nw, 1))
+                oce.debug(debug, "calling par(mfrow=c(", nw, ", 1)\n")
             }
         } else {
             stop("cannot have use.layout=FALSE unless use.new.imagep=TRUE")
         }
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
-    for (w in 1:lw) {
+    for (w in 1:nw) {
         if (w > 1)
             main <- ""
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
@@ -512,7 +516,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                               adorn=adorn[w],
                               mgp=mgp,
                               mar=mar,
-                              cex=cex*(1 - min(lw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                              cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
                               main=main,
                               debug=debug-1,
                               ...)
@@ -531,6 +535,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                            mgp=mgp,
                            mar=mar,
                            cex=1,
+                           lwd=lwd[w],
                            main=main,
                            debug=debug-1,
                            ...)
@@ -540,30 +545,30 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 draw.time.range <- FALSE
             }
         } else if (which[w] %in% timeseries) { # time-series types
-            oce.debug(debug, "graph", w, "is a timeseries; which=", which[w], "\n")
+            if (missing(col)) col <- rep("black", length.out=nw) else col <- rep(col, length.out=nw)
+            oce.debug(debug, "graph", w, "is a timeseries\n")
             par(mgp=mgp, mar=mar, cex=cex)
             tlim <- range(x$data$ts$time)
             if (which[w] == 13)
                 oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w],
+                            col=col[w], lwd=lwd[w],
                             ylab=resizable.label("S"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 14)
                 oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w],
+                            col=col[w], lwd=lwd[w],
                             ylab= expression(paste("T [ ", degree, "C ]")), type='l',
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 15) {
                 oce.debug(debug, "pressure plot. col=", col[w], "\n")
-                print(col)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w],
+                            col=col[w], lwd=lwd[w],
                             ylab=resizable.label("p"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
@@ -571,21 +576,21 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w],
+                            col=col[w], lwd=lwd[w],
                             ylab=resizable.label("heading"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 17)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w],
+                            col=col[w], lwd=lwd[w],
                             ylab=resizable.label("pitch"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 18)
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w],
+                            col=col[w], lwd=lwd[w],
                             ylab=resizable.label("roll"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 19) {
@@ -593,7 +598,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w],
+                                col=col[w], lwd=lwd[w],
                                 ylab=ad.beam.name(x, 1), type=type,
                                 draw.time.range=draw.time.range, cex.axis=cex,
                                 adorn=adorn[w], ...)
@@ -604,7 +609,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w],
+                                col=col[w], lwd=lwd[w],
                                 ylab=ad.beam.name(x, 2), type=type,
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
@@ -615,7 +620,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w],
+                                col=col[w], lwd=lwd[w],
                                 ylab=ad.beam.name(x, 3), type=type,
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
@@ -626,7 +631,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w],
+                                col=col[w], lwd=lwd[w], 
                                 ylab=ad.beam.name(x, 4), type=type,
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)

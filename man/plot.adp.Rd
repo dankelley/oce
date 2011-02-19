@@ -10,6 +10,7 @@
      col,
      zlim,
      titles,
+     lwd=par('lwd'),
      type='l',
      ytype=c("profile", "distance"),
      adorn=NULL,
@@ -49,6 +50,8 @@
     placed in the right hand side of the top margin.  For timeseries,
     these strings are ignored.
     If this is provided, its length must equal that of \code{which}.}
+  \item{lwd}{if the plot is of a time-series or scattergraph format with lines,
+      this is used in the usual way; otherwise, e.g. for image formats, this is ignored.}
   \item{type}{if the plot is of a time-series or scattergraph format, this is
       used in the usual way, e.g. \code{"l"} for lines, etc.; otherwise, as for
       image formats, this is ignored.}

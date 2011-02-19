@@ -6,10 +6,11 @@
 
 \description{Plot ADV data.}
 
-\usage{\method{plot}{adv}(x,
-    which=c(1:3,14,15),
+\usage{\method{plot}{adv}(x, which=c(1:3,14,15),
+    col,
     titles,
     type="l",
+    lwd=par('lwd'),
     adorn=NULL,
     draw.time.range=getOption("oce.draw.time.range"),
     draw.zero.line=FALSE,
@@ -31,11 +32,16 @@
         panels running down from the top of the page.  See
         \dQuote{Details} for the meanings of various values of
         \code{which}.}
+    \item{col}{optional indication of colour(s) to use.  If not provided,
+        the default for images is \code{oce.colors.palette(128,1)}, and for
+        lines and points is black.}
     \item{titles}{optional vector of character strings to be used as
         labels for the plot panels.  For images, these strings will be
         placed in the right hand side of the top margin.  For timeseries,
         these strings are ignored.
         If this is provided, its length must equal that of \code{which}.}
+    \item{lwd}{if the plot is of a time-series or scattergraph format with lines,
+        this is used in the usual way; otherwise, e.g. for image formats, this is ignored.}
     \item{type}{type of plot, as for \code{\link{plot}}.}
     \item{adorn}{optional list of \code{\link{expression}}s to be performed
         immediately after drawing the panels. (See \code{\link{plot.adp}} for
