@@ -316,6 +316,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     dots <- list(...)
     ytype <- match.arg(ytype)
     ## user may specify a matrix for xlim and ylim
+    col <- vector(col, ncol=lw)
     gave.ylim <- !missing(ylim)
     oce.debug(debug, 'gave.ylim=', gave.ylim)
     if (gave.ylim) {
@@ -546,16 +547,23 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
+                            col=col[w],
                             ylab=resizable.label("S"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 14)
-                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylim=if(gave.ylim) ylim[w,],
+                oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
+                            xlim=if(gave.xlim) xlim[w,] else tlim,
+                            ylim=if(gave.ylim) ylim[w,],
+                            col=col[w],
                             ylab= expression(paste("T [ ", degree, "C ]")), type='l',
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 15) {
+                oce.debug(debug, "pressure plot. col=", col[w], "\n")
+                print(col)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
+                            col=col[w],
                             ylab=resizable.label("p"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
@@ -563,18 +571,21 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
+                            col=col[w],
                             ylab=resizable.label("heading"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 17)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
+                            col=col[w],
                             ylab=resizable.label("pitch"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 18)
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
+                            col=col[w],
                             ylab=resizable.label("roll"), type=type,
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 19) {
@@ -582,6 +593,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
+                                col=col[w],
                                 ylab=ad.beam.name(x, 1), type=type,
                                 draw.time.range=draw.time.range, cex.axis=cex,
                                 adorn=adorn[w], ...)
@@ -592,6 +604,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
+                                col=col[w],
                                 ylab=ad.beam.name(x, 2), type=type,
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
@@ -602,6 +615,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
+                                col=col[w],
                                 ylab=ad.beam.name(x, 3), type=type,
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
@@ -612,6 +626,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
+                                col=col[w],
                                 ylab=ad.beam.name(x, 4), type=type,
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
