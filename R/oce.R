@@ -222,8 +222,7 @@ oce.plot.ts <- function(x,
     debug <- min(debug, 4)
     oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
     oce.debug(debug, "mar=",mar,"\n")
-    oce.debug(debug, "length(x)", length(x), "\n")
-    oce.debug(debug, "length(y)", length(y), "\n")
+    oce.debug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     oce.debug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
@@ -259,7 +258,8 @@ oce.plot.ts <- function(x,
     axis(4, labels=FALSE)
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
-        if (class(t) == "try-error") warning("cannot evaluate adorn {", adorn, "}\n")
+        if (class(t) == "try-error")
+            warning("cannot evaluate adorn {", adorn, "}\n")
     }
     oce.debug(debug, "\b\b} # oce.plot.ts()\n")
     invisible()
@@ -991,10 +991,23 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oce.debug(debug, vector.show(z, "Time range is 4 months; z="))
         if (missing(format)) format <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
-        t.start <- trunc(rr[1], "day")
-        t.end <- trunc(rr[2] + 86400, "day")
+        rrl <- as.POSIXlt(rr)
+        rrl[1]$mday <- 1
+        rrl[2] <- rrl[2] + 31 * 86400
+        rrl[2]$mday <- 1
+        t.start <- trunc(rrl[1], "day")
+        t.end <- trunc(rrl[2] + 86400, "day")
         z <- seq(t.start, t.end, by="month")
         oce.debug(debug, vector.show(z, "Time range is under a year or so; z="))
+        if (missing(format)) format <- "%b %d"
+    } else if (d < 3.1 * 60 * 60 * 24 * 365) { # under about 3 years
+        rrl <- as.POSIXlt(rr)
+        rrl[1]$mday <- 1
+        rrl[2] <- rrl[2] + 31 * 86400
+        rrl[2]$mday <- 1
+        t.start <- trunc(rrl[1], "day")
+        t.end <- trunc(rrl[2], "day")
+        z <- seq(t.start, t.end, by="month")
         if (missing(format)) format <- "%b %d"
     } else { # FIXME: do this as above.  Then remove the junk near the top.
         class(z) <- c("POSIXt", "POSIXct")
