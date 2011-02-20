@@ -5,31 +5,32 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
                      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
                      use.smoothScatter=FALSE,
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
+                     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                     main="",
                      debug=getOption("oce.debug"),
                      ...)
 {
     if (!inherits(x, "pt"))
         stop("method is only for pt objects")
-    lw <- length(which)
+    nw <- length(which)
     opar <- par(no.readonly = TRUE)
-    if (lw > 1)
+    if (nw > 1)
         on.exit(par(opar))
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
-        adorn <- rep(adorn, lw)
-        adorn.length <- lw
+        adorn <- rep(adorn, nw)
+        adorn.length <- nw
     }
-    if (lw == 2) {
+    if (nw == 2) {
         layout(cbind(c(1,2)))
-    } else if (lw==3 || lw==4) {
+    } else if (nw==3 || nw==4) {
         layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
     }
     par(mgp=mgp, mar=mar)
 
     ## decode string values of 'which'
-    which2 <- vector("numeric", lw)
-    for (w in 1:lw) {
+    which2 <- vector("numeric", nw)
+    for (w in 1:nw) {
         ww <- which[w]
         if (is.numeric(ww)) {
             which2[w] <- ww
@@ -47,32 +48,35 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
         }
     }
     which <- which2
+    if (missing(main))
+        main <- rep('', length.out=nw)
+    else
+        main <- rep(main, length.out=nw)
     oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-    for (w in 1:lw) {
+    for (w in 1:nw) {
         if (which[w] == 1) {
-            plot(x$data$ts$time, x$data$ts$temperature,
-                 xlab=if (missing(xlab)) "" else xlab,
-                 ylab=if (missing(ylab)) resizable.label("T", "y") else ylab,
-                 xaxs="i", type='l',
+            oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
+                 ylab=resizable.label("T", "y"),
+                 type='l',
                  xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
-                 axes=FALSE, ...)
-            box()
-            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range, abbreviate.time.range=abbreviate.time.range)
+                 main=main[w])
+            ##box()
+            ##oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range, abbreviate.time.range=abbreviate.time.range)
             draw.time.range <- FALSE    # only the first time panel gets the time indication
             axis(2)
         } else if (which[w] == 3) {     # pressure timeseries
-            plot(x$data$ts$time, x$data$ts$pressure,
-                 xlab=if (missing(xlab)) "" else xlab,
-                 ylab=if (missing(ylab)) resizable.label("p", "y") else ylab,
-                 xaxs="i", type='l',
+            oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
+                 ylab=resizable.label("p", "y"),
+                 type='l',
                  xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(plim)) range(x$data$ts$pressure, na.rm=TRUE) else plim,
-                 axes=FALSE, ...)
-            box()
-            oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
+                 main=main[w],
+                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5))
+            ##box()
+            ##oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
             draw.time.range <- FALSE
-            axis(2)
+            ##axis(2)
         } else if (which[w] == 2) {
             text.item <- function(item, cex=4/5*par("cex")) {
                 if (!is.null(item) && !is.na(item)) {

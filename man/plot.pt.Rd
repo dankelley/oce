@@ -14,7 +14,8 @@
      abbreviate.time.range=getOption("oce.abbreviate.time.range"),
      use.smoothScatter=FALSE,
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1]+1, mgp[1]+1, 1, 1.5),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+     main="",
      debug=getOption("oce.debug"),
      \dots)}
 
@@ -59,6 +60,7 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{main}{main title for plot, used just on the top panel, if there are several panels.}
   \item{debug}{a flag that turns on debugging, if it exceeds 0.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
