@@ -16,7 +16,7 @@
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      margins.as.image=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim, ylim, 

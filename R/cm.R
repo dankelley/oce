@@ -297,4 +297,5 @@ plot.cm <- function(x,
         }
     }
     oce.debug(debug, "\b\b} # plot.cm()\n")
+    invisible()
 }

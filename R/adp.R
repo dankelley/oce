@@ -285,7 +285,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
+                     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim, 
@@ -556,6 +556,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylim=if(gave.ylim) ylim[w,],
                             col=col[w], lwd=lwd[w], main=main[w],
                             ylab=resizable.label("S"), type=type,
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 14)
                 oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
@@ -563,6 +564,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylim=if(gave.ylim) ylim[w,],
                             col=col[w], lwd=lwd[w], main=main[w],
                             ylab= expression(paste("T [ ", degree, "C ]")), type='l',
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 15) {
                 oce.debug(debug, "pressure plot. col=", col[w], "\n")
@@ -571,6 +573,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylim=if(gave.ylim) ylim[w,],
                             col=col[w], lwd=lwd[w], main=main[w],
                             ylab=resizable.label("p"), type=type,
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
             if (which[w] == 16)
@@ -579,6 +582,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylim=if(gave.ylim) ylim[w,],
                             col=col[w], lwd=lwd[w], main=main[w],
                             ylab=resizable.label("heading"), type=type,
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 17)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
@@ -586,6 +590,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylim=if(gave.ylim) ylim[w,],
                             col=col[w], lwd=lwd[w], main=main[w],
                             ylab=resizable.label("pitch"), type=type,
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 18)
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll,
@@ -593,6 +598,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylim=if(gave.ylim) ylim[w,],
                             col=col[w], lwd=lwd[w], main=main[w],
                             ylab=resizable.label("roll"), type=type,
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             if (which[w] == 19) {
                 if (x$metadata$number.of.beams > 0)
@@ -601,6 +607,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 ylim=if(gave.ylim) ylim[w,],
                                 col=col[w], lwd=lwd[w], main=main[w],
                                 ylab=ad.beam.name(x, 1), type=type,
+                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range, cex.axis=cex,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 1 because the device no beams")
@@ -612,6 +619,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 ylim=if(gave.ylim) ylim[w,],
                                 col=col[w], lwd=lwd[w], main=main[w],
                                 ylab=ad.beam.name(x, 2), type=type,
+                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
@@ -623,6 +631,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 ylim=if(gave.ylim) ylim[w,],
                                 col=col[w], lwd=lwd[w], main=main[w],
                                 ylab=ad.beam.name(x, 3), type=type,
+                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
@@ -634,6 +643,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 ylim=if(gave.ylim) ylim[w,],
                                 col=col[w], lwd=lwd[w], main=main[w], 
                                 ylab=ad.beam.name(x, 4), type=type,
+                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                 else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
