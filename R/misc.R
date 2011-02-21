@@ -28,7 +28,11 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
 
 normalize <- function(x)
 {
-    (x - mean(x, na.rm=TRUE)) / sqrt(var(x, na.rm=TRUE))
+    var <- var(x, na.rm=TRUE)
+    if (var == 0)
+        rep(0, length(x))
+    else
+        (x - mean(x, na.rm=TRUE)) / sqrt(var)
 }
 
 detrend <- function(x,y)
