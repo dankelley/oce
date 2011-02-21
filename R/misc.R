@@ -64,10 +64,14 @@ despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.ra
     if (method == "median") {
         xxs <- runmed(xx, k=k)
         deviant <- n < abs(normalize(xx - xxs))
+    dan.deviant<<-deviant
+    dan.unphysical<<-unphysical
+    dan.xxs<<-xxs
         if (method == "NA")
             x[deviant | unphysical] <- NA
         else
             x[deviant | unphysical] <- xxs[deviant | unphysical]
+    cat("AAA\n")
     } else if (method == "smooth") {
         xxs <- as.numeric(smooth(xx))
         deviant <- n < abs(normalize(xx - xxs))
