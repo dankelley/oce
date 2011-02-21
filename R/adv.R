@@ -1312,17 +1312,21 @@ plot.adv <- function(x, which=c(1:3,14,15),
     ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     nw <- length(which)
     if (nw == 1) {
-        if (which == "velocity")
-            which <- 1:3
-        else if (which == "amplitude")
-            which <- 5:7
-        else if (which == "backscatter")
-            which <- 9:11
-        else if (which == "hydrography")
-            which <- 14:15
-        else if (which == "angles")
-            which <- 16:18
-        nw <- length(which)
+        pm <- pmatch(which, c("velocity","amplitude","quality","hydrography", "angles"))
+        if (!is.na(pm)) {
+            nbeams <- 3
+            if (pm == 1)
+                which <- 0 + seq(1, nbeams)
+            else if (pm == 2)
+                which <- 4 + seq(1, nbeams)
+            else if (pm == 3)
+                which <- 8 + seq(1, nbeams)
+            else if (pm == 4)
+                which <- 14:15
+            else if (pm == 5)
+                which <- 16:18
+            nw <- length(which)
+        }
     }
     if (missing(col))
         col <- rep("black", length.out=nw) else col <- rep(col, length.out=nw)

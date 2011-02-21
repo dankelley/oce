@@ -209,6 +209,14 @@
       \code{"bottom.u4"}) for bottom velocity from beams 1 to 4.
 
     }
+    In addition to the above, there are some groupings defined:
+    \itemize{
+        \item \code{which="velocity"} equivalent to \code{which=1:3} (velocity components)
+        \item \code{which="amplitude"} equivalent to \code{which=5:7} (backscatter intensity components)
+        \item \code{which="quality"} equivalent to \code{which=9:11} (quality components)
+        \item \code{which="hydrography"} equivalent to \code{which=14:15} (temperature and pressure)
+        \item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
+    }
 
     The color scheme for image plots (\code{which} in 1:12) is provided
     by the \code{col} argument, which is passed to \code{\link{image}}

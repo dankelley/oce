@@ -309,6 +309,23 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     }
     opar <- par(no.readonly = TRUE)
     nw <- length(which)
+    nbeams  <- x$metadata$number.of.beams
+    if (nw == 1) {
+        pm <- pmatch(which, c("velocity","amplitude","quality","hydrography", "angles"))
+        if (!is.na(pm)) {
+            if (pm == 1)
+                which <- 0 + seq(1, nbeams)
+            else if (pm == 2)
+                which <- 4 + seq(1, nbeams)
+            else if (pm == 3)
+                which <- 8 + seq(1, nbeams)
+            else if (pm == 4)
+                which <- 14:15
+            else if (pm == 5)
+                which <- 16:18
+            nw <- length(which)
+        }
+    }
     if (!missing(titles) && length(titles) != nw)
         stop("length of 'titles' must equal length of 'which'")
     oce.debug(debug, "length(which) =", nw, "\n")
