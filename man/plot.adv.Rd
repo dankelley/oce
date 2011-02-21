@@ -122,6 +122,14 @@
         \code{"uv+ellipse"} case, but with an added arrow indicating the
         mean current.
     }
+    In addition to the above, there are some groupings defined:
+    \itemize{ 
+        \item \code{which="velocity"} equivalent to \code{which=1:3} (three velocity components)
+        \item \code{which="amplitude"} equivalent to \code{which=5:7} (three amplitude components)
+        \item \code{which="backscatter"} equivalent to \code{which=9:11} (three backscatter components)
+        \item \code{which="hydrography"} equivalent to \code{which=14:15} (temperature and pressure)
+        \item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
+    }
 }
 
 \seealso{

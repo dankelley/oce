@@ -1297,20 +1297,35 @@ plot.adv <- function(x, which=c(1:3,14,15),
                      ...)
 {
     debug <- round(debug)
-    if (debug < 0) debug <- 0
-    if (debug > 4) debug <- 4
+    if (debug < 0)
+        debug <- 0
+    if (debug > 4)
+        debug <- 4
     oce.debug(debug, "\bplot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="")
     have.brush.correlation <- !missing(brush.correlation)
     oce.debug(debug, "brush.correlation", if (have.brush.correlation) brush.correlation else "not given", "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
+    opar <- par(no.readonly = TRUE)
     dots <- names(list(...))
     ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
-    opar <- par(no.readonly = TRUE)
     nw <- length(which)
-    if (missing(col)) col <- rep("black", length.out=nw) else col <- rep(col, length.out=nw)
-
+    if (nw == 1) {
+        if (which == "velocity")
+            which <- 1:3
+        else if (which == "amplitude")
+            which <- 5:7
+        else if (which == "backscatter")
+            which <- 9:11
+        else if (which == "hydrography")
+            which <- 14:15
+        else if (which == "angles")
+            which <- 16:18
+        nw <- length(which)
+    }
+    if (missing(col))
+        col <- rep("black", length.out=nw) else col <- rep(col, length.out=nw)
     if (!missing(titles) && length(titles) != nw)
         stop("length of 'titles' must equal length of 'which'")
     if (nw > 1)
@@ -1361,6 +1376,20 @@ plot.adv <- function(x, which=c(1:3,14,15),
     ## Translate word-style (FIXME: ugly coding)
     oce.debug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     which2 <- vector("numeric", nw)
+    if (nw == 1) {
+        if (which == "velocity")
+            which <- 1:3
+        else if (which == "amplitude")
+            which <- 5:7
+        else if (which == "backscatter")
+            which <- 9:11
+        else if (which == "hydrography")
+            which <- 14:15
+        else if (which == "angles")
+            which <- 16:18
+        nw <- length(which)
+        print(which)
+    }
     for (w in 1:nw) {
         ww <- which[w]
         if (is.numeric(ww)) {
