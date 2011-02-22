@@ -7,7 +7,7 @@
 \description{Plot \code{cm} (current meter) data}
 
 \usage{\method{plot}{cm}(x,
-     which=c(1, 2, 6, 9),
+     which=c(1, 2, 7, 9),
      type="l",
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),

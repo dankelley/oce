@@ -6,10 +6,14 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     latitude=NA, longitude=NA,
                     debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
 {
-    oce.debug(debug, "read.cm(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
+    if (debug > 2)
+        debug <- 2
+    if (debug < 0)
+        debug  <- 0
+    oce.debug(debug, "\b\bread.cm(file=\"",file,
+              "\", from=", format(from),
+              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, "type=", type, ", ...) {\n", sep="")
     type <- match.arg(type)
-    if (monitor)
-        cat(file, "\n", ...)
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
                    latitude=latitude, longitude=longitude,
@@ -24,7 +28,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 {
     if (debug > 1)
         debug <- 1
-    oce.debug(debug, "\b\bread.cm(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,",...) {\n")
+    oce.debug(debug, "\b\bread.cm.s4(file=\"",file,
+              "\", from=", format(from),
+              ", to=", if (missing(to)) "(missing)" else format(to), ", by=", by, ", ...) {\n", sep="")
     if (is.character(file)) {
         filename <- full.filename(file)
         file <- file(file, "r")
@@ -69,7 +75,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         } else if (items[1] == "3") {
             t0 <- strptime(paste(start.day, start.hms), "%m/%d/%Y %H:%M:%s", tz=tz)
             t1 <- strptime(paste(start.day, items[3]), "%m/%d/%Y %H:%M:%s", tz=tz)
-            deltat <- as.numeric(difftime(t1, t0, units="secs"))
+            deltat <- as.numeric(t1) - as.numeric(t0)
             break
         }
     }
@@ -78,7 +84,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## thwarted the use of read.table() to read the data.  Besides, those first
     ## 3 lines are likely to just be in-air measurements, anyway ... there is likely
     ## to be little harm in skipping quite a lot more than just 3 points!
-    metadata$measurement.start <- t0 + 2 * deltat
+    metadata$measurement.start <- t0 + (2 + skip) * deltat
     metadata$measurement.deltat <- deltat
     d <- read.table(file, skip=skip, sep='\t', stringsAsFactors=FALSE)
     col.north <- 5
@@ -123,6 +129,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         salinity <- sw.S.C.T.p(conductivity, temperature, depth) # FIXME: should really be pressure
     else
         salinity <- d[, col.salinity]
+    sample <- as.numeric(d[, 1])
     n <- length(u)
     time <- metadata$measurement.start + seq(0,n-1)*metadata$measurement.deltat
     if (inherits(from, "POSIXt")) {
@@ -132,7 +139,11 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             stop("sorry, 'by' must equal 1, in this (early) version of read.cm.s4()")
         from.to.POSIX <- TRUE
         from.index <- which(time >= from)[1]
+        if (is.na(from.index))
+            from.index <- 1
         to.index <- which(to <= time)[1]
+        if (is.na(to.index))
+            to.index <- n
         oce.debug(debug, "Time-based trimming: from=", format(from), "to=", format(to), "yield from.index=", from.index, "and to.index=", to.index, "\n")
         keep <- seq(from.index, to.index)
     } else {
@@ -142,8 +153,9 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             stop("'to' must be either POSIXt or numeric")
         keep <- seq(from, to)
     }
-    time <- time[keep]
-    ts <- list(time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
+    keep <- keep[1 <= keep]
+    keep <- keep[keep <= n]
+    ts <- list(sample=sample[keep], time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
     metadata$measurement.end <- ts$time[length(ts$time)]
     data <- list(ts=ts)
     if (missing(log.action))
@@ -158,7 +170,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
 summary.cm <- function(object, ...)
 {
-    if (!inherits(object, "cm")) stop("method is only for cm objects")
+    if (!inherits(object, "cm"))
+        stop("method is only for cm objects")
     if (inherits(object, "s4")) {
         res.specific <- list(foo="bar")
     } else {
@@ -175,6 +188,7 @@ summary.cm <- function(object, ...)
     res$measurement.deltat <- object$metadata$measurement.deltat
     res$processing.log <- processing.log.summary(object)
     ts.names <- names(object$data$ts)
+    print(ts.names)
     fives <- matrix(nrow=(-1+length(ts.names)), ncol=5)
     ii <- 1
     for (i in 1:length(ts.names)) {
@@ -226,7 +240,7 @@ print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 plot.cm <- function(x,
-                    which=c(1, 2, 6, 9),
+                    which=c(1, 2, 7, 9),
                     type="l",
                     adorn=NULL,
                     draw.time.range=getOption("oce.draw.time.range"),
