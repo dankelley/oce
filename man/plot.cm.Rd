@@ -7,7 +7,7 @@
 \description{Plot \code{cm} (current meter) data}
 
 \usage{\method{plot}{cm}(x,
-     which=1:2,
+     which=c(1, 2, 6, 9),
      type="l",
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
@@ -48,25 +48,30 @@
 }
 
 \details{Creates a multi-panel summary plot of data measured by a
-  current meter.  The panels are controlled by the \code{which}
-  argument, as follows.
-  \itemize{ 
-    \item \code{which=1} or \code{which="u"} for a time-series graph of
-    eastward velocity, \code{u}, as a function of time.
-    \item \code{which=2} or \code{which="v"} for a time-series graph of
-    northward velocity, \code{u}, as a function of time.
-    \item \code{which=3} or \code{"progressive vector"} for
-    progressive-vector plot
-    \item \code{which=4} or \code{"uv"} for a plot of \code{v} versus
-    \code{u}.  (Dots are used for small datasets, and smoothScatter for
-    large ones.)
-    \item \code{which=5} or \code{"uv+ellipse"} as the \code{"uv"}
-      case, but with an added indication of the tidal ellipse,
-      calculated from the eigen vectors of the covariance matrix.
-    \item \code{which=6} or \code{"uv+ellipse+arrow"} as the
-      \code{"uv+ellipse"} case, but with an added arrow indicating the
-      mean current.
-  }
+    current meter.  The panels are controlled by the \code{which}
+    argument, as follows.
+    \itemize{ 
+        \item \code{which=1} or \code{which="u"} for a time-series graph of
+        eastward velocity, \code{u}, as a function of time.
+        \item \code{which=2} or \code{which="v"} for a time-series graph of
+        northward velocity, \code{u}, as a function of time.
+        \item \code{which=3} or \code{"progressive vector"} for
+        progressive-vector plot
+        \item \code{which=4} or \code{"uv"} for a plot of \code{v} versus
+        \code{u}.  (Dots are used for small datasets, and smoothScatter for
+        large ones.)
+        \item \code{which=5} or \code{"uv+ellipse"} as the \code{"uv"}
+        case, but with an added indication of the tidal ellipse,
+        calculated from the eigen vectors of the covariance matrix.
+        \item \code{which=6} or \code{"uv+ellipse+arrow"} as the
+        \code{"uv+ellipse"} case, but with an added arrow indicating the
+        mean current.
+        \item \code{which=7} or \code{"depth"} for depth
+        \item \code{which=8} or \code{"salinity"} for salinity
+        \item \code{which=9} or \code{"temperature"} for temperature
+        \item \code{which=10} or \code{"heading"} for heading
+        \item \code{which=11} or \code{"TS"} for a TS diagram
+    }
 }
 
 \seealso{See \code{\link{read.cm}} for notes on functions relating to
