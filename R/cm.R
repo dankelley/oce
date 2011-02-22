@@ -1,5 +1,6 @@
-## cm.R current-meter support (interocean S4)
+## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
+## cm.R current-meter support (interocean S4)
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     type=c("s4"),
                     latitude=NA, longitude=NA,
@@ -233,6 +234,7 @@ plot.cm <- function(x,
                     mgp=getOption("oce.mgp"),
                     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                     small=2000,
+                    main="",
                     debug=getOption("oce.debug"),
                     ...)
 {
@@ -309,13 +311,11 @@ plot.cm <- function(x,
     for (w in 1:lw) {
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] == 1) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$u, type=type, xlab="", ylab="u [m/s]", ...)
-            if (draw.zero.line)
-                abline(h=0)
+            oce.plot.ts(x$data$ts$time, x$data$ts$u,
+                        type=type, xlab="", ylab="u [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 2) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$v, type=type, xlab="", ylab="v [m/s]", ...)
-            if (draw.zero.line)
-                abline(h=0)
+            oce.plot.ts(x$data$ts$time, x$data$ts$v,
+                        type=type, xlab="", ylab="v [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 3) {     # or "progressive vector"
             oce.debug(debug, "progressive vector plot\n")
             dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec")) # FIXME: assuming equal dt
@@ -357,15 +357,19 @@ plot.cm <- function(x,
                 }
             }
         } else if (which[w] == 7) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$depth, ylab="Depth [m]", type=type)
+            oce.plot.ts(x$data$ts$time, x$data$ts$depth,
+                        type=type, xlab="", ylab="Depth [m]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 8) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$salinity, ylab=resizable.label("S", "y"), type=type)
+            oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
+                        type=type, xlab="", ylab=resizable.label("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 9) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab=resizable.label("T", "y"), type=type)
+            oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
+                        type=type, xlab="", ylab=resizable.label("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 10) {
-            oce.plot.ts(x$data$ts$time, x$data$ts$heading, ylab="Heading", type=type)
+            oce.plot.ts(x$data$ts$time, x$data$ts$heading,
+                        type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 11) {
-            plot.TS(as.ctd(x$data$ts$salinity, x$data$ts$temperature, x$data$ts$depth), ...)
+            plot.TS(as.ctd(x$data$ts$salinity, x$data$ts$temperature, x$data$ts$depth), main=main, ...)
         } else {
             stop("unknown value of which (", which[w], ")")
         }
