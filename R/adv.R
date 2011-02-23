@@ -1328,10 +1328,11 @@ plot.adv <- function(x, which=c(1:3,14,15),
             nw <- length(which)
         }
     }
-    col.per.point <- length(col) == length(x$data$ts.slow$time)
+    col.per.point <- FALSE
     if (missing(col)) {
         col <- rep("black", length.out=nw)
     } else {
+        col.per.point <- length(col) == length(x$data$ts.slow$time)
         if (!col.per.point)
             col <- rep(col, length.out=nw)
     }
