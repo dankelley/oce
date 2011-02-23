@@ -1328,8 +1328,13 @@ plot.adv <- function(x, which=c(1:3,14,15),
             nw <- length(which)
         }
     }
-    if (missing(col))
-        col <- rep("black", length.out=nw) else col <- rep(col, length.out=nw)
+    col.per.point <- length(col) == length(x$data$ts.slow$time)
+    if (missing(col)) {
+        col <- rep("black", length.out=nw)
+    } else {
+        if (!col.per.point)
+            col <- rep(col, length.out=nw)
+    }
     if (!missing(titles) && length(titles) != nw)
         stop("length of 'titles' must equal length of 'which'")
     if (nw > 1)
@@ -1392,7 +1397,6 @@ plot.adv <- function(x, which=c(1:3,14,15),
         else if (which == "angles")
             which <- 16:18
         nw <- length(which)
-        print(which)
     }
     for (w in 1:nw) {
         ww <- which[w]
@@ -1557,7 +1561,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
                             main=main,
                             debug=debug-1,
                             ...)
@@ -1570,7 +1574,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
                             main=main,
                             debug=debug-1,
                             ...)
@@ -1584,7 +1588,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                         type=type,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                        lwd=lwd[w], col=col[w],
+                        lwd=lwd[w], col=if(col.per.point) col else col[w],
                         main=main,
                         debug=debug-1,
                         ...)
@@ -1598,7 +1602,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
                             main=main,
                             debug=debug-1,
                             ...)
@@ -1611,7 +1615,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
                             main=main,
                             debug=debug-1,
                             ...)
@@ -1626,7 +1630,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
                             main=main,
                             debug=debug-1,
                             ...)
@@ -1638,7 +1642,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pitch, na.rm=TRUE),
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
                             main=main,
                             debug=debug-1,
                             ...)
@@ -1653,7 +1657,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
                             main=main,
                             debug=debug-1,
                             ...)
