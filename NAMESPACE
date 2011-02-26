@@ -56,7 +56,6 @@ export(
        magnetic.declination,
        make.filter,
        make.section,
-       matlab2POSIXt,
        match.bytes,
        matrix.smooth,
        number.as.POSIXct,

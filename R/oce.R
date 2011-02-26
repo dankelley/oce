@@ -1,3 +1,4 @@
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 use.heading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b$data$ts))
@@ -804,7 +805,7 @@ oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 oce.colors.jet <- function(n)
 {
     if ((n <- as.integer(n[1])) > 0) {
-                                        # matlab::jet, cleaned of matlab:: calls
+        ## matlab::jet, cleaned of matlab:: calls
         n4 <- ceiling(n / 4)
         u <- c(seq(1, n4) / n4,
                if (n4 > 1) rep(1, n4-1) else NULL,
@@ -1149,19 +1150,17 @@ oce.bisect <- function(f, xleft, xright, dx, debug=getOption("oce.debug"))
     xmiddle
 }
 
-number.as.POSIXct <- function(t, type=c("unix"), tz="UTC")
+number.as.POSIXct <- function(t, type=c("unix", "matlab"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
         (t - as.numeric(tref)) + tref
+    } else if (type == "matlab") {
+        ## R won't take a day "0", so subtract one
+        as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1))
     } else {
         stop("type must be \"unix\"")
     }
 }
-
-
-
-
-
 

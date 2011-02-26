@@ -954,12 +954,6 @@ byte2binary <- function(x, endian=c("little", "big"))
     rval
 }
 
-matlab2POSIXt <- function(t, tz="UTC")
-{
-    ## R won't take a day "0", so subtract one
-    ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
-}
-
 formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 {
     formatci.one <- function(ci, style, digits=NULL)
