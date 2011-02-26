@@ -7,7 +7,7 @@
 \description{Plot pt temperature-depth recorder data}
 
 \usage{\method{plot}{pt}(x,
-     which=1:4, title=deparse(substitute(x)), adorn=NULL,
+     which=1:4, title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
      draw.time.range=getOption("oce.draw.time.range"),

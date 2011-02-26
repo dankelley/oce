@@ -1,4 +1,4 @@
-plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
+plot.pt <- function (x, which=1:4, title="", adorn=NULL,
                      tlim, plim, Tlim,
                      xlab, ylab,
                      draw.time.range=getOption("oce.draw.time.range"),
@@ -95,8 +95,8 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             d.yloc <- 0.7
             cex <- par("cex")
             text.item(title, cex=1.25*cex)
-            if (!is.null(x$metadata$filename))
-                text.item(x$metadata$filename, cex=cex)
+            ##if (!is.null(x$metadata$filename))
+            ##    text.item(x$metadata$filename, cex=cex)
             if (!is.null(x$metadata$serial.number))
                 text.item(paste("Serial Number: ", x$metadata$serial.number),cex=cex)
             if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
@@ -117,7 +117,6 @@ plot.pt <- function (x, which=1:4, title=deparse(substitute(x)), adorn=NULL,
             if (!("cex"  %in% names(list(...))))
                 args <- c(args, cex=1/2)
             np <- length(x$data$ts$pressure)
-            print(args$cex)
             if (use.smoothScatter) {
                 args <- args[names(args) != "type"]
                 do.call(smoothScatter, args)
