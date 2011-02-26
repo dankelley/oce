@@ -933,63 +933,76 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
               "UTC to ",
               format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
               "UTC\n")
-
+    z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     if (d < 60) {                       # under 1 min
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 sec")
         oce.debug(debug, "time range is under a minute\n")
         oce.debug(debug, vector.show(z, "z"))
-        if (missing(format)) format <- "%H:%M:%S"
+        if (missing(format))
+            format <- "%H:%M:%S"
     } else if (d < 60 * 30) {                  # under 30min
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="min")
         oce.debug(debug, "time range is under 30 min\n")
         oce.debug(debug, vector.show(z, "z"))
-        if (missing(format)) format <- "%H:%M"
+        if (missing(format))
+            format <- "%H:%M"
     } else if (d < 60 * 60) {                  # under 1 hour
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
         oce.debug(debug, vector.show(z, "Time range is under an hour; z="))
-        if (missing(format)) format <- "%H:%M"
+        if (missing(format))
+            format <- "%H:%M"
     } else if (d < 60 * 60 * 2) {       # under 2 hours
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
         oce.debug(debug, vector.show(z, "Time range is under 2 hours; z="))
-        if (missing(format)) format <- "%H:%M"
+        if (missing(format))
+            format <- "%H:%M"
     } else if (d < 60 * 60 * 6) {       # under 6 hours, use HM
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
         oce.debug(debug, vector.show(z, "Time range is under 6 hours; z="))
-        if (missing(format)) format <- "%H:%M"
-    } else if (d < 60 * 60 * 24) {        # under a day
-        t.start <- trunc(rr[1], "hour")
-        t.end <- trunc(rr[2] + 3600, "hour")
-        z <- seq(t.start, t.end, by="hour")
-        oce.debug(debug, vector.show(z, "Time range is under a day; z="))
-        if (missing(format)) format <- "%H:%M"
-    } else if (d < 60 * 60 * 24 * 2) {        # under 2 days
+        if (missing(format))
+            format <- "%H:%M"
+    } else if (d < 60 * 60 * 24 * 2.9) {        # under 3 days: 2-hour subticks
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 86400, "hour")
-        z <- seq(t.start, t.end, by="hour")
-        oce.debug(debug, vector.show(z, "Time range is under 2 days; z="))
-        if (missing(format)) format <- "%H"
-    } else if (d < 60 * 60 * 24 * 32) {        # under 2 weeks
+        z <- seq(t.start, t.end, by="day")
+        z.sub <- seq(t.start, t.end, by="hour")
+        oce.debug(debug, vector.show(z, "Time range is under 3 days; z="))
+        oce.debug(debug, vector.show(z.sub, "Time range is under 3 days; z.sub="))
+        if (missing(format))
+           format <- "%b %d"
+     } else if (d < 60 * 60 * 24 * 4.9) {        # under 5 days: show hours
+        t.start <- trunc(rr[1], "day")
+        t.end <- trunc(rr[2] + 86400, "day")
+        z <- seq(t.start, t.end, by="day")
+        z.sub <- seq(t.start, t.end, by="2 hour")
+        oce.debug(debug, vector.show(z, "Time range is under 5 days; z="))
+        oce.debug(debug, vector.show(z.sub, "Time range is under 5 days; z.sub="))
+        if (missing(format))
+            format <- "%b %d"
+    } else if (d < 60 * 60 * 24 * 32) {        # under 1 month
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         oce.debug(debug, vector.show(z, "Time range is under 2 weeks; z="))
-        if (missing(format)) format <- "%b %d"
+        if (missing(format))
+            format <- "%b %d"
     } else if (d < 60 * 60 * 24 * 32 * 4) {        # under 4 months
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         oce.debug(debug, vector.show(z, "Time range is 4 months; z="))
-        if (missing(format)) format <- "%b %d"
+        if (missing(format))
+            format <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
         rrl <- as.POSIXlt(rr)
         rrl[1]$mday <- 1
@@ -999,7 +1012,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.end <- trunc(rrl[2] + 86400, "day")
         z <- seq(t.start, t.end, by="month")
         oce.debug(debug, vector.show(z, "Time range is under a year or so; z="))
-        if (missing(format)) format <- "%b %d"
+        if (missing(format))
+            format <- "%b %d"
     } else if (d < 3.1 * 60 * 60 * 24 * 365) { # under about 3 years
         rrl <- as.POSIXlt(rr)
         rrl[1]$mday <- 1
@@ -1008,7 +1022,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.start <- trunc(rrl[1], "day")
         t.end <- trunc(rrl[2], "day")
         z <- seq(t.start, t.end, by="month")
-        if (missing(format)) format <- "%b %d"
+        if (missing(format))
+            format <- "%b %d"
     } else { # FIXME: do this as above.  Then remove the junk near the top.
         class(z) <- c("POSIXt", "POSIXct")
         attr(z, "tzone") <- attr(x, "tzone")
@@ -1022,7 +1037,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         class(zz) <- c("POSIXt", "POSIXlt")
         z <- as.POSIXct(zz)
         attr(z, "tzone") <- attr(x, "tzone")
-        if (missing(format)) format <- "%Y"
+        if (missing(format))
+            format <- "%Y"
         oce.debug(debug, vector.show(z, "z="))
     }
     if (!mat)
@@ -1034,9 +1050,9 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     ##oce.debug(debug, "range:", format(range[1]), "to", format(range[2]), "\n")
     keep <- range[1] <= (z + twiddle) & (z - twiddle) <= range[2]
     ##oce.debug(debug, vector.show(keep, "keep"))
-    ##oce.debug(debug, vector.show(z, "z before keep"))
+    oce.debug(debug, vector.show(z, "z before keep"))
     z <- z[keep]
-    ##oce.debug(debug, vector.show(z, "z after keep"))
+    oce.debug(debug, vector.show(z, "z after keep"))
     if (!is.logical(labels))
         labels <- labels[keep]
     else if (identical(labels, TRUE))
@@ -1067,10 +1083,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         ## only show timezone if hours are shown
-        oce.debug(debug, "time.range[1]:", format(time.range[1]))
-        oce.debug(debug, "round(time.range[1], 'days'):", format(round(time.range[1],'days')))
-        oce.debug(debug, "time.range[2]:", format(time.range[2]))
-        oce.debug(debug, "round(time.range[2], 'days'):", format(round(time.range[1],'days')))
+        oce.debug(debug, "time.range[1]:", format(time.range[1]), "\n")
+        oce.debug(debug, "round(time.range[1], 'days'):", format(round(time.range[1],'days')), "\n")
+        oce.debug(debug, "time.range[2]:", format(time.range[2]), "\n")
+        oce.debug(debug, "round(time.range[2], 'days'):", format(round(time.range[1],'days')), "\n")
         ## The below is not fool-proof, depending on how xlim might have been supplied; see
         ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
         if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
@@ -1086,6 +1102,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     }
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
+    }
+    oce.debug(debug, vector.show(z, "z="))
+    if (length(z.sub) > 0) {
+        axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
+        oce.debug(debug, vector.show(z.sub, "z.sub="))
     }
     axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
     oce.debug(debug, "\b\b} # oce.axis.ts()\n")
