@@ -935,6 +935,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
               format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
+    oce.debug(debug, "d=", d, " (time range)\n")
     if (d < 60) {                       # under 1 min
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
@@ -970,6 +971,13 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
         oce.debug(debug, vector.show(z, "Time range is under 6 hours; z="))
+        if (missing(format))
+            format <- "%H:%M"
+    } else if (d < 60 * 60 * 25) {       # under about a day
+        t.start <- trunc(rr[1], "hour")
+        t.end <- trunc(rr[2] + 3600, "hour")
+        z <- seq(t.start, t.end, by="1 hour")
+        oce.debug(debug, vector.show(z, "Time range is under 25 hours; z="))
         if (missing(format))
             format <- "%H:%M"
     } else if (d < 60 * 60 * 24 * 2.9) {        # under 3 days: 2-hour subticks
