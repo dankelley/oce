@@ -1111,3 +1111,57 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
     oce.debug(debug, "\b\b} # oce.axis.ts()\n")
 }
+
+oce.bisect <- function(f, xleft, xright, dx, debug=getOption("oce.debug"))
+{
+    if (xleft >= xright)
+        stop("xright must exceed xleft")
+    if (f(xleft) * f(xright) > 0)
+        stop("xleft and xright do not bracket a root")
+    if (missing(dx))
+        dx <- (xright - xleft) / 1e5
+    else {
+        if (dx == 0)
+            stop('cannot have dx == 0')
+        if (dx < 0)
+            stop('cannot have dx < 0')
+    }
+    xmiddle <- 0.5 * (xleft + xright)
+    npass <- 4 + floor(1 + log2((xright - xleft) / dx))
+    oce.debug(debug, "npass=", npass, "\n")
+    for (pass in 1:npass) {
+        if (f(xleft) * f(xmiddle) < 0) { # FIXME: should not need to do f(left)
+            tmp <- xmiddle
+            xmiddle <- 0.5 * (xleft + xmiddle)
+            xright <- tmp
+            oce.debug(debug, xleft, "|", xmiddle, "|", xright, "<\n")
+        } else {
+            tmp <- xmiddle
+            xmiddle <- 0.5 * (xmiddle + xright)
+            xleft <- tmp
+            oce.debug(debug, ">", xleft, "|", xmiddle, "|", xright, "\n")
+        }
+        if ((xright - xleft) < dx){
+            oce.debug(debug, "got root in pass", pass, "\n")
+            break
+        }
+    }
+    xmiddle
+}
+
+number.as.POSIXct <- function(t, type=c("unix"), tz="UTC")
+{
+    type <- match.arg(type)
+    if (type == "unix") {
+        tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
+        (t - as.numeric(tref)) + tref
+    } else {
+        stop("type must be \"unix\"")
+    }
+}
+
+
+
+
+
+
