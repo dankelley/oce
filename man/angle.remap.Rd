@@ -19,9 +19,8 @@
     that swing from small angles to large angles, because of the
     modulo-360 cut point.
 
-    The method is to use the cosine and sine of the angle, to construct
-    "x" and "y" values on a unit circle,  then to find means and
-    medians of x and y respectively, and finally to use
+    The method is to use the cosine and sine of the angle in order to
+    find "x" and "y" values on a unit circle, and then to use
     \code{\link{atan2}} to infer the angles.
 }
 
