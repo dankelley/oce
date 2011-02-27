@@ -1,4 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 use.heading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b$data$ts))
@@ -13,9 +13,9 @@ use.heading <- function(b, g, add=0)
     t0 <- as.numeric(g$data$ts$time[1])
     if (is.na(t0))
         stop("need first element of from$data$ts$time to be non-NA")
-    b.t <- as.numeric(b$data$ts$time) - t0
-    g.t <- as.numeric(g$data$ts$time) - t0
-    res$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add * pi / 180
+    b.t <- as.numeric(b$data$ts$time) - t0 # FIXME: what if heading in ts.slow?
+    g.t <- as.numeric(g$data$ts$time) - t0 # FIXME: what if heading in ts.slow?
+    res$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -63,9 +63,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         ## data$ts (note: 'keep' will be re-used for data$ma)
         ntime <- length(x$data$ts$time)
         keep <- rep(FALSE, ntime)
-        ##oce.debug(debug, "ntime=",ntime, "\n")
         for (w in 1:nstart) {
-            ##oce.debug(debug, " start[", w, "]=", format(start[w]), "; end[", w, "]=", format(end[w]), "\n", sep="")
             keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time <= end[w])
             oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
         }
@@ -77,7 +75,6 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                     res$data$ts[[name]] <- res$data$ts[[name]][keep]
             }
         }
-        ## data$ts.slow (if it exists)
         if ("ts.slow" %in% names(res$data)) {
             oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
             keep.slow <- rep(FALSE, length(x$data$ts.slow$time)) # note that 'keep' is reserved for use with data$ma
@@ -96,7 +93,6 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         }
         if (index.return)
             return(res)
-        ## data$ma
         if ("ma" %in% names(res$data)) {
             for (maname in names(res$data$ma)) {
                 ldim <- length(dim(res$data$ma[[maname]]))
@@ -765,22 +761,36 @@ read.oce <- function(file, ...)
 {
     type <- magic(file)
     log.action <- paste(deparse(match.call()), sep="", collapse="")
-    if (type == "shapefile")              stop("cannot read shapefiles")
-    if (type == "adp/rdi")                return(read.adp.rdi(file, log.action=log.action, ...))
-    if (type == "adp/sontek")             return(read.adp.sontek(file, log.action=log.action, ...)) # FIXME is pcadcp different?
-    if (type == "adp/nortek/aquadopp")    stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
-    if (type == "adp/nortek/aquadoppHR")  return(read.adp.nortek(file, log.action=log.action, ...))
-    if (type == "adv/nortek/vector")      return(read.adv.nortek(file, log.action=log.action, ...))
-    if (type == "adv/sontek/adr")         return(read.adv.sontek.adr(file, log.action=log.action, ...))
+    if (type == "shapefile") 
+        stop("cannot read shapefiles")
+    if (type == "adp/rdi")               
+        return(read.adp.rdi(file, log.action=log.action, ...))
+    if (type == "adp/sontek")
+        return(read.adp.sontek(file, log.action=log.action, ...)) # FIXME is pcadcp different?
+    if (type == "adp/nortek/aquadopp")
+        stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
+    if (type == "adp/nortek/aquadoppHR")
+        return(read.adp.nortek(file, log.action=log.action, ...))
+    if (type == "adv/nortek/vector")
+        return(read.adv.nortek(file, log.action=log.action, ...))
+    if (type == "adv/sontek/adr")
+        return(read.adv.sontek.adr(file, log.action=log.action, ...))
     ## FIXME need adv/sontek (non adr)
-    if (type == "interocean/s4")          return(read.cm.s4(file, log.action=log.action, ...))
-    if (type == "ctd/sbe/19")             return(read.ctd.sbe(file, log.action=log.action, ...))
+    if (type == "interocean/s4")
+        return(read.cm.s4(file, log.action=log.action, ...))
+    if (type == "ctd/sbe/19")
+        return(read.ctd.sbe(file, log.action=log.action, ...))
     if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, log.action=log.action, ...))
-    if (type == "coastline")              return(read.coastline(file, type="mapgen", log.action=log.action, ...))
-    if (type == "sealevel")               return(read.sealevel(file, log.action=log.action, ...))
-    if (type == "topo")                   return(read.topo(file, log.action=log.action, ...))
-    if (type == "pt")                     return(read.pt(file, log.action=log.action, ...))
-    if (type == "section")                return(read.section(file, log.action=log.action, ...))
+    if (type == "coastline")
+        return(read.coastline(file, type="mapgen", log.action=log.action, ...))
+    if (type == "sealevel")
+        return(read.sealevel(file, log.action=log.action, ...))
+    if (type == "topo")
+        return(read.topo(file, log.action=log.action, ...))
+    if (type == "pt")
+        return(read.pt(file, log.action=log.action, ...))
+    if (type == "section")
+        return(read.section(file, log.action=log.action, ...))
     stop("unknown file type \"", type, "\"")
 }
 
@@ -890,43 +900,6 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     d <- range[2] - range[1]            # time span, in seconds
     z <- c(range, x[is.finite(x)])
     attr(z, "tzone") <- attr(x, "tzone") # need this because c() makes it local time zone (!)
-    if (FALSE) {                         # will remove after testing
-        if (d < 1.1 * 60) {              # under about a minute
-            sc <- 1
-            if (missing(format))
-                format <- "%S"
-        } else if (d < 1.1 * 60 * 60) { # under about an hour
-            sc <- 60
-            if (missing(format))
-                format <- "%M:%S"
-        } else if (d < 1.1 * 60 * 60 * 24) { # under about a day
-            sc <- 60 * 60
-            if (missing(format))
-                format <- "%H:%M"
-        } else if (d < 2 * 60 * 60 * 24) { # under 2 days
-            sc <- 60 * 60
-            if (missing(format))
-                format <- "%a %H:%M"
-        } else if (d < 7 * 60 * 60 * 24) { # under a week
-            sc <- 60 * 60 * 24
-            if (missing(format))
-                format <- "%a"
-        } else if (d < 3 * 7 * 60 * 60 * 24) { # under 3 weeks
-            sc <- 60 * 60 * 24
-            if (missing(format))
-                format <- "%b %d"
-        } else if (d < 32 * 60 * 60 * 24) { # under  a month
-            sc <- 60 * 60 * 24 * 7
-            if (missing(format))
-                format <- "%a"
-        } else {
-            sc <- 60 * 60 * 24
-            oce.debug(debug, "more than a month time range; sc=", sc, "\n")
-            if (missing(format))
-                format <- "%a"
-        }
-    }
-
     rr <- range + as.POSIXct("2000-01-20") - as.numeric(as.POSIXct("2000-01-20"))
     attr(rr, "tzone") <- attr(x, "tzone")
     oce.debug(debug, "range=",
@@ -980,7 +953,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oce.debug(debug, vector.show(z, "Time range is under 25 hours; z="))
         if (missing(format))
             format <- "%H:%M"
-    } else if (d < 60 * 60 * 24 * 2.9) {        # under 3 days: 2-hour subticks
+    } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 86400, "hour")
         z <- seq(t.start, t.end, by="day")
@@ -988,8 +961,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oce.debug(debug, vector.show(z, "Time range is under 3 days; z="))
         oce.debug(debug, vector.show(z.sub, "Time range is under 3 days; z.sub="))
         if (missing(format))
-           format <- "%b %d"
-     } else if (d < 60 * 60 * 24 * 4.9) {        # under 5 days: show hours
+            format <- "%b %d"
+    } else if (d <= 60 * 60 * 24 * 5) {        # under 5 days: label day; show 2-h subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
@@ -998,14 +971,22 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oce.debug(debug, vector.show(z.sub, "Time range is under 5 days; z.sub="))
         if (missing(format))
             format <- "%b %d"
-    } else if (d < 60 * 60 * 24 * 32) {        # under 1 month
+    } else if (d <= 60 * 60 * 24 * 14) { # under 2 weeks: label day; show 12-h subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
+        z.sub <- seq(t.start, t.end, by="12 hour")
         oce.debug(debug, vector.show(z, "Time range is under 2 weeks; z="))
         if (missing(format))
             format <- "%b %d"
-    } else if (d < 60 * 60 * 24 * 32 * 4) {        # under 4 months
+    } else if (d <= 60 * 60 * 24 * 31) { # under 1 month: label day
+        t.start <- trunc(rr[1], "day")
+        t.end <- trunc(rr[2] + 86400, "day")
+        z <- seq(t.start, t.end, by="day")
+        oce.debug(debug, vector.show(z, "Time range is under a month; z="))
+        if (missing(format))
+            format <- "%b %d"
+    } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
@@ -1132,8 +1113,8 @@ oce.bisect <- function(f, xleft, xright, dx, debug=getOption("oce.debug"))
     else {
         if (dx == 0)
             stop('cannot have dx == 0')
-        if (dx < 0)
-            stop('cannot have dx < 0')
+    if (dx < 0)
+        stop('cannot have dx < 0')
     }
     xmiddle <- 0.5 * (xleft + xright)
     npass <- 4 + floor(1 + log2((xright - xleft) / dx))
