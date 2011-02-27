@@ -1057,8 +1057,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         time.range.data <- range(x, na.rm=TRUE)
         time.range[1] <- max(time.range[1], time.range.data[1])
         time.range[2] <- min(time.range[2], time.range.data[2])
-        tr1 <- format(time.range[1])
-        tr2 <- format(time.range[2])
+        tr1 <- format(time.range[1], getOption("oce.time.format"))
+        tr2 <- format(time.range[2], getOption("oce.time.format"))
         if (abbreviate.time.range) {
             if (time.range[1]$year == time.range[2]$year) {
                 tr2 <- substr(tr2, 6, nchar(tr2)) # remove the "YYYY-"
