@@ -946,16 +946,16 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oce.debug(debug, vector.show(z, "Time range is under 6 hours; z="))
         if (missing(format))
             format <- "%H:%M"
-    } else if (d < 60 * 60 * 25) {       # under about a day
+    } else if (d < 60 * 60 * 30) {       # under about a day
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="1 hour")
-        oce.debug(debug, vector.show(z, "Time range is under 25 hours; z="))
+        oce.debug(debug, vector.show(z, "Time range is under 30 hours, so z="))
         if (missing(format))
-            format <- "%H:%M"
+            format <- "%H"
     } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
-        t.start <- trunc(rr[1], "hour")
-        t.end <- trunc(rr[2] + 86400, "hour")
+        t.start <- trunc(rr[1], "day")
+        t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         z.sub <- seq(t.start, t.end, by="hour")
         oce.debug(debug, vector.show(z, "Time range is under 3 days; z="))
@@ -1036,8 +1036,12 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
 
     ##
     ## FIXME: I was twiddling the numbers, to get more labels, but xaxs="r" fixes that.
-    twiddle <- 0*diff(as.numeric(range)) / 10 # FIXME: do I need this anymore?
-    ##oce.debug(debug, "range:", format(range[1]), "to", format(range[2]), "\n")
+    twiddle <- 0.04 * diff(as.numeric(range))  # FIXME: do I need this anymore?
+    oce.debug(debug, "range=",
+              format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
+              "UTC to ",
+              format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
+              "UTC\n")
     keep <- range[1] <= (z + twiddle) & (z - twiddle) <= range[2]
     ##oce.debug(debug, vector.show(keep, "keep"))
     oce.debug(debug, vector.show(z, "z before keep"))
@@ -1076,7 +1080,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oce.debug(debug, "time.range[1]:", format(time.range[1]), "\n")
         oce.debug(debug, "round(time.range[1], 'days'):", format(round(time.range[1],'days')), "\n")
         oce.debug(debug, "time.range[2]:", format(time.range[2]), "\n")
-        oce.debug(debug, "round(time.range[2], 'days'):", format(round(time.range[1],'days')), "\n")
+        oce.debug(debug, "round(time.range[2], 'days'):", format(round(time.range[2],'days')), "\n")
         ## The below is not fool-proof, depending on how xlim might have been supplied; see
         ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
         if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
@@ -1098,6 +1102,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
         oce.debug(debug, vector.show(z.sub, "z.sub="))
     }
+    oce.debug(debug, vector.show(labels, "labels="))
     axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
     oce.debug(debug, "\b\b} # oce.axis.ts()\n")
 }
