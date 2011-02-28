@@ -909,11 +909,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oce.debug(debug, "d=", d, " (time range)\n")
-    if (d < 60) {                       # under 1 min
-        t.start <- trunc(rr[1]-30, "mins")
-        t.end <- trunc(rr[2]+30, "mins")
+    if (d < 60 * 3) {                       # under 3 min
+        t.start <- trunc(rr[1]-60, "mins")
+        t.end <- trunc(rr[2]+60, "mins")
         z <- seq(t.start, t.end, by="10 sec")
-        oce.debug(debug, "time range is under a minute\n")
+        oce.debug(debug, "time range is under 3 minutes\n")
         oce.debug(debug, vector.show(z, "z"))
         if (missing(format))
             format <- "%H:%M:%S"
