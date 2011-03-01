@@ -50,41 +50,51 @@ detrend <- function(x,y)
     y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
 }
 
-despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.range,
-                    action=c("replace","NA"))
+despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
+                    replace=c("reference","NA"))
 {
-    xx <- x
-    small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
-    large <- if (missing(physical.range)) max(x, na.rm=TRUE) else physical.range[2]
+    reference <- match.arg(reference)
+    replace <- match.arg(replace)
+    gave.min <- !missing(min)
+    gave.max <- !missing(max)
+    nx <- length(x)
+    ## degap
     na <- is.na(x)
-    unphysical <- xx < small | large < xx
-    xx[unphysical | na] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
-    method <- match.arg(method)
-    action <- match.arg(action)
-    if (method == "median") {
-        xxs <- runmed(xx, k=k)
-        deviant <- n < abs(normalize(xx - xxs))
-        if (method == "NA")
-            x[deviant | unphysical] <- NA
-        else
-            x[deviant | unphysical] <- xxs[deviant | unphysical]
-    } else if (method == "smooth") {
-        xxs <- as.numeric(smooth(xx))
-        deviant <- n < abs(normalize(xx - xxs))
-        if (method == "NA")
-            x[deviant | unphysical] <- NA
-        else
-            x[deviant | unphysical] <- xxs[deviant | unphysical]
-    } else if (method == "mean") {
-        mean <- mean(x)
-        stdev <- sqrt(var(x))
-        good <- (mean - n * stdev < x) & (x < mean + n * stdev)
-        if (method == "NA")
-            x[!good] <- NA
-        else
-            x[!good] <- xxs[!good]
+    if (sum(na) > 0) {
+        i <- 1:nx
+        x.gapless <- approx(i[!na], x[!na], i)$y
     } else {
-        stop("unknown method ", method, "; try method=1 or method=2)")
+        x.gapless <- x
+    }
+    if (reference == "median" || reference == "smooth") {
+        if (reference == "median")
+            x.reference <- runmed(x.gapless, k=k)
+        else
+            x.reference <- as.numeric(smooth(x.gapless))
+        distance <- abs(x.reference - x.gapless)
+        stddev <- sqrt(var(distance))
+        bad <- distance > n * stddev
+        nbad <- sum(bad)
+        if (nbad > 0) {
+            if (replace == "reference")
+                x[bad] <- x.reference[bad]
+            else
+                x[bad] <- rep(NA, nbad)
+        }
+    } else if (reference == "trim") {
+        if (!gave.min || !gave.max)
+            stop("must give min and max")
+        bad <- !(min <= x & x <= max)
+        nbad <- length(bad)
+        if (nbad > 0) {
+            i <- 1:nx
+            if (replace == "reference")
+                x[bad] <- approx(i[!bad], x.gapless[!bad], i[bad])$y
+            else
+                x[bad] <- rep(NA, nbad)
+        }
+    } else {
+        stop("unknown reference ", reference)
     }
     x
 }
