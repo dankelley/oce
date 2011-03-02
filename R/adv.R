@@ -1749,6 +1749,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
+                if (main[w] != "")
+                    mtext(main[w], adj=1)
             }
         } else {
             stop("unknown value of \"which\":", which[w])

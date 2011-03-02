@@ -755,6 +755,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                               ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                               ...)
             }
+            if (main[w] != "")
+                mtext(main[w], adj=1)
             if (which[w] >= 29) {
                 ok <- !is.na(u) & !is.na(v)
                 e <- eigen(cov(data.frame(u[ok],v[ok])))
