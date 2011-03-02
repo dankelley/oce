@@ -161,7 +161,7 @@
       rotated-upward velocity, depending on the coordinate system.
 
     \item \code{which=22} yields a time-series of distance-averaged
-      velocity for beam 4, for \code{beam} coordiantes, or velocity
+      velocity for beam 4, for \code{beam} coordinates, or velocity
       estimate, for other coordinates.  (This is ignored for 3-beam
       data.)
 
