@@ -28,6 +28,7 @@
 }
 
 \examples{
+## Example 1: daily variation in sun elevation
 dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60),
                     location="Halifax, Nova Scotia", add=FALSE, ...)
 {
@@ -52,6 +53,21 @@ dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60),
 dayplot("2009-06-22")
 dayplot("2009-12-22", add=TRUE)
 dayplot(trunc(Sys.time(),"days"), add=TRUE, col="red")
+
+## Example 2: infer location from sunrise and sunset times
+rise <- as.POSIXct("2011-03-03 06:49:00", tz="UTC") + 4*3600
+set <- as.POSIXct("2011-03-03 18:04:00", tz="UTC") + 4*3600
+mismatch <- function(latlon) 
+{
+    sun.angle(rise, latlon[1], latlon[2])$elevation^2 +
+    sun.angle(set, latlon[1], latlon[2])$elevation^2
+}
+result <- optim(c(1,1), mismatch)
+lat.hfx <- 44.65
+lon.hfx <- (-63.55274)
+dist <- geod.dist(result$par[1], result$par[2], lat.hfx, lon.hfx)
+cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch \%.0f km", 
+            result$par[1], result$par[2], dist))
 }
 
 \references{Based on Fortran code retrieved from
