@@ -94,7 +94,8 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
 summary.adp <- function(object, ...)
 {
-    if (!inherits(object, "adp")) stop("method is only for adp objects")
+    if (!inherits(object, "adp"))
+        stop("method is only for adp objects")
     if (is.null(object$metadata$have.actual.data) || object$metadata$have.actual.data) {
         if (1 == length(agrep("nortek", object$metadata$manufacturer, ignore.case=TRUE))) {
             res.specific <- list(internal.code.version=object$metadata$internal.code.version,
@@ -627,7 +628,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range, cex.axis=cex,
                                 adorn=adorn[w], ...)
-                else warning("cannot plot beam/velo 1 because the device no beams")
+                    else warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
                 if (x$metadata$number.of.beams > 1)
@@ -639,7 +640,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
-                else warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
+                    else warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
             }
             if (which[w] == 21) {
                 if (x$metadata$number.of.beams > 2)
@@ -651,7 +652,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
-                else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
+                    else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] == 22) {
                 if (x$metadata$number.of.beams > 3)
@@ -663,7 +664,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
-                else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
+                    else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             draw.time.range <- FALSE
             if (margins.as.image && use.layout)  {
@@ -679,9 +680,11 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec")) # FIXME: should not assume all equal
                 m.per.km <- 1000
                 if (!missing(control) && !is.null(control$bin)) {
-                    if (control$bin < 1) stop("cannot have control$bin less than 1, but got ", control$bin)
+                    if (control$bin < 1)
+                        stop("cannot have control$bin less than 1, but got ", control$bin)
                     max.bin <- dim(x$data$ma$v)[2]
-                    if (control$bin > max.bin) stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
+                    if (control$bin > max.bin)
+                        stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
                     u <- x$data$ma$v[,control$bin,1]
                     v <- x$data$ma$v[,control$bin,2]
                 } else {
@@ -879,10 +882,13 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getO
 
 adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "adp")) stop("method is only for objects of class \"adp\"")
-    if (x$metadata$oce.coordinate != "beam") stop("input must be in beam coordinates")
+    if (!inherits(x, "adp"))
+        stop("method is only for objects of class \"adp\"")
+    if (x$metadata$oce.coordinate != "beam")
+        stop("input must be in beam coordinates")
     if (inherits(x, "rdi")) {
-        if (x$metadata$number.of.beams != 4) stop("can only handle 4-beam ADP units from RDI")
+        if (x$metadata$number.of.beams != 4)
+            stop("can only handle 4-beam ADP units from RDI")
         res <- x
         if (!is.null(x$metadata$transformation.matrix)) {
             tm <- x$metadata$transformation.matrix
@@ -1045,8 +1051,10 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 
 adp.enu2other <- function(x, heading=0, pitch=0, roll=0)
 {
-    if (!inherits(x, "adp")) stop("method is only for adp objects")
-    if (x$metadata$oce.coordinate != "enu") stop("input must be in enu coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    if (!inherits(x, "adp"))
+        stop("method is only for adp objects")
+    if (x$metadata$oce.coordinate != "enu")
+        stop("input must be in enu coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
     to.radians <- atan2(1,1) / 45
     CH <- cos(to.radians * heading)
