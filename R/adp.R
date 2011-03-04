@@ -904,7 +904,8 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         res$data$ma$v[,,4] <- tm[4,1] * x$data$ma$v[,,1] + tm[4,2] * x$data$ma$v[,,2] + tm[4,3] * x$data$ma$v[,,3] + tm[4,4] * x$data$ma$v[,,4]
     } else if (inherits(x, "nortek")) {
         warning("should perhaps flip the signs of rows 2 and 3 of nortek transformation matrix")
-        if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from nortek")
+        if (x$metadata$number.of.beams != 3)
+            stop("can only handle 3-beam ADP units from nortek")
         res <- x
         if (!is.null(x$metadata$transformation.matrix)) {
             tm <- x$metadata$transformation.matrix
@@ -925,7 +926,8 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         }
     } else if (inherits(x, "sontek")) {
         warning("should perhaps flip the signs of rows 2 and 3 of sontek transformation matrix")
-        if (x$metadata$number.of.beams != 3) stop("can only handle 3-beam ADP units from sontek")
+        if (x$metadata$number.of.beams != 3)
+            stop("can only handle 3-beam ADP units from sontek")
         res <- x
         if (!is.null(x$metadata$transformation.matrix)) {
             tm <- x$metadata$transformation.matrix
