@@ -950,8 +950,10 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 
 adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "adp")) stop("method is only for adp objects")
-    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates; consider adp.2enu() if you do not know the coordinate system")
+    if (!inherits(x, "adp"))
+        stop("method is only for adp objects")
+    if (x$metadata$oce.coordinate != "xyz")
+        stop("input must be in xyz coordinates; consider adp.2enu() if you do not know the coordinate system")
     res <- x
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
