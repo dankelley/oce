@@ -6,58 +6,75 @@
 
 \description{Remove spikes from a time series}
 
-\usage{despike(x, method=c("median","smooth", "mean"), n=4, k=7, physical.range)}
+\usage{despike(x, reference=c("median","smooth", "trim"), n=4, k=7, min, max,
+        replace=c("reference", "NA"))}
 
 \arguments{
-  \item{x}{a vector}
-  \item{method}{number indicating the method used to develop the
-      smoothed estimate of \code{x}; see \sQuote{Details}.}
-  \item{n}{number of standard-deviation increments to tolerate}
-  \item{k}{length of running median used in algorithm}
-  \item{physical.range}{optional two-element vector holding the smallest
-    physically-realistic value and the highest one.  (For example, for
-    water temperature, one might use \code{c(-3,101)}.)}
+    \item{x}{a vector of values, interpreted as a time series}
+
+    \item{reference}{indication of the type of reference time series to be used
+        in the detection of spikes; see \sQuote{Details}.}
+
+    \item{n}{an indication of the limit to differences between \code{x} and
+        the reference time series, used for \code{reference="median"} or
+        \code{reference="smooth"}; see \sQuote{Details.}}
+
+    \item{k}{length of running median used with \code{reference="median"}, and
+        ignored for other values of \code{reference}.}
+
+    \item{min}{minimum non-spike value of \code{x}, used with
+        \code{reference="trim"}.}
+
+    \item{max}{maximum non-spike value of \code{x}, used with
+        \code{reference="trim"}.}
+        
+    \item{replace}{an indication of what to do with spike values, with
+        \code{"reference"} indicating to replace them with the reference time
+        series, and \code{"NA"} indicating to replace them with \code{NA}.}
+    
 }
 
-\details{The method identifies spikes by statistical deviation from a
-  smoothed form of the series.  
+\details{The method identifies spikes with respect to a "reference"
+    time-series, and replaces these spikes with the reference value, or with
+    \code{NA} according to the value of \code{action}.
 
-  The first step is to construct gapless, physically-realistic series
-  that has no missing values, and no values outside the physical range
-  (if \code{physical.range} is given).  All such values are replaced
-  with the overall \code{\link{median}}.
+    For \code{reference="median"}, the first step is to linearly interpolate
+    across any gaps, in which \code{x==NA}.  Then the reference time series is
+    constructed using \code{\link{runmed}} as a running median of \code{k}
+    elements.  Then, the standard deviation of the difference between \code{x}
+    and the reference is calculated.  Any \code{x} values that differ from the
+    reference by more than \code{n} times this standard deviation are
+    considered to be spikes.  If \code{replace="reference"}, these \code{x}
+    values are replaced with the reference series, and the resultant time
+    series is returned.  If \code{replace="NA"}, the spikes are replaced with
+    \code{NA} in the returned time series. 
 
-  If \code{method="median"}, then a running median is calculated with
-  \code{\link{runmed}}, with the running length given by \code{k}.  This is
-  taken as a reference series.  Then the absolute value of the difference
-  between this reference series and the original is divided by the overall
-  standard deviation of the original series, and if the result exceeds
-  \code{n}, the point is flagged as suspect.  
+    For \code{reference="smooth"}, the processing is the same as for
+    \code{"median"}, except that \code{\link{smooth}} is used to calculate the
+    reference time series.
+    
+    For \code{reference="trim"}, the reference time series is constructed by
+    linear interpolation across any regions in which \code{x<min} or
+    \code{x>max}.  In this case, the value of \code{n} is ignored, and the
+    return value either uses the reference time series for spikes, or
+    \code{NA}, according to the value of \code{replace}.
 
-  If \code{method="smooth"}, then \code{\link{smooth}} is used to create the
-  reference series, and the other steps are as for \code{"median"}.
+}
 
-  if \code{method="mean"}, then the overall mean of the series is used as the
-  reference series, and the other steps are as for \code{"median"}.
+\value{A new vector in which spikes are replaced as described above.}
 
-  Finally, in all methods, flagged points are replaced with code{NA} values.}
-
-\value{A new vector that is identical to the original one, except that spikes
-    and unphysical values are replaced with \code{NA}.}
-
-\note{This is a preliminary verson of the function, and it may change.  In
-    particular, either \code{mean} should refer to a running mean, or
-    \code{median} should be renamed \code{runmed}.}
 
 \examples{
-n <- 100
+n <- 50
 x <- 1:n
 y <- rnorm(n=n)
 y[n/2] <- 10                    # 10 standard deviations
-yy <- despike(y)
 plot(x, y, type='l')
-spike <- is.na(yy)
-points(x[spike], y[spike], col="red", cex=3)
+lines(x, despike(y), col='red')
+lines(x, despike(y, reference="smooth"), col='darkgreen')
+lines(x, despike(y, reference="trim", min=-3, max=3), col='blue')
+legend("topright", lwd=1, col=c("black", "red", "darkgreen", "blue"),
+       legend=c("raw", "median", "smooth", "trim"))
 }
 
 \author{Dan Kelley}

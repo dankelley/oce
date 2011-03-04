@@ -10,11 +10,13 @@
      col,
      zlim,
      titles,
+     lwd=par('lwd'),
+     type='l',
      ytype=c("profile", "distance"),
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
      mgp=getOption("oce.mgp"),
-     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      margins.as.image=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim, ylim, 
@@ -48,6 +50,11 @@
     placed in the right hand side of the top margin.  For timeseries,
     these strings are ignored.
     If this is provided, its length must equal that of \code{which}.}
+  \item{lwd}{if the plot is of a time-series or scattergraph format with lines,
+      this is used in the usual way; otherwise, e.g. for image formats, this is ignored.}
+  \item{type}{if the plot is of a time-series or scattergraph format, this is
+      used in the usual way, e.g. \code{"l"} for lines, etc.; otherwise, as for
+      image formats, this is ignored.}
   \item{ytype}{character string controlling the type of the y axis for
     images (ignored for time series).  If \code{"distance"}, then the y
     axis will be distance from the sensor head, with smaller distances
@@ -154,7 +161,7 @@
       rotated-upward velocity, depending on the coordinate system.
 
     \item \code{which=22} yields a time-series of distance-averaged
-      velocity for beam 4, for \code{beam} coordiantes, or velocity
+      velocity for beam 4, for \code{beam} coordinates, or velocity
       estimate, for other coordinates.  (This is ignored for 3-beam
       data.)
 
@@ -201,6 +208,14 @@
     \item \code{which=51} to \code{54} (or \code{"bottom.u1"} to
       \code{"bottom.u4"}) for bottom velocity from beams 1 to 4.
 
+    }
+    In addition to the above, there are some groupings defined:
+    \itemize{
+        \item \code{which="velocity"} equivalent to \code{which=1:3} (velocity components)
+        \item \code{which="amplitude"} equivalent to \code{which=5:7} (backscatter intensity components)
+        \item \code{which="quality"} equivalent to \code{which=9:11} (quality components)
+        \item \code{which="hydrography"} equivalent to \code{which=14:15} (temperature and pressure)
+        \item \code{which="angles"} equivalent to \code{which=16:18} (heading, pitch and roll)
     }
 
     The color scheme for image plots (\code{which} in 1:12) is provided

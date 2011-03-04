@@ -13,6 +13,7 @@
                    oce.mgp = c(2,3/4,0),
                    oce.draw.time.range = TRUE,
                    oce.abbreviate.time.range = TRUE,
+                   oce.time.format = "%Y-%m-%d %H:%M:%S",
                    oce.debug = 0)
     toset <- !(names(op.oce) %in% names(op))
     if(any(toset)) options(op.oce[toset])

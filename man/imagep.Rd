@@ -86,7 +86,7 @@ library(oce)
 h <- seq(0, 50, length.out=200)
 drho <- seq(1, 3, length.out=200)
 speed <- sqrt(9.8*outer(drho/1024, h, "*"))
-imagep(h, drho, speed, xlab="Equivalent depth [m]",
+imagepnew(h, drho, speed, xlab="Equivalent depth [m]",
   ylab=expression(paste(Delta*rho, " [kg/m^3]")),
   zlab="Internal-wave speed [m/s]")
 points(20, 2)

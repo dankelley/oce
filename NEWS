@@ -1,4 +1,8 @@
 0.1-82
+- remove matlab2POSIXt(), which is replaced with a sub-case of number.as.POSIXct()
+- number.as.POSIXct(): added
+- oce.biset(): added
+- despike(): add argument 'action'
 - detrend(): added
 - read.adp.sontek(): handle PCADP type
 - read.adp.sontek.serial(): added

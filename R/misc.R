@@ -11,10 +11,14 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         stop("must give argument 't0'")
     oce.debug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
     rval <- x
-    if ("ts" %in% names(x$data))
+    if ("ts" %in% names(x$data)) {
+        oce.debug(debug, "retiming x$data$ts$time")
         rval$data$ts$time <- x$data$ts$time + a + b * (as.numeric(x$data$ts$time) - as.numeric(t0))
-    if ("ts.slow" %in% names(x$data))
+    }
+    if ("ts.slow" %in% names(x$data)) {
+        oce.debug(debug, "retiming x$data$ts.slow$time\n")
         rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (as.numeric(x$data$ts.slow$time) - as.numeric(t0))
+    }
     rval$processing.log <- processing.log.add(rval$processing.log,
                                               paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # retime.adv()\n")
@@ -24,7 +28,11 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
 
 normalize <- function(x)
 {
-    (x - mean(x, na.rm=TRUE)) / sqrt(var(x, na.rm=TRUE))
+    var <- var(x, na.rm=TRUE)
+    if (var == 0)
+        rep(0, length(x))
+    else
+        (x - mean(x, na.rm=TRUE)) / sqrt(var)
 }
 
 detrend <- function(x,y)
@@ -42,31 +50,51 @@ detrend <- function(x,y)
     y - (y[1] + (y[n]-y[1]) * (x-x[1])/(x[n]-x[1]))
 }
 
-despike <- function(x, method=c("median","smooth","mean"), n=4, k=7, physical.range)
+despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, max,
+                    replace=c("reference","NA"))
 {
-    xx <- x
-    small <- if (missing(physical.range)) min(x, na.rm=TRUE) else physical.range[1]
-    large <- if (missing(physical.range)) max(x, na.rm=TRUE) else physical.range[2]
+    reference <- match.arg(reference)
+    replace <- match.arg(replace)
+    gave.min <- !missing(min)
+    gave.max <- !missing(max)
+    nx <- length(x)
+    ## degap
     na <- is.na(x)
-    unphysical <- xx < small | large < xx
-    xx[unphysical | na] <- median(xx, na.rm=TRUE) # (runmed, smooth) cannot handle NA
-    method  <- match.arg(method)
-    if (method == "median") {
-        xxs <- runmed(xx, k=k)
-        deviant <- n < abs(normalize(xx - xxs))
-        x[deviant | unphysical] <- NA
-    } else if (method == "smooth") {
-        xxs <- as.numeric(smooth(xx))
-        deviant <- n < abs(normalize(xx - xxs))
-        x[deviant | unphysical] <- NA
-    } else if (method == "mean") {
-        mean <- mean(x)
-        stdev <- sqrt(var(x))
-        good <- (mean - n * stdev < x) & (x < mean + n * stdev)
-        x[!good] <- NA
-        x
+    if (sum(na) > 0) {
+        i <- 1:nx
+        x.gapless <- approx(i[!na], x[!na], i)$y
     } else {
-        stop("unknown method ", method, "; try method=1 or method=2)")
+        x.gapless <- x
+    }
+    if (reference == "median" || reference == "smooth") {
+        if (reference == "median")
+            x.reference <- runmed(x.gapless, k=k)
+        else
+            x.reference <- as.numeric(smooth(x.gapless))
+        distance <- abs(x.reference - x.gapless)
+        stddev <- sqrt(var(distance))
+        bad <- distance > n * stddev
+        nbad <- sum(bad)
+        if (nbad > 0) {
+            if (replace == "reference")
+                x[bad] <- x.reference[bad]
+            else
+                x[bad] <- rep(NA, nbad)
+        }
+    } else if (reference == "trim") {
+        if (!gave.min || !gave.max)
+            stop("must give min and max")
+        bad <- !(min <= x & x <= max)
+        nbad <- length(bad)
+        if (nbad > 0) {
+            i <- 1:nx
+            if (replace == "reference")
+                x[bad] <- approx(i[!bad], x.gapless[!bad], i[bad])$y
+            else
+                x[bad] <- rep(NA, nbad)
+        }
+    } else {
+        stop("unknown reference ", reference)
     }
     x
 }
@@ -138,6 +166,12 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
         oce.debug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
     }
     list(filename=filename, start.time=start.time)
+}
+
+angle.remap <- function(theta)
+{
+    to.rad <- atan2(1, 1) / 45
+    atan2(sin(to.rad * theta), cos(to.rad * theta)) / to.rad
 }
 
 unwrap.angle <- function(angle)
@@ -928,12 +962,6 @@ byte2binary <- function(x, endian=c("little", "big"))
         }
     }
     rval
-}
-
-matlab2POSIXt <- function(t, tz="UTC")
-{
-    ## R won't take a day "0", so subtract one
-    ISOdatetime(0000,01,01,0,0,0,tz=tz) + 86400 * (t - 1)
 }
 
 formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)

@@ -517,9 +517,18 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
 
     ## FIXME: Sontek ADV transformation matrix equal for all units?  (Nortek Vector is not.)
-    transformation.matrix <- rbind(c(11033,  -8503, -5238),
-                                   c(  347, -32767,  9338),
-                                   c(-1418,  -1476, -1333)) / 4096
+    ## below for sontek serial number B373H
+    ## Transformation Matrix ----->    2.710   -1.409   -1.299
+    ##                       ----->    0.071    2.372   -2.442
+    ##                       ----->    0.344    0.344    0.344
+    ## > rbind(c(2.710,-1.409,-1.299),c(0.071,2.372,-2.442),c(0.344,0.344,0.344)) * 4096
+    ##          [,1]      [,2]       [,3]
+    ## [1,] 11100.160 -5771.264  -5320.704
+    ## [2,]   290.816  9715.712 -10002.432
+    ## [3,]  1409.024  1409.024   1409.024
+    transformation.matrix <- rbind(c(11100, -5771,  -5321),
+                                   c(  291,  9716, -10002),
+                                   c( 1409,  1409,   1409)) / 4096
     time <- start[1] + (serial.number - serial.number[1]) * deltat
     deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
@@ -1269,10 +1278,11 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     invisible(x)
 }
 
-plot.adv <- function(x,
-                     which=c(1:3,14,15),
+plot.adv <- function(x, which=c(1:3,14,15),
+                     col,
                      titles,
                      type="l",
+                     lwd=par('lwd'),
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
                      draw.zero.line=FALSE,
@@ -1282,25 +1292,53 @@ plot.adv <- function(x,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim,
                      brush.correlation, col.brush="red",
+                     main="",
                      debug=getOption("oce.debug"),
                      ...)
 {
     debug <- round(debug)
-    if (debug < 0) debug <- 0
-    if (debug > 4) debug <- 4
+    if (debug < 0)
+        debug <- 0
+    if (debug > 4)
+        debug <- 4
     oce.debug(debug, "\bplot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="")
     have.brush.correlation <- !missing(brush.correlation)
     oce.debug(debug, "brush.correlation", if (have.brush.correlation) brush.correlation else "not given", "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv")) stop("method is only for adv objects")
-    dots <- names(list(...))
-                                        #if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     opar <- par(no.readonly = TRUE)
-    lw <- length(which)
-
-    if (!missing(titles) && length(titles) != lw) stop("length of 'titles' must equal length of 'which'")
-    if (lw > 1)
+    dots <- names(list(...))
+    ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
+    nw <- length(which)
+    if (nw == 1) {
+        pm <- pmatch(which, c("velocity","amplitude","quality","hydrography", "angles"))
+        if (!is.na(pm)) {
+            nbeams <- 3
+            if (pm == 1)
+                which <- 0 + seq(1, nbeams)
+            else if (pm == 2)
+                which <- 4 + seq(1, nbeams)
+            else if (pm == 3)
+                which <- 8 + seq(1, nbeams)
+            else if (pm == 4)
+                which <- 14:15
+            else if (pm == 5)
+                which <- 16:18
+            nw <- length(which)
+        }
+    }
+    col.per.point <- FALSE
+    if (missing(col)) {
+        col <- rep("black", length.out=nw)
+    } else {
+        col.per.point <- length(col) == length(x$data$ts.slow$time)
+        if (!col.per.point)
+            col <- rep(col, length.out=nw)
+    }
+    if (!missing(titles) && length(titles) != nw)
+        stop("length of 'titles' must equal length of 'which'")
+    if (nw > 1)
         on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
@@ -1309,11 +1347,11 @@ plot.adv <- function(x,
     gave.ylim <- !missing(ylim)
     if (gave.ylim) {
         if (is.matrix(ylim)) {
-            if (dim(ylim)[2] != lw) {
-                ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            if (dim(ylim)[2] != nw) {
+                ylim2 <- matrix(ylim, ncol=2, nrow=nw) # FIXME: is this what I want?
             }
         } else {
-            ylim2 <- matrix(ylim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            ylim2 <- matrix(ylim, ncol=2, nrow=nw) # FIXME: is this what I want?
         }
         class(ylim2) <- class(ylim)
         ylim <- ylim2
@@ -1321,35 +1359,47 @@ plot.adv <- function(x,
     gave.xlim <- !missing(xlim)
     if (gave.xlim) {
         if (is.matrix(xlim)) {
-            if (dim(xlim)[2] != lw) {
-                xlim2 <- matrix(xlim, ncol=2, nrow=lw) # FIXME: is this what I want?
+            if (dim(xlim)[2] != nw) {
+                xlim2 <- matrix(xlim, ncol=2, nrow=nw) # FIXME: is this what I want?
             }
         } else {
             if (length(xlim) != 2)
                 stop("xlim must be a vector of length 2, or a 2-column matrix")
-            xlim2 <- matrix(xlim[1:2], ncol=2, nrow=lw, byrow=TRUE)
+            xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
         }
         xlim <- xlim2
     }
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
-        adorn <- rep(adorn, lw)
-        adorn.length <- lw
+        adorn <- rep(adorn, nw)
+        adorn.length <- nw
     }
     oce.debug(debug, "before layout, cex=", par('cex'), "\n")
-    if (lw > 1) {
+    if (nw > 1) {
         if (margins.as.image) {
             w <- 1.5
-            lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+            lay <- layout(matrix(1:(2*nw), nrow=nw, byrow=TRUE), widths=rep(c(1, lcm(w)), nw))
         } else {
-            lay <- layout(cbind(1:lw))
+            lay <- layout(cbind(1:nw))
         }
     }
     ## Translate word-style (FIXME: ugly coding)
-    lw <- length(which)
     oce.debug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-    which2 <- vector("numeric", lw)
-    for (w in 1:lw) {
+    which2 <- vector("numeric", nw)
+    if (nw == 1) {
+        if (which == "velocity")
+            which <- 1:3
+        else if (which == "amplitude")
+            which <- 5:7
+        else if (which == "backscatter")
+            which <- 9:11
+        else if (which == "hydrography")
+            which <- 14:15
+        else if (which == "angles")
+            which <- 16:18
+        nw <- length(which)
+    }
+    for (w in 1:nw) {
         ww <- which[w]
         if (is.numeric(ww)) {
             which2[w] <- ww
@@ -1391,7 +1441,9 @@ plot.adv <- function(x,
     tlim <- range(x$data$ts$time, na.rm=TRUE)
     if (have.ts.slow)
         tslim <- range(x$data$ts.slow$time, na.rm=TRUE)
-    for (w in 1:lw) {
+    for (w in 1:nw) {
+        if (w > 1)
+            main <- ""
         oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar)
         if (which[w] %in% 1:3) {        # u1, u2, u3
@@ -1407,6 +1459,8 @@ plot.adv <- function(x,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
                 points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=col.brush)
@@ -1420,6 +1474,8 @@ plot.adv <- function(x,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp,
                             mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             }
@@ -1430,31 +1486,35 @@ plot.adv <- function(x,
             ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
             oce.debug(debug, "plotting a1, a2, or a3 since which[w] == ", which[w], "\n")
             y <- as.numeric(x$data$ma$a[,which[w]-4])
-            oce.debug("range(y):", range(y, na.rm=TRUE), "\n")
+            oce.debug(debug, "range(y):", paste(range(y, na.rm=TRUE), sep="-"), "\n")
             if (have.brush.correlation && type == "p") {
                 good <- as.numeric(x$data$ma$c[,which[w]-4]) >= brush.correlation
-                oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(a[which[w]-4]),
+                oce.plot.ts(x$data$ts$time[good], y[good],
+                            ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
                 points(x$data$ts$time[!good], y[!good], col=col.brush)
             } else {
-                oce.plot.ts(x$data$ts$time, y, ylab=expression(a[which[w]-4]),
+                oce.plot.ts(x$data$ts$time, y,
+                            ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             }
@@ -1463,28 +1523,31 @@ plot.adv <- function(x,
             y <- as.numeric(x$data$ma$c[,which[w]-8])
             if (have.brush.correlation && type == "p") {
                 good <- as.numeric(x$data$ma$c[,which[w]-8]) >= brush.correlation
-                oce.plot.ts(x$data$ts$time[good], y[good], ylab=expression(q[which[w-8]]),
+                oce.plot.ts(x$data$ts$time[good], y[good],
+                            ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
                 points(x$data$ts$time[!good], y[!good], col=col.brush)
             } else {
-                oce.plot.ts(x$data$ts$time, y, ylab=expression(q[which[w-8]]),
+                oce.plot.ts(x$data$ts$time, y,
+                            ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
                             draw.time.range=draw.time.range,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=col[w],
                             debug=debug-1,
                             ...)
             }
@@ -1498,8 +1561,9 @@ plot.adv <- function(x,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$temperature, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             } else {
@@ -1510,8 +1574,9 @@ plot.adv <- function(x,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$temperature, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             }
@@ -1523,8 +1588,9 @@ plot.adv <- function(x,
                         ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pressure, na.rm=TRUE),
                         type=type,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                        mgp=mgp,
-                        mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                        mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                        lwd=lwd[w], col=if(col.per.point) col else col[w],
+                        main=main,
                         debug=debug-1,
                         ...)
         } else if (which[w] == 16 || which[w] == "heading") {
@@ -1536,8 +1602,9 @@ plot.adv <- function(x,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$heading, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             } else {
@@ -1548,8 +1615,9 @@ plot.adv <- function(x,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$heading, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             }
@@ -1562,8 +1630,9 @@ plot.adv <- function(x,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$pitch, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             } else {
@@ -1572,9 +1641,11 @@ plot.adv <- function(x,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pitch, na.rm=TRUE),
+                            type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             }
@@ -1587,8 +1658,9 @@ plot.adv <- function(x,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$roll, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=if(col.per.point) col else col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             } else {
@@ -1599,8 +1671,9 @@ plot.adv <- function(x,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$roll, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp,
-                            mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            lwd=lwd[w], col=col[w],
+                            main=main,
                             debug=debug-1,
                             ...)
             }
@@ -1610,21 +1683,24 @@ plot.adv <- function(x,
             c <- as.numeric(x$data$ma$c[,1])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,] else range(a),
-                          ylim=if (gave.ylim) ylim[w,] else range(c))
+                          ylim=if (gave.ylim) ylim[w,] else range(c),
+                          main=main)
             mtext("beam 1")
         } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
             a <- as.numeric(x$data$ma$a[,2])
             c <- as.numeric(x$data$ma$c[,2])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,] else range(a),
-                          ylim=if (gave.ylim) ylim[w,] else range(c))
+                          ylim=if (gave.ylim) ylim[w,] else range(c),
+                          main=main)
             mtext("beam 2")
         } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
             a <- as.numeric(x$data$ma$a[,3])
             c <- as.numeric(x$data$ma$c[,3])
             smoothScatter(a, c, nbin=64, xlab="Amplitude", ylab="Correlation",
                           xlim=if (gave.xlim) xlim[w,] else range(a),
-                          ylim=if (gave.ylim) ylim[w,] else range(c))
+                          ylim=if (gave.ylim) ylim[w,] else range(c),
+                          main=main)
             mtext("beam 3")
         } else if (which[w] == 23 || which[w] == "progressive vector") {    # progressive vector
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -1640,7 +1716,7 @@ plot.adv <- function(x,
             y.dist <- cumsum(v) * dt / m.per.km
             plot(x.dist, y.dist, xlab="km", ylab="km", type=type,
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                 asp=1, ...)
+                 asp=1, main=main, lwd=lwd[w], col=col[w], ...)
         } else if (which[w] >= 28) {
             oce.debug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
@@ -1648,7 +1724,7 @@ plot.adv <- function(x,
             if (n < 2000) {
                 plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                     asp=1, xlim=xlim, ylim=ylim, ...)
+                     asp=1, xlim=xlim, ylim=ylim, lwd=lwd[w], col=col[w], main=main, ...)
             } else {
                 smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,
@@ -1665,15 +1741,16 @@ plot.adv <- function(x,
                 theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
                 rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
                 xxyy <- rotate %*% rbind(xx, yy)
-                col <- if ("col" %in% names(dots)) col else "darkblue"
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
-                lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                lines(xxyy[1,], xxyy[2,], lwd=2, col="darkblue")
                 if (which[w] >= 30) {
                     umean <- mean(x$data$ma$v[,1], na.rm=TRUE)
                     vmean <- mean(x$data$ma$v[,2], na.rm=TRUE)
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
+                if (main[w] != "")
+                    mtext(main[w], adj=1)
             }
         } else {
             stop("unknown value of \"which\":", which[w])
@@ -1749,8 +1826,10 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
 adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\badv.xyz2enu(x, declination=", declination, ",debug) {\n")
-    if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "xyz") stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    if (!inherits(x, "adv"))
+        stop("method is only for objects of class \"adv\"")
+    if (x$metadata$oce.coordinate != "xyz")
+        stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     have.ts.slow <- "ts.slow" %in% names(x$data)
     have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading) == 1 && length(x$data$ts.slow$pitch) == 1 && length(x$data$ts.slow$roll) == 1) || (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
     oce.debug(debug, "have.steady.angles=",have.steady.angles,"\n")
