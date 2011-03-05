@@ -37,7 +37,7 @@ plot.coastline <- function (x,
     }
     dots <- list(...)
     names.dots <- names(dots)
-    ##  par(mgp=mgp, mar=mar)
+    par(mgp=mgp, mar=mar)
     if ("xlim" %in% names.dots) {
         stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
     }
@@ -168,7 +168,6 @@ plot.coastline <- function (x,
     oce.debug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
     oce.debug(debug, "\b\b} # plot.coastline()\n")
     invisible()
-    ## par(opar)
 }
 
 read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
