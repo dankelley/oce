@@ -33,6 +33,7 @@ export(
        decimate,
        despike,
        detrend,
+       drawpalette,
        fill.gap,
        formatci,
        full.filename,
