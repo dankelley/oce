@@ -1,5 +1,4 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
-use.new.imagep <- TRUE
 
 remove.ship.motion <- function(x)
 {
@@ -291,7 +290,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim, 
                      control,
-                     use.layout=FALSE,  # FIXME: remove from arg list if imagep gets working
+                     use.layout=FALSE,
                      main="",
                      debug=getOption("oce.debug"),
                      ...)
@@ -476,13 +475,9 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
         }
     } else {
-        if (use.new.imagep) {
-            if (nw > 1) {
-                par(mfrow=c(nw, 1))
-                oce.debug(debug, "calling par(mfrow=c(", nw, ", 1)\n")
-            }
-        } else {
-            stop("cannot have use.layout=FALSE unless use.new.imagep=TRUE")
+        if (nw > 1) {
+            par(mfrow=c(nw, 1))
+            oce.debug(debug, "calling par(mfrow=c(", nw, ", 1)\n")
         }
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
@@ -522,47 +517,26 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 skip <- TRUE
             }
             if (!skip) {
-                if (use.new.imagep) {
-                    imagepnew(x=tt, y=x$data$ss$distance, z=z,
-                              zlim=zlim,
-                              flip.y=flip.y,
-                              col=if (missing(col)) oce.colors.palette(128, 1) else col,
-                              ylab=resizable.label("distance"),
-                              xlab="Time",
-                              zlab=zlab,
-                              draw.time.range=draw.time.range,
-                              draw.contours=FALSE,
-                              adorn=adorn[w],
-                              mgp=mgp,
-                              mar=mar,
-                              cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
-                              main=main[w],
-                              debug=debug-1,
-                              ...)
-                } else {
-                    imagep(x=tt, y=x$data$ss$distance, z=z,
-                           zlim=zlim,
-                           flip.y=flip.y,
-                           col=if (missing(col)) oce.colors.palette(128, 1) else col,
-                           ylab=resizable.label("distance"),
-                           xlab="Time",
-                           zlab=zlab,
-                           draw.time.range=draw.time.range,
-                           draw.contours=FALSE,
-                           do.layout=FALSE,
-                           adorn=adorn[w],
-                           mgp=mgp,
-                           mar=mar,
-                           cex=1,
-                           lwd=lwd[w],
-                           main=main[w],
-                           debug=debug-1,
-                           ...)
-                }
-                if (show.bottom)
-                    lines(x$data$ts$time, bottom)
-                draw.time.range <- FALSE
+                imagep(x=tt, y=x$data$ss$distance, z=z,
+                       zlim=zlim,
+                       flip.y=flip.y,
+                       col=if (missing(col)) oce.colors.palette(128, 1) else col,
+                       ylab=resizable.label("distance"),
+                       xlab="Time",
+                       zlab=zlab,
+                       draw.time.range=draw.time.range,
+                       draw.contours=FALSE,
+                       adorn=adorn[w],
+                       mgp=mgp,
+                       mar=mar,
+                       cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                       main=main[w],
+                       debug=debug-1,
+                       ...)
             }
+            if (show.bottom)
+                lines(x$data$ts$time, bottom)
+            draw.time.range <- FALSE
         } else if (which[w] %in% timeseries) { # time-series types
             if (missing(col)) col <- rep("black", length.out=nw) else col <- rep(col, length.out=nw)
             oce.debug(debug, "graph", w, "is a timeseries\n")

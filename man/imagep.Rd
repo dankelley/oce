@@ -7,19 +7,20 @@
       flip.y=FALSE,
       xlab="", ylab="", zlab="",
       breaks, col,
-      do.layout=TRUE,
       draw.contours=TRUE,
       draw.time.range=getOption("oce.draw.time.range"),
+      draw.palette=TRUE,
       mgp=getOption("oce.mgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
-            mgp[2]+1/2,
+            mgp[2]+1/2, 
             1/2),
       xaxs="i",
       yaxs="i",
       cex=par("cex"),
       adorn,
       axes=TRUE,
+      main="",
       debug=getOption("oce.debug"),
       \dots)
 }
@@ -38,11 +39,6 @@
   \item{col}{either a vector of colours corresponding to the breaks, of length
      1 plus the number of breaks, or a function specifying colours,
      e.g. \code{\link{oce.colors.jet}} for a rainbow.}
-  \item{do.layout}{boolean, \code{TRUE} if \code{imagep} will be using
-    the \code{\link{layout}} command to set up space for the image and
-    the palette.  If set to \code{FALSE}, the user must set the layout
-    first.  (The second scheme is useful for plots with several image
-    panels, since \code{\link{layout}} cannot be nested.)}
   \item{draw.contours}{boolean, \code{TRUE} to get contours on the
     image, and palette, at the colour breaks.  Images with a great deal
     of high-wavenumber variation look poor with contours.}
@@ -51,6 +47,8 @@
     data (not the axis) is indicated at the top-left margin of the
     graph.  This is useful because the labels on time axes only indicate
     hours if the range is less than a day, etc.}
+  \item{draw.palette}{boolean, with value \code{TRUE} to draw a palette
+    at the right-hand side of the main image.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
@@ -64,17 +62,28 @@
   \item{adorn}{optional \code{\link{expression}} to be performed immediately after
     drawing the data panel.}     
   \item{axes}{logical, set \code{TRUE} to get axes on the main image.}
+  \item{main}{title for plot.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{Creates an image with a colour palette to the right.  The
-  effect is similar to \code{\link{filled.contour}} except that with
-  \code{imagep} it is possible to set the \code{\link{layout}} outside
-  the function, which enables the creation of plots with many
-  image-palette panels.  Note that the contour lines may not coincide
-  with the colour transitions, in the case of coarse images.}
+\details{
+
+  Creates an image with a colour palette to the right.  The effect is similar
+  to \code{\link{filled.contour}} except that with \code{imagep} it is possible
+  to set the \code{\link{layout}} outside the function, which enables the
+  creation of plots with many image-palette panels.  Note that the contour
+  lines may not coincide with the colour transitions, in the case of coarse
+  images.
+
+  Note that this does not use \code{\link{layout}} or any of the other screen
+  splitting methods.  It simply manipulates margins, and draws two plots
+  together.  This lets users employ their favourite layout schemes.
+
+  The palette is drawn before the image, so that further drawing can be done on
+  the image if desired, if the user prefers not to use the \code{adorn}
+  argument.}
 
 \value{None.}
 
@@ -83,13 +92,15 @@
 }
 \examples{
 library(oce)
+opar <- par(no.readonly = TRUE)
+par(mfrow=c(1,1))
 h <- seq(0, 50, length.out=200)
 drho <- seq(1, 3, length.out=200)
 speed <- sqrt(9.8*outer(drho/1024, h, "*"))
-imagepnew(h, drho, speed, xlab="Equivalent depth [m]",
+imagep(h, drho, speed, xlab="Equivalent depth [m]",
   ylab=expression(paste(Delta*rho, " [kg/m^3]")),
   zlab="Internal-wave speed [m/s]")
-points(20, 2)
+par(opar)
 }
 \author{Dan Kelley}
 \keyword{misc}
