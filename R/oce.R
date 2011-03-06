@@ -1105,6 +1105,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     oce.debug(debug, vector.show(labels, "labels="))
     axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
     oce.debug(debug, "\b\b} # oce.axis.ts()\n")
+    invisible()
 }
 
 oce.bisect <- function(f, xleft, xright, dx, debug=getOption("oce.debug"))
