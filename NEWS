@@ -1,6 +1,6 @@
 0.1-82
-- add drawpalette() [experimental]
-- remove matlab2POSIXt(), which is replaced with a sub-case of number.as.POSIXct()
+- add drawpalette()
+- remove matlab2POSIXt(), now a sub-case of number.as.POSIXct()
 - number.as.POSIXct(): added
 - oce.biset(): added
 - despike(): add argument 'action'
