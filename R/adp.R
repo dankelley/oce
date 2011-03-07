@@ -73,7 +73,8 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 {
     oce.debug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)
-    if (monitor) cat(file, "\n", ...)
+    if (monitor)
+        cat(file, "\n", ...)
     if (type == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
                      latitude=latitude, longitude=longitude,
@@ -602,7 +603,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range, cex.axis=cex,
                                 adorn=adorn[w], ...)
-                    else warning("cannot plot beam/velo 1 because the device no beams")
+                    else
+                        warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
                 if (x$metadata$number.of.beams > 1)
@@ -614,7 +616,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
-                    else warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
+                    else
+                        warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
             }
             if (which[w] == 21) {
                 if (x$metadata$number.of.beams > 2)
@@ -626,7 +629,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
-                    else warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
+                    else
+                        warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] == 22) {
                 if (x$metadata$number.of.beams > 3)
@@ -638,7 +642,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
-                    else warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
+                    else
+                        warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             draw.time.range <- FALSE
             if (margins.as.image && use.layout)  {
