@@ -505,7 +505,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 if ("q" %in% names(x$data$ma)) {
                     z <- as.numeric(x$data$ma$q[,,which[w]-8])
                     dim(z) <- dim(x$data$ma$q)[1:2]
-                    zlim <- c(0, 100)
+                    zlim <- c(0, 256)
                     zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
                 } else if ("amp" %in% names(x$data$ma)) {
                     z <- as.numeric(x$data$ma$amp[,,which[w]-8])
