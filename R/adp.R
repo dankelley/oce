@@ -160,7 +160,6 @@ summary.adp <- function(object, ...)
         res$coordinate.system <- object$metadata$coordinate.system
         res$oce.coordinate <- object$metadata$oce.coordinate
         res$processing.log <- processing.log.summary(object)
-
         if (have.data) {
             ts.names <- names(object$data$ts)
             ma.names <- names(object$data$ma)

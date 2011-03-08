@@ -1150,7 +1150,7 @@ number.as.POSIXct <- function(t, type=c("unix", "matlab"), tz="UTC")
     type <- match.arg(type)
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
-        (t - as.numeric(tref)) + tref
+        (as.numeric(t) - as.numeric(tref)) + tref
     } else if (type == "matlab") {
         ## R won't take a day "0", so subtract one
         as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1))
