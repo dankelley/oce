@@ -149,14 +149,14 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 
     \item Next, velocity chunks (at which velocities are stored, but not
     heading, etc.), are located within the buffer by using
-    \code{match.bytes(buf, 0xa5, 0x10)}.  \emph{BUG:} the checksum
+    \code{matchBytes(buf, 0xa5, 0x10)}.  \emph{BUG:} the checksum
     provided in bytes 23 and 24 of these chunks should be examined to
     discard matches that occur randomly (with probability 1:65025) but
     this is not done in the present version of the
     \code{read.adv.nortek} function.
 
     \item System chunks (which hold heading, pitch, etc.) are found with
-    \code{match.bytes(buf, 0xa5, 0x11, 0x0e)}.
+    \code{matchBytes(buf, 0xa5, 0x11, 0x0e)}.
 
     \item Times from the system chunks are mapped to velocity chunks by
     \emph{assuming} a constant sampling rate for each chunk.  If this

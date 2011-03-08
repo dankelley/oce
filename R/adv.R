@@ -806,7 +806,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
 
     ## Use 3-byte flag to find bursts in buf.  Then find their times, and # samples in each.
     ## Note: checking not just on the 2 "official" bytes, but also on third (3c=60=number of bytes in header)
-    burst.bufindex <- match.bytes(buf, 0xA5, 0x11, 0x3c)
+    burst.bufindex <- matchBytes(buf, 0xA5, 0x11, 0x3c)
 
     oce.debug(debug, "burst.bufindex[1:10]=", paste(burst.bufindex[1:10], collapse=" "), "\n")
 

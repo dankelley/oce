@@ -1,12 +1,12 @@
-\name{match.bytes}
+\name{matchBytes}
 
-\alias{match.bytes}
+\alias{matchBytes}
 
 \title{Find spots in a raw vector that match a given byte sequence.}
 
 \description{Find spots in a raw vector that match a given byte sequence.}
 
-\usage{match.bytes(input, b1, \dots)}
+\usage{matchBytes(input, b1, \dots)}
 
 \arguments{
 \item{input}{a vector of raw (byte) values.}
@@ -18,7 +18,7 @@
 
 \examples{
 buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
-match <- match.bytes(buf, 0xa5, 0x11)
+match <- matchBytes(buf, 0xa5, 0x11)
 print(buf)
 print(match)
 }

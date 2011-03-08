@@ -238,7 +238,7 @@ matrix.smooth <- function(m)
     .Call("matrix_smooth", m)
 }
 
-match.bytes <- function(input, b1, ...)
+matchBytes <- function(input, b1, ...)
 {
     if (missing(input))
         stop("must provide \"input\"")

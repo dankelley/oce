@@ -198,7 +198,7 @@ SEXP nortek_checksum(SEXP buf, SEXP key)
      library(oce)
      f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/vector1943/194301.vec" ## dir will change; times are odd
      buf <- readBin(f, what="raw", n=1e4)
-     vvd.start <- match.bytes(buf, 0xa5, 0x10)
+     vvd.start <- matchBytes(buf, 0xa5, 0x10)
      ok <- NULL;dyn.load("~/src/R-kelley/oce/src/bitwise.so");for(i in 1:200) {ok <- c(ok, .Call("nortek_checksum",buf[vvd.start[i]+0:23], c(0xb5, 0x8c)))}
      */
   int i, n;
@@ -346,7 +346,7 @@ SEXP locate_byte_sequences(SEXP buf, SEXP match, SEXP len, SEXP key, SEXP max)
      library(oce)
      f <- "/Users/kelley/data/archive/sleiwex/2008/moorings/m06/adv/nortek_1943/raw/adv_nortek_1943.vec"
      buf <- readBin(f, what="raw", n=1e6)
-     vvd.start <- match.bytes(buf, 0xa5, 0x10)
+     vvd.start <- matchBytes(buf, 0xa5, 0x10)
      dyn.load("~/src/R-kelley/oce/src/bitwise.so")
      s <- .Call("locate_byte_sequences",buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
      print(s)

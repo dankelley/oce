@@ -56,7 +56,7 @@ export(
        magnetic.declination,
        make.filter,
        make.section,
-       match.bytes,
+       matchBytes,
        matrix.smooth,
        number.as.POSIXct,
        oce.approx,
