@@ -945,23 +945,28 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) {
+    ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all. (FIXME: may change.)
+    ## There are three instrument.type values, ("teledyn rdi", "nortek", and "sontek"), and
+    ## three orientation values ("upward", "downward", and "sideward").
+    if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) { # "teledyn rdi"
         if (res$metadata$orientation == "upward") {
             warning("adding 180 deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
         }
-    }
-    if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
-        1 == length(agrep("sontek", x$metadata$manufacturer))) {
-        ## Adjust the heading, so that the formulae (based on RDI) will work here
-        heading <- heading - 90
-        pitch <- - pitch
-        warning("since nortek-adp or sontek-adp, changed sign of pitch and subtracted 90 from heading")
+    } else if (1 == length(agrep("nortek", x$metadata$manufacturer))) { # "nortek"
+        ## FIXME: should check metadata$orientation before adjusting heading and pitch.  And what of roll?
+        heading <- heading - 90        # Adjust heading, so the formulae (based on RDI) will work
+        pitch <- (-pitch)              # Adjust pitch, so the formulae (based on RDI) will work
+        warning("since nortek-adp, changed sign of pitch and subtracted 90 from heading")
+    } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
+        ## FIXME: should check metadata$orientation before adjusting heading and pitch.  And what of roll?
+        heading <- heading - 90        # Adjust heading, so the formulae (based on RDI) will work
+        pitch <- (-pitch)              # Adjust pitch, so the formulae (based on RDI) will work
+        warning("since sontek-adp, changed sign of pitch and subtracted 90 from heading")
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
-    have.steady.angles <- length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1
     radian.per.degree <- atan2(1,1) / 45
     h <- heading * radian.per.degree
     p <- pitch * radian.per.degree
@@ -974,7 +979,10 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     SR <- sin(r)
     np <- dim(x$data$ma$v)[1]           # number of profiles
     nc <- dim(x$data$ma$v)[2]           # number of cells
-    if (have.steady.angles) {
+    ## Note that we construct a 3*3*np matrix that is the product of three rotation matrices.
+    ## This takes 9*np of matrix memory, versus 27*np for rotation matrices used them in sequence.
+    if (length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1) {
+        ## Steady (heading, pitch, roll) angles only need a 2D rotation matrix.
         R <- array(dim=c(3, 3))
         R[1,1] <-  CH * CR + SH * SP * SR
         R[1,2] <-  SH * CP
@@ -985,12 +993,6 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         R[3,1] <- -CP * SR
         R[3,2] <-  SP
         R[3,3] <-  CP * CR
-        ## Timing tests suggest using a 2D matrix for R drops user
-        ## time by factor of 2.  That may be an underestimate, if jobs
-        ## have to compete for RAM, which was the case on the test
-        ## machine with 4Gb of RAM, working on a six-day dataset
-        ## sampled at 0.1Hz with 84 bins.
-        ##
         ## Timing tests (not recorded) suggest little speed difference
         ## in working across profiles or across cells.  This may just
         ## mean that the loop overhead is small compared with the
@@ -1003,9 +1005,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         res$data$ma$v[,,2] <- rot[2,,]
         res$data$ma$v[,,3] <- rot[3,,]
     } else {
-        ## Note: construct a 3*3*np matrix that is the product of three
-        ## rotation matrices.  This is 9*np of matrix memory, versus
-        ## 27*np for the three matrices.
+        ## Unsteady angles need a 3D rotation matrix, with the third dimension for profile-sequence number.
         R <- array(dim=c(3, 3, np))
         R[1,1,] <-  CH * CR + SH * SP * SR
         R[1,2,] <-  SH * CP

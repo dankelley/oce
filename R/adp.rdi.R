@@ -160,7 +160,6 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## clearly different, in the two documentation entries.
     if (FLD.length == 59) {
         instrument.subtype <- "workhorse" # "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130)
-
     } else if (FLD.length == 50) {
         instrument.subtype <- "surveyor" # "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
     } else {
@@ -530,8 +529,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
             if (despike) {
-                temperature <- despike(temperature, physical.range=c(-3,101))
-                pressure <- despike(pressure, physical.range=c(1,10e3))
+                temperature <- despike(temperature, reference="trim", min=-3, max=101)
+                pressure <- despike(pressure, reference="trim", min=1, max=10000)
             }
             oce.debug(debug, vector.show(temperature, "temperature"))
             oce.debug(debug, vector.show(pressure, "pressure"))
@@ -590,7 +589,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                                        tm.b     ,       tm.b,       tm.b,      tm.b,
                                                        tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                                      nrow=4, byrow=TRUE)
-            if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
+            if (monitor)
+                cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oce.tz")
             if (have.bottom.track) {
