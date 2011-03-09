@@ -991,7 +991,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         ## doing the work across profile, or cell, as fits the
         ## problem.  Below, partly as a demonstration, I am working
         ## across cells (nor profiles, as the rest of the code).
-        rot <- array(unlist(lapply(1:nc, function(c) R %*% t(x$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
+        rot <- array(unlist(lapply(1:nc, function(c) R %*% t(res$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
         res$data$ma$v[,,1] <- rot[1,,]
         res$data$ma$v[,,2] <- rot[2,,]
         res$data$ma$v[,,3] <- rot[3,,]
