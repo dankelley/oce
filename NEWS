@@ -1,4 +1,5 @@
 0.1-82
+- change RDI coordinate handling
 - rename match.bytes() as matchBytes()
 - add drawpalette()
 - remove matlab2POSIXt(), now a sub-case of number.as.POSIXct()

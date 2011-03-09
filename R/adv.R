@@ -526,9 +526,10 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     ## [1,] 11100.160 -5771.264  -5320.704
     ## [2,]   290.816  9715.712 -10002.432
     ## [3,]  1409.024  1409.024   1409.024
-    transformation.matrix <- rbind(c(11100, -5771,  -5321),
-                                   c(  291,  9716, -10002),
-                                   c( 1409,  1409,   1409)) / 4096
+    ##transformation.matrix <- rbind(c(11100, -5771,  -5321),
+    ##                               c(  291,  9716, -10002),
+    ##                               c( 1409,  1409,   1409)) / 4096
+    transformation.matrix <- NULL
     time <- start[1] + (serial.number - serial.number[1]) * deltat
     deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
@@ -1792,18 +1793,14 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam")
         stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    if (is.null(x$metadata$transformation.matrix))
-        stop("can't convert coordinates because object metadata$transformation.matrix is NULL")
+    if (is.null(x$metadata$transformation.matrix)) {
+        cat("How to add a transformation matrix to a velocimeter record named 'x':
+            x$metadata$transformation.matrix <- rbind(c(11100, -5771,  -5321),
+                                                      c(  291,  9716, -10002),
+                                                      c( 1409,  1409,   1409)) / 4096")
+        stop("cannot convert coordinates because metadata$transformation.matrix is NULL (see above).")
+    }
     tm <- x$metadata$transformation.matrix
-    ## alter transformation matrix if pointing downward. FIXME: is this right?
-    ##if (FALSE) {  # FIXME: should we modify the transformation matrix?
-    ##    if (x$metadata$orientation == "downward") {
-    ##        tm[2,] <- -tm[2,]
-    ##        tm[3,] <- -tm[3,]
-    ##    }
-    ##}
-    if (x$metadata$orientation == "downward")
-        warning("Q: since the instrument points downwards, should the sign of rows 2 and 3 of transformation matrix be altered?")
     oce.debug(debug, "Transformation matrix:\n")
     oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[1,1], tm[1,2], tm[1,3]))
     oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3]))
@@ -1857,12 +1854,18 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     }
     heading <- heading + declination
     ##print(x$metadata)
-    if (1 == length(agrep("nortek", x$metadata$manufacturer)) ||
-        1 == length(agrep("sontek", x$metadata$manufacturer))) {
+    if (1 == length(agrep("nortek", x$metadata$manufacturer))) {
         ## Adjust the heading, so that the formulae (based on RDI) will work here
+        ## FIXME: should check up vs down, non-cabelled vs cabelled.
         heading <- heading - 90
         pitch <- - pitch
-        warning("since nortek-adv or sontek-adv, changed sign of pitch and subtracted 90 from heading")
+        warning("since nortek-adv, changed sign of pitch and subtracted 90 from heading")
+    } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) {
+        ## Adjust the heading, so that the formulae (based on RDI) will work here
+        ## FIXME: should check up vs down, non-cabelled vs cabelled.
+        heading <- heading - 90
+        pitch <- - pitch
+        warning("since sontek-adv, changed sign of pitch and subtracted 90 from heading")
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))

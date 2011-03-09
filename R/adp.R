@@ -878,10 +878,6 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm)
         }
-        if (x$metadata$orientation == "upward") { # change sign of u and w, since RDI is pointing upward
-            tm[1,] <- -tm[1,]
-            tm[3,] <- -tm[3,]
-        }
         res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
@@ -949,8 +945,10 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ## three orientation values ("upward", "downward", and "sideward").
     if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) { # "teledyn rdi"
         if (res$metadata$orientation == "upward") {
-            warning("adding 180 deg to the roll of this RDI instrument, because it points upward\n")
             roll <- roll + 180
+            res$data$ts$ma$v[,,1] <- -res$data$ts$ma$v[,,1] 
+            res$data$ts$ma$v[,,3] <- -res$data$ts$ma$v[,,3] 
+            warning("RDI, pointing upward: to get ship coordinates, added 180deg to roll, negated x-velo, and negated z-velo")
         }
     } else if (1 == length(agrep("nortek", x$metadata$manufacturer))) { # "nortek"
         ## FIXME: should check metadata$orientation before adjusting heading and pitch.  And what of roll?
