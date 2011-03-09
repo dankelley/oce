@@ -881,6 +881,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         if (x$metadata$orientation == "upward") { # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
             tm[1,] <- -tm[1,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
             tm[3,] <- -tm[3,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
+            warning("upward-oriented RDI adcp, so changing the sign of tm[1,] and tm[3,]")
         } 
         res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
@@ -943,7 +944,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             roll <- roll + 180
             ##res$data$ma$v[,,1] <- -res$data$ma$v[,,1] ## FIXME 2: see FIXME 1 above
             ##res$data$ma$v[,,3] <- -res$data$ma$v[,,3] ## FIXME 2: see FIXME 1 above
-            warning("upward-looking RDI ADCP: to get ship coordinates, added 180deg to roll, negated x-velo, and negated z-velo")
+            warning("upward-looking RDI ADCP: to get ship coordinates, added 180deg to roll [also, maybe should negate x-velo and z-velo]")
         } else {
             roll <- -roll              # p12 of "RDI Coordinate Transformation Manual" (July 1998)
             warning("downward-looking RDI ADCP: to get ship coordinates, negated roll")
@@ -995,7 +996,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         ## doing the work across profile, or cell, as fits the
         ## problem.  Below, partly as a demonstration, I am working
         ## across cells (nor profiles, as the rest of the code).
-        rot <- array(unlist(lapply(1:nc, function(c) R %*% t(res$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
+        rot <- array(unlist(lapply(1:nc, function(c) R %*% t(x$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
         res$data$ma$v[,,1] <- rot[1,,]
         res$data$ma$v[,,2] <- rot[2,,]
         res$data$ma$v[,,3] <- rot[3,,]
@@ -1012,7 +1013,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         R[3,2,] <-  SP
         R[3,3,] <-  CP * CR
         ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
-        rot <- array(unlist(lapply(1:np, function(p) R[,,p] %*% t(res$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+        rot <- array(unlist(lapply(1:np, function(p) R[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
         res$data$ma$v[,,1] <- t(rot[1,,])
         res$data$ma$v[,,2] <- t(rot[2,,])
         res$data$ma$v[,,3] <- t(rot[3,,])
