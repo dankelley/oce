@@ -889,20 +889,11 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         res <- x
         if (!is.null(x$metadata$transformation.matrix)) {
             tm <- x$metadata$transformation.matrix
-            if (FALSE) {                                    # FIXME: decide whether to modify transformation matrix here
-                if (x$metadata$orientation == "downward") { # flip sign of rows 2 and 3
-                    ## http://woodshole.er.usgs.gov/pubs/of2005-1429/MFILES/AQDPTOOLS/beam2enu.m
-                    tm[2,] <- -tm[2,]       # FIXME: shouldn't this be done in read.adp.nortek() ?
-                    tm[3,] <- -tm[3,]
-                } else if (x$metadata$orientation != "upward") {
-                    stop("beam orientation must be \"upward\" or \"downward\", but is \"", x$metadata$orientation, "\"")
-                }
-            }
             res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
             res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
             res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
         } else {
-            stop("adp.beam2xyz() needs metadata$transformation.matrix")
+            stop("missing x$metadata$transformation.matrix")
         }
     } else if (inherits(x, "sontek")) {
         warning("should perhaps flip the signs of rows 2 and 3 of sontek transformation matrix")
@@ -948,7 +939,10 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             roll <- roll + 180
             res$data$ts$ma$v[,,1] <- -res$data$ts$ma$v[,,1] 
             res$data$ts$ma$v[,,3] <- -res$data$ts$ma$v[,,3] 
-            warning("RDI, pointing upward: to get ship coordinates, added 180deg to roll, negated x-velo, and negated z-velo")
+            warning("upward-looking RDI ADCP: to get ship coordinates, added 180deg to roll, negated x-velo, and negated z-velo")
+        } else {
+            roll <- -roll              # p12 of "RDI Coordinate Transformation Manual" (July 1998)
+            warning("downward-looking RDI ADCP: to get ship coordinates, negated roll")
         }
     } else if (1 == length(agrep("nortek", x$metadata$manufacturer))) { # "nortek"
         ## FIXME: should check metadata$orientation before adjusting heading and pitch.  And what of roll?
@@ -976,8 +970,8 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     SR <- sin(r)
     np <- dim(x$data$ma$v)[1]           # number of profiles
     nc <- dim(x$data$ma$v)[2]           # number of cells
-    ## Note that we construct a 3*3*np matrix that is the product of three rotation matrices.
-    ## This takes 9*np of matrix memory, versus 27*np for rotation matrices used them in sequence.
+    ## Construct the 3*3*np matrix that is the product of three rotation matrices, using
+    ## O(9*np) of matrix memory, versus O(27*np) for the three matrices applied in sequence.
     if (length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1) {
         ## Steady (heading, pitch, roll) angles only need a 2D rotation matrix.
         R <- array(dim=c(3, 3))
@@ -1014,7 +1008,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         R[3,2,] <-  SP
         R[3,3,] <-  CP * CR
         ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
-        rot <- array(unlist(lapply(1:np, function(p) R[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+        rot <- array(unlist(lapply(1:np, function(p) R[,,p] %*% t(res$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
         res$data$ma$v[,,1] <- t(rot[1,,])
         res$data$ma$v[,,2] <- t(rot[2,,])
         res$data$ma$v[,,3] <- t(rot[3,,])
