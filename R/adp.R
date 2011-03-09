@@ -878,6 +878,10 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
             print(tm)
         }
+        if (x$metadata$orientation == "upward") { # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
+            tm[1,] <- -tm[1,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
+            tm[3,] <- -tm[3,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
+        } 
         res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
         res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
@@ -934,11 +938,11 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all. (FIXME: may change.)
     ## There are three instrument.type values, ("teledyn rdi", "nortek", and "sontek"), and
     ## three orientation values ("upward", "downward", and "sideward").
-    if (1 == length(agrep("rdi", x$metadata$instrument.type, ignore.case=TRUE))) { # "teledyn rdi"
+    if (1 == length(agrep("rdi", x$metadata$manufacturer, ignore.case=TRUE))) { # "teledyn rdi"
         if (res$metadata$orientation == "upward") {
             roll <- roll + 180
-            res$data$ts$ma$v[,,1] <- -res$data$ts$ma$v[,,1] 
-            res$data$ts$ma$v[,,3] <- -res$data$ts$ma$v[,,3] 
+            ##res$data$ma$v[,,1] <- -res$data$ma$v[,,1] ## FIXME 2: see FIXME 1 above
+            ##res$data$ma$v[,,3] <- -res$data$ma$v[,,3] ## FIXME 2: see FIXME 1 above
             warning("upward-looking RDI ADCP: to get ship coordinates, added 180deg to roll, negated x-velo, and negated z-velo")
         } else {
             roll <- -roll              # p12 of "RDI Coordinate Transformation Manual" (July 1998)
