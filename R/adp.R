@@ -1041,7 +1041,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
                      unlist(
                             lapply(1:nc,
                                    function(c)
-                                       R %*% rbind(starboard, forward, mast)))) # FIXME: check formula
+                                       R %*% rbind(starboard, forward, mast))), # FIXME: check formula
                      dim=c(3,nc,np))
         res$data$ma$v[,,1] <- rot[1,,]
         res$data$ma$v[,,2] <- rot[2,,]

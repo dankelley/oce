@@ -366,6 +366,7 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
 
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                    latitude=NA, longitude=NA,
+                                   beam.angle=25,
                                    monitor=TRUE, log.action,
                                    debug=getOption("oce.debug"))
 {
@@ -567,7 +568,6 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     }
     if (monitor)
         cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
-    beam.angle <- 25 ## FIXME: can we assume this for all instruments??
     S  <- 1 / (3 * sin(beam.angle * pi / 180))
     CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2
     C  <- 1 / (3 * cos(beam.angle * pi / 180))

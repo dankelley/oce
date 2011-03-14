@@ -32,6 +32,7 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
                       latitude=NA, longitude=NA,
+                      beam.angle=25,
                       monitor=TRUE, log.action,
                       debug=getOption("oce.debug")) 
 }
@@ -63,6 +64,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
     degrees East.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
+  \item{beam.angle}{angle between instrument axis and beams, in degrees.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     (with numbers and dots) of every profile read.}
   \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
