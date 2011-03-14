@@ -1297,11 +1297,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                      debug=getOption("oce.debug"),
                      ...)
 {
-    debug <- round(debug)
-    if (debug < 0)
-        debug <- 0
-    if (debug > 4)
-        debug <- 4
+    debug <- min(4, max(0, round(debug)))
     oce.debug(debug, "\bplot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="")
     have.brush.correlation <- !missing(brush.correlation)
     oce.debug(debug, "brush.correlation", if (have.brush.correlation) brush.correlation else "not given", "\n")
@@ -1717,7 +1713,9 @@ plot.adv <- function(x, which=c(1:3,14,15),
             y.dist <- cumsum(v) * dt / m.per.km
             plot(x.dist, y.dist, xlab="km", ylab="km", type=type,
                  cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                 asp=1, main=main, lwd=lwd[w], col=col[w], ...)
+                 asp=1, lwd=lwd[w], col=col[w], ...)
+            if (main[w] != "")
+                mtext(main[w], adj=1)
         } else if (which[w] >= 28) {
             oce.debug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))

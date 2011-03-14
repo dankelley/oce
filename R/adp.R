@@ -928,10 +928,12 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 
 adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
+    oce.debug(debug, "\b\badp.xyz2enu(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "xyz")
         stop("input must be in xyz coordinates; consider adp.2enu() if you do not know the coordinate system")
+    
     res <- x
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
@@ -940,52 +942,57 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ## There are three instrument.type values, ("teledyn rdi", "nortek", and "sontek"), and
     ## three orientation values ("upward", "downward", and "sideward").
     if (1 == length(agrep("rdi", x$metadata$manufacturer, ignore.case=TRUE))) { # "teledyn rdi"
+        oce.debug(debug, "Teledyn-RDI adcp\n")
         if (res$metadata$orientation == "upward") {
+            oce.debug(debug, "configuration: upward-looking\n")
             roll <- roll + 180 # p14 "RDI Coordinate Transformation Manual" (July 1998)
             starboard <- -res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- -res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            oce.debug(debug, "Upward-looking Teledyne-RDI ADCP\n")
-        } else {
+        } else if (res$metadata$orientation == "downward") {
+            oce.debug(debug, "configuration: downward-looking\n")
             roll <- -roll
             starboard <- res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            oce.debug(debug, "Downward-looking Teledyne-RDI ADCP\n")
+        } else {
+            stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
         }
     } else if (1 == length(agrep("nortek", x$metadata$manufacturer))) { # "nortek"
+        oce.debug(debug, "Nortek adp\n")
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
         heading <- heading - 90
         pitch <- (-pitch)
         roll <- (-roll)
         if (res$metadata$orientation == "upward") {
+            oce.debug(debug, "configuration: upward-looking\n")
             starboard <- res$data$ma$v[,,1] 
             forward <- -res$data$ma$v[,,2]
             mast <- -res$data$ma$v[,,3]
-            oce.debug(debug, "upward-looking Nortek ADP\n")
-        } else if (res$metadata$orientation == "upward") {
+        } else if (res$metadata$orientation == "downward") {
+            oce.debug(debug, "configuration: downward-looking\n")
             starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
-            oce.debug(debug, "downward-looking Nortek ADP\n")
         } else {
             stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
         }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
+        oce.debug(debug, "Sontek adp\n")
         ## h/p/r and s/f/m mimic Sontek from Clark Richards pers. comm. 2011-03-14
         heading <- heading - 90
         pitch <- (-pitch)
         roll <- (-roll)
         if (res$metadata$orientation == "upward") {
+            oce.debug(debug, "configuration: upward-looking\n")
             starboard <- res$data$ma$v[,,1] 
             forward <- -res$data$ma$v[,,2]
             mast <- -res$data$ma$v[,,3]
-            oce.debug(debug, "upward-looking Sontek ADP\n")
-        } else if (res$metadata$orientation == "upward") {
+        } else if (res$metadata$orientation == "downward") {
+            oce.debug(debug, "configuration: downward-looking\n")
             starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
-            oce.debug(debug, "downward-looking Sontek ADP\n")
         } else {
             stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
         }
@@ -1029,11 +1036,13 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         ## matrix work.  In any case, it opens the possibility of
         ## doing the work across profile, or cell, as fits the
         ## problem.  Below, partly as a demonstration, I am working
-        ## across cells (nor profiles, as the rest of the code).
-        
-        ## FIXME: make this code more closely mimic the varying-value code below.=
-        
-        rot <- array(unlist(lapply(1:nc, function(c) R %*% t(x$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
+        ## across cells (not profiles, as the rest of the code).
+        rot <- array(
+                     unlist(
+                            lapply(1:nc,
+                                   function(c)
+                                       R %*% rbind(starboard, forward, mast)))) # FIXME: check formula
+                     dim=c(3,nc,np))
         res$data$ma$v[,,1] <- rot[1,,]
         res$data$ma$v[,,2] <- rot[2,,]
         res$data$ma$v[,,3] <- rot[3,,]
@@ -1065,6 +1074,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     res$metadata$oce.coordinate <- "enu"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b} # adp.xyz2enu()\n")
     res
 }
 
