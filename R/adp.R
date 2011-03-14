@@ -936,29 +936,62 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     heading <- res$data$ts$heading + declination
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
-    ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all. (FIXME: may change.)
+    ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
     ## There are three instrument.type values, ("teledyn rdi", "nortek", and "sontek"), and
     ## three orientation values ("upward", "downward", and "sideward").
     if (1 == length(agrep("rdi", x$metadata$manufacturer, ignore.case=TRUE))) { # "teledyn rdi"
         if (res$metadata$orientation == "upward") {
-            roll <- roll + 180
-            ##res$data$ma$v[,,1] <- -res$data$ma$v[,,1] ## FIXME 2: see FIXME 1 above
-            ##res$data$ma$v[,,3] <- -res$data$ma$v[,,3] ## FIXME 2: see FIXME 1 above
-            warning("upward-looking RDI ADCP: to get ship coordinates, added 180deg to roll [also, maybe should negate x-velo and z-velo]")
+            roll <- roll + 180 # p14 "RDI Coordinate Transformation Manual" (July 1998)
+            starboard <- -res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            mast <- -res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            oce.debug(debug, "Upward-looking Teledyne-RDI ADCP\n")
         } else {
-            roll <- -roll              # p12 of "RDI Coordinate Transformation Manual" (July 1998)
-            warning("downward-looking RDI ADCP: to get ship coordinates, negated roll")
+            roll <- -roll
+            starboard <- res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            mast <- res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            oce.debug(debug, "Downward-looking Teledyne-RDI ADCP\n")
         }
     } else if (1 == length(agrep("nortek", x$metadata$manufacturer))) { # "nortek"
-        ## FIXME: should check metadata$orientation before adjusting heading and pitch.  And what of roll?
-        heading <- heading - 90        # Adjust heading, so the formulae (based on RDI) will work
-        pitch <- (-pitch)              # Adjust pitch, so the formulae (based on RDI) will work
-        warning("since nortek-adp, changed sign of pitch and subtracted 90 from heading")
+        ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
+        heading <- heading - 90
+        pitch <- (-pitch)
+        roll <- (-roll)
+        if (res$metadata$orientation == "upward") {
+            starboard <- res$data$ma$v[,,1] 
+            forward <- -res$data$ma$v[,,2]
+            mast <- -res$data$ma$v[,,3]
+            oce.debug(debug, "upward-looking Nortek ADP\n")
+        } else if (res$metadata$orientation == "upward") {
+            starboard <- res$data$ma$v[,,1]
+            forward <- res$data$ma$v[,,2]
+            mast <- res$data$ma$v[,,3]
+            oce.debug(debug, "downward-looking Nortek ADP\n")
+        } else {
+            stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
+        }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
-        ## FIXME: should check metadata$orientation before adjusting heading and pitch.  And what of roll?
-        heading <- heading - 90        # Adjust heading, so the formulae (based on RDI) will work
-        pitch <- (-pitch)              # Adjust pitch, so the formulae (based on RDI) will work
-        warning("since sontek-adp, changed sign of pitch and subtracted 90 from heading")
+        ## h/p/r and s/f/m mimic Sontek from Clark Richards pers. comm. 2011-03-14
+        heading <- heading - 90
+        pitch <- (-pitch)
+        roll <- (-roll)
+        if (res$metadata$orientation == "upward") {
+            starboard <- res$data$ma$v[,,1] 
+            forward <- -res$data$ma$v[,,2]
+            mast <- -res$data$ma$v[,,3]
+            oce.debug(debug, "upward-looking Sontek ADP\n")
+        } else if (res$metadata$orientation == "upward") {
+            starboard <- res$data$ma$v[,,1]
+            forward <- res$data$ma$v[,,2]
+            mast <- res$data$ma$v[,,3]
+            oce.debug(debug, "downward-looking Sontek ADP\n")
+        } else {
+            stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
+        }
+    } else {
+        stop("unrecognized manufacturer; should be 'teledyne rdi', 'sontek', or 'nortek', but is '",
+             x$metadata$manufacturer, "'")
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
@@ -978,6 +1011,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ## Construct the 3*3*np matrix that is the product of three rotation matrices, using
     ## O(9*np) of matrix memory, versus O(27*np) for the three matrices applied in sequence.
     if (length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1) {
+        oce.debug(debug, "constant heading, pitch and roll\n")
         ## Steady (heading, pitch, roll) angles only need a 2D rotation matrix.
         R <- array(dim=c(3, 3))
         R[1,1] <-  CH * CR + SH * SP * SR
@@ -996,12 +1030,17 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         ## doing the work across profile, or cell, as fits the
         ## problem.  Below, partly as a demonstration, I am working
         ## across cells (nor profiles, as the rest of the code).
+        
+        ## FIXME: make this code more closely mimic the varying-value code below.=
+        
         rot <- array(unlist(lapply(1:nc, function(c) R %*% t(x$data$ma$v[,c,1:3]))), dim=c(3,nc,np))
         res$data$ma$v[,,1] <- rot[1,,]
         res$data$ma$v[,,2] <- rot[2,,]
         res$data$ma$v[,,3] <- rot[3,,]
     } else {
-        ## Unsteady angles need a 3D rotation matrix, with the third dimension for profile-sequence number.
+        oce.debug(debug, "time-varying heading, pitch and roll\n")
+        ## matrix below is in RDI convention, with "H" meaning geographic-notation heading,
+        ## not the mathematical-notation of Clark Richards (pers. comm. 2011-03-14)
         R <- array(dim=c(3, 3, np))
         R[1,1,] <-  CH * CR + SH * SP * SR
         R[1,2,] <-  SH * CP
@@ -1012,8 +1051,13 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         R[3,1,] <- -CP * SR
         R[3,2,] <-  SP
         R[3,3,] <-  CP * CR
-        ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
-        rot <- array(unlist(lapply(1:np, function(p) R[,,p] %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
+        ## use lapply() to rotate using profile-by-profile matrix multiplication
+        rot <- array(
+                     unlist(
+                            lapply(1:np,
+                                   function(p)
+                                       R[,,p] %*% rbind(starboard[p,], forward[p,], mast[p,]))),
+                     dim=c(3, nc, np))
         res$data$ma$v[,,1] <- t(rot[1,,])
         res$data$ma$v[,,2] <- t(rot[2,,])
         res$data$ma$v[,,3] <- t(rot[3,,])
