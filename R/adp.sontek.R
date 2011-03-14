@@ -343,8 +343,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ##      0.000  -2.230   2.230
         ##      0.345   0.345   0.345
         ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
-    } else stop("can only handle 3-beam devices")
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    } else
+        stop("can only handle 3-beam devices")
+    if (missing(log.action))
+        log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("sontek", "adp", "oce")
