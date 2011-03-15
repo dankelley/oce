@@ -1767,14 +1767,14 @@ plot.adv <- function(x, which=c(1:3,14,15),
     invisible()
 }
 
-adv.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
+to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\badv.2enu() {\n")
     coord <- x$metadata$oce.coordinate
     if (coord == "beam") {
-        x <- adv.xyz2enu(adv.beam2xyz(x, debug=debug-1), declination=declination, debug=debug-1)
+        x <- xyz.to.enu.adv(beam.to.xyz.adv(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
-        x <- adv.xyz2enu(x, declination=declination, debug=debug-1)
+        x <- xyz.to.enu.adv(x, declination=declination, debug=debug-1)
     } else if (coord == "enu") {
         ;
     } else {
@@ -1784,9 +1784,9 @@ adv.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     x
 }
 
-adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
+beam.to.xyz.adv <- function(x, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "\b\badv.beam2xyz() {\n")
+    oce.debug(debug, "\b\bbeam.to.xyz.adv() {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "beam")
@@ -1814,13 +1814,13 @@ adv.beam2xyz <- function(x, debug=getOption("oce.debug"))
     x$metadata$oce.coordinate <- "xyz"
     x$processing.log <- processing.log.add(x$processing.log,
                                            paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # adv.beam2xyz()\n")
+    oce.debug(debug, "\b\b} # beam.to.xyz.adv()\n")
     x
 }
 
-adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
+xyz.to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "\b\badv.xyz2enu(x, declination=", declination, ",debug) {\n")
+    oce.debug(debug, "\b\bxyz.to.enu.adv(x, declination=", declination, ",debug) {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz")
@@ -1879,7 +1879,7 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     CR <- cos(rrad)
     SR <- sin(rrad)
     if (x$metadata$orientation == "downward") { #FIXME: I think this is plain wrong; should change sign of row 2 and 3 (??)
-        warning("adv.xyz2enu() switching signs of pitch and roll, because unit is oriented downward. BUT IS THIS CORRECT??")
+        warning("xyz.to.enu.adv() switching signs of pitch and roll, because unit is oriented downward. BUT IS THIS CORRECT??")
         SP <- -SP
         SR <- -SR
     }
@@ -1925,13 +1925,13 @@ adv.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     x$metadata$oce.coordinate <- "enu"
     x$processing.log <- processing.log.add(x$processing.log,
                                            paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # adv.xyz2enu()\n")
+    oce.debug(debug, "\b\b} # xyz.to.enu.adv()\n")
     x
 }
 
-adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
+enu.to.other.adv <- function(x, heading=0, pitch=0, roll=0)
 {
-    oce.debug(debug, "\b\badv.enu2other() {\n")
+    oce.debug(debug, "\b\benu.to.other.adv() {\n")
     if (!inherits(x, "adv")) stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "enu") stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     to.radians <- atan2(1,1) / 45
@@ -1951,6 +1951,6 @@ adv.enu2other <- function(x, heading=0, pitch=0, roll=0)
     x$metadata$oce.coordinate <- "other"
     x$processing.log <- processing.log.add(x$processing.log,
                                            paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # adv.enu2other()\n")
+    oce.debug(debug, "\b\b} # enu.to.other.adv()\n")
     x
 }

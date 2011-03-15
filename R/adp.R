@@ -816,14 +816,14 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     invisible()
 }
 
-adp.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
+to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\badp.2enu() {\n")
     coord <- x$metadata$oce.coordinate
     if (coord == "beam") {
-        x <- adp.xyz2enu(adp.beam2xyz(x, debug=debug-1), declination=declination, debug=debug-1)
+        x <- xyz.to.enu.adp(beam.to.xyz.adp(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
-        x <- adp.xyz2enu(x, declination=declination, debug=debug-1)
+        x <- xyz.to.enu.adp(x, declination=declination, debug=debug-1)
     } else if (coord == "enu") {
         ;
     } else {
@@ -833,7 +833,7 @@ adp.2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     x
 }
 
-adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oce.debug"))
+beam.attenuate.adp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\badp.beam.attenuate(...) {\n")
     if (!inherits(x, "adp"))
@@ -855,14 +855,14 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getO
     res$metadata$oce.beam.attenuated <- TRUE
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # adp.beam.attenuate()\n")
+    oce.debug(debug, "\b\b} # beamAttenuate.adp()\n")
     res
 }
 
-adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
+beam.to.xyz.adp <- function(x, debug=getOption("oce.debug"))
 {
     debug <- if (debug > 0) 1 else 0
-    oce.debug(debug, "\b\badp.beam2xyz(x, debug=", debug, ") {\n", sep="")
+    oce.debug(debug, "\b\bbeam.to.xyz.adp(x, debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam")
@@ -880,12 +880,7 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
             cat("Transformation matrix:\n")
             print(tm)
         }
-        ##if (x$metadata$orientation == "upward") { # FIXME 1: do this in xyz2enu (see FIXME 2)
-        ##    tm[1,] <- -tm[1,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2)
-        ##    tm[3,] <- -tm[3,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2)
-        ##    warning("upward-oriented RDI adcp, so changing the sign of tm[1,] and tm[3,]")
-        ##} 
-        V <- x$data$ma$v[,,1:3]
+        V <- x$data$ma$v[,,1:4]
         res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3] + tm[1,4] * V[,,4]
         res$data$ma$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3] + tm[2,4] * V[,,4]
         res$data$ma$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3] + tm[3,4] * V[,,4]
@@ -922,14 +917,14 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
     res$metadata$oce.coordinate <- "xyz"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b\b} # adp.beam2xyz()\n")
+    oce.debug(debug, "\b\b\b} # adp.beam.to.xyz()\n")
     res
 }
 
-adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
+xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     debug <- if (debug > 0) 1 else 0
-    oce.debug(debug, "\b\badp.xyz2enu(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
+    oce.debug(debug, "\b\bxyz.to.enu.adp(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "xyz")
@@ -1079,11 +1074,11 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     res$metadata$oce.coordinate <- "enu"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b\b} # adp.xyz2enu()\n")
+    oce.debug(debug, "\b\b\b} # xyz.to.enu.adp()\n")
     res
 }
 
-adp.enu2other <- function(x, heading=0, pitch=0, roll=0)
+enu.to.other.adp <- function(x, heading=0, pitch=0, roll=0)
 {
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")

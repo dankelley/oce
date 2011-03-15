@@ -1,13 +1,13 @@
-\name{adv.xyz2enu}
+\name{xyz.to.enu.adv}
 
-\alias{adv.xyz2enu}
+\alias{xyz.to.enu.adv}
 
 \title{Convert ADV from xyz coordinates to enu coordinates}
 
 \description{Convert ADV velocity components from a xyz-based
   coordinate system to an enu-based coordinate system.}
 
-\usage{adv.xyz2enu(x, declination=0, debug=getOption("oce.debug"))}
+\usage{xyz.to.enu.adv(x, declination=0, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}

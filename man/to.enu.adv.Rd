@@ -1,13 +1,13 @@
-\name{adv.2enu}
+\name{to.enu.adv}
 
-\alias{adv.2enu}
+\alias{to.enu.adv}
 
 \title{Convert ADV to enu coordinates, from any other coordinates}
 
 \description{Convert ADV velocities to enu coordinates, from any other
 coordinates}
 
-\usage{adv.2enu(x, declination=0, debug=getOption("oce.debug"))}
+\usage{to.enu.adv(x, declination=0, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}
@@ -18,12 +18,12 @@ coordinates}
     functions, after subtracting 1.}
 }
 
-\details{This is mostly a wrapper that calls \code{\link{adv.beam2xyz}} if needed,
-  and then calls \code{\link{adv.xyz2enu}}.}
+\details{This is mostly a wrapper that calls \code{\link{beam.to.xyz.adv}} if needed,
+  and then calls \code{\link{xyz.to.enu.adv}}.}
 
 \seealso{See \code{\link{read.adv}} for notes on functions relating to
-  \code{"adv"} objects.  Also, see \code{\link{adv.beam2xyz}} and
-  \code{\link{adv.xyz2enu}}.
+  \code{"adv"} objects.  Also, see \code{\link{beam.to.xyz.adv}} and
+  \code{\link{xyz.to.enu.adv}}.
 }
 
 \author{Dan Kelley}

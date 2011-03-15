@@ -1,6 +1,6 @@
-\name{adp.enu2other}
+\name{enu.to.other.adp}
 
-\alias{adp.enu2other}
+\alias{enu.to.other.adp}
 
 \title{Convert ADP from east-north-up coordinates to other coordinates}
 
@@ -8,7 +8,7 @@
   coordinate system to another system, perhaps to align axes with the
   coastline.}
 
-\usage{adp.enu2other(x, heading=0, pitch=0, roll=0)}
+\usage{enu.to.other.adp(x, heading=0, pitch=0, roll=0)}
 
 \arguments{
   \item{x}{an object of class \code{"adp"}.}
@@ -32,7 +32,7 @@
   not to the values of the corresponding arguments supplied to the
   present function.
 
-  The code is similar to that used by \code{\link{adp.xyz2enu}},
+  The code is similar to that used by \code{\link{xyz.to.enu.adp}},
   but in the present case the signs of \code{pitch} and \code{roll} are
   obeyed, regardless of whether the instrument points up or down,
   because enu coordinates already account for instrument alignment.}
@@ -44,7 +44,7 @@
 \examples{
 library(oce)
 data(adp)
-o <- adp.enu2other(adp, heading=31.5)
+o <- enu.to.other.adp(adp, heading=31.5)
 plot(o, which=1:3)
 }
 

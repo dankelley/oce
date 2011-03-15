@@ -1,6 +1,6 @@
-\name{adv.enu2other}
+\name{enu.to.other.adv}
 
-\alias{adv.enu2other}
+\alias{enu.to.other.adv}
 
 \title{Convert ADV from east-north-up coordinates to other coordinates}
 
@@ -8,7 +8,7 @@
   coordinate system to another system, perhaps to align axes with the
   coastline.}
 
-\usage{adv.enu2other(x, heading=0, pitch=0, roll=0)}
+\usage{enu.to.other.adv(x, heading=0, pitch=0, roll=0)}
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}

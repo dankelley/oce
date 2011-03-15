@@ -1,4 +1,5 @@
 0.1-82
+- rename e.g. adv.2enu() as to.enu.adv()
 - change RDI coordinate handling
 - rename match.bytes() as matchBytes()
 - add drawpalette()

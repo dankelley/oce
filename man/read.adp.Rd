@@ -162,19 +162,19 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
   Several functions are provided to manipulate \code{adp} objects.  For
   example, in many research applications, the records are stored in beam
   coordinates, instead of the further-processed forms such as instrument
-  or enu coordinates.  Accordingly, \code{\link{adp.beam2xyz}} is
+  or enu coordinates.  Accordingly, \code{\link{beam.to.xyz.adp}} is
   provided, convert the velocity portions of \code{adp} objects from
   beam coordinates to xyz-based (also called ship-based or
   instrument-based) coordinates.  Similarly,
-  \code{\link{adp.xyz2enu}} converts from xyz to enu
+  \code{\link{xyz.to.enu.adp}} converts from xyz to enu
   coordinates, taking into account the varying orientation of an
   instrument attached to a ship or a mobile mooring.  For applications
   in which enu-based coordinates are not desired (e.g. if a coordinate
   is to be aligned with the local coastline or a mean current),
-  \code{\link{adp.enu2other}} is provided, to convert from enu
+  \code{\link{enu.to.other.adp}} is provided, to convert from enu
   coordinates to another coordinate system. 
 
- Another convenience function is \code{\link{adp.beam.attenuate}},
+ Another convenience function is \code{\link{beam.attenuate.adp}},
 which performs a correction for \eqn{r^2}{r^2} beam spreading.}
 
 \examples{

@@ -121,8 +121,8 @@
       \code{"other"} coordinates, it will be component corresponding to
       east, after rotation (labelled \code{u\'}).  Note that the
       coordinate is set by \code{\link{read.adp}}, or by
-      \code{\link{adp.beam2xyz}}, \code{\link{adp.xyz2enu}}, or
-      \code{\link{adp.enu2other}}.
+      \code{\link{beam.to.xyz.adp}}, \code{\link{xyz.to.enu.adp}}, or
+      \code{\link{enu.to.other.adp}}.
     
     \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
       distance-time images of backscatter intensity of the respective beams.
@@ -250,13 +250,13 @@
   \code{\link{read.adp.nortek}} (for NorTek files).  These files may be
   in beam coordinates, in xyz coordinates, or in enu coordinates.  It is
   common in a scientific setting to use beam coordinates, and so this
-  package offers functions \code{\link{adp.beam2xyz}} and
-  \code{\link{adp.xyz2enu}} to take the intermediate steps, and
-  \code{\link{adp.enu2other}} to go further, e.g. to rotate into a
+  package offers functions \code{\link{beam.to.xyz.adp}} and
+  \code{\link{xyz.to.enu.adp}} to take the intermediate steps, and
+  \code{\link{enu.to.other.adp}} to go further, e.g. to rotate into a
   coordinate system aligned with the shoreline or with an isobath.
 
   The beam stength may be corrected for R-squared spreading with
-  \code{\link{adp.beam.attenuate}}.
+  \code{\link{beam.attenuate.adp}}.
 
   Summaries of ADP data are provided by \code{\link{summary.adp}}.
 

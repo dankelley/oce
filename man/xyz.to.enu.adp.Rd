@@ -1,6 +1,6 @@
-\name{adp.xyz2enu}
+\name{xyz.to.enu.adp}
 
-\alias{adp.xyz2enu}
+\alias{xyz.to.enu.adp}
 
 \title{Convert ADP from xyz coordinates to enu coordinates}
 
@@ -8,7 +8,7 @@
   coordinate system to an enu-based coordinate system, by using
   the instrument's recording of heading,  pitch, and roll.}
 
-\usage{adp.xyz2enu(x, declination=0, debug=getOption("oce.debug"))}
+\usage{xyz.to.enu.adp(x, declination=0, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adp"}.}

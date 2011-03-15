@@ -224,8 +224,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 
 \seealso{Objects of class \code{adv} may be plotted with
   \code{\link{plot.adv}} or summarized with \code{\link{summary.adv}}.
-  Coordinate transformations are done with \code{\link{adv.beam2xyz}},
-  \code{\link{adv.xyz2enu}}, and \code{\link{adv.enu2other}}, in
+  Coordinate transformations are done with \code{\link{beam.to.xyz.adv}},
+  \code{\link{xyz.to.enu.adv}}, and \code{\link{enu.to.other.adv}}, in
   that order.}
 
 \examples{
@@ -291,7 +291,7 @@ d <- oce.edit(d, "heading", 0)
 d <- oce.edit(d, "pitch", 0)
 d <- oce.edit(d, "roll", 0)
 d <- oce.edit(d, "serial.number", "202h")
-enu <- adv.xyz2enu(d)
+enu <- xyz.to.enu(d)
 plot(enu, which=c("u1", "u2", "u3", "temperature"))
 }
 }
