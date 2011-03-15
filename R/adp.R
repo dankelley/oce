@@ -932,10 +932,10 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "xyz")
-        stop("input must be in xyz coordinates; consider adp.2enu() if you do not know the coordinate system")
+        stop("input must be in xyz coordinates")
     
     res <- x
-    heading <- res$data$ts$heading + declination
+    heading <- res$data$ts$heading
     pitch <- res$data$ts$pitch
     roll <- res$data$ts$roll
     ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
@@ -956,7 +956,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
         } else {
-            stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
+            stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
     } else if (1 == length(agrep("nortek", x$metadata$manufacturer))) { # "nortek"
         oce.debug(debug, "Nortek adp\n")
@@ -975,7 +975,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
         } else {
-            stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
+            stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
         oce.debug(debug, "Sontek adp\n")
@@ -994,7 +994,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
         } else {
-            stop("expecting 'upward' or 'downward' for metadata$orientation, but got '", x$metadata$orientation, "'")
+            stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
     } else {
         stop("unrecognized manufacturer; should be 'teledyne rdi', 'sontek', or 'nortek', but is '",
@@ -1004,7 +1004,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
     radian.per.degree <- atan2(1,1) / 45
-    h <- heading * radian.per.degree
+    h <- (heading + declination) * radian.per.degree
     p <- pitch * radian.per.degree
     r <- roll * radian.per.degree
     CH <- cos(h)
@@ -1041,9 +1041,9 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
                      unlist(
                             lapply(1:nc,
                                    function(c)
-                                       R %*% rbind(starboard, forward, mast))), # FIXME: check formula
+                                       R %*% rbind(starboard, forward, mast))),
                      dim=c(3,nc,np))
-        res$data$ma$v[,,1] <- rot[1,,]
+        res$data$ma$v[,,1] <- rot[1,,] # FIXME: check on the formula for constant h/p/r (or delete this)
         res$data$ma$v[,,2] <- rot[2,,]
         res$data$ma$v[,,3] <- rot[3,,]
     } else {
