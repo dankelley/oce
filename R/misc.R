@@ -208,7 +208,7 @@ oce.spectrum <- function(x, ...)
     invisible(rval)
 }
 
-vector.show <- function(v, msg)
+vector.show <- function(v, msg, digits=5)
 {
     n <- length(v)
     if (missing(msg))
@@ -216,10 +216,19 @@ vector.show <- function(v, msg)
     if (n == 0) {
         paste(msg, "(empty vector)\n")
     } else {
-        if (n > 6) {
-            paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
-        } else {
-            paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
+        if (is.numeric(v)) {
+            if (n > 6) {
+                vv <- format(v[c(1, 2, 3, n-2, n-1, n)], digits=digits)
+                paste(msg, ": ", vv[1], ", ", vv[2], ", ", vv[3], ", ..., ", vv[4], ", ", vv[5], ", ", vv[6], " (length ", n, ")\n", sep="")
+            } else {
+                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
+            }
+       } else {
+             if (n > 6) {
+                paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
+            } else {
+                paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
+            }
         }
     }
 }
@@ -1173,9 +1182,10 @@ show.fives <- function(x, indent="    ")
 
 oce.debug <- function(debug=0, ...)
 {
-    debug <- if (debug > 4) 4 else floor(debug + 0.5)
+    debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
-        cat(paste(rep("  ", 5 - debug), collapse=""), ...)
+        ##cat(paste(rep("  ", 5 - debug), collapse=""), ...)
+        cat(paste(rep("  ", debug), collapse=""), ...)
     }
     flush.console()
 }

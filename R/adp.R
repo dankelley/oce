@@ -295,6 +295,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      debug=getOption("oce.debug"),
                      ...)
 {
+    debug <- if (debug > 0) 1 else 0
     oce.debug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
     oce.debug(debug, "early in plot.adp:\n")
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
@@ -328,7 +329,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     }
     if (!missing(titles) && length(titles) != nw)
         stop("length of 'titles' must equal length of 'which'")
-    oce.debug(debug, "length(which) =", nw, "\n")
     if (nw > 1)
         on.exit(par(opar))
     par(mgp=mgp, mar=mar, cex=cex)
@@ -716,7 +716,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
                 v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
             }
-            oce.debug(debug, "uv type plot; gave.ylim=", gave.ylim, '\n')
+            oce.debug(debug, "uv type plot\n")
             if (n < 2000) {
                 if ("type" %in% names(dots)) {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col,
@@ -808,10 +808,11 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         }
         if (w <= adorn.length) {
             t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            if (class(t) == "try-error")
+                warning("cannot evaluate adorn[", w, "]\n")
         }
     }
-    oce.debug(debug, "\b\b} # plot.adp\n")
+    oce.debug(debug, "\b\b\b} # plot.adp()\n")
     invisible()
 }
 
@@ -860,6 +861,8 @@ adp.beam.attenuate <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getO
 
 adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
 {
+    debug <- if (debug > 0) 1 else 0
+    oce.debug(debug, "\b\badp.beam2xyz(x, debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
         stop("method is only for objects of class \"adp\"")
     if (x$metadata$oce.coordinate != "beam")
@@ -868,66 +871,64 @@ adp.beam2xyz <- function(x, debug=getOption("oce.debug"))
         if (x$metadata$number.of.beams != 4)
             stop("can only handle 4-beam ADP units from RDI")
         res <- x
-        if (!is.null(x$metadata$transformation.matrix)) {
-            tm <- x$metadata$transformation.matrix
-        } else {
-            tm <- matrix(c(-1.9318517,  1.9318517,  0.0000000,  0.0000000,
-                           0.0000000 ,  0.0000000, -1.9318517,  1.9318517,
-                           -0.2588190, -0.2588190, -0.2588190, -0.2588190,
-                           1.3660254 ,  1.3660254, -1.3660254, -1.3660254), nrow=4, byrow=TRUE)
-            warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
+        if (is.null(x$metadata$transformation.matrix))
+            stop("missing x$metadata$transformation.matrix")
+        tm <- x$metadata$transformation.matrix
+        if (!all.equal(dim(tm), c(4,4)))
+            stop("x$metadata$transformation.matrix must be a 4x4 matrix")
+        if (debug) {
+            cat("Transformation matrix:\n")
             print(tm)
         }
-        if (x$metadata$orientation == "upward") { # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
-            tm[1,] <- -tm[1,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
-            tm[3,] <- -tm[3,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2 below)
-            warning("upward-oriented RDI adcp, so changing the sign of tm[1,] and tm[3,]")
-        } 
-        res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3] + tm[1,4] * x$data$ma$v[,,4]
-        res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3] + tm[2,4] * x$data$ma$v[,,4]
-        res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3] + tm[3,4] * x$data$ma$v[,,4]
-        res$data$ma$v[,,4] <- tm[4,1] * x$data$ma$v[,,1] + tm[4,2] * x$data$ma$v[,,2] + tm[4,3] * x$data$ma$v[,,3] + tm[4,4] * x$data$ma$v[,,4]
+        ##if (x$metadata$orientation == "upward") { # FIXME 1: do this in xyz2enu (see FIXME 2)
+        ##    tm[1,] <- -tm[1,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2)
+        ##    tm[3,] <- -tm[3,]          # FIXME 1: want to do this in xyz2enu (see FIXME 2)
+        ##    warning("upward-oriented RDI adcp, so changing the sign of tm[1,] and tm[3,]")
+        ##} 
+        V <- x$data$ma$v[,,1:3]
+        res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3] + tm[1,4] * V[,,4]
+        res$data$ma$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3] + tm[2,4] * V[,,4]
+        res$data$ma$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3] + tm[3,4] * V[,,4]
+        res$data$ma$v[,,4] <- tm[4,1] * V[,,1] + tm[4,2] * V[,,2] + tm[4,3] * V[,,3] + tm[4,4] * V[,,4]
     } else if (inherits(x, "nortek")) {
-        warning("should perhaps flip the signs of rows 2 and 3 of nortek transformation matrix")
         if (x$metadata$number.of.beams != 3)
             stop("can only handle 3-beam ADP units from nortek")
-        res <- x
-        if (!is.null(x$metadata$transformation.matrix)) {
-            tm <- x$metadata$transformation.matrix
-            res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
-            res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
-            res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
-        } else {
+        if (is.null(x$metadata$transformation.matrix))
             stop("missing x$metadata$transformation.matrix")
-        }
+        tm <- x$metadata$transformation.matrix
+        if (!all.equal(dim(tm), c(3, 3)))
+            stop("x$metadata$transformation.matrix must be a 3x3 matrix")
+        res <- x
+        V <- x$data$ma$v[,,1:3]
+        res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
+        res$data$ma$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
+        res$data$ma$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
     } else if (inherits(x, "sontek")) {
-        warning("should perhaps flip the signs of rows 2 and 3 of sontek transformation matrix")
         if (x$metadata$number.of.beams != 3)
             stop("can only handle 3-beam ADP units from sontek")
+        if (is.null(x$metadata$transformation.matrix))
+            stop("missing x$metadata$transformation.matrix")
+        tm <- x$metadata$transformation.matrix
+        if (!all.equal(dim(tm), c(3, 3)))
+            stop("x$metadata$transformation.matrix must be a 3x3 matrix")
         res <- x
-        if (!is.null(x$metadata$transformation.matrix)) {
-            tm <- x$metadata$transformation.matrix
-        } else {
-            tm <- matrix(c(1.577, -0.789, -0.789,
-                           0.000, -1.366,  1.366,
-                           0.368,  0.368,  0.368), nrow=4, byrow=TRUE)
-            warning("adp.beam2xyz() detected no metadata$transformation.matrix, so assuming the following:")
-            print(tm)
-        }
-        res$data$ma$v[,,1] <- tm[1,1] * x$data$ma$v[,,1] + tm[1,2] * x$data$ma$v[,,2] + tm[1,3] * x$data$ma$v[,,3]
-        res$data$ma$v[,,2] <- tm[2,1] * x$data$ma$v[,,1] + tm[2,2] * x$data$ma$v[,,2] + tm[2,3] * x$data$ma$v[,,3]
-        res$data$ma$v[,,3] <- tm[3,1] * x$data$ma$v[,,1] + tm[3,2] * x$data$ma$v[,,2] + tm[3,3] * x$data$ma$v[,,3]
+        V <- x$data$ma$v[,,1:3]
+        res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
+        res$data$ma$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
+        res$data$ma$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oce.coordinate <- "xyz"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
+    oce.debug(debug, "\b\b\b} # adp.beam2xyz()\n")
     res
 }
 
 adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
 {
+    debug <- if (debug > 0) 1 else 0
     oce.debug(debug, "\b\badp.xyz2enu(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
@@ -942,13 +943,15 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ## There are three instrument.type values, ("teledyn rdi", "nortek", and "sontek"), and
     ## three orientation values ("upward", "downward", and "sideward").
     if (1 == length(agrep("rdi", x$metadata$manufacturer, ignore.case=TRUE))) { # "teledyn rdi"
-        oce.debug(debug, "Teledyn-RDI adcp\n")
+        oce.debug(debug, "instrument: Teledyne-RDI adcp\n")
+        ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "configuration: upward-looking\n")
-            roll <- roll + 180 # p14 "RDI Coordinate Transformation Manual" (July 1998)
+            ## As an alternative to the next three lines, could just add 180 degrees to roll
             starboard <- -res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- -res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            oce.debug(debug, "add 180 to roll; S=-X; F=Y; M=-Z\n")
         } else if (res$metadata$orientation == "downward") {
             oce.debug(debug, "configuration: downward-looking\n")
             roll <- -roll
@@ -962,15 +965,17 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         oce.debug(debug, "Nortek adp\n")
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
         heading <- heading - 90
-        pitch <- (-pitch)
-        roll <- (-roll)
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "configuration: upward-looking\n")
+            pitch <- -pitch
+            roll <- -roll
             starboard <- res$data$ma$v[,,1] 
             forward <- -res$data$ma$v[,,2]
             mast <- -res$data$ma$v[,,3]
         } else if (res$metadata$orientation == "downward") {
             oce.debug(debug, "configuration: downward-looking\n")
+            pitch <- -pitch
+            roll <- -roll
             starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
@@ -981,15 +986,17 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         oce.debug(debug, "Sontek adp\n")
         ## h/p/r and s/f/m mimic Sontek from Clark Richards pers. comm. 2011-03-14
         heading <- heading - 90
-        pitch <- (-pitch)
-        roll <- (-roll)
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "configuration: upward-looking\n")
+            pitch <- (-pitch)
+            roll <- (-roll)
             starboard <- res$data$ma$v[,,1] 
             forward <- -res$data$ma$v[,,2]
             mast <- -res$data$ma$v[,,3]
         } else if (res$metadata$orientation == "downward") {
             oce.debug(debug, "configuration: downward-looking\n")
+            pitch <- (-pitch)
+            roll <- (-roll)
             starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
@@ -1018,7 +1025,6 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     ## Construct the 3*3*np matrix that is the product of three rotation matrices, using
     ## O(9*np) of matrix memory, versus O(27*np) for the three matrices applied in sequence.
     if (length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1) {
-        oce.debug(debug, "constant heading, pitch and roll\n")
         ## Steady (heading, pitch, roll) angles only need a 2D rotation matrix.
         R <- array(dim=c(3, 3))
         R[1,1] <-  CH * CR + SH * SP * SR
@@ -1047,9 +1053,8 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
         res$data$ma$v[,,2] <- rot[2,,]
         res$data$ma$v[,,3] <- rot[3,,]
     } else {
-        oce.debug(debug, "time-varying heading, pitch and roll\n")
-        ## matrix below is in RDI convention, with "H" meaning geographic-notation heading,
-        ## not the mathematical-notation of Clark Richards (pers. comm. 2011-03-14)
+        ## Rotation matrix, as in section 5.6 of RDI "adcp coordinate transformation" (1997)
+        ## (Matches Clark Richards (2011-03-14 Pers. Comm.) *if* the sign of heading is reversed.)
         R <- array(dim=c(3, 3, np))
         R[1,1,] <-  CH * CR + SH * SP * SR
         R[1,2,] <-  SH * CP
@@ -1074,7 +1079,7 @@ adp.xyz2enu <- function(x, declination=0, debug=getOption("oce.debug"))
     res$metadata$oce.coordinate <- "enu"
     res$processing.log <- processing.log.add(res$processing.log,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # adp.xyz2enu()\n")
+    oce.debug(debug, "\b\b\b} # adp.xyz2enu()\n")
     res
 }
 

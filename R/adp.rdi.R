@@ -548,10 +548,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             metadata$number.of.beams <- header$number.of.beams
             metadata$depth.of.transducer <- mean(depth.of.transducer, na.rm=TRUE)
             ## Transformation matrix
-            tm.c <- if (metadata$beam.pattern == "convex") 1 else -1; # control sign of first 2 rows of transformation.matrix
-            tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
-            tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
-            tm.d <- tm.a / sqrt(2)
             ## FIXME Dal people use 'a' in last row of matrix, but both
             ## RDI and CODAS use as we have here.  (And I think RDI
             ## may have two definitions...)
@@ -578,12 +574,14 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             ##            |
             ##    x <-----*   (z into page, or downward)
             ##
-            ## The matrix below is from page 13 (section 5.30) of the ACT.  Later on,
-            ## in adp.beam2xyz(), we will change the sign of rows 1 and 3, if the
-            ## device is pointing upwards.
+            ## The matrix below is from section 5.3 of the ACT.
             ##
             ## As a check on coding, see the python software at
-            ##   http://currents.soest.hawaii.edu/hg/hgwebdir.cgi/pycurrents/file/tip/adcp/transform.py
+            ##   http://currents.soest.hawaii.edu/hg/pycurrents/file/3175207488bb/adcp/transform.py
+            tm.c <- if (metadata$beam.pattern == "convex") 1 else -1; # control sign of first 2 rows of transformation.matrix
+            tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
+            tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
+            tm.d <- tm.a / sqrt(2)
             metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
                                                        0        ,          0, -tm.c*tm.a, tm.c*tm.a,
                                                        tm.b     ,       tm.b,       tm.b,      tm.b,
