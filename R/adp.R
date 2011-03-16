@@ -946,13 +946,14 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
             starboard <- -res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- -res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            oce.debug(debug, "add 180 to roll; S=-X; F=Y; M=-Z\n")
+            oce.debug(debug, "S=-X; F=Y; M=-Z\n")
         } else if (res$metadata$orientation == "downward") {
             oce.debug(debug, "configuration: downward-looking\n")
             roll <- -roll
             starboard <- res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            oce.debug(debug, "roll=-roll; S=X; F=Y; M=Z\n")
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }

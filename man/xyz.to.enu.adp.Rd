@@ -17,28 +17,47 @@
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate
       amount of debugging information, or to 2 to get more.} }
 
-\details{A single formula is used for different instruments, but its
-    constituents are altered on a case-by-case basis.  The first step is to
+\details{A single formula is used for different instruments and configuraitons,
+    but its constituents are altered to fit each case.  The first step is to
     convert the (x,y,z) velocity components (stored in the three columns of
     \code{x$data$ma$v[,,1:3]}) into what RDI (1998 pages 11 and 12) calls
-    "ship", or "righted" components.  For example, the z coordinate may point
-    upwards or downwards, depending on the instrument configuration, and so
-    this is converted to a so-called "mast" coordinate that points upwards (as
-    for a righted ship).  The other ship coordinates are called "starboard" and
-    "forward", and they take the meanings that a mariner would expect.
-   
-    Once the (x,y,z) velocities are converted to ship velocities, the detailed
-    orientation of the instrument is extracted from \code{x$data$ts$heading},
-    \code{x$data$ts$pitch}, and \code{x$data$ts$roll}.  As in the previous
-    step, these are adjusted to account for instrument type and upward/downward
-    orientation.
+    "ship", or "righted" components.  For example, the z coordinate, which may
+    point upwards or downwards depending on instrument orientation, is mapped
+    onto a so-called "mast" coordinate that points more nearly upwards than
+    downward (as for a righted ship).  The other ship coordinates are called
+    "starboard" and "forward", the meanings of which will be clear to a
+    mariner.  Once the (x,y,z) velocities are converted to ship/righted
+    velocities, the detailed orientation of the instrument is extracted from
+    heading, pitch, and roll vectors stored in \code{x$data$ts}.  As in the
+    previous step, these may be  adjusted to account for instrument type and
+    upward/downward orientation. The case-by-case details are as follows:
+
+    \itemize{
+
+        \item \emph{RDI pointed upward}: values of heading, pitch and roll are
+        used as stored in the object; "starboard" is taken as the negative of
+        the "x" component, "forward" is taken as the "y" component, and "mast"
+        is taken as the negative of the "z" component.
+
+        \item \emph{RDI pointed downward}: (FILLIN)
+
+        \item \emph{nortek pointed upward}: (FILLIN)
+
+        \item \emph{nortek pointed downward}: (FILLIN)
+
+        \item \emph{sontek pointed upward}: (FILLIN)
+
+        \item \emph{sontek pointed downward}: (FILLIN)
+
+    }
     
-    After these steps, a rotation matrix is used to convert to east-north-up
-    coordinates.  This is as described in RDI (1998, pages 13 and 14), which is
-    an excellent resource for further reading, in general.
+    After these steps, a standardized rotation matrix is used to convert to
+    east-north-up coordinates.  This is as described in RDI (1998, pages 13 and
+    14), which is an excellent resource for further reading, in general.
+
 }
 
-\value{An object with \code{data$ma$v[,1:3,]} altered appropriately,
+\value{An object with \code{data$ma$v[,,1:3]} altered appropriately,
   and \code{metadata$oce.orientation} changed from \code{xyz} to
   \code{enu}.}
 
