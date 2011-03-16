@@ -286,7 +286,7 @@ d <- oce.edit(d, "oce.coordinate", "xyz")    # present coordinate
 d <- oce.edit(d, "transformation.matrix", rbind(c(11033,-8503,-5238),
                                                 c(347,-32767,9338),
                                                 c(-1418, -1476, -1333)) / 4096)
-d <- oce.edit(d, "orientation", "up")
+d <- oce.edit(d, "orientation", "upward")
 d <- oce.edit(d, "heading", 0)
 d <- oce.edit(d, "pitch", 0)
 d <- oce.edit(d, "roll", 0)

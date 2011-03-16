@@ -989,6 +989,7 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
             starboard <- res$data$ma$v[,,1] 
             forward <- -res$data$ma$v[,,2]
             mast <- -res$data$ma$v[,,3]
+            oce.debug(debug, "heading=heading=90; roll=-roll; pitch=-pitch; S=X; F=-Y; M=-Z\n")
         } else if (res$metadata$orientation == "downward") {
             oce.debug(debug, "configuration: downward-looking\n")
             pitch <- (-pitch)

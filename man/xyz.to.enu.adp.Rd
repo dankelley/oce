@@ -52,8 +52,24 @@
     }
     
     After these steps, a standardized rotation matrix is used to convert to
-    east-north-up coordinates.  This is as described in RDI (1998, pages 13 and
-    14), which is an excellent resource for further reading, in general.
+    east-north-up coordinates.  As is described in the RDI coordinate
+    transformation manual (1998, pages 13 and 14), this matrix is based on
+    sines and cosines of the attitude angles.  Let \code{CH} and \code{SH}
+    denote cosine and sine of heading (after adjusting for declination), with
+    similar terms for pitch and roll using second letters \code{P} and
+    \code{R}.  Then, the rotation matrix is defined by
+
+    \preformatted{
+rbind(c( CH*CR + SH*SP*SR,   SH*CP,    CH*SR - SH*SP*CR),
+      c(-SH*CR + CH*SP*SR,   CH*CP,   -SH*SR - CH*SP*CR),
+      c(           -CP*SR,      SP,               CP*CR))
+    }
+
+    This matrix is left-multiplied by a matrix with three rows, the top a
+    vector of "starboard" values, the middle a vector of "forward" values, and
+    the bottom a vector of "mast" values.  Finally, the columns of
+    \code{data$ma$v[,,1:3]} are filled in with the result of the matrix
+    multiplication.
 
 }
 

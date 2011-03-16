@@ -342,7 +342,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
     status <- buf[vsd.start[floor(0.5*length(vsd.start))] + 23]
-    metadata$orientation <- if ("0" == substr(byte2binary(status, endian="big"), 1, 1)) "upwards" else "downwards"
+    metadata$orientation <- if ("0" == substr(byte2binary(status, endian="big"), 1, 1)) "upward" else "downward"
     ##
     metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0) # FIXME: surely this is in the header (?!?)
     oce.debug(debug, vector.show(metadata$burst.length, "burst.length"))
@@ -547,7 +547,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                      subsample.deltat=deltat,
                      coordinate.system="xyz", # guess
                      oce.coordinate="xyz",    # guess
-                     orientation="up")        # guess
+                     orientation="upward") # guess
 
     nt <- length(time)
     data <- list(ts=list(time=time,
@@ -1826,7 +1826,8 @@ xyz.to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
     if (x$metadata$oce.coordinate != "xyz")
         stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     have.ts.slow <- "ts.slow" %in% names(x$data)
-    have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading) == 1 && length(x$data$ts.slow$pitch) == 1 && length(x$data$ts.slow$roll) == 1) || (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
+    have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading)==1 && length(x$data$ts.slow$pitch)==1 && length(x$data$ts.slow$roll)==1) ||
+    (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
     oce.debug(debug, "have.steady.angles=",have.steady.angles,"\n")
     if (have.ts.slow) {
         oce.debug(debug, "adv data has data$ts.slow\n")
@@ -1854,16 +1855,32 @@ xyz.to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
     ##print(x$metadata)
     if (1 == length(agrep("nortek", x$metadata$manufacturer))) {
         ## Adjust the heading, so that the formulae (based on RDI) will work here
-        ## FIXME: should check up vs down, non-cabelled vs cabelled.
-        heading <- heading - 90
-        pitch <- - pitch
-        warning("since nortek-adv, changed sign of pitch and subtracted 90 from heading")
+        ## FIXME: should check if cabeled or not.
+        if (x$metadata$orientation == "upward") {
+            heading <- heading - 90
+            pitch <- - pitch
+            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
+        } else if (x$metadata$orientation == "downward") {
+            heading <- heading - 90
+            pitch <- - pitch
+            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
+        } else {
+            stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
+        }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) {
         ## Adjust the heading, so that the formulae (based on RDI) will work here
         ## FIXME: should check up vs down, non-cabelled vs cabelled.
-        heading <- heading - 90
-        pitch <- - pitch
-        warning("since sontek-adv, changed sign of pitch and subtracted 90 from heading")
+        if (x$metadata$orientation == "upward") {
+            heading <- heading - 90
+            pitch <- - pitch
+            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
+        } else if (x$metadata$orientation == "downward") {
+            heading <- heading - 90
+            pitch <- - pitch
+            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
+        } else {
+            stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
+        }
     }
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
