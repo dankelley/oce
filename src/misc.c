@@ -145,11 +145,14 @@ SEXP matrix_smooth(SEXP mat)
     int ncol = INTEGER(GET_DIM(mat))[1];
     int i, j;
     double *matp, *resp;
-    if (!isMatrix(mat)) error("'mat' must be a matrix");
+    if (!isMatrix(mat))
+        error("'mat' must be a matrix");
     //if (isInteger(mat)) warning("'mat' is integer, but should be real");
-    if (!isReal(mat)) error("'mat' must be numeric, not integer");
+    if (!isReal(mat))
+        error("'mat' must be numeric, not integer");
     matp = REAL(mat);
-    if (length(mat) != nrow * ncol) error("'nrow'*'ncol' must equal number of elements in 'mat'");
+    if (length(mat) != nrow * ncol)
+        error("'nrow'*'ncol' must equal number of elements in 'mat'");
     PROTECT(res = allocMatrix(REALSXP, nrow, ncol));
     resp = REAL(res);
     // copy edges (change this, if filter size changes)
@@ -175,5 +178,113 @@ SEXP matrix_smooth(SEXP mat)
     UNPROTECT(1);
     return(res);
 }
-#undef SQR
+
+/*
+Test with sleiwex 2008 m05 adp (sontek)
+
+load("/data/archive/sleiwex/2008/moorings/m05/adp/sontek_c344/r/m05_adp_xyz.rda")
+load("/data/archive/sleiwex/2008/moorings/m05/adp/sontek_c344/r/m05_adp_enu.rda")
+
+system.time(d <- xyz.to.enu.adp(m05.adp.xyz, declination=(-18.099)))
+png('newer.png'); plot(d, which='uv+ellipse+arrow', main='newer 6.114s');dev.off()
+
+
+heading <- m05.adp.xyz$data$ts$heading[1:5]
+pitch <- m05.adp.xyz$data$ts$pitch[1:5]
+roll <- m05.adp.xyz$data$ts$roll[1:5]
+heading <- heading - 90
+heading <- heading + (-18.099)
+pitch <- (-pitch)
+roll <- (-roll)
+starboard <- m05.adp.xyz$data$ma$v[1:5, 1, 1] # bin 1
+forward <- -m05.adp.xyz$data$ma$v[1:5, 1, 2] # bin 1
+mast <- -m05.adp.xyz$data$ma$v[1:5, 1, 3] # bin 1
+
+system("R CMD SHLIB misc.c")
+dyn.load("misc.so")
+m <- .Call("sfm_enu", heading, pitch, roll, starboard, forward, mast)
+print(m)
+print(m05.adp.enu$data$ma$v[1:5,1,])
+
+> m05.adp.enu$data$ma$v[1:5,1,]
+                   [,1]               [,2]                 [,3]
+[1,] 0.2267969684975225 0.2064642132398775 -0.04639371340121831
+[2,] 0.1686621484404889 0.2148234570537008 -0.02718656614270807
+[3,] 0.1356315034838943 0.2217491282924235 -0.03321269753774039
+[4,] 0.1909154445231142 0.1523488598127603 -0.02908284786998954
+[5,] 0.1529715003543281 0.1955612133135224 -0.03012186155548581
+
+ */
+#define mat_at(matrix, r, c, nr) *(matrix + r + c * nr)
+#define check(v, vname, n) \
+{ \
+    if (!isVector(v)) \
+        error("'%s' must be a vector\n", vname);\
+    if (!isReal(v))\
+        error("'%s' must have storage type 'numeric' (floating-point)\n", vname);\
+    if (n == 0) {\
+        n = GET_LENGTH(v);\
+    } else {\
+        if (n != GET_LENGTH(v))\
+        error("length of '%s' is %d, but it should be %d to match length of 'heading'\n", vname, GET_LENGTH(v), n);\
+    }\
+}
+SEXP sfm_enu(SEXP heading, SEXP pitch, SEXP roll, SEXP starboard, SEXP forward, SEXP mast)
+{
+    /* check lengths and storage types */
+    int n = 0;
+    check(heading, "heading", n);
+    check(pitch, "pitch", n)
+    check(roll, "roll", n)
+    check(starboard, "starboard", n)
+    check(forward, "forward", n)
+    check(roll, "roll", n)
+    /* calculate sines and cosines */
+    double *CH = (double *) R_alloc(n, sizeof(double));
+    double *SH = (double *) R_alloc(n, sizeof(double));
+    double *CP = (double *) R_alloc(n, sizeof(double));
+    double *SP = (double *) R_alloc(n, sizeof(double));
+    double *CR = (double *) R_alloc(n, sizeof(double));
+    double *SR = (double *) R_alloc(n, sizeof(double));
+    double *heading_p = REAL(heading), *pitch_p = REAL(pitch), *roll_p = REAL(roll);
+#define PI_OVER_180 0.0174532925199433
+    double h, p, r;
+    for (int i = 0; i < n; i++) {
+        h = PI_OVER_180 * heading_p[i];
+        p = PI_OVER_180 * pitch_p[i];
+        r = PI_OVER_180 * roll_p[i];
+        CH[i] = cos(h);
+        SH[i] = sin(h);
+        CP[i] = cos(p);
+        SP[i] = sin(p);
+        CR[i] = cos(r);
+        SR[i] = sin(r);
+    }
+#undef PI_OVER_180
+    double *starboard_p = REAL(starboard);
+    double *forward_p = REAL(forward);
+    double *mast_p = REAL(mast);
+    SEXP enu;
+    PROTECT(enu = allocMatrix(REALSXP, n, 3));
+    double *enu_p = REAL(enu);
+    for (int i = 0; i < n; i++) {
+        double CHi, SHi, CPi, SPi, CRi, SRi, starboardi, forwardi, masti;
+        starboardi = starboard_p[i];
+        forwardi = forward_p[i];
+        masti = mast_p[i];
+        CHi = CH[i];
+        SHi = SH[i];
+        CPi = CP[i];
+        SPi = SP[i];
+        CRi = CR[i];
+        SRi = SR[i];
+        *(enu_p + i      ) = starboardi * ( CHi * CRi + SHi * SPi * SRi) + forwardi * (SHi * CPi) + masti * ( CHi * SRi - SHi * SPi * CRi);
+        *(enu_p + i +   n) = starboardi * (-SHi * CRi + CHi * SPi * SRi) + forwardi * (CHi * CPi) + masti * (-SHi * SRi - CHi * SPi * CRi);
+        *(enu_p + i + 2*n) = starboardi * (-CPi * SRi)                   + forwardi * SPi         + masti * ( CPi * CRi);
+    }
+    UNPROTECT(1);
+    return(enu);
+}
+#undef check
+#undef mat_l
 
