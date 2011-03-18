@@ -1054,14 +1054,36 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
     } else {
         ## Rotation matrix, as in section 5.6 of RDI "adcp coordinate transformation" (1997)
         ## (Matches Clark Richards (2011-03-14 Pers. Comm.) *if* the sign of heading is reversed.)
-        if (!TRUE) {
+        if (1 == getOption("oce.flag1")) {
+            cat("oce.flag1 == 1 so using .Call\n")
             for (c in 1:nc) {
                 enu <- .Call("sfm_enu", heading + declination, pitch, roll, starboard[,c], forward[,c], mast[,c])
                 res$data$ma$v[,c,1] <- enu[,1]
                 res$data$ma$v[,c,2] <- enu[,2]
                 res$data$ma$v[,c,3] <- enu[,3]
             }
+        } else if (2 == getOption("oce.flag1")) {
+            cat("oce.flag1 == 2 so using .C\n")
+            for (c in 1:nc) {
+                enu <- .C("sfm_enu2",
+                          as.integer(np),
+                          as.double(heading + declination),
+                          as.double(pitch),
+                          as.double(roll), 
+                          as.double(starboard[,c]),
+                          as.double(forward[,c]),
+                          as.double(mast[,c]),
+                          east = double(np),
+                          north = double(np),
+                          up = double(np),
+                          NAOK=TRUE,
+                          PACKAGE="oce")
+                res$data$ma$v[,c,1] <- enu$east
+                res$data$ma$v[,c,2] <- enu$north
+                res$data$ma$v[,c,3] <- enu$up
+            }
         } else {
+            cat("oce.flag1 == 0 so using lapply and internal matrix operations\n")
             ## use lapply() to rotate using profile-by-profile matrix multiplication
             R <- array(dim=c(3, 3, np))
             R[1,1,] <-  CH * CR + SH * SP * SR

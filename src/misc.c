@@ -182,10 +182,11 @@ SEXP matrix_smooth(SEXP mat)
 /*
 Test with sleiwex 2008 m05 adp (sontek)
 
-load("/data/archive/sleiwex/2008/moorings/m05/adp/sontek_c344/r/m05_adp_xyz.rda")
+load("/data/archive/sleiwex/2008/moorings/m05/adp/sontek_c344/r/m05_adp_xyz.rda") 
 load("/data/archive/sleiwex/2008/moorings/m05/adp/sontek_c344/r/m05_adp_enu.rda")
 
-system.time(d <- xyz.to.enu.adp(m05.adp.xyz, declination=(-18.099)))
+options(oce.flag1=1)
+system.time(d <- xyz.to.enu.adp(m05.adp.xyz, declination=(-18.099))) 
 png('newer.png'); plot(d, which='uv+ellipse+arrow', main='newer 6.114s');dev.off()
 
 
@@ -288,3 +289,32 @@ SEXP sfm_enu(SEXP heading, SEXP pitch, SEXP roll, SEXP starboard, SEXP forward, 
 #undef check
 #undef mat_l
 
+void
+sfm_enu2(int *n, double *heading, double *pitch, double *roll, double *starboard, double *forward, double *mast, double *east, double *north, double *up)
+{
+    /* calculate sines and cosines */
+    double *CH = (double *) R_alloc(*n, sizeof(double));
+    double *SH = (double *) R_alloc(*n, sizeof(double));
+    double *CP = (double *) R_alloc(*n, sizeof(double));
+    double *SP = (double *) R_alloc(*n, sizeof(double));
+    double *CR = (double *) R_alloc(*n, sizeof(double));
+    double *SR = (double *) R_alloc(*n, sizeof(double));
+    double h, p, r;
+    int nn = *n;
+    for (int i = 0; i < nn; i++) {
+#define PI_OVER_180 0.0174532925199433
+        h = PI_OVER_180 * heading[i];
+        p = PI_OVER_180 * pitch[i];
+        r = PI_OVER_180 * roll[i];
+#undef PI_OVER_180
+        CH[i] = cos(h);
+        SH[i] = sin(h);
+        CP[i] = cos(p);
+        SP[i] = sin(p);
+        CR[i] = cos(r);
+        SR[i] = sin(r);
+        east[i]  = starboard[i] * ( CH[i] * CR[i] + SH[i] * SP[i] * SR[i]) + forward[i] * (SH[i] * CP[i]) + mast[i] * ( CH[i] * SR[i] - SH[i] * SP[i] * CR[i]);
+        north[i] = starboard[i] * (-SH[i] * CR[i] + CH[i] * SP[i] * SR[i]) + forward[i] * (CH[i] * CP[i]) + mast[i] * (-SH[i] * SR[i] - CH[i] * SP[i] * CR[i]);
+        up[i]    = starboard[i] * (-CP[i] * SR[i])                         + forward[i] * SP[i]           + mast[i] * ( CP[i] * CR[i]);
+    }
+}
