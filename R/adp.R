@@ -1063,9 +1063,29 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
                 res$data$ma$v[,c,3] <- enu[,3]
             }
         } else if (2 == getOption("oce.flag1")) {
-            cat("oce.flag1 == 2 so using .C\n")
+            cat("oce.flag1 == 2 so using .C(\"sfm_enu2\", ...)\n")
             for (c in 1:nc) {
                 enu <- .C("sfm_enu2",
+                          as.integer(np),
+                          as.double(heading + declination),
+                          as.double(pitch),
+                          as.double(roll), 
+                          as.double(starboard[,c]),
+                          as.double(forward[,c]),
+                          as.double(mast[,c]),
+                          east = double(np),
+                          north = double(np),
+                          up = double(np),
+                          NAOK=TRUE,
+                          PACKAGE="oce")
+                res$data$ma$v[,c,1] <- enu$east
+                res$data$ma$v[,c,2] <- enu$north
+                res$data$ma$v[,c,3] <- enu$up
+            }
+         } else if (3 == getOption("oce.flag1")) {
+            cat("oce.flag1 == 3 so using .C(\"sfm_enu3\", ...)\n")
+            for (c in 1:nc) {
+                enu <- .Fortran("sfm_enu3",
                           as.integer(np),
                           as.double(heading + declination),
                           as.double(pitch),

@@ -185,8 +185,7 @@ Test with sleiwex 2008 m05 adp (sontek)
 load("/data/archive/sleiwex/2008/moorings/m05/adp/sontek_c344/r/m05_adp_xyz.rda") 
 load("/data/archive/sleiwex/2008/moorings/m05/adp/sontek_c344/r/m05_adp_enu.rda")
 
-options(oce.flag1=1)
-system.time(d <- xyz.to.enu.adp(m05.adp.xyz, declination=(-18.099))) 
+options(oce.flag1=1);system.time(d <- xyz.to.enu.adp(m05.adp.xyz, declination=(-18.099))) 
 png('newer.png'); plot(d, which='uv+ellipse+arrow', main='newer 6.114s');dev.off()
 
 
