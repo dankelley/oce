@@ -1009,15 +1009,10 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
     oce.debug(debug, vector.show(roll, "roll"))
     np <- dim(x$data$ma$v)[1]           # number of profiles
     nc <- dim(x$data$ma$v)[2]           # number of cells
-
-    ## Construct the 3*3*np matrix that is the product of three rotation matrices, using
-    ## O(9*np) of matrix memory, versus O(27*np) for the three matrices applied in sequence.
-
-    ## Rotation matrix, as in section 5.6 of RDI "adcp coordinate transformation" (1997)
-    ## (Matches Clark Richards (2011-03-14 Pers. Comm.) *if* the sign of heading is reversed.)
+    ## ADP and ADV calculations are both handled by sfm_enu
     for (c in 1:nc) {
         enu <- .C("sfm_enu",
-                  as.integer(length(x$data$ts$heading)),
+                  as.integer(length(x$data$ts$heading)), # need not equal np
                   as.double(heading + declination),
                   as.double(pitch),
                   as.double(roll), 

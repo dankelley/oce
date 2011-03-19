@@ -1851,7 +1851,6 @@ xyz.to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
     }
-    heading <- heading + declination
     ##print(x$metadata)
     if (1 == length(agrep("nortek", x$metadata$manufacturer))) {
         ## Adjust the heading, so that the formulae (based on RDI) will work here
@@ -1882,63 +1881,31 @@ xyz.to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
     }
-    oce.debug(debug, vector.show(heading, "heading"))
-    oce.debug(debug, vector.show(pitch, "pitch"))
-    oce.debug(debug, vector.show(roll, "roll"))
-    to.radians <- atan2(1,1) / 45
-    hrad <- to.radians * heading        # This could save millions of multiplies
-    prad <- to.radians * pitch          # although the trig is probably taking
-    rrad <- to.radians * roll           # most of the time.
-    CH <- cos(hrad)
-    SH <- sin(hrad)
-    CP <- cos(prad)
-    SP <- sin(prad)
-    CR <- cos(rrad)
-    SR <- sin(rrad)
     if (x$metadata$orientation == "downward") { #FIXME: I think this is plain wrong; should change sign of row 2 and 3 (??)
-        warning("xyz.to.enu.adv() switching signs of pitch and roll, because unit is oriented downward. BUT IS THIS CORRECT??")
-        SP <- -SP
-        SR <- -SR
+        warning("FIXME: xyz.to.enu.adv() should switch signs of pitch and roll, because unit is oriented downward. BUT IS THIS CORRECT??")
     }
+    ## FIXME: should be defining starboard, forward, mast in the above devices-specific blocks
+    starboard <- x$data$ma$v[,1]
+    forward <- x$data$ma$v[,2]
+    mast <- x$data$ma$v[,3]
     np <- dim(x$data$ma$v)[1]
-    if (have.steady.angles) {
-        oce.debug(debug, "the heading, pitch, and roll are all constant\n")
-        R <- array(numeric(), dim=c(3, 3))
-        R[1,1] <-  CH * CR + SH * SP * SR
-        R[1,2] <-  SH * CP
-        R[1,3] <-  CH * SR - SH * SP * CR
-        R[2,1] <- -SH * CR + CH * SP * SR
-        R[2,2] <-  CH * CP
-        R[2,3] <- -SH * SR - CH * SP * CR
-        R[3,1] <- -CP * SR
-        R[3,2] <-  SP
-        R[3,3] <-  CP * CR
-        u <- R[1,1] * x$data$ma$v[,1] + R[1,2] * x$data$ma$v[,2] + R[1,3] * x$data$ma$v[,3]
-        v <- R[2,1] * x$data$ma$v[,1] + R[2,2] * x$data$ma$v[,2] + R[2,3] * x$data$ma$v[,3]
-        w <- R[3,1] * x$data$ma$v[,1] + R[3,2] * x$data$ma$v[,2] + R[3,3] * x$data$ma$v[,3]
-        x$data$ma$v[,1] <- u
-        x$data$ma$v[,2] <- v
-        x$data$ma$v[,3] <- w
-        ##(speed test; replace above 3 lines with this) x$data$ma$v <- t(R %*% t(x$data$ma$v))
-    } else {
-        ## as with corresponding adp routine, construct single 3*3*np matrix
-        oce.debug(debug, "the heading, pitch, and roll vary with time\n")
-        tr.mat <- array(numeric(), dim=c(3, 3, np))
-        tr.mat[1,1,] <-  CH * CR + SH * SP * SR
-        tr.mat[1,2,] <-  SH * CP
-        tr.mat[1,3,] <-  CH * SR - SH * SP * CR
-        tr.mat[2,1,] <- -SH * CR + CH * SP * SR
-        tr.mat[2,2,] <-  CH * CP
-        tr.mat[2,3,] <- -SH * SR - CH * SP * CR
-        tr.mat[3,1,] <- -CP * SR
-        tr.mat[3,2,] <-  SP
-        tr.mat[3,3,] <-  CP * CR
-        ##rm(hrad,prad,rrad,CH,SH,CP,SP,CR,SR) # might be tight on space (but does this waste time?)
-        rotated <- matrix(unlist(lapply(1:np, function(p) tr.mat[,,p] %*% x$data$ma$v[p,])), nrow=3)
-        x$data$ma$v[,1] <- rotated[1,]
-        x$data$ma$v[,2] <- rotated[2,]
-        x$data$ma$v[,3] <- rotated[3,]
-    }
+    enu <- .C("sfm_enu",
+              as.integer(length(heading)), # need not equal np
+              as.double(heading + declination),
+              as.double(pitch),
+              as.double(roll), 
+              as.integer(np),
+              as.double(starboard),
+              as.double(forward),
+              as.double(mast),
+              east = double(np),
+              north = double(np),
+              up = double(np),
+              NAOK=TRUE,
+              PACKAGE="oce")
+    x$data$ma$v[,1] <- enu$east
+    x$data$ma$v[,2] <- enu$north
+    x$data$ma$v[,3] <- enu$up
     x$metadata$oce.coordinate <- "enu"
     x$processing.log <- processing.log.add(x$processing.log,
                                            paste(deparse(match.call()), sep="", collapse=""))
