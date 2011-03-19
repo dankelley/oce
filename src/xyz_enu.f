@@ -15,15 +15,16 @@
         SP(i) = sin(p)
         CR(i) = cos(r)
         SR(i) = sin(r)
-        ea(i) = st(i) * (CH(i) * CR(i) + SH(i) * SP(i) * SR(i)) + 
-     &          fo(i) * (SH(i) * CP(i)) + 
-     &          ma(i) * (CH(i) * SR(i) - SH(i) * SP(i) * CR(i))
-        no(i) = st(i) * (-SH(i) * CR(i) + CH(i) * SP(i) * SR(i)) +
-     &          fo(i) * (CH(i) * CP(i)) +
-     &          ma(i) * (-SH(i) * SR(i) - CH(i) * SP(i) * CR(i))
-        up(i) = st(i) * (-CP(i) * SR(i)) +
-     &          fo(i) * SP(i) +
-     &          ma(i) * (CP(i) * CR(i))
-      END DO
-        RETURN
-        END
+        ea(i) = st(i) * ( CH(i) * CR(i) + SH(i) * SP(i) * SR(i) ) + 
+     &          fo(i) * ( SH(i) * CP(i) ) + 
+     &          ma(i) * ( CH(i) * SR(i) - SH(i) * SP(i) * CR(i) )
+        no(i) = st(i) * (-SH(i) * CR(i) + CH(i) * SP(i) * SR(i) ) +
+     &          fo(i) * ( CH(i) * CP(i) ) +
+     &          ma(i) * (-SH(i) * SR(i) - CH(i) * SP(i) * CR(i) )
+        up(i) = st(i) * (-CP(i) * SR(i) ) +
+     &          fo(i) * ( SP(i) ) +
+     &          ma(i) * ( CP(i) * CR(i) )
+        IF (0 .EQ. MOD(n, 1000)) CALL rchkusr()
+      ENDDO
+      RETURN
+      END
