@@ -1007,99 +1007,70 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
     oce.debug(debug, vector.show(heading, "heading"))
     oce.debug(debug, vector.show(pitch, "pitch"))
     oce.debug(debug, vector.show(roll, "roll"))
-    radian.per.degree <- atan2(1,1) / 45
 
-    h <- (heading + declination) * radian.per.degree
-    p <- pitch * radian.per.degree
-    r <- roll * radian.per.degree
-    CH <- cos(h)
-    SH <- sin(h)
-    CP <- cos(p)
-    SP <- sin(p)
-    CR <- cos(r)
-    SR <- sin(r)
-
-    np <- dim(x$data$ma$v)[1]           # number of profiles
-    nc <- dim(x$data$ma$v)[2]           # number of cells
     ## Construct the 3*3*np matrix that is the product of three rotation matrices, using
     ## O(9*np) of matrix memory, versus O(27*np) for the three matrices applied in sequence.
-    if (length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1) {
-        ## Steady (heading, pitch, roll) angles only need a 2D rotation matrix.
-        R <- array(dim=c(3, 3))
-        R[1,1] <-  CH * CR + SH * SP * SR
-        R[1,2] <-  SH * CP
-        R[1,3] <-  CH * SR - SH * SP * CR
-        R[2,1] <- -SH * CR + CH * SP * SR
-        R[2,2] <-  CH * CP
-        R[2,3] <- -SH * SR - CH * SP * CR
-        R[3,1] <- -CP * SR
-        R[3,2] <-  SP
-        R[3,3] <-  CP * CR
-        ## Timing tests (not recorded) suggest little speed difference
-        ## in working across profiles or across cells.  This may just
-        ## mean that the loop overhead is small compared with the
-        ## matrix work.  In any case, it opens the possibility of
-        ## doing the work across profile, or cell, as fits the
-        ## problem.  Below, partly as a demonstration, I am working
-        ## across cells (not profiles, as the rest of the code).
+
+    ## Rotation matrix, as in section 5.6 of RDI "adcp coordinate transformation" (1997)
+    ## (Matches Clark Richards (2011-03-14 Pers. Comm.) *if* the sign of heading is reversed.)
+    if (1 == getOption("oce.flag1")) {
+        cat("oce.flag1 == 1 so using .C(\"sfm_enu\", ...)\n")
+        for (c in 1:nc) {
+            enu <- .C("sfm_enu",
+                      as.integer(length(x$data$ts$heading)),
+                      as.double(heading + declination),
+                      as.double(pitch),
+                      as.double(roll), 
+                      as.integer(np),
+                      as.double(starboard[,c]),
+                      as.double(forward[,c]),
+                      as.double(mast[,c]),
+                      east = double(np),
+                      north = double(np),
+                      up = double(np),
+                      NAOK=TRUE,
+                      PACKAGE="oce")
+            res$data$ma$v[,c,1] <- enu$east
+            res$data$ma$v[,c,2] <- enu$north
+            res$data$ma$v[,c,3] <- enu$up
+        }
+    } else if (0 == getOption("oce.flag1")) {
+        cat("oce.flag1 == 0 so using lapply and internal matrix operations\n")
+        radian.per.degree <- atan2(1,1) / 45
+        h <- (heading + declination) * radian.per.degree
+        p <- pitch * radian.per.degree
+        r <- roll * radian.per.degree
+        CH <- cos(h)
+        SH <- sin(h)
+        CP <- cos(p)
+        SP <- sin(p)
+        CR <- cos(r)
+        SR <- sin(r)
+
+        np <- dim(x$data$ma$v)[1]           # number of profiles
+        nc <- dim(x$data$ma$v)[2]           # number of cells
+        ## use lapply() to rotate using profile-by-profile matrix multiplication
+        R <- array(dim=c(3, 3, np))
+        R[1,1,] <-  CH * CR + SH * SP * SR
+        R[1,2,] <-  SH * CP
+        R[1,3,] <-  CH * SR - SH * SP * CR
+        R[2,1,] <- -SH * CR + CH * SP * SR
+        R[2,2,] <-  CH * CP
+        R[2,3,] <- -SH * SR - CH * SP * CR
+        R[3,1,] <- -CP * SR
+        R[3,2,] <-  SP
+        R[3,3,] <-  CP * CR
         rot <- array(
                      unlist(
-                            lapply(1:nc,
-                                   function(c)
-                                       R %*% rbind(starboard, forward, mast))),
-                     dim=c(3,nc,np))
-        res$data$ma$v[,,1] <- rot[1,,] # FIXME: check on the formula for constant h/p/r (or delete this)
-        res$data$ma$v[,,2] <- rot[2,,]
-        res$data$ma$v[,,3] <- rot[3,,]
+                            lapply(1:np,
+                                   function(p)
+                                       R[,,p] %*% rbind(starboard[p,], forward[p,], mast[p,]))),
+                     dim=c(3, nc, np))
+        res$data$ma$v[,,1] <- t(rot[1,,])
+        res$data$ma$v[,,2] <- t(rot[2,,])
+        res$data$ma$v[,,3] <- t(rot[3,,])
     } else {
-        ## Rotation matrix, as in section 5.6 of RDI "adcp coordinate transformation" (1997)
-        ## (Matches Clark Richards (2011-03-14 Pers. Comm.) *if* the sign of heading is reversed.)
-        if (1 == getOption("oce.flag1")) {
-            cat("oce.flag1 == 1 so using .C(\"sfm_enu\", ...)\n")
-            for (c in 1:nc) {
-                enu <- .C("sfm_enu",
-                          as.integer(np),
-                          as.double(heading + declination),
-                          as.double(pitch),
-                          as.double(roll), 
-                          as.integer(np),
-                          as.double(starboard[,c]),
-                          as.double(forward[,c]),
-                          as.double(mast[,c]),
-                          east = double(np),
-                          north = double(np),
-                          up = double(np),
-                          NAOK=TRUE,
-                          PACKAGE="oce")
-                res$data$ma$v[,c,1] <- enu$east
-                res$data$ma$v[,c,2] <- enu$north
-                res$data$ma$v[,c,3] <- enu$up
-            }
-        } else if (0 == getOption("oce.flag1")) {
-            cat("oce.flag1 == 0 so using lapply and internal matrix operations\n")
-            ## use lapply() to rotate using profile-by-profile matrix multiplication
-            R <- array(dim=c(3, 3, np))
-            R[1,1,] <-  CH * CR + SH * SP * SR
-            R[1,2,] <-  SH * CP
-            R[1,3,] <-  CH * SR - SH * SP * CR
-            R[2,1,] <- -SH * CR + CH * SP * SR
-            R[2,2,] <-  CH * CP
-            R[2,3,] <- -SH * SR - CH * SP * CR
-            R[3,1,] <- -CP * SR
-            R[3,2,] <-  SP
-            R[3,3,] <-  CP * CR
-            rot <- array(
-                         unlist(
-                                lapply(1:np,
-                                       function(p)
-                                           R[,,p] %*% rbind(starboard[p,], forward[p,], mast[p,]))),
-                         dim=c(3, nc, np))
-            res$data$ma$v[,,1] <- t(rot[1,,])
-            res$data$ma$v[,,2] <- t(rot[2,,])
-            res$data$ma$v[,,3] <- t(rot[3,,])
-        } else {
-            stop("unknown value of oce.flag1; must be 0 or 1");
-        }
+        stop("unknown value of oce.flag1; must be 0 or 1");
     }
     res$metadata$oce.coordinate <- "enu"
     res$processing.log <- processing.log.add(res$processing.log,
