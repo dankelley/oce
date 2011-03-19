@@ -4,7 +4,7 @@ Date: 2011-03-19
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 0.99)
+Depends: R (>= 2.10)
 Description: Supports the analysis of Oceanographic data,
  including ADP measurements, CTD measurements, sectional
  data, sea-level timeseries, coastline files, etc.  
