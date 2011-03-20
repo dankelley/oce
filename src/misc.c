@@ -145,11 +145,14 @@ SEXP matrix_smooth(SEXP mat)
     int ncol = INTEGER(GET_DIM(mat))[1];
     int i, j;
     double *matp, *resp;
-    if (!isMatrix(mat)) error("'mat' must be a matrix");
+    if (!isMatrix(mat))
+        error("'mat' must be a matrix");
     //if (isInteger(mat)) warning("'mat' is integer, but should be real");
-    if (!isReal(mat)) error("'mat' must be numeric, not integer");
+    if (!isReal(mat))
+        error("'mat' must be numeric, not integer");
     matp = REAL(mat);
-    if (length(mat) != nrow * ncol) error("'nrow'*'ncol' must equal number of elements in 'mat'");
+    if (length(mat) != nrow * ncol)
+        error("'nrow'*'ncol' must equal number of elements in 'mat'");
     PROTECT(res = allocMatrix(REALSXP, nrow, ncol));
     resp = REAL(res);
     // copy edges (change this, if filter size changes)
@@ -175,5 +178,4 @@ SEXP matrix_smooth(SEXP mat)
     UNPROTECT(1);
     return(res);
 }
-#undef SQR
 

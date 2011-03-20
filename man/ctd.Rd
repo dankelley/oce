@@ -11,7 +11,9 @@
 
 \usage{data(ctd)}
 
-\examples{ctd <- read.oce(system.file("data", "ctd.cnv", package="oce"))}
+\examples{
+ctd <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+}
 
 \source{Peter Galbraith acquired these data during the \acronym{SLEIWEX}
 field program, part of a Dalhousie/IML cooperative study of

@@ -1,13 +1,13 @@
-\name{adp.beam2xyz}
+\name{beam.to.xyz.adp}
 
-\alias{adp.beam2xyz}
+\alias{beam.to.xyz.adp}
 
 \title{Convert ADP from beam coordinates to xyz coordinates}
 
 \description{Convert ADP velocity components from a beam-based
   coordinate system to a xyz-based coordinate system.}
 
-\usage{adp.beam2xyz(x, debug=getOption("oce.debug"))}
+\usage{beam.to.xyz.adp(x, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adp"}.}

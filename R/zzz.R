@@ -14,7 +14,9 @@
                    oce.draw.time.range = TRUE,
                    oce.abbreviate.time.range = TRUE,
                    oce.time.format = "%Y-%m-%d %H:%M:%S",
+                   oce.flag1 = 1,
                    oce.debug = 0)
     toset <- !(names(op.oce) %in% names(op))
-    if(any(toset)) options(op.oce[toset])
+    if(any(toset))
+        options(op.oce[toset])
 }

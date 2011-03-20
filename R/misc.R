@@ -1,4 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
 {
     if (missing(x))
@@ -24,7 +24,6 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
     oce.debug(debug, "\b\b} # retime.adv()\n")
     rval
 }
-
 
 normalize <- function(x)
 {
@@ -209,7 +208,7 @@ oce.spectrum <- function(x, ...)
     invisible(rval)
 }
 
-vector.show <- function(v, msg)
+vector.show <- function(v, msg, digits=5)
 {
     n <- length(v)
     if (missing(msg))
@@ -217,10 +216,19 @@ vector.show <- function(v, msg)
     if (n == 0) {
         paste(msg, "(empty vector)\n")
     } else {
-        if (n > 6) {
-            paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
-        } else {
-            paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
+        if (is.numeric(v)) {
+            if (n > 6) {
+                vv <- format(v[c(1, 2, 3, n-2, n-1, n)], digits=digits)
+                paste(msg, ": ", vv[1], ", ", vv[2], ", ", vv[3], ", ..., ", vv[4], ", ", vv[5], ", ", vv[6], " (length ", n, ")\n", sep="")
+            } else {
+                paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
+            }
+       } else {
+             if (n > 6) {
+                paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
+            } else {
+                paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
+            }
         }
     }
 }
@@ -239,7 +247,7 @@ matrix.smooth <- function(m)
     .Call("matrix_smooth", m)
 }
 
-match.bytes <- function(input, b1, ...)
+matchBytes <- function(input, b1, ...)
 {
     if (missing(input))
         stop("must provide \"input\"")
@@ -331,10 +339,10 @@ lon.format <- function(lon, digits=max(6, getOption("digits") - 1))
     for (i in 1:n)
         if (is.na(lon[i]))
             rval[i] <- ""
-    else
-        rval[i] <- paste(format(abs(lon[i]), digits=digits),
-                         if (lon[i] > 0) "E" else "S",
-                         sep="")
+        else
+            rval[i] <- paste(format(abs(lon[i]), digits=digits),
+                             if (lon[i] > 0) "E" else "S",
+                             sep="")
     rval
 }
 
@@ -577,10 +585,10 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
             llat2 <- lat2
             llon2 <- lon2
         }
-        #subroutine geoddist(DLAT1,DLON1,DLAT2,DLON2,A,F,FAZ,BAZ,S)
+                                        #subroutine geoddist(DLAT1,DLON1,DLAT2,DLON2,A,F,FAZ,BAZ,S)
         res <- vector("numeric", n1)
         for (i in 1:n1) {
-            #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
+                                        #cat("values=",lat1[i],lon1[i],llat2[i],llon2[i],"\n")
             if (is.finite(lat1[i]) && is.finite(lon1[i]) && is.finite(llat2[i]) && is.finite(llon2[i])) {
                 ## res[i] <- .Fortran("geoddist",
                 res[i] <- .C("geoddist",
@@ -1174,9 +1182,115 @@ show.fives <- function(x, indent="    ")
 
 oce.debug <- function(debug=0, ...)
 {
-    debug <- if (debug > 4) 4 else floor(debug + 0.5)
+    debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
-        cat(paste(rep("  ", 5 - debug), collapse=""), ...)
+        ##cat(paste(rep("  ", 5 - debug), collapse=""), ...)
+        cat(paste(rep("  ", debug), collapse=""), ...)
     }
     flush.console()
 }
+
+drawpalette <- function(zlim,
+                        zlab="",
+                        breaks, col,
+                        draw.contours=TRUE,
+                        debug=getOption("oce.debug"),
+                        ...)
+{
+    debug <- min(5, max(debug, 0))
+    gave.zlim <- !missing(zlim)
+    gave.breaks <- !missing(breaks)
+    if (gave.zlim)
+        oce.debug(debug, "\b\bpalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
+    else
+        oce.debug(debug, "palette() with no arguments: set space to right of a graph\n")
+    oce.debug(debug, if (gave.breaks) "gave breaks\n" else "did not give breaks\n")
+    omai <- par("mai")
+    omar <- par("mar")
+    device.width <- par("din")[1]
+    oce.debug(debug, "device.width = ", device.width, " inches\n")
+    line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
+    tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
+
+    ## widths of items [in inches]
+    widths <- list(mar.lhs=omai[2],    # width of LHS margin
+                   main=NA,            # main image width
+                   palette.separation=1/8, # between main & palette
+                   palette.width=1/4,  # palette width
+                   mar.rhs=tic.length + line.height * if(nchar(zlab)==0) 1.0 else 1.5) # width of RHS margin
+    ## next line ensures that things add up... but see FIXME below
+    widths$main <- device.width - widths$mar.lhs - widths$palette.separation - widths$palette.width - widths$mar.rhs
+    if (debug > 0) {
+        for (n in names(widths)) {
+            oce.debug(debug, " width$", n, " = ", widths[[n]], "\n", sep="")
+        }
+    }
+    contours <- NULL
+    if (gave.zlim) {
+        if (gave.breaks) {
+            breaks.orig <- breaks
+        } else {
+            zrange <- zlim
+            if (missing(col)) {
+                breaks <- pretty(zlim)
+                contours <- breaks
+            } else {
+                if (is.function(col)) {
+                    breaks <- seq(zlim[1], zlim[2], length.out=256) # smooth image colorscale
+                    contours <- pretty(zlim)
+                } else {
+                    breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                    contours <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                }
+            }
+            breaks.orig <- breaks
+            breaks[1] <- zrange[1]
+            breaks[length(breaks)] <- zrange[2]
+        }
+        if (missing(col))
+            col <- oce.colors.palette(n=length(breaks)-1)
+        if (is.function(col))
+            col <- col(n=length(breaks)-1)
+    }
+    the.mai <- c(omai[1],
+                 widths$main + widths$mar.lhs + widths$palette.separation,
+                 omai[3],
+                 widths$mar.rhs)
+    oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
+    the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
+    oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
+    if (gave.zlim) {
+        par(mai=the.mai)
+        if (!gave.breaks) {
+            palette <- seq(zlim[1], zlim[2], length.out=300)
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
+                  zlim=zlim)
+        } else {
+            palette <- seq(zlim[1], zlim[2], length.out=300)
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                  breaks=breaks.orig,
+                  col=col,
+                  zlim=zlim)
+        }
+        if (draw.contours)
+            abline(h=contours)
+        box()
+        if (debug > 0)
+            print(palette)
+        axis(side=4, at=if (is.null(contours)) contours else pretty(palette))
+        if (nchar(zlab) > 0)
+            mtext(zlab, side=4, line=2.0, cex=par('cex'))
+    }
+    the.mai <- c(omai[1],
+                 widths$mar.lhs,
+                 omai[3],
+                 widths$palette.separation + widths$palette.width + widths$mar.rhs)
+    the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
+    oce.debug(debug, "original par(mai)=", format(omai, digits=2), "\n")
+    oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), "\n")
+    oce.debug(debug, "\b\b} # palette()\n")
+    if (gave.zlim)
+        par(new=TRUE, mai=the.mai)
+    invisible()
+}
+

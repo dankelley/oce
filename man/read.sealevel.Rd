@@ -89,13 +89,15 @@ read.sealevel(file, tz=getOption("oce.tz"),
 }
 
 \examples{
+\dontrun{
 library(oce)
 # sealevel.hal
-sl <- read.oce(system.file("data", "h275a96.dat", package="oce"))
+sl <- read.oce("h275a96.dat")
 summary(sl)
 plot(sl)
 m <- tidem(sl)
 plot(m)
+}
 }
 
 \references{The Hawaii archive site at \url{http://ilikai.soest.hawaii.edu/uhslc/datai.html}

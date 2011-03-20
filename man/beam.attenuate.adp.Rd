@@ -1,12 +1,12 @@
-\name{adp.beam.attenuate}
+\name{beam.attenuate.adp}
 
-\alias{adp.beam.attenuate}
+\alias{beam.attenuate.adp}
 
 \title{Attenuate ADP beam signal strength}
 
 \description{Attenuate ADP beam signal strength}
 
-\usage{adp.beam.attenuate(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oce.debug"))}
+\usage{beam.attenuate.adp(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oce.debug"))}
 
 \arguments{
     \item{x}{an object of class \code{"adp"}}
@@ -30,7 +30,7 @@
 library(oce)
 data(adp)
 plot(adp, which=5) # beam 1 echo intensity
-adp.att <- adp.beam.attenuate(adp)
+adp.att <- beam.attenuate.adp(adp)
 plot(adp.att, which=5) # beam 1 echo intensity
 ## Profiles
 par(mar=c(4, 4, 1, 1))

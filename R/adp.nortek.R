@@ -414,6 +414,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      config.tilt.sensor=header$head$config.tilt.sensor,
                      beam.angle=25,     # FIXME: may change with new devices
                      tilt.sensor.orientation=header$head$tilt.sensor.orientation,
+                     orientation=header$head$tilt.sensor.orientation,
                      frequency=header$head$frequency,
                      head.serial.number=header$head$head.serial.number,
                      bin1.distance=header$user$blanking.distance, # FIXME: is this right?

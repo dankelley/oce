@@ -27,8 +27,10 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## Fixed Leader Data, abbreviated FLD, pointed to by the data offset
     FLD <- buf[data.offset[1]+1:(data.offset[2] - data.offset[1])]
     oce.debug(debug, "Fixed Leader Data:", paste(FLD, collapse=" "), "\n")
-    if (FLD[1] != 0x00) stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
-    if (FLD[2] != 0x00) stop("second byte of fixed leader header must be a0x00 but it was ", FLD[2])
+    if (FLD[1] != 0x00)
+        stop("first byte of fixed leader header must be 0x00 but it was ", FLD[1])
+    if (FLD[2] != 0x00)
+        stop("second byte of fixed leader header must be a0x00 but it was ", FLD[2])
     program.version.major <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     program.version.minor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     program.version <- paste(program.version.major, program.version.minor, sep=".")
@@ -87,7 +89,8 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     number.of.cells <- readBin(FLD[10], "integer", n=1, size=1) # WN
     pings.per.ensemble <- readBin(FLD[11:12], "integer", n=1, size=2, endian="little")
     cell.size <- readBin(FLD[13:14], "integer", n=1, size=2, endian="little") / 100 # WS in m
-    if (cell.size < 0 || cell.size > 64) stop("cell size of ", cell.size, "is not in the allowed range of 0m to 64m")
+    if (cell.size < 0 || cell.size > 64)
+        stop("cell size of ", cell.size, "is not in the allowed range of 0m to 64m")
     blank.after.transmit <- readBin(FLD[15:16], "integer", n=1, size=2, endian="little") / 100 # in m
     profiling.mode <- readBin(FLD[17], "integer", n=1, size=1) # WM
     low.corr.thresh <- readBin(FLD[18], "integer", n=1, size=1)
@@ -157,7 +160,6 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ## clearly different, in the two documentation entries.
     if (FLD.length == 59) {
         instrument.subtype <- "workhorse" # "WorkHorse Commands and Output Data Format_Mar05.pdf" (and Nov07 version) Figure 9 on page 122 (pdf-page 130)
-
     } else if (FLD.length == 50) {
         instrument.subtype <- "surveyor" # "Ocean Surveyor Technical Manual.pdf" table D-3 on page D-5 (pdf-page 139)
     } else {
@@ -168,8 +170,10 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     VLD <- buf[data.offset[2]+1:nVLD]
     oce.debug(debug, "Variable Leader Data (", length(VLD), "bytes):", paste(VLD, collapse=" "), "\n")
     ## ensure that header is not ill-formed
-    if (VLD[1] != 0x80) stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
-    if (VLD[2] != 0x00) stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
+    if (VLD[1] != 0x80)
+        stop("byte 1 of variable leader data should be 0x80, but it is ", VLD[1])
+    if (VLD[2] != 0x00)
+        stop("byte 2 of variable leader data should be 0x00, but it is ", VLD[2])
     ensemble.number <- readBin(VLD[3:4], "integer", n=1, size=2, endian="little")
     ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
 
@@ -314,7 +318,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -368,7 +373,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                                          tz=tz)) - as.numeric(measurement.start)
             oce.debug(debug, "measurement.deltat:", measurement.deltat, "\n")
             if (inherits(from, "POSIXt")) {
-                if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+                if (!inherits(to, "POSIXt"))
+                    stop("if 'from' is POSIXt, then 'to' must be, also")
                 from.pair <- bisect.adp.rdi(from, add=-1, debug=debug-1)
                 from <- from.index <- from.pair$index
                 to.pair <- bisect.adp.rdi(to, add=1, debug=debug-1)
@@ -390,8 +396,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             } else {
                 from.index <- from
                 to.index <- to
-                if (to.index < from.index) stop("need more separation between from and to")
-                if (is.character(by)) stop("cannot have string for 'by' if 'from' and 'to' are integers")
+                if (to.index < from.index)
+                    stop("need more separation between from and to")
+                if (is.character(by))
+                    stop("cannot have string for 'by' if 'from' and 'to' are integers")
                 profile.start <- profile.start[seq(from=from, to=to, by=by)]
                 oce.debug(debug, vector.show(profile.start, "profile.start after indexing:"))
             }
@@ -453,9 +461,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                         if (!have.bottom.track) { # FIXME: maybe only 'surveyor' has bottom track ... if so, recode this
                             if (number.of.beams != 4)
                                 stop("expecting 4 beams, for this RDI adcp")
-                            bottom.range <- array(double(), dim=c(profiles.to.read, number.of.beams))
-                            bottom.velocity <- array(double(), dim=c(profiles.to.read, number.of.beams))
-                            have.bottom.track <- TRUE
+                        bottom.range <- array(double(), dim=c(profiles.to.read, number.of.beams))
+                        bottom.velocity <- array(double(), dim=c(profiles.to.read, number.of.beams))
+                        have.bottom.track <- TRUE
                         }
                         range.lsb <- readBin(buf[o+c(16:24)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         range.msb <- readBin(buf[o+78:81], "integer", n=4, size=1, signed=FALSE, endian="little")
@@ -521,8 +529,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             temperature <- 0.01 * readBin(buf[profile.start2 + 26], "integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
             pressure <- 0.001 * readBin(buf[profile.start4 + 48], "integer", n=profiles.to.read, size=4, endian="little", signed=FALSE)
             if (despike) {
-                temperature <- despike(temperature, physical.range=c(-3,101))
-                pressure <- despike(pressure, physical.range=c(1,10e3))
+                temperature <- despike(temperature, reference="trim", min=-3, max=101)
+                pressure <- despike(pressure, reference="trim", min=1, max=10000)
             }
             oce.debug(debug, vector.show(temperature, "temperature"))
             oce.debug(debug, vector.show(pressure, "pressure"))
@@ -540,10 +548,6 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             metadata$number.of.beams <- header$number.of.beams
             metadata$depth.of.transducer <- mean(depth.of.transducer, na.rm=TRUE)
             ## Transformation matrix
-            tm.c <- if (metadata$beam.pattern == "convex") 1 else -1; # control sign of first 2 rows of transformation.matrix
-            tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
-            tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
-            tm.d <- tm.a / sqrt(2)
             ## FIXME Dal people use 'a' in last row of matrix, but both
             ## RDI and CODAS use as we have here.  (And I think RDI
             ## may have two definitions...)
@@ -570,18 +574,21 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             ##            |
             ##    x <-----*   (z into page, or downward)
             ##
-            ## The matrix below is from page 13 (section 5.30) of the ACT.  Later on,
-            ## in adp.beam2xyz(), we will change the sign of rows 1 and 3, if the
-            ## device is pointing upwards.
+            ## The matrix below is from section 5.3 of the ACT.
             ##
             ## As a check on coding, see the python software at
-            ##   http://currents.soest.hawaii.edu/hg/hgwebdir.cgi/pycurrents/file/tip/adcp/transform.py
+            ##   http://currents.soest.hawaii.edu/hg/pycurrents/file/3175207488bb/adcp/transform.py
+            tm.c <- if (metadata$beam.pattern == "convex") 1 else -1; # control sign of first 2 rows of transformation.matrix
+            tm.a <- 1 / (2 * sin(metadata$beam.angle * pi / 180))
+            tm.b <- 1 / (4 * cos(metadata$beam.angle * pi / 180))
+            tm.d <- tm.a / sqrt(2)
             metadata$transformation.matrix <- matrix(c(tm.c*tm.a, -tm.c*tm.a,          0,         0,
                                                        0        ,          0, -tm.c*tm.a, tm.c*tm.a,
                                                        tm.b     ,       tm.b,       tm.b,      tm.b,
                                                        tm.d     ,       tm.d,      -tm.d,     -tm.d),
                                                      nrow=4, byrow=TRUE)
-            if (monitor) cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
+            if (monitor)
+                cat("\nRead", profiles.to.read,  "profiles, out of a total of",profiles.in.file,"profiles in", filename, "\n", ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oce.tz")
             if (have.bottom.track) {
@@ -594,13 +601,13 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             data <- list(ma=ma,
                          ss=list(distance=seq(bin1.distance, by=cell.size, length.out=number.of.cells)),
                          ts=list(time=time,
-                         pressure=pressure,
-                         temperature=temperature,
-                         salinity=salinity,
-                         depth.of.transducer=depth.of.transducer,
-                         heading=heading,
-                         pitch=pitch,
-                         roll=roll))
+                                 pressure=pressure,
+                                 temperature=temperature,
+                                 salinity=salinity,
+                                 depth.of.transducer=depth.of.transducer,
+                                 heading=heading,
+                                 pitch=pitch,
+                                 roll=roll))
         } else {
             warning("There are no profiles in this file.")
             metadata <- header
@@ -614,7 +621,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         data <- NULL
     }
     metadata$manufacturer <- "teledyne rdi"
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    if (missing(log.action))
+        log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("rdi", "adp", "oce")

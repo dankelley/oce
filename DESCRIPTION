@@ -1,10 +1,10 @@
 Package: oce
 Version: 0.1-82
-Date: 2011-03-03
+Date: 2011-03-20
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 0.99)
+Depends: R (>= 2.10)
 Description: Supports the analysis of Oceanographic data,
  including ADP measurements, CTD measurements, sectional
  data, sea-level timeseries, coastline files, etc.  

@@ -38,8 +38,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             oce.debug(debug, "middle=", middle, " lower=", lower, " upper=", upper, " pass=", pass, " of max=", passes, "\n")
         }
         middle <- middle + add          # may use add to extend before and after window
-        if (middle < 1) middle <- 1
-        if (middle > len) middle <- len
+        if (middle < 1)
+            middle <- 1
+        if (middle > len)
+            middle <- len
         t <- ISOdatetime(readBin(buf[profile.start[middle]+18:19],"integer",size=2,signed=FALSE,endian="little"),  # year
                          as.integer(buf[profile.start[middle]+21]), # month
                          as.integer(buf[profile.start[middle]+20]), # day
@@ -57,7 +59,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         file <- file(file, "rb")
         on.exit(close(file))
     }
-    if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         filename <- "(connection)"
         open(file, "rb")
@@ -114,7 +117,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## Only read (important) things that don't change profile-by-profile
     number.of.beams <- as.integer(buf[s+26])
     oce.debug(debug, "number.of.beams=", number.of.beams, "\n")
-    if (number.of.beams != 3) stop("there should be 3 beams, but the file indicates ", number.of.beams)
+    if (number.of.beams != 3)
+        stop("there should be 3 beams, but the file indicates ", number.of.beams)
     orientation <- as.integer(buf[s+27])
     oce.debug(debug, "orientation=", orientation, "\n")
     temp.mode <- as.integer(buf[s+28])
@@ -164,7 +168,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+        if (!inherits(to, "POSIXt"))
+            stop("if 'from' is POSIXt, then 'to' must be, also")
         from.pair <- bisect.sontek.adp(from, -1, debug-1)
         from <- from.index <- from.pair$index
         to.pair <- bisect.sontek.adp(to, 1, debug-1)
@@ -196,8 +201,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         if (missing.to)
             to <- length(profile.start)
         to.index <- to
-        if (to.index < 1 + from.index) stop("need more separation between from and to")
-        if (is.character(by)) stop("cannot have string for 'by' if 'from' and 'to' are integers")
+        if (to.index < 1 + from.index)
+            stop("need more separation between from and to")
+        if (is.character(by))
+            stop("cannot have string for 'by' if 'from' and 'to' are integers")
         profile.start <- profile.start[seq(from=from, to=to, by=by)]
         oce.debug(debug, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
     }
@@ -322,9 +329,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (number.of.beams == 3) {
         ## FIXME: using 25 degrees, which is FLAT-OUT wrong
         ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
-        ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
+        ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
         ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
-        S  <- 1 / (3 * sin(beam.angle * pi / 180))             # 0.7887339
+        S  <- 1 / (3 * sin(beam.angle * pi / 180)) # 0.7887339
         CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
         C  <- 1 / (3 * cos(beam.angle * pi / 180))             # 0.3677926
         metadata$transformation.matrix <- matrix(c(2*S,  -S,  -S,
@@ -336,8 +343,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ##      0.000  -2.230   2.230
         ##      0.345   0.345   0.345
         ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
-    } else stop("can only handle 3-beam devices")
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
+    } else
+        stop("can only handle 3-beam devices")
+    if (missing(log.action))
+        log.action <- paste(deparse(match.call()), sep="", collapse="")
     log.item <- processing.log.item(log.action)
     res <- list(data=data, metadata=metadata, processing.log=log.item)
     class(res) <- c("sontek", "adp", "oce")
@@ -359,6 +368,7 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
 
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                    latitude=NA, longitude=NA,
+                                   beam.angle=25,
                                    monitor=TRUE, log.action,
                                    debug=getOption("oce.debug"))
 {
@@ -560,7 +570,6 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     }
     if (monitor)
         cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
-    beam.angle <- 25 ## FIXME: can we assume this for all instruments??
     S  <- 1 / (3 * sin(beam.angle * pi / 180))
     CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2
     C  <- 1 / (3 * cos(beam.angle * pi / 180))
