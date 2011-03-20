@@ -12,17 +12,26 @@
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}
-  \item{heading}{angle, in degrees, to be added to the
-    heading.}
-  \item{pitch}{angle to be added to the pitch.}
-  \item{roll}{angle to be added to the roll.}
+  \item{heading}{number or vector of numbers, giving the angle, in degrees, to
+      be added to the heading.  See \dQuote{Details}.}
+  \item{pitch}{as \code{heading} but for pitch.}
+  \item{roll}{as \code{heading} but for roll.}
 }
 
-\details{The value of \code{x$metadata$oce.coordinate} is set to
-  \code{"other"} to indicate this change in coordinate system.}
+\details{The supplied angles specify rotations to be made around the
+  axes for which heading, pitch, and roll are defined.  For example, an
+  eastward current will point southeast if \code{heading=45} is used.
+  
+  The returned value has heading, pitch, and roll matching those of \code{x},
+  so these angles retain their meaning as the instrument orientation.
 
-\seealso{See \code{\link{read.adv}} for notes on functions relating to
-  \code{"adv"} objects.}
+  NOTE: this function works similarly to \code{\link{xyz.to.enu.adv}}, except
+  that in the present function, it makes no difference whether the instrument
+  points up or down, etc.
+}
+
+\seealso{See \code{\link{read.adv}} for other functions that relate to objects
+    of class \code{"adv"}}
 
 \author{Dan Kelley}
 

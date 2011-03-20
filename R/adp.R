@@ -284,6 +284,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      ytype=c("profile", "distance"),
                      adorn=NULL,
                      draw.time.range=getOption("oce.draw.time.range"),
+                     use.smoothScatter,
                      mgp=getOption("oce.mgp"),
                      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
@@ -703,7 +704,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
         } else if (which[w] %in% 28:30) { # "uv", "uv+ellipse", or "uv+ellipse+arrow"
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- prod(dim(x$data$ma$v)[1:2])
+            n <- dim(x$data$ma$v)[1]
             if (!missing(control) && !is.null(control$bin)) {
                 if (control$bin < 1)
                     stop("cannot have control$bin less than 1, but got ", control$bin)
@@ -717,7 +718,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
             }
             oce.debug(debug, "uv type plot\n")
-            if (n < 2000) {
+            if (n < 5000 || (!missing(use.smoothScatter) && !use.smoothScatter)) {
                 if ("type" %in% names(dots)) {
                     plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col,
                          xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
@@ -1043,22 +1044,27 @@ enu.to.other.adp <- function(x, heading=0, pitch=0, roll=0)
     if (x$metadata$oce.coordinate != "enu")
         stop("input must be in enu coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
     res <- x
-    to.radians <- atan2(1,1) / 45
-    CH <- cos(to.radians * heading)
-    SH <- sin(to.radians * heading)
-    CP <- cos(to.radians * pitch)
-    SP <- sin(to.radians * pitch)
-    CR <- cos(to.radians * roll)
-    SR <- sin(to.radians * roll)
-    tr.mat <- matrix(c( CH * CR + SH * SP * SR,  SH * CP,  CH * SR - SH * SP * CR,
-                       -SH * CR + CH * SP * SR,  CH * CP, -SH * SR - CH * SP * CR,
-                       -CP * SR,                 SP,       CP * CR),               nrow=3, byrow=TRUE)
-    np <- dim(x$data$ma$v)[1]
-    nc <- dim(x$data$ma$v)[2]
-    rotated <- array(unlist(lapply(1:np, function(p) tr.mat %*% t(x$data$ma$v[p,,1:3]))), dim=c(3, nc, np))
-    res$data$ma$v[,,1] <- t(rotated[1,,])
-    res$data$ma$v[,,2] <- t(rotated[2,,])
-    res$data$ma$v[,,3] <- t(rotated[3,,])
+    np <- dim(x$data$ma$v)[1]           # number of profiles
+    nc <- dim(x$data$ma$v)[2]           # number of cells
+    for (c in 1:nc) {
+        other <- .C("sfm_enu",
+                    as.integer(length(heading)),
+                    as.double(heading),
+                    as.double(pitch),
+                    as.double(roll), 
+                    as.integer(np),
+                    as.double(x$data$ma$v[,c,1]),
+                    as.double(x$data$ma$v[,c,2]),
+                    as.double(x$data$ma$v[,c,3]),
+                    v1new = double(np),
+                    v2new = double(np),
+                    v3new = double(np),
+                    NAOK=TRUE,
+                    PACKAGE="oce")
+        res$data$ma$v[,c,1] <- other$v1new
+        res$data$ma$v[,c,2] <- other$v2new
+        res$data$ma$v[,c,3] <- other$v3new
+    }
     res$metadata$oce.coordinate <- "other"
     log.action <- paste(deparse(match.call()), sep="", collapse="")
     res$processing.log <- processing.log.add(res$processing.log,

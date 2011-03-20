@@ -12,39 +12,32 @@
 
 \arguments{
   \item{x}{an object of class \code{"adp"}.}
-  \item{heading}{ angle, in degrees, to be added to the
-    heading.  See \dQuote{Details}.}
-  \item{pitch}{angle to be added to the pitch.}
-  \item{roll}{angle to be added to the roll.}
+  \item{heading}{number or vector of numbers, giving the angle, in degrees, to
+      be added to the heading.  See \dQuote{Details}.}
+  \item{pitch}{as \code{heading} but for pitch.}
+  \item{roll}{as \code{heading} but for roll.}
 }
 
 \details{The supplied angles specify rotations to be made around the
-  axes for heading, pitch, and roll.  Think of this as addition.  For
-  example, an object \code{d} storing current of speed \code{U} running 
-  from southwest to northeast has equal and positive eastward and 
-  northward components in enu coordinates, so setting \code{heading=45} 
-  yields horizontal components \code{d$data$ma$v[,1,]=U} and 
-  \code{d$data$ma$v[,2,]=0}, leaving vertical component
-  \code{d$data$ma$v[,3,]} unaltered.
+  axes for which heading, pitch, and roll are defined.  For example, an
+  eastward current will point southeast if \code{heading=45} is used.
+  
+  The returned value has heading, pitch, and roll matching those of \code{x},
+  so these angles retain their meaning as the instrument orientation.
 
-  Note that the stored values for heading, pitch, and roll are
-  \emph{not} altered.  These values refer the instrument orientation,
-  not to the values of the corresponding arguments supplied to the
-  present function.
+  NOTE: this function works similarly to \code{\link{xyz.to.enu.adp}}, except
+  that in the present function, it makes no difference whether the instrument
+  points up or down, etc.
+}
 
-  The code is similar to that used by \code{\link{xyz.to.enu.adp}},
-  but in the present case the signs of \code{pitch} and \code{roll} are
-  obeyed, regardless of whether the instrument points up or down,
-  because enu coordinates already account for instrument alignment.}
-
-\value{An object with code{data$ma$v[,1:3,]} altered appropriately,
+\value{An object with \code{data$ma$v[,1:3,]} altered appropriately,
  and \code{metadata$oce.coordinate} changed from \code{enu} to
   \code{other}.}
 
 \examples{
 library(oce)
 data(adp)
-o <- enu.to.other.adp(adp, heading=31.5)
+o <- enu.to.other.adp(adp, heading=-31.5)
 plot(o, which=1:3)
 }
 
@@ -53,7 +46,7 @@ plot(o, which=1:3)
 P/N 951-6079-00 (July 1998)}
 
 \seealso{See \code{\link{read.adp}} for other functions that relate to objects
-of class \code{"adp"}.}
+    of class \code{"adp"}.}
 
 \author{Dan Kelley}
 

@@ -15,6 +15,7 @@
      ytype=c("profile", "distance"),
      adorn=NULL,
      draw.time.range=getOption("oce.draw.time.range"),
+     use.smoothScatter,
      mgp=getOption("oce.mgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      margins.as.image=FALSE,
@@ -72,6 +73,10 @@
   \item{draw.time.range}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
+  \item{use.smoothScatter}{boolean that indicates whether to use
+      \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.
+      If not provided a default is used, with \code{\link{smoothScatter}} being
+      used if there are more than 2000 points to plot.},
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
