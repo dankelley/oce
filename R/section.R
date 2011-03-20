@@ -100,8 +100,10 @@ make.section <- function(item, ...)
 "+.section" <- function(section, station)
 {
     if (missing(station)) return(section) # not sure this can happen
-    if (!inherits(section, "section")) stop("'section' is not a section")
-    if (!inherits(station, "ctd")) stop("'station' is not a station")
+    if (!inherits(section, "section"))
+        stop("'section' is not a section")
+    if (!inherits(station, "ctd"))
+        stop("'station' is not a station")
     res <- section
     n.orig <- length(section$data$station)
     s <- vector("list", n.orig + 1)
@@ -335,7 +337,8 @@ plot.section <- function(x,
 	oce.debug(debug, "\b} # plot.subsection()\n")
     }                                   # plot.subsection
 
-    if (!inherits(x, "section")) stop("method is only for section objects")
+    if (!inherits(x, "section"))
+        stop("method is only for section objects")
     opar <- par(no.readonly = TRUE)
     if (length(which) > 1) on.exit(par(opar))
 
@@ -348,7 +351,8 @@ plot.section <- function(x,
     } else {
 	num.stations <- length(station.indices)
     }
-    if (num.stations < 2) stop("cannot plot a section containing fewer than 2 stations")
+    if (num.stations < 2)
+        stop("cannot plot a section containing fewer than 2 stations")
     num.depths <- length(x$data$station[[station.indices[1]]]$data$pressure)
 
     ## Check that pressures coincide
@@ -409,7 +413,8 @@ plot.section <- function(x,
 	}
     }
     which <- which2
-    if (any(!which %in% 1:4)) stop("which must be between 1 and 4")
+    if (any(!which %in% 1:4))
+        stop("which must be between 1 and 4")
     oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     par(mgp=mgp, mar=mar)
     if (lw > 1) {
@@ -491,7 +496,8 @@ read.section <- function(file, section.id="", flags,
     ccc <- textConnection(lines[header.length])
     var.units <- scan(ccc, sep=",", what="", quiet=TRUE)
     close(ccc)
-    if (length(var.units) != length(var.names)) stop("length mismatch in variable lists")
+    if (length(var.units) != length(var.names))
+        stop("length mismatch in variable lists")
     header <- lines[1:header.length]
     nd <- n - header.length - 1
     nv <- length(var.names)
@@ -660,7 +666,8 @@ section.smooth <- function(section, df, debug=getOption("oce.debug"), ...)
     ## bugs: should ensure that every station has identical pressures
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
     oce.debug(debug, "\bsection.smooth(section,debug=", debug, ", ...) {\n", sep="")
-    if (!inherits(section, "section")) stop("method is only for section objects")
+    if (!inherits(section, "section"))
+        stop("method is only for section objects")
     nstn <- length(section$data$station)
     nprs <- length(section$data$station[[1]]$data$pressure)
     if (missing(df))
@@ -713,7 +720,8 @@ section.smooth <- function(section, df, debug=getOption("oce.debug"), ...)
 
 summary.section <- function(object, ...)
 {
-    if (!inherits(object, "section")) stop("method is only for section objects")
+    if (!inherits(object, "section"))
+        stop("method is only for section objects")
     num.stations <- length(object$data$station)
     stn.sum <- matrix(nrow=num.stations, ncol=5)
     res <- list(section.id=object$metadata$section.id,

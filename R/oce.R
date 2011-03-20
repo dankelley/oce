@@ -323,7 +323,8 @@ oce.edit <- function(x, item, value, action, reason="", person="",
     if (!missing(item)) {
         if (missing(value))
             stop("must supply a 'value' for this 'item'")
-        ##if (!(item %in% names(x$metadata))) stop("no item named '", item, "' in object's  metadata")
+        ##if (!(item %in% names(x$metadata)))
+        ## stop("no item named '", item, "' in object's  metadata")
         if (inherits(x, "adv")) {
             oce.debug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))

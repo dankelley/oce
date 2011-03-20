@@ -35,7 +35,8 @@ plot.tidem <- function(x,
             }
         }
     }
-    if (!inherits(x, "tidem")) stop("method is only for tidal analysis objects")
+    if (!inherits(x, "tidem"))
+        stop("method is only for tidal analysis objects")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (lw > 1) on.exit(par(opar))
@@ -339,7 +340,8 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
             if (!quiet)
                 cat("[", constituents[i], "]\n",sep="")
             if (constituents[i] == "standard") { # must be first!
-                if (i != 1) stop("\"standard\" must occur first in constituents list")
+                if (i != 1)
+                    stop("\"standard\" must occur first in constituents list")
                 name <- tc$name[standard][-1]
                 freq <- tc$freq[standard][-1]
                 kmpr <- tc$kmpr[standard][-1]
@@ -382,7 +384,8 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
 
     for (i in 1:nc) {                   # Build up based on constituent names
         ic <- which(tc$name == name[i])
-        if (!length(ic)) stop("there is no tidal constituent named \"", name[i], "\"")
+        if (!length(ic))
+            stop("there is no tidal constituent named \"", name[i], "\"")
         index[i] <- ic
         freq[i] <- tc$freq[ic]
         kmpr[i] <- tc$kmpr[ic]
@@ -501,7 +504,8 @@ summary.tidem <- function(object, p, constituent, ...)
     }
     else {
         i <- which(object$name==constituent)
-        if (length(i) == 0) stop("there is no such constituent '", constituent, "'")
+        if (length(i) == 0)
+            stop("there is no such constituent '", constituent, "'")
         fit <- data.frame(Const=object$const[i],
                           Name=object$name[i],
                           Freq=object$freq[i],

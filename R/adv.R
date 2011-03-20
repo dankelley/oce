@@ -1322,7 +1322,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
         stop("method is only for adv objects")
     opar <- par(no.readonly = TRUE)
     dots <- names(list(...))
-    ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23))) stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
+    ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))
+    ##   stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     nw <- length(which)
     if (nw == 1) {
         pm <- pmatch(which, c("velocity","amplitude","quality","hydrography", "angles"))

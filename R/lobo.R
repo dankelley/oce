@@ -78,7 +78,8 @@ plot.lobo <- function(x,
                       mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
                       ...)
 {
-    if (!inherits(x, "lobo")) stop("method is only for lobo objects")
+    if (!inherits(x, "lobo"))
+        stop("method is only for lobo objects")
     opar <- par(no.readonly = TRUE)
     on.exit(par(opar))
     par(mgp=mgp, mar=mar)
@@ -171,7 +172,8 @@ read.lobo <- function(file, cols=7, log.action) {
 
 summary.lobo <- function(object, ...)
 {
-    if (!inherits(object, "lobo")) stop("method is only for lobo objects")
+    if (!inherits(object, "lobo"))
+        stop("method is only for lobo objects")
     dim <- dim(object$data)
     fives <- matrix(nrow=dim[2]-1, ncol=5) # skipping time
     res <- list(time.range=range(object$data$time, na.rm=TRUE),

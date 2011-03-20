@@ -34,7 +34,8 @@ plot.windrose <- function(x,
                           col,
                           ...)
 {
-    if (!inherits(x, "windrose")) stop("method is only for wind-rose objects")
+    if (!inherits(x, "windrose"))
+        stop("method is only for wind-rose objects")
     type <- match.arg(type)
     nt <- length(x$data$theta)
     t <- x$data$theta * pi / 180        # in radians
@@ -52,7 +53,8 @@ plot.windrose <- function(x,
     if (missing(col))
         col <- c("red", "pink", "blue", "darkgray")
     else {
-        if (length(col) != 4) stop("'col' should be a list of 4 colours")
+        if (length(col) != 4)
+            stop("'col' should be a list of 4 colours")
     }
                                         # Draw circle and radii
     tt <- seq(0, 2*pi, length.out=100)
@@ -120,7 +122,8 @@ plot.windrose <- function(x,
 
 summary.windrose <- function(object, ...)
 {
-    if (!inherits(object, "windrose")) stop("method is only for windrose objects")
+    if (!inherits(object, "windrose"))
+        stop("method is only for windrose objects")
     n <- length(object$data$theta)
     fives <- matrix(nrow=n, ncol=5)
     res <- list(n=n,

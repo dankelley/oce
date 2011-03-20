@@ -40,7 +40,8 @@ decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
         if (buf[o+2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
             oce.debug(debug, "\n\bHARDWARE CONFIGURATION\n")
             hardware$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2, endian="little")
-            if (hardware$size != 24) stop("size of hardware header expected to be 24 two-byte words, but got ", hardware$size)
+            if (hardware$size != 24)
+                stop("size of hardware header expected to be 24 two-byte words, but got ", hardware$size)
             if (2 * hardware$size != header.length.hardware)
                 stop("size of hardware header expected to be ", header.length.hardware, "but got ", hardware$size)
             oce.debug(debug, "hardware$size=", hardware$size, "\n")
@@ -294,7 +295,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
 
 
     if (inherits(from, "POSIXt")) {
-        if (!inherits(to, "POSIXt")) stop("if 'from' is POSIXt, then 'to' must be, also")
+        if (!inherits(to, "POSIXt"))
+            stop("if 'from' is POSIXt, then 'to' must be, also")
         from.pair <- bisect.adp.nortek(from, -1, debug-1)
         from <- from.index <- from.pair$index
         to.pair <- bisect.adp.nortek(to, 1, debug-1)
@@ -330,8 +332,10 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     } else {
         from.index <- from
         to.index <- to
-        if (to.index < 1 + from.index) stop("need more separation between from and to")
-        if (is.character(by)) stop("cannot have string for 'by' if 'from' and 'to' are integers")
+        if (to.index < 1 + from.index)
+            stop("need more separation between from and to")
+        if (is.character(by))
+            stop("cannot have string for 'by' if 'from' and 'to' are integers")
         profile.start <- profile.start[seq(from=from, to=to, by=by)]
         oce.debug(debug, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
     }

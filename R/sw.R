@@ -25,8 +25,10 @@ sw.S.C.T.p <- function(conductivity, temperature, pressure)
     nC <- length(conductivity)
     nT <- length(temperature)
     np <- length(pressure)
-    if (nC != nT) stop("lengths of C and temperature must agree, but they are ", nC, " and ", nT, ", respectively")
-    if (nC != np) stop("lengths of C and p must agree, but they are ", nC, " and ", np, ", respectively")
+    if (nC != nT)
+        stop("lengths of C and temperature must agree, but they are ", nC, " and ", nT, ", respectively")
+    if (nC != np)
+        stop("lengths of C and p must agree, but they are ", nC, " and ", np, ", respectively")
     rval <- .C("sw_salinity",
                as.integer(nC),
                as.double(conductivity),
@@ -44,8 +46,10 @@ sw.S.T.rho <- function(temperature, density, pressure) # FIXME: should be vector
     nt <- length(temperature)
     nrho <- length(density)
     np <- length(pressure)
-    if (nt != nrho) stop("lengths of temperature and density must agree, but they are ", nt, " and ", nrho, ", respectively")
-    if (nt != np) stop("lengths of temperature and p arrays must agree, but they are ", nt, " and ", np, ", respectively")
+    if (nt != nrho)
+        stop("lengths of temperature and density must agree, but they are ", nt, " and ", nrho, ", respectively")
+    if (nt != np)
+        stop("lengths of temperature and p arrays must agree, but they are ", nt, " and ", np, ", respectively")
     for (i in 1:nt) {                   # FIXME: avoid loops
         sigma <- ifelse(density > 500, density - 1000, density)
     	this.S <- .C("sw_strho",
@@ -70,8 +74,10 @@ sw.T.S.rho <- function(salinity, density, pressure) # FIXME: should be vectorize
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nrho) stop("lengths of salinity and rho must agree, but they are ", nS, " and ", nrho,  ", respectively")
-    if (nS != np)   stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != nrho)
+        stop("lengths of salinity and rho must agree, but they are ", nS, " and ", nrho,  ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     for (i in 1:nS) {                   # FIXME: avoid loops
     	sig <- density[i]
     	if (sig > 500) {
@@ -91,7 +97,8 @@ sw.T.S.rho <- function(salinity, density, pressure) # FIXME: should be vectorize
 
 sw.T.freeze <- function(salinity, pressure=NULL)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         pressure <- salinity$data$pressure
         salinity <- salinity$data$salinity # note: this destroys the ctd object
@@ -101,7 +108,8 @@ sw.T.freeze <- function(salinity, pressure=NULL)
 
 sw.alpha <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
         pressure <- salinity$data$pressure
@@ -117,20 +125,23 @@ sw.alpha <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE
 
 sw.alpha.over.beta <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
         pressure <- salinity$data$pressure
         salinity <- salinity$data$salinity # note: this destroys the ctd object
     }
-    if (is.null(temperature)) stop("must provide temperature")
+    if (is.null(temperature))
+        stop("must provide temperature")
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    if (nS != nt)
+        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
                                         # sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
@@ -138,7 +149,8 @@ sw.alpha.over.beta <- function(salinity, temperature=NULL, pressure=NULL, is.the
     }
     if (!is.theta)
         t = sw.theta(salinity, temperature, pressure)
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_alpha_over_beta",
                as.integer(nS),
                as.double(salinity),
@@ -152,7 +164,8 @@ sw.alpha.over.beta <- function(salinity, temperature=NULL, pressure=NULL, is.the
 
 sw.beta <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
         pressure <- salinity$data$pressure
@@ -168,13 +181,15 @@ sw.beta <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    if (nS != nt)
+        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
                                         # sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
         pressure <- rep(pressure[1], np)
     }
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_beta",
                as.integer(nS),
                as.double(salinity),
@@ -249,7 +264,8 @@ sw.dynamic.height <- function(x, reference.pressure=2000)
 
 sw.lapse.rate <- function(salinity, temperature=NULL, pressure=NULL)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
         pressure <- salinity$data$pressure
@@ -263,8 +279,10 @@ sw.lapse.rate <- function(salinity, temperature=NULL, pressure=NULL)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != nt)
+        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_lapserate",
                as.integer(nS),
                as.double(salinity),
@@ -278,7 +296,8 @@ sw.lapse.rate <- function(salinity, temperature=NULL, pressure=NULL)
 
 sw.rho <- function(salinity, temperature=NULL, pressure=NULL)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
         pressure <- salinity$data$pressure
@@ -292,13 +311,15 @@ sw.rho <- function(salinity, temperature=NULL, pressure=NULL)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    if (nS != nt)
+        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     ## sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
         p <- rep(pressure[1], np)
     }
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_rho",
                as.integer(nS),
                as.double(salinity),
@@ -312,7 +333,8 @@ sw.rho <- function(salinity, temperature=NULL, pressure=NULL)
 
 sw.sigma <- function(salinity, temperature=NULL, pressure=NULL)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
         pressure <- salinity$data$pressure
@@ -323,7 +345,8 @@ sw.sigma <- function(salinity, temperature=NULL, pressure=NULL)
 
 sw.sigma.t <- function(salinity, temperature=NULL, pressure=NULL)
 {
-    if (missing(salinity)) stop("must provide salinity")
+    if (missing(salinity))
+        stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
         pressure <- salinity$data$pressure
@@ -363,13 +386,15 @@ sw.sound.speed <- function(salinity, temperature=NULL, pressure=NULL)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    if (nS != nt)
+        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
                                         # sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
         p <- rep(pressure[1], np)
     }
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_svel",
                as.integer(nS),
                as.double(salinity),
@@ -400,8 +425,10 @@ sw.specific.heat <- function(salinity, temperature=NULL, pressure=NULL)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != nt)
+        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     for (i in 1:nS) {                   # FIXME: avoid loops
     	this.CP <- .Fortran("ocecp", as.double(salinity[i]),
                             as.double(temperature[i]), as.double(pressure[i]),
@@ -432,13 +459,15 @@ sw.spice <- function(salinity, temperature=NULL, pressure=NULL)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
-    if (nS != nt) stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
+    if (nS != nt)
+        stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     ## sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
         p <- rep(pressure[1], np)
     }
-    if (nS != np) stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
+    if (nS != np)
+        stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_spice",
                as.integer(nS),
                as.double(salinity),

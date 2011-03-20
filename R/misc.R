@@ -242,7 +242,8 @@ full.filename <- function(filename)
 }
 matrix.smooth <- function(m)
 {
-    if (missing(m)) stop("must provide matrix 'm'")
+    if (missing(m))
+        stop("must provide matrix 'm'")
     storage.mode(m) <- "double"
     .Call("matrix_smooth", m)
 }
@@ -453,7 +454,8 @@ gravity <- function(latitude=45, degrees=TRUE)
 make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=FALSE)
 {
     type <- match.arg(type)
-    if (missing(m)) stop("must supply 'm'")
+    if (missing(m))
+        stop("must supply 'm'")
     i <- seq(0, m - 1)
     if (type == "blackman-harris") {    # See Harris (1978) table on p65
         if (m == 2 * floor(m/2)) {
@@ -483,8 +485,10 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
 
 oce.filter <- function(x, a=1, b, zero.phase=FALSE)
 {
-    if (missing(x)) stop("must supply x")
-    if (missing(b)) stop("must supply b")
+    if (missing(x))
+        stop("must supply x")
+    if (missing(b))
+        stop("must supply b")
     if (!zero.phase) {
         return(.Call("oce_filter", x, a, b))
     } else {
@@ -506,14 +510,21 @@ geod.xy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
-    if (missing(lat)) stop("must provide lat")
-    if (missing(lon)) stop("must provide lat")
-    if (missing(lat.ref)) stop("must provide lat.ref")
-    if (missing(lon.ref)) stop("must provide lon.ref")
-    if (!is.finite(lat.ref)) stop("lat.ref must be finite")
-    if (!is.finite(lon.ref)) stop("lat.ref must be finite")
+    if (missing(lat))
+        stop("must provide lat")
+    if (missing(lon))
+        stop("must provide lat")
+    if (missing(lat.ref))
+        stop("must provide lat.ref")
+    if (missing(lon.ref))
+        stop("must provide lon.ref")
+    if (!is.finite(lat.ref))
+        stop("lat.ref must be finite")
+    if (!is.finite(lon.ref))
+        stop("lat.ref must be finite")
     n <- length(lat)
-    if (length(lon) != n) stop("lat and lon must be vectors of the same length")
+    if (length(lon) != n)
+        stop("lat and lon must be vectors of the same length")
     x <- y <- vector("numeric", n)
     xy  <- .C("geod_xy",
               as.integer(n),
@@ -574,9 +585,11 @@ geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
         }
     } else {
         n1 <- length(lat1)
-        if (length(lon1) != n1) stop("lat1 and lon1 must be vectors of the same length")
+        if (length(lon1) != n1)
+            stop("lat1 and lon1 must be vectors of the same length")
         n2 <- length(lat2)
-        if (length(lon2) != n2) stop("lat2 and lon2 must be vectors of the same length")
+        if (length(lon2) != n2)
+            stop("lat2 and lon2 must be vectors of the same length")
         if (n2 < n1) { # take only first one
             if (n2 != 1) warning("Using just the first element of lat2 and lon2, even though it contains more elements")
             llat2 <- rep(lat2[1], n1)
@@ -614,8 +627,10 @@ interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
                           xr=NULL, yr=NULL, gamma=0.5, iterations=2)
 {
     n <- length(x)
-    if (length(y) != n) stop("lengths of x and y disagree; they are ", n, " and ", length(y))
-    if (length(z) != n) stop("lengths of x and z disagree; they are ", n, " and ", length(z))
+    if (length(y) != n)
+        stop("lengths of x and y disagree; they are ", n, " and ", length(y))
+    if (length(z) != n)
+        stop("lengths of x and z disagree; they are ", n, " and ", length(z))
     if (is.null(w)) {
         w <- rep(1.0, length(x))
         cat("interp.barnes assuming equal weights on all data\n")
@@ -666,9 +681,11 @@ coriolis <- function(lat, degrees=TRUE)
 
 undrift.time <- function(x, slow.end = 0, tname="time")
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
     names <- names(x$data)
-    if (!(tname %in% names)) stop("no column named '", tname, "'; only found: ", paste(names, collapse=" "))
+    if (!(tname %in% names))
+        stop("no column named '", tname, "'; only found: ", paste(names, collapse=" "))
     rval <- x
     time <- rval$data[[tname]]
     nt <- length(time)
@@ -751,18 +768,23 @@ oce.colors.gebco <- function(n=9, region=c("water", "land", "both"), type=c("fil
 
 header <- function(x)
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
     return(x$metadata$header)
 }
 
 add.column <- function (x, data, name)
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
-    if (missing(data)) stop("must supply data")
-    if (missing(name)) stop("must supply name")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
+    if (missing(data))
+        stop("must supply data")
+    if (missing(name))
+        stop("must supply name")
     n <- dim(x$data)[1]
     nd <- length(data)
-    if (nd != n) stop("data length is ", nd, " but it must be ", n, " to match existing data")
+    if (nd != n)
+        stop("data length is ", nd, " but it must be ", n, " to match existing data")
     rval <- x
     rval$data <- data.frame(x$data, data)
     names(rval$data) <- c(names(x$data), name)
@@ -773,7 +795,8 @@ add.column <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
     oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
@@ -849,11 +872,13 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
             }
         }
     } else if (inherits(x, "ctd")) {
-        if (do.filter) stop("cannot (yet) filter ctd data during decimation") # FIXME
+        if (do.filter)
+            stop("cannot (yet) filter ctd data during decimation") # FIXME
         select <- seq(1, dim(x$data)[1], by=by)
         res$data <- x$data[select,]
     } else if (inherits(x, "pt")) {
-        if (do.filter) stop("cannot (yet) filter pt data during decimation") # FIXME
+        if (do.filter)
+            stop("cannot (yet) filter pt data during decimation") # FIXME
         for (name in names(res$data$ts))
             res$data[[name]] <- x$data[[name]][select]
     } else {
@@ -868,7 +893,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
 
 oce.smooth <- function(x, ...)
 {
-    if (!inherits(x, "oce")) stop("method is only for oce objects")
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
     res <- x
     if (inherits(x, "adp")) {
         stop("cannot handle ADP objects (request this from the author)")
@@ -977,7 +1003,8 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
     formatci.one <- function(ci, style, digits=NULL)
     {
         debug <- FALSE
-        if (missing(ci)) stop("must supply ci")
+        if (missing(ci))
+            stop("must supply ci")
         ci <- as.numeric(ci)
         if (length(ci) == 3) {
             x <- ci[2]
@@ -1034,7 +1061,8 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
         }
         rval
     } else {
-        if (missing(ci)) stop("must give either ci or model")
+        if (missing(ci))
+            stop("must give either ci or model")
         formatci.one(ci=ci, style=style, digits=digits)
     }
 }
@@ -1098,14 +1126,17 @@ apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.de
 
 magnetic.declination <- function(lat, lon, date)
 {
-    if (missing(lat) || missing(lon) || missing(date)) stop("must provide lat, lon, and date")
+    if (missing(lat) || missing(lon) || missing(date))
+        stop("must provide lat, lon, and date")
     dim <- dim(lat)
-    if (!all(dim == dim(lon))) stop("dimensions of lat and lon must agree")
+    if (!all(dim == dim(lon)))
+        stop("dimensions of lat and lon must agree")
     n <- length(lat)
     if (length(date) == 1) {
         date <- rep(date, n)
     } else {
-        if (!all(dim == dim(date))) stop("dimensions of lat and date must agree")
+        if (!all(dim == dim(date)))
+            stop("dimensions of lat and date must agree")
     }
     if (!is.null(dim)) {
         dim(lat) <- n
@@ -1158,7 +1189,8 @@ ctime.to.seconds <- function(ctime)
 
 show.fives <- function(x, indent="    ")
 {
-    if (!("fives" %in% names(x))) stop("'x' has no item named 'fives'")
+    if (!("fives" %in% names(x)))
+        stop("'x' has no item named 'fives'")
     rownames <- rownames(x$fives)
     colnames <- colnames(x$fives)
     data.width <- max(nchar(colnames)) + 5

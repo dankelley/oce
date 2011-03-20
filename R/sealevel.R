@@ -14,7 +14,8 @@ as.sealevel <- function(elevation,
                         reference.code=NA,
                         deltat)
 {
-    if (missing(elevation)) stop("must supply sealevel height, elevation, in metres")
+    if (missing(elevation))
+        stop("must supply sealevel height, elevation, in metres")
     n <- length(elevation)
     if (missing(time)) {              # construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="GMT")
@@ -91,7 +92,8 @@ plot.sealevel <- function(x, which=1:4,
         draw.constituent(0.0833333333, "S2", side=1)
     }
 
-    if (!inherits(x, "sealevel")) stop("method is only for sealevel objects")
+    if (!inherits(x, "sealevel"))
+        stop("method is only for sealevel objects")
     opar <- par(no.readonly = TRUE)
     par(mgp=mgp, mar=mar)
     lw <- length(which)
@@ -302,7 +304,8 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
         reference.code    <- substr(header, 77, 77) # add to values
         units             <- substr(header, 79, 80)
         oce.debug(debug, "units=", units, "\n")
-        if (tolower(units) != "mm") stop("require units to be 'mm' or 'MM', not '", units, "'")
+        if (tolower(units) != "mm")
+            stop("require units to be 'mm' or 'MM', not '", units, "'")
         elevation <- array(NA, 12*(n-1))
         first.twelve.hours  <- 3600 * (0:11)
         second.twelve.hours <- 3600 * (12:23)
@@ -363,7 +366,8 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
 
 summary.sealevel <- function(object, ...)
 {
-    if (!inherits(object, "sealevel")) stop("method is only for sealevel objects")
+    if (!inherits(object, "sealevel"))
+        stop("method is only for sealevel objects")
     fives <- matrix(nrow=1, ncol=5)
     res <- list(number=object$metadata$station.number,
                 version=if (is.null(object$metadata$version)) "?" else object$metadata$version,

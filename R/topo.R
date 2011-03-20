@@ -17,7 +17,8 @@ plot.topo <- function(x,
                       debug=getOption("oce.debug"),
                       ...)
 {
-    if (!inherits(x, "topo")) stop("method is only for topo objects")
+    if (!inherits(x, "topo"))
+        stop("method is only for topo objects")
     oce.debug(debug, "\b\bplot.topo() {\n")
 
     opar <- par(no.readonly = TRUE)
@@ -260,8 +261,10 @@ as.topo <- function(longitude, latitude, z, filename="", log.action)
     lon.ll <- min(longitude, na.rm=TRUE)
     lat.ll <- min(latitude, na.rm=TRUE)
     dim <- dim(z)
-    if (dim[1] != ncols) stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
-    if (dim[2] != nrows) stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
+    if (dim[1] != ncols)
+        stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
+    if (dim[2] != nrows)
+        stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
     data <- list(longitude=longitude, latitude=latitude, z=z)
     metadata <- list(filename=file, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
     if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
@@ -273,7 +276,8 @@ as.topo <- function(longitude, latitude, z, filename="", log.action)
 
 summary.topo <- function(object, ...)
 {
-    if (!inherits(object, "topo")) stop("method is only for topo objects")
+    if (!inherits(object, "topo"))
+        stop("method is only for topo objects")
     res <- list(lat.range=range(object$data$lat, na.rm=TRUE),
                 lon.range=range(object$data$lon, na.rm=TRUE),
                 z.range=range(object$data$z, na.rm=TRUE),

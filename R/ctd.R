@@ -16,8 +16,10 @@ as.ctd <- function(salinity, temperature, pressure, quality,
             pressure <- df$pressure
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
     } else {
-        if (missing(temperature)) stop("must give temperature")
-        if (missing(pressure)) stop("must give pressure")
+        if (missing(temperature))
+            stop("must give temperature")
+        if (missing(pressure))
+            stop("must give pressure")
     }
     depths <- max(length(salinity), length(temperature), length(pressure))
     if (length(pressure) < depths)
@@ -64,10 +66,14 @@ as.ctd <- function(salinity, temperature, pressure, quality,
 
 ctd.add.column <- function (x, column, name, label, debug = FALSE)
 {
-    if (missing(column)) stop("must supply column data")
-    if (length(column) != dim(x$data)[1]) stop("column has ", length(column), " data but it must have ", dim(x$data)[1], " data to match existing object")
-    if (missing(name))  stop("must supply \"name\"")
-    if (missing(label)) label <- name
+    if (missing(column))
+        stop("must supply column data")
+    if (length(column) != dim(x$data)[1])
+        stop("column has ", length(column), " data but it must have ", dim(x$data)[1], " data to match existing object")
+    if (missing(name))
+        stop("must supply \"name\"")
+    if (missing(label))
+        label <- name
     res <- x
     r <- range(column)
     res$data[,name] <- column
@@ -82,7 +88,8 @@ ctd.decimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross")
     ## SHOULD ADD: spline; supsmu; ...
 {
     oce.debug(debug, "\bctd.decimate(x, p, method=\"", method, "\", ...) {\n", sep="")
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(x, "ctd"))
+        stop("method is only for ctd objects")
     res <- x
     n <- length(x$data$pressure)
     if (n < 2) {
@@ -183,7 +190,8 @@ ctd.trim <- function(x, method=c("downcast", "index", "range"),
                      parameters, debug=getOption("oce.debug"))
 {
     oce.debug(debug, "\b\bctd.trim() {\n")
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(x, "ctd"))
+        stop("method is only for ctd objects")
     res <- x
     n <- length(x$data$pressure)
     if (n < 2) {
@@ -286,8 +294,10 @@ ctd.trim <- function(x, method=c("downcast", "index", "range"),
 
 ctd.update.header <- function (x, debug = FALSE)
 {
-    if (length(x$metadata$header) < 1) stop("there is no header in this CTD object")
-    if (length(x$data) < 1) stop("there are no data in this CTD object")
+    if (length(x$metadata$header) < 1)
+        stop("there is no header in this CTD object")
+    if (length(x$data) < 1)
+        stop("there are no data in this CTD object")
     replace.header.element <- function(h, match, new)
     {
         for (i in 1:length(h)) {
@@ -316,9 +326,11 @@ ctd.update.header <- function (x, debug = FALSE)
 
 write.ctd <- function(object, file=stop("'file' must be specified"))
 {
-    if (!inherits(object, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(object, "ctd"))
+        stop("method is only for ctd objects")
     if (is.character(file)) {
-        if (file == "") stop("'file' must be a non-empty string")
+        if (file == "")
+            stop("'file' must be a non-empty string")
         con <- file(file, "w")
     } else if (inherits(file, "connection")) {
         con <- file
@@ -342,7 +354,8 @@ plot.ctd <- function (x, which = 1:4,
                       debug=getOption("oce.debug"),
                       ...)
 {
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(x, "ctd"))
+        stop("method is only for ctd objects")
     oce.debug(debug, "\b\bplot.ctd() {\n")
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
@@ -381,7 +394,8 @@ plot.ctd <- function (x, which = 1:4,
     ## 11=density profile
     ## 12=N2 profile
 
-    ##if (any(!which %in% 1:12)) stop("which must be between 1 and 12")
+    ##if (any(!which %in% 1:12))
+    ##    stop("which must be between 1 and 12")
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -560,7 +574,8 @@ plot.ctd.scan <- function(x,
                           mgp=getOption("oce.mgp"),
                           ...)
 {
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(x, "ctd"))
+        stop("method is only for ctd objects")
     opar <- par(no.readonly=TRUE)
     on.exit(par(opar))
     par(mgp=mgp)
@@ -574,7 +589,8 @@ plot.ctd.scan <- function(x,
     layout(matrix(1:2, nrow=2))
     xx <- x$data[[name]];
     xxlen <- length(xx)
-    ##if (xxlen < 1) stop(paste("this ctd has no data column named '", name, "'",sep=""))
+    ##if (xxlen < 1)
+    ##   stop(paste("this ctd has no data column named '", name, "'",sep=""))
     if (xxlen < 1) {
         xxlen <- length(x$data$pressure)
         xx <- seq(1, xxlen)             # fake a scan number
@@ -599,7 +615,8 @@ plot.ctd.scan <- function(x,
     ##    par(mar=c(4,4,1,4)) # bot left top right
     Slen <- length(x$data$salinity)
     Tlen <- length(x$data$temperature)
-    if (Slen != Tlen) stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
+    if (Slen != Tlen)
+        stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
     plot(x$data[[name]], x$data$temperature, xlab="scan", ylab="", type="l", col = T.col, axes=FALSE)
     axis(1)
     axis(2,col=T.col, col.axis = T.col, col.lab = T.col)
@@ -699,7 +716,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     oce.debug(debug, paste("examining header line '",line,"'\n"))
     header <- line
     ## CTD, 20000718WHPOSIOSCD
-    if ("CTD" != substr(line, 1, 3)) stop("Can only read WOCE files of type CTD")
+    if ("CTD" != substr(line, 1, 3))
+        stop("Can only read WOCE files of type CTD")
     tmp <- sub("(.*), ", "", line);
     date <- substr(tmp, 1, 8)
     ##cat("DATE '", date, "'\n", sep="")
@@ -912,7 +930,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     } else {
         filename <- ""
     }
-    if (!inherits(file, "connection")) stop("argument `file' must be a character string or connection")
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
         open(file, "r")
         on.exit(close(file))
@@ -1107,8 +1126,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
             warning("'** Recovery' not found in header");
     }
     ## Require p,S,T data at least
-    if (!found.temperature) stop("cannot find 'temperature' in this file")
-    if (!found.pressure && !found.depth)    stop("no column named 'pressure', 'depth' or 'depSM'")
+    if (!found.temperature)
+        stop("cannot find 'temperature' in this file")
+    if (!found.pressure && !found.depth)
+        stop("no column named 'pressure', 'depth' or 'depSM'")
 
     ## If no water depth found, guess it from the maximum depth
 
@@ -1185,7 +1206,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
 
 summary.ctd <- function(object, ...)
 {
-    if (!inherits(object, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(object, "ctd"))
+        stop("method is only for ctd objects")
     dim <- dim(object$data)
     fives <- matrix(nrow=dim[2], ncol=5)
     res <- list(filename="", system.upload.time="", date="", institute="",
@@ -1304,7 +1326,8 @@ plot.TS <- function (x,
                      lwd.rho=par("lwd"), lty.rho=par("lty"),
                      ...)
 {
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(x, "ctd"))
+        stop("method is only for ctd objects")
 
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
@@ -1339,7 +1362,7 @@ plot.TS <- function (x,
     draw.isopycnals(rho.levels=rho.levels, rotate.rho.labels=rotate.rho.labels, rho1000=rho1000, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
-    lines(Sr, sw.T.freeze(Sr, p=0), col="darkblue")
+    lines(Sr, sw.T.freeze(salinity=Sr, pressure=0), col="darkblue")
 }
 
 draw.isopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
@@ -1408,7 +1431,8 @@ plot.profile <- function (x,
                           mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
                           ...)
 {
-    if (!inherits(x, "ctd")) stop("method is only for ctd objects")
+    if (!inherits(x, "ctd"))
+        stop("method is only for ctd objects")
     dots <- list(...)
     ytype <- match.arg(ytype)
     pname <- if (ytype == "pressure") resizable.label("p", "y") else if (ytype == "z") resizable.label("z", "y")
@@ -1645,7 +1669,8 @@ plot.profile <- function (x,
         lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
     } else {
         w <- which(names(x$data) == xtype)
-        if (length(w) < 1) stop("unknown type \"", xtype, "\"; try one of: ", paste(names(x$data), collapse=" "))
+        if (length(w) < 1)
+            stop("unknown type \"", xtype, "\"; try one of: ", paste(names(x$data), collapse=" "))
         plot(x$data[, w], y, ylim=ylim,
              type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3)

@@ -189,7 +189,8 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
             file <- full.filename(file)
             on.exit(close(file))
         }
-        if (!inherits(file, "connection")) stop("'file' must be a character string or connection")
+        if (!inherits(file, "connection"))
+            stop("'file' must be a character string or connection")
         if (!isOpen(file)) {
             open(file, "r")
             on.exit(close(file))
@@ -362,7 +363,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
 
 summary.coastline <- function(object, ...)
 {
-    if (!inherits(object, "coastline")) stop("method is only for coastline objects")
+    if (!inherits(object, "coastline"))
+        stop("method is only for coastline objects")
     fives <- matrix(nrow=2, ncol=5)
     res <- list(length=length(object$data$longitude),
                 missing=sum(is.na(object$data$longitude)),
