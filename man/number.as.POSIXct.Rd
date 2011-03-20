@@ -2,9 +2,9 @@
 
 \alias{number.as.POSIXct}
 
-\title{Convert an integer time to a POSIXct time}
+\title{Convert a numeric time to a POSIXct time}
 
-\description{Convert an integer time to a POSIXct time}
+\description{Convert a numeric time to a POSIXct time}
 
 \usage{number.as.POSIXct(t, type=c("unix", "matlab", "gps"), tz="UTC")}
 
