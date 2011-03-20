@@ -1160,7 +1160,7 @@ number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
     if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
-        GPS.t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
+        as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
     } else {
         stop("type must be \"unix\", \"matlab\" or \"GPS\"")
     }
