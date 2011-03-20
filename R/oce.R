@@ -1145,17 +1145,23 @@ oce.bisect <- function(f, xleft, xright, dx, debug=getOption("oce.debug"))
     xmiddle
 }
 
-number.as.POSIXct <- function(t, type=c("unix", "matlab"), tz="UTC")
+number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
-        (as.numeric(t) - as.numeric(tref)) + tref
-    } else if (type == "matlab") {
+        return((as.numeric(t) - as.numeric(tref)) + tref)
+    } 
+    if (type == "matlab") {
         ## R won't take a day "0", so subtract one
-        as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1))
+        return(as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1)))
+    }
+    if (type == "gps") {
+        if (!is.matrix(t) || dim(t)[2] != 2)
+            stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
+        GPS.t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
     } else {
-        stop("type must be \"unix\"")
+        stop("type must be \"unix\", \"matlab\" or \"GPS\"")
     }
 }
 
