@@ -1160,9 +1160,51 @@ number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
     if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
+        ## FIXME: take care of leap seconds 2005
+        ## FIXME: handle datees before 1999
         as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
     } else {
         stop("type must be \"unix\", \"matlab\" or \"GPS\"")
     }
 }
-
+## http://en.wikipedia.org/wiki/Leap_second
+## 1972	+1	+1
+## 1973	0	+1
+## 1974	0	+1
+## 1975	0	+1
+## 1976	0	+1
+## 1977	0	+1
+## 1978	0	+1
+## 1979	0	+1
+## 1980	0	0
+## 1981	+1	0
+## 1982	+1	0
+## 1983	+1	0
+## 1984	0	0
+## 1985	+1	0
+## 1986	0	0
+## 1987	0	+1
+## 1988	0	0
+## 1989	0	+1
+## 1990	0	+1
+## 1991	0	0
+## 1992	+1	0
+## 1993	+1	0
+## 1994	+1	0
+## 1995	0	+1
+## 1996	0	0
+## 1997	+1	0
+## 1998	0	+1
+## 1999	0	0
+## 2000	0	0
+## 2001	0	0
+## 2002	0	0
+## 2003	0	0
+## 2004	0	0
+## 2005	0	+1
+## 2006	0	0
+## 2007	0	0
+## 2008	0	+1
+## 2009	0	0
+## 2010	0	0
+## 2011	0	
