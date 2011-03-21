@@ -35,6 +35,7 @@
 \examples{
 cat("In Unix, time=0 (seconds) means ", format(number.as.POSIXct(0)), "\n")
 cat("In Matlab, time=1 (days) means ", format(number.as.POSIXct(1, type="matlab")), "\n")
+cat("GPS week 604 second 134351 is", format(number.as.POSIXct(cbind(604,134351), type="gps")), "\n")
 }
 
 \author{Dan Kelley}

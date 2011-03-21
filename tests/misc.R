@@ -13,3 +13,7 @@ stopifnot(all.equal.numeric(matlab.res, oce.filter(x, a, b)))
 
 # Magnetic declination
 stopifnot(all.equal.numeric(-16.80410, magnetic.declination(44+55/60,-(69+46/60),2008),1e-3))
+
+# GPS time
+stopifnot(number.as.POSIXct(cbind(604,134351), type="gps") == as.POSIXct("2011-03-21 13:18:56",tz="UTC"))
+
