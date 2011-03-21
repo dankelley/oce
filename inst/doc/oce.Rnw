@@ -1,4 +1,4 @@
-% -*- fill-column: 80; comment-column: 50; -*-
+% vim: spell tw=80 shiftwidth=4 softtabstop=4 expandtab
 
 \documentclass{article}
 
