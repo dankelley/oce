@@ -368,10 +368,14 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
 
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                    latitude=NA, longitude=NA,
-                                   beam.angle=25,
+                                   beam.angle=25, orientation,
                                    monitor=TRUE, log.action,
                                    debug=getOption("oce.debug"))
 {
+    ## Data format is described in
+    ##   SonTek/YSI
+    ##   ADPManual_v710.pdf
+    ## A3. Profile Header/CTD/GPS/Bottom Track,/SonWave/Profile Data Structures
     bisect.adp.sontek.serial <- function(t.find, add=0, tz="UTC", debug=0) {
         oce.debug(debug, "bisect.adp.sontek.serial(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(p)
@@ -462,6 +466,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     ## read some unchanging things from the first profile only
     serial.number <- paste(readBin(buf[p[1]+4:13], "character", n=10, size=1),collapse="")
     number.of.beams <- readBin(buf[p[1]+26], "integer", n=1, size=1, signed=FALSE)
+    if (missing(orientation)) {
     orientation <- readBin(buf[p[1]+27], "integer", n=1, size=1, signed=FALSE)
     if (orientation == 0)
         orientation <- "upward"
@@ -471,6 +476,10 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
         orientation <- "sideward"
     else
         stop("orientation=", orientation, "but must be 0 (upward), 1 (downward), or 2 (sideward)")
+    } else {
+        if (orientation != "upward" && orientation != "downward")
+            stop("orientation \"", orientation, " is not allowed; try \"upward\" or \"downward\"")
+    }
     ## 28 is tempmode
     ## coord.system 0=beam 1=XYZ 2=ENU
     coordinate.system <- readBin(buf[p[1]+29], "integer", n=1, size=1, signed=FALSE)
@@ -570,13 +579,18 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     }
     if (monitor)
         cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
-    S  <- 1 / (3 * sin(beam.angle * pi / 180))
-    CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2
-    C  <- 1 / (3 * cos(beam.angle * pi / 180))
-    transformation.matrix <- matrix(c(2*S,  -S,  -S,
-                                      0  , -CS,  CS,
-                                      C  ,   C,   C),
-                                    nrow=3, byrow=TRUE)
+    S  <- sin(beam.angle * pi / 180)
+    C  <- cos(beam.angle * pi / 180)
+    if (orientation == "upward") {
+        ## OAR explains the method of determining the matrix.
+        transformation.matrix <- rbind(c( 2/3/S,       -1/3/S, -1/3/S),
+                                       c(     0,  1/sqrt(3)/S, -1/sqrt(3)/S),
+                                       c( 1/3/C,        1/3/C,  1/3/C))
+    } else {
+        transformation.matrix <- rbind(c( 2/3/S,       -1/3/S, -1/3/S),
+                                       c(     0, -1/sqrt(3)/S,  1/sqrt(3)/S),
+                                       c(-1/3/C,       -1/3/C, -1/3/C))
+    }
     metadata <- list(manufacturer="sontek",
                      instrument.type="adp",
                      serial.number=serial.number,
