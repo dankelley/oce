@@ -1160,7 +1160,7 @@ number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
     if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
-        ## FIXME: take care of leap seconds since the GPS start time, which was 1980
+        ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
         ## http://en.wikipedia.org/wiki/Leap_second
         leaps <- strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01", "1989-01-01", "1990-01-01",
                             "1992-07-01", "1993-07-01", "1994-07-01", "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01",
