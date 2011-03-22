@@ -1224,7 +1224,8 @@ oce.debug <- function(debug=0, ...)
 
 drawpalette <- function(zlim,
                         zlab="",
-                        breaks, col,
+                        breaks,
+                        col,
                         draw.contours=TRUE,
                         debug=getOption("oce.debug"),
                         ...)
@@ -1321,8 +1322,12 @@ drawpalette <- function(zlim,
     oce.debug(debug, "original par(mai)=", format(omai, digits=2), "\n")
     oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), "\n")
     oce.debug(debug, "\b\b} # palette()\n")
+    oce.debug(debug, "drawpalette orig mar=",par('mar'),"\n")
     if (gave.zlim)
         par(new=TRUE, mai=the.mai)
+    else
+        par(mai=the.mai)
+    oce.debug(debug, "drawpalette at end mar=",par('mar'),"\n")
     invisible()
 }
 

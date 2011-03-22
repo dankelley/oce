@@ -296,7 +296,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      debug=getOption("oce.debug"),
                      ...)
 {
-    debug <- if (debug > 0) 1 else 0
+    debug <- max(0, min(debug, 4))
     oce.debug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
     oce.debug(debug, "early in plot.adp:\n")
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
@@ -482,6 +482,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         }
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
+    have.time.images <- any(which %in% images)
+    oce.debug(debug, 'have.time.images=', have.time.images, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
     for (w in 1:nw) {
         oce.debug(debug, "which[", w, "]=", which[w], "; draw.time.range=", draw.time.range, "\n")
         if (which[w] %in% images) {                   # image types
@@ -543,110 +545,208 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             oce.debug(debug, "graph", w, "is a timeseries\n")
             par(mgp=mgp, mar=mar, cex=cex)
             tlim <- range(x$data$ts$time)
-            if (which[w] == 13)
+            if (which[w] == 13) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w], lwd=lwd[w], main=main[w],
-                            ylab=resizable.label("S"), type=type,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            xaxs="i",
+                            col=col[w],
+                            lwd=lwd[w],
+                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                            main=main[w],
+                            ylab=resizable.label("S"),
+                            type=type,
+                            mgp=mgp,
+                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 14)
+            }
+            if (which[w] == 14) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w], lwd=lwd[w], main=main[w],
-                            ylab= expression(paste("T [ ", degree, "C ]")), type='l',
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            draw.time.range=draw.time.range, adorn=adorn[w])
+                            xaxs="i",
+                            col=col[w],
+                            lwd=lwd[w],
+                            cex=cex*(1 - min(nw / 8, 1/4)),
+                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                            main=main[w],
+                            ylab=expression(paste("T [ ", degree, "C ]")),
+                            type=type,
+                            mgp=mgp,
+                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            draw.time.range=draw.time.range,
+                            adorn=adorn[w],
+                            debug=debug-1)
+            }
             if (which[w] == 15) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 oce.debug(debug, "pressure plot. col=", col[w], "\n")
                 oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w], lwd=lwd[w], main=main[w],
-                            ylab=resizable.label("p"), type=type,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            xaxs="i",
+                            col=col[w],
+                            lwd=lwd[w],
+                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                            main=main[w],
+                            ylab=resizable.label("p"),
+                            type=type,
+                            mgp=mgp,
+                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
-            if (which[w] == 16)
+            if (which[w] == 16) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w], lwd=lwd[w], main=main[w],
-                            ylab=resizable.label("heading"), type=type,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            xaxs="i",
+                            col=col[w],
+                            lwd=lwd[w],
+                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                            main=main[w],
+                            ylab=resizable.label("heading"),
+                            type=type,
+                            mgp=mgp, 
+                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 17)
+            }
+            if (which[w] == 17) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w], lwd=lwd[w], main=main[w],
-                            ylab=resizable.label("pitch"), type=type,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            xaxs="i",
+                            col=col[w],
+                            lwd=lwd[w],
+                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                            main=main[w],
+                            ylab=resizable.label("pitch"),
+                            type=type,
+                            mgp=mgp,
+                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
-            if (which[w] == 18)
+            }
+            if (which[w] == 18) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
-                            col=col[w], lwd=lwd[w], main=main[w],
-                            ylab=resizable.label("roll"), type=type,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            xaxs="i",
+                            col=col[w],
+                            lwd=lwd[w],
+                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                            main=main[w],
+                            ylab=resizable.label("roll"),
+                            type=type,
+                            mgp=mgp,
+                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
+            }
             if (which[w] == 19) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w], lwd=lwd[w], main=main[w],
-                                ylab=ad.beam.name(x, 1), type=type,
-                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                draw.time.range=draw.time.range, cex.axis=cex,
+                                xaxs="i",
+                                col=col[w],
+                                lwd=lwd[w],
+                                cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                main=main[w],
+                                ylab=ad.beam.name(x, 1),
+                                type=type,
+                                mgp=mgp,
+                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 1)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w], lwd=lwd[w], main=main[w],
-                                ylab=ad.beam.name(x, 2), type=type,
-                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                xaxs="i",
+                                col=col[w],
+                                lwd=lwd[w],
+                                cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                main=main[w],
+                                ylab=ad.beam.name(x, 2),
+                                type=type,
+                                mgp=mgp,
+                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
             }
             if (which[w] == 21) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 2)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w], lwd=lwd[w], main=main[w],
-                                ylab=ad.beam.name(x, 3), type=type,
-                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                xaxs="i",
+                                col=col[w],
+                                lwd=lwd[w],
+                                cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                main=main[w],
+                                ylab=ad.beam.name(x, 3),
+                                type=type,
+                                mgp=mgp,
+                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] == 22) {
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 3)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
-                                col=col[w], lwd=lwd[w], main=main[w], 
-                                ylab=ad.beam.name(x, 4), type=type,
-                                mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                xaxs="i",
+                                col=col[w],
+                                lwd=lwd[w],
+                                cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                main=main[w], 
+                                ylab=ad.beam.name(x, 4),
+                                type=type,
+                                mgp=mgp,
+                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 draw.time.range=draw.time.range,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             draw.time.range <- FALSE
-            if (margins.as.image && use.layout)  {
+            if (margins.as.image && use.layout)  { # FIXME: I think this should be deleted
                 ## blank plot, to get axis length same as for images
                 omar <- par("mar")
                 par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))

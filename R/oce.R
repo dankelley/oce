@@ -216,15 +216,18 @@ oce.plot.ts <- function(x,
                         debug=getOption("oce.debug"),
                         ...)
 {
+    ocex <- par("cex")
+    par(cex=cex)
     debug <- min(debug, 4)
     oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
-    oce.debug(debug, "mar=",mar,"\n")
+    oce.debug(debug, "mgp=",mgp,"\n")
     oce.debug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     oce.debug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
     par(mgp=mgp, mar=mar)
     args <- list(...)
+
     if (length(y) == 1)
         y <- rep(y, length(x))
     if (despike)
@@ -233,16 +236,15 @@ oce.plot.ts <- function(x,
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab,
-             cex=cex, cex.lab=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
              type=type, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab,
-             cex=cex, cex.lab=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
-             type=type, ...)
+        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab, ylab=ylab, type=type, ...)
     }
-    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main, debug=debug-1, cex=cex, cex.axis=cex.axis, cex.main=cex.main, ...)
+    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main,
+                              mgp=mgp, cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                              debug=debug-1, ...)
     if (grid) {
         lwd <- par("lwd")
         abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
@@ -256,8 +258,9 @@ oce.plot.ts <- function(x,
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error")
-            warning("cannot evaluate adorn {", adorn, "}\n")
+            warning("cannot evaluate adorn {", format(adorn), "}\n")
     }
+    par(cex=ocex)
     oce.debug(debug, "\b\b} # oce.plot.ts()\n")
     invisible()
 }
@@ -880,10 +883,14 @@ oce.colors.palette <- function(n, which=1)
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
                               draw.time.range=TRUE, abbreviate.time.range=FALSE, draw.frequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+                              mar=par("mar"),
+                              mgp=par("mgp"),
                               main="",
                               debug=getOption("oce.debug"), ...)
 {
     oce.debug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
+    oce.debug(debug,"mar=",mar,"\n")
+    oce.debug(debug,"mgp=",mgp,"\n")
     oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oce.debug(debug,vector.show(x, "x"))
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
@@ -1104,7 +1111,14 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oce.debug(debug, vector.show(z.sub, "z.sub="))
     }
     oce.debug(debug, vector.show(labels, "labels="))
-    axis(side, at = z, line=0, labels = labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main)
+    ocex <- par('cex')
+    ocex.axis <- par('cex.axis')
+    ocex.main <- par('cex.main')
+    omgp <- par('mgp')
+    par(cex=cex, cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
+    ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
+    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex=cex, cex.main=cex.main, cex.axis=cex.axis)
+    par(cex=ocex, cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
     oce.debug(debug, "\b\b} # oce.axis.ts()\n")
     invisible()
 }

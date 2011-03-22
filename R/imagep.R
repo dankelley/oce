@@ -29,7 +29,6 @@ imagep <- function(x, y, z,
     oce.debug(debug, paste("  xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep=""))
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-
     if (missing(x))
         stop("must supply x")
     if (missing(y))
@@ -152,7 +151,7 @@ imagep <- function(x, y, z,
         }
         box()
         if (axes) {
-            oce.axis.POSIXct(side=1, x=x, cex.axis=cex, cex.lab=cex, draw.time.range=draw.time.range)
+            oce.axis.POSIXct(side=1, x=x, cex=cex, cex.axis=cex, cex.lab=cex, draw.time.range=draw.time.range, mar=mar, mgp=mgp)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
     } else {
