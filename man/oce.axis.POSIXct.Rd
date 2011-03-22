@@ -8,9 +8,8 @@
 
 \usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE,
   draw.time.range=TRUE, abbreviate.time.range=FALSE, draw.frequency=FALSE,
-  cex=par("cex"),
-  cex.axis=par("cex.axis"),
-  cex.main=par("cex.main"), 
+  cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), 
+  mar=par("mar"), mgp=par("mgp"),
   main="", debug=getOption("oce.debug"), ...)}
 
 \arguments{
@@ -29,6 +28,8 @@
   \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
   \item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
   \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
+  \item{mar}{value for \code{par(mar)} for axis}
+  \item{mgp}{value for \code{par(mgp)} for axis}
   \item{main}{title of plot.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
