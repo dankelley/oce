@@ -333,7 +333,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     file.size <- seek(file, where=0)
     oce.debug(debug, "file.size=", file.size, "\n")
     buf <- readBin(file, what="raw", n=file.size, endian="little")
-
+    ##b<<-buf
     ## decode header
     header <- decode.header.rdi(buf, debug=debug-1)
     if (header$have.actual.data) {
@@ -342,8 +342,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         bin1.distance <- header$bin1.distance
         xmit.pulse.length <- header$xmit.pulse.length
         cell.size <- header$cell.size
-        profile.start <- .Call("match2bytes", buf, 0x80, 0x00, TRUE)
-        oce.debug(debug, vector.show(profile.start, "profile.start before trimming:"))
+        profile.start <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
+        profile.start <- profile.start + as.numeric(buf[profile.start[1]+8]) + 256*as.numeric(buf[profile.start[i]+9])
+        # offset for data type 1 (velocity)
+        oce.debug(1+debug, vector.show(profile.start, "profile.start before trimming:"))
         profiles.in.file <- length(profile.start)
         oce.debug(debug, "profiles.in.file=", profiles.in.file, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
         if (profiles.in.file > 0)  {
