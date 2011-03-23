@@ -192,6 +192,7 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
     ensemble.number.MSB <- readBin(VLD[12], "integer", n=1, size=1)
     bit.result <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speed.of.sound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
+    oce.debug(debug, "speed.of.sound = ", speed.of.sound, "\n")
     if (speed.of.sound < 1400 || speed.of.sound > 1600)
         warning("speed of sound is ", speed.of.sound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
     ## Comment out some things not needed here (may be wrong, too)
@@ -205,7 +206,6 @@ decode.header.rdi <- function(buf, debug=getOption("oce.debug"), tz=getOption("o
 
     ## Skipping a lot ...
     ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
-
     list(instrument.type="adcp",
          instrument.subtype=instrument.subtype,
          program.version.major=program.version.major,
@@ -343,7 +343,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         xmit.pulse.length <- header$xmit.pulse.length
         cell.size <- header$cell.size
         profile.start <- .Call("ldc_rdi", buf, 0) # point at bytes (7f 7f)
-        profile.start <- profile.start + as.numeric(buf[profile.start[1]+8]) + 256*as.numeric(buf[profile.start[i]+9])
+        profile.start <- profile.start + as.numeric(buf[profile.start[1]+8]) + 256*as.numeric(buf[profile.start[1]+9])
         # offset for data type 1 (velocity)
         oce.debug(1+debug, vector.show(profile.start, "profile.start before trimming:"))
         profiles.in.file <- length(profile.start)
