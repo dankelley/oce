@@ -405,7 +405,8 @@ oce.write.table <- function (x, file="", ...)
 
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), ...)
 {
-    oce.debug(debug, "\b\bsubset.oce() {\n")
+    debug <- max(0, min(debug, 1))
+    oce.debug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (inherits(x, "cm")) {
@@ -519,7 +520,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 station[[i]] <- x$data$station[[ii]]
             }
             data <- list(station=station)
-            metadata <- list(header=x$header,section.id=x$section.id,station.id=stn,latitude=lat,longitude=lon)
+            metadata <- list(header=x$metadata$header,section.id=x$metadata$section.id,station.id=stn,latitude=lat,longitude=lon)
             rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
             class(rval) <- c("section", "oce")
         } else {                        # subset within the stations
@@ -533,6 +534,32 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 rval$metadata$longitude <- rval$metadata$longitude[keep]
                 rval$metadata$station.id <- rval$metadata$station.id[keep]
                 rval$data$station <- rval$data$station[keep]
+            } else if (length(grep("latitude", subset.string)) || length(grep("longitude", subset.string))) {
+                n <- length(x$data$station)
+                keep <- vector(length=n)
+                for (i in 1:n)
+                    keep[i] <- eval(substitute(subset), x$data$station[[i]]$metadata, parent.frame())
+                nn <- sum(keep)
+                station <- vector("list", nn)
+                stn <- vector("character", nn)
+                lon <- vector("numeric", nn)
+                lat <- vector("numeric", nn)
+                j <- 1
+                for (i in 1:n) {
+                    if (keep[i]) {
+                        stn[j] <- x$metadata$station.id[i]
+                        lat[j] <- x$metadata$latitude[i]
+                        lon[j] <- x$metadata$longitude[i]
+                        station[[j]] <- x$data$station[[i]]
+                        j <- j + 1
+                    }
+                }
+                data <- list(station=station)
+                metadata <- list(header=x$metadata$header,
+                                 section.id=x$metadata$section.id,
+                                 station.id=stn,latitude=lat,longitude=lon)
+                rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
+                class(rval) <- c("section", "oce")
             } else {
                 n <- length(x$data$station)
                 r <- eval(substitute(subset), x$data$station[[1]]$data, parent.frame())
@@ -541,16 +568,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 }
             }
         }
-        rval$processing.log <- processing.log.add(rval$processing.log,
-                                                  paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "pt")) {
         r <- eval(substitute(subset), x$data$ts, parent.frame())
         r <- r & !is.na(r)
         rval <- x
         for (name in names(rval$data$ts))
             rval$data$ts[[name]] <- x$data$ts[[name]][r]
-        rval$processing.log <- processing.log.add(rval$processing.log,
-                                                  paste(deparse(match.call()), sep="", collapse=""))
     } else if (inherits(x, "adv")) {
         if (!is.null(indices))
             stop("cannot specify 'indices' for adv objects (not coded yet)")
