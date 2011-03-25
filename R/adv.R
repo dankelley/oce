@@ -1449,7 +1449,6 @@ plot.adv <- function(x, which=c(1:3,14,15),
     }
     which <- which2
     oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-
     oce.debug(debug, "after layout, cex=", par('cex'), "\n")
     have.ts.slow <- "ts.slow" %in% names(x$data)
     tlim <- range(x$data$ts$time, na.rm=TRUE)

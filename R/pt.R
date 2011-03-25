@@ -135,8 +135,8 @@ plot.pt <- function (x, which=1:4, title="", adorn=NULL,
 
 read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=getOption("oce.debug"))
 {
-    if (!missing(to))
-        oce.debug(debug, 'to=', to, '\n')
+    debug <- max(0, min(debug, 2))
+    oce.debug(debug, "\b\bread.pt(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...)\n", sep="")
     file <- full.filename(file)
     filename <- file
     if (is.character(file)) {
@@ -227,6 +227,9 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     nvar <- length(strsplit(line, "[ ]+")[[1]])
 
     oce.debug(debug, " data line '", line, "' reveals ", nvar, " data per line\n", sep="")
+
+    from.orig <- from
+    from <- max(1, from)
     if (missing(to)) {
         oce.debug(debug, "reading whole file, since 'to' was not provided\n")
         d <- scan(file, character(), skip=from-1, quiet=TRUE) # whole file
@@ -246,6 +249,11 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     subsample.start <- measurement.start + (from - 1) * measurement.deltat # FIXME: check this
     subsample.deltat <- by * measurement.deltat
     if (nvar == 2) {
+        if (from.orig < 1) {
+            cat("NEG\n")
+        } else {
+            cat("POS\n")
+        }
         time <- subsample.start + seq(from=0, to=n-1) * subsample.deltat
         oce.debug(debug, "nvar=2; setting time[1]=", format(time[1]), "and time[2]=", format(time[2]), "with subsample.deltat=", subsample.deltat,"\n")
         temperature <- as.numeric(d[1,])
@@ -277,6 +285,7 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     log.item <- processing.log.item(log.action)
     rval <- list(data=data, metadata=metadata, processing.log=log.item)
     class(rval) <- c("pt", "oce")
+    oce.debug(debug, "\b\b} # read.pt()\n", sep="")
     rval
 }
 
