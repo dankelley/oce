@@ -41,6 +41,10 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
 {
     if (!inherits(x, "pt"))
         stop("method is only for pt objects")
+    if (0 == sum(!is.na(x$data$ts$temperature)))
+        stop("no good temperatures to plot")
+    if (0 == sum(!is.na(x$data$ts$pressure)))
+        stop("no good pressures to plot")
     nw <- length(which)
     opar <- par(no.readonly = TRUE)
     if (nw > 1)
@@ -83,6 +87,7 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
         main <- rep(main, length.out=nw)
     oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     for (w in 1:nw) {
+        oce.debug(debug, "which[", w, "]=", which[w], "\n")
         if (which[w] == 1) {
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                  ylab=resizable.label("T", "y"),
@@ -268,11 +273,27 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     dim(d) <- c(nvar, n)
     if (nvar == 2) {
         time <- measurement.start + seq(from=0, to=n-1) * measurement.deltat 
+        Tcol <- 1
+        pcol <- 2
     } else if (nvar == 4) {
-        time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+        ## This time conversion is the slowest part of this function.  With R 2.13.0a working on
+        ## a 620524-long vector: strptime() took 24s on a particular machine, and
+        ## as.POSIXct() took 104s.  So, use strptime(), if the first time seems 
+        ## to be in a stanadard format.
+        if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1,1])))
+            time <- strptime(paste(d[1,], d[2,]), format="%Y/%m/%d %H:%M:%S", tz=tz)
+        else
+            time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+        Tcol <- 3
+        pcol <- 4
     } else if (nvar == 5) {
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
-        time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+        if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1,1])))
+            time <- strptime(paste(d[1,], d[2,]), format="%Y/%m/%d %H:%M:%S", tz=tz)
+        else
+            time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+        Tcol <- 3
+        pcol <- 4
     } else
         stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    ## subset
 
@@ -288,33 +309,14 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     oce.debug(debug, "will be skipping time with seq(..., by=", by, ")\n")
     look <- seq.int(1, dim(d)[2], by=by)
     time <- time[look]
-    temperature <- as.numeric(d[1,look])
-    pressure <- as.numeric(d[2,look])
-
-    return(as.pt(time, temperature, pressure, instrument.type="rbr",
-                 serial.number=serial.number,
-                 filename=filename,
-                 log.action=paste(deparse(match.call()), sep="", collapse=""),
-                 debug=debug-1))
-    
-    data <- list(ts=list(time=time, temperature=temperature, pressure=pressure))
-    metadata <- list(filename=filename,
-                     instrument.type="rbr",
-                     serial.number=serial.number,
-                     measurement.start=measurement.start,
-                     measurement.end=measurement.end,
-                     measurement.deltat=measurement.deltat,
-                     subsample.start=time[1],
-                     subsample.end=time[length(time)],
-                     subsample.deltat=as.numeric(time[2])-as.numeric(time[1]))
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    rval <- list(data=data, metadata=metadata, processing.log=log.item)
-    class(rval) <- c("pt", "oce")
-    oce.debug(debug, "\b\b} # read.pt()\n", sep="")
-    rval
+    temperature <- as.numeric(d[Tcol, look])
+    pressure <- as.numeric(d[pcol, look])
+    as.pt(time, temperature, pressure, instrument.type="rbr",
+          serial.number=serial.number,
+          filename=filename,
+          log.action=paste(deparse(match.call()), sep="", collapse=""),
+          debug=debug-1)
 }
-
 
 summary.pt <- function(object, ...)
 {
@@ -328,14 +330,10 @@ summary.pt <- function(object, ...)
     rownames(fives) <- c("Temperature", "Pressure")
     res <- list(filename=object$metadata$filename,
                 serial.number=object$metadata$serial.number,
-                measurement.start=object$metadata$measurement.start,
-                measurement.end=object$metadata$measurement.end,
-                measurement.deltat=object$metadata$measurement.deltat,
-                subsample.start=object$metadata$subsample.start,
-                subsample.end=object$metadata$subsample.end,
-                subsample.deltat=object$metadata$subsample.deltat,
-                samples=length(object$data$ts$temperature), # FIXME: do we need this?
                 fives=fives,
+                tstart=object$data$ts$time[1], 
+                tend=object$data$ts$time[length(object$data$ts$time)], 
+                deltat=as.numeric(object$data$ts$time[2]) - as.numeric(object$data$ts$time[1]), 
                 processing.log=processing.log.summary(object))
     class(res) <- "summary.pt"
     res
@@ -347,13 +345,9 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(paste("* Instrument:         RBR, serial number ``", x$serial.number, "``\n", sep=""), ...)
     cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
     cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(x$measurement.start), attr(x$measurement.start, "tzone"),
-                format(x$measurement.end), attr(x$measurement.end, "tzone"),
-                1 / x$measurement.deltat), ...)
-    cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-                format(x$subsample.start), attr(x$subsample.start, "tzone"),
-                format(x$subsample.end),  attr(x$subsample.end, "tzone"),
-                1 / x$subsample.deltat), ...)
+                format(x$tstart), attr(x$tstart, "tzone"),
+                format(x$tend), attr(x$tend, "tzone"),
+                1 / x$deltat), ...)
     cat("* Statistics of subsample::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
     ##cat("\n* Processing log::\n\n", ...)
