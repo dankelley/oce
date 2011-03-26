@@ -1,3 +1,32 @@
+as.pt <- function(time, temperature, pressure,
+                  filename="",
+                  instrument.type="rbr", serial.number="",
+                  log.action, debug=getOption("oce.debug"))
+{
+    debug <- min(debug, 1)
+    oce.debug(debug, "\bas.pt(..., filename=\"", filename, "\", serial.number=\"", serial.number, "\")\n", sep="")
+    if (missing(time) || missing(temperature) || missing(pressure))
+        stop("must give (at least) time, temperature, and pressure")
+    if (!inherits(time, "POSIXt"))
+        stop("'time' must be POSIXt")
+    time <- as.POSIXct(time)
+    if (length(time) != length(temperature))
+        stop("lengths of 'time' and 'temperature' must match")
+    if (length(time) != length(pressure))
+        stop("lengths of 'time' and 'pressure' must match")
+    data <- list(ts=list(time=time, temperature=temperature, pressure=pressure))
+    metadata <- list(filename=filename,
+                     instrument.type=instrument.type,
+                     serial.number=serial.number)
+    if (missing(log.action))
+        log.action <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processing.log.item(log.action)
+    rval <- list(data=data, metadata=metadata, processing.log=log.item)
+    class(rval) <- c("pt", "oce")
+    oce.debug(debug, "\b} # as.pt()\n", sep="")
+    rval
+}
+
 plot.pt <- function (x, which=1:4, title="", adorn=NULL,
                      tlim, plim, Tlim,
                      xlab, ylab,
@@ -60,6 +89,7 @@ plot.pt <- function (x, which=1:4, title="", adorn=NULL,
                  type='l',
                  xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
+                 draw.time.range=draw.time.range,
                  main=main[w])
             ##box()
             ##oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range, abbreviate.time.range=abbreviate.time.range)
@@ -72,6 +102,7 @@ plot.pt <- function (x, which=1:4, title="", adorn=NULL,
                  xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(plim)) range(x$data$ts$pressure, na.rm=TRUE) else plim,
                  main=main[w],
+                 draw.time.range=draw.time.range,
                  mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5))
             ##box()
             ##oce.axis.POSIXct(1, x=x$data$ts$time, draw.time.range=draw.time.range)
@@ -225,52 +256,35 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     pushBack(line, file)
     line <- gsub("[ ]+$", "", gsub("^[ ]+","", line))
     nvar <- length(strsplit(line, "[ ]+")[[1]])
-
     oce.debug(debug, " data line '", line, "' reveals ", nvar, " data per line\n", sep="")
-
-    from.orig <- from
-    from <- max(1, from)
-    if (missing(to)) {
-        oce.debug(debug, "reading whole file, since 'to' was not provided\n")
-        d <- scan(file, character(), skip=from-1, quiet=TRUE) # whole file
-    } else {
-        oce.debug(debug, "skipping (from-1)=", from-1, "lines, then reading (to-from+1)=", to-from+1, "lines\n")
-        d <- scan(file, character(), skip=from-1, quiet=TRUE, nlines=(to - from + 1))
-    }
-    oce.debug(debug, "got length(d)=", length(d), "during the scan()\n")
-    ## FIXME: it is slow to read whole file and then subset ... would multiple calls to scan() be faster?
+    d <- scan(file, character(), quiet=TRUE) # read whole file (it's too tricky to bisect times with text data)
     n <- length(d) / nvar
+    oce.debug(debug, "file has", length(d), "items; assuming", nvar, "items per line, based on first line\n")
     dim(d) <- c(nvar, n)
-
-    ## subset
-    look <- seq(from=1, to=n, by=by)    # BUG: why not using proper 'from'?
-    d <- d[,look]
-    n <- dim(d)[2]
-    subsample.start <- measurement.start + (from - 1) * measurement.deltat # FIXME: check this
-    subsample.deltat <- by * measurement.deltat
     if (nvar == 2) {
-        if (from.orig < 1) {
-            cat("NEG\n")
-        } else {
-            cat("POS\n")
-        }
-        time <- subsample.start + seq(from=0, to=n-1) * subsample.deltat
-        oce.debug(debug, "nvar=2; setting time[1]=", format(time[1]), "and time[2]=", format(time[2]), "with subsample.deltat=", subsample.deltat,"\n")
-        temperature <- as.numeric(d[1,])
-        pressure <- as.numeric(d[2,])
+        time <- measurement.start + seq(from=0, to=n-1) * measurement.deltat 
     } else if (nvar == 4) {
-        oce.debug(debug, "nvar=4; decoding data\n")
         time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
-        temperature <- as.numeric(d[3,])
-        pressure <- as.numeric(d[4,])
     } else if (nvar == 5) {
-        oce.debug(debug, "nvar=5; decoding data\n")
         ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
-        time <- as.POSIXct(paste(d[1,], d[2,]),tz=tz)
-        temperature <- as.numeric(d[3,])
-        pressure <- as.numeric(d[4,])
-        ## ignore column 5
-    } else stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)
+        time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+    } else
+        stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    ## subset
+
+    ## subset times
+    keep <- from <= time & time <= to # FIXME: from may be int or time
+    oce.debug(debug, "will be skipping time with seq(..., by=", by, ")\n")
+    look <- seq.int(1, dim(d)[2], by=by)
+    time <- time[look]
+    temperature <- as.numeric(d[1,look])
+    pressure <- as.numeric(d[2,look])
+
+    return(as.pt(time, temperature, pressure, instrument.type="rbr",
+                 serial.number=serial.number,
+                 filename=filename,
+                 log.action=paste(deparse(match.call()), sep="", collapse=""),
+                 debug=debug-1))
+    
     data <- list(ts=list(time=time, temperature=temperature, pressure=pressure))
     metadata <- list(filename=filename,
                      instrument.type="rbr",

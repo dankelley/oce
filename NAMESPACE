@@ -8,6 +8,7 @@ export(
        apply.magnetic.declination,
        as.coastline,
        as.ctd,
+       as.pt,
        as.sealevel,
        as.topo,
        as.windrose,

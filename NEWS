@@ -1,5 +1,6 @@
 0.1-83
-- read.pt(): fix error in times 
+- read.pt(): fix timing error; use as.pt() to create return value
+- add as.pt()
 - read.adp.rdi() uses checksums
 - number.as.POSIXct(type="gps"): account for leap seconds
 0.1-82
