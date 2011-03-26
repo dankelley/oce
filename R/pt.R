@@ -240,17 +240,22 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     if (inherits(from, "POSIXt") || inherits(from, "character")) {
         if (!inherits(to, "POSIXt") && !inherits(to, "character"))
             stop("if 'from' is POSIXt or character, then 'to' must be, also")
+        if (to <= from)
+            stop("cannot have 'to' <= 'from'")
         from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurement.start, units="secs")) / measurement.deltat
         oce.debug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
         to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurement.start, units="secs")) / measurement.deltat
         oce.debug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+    } else {
+        if (from < 1)
+            stop("cannot have 'from' < 1")
+        if (!missing(to) && to < from)
+            stop("cannot have 'to' < 'from'")
     }
     oce.debug(debug, "by=", by, "in argument list\n")
     by <- ctime.to.seconds(by)
     oce.debug(debug, "inferred by=", by, "s\n")
-
     col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
-
     ## Read a line to determine if there is a pair of columns for time
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
     pushBack(line, file)
@@ -272,7 +277,14 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
         stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    ## subset
 
     ## subset times
-    keep <- from <= time & time <= to # FIXME: from may be int or time
+    if (inherits(from, "POSIXt") || inherits(from, "character")) {
+        keep <- from <= time & time <= to # FIXME: from may be int or time
+    } else {
+        if (missing(to))
+            look <- from:n
+        else
+            look <- from:to
+    }
     oce.debug(debug, "will be skipping time with seq(..., by=", by, ")\n")
     look <- seq.int(1, dim(d)[2], by=by)
     time <- time[look]
