@@ -27,17 +27,17 @@ as.pt <- function(time, temperature, pressure,
     rval
 }
 
-plot.pt <- function (x, which=1:4, title="", adorn=NULL,
-                     tlim, plim, Tlim,
-                     xlab, ylab,
-                     draw.time.range=getOption("oce.draw.time.range"),
-                     abbreviate.time.range=getOption("oce.abbreviate.time.range"),
-                     use.smoothScatter=FALSE,
-                     mgp=getOption("oce.mgp"),
-                     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-                     main="",
-                     debug=getOption("oce.debug"),
-                     ...)
+plot.pt <- function(x, which=1:4, title="", adorn=NULL,
+                    tlim, plim, Tlim,
+                    xlab, ylab,
+                    draw.time.range=getOption("oce.draw.time.range"),
+                    abbreviate.time.range=getOption("oce.abbreviate.time.range"),
+                    use.smoothScatter=FALSE,
+                    mgp=getOption("oce.mgp"),
+                    mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                    main="",
+                    debug=getOption("oce.debug"),
+                    ...)
 {
     if (!inherits(x, "pt"))
         stop("method is only for pt objects")
