@@ -18,8 +18,9 @@
 \value{A new vector, which has minimum \code{lim[1]} and maximum \code{lim[2]}.}
 
 \examples{
-x <- 0:10
-plot(x, pch=20, cex=5, col=hsv(rescale(x, c(0, 2/3))))
+x <- 1:6
+drawpalette(c(1,6),col=oce.colors.jet)
+plot(x, pch=20, cex=6, col=oce.colors.jet(100)[rescale(x, c(1, 100))])
 }
 
 \author{Dan Kelley}
