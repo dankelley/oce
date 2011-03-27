@@ -121,6 +121,7 @@ export(
        read.pt,
        read.sealevel,
        read.section,
+       rescale,
        retime,
        seconds.to.ctime,
        resizable.label,

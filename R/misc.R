@@ -1,4 +1,10 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+rescale <- function(x, lim=c(0,1))
+{
+    r <- range(x, na.rm=TRUE)
+    rval <- lim[1] + (lim[2] - lim[1]) * (x - r[1]) / (r[2] - r[1])
+}
+
 retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
 {
     if (missing(x))
