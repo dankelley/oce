@@ -18,9 +18,11 @@
 \value{A new vector, which has minimum \code{lim[1]} and maximum \code{lim[2]}.}
 
 \examples{
-x <- 1:6
-drawpalette(c(1,6),col=oce.colors.jet)
-plot(x, pch=20, cex=6, col=oce.colors.jet(100)[rescale(x, c(1, 100))])
+x <- runif(1000, min=-1, max=1)
+y <- runif(1000, min=-1, max=1)
+drawpalette(zlim=c(-2,2), zlab=expression(x^2+y^2), col=oce.colors.jet)
+col <- oce.colors.jet(100)[rescale(x^2+y^2, c(1, 100))]
+plot(x, y, col=col, cex=4, pch=20)
 }
 
 \author{Dan Kelley}
