@@ -24,7 +24,7 @@
              cex=1,
              use.smoothScatter=FALSE,
              mgp=getOption("oce.mgp"),
-             mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 0.5),
+             mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
 \dots)
 }
 

@@ -1232,7 +1232,7 @@ drawpalette <- function(zlim,
                         zlab="",
                         breaks,
                         col,
-                        draw.contours=TRUE,
+                        draw.contours=FALSE,
                         debug=getOption("oce.debug"),
                         ...)
 {
@@ -1256,7 +1256,7 @@ drawpalette <- function(zlim,
                    main=NA,            # main image width
                    palette.separation=1/8, # between main & palette
                    palette.width=1/4,  # palette width
-                   mar.rhs=tic.length + line.height * if(nchar(zlab)==0) 1.0 else 1.5) # width of RHS margin
+                   mar.rhs=tic.length + line.height * if(nchar(zlab)==0) 1.0 else 2.0) # width of RHS margin
     ## next line ensures that things add up... but see FIXME below
     widths$main <- device.width - widths$mar.lhs - widths$palette.separation - widths$palette.width - widths$mar.rhs
     if (debug > 0) {
@@ -1316,7 +1316,7 @@ drawpalette <- function(zlim,
         box()
         if (debug > 0)
             print(palette)
-        axis(side=4, at=if (is.null(contours)) contours else pretty(palette))
+        axis(side=4, at=if (is.null(contours)) contours else pretty(palette), mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
     }

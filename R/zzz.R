@@ -10,7 +10,7 @@
     op <- options()
     op.oce <- list(oce.tz = "UTC",
                    ##oce.mgp = c(2.5,1,0),
-                   oce.mgp = c(2,3/4,0),
+                   oce.mgp = c(2.5, 0.7, 0),
                    oce.draw.time.range = TRUE,
                    oce.abbreviate.time.range = TRUE,
                    oce.time.format = "%Y-%m-%d %H:%M:%S",

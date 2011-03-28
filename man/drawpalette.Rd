@@ -6,7 +6,7 @@
 
 \description{Draw a palette on the right-hand side of plot device}
 
-\usage{drawpalette(zlim, zlab="", breaks, col, draw.contours=TRUE, debug=getOption("oce.debug"), \dots)}
+\usage{drawpalette(zlim, zlab="", breaks, col, draw.contours=FALSE, debug=getOption("oce.debug"), \dots)}
 
 \arguments{
     \item{zlim}{two-element vector containing the lower and upper limits of z.
