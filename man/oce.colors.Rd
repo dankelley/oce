@@ -65,7 +65,7 @@ par(opar)
 
 \references{
 Color Brewer.
-http://www.personal.psu.edu/cab38/ColorBrewer/ColorBrewer.html
+\url{http://colorbrewer2.org/}
 
 Light, A., and P. J. Bartlein, 2004.
 The End of the Rainbow? Color Schemes for Improved Data Graphics.
