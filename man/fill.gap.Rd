@@ -6,11 +6,14 @@
 
 \description{Fill a gap in an oce object}
 
-\usage{fill.gap(x, method=c("linear"))}
+\usage{fill.gap(x, method=c("linear"), rule=1)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
   \item{method}{to use; see \dQuote{Details}.}
+  \item{rule}{integer controlling behaviour at start and end of \code{x}.  If
+      \code{rule=1}, \code{NA} values at the ends are left in the return value.
+      If \code{rule=2}, they are replaced with the nearest non-NA point.}
 }
 
 \details{Sequences of \code{NA} values, are filled by linear

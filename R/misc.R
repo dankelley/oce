@@ -719,7 +719,7 @@ undrift.time <- function(x, slow.end = 0, tname="time")
     rval
 }
 
-fill.gap <- function(x, method=c("linear"))
+fill.gap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
         stop("only works for numeric 'x'")
@@ -728,7 +728,7 @@ fill.gap <- function(x, method=c("linear"))
     method <- match.arg(method)
     class <- class(x)
     x <- as.numeric(x)
-    res <- .Call("fillgap", x)
+    res <- .Call("fillgap", x, rule)
     class(res) <-  class
     res
 }
