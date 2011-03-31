@@ -6,7 +6,7 @@
 
 \description{Draw a palette on the right-hand side of plot device}
 
-\usage{drawpalette(zlim, zlab="", breaks, col, draw.contours=FALSE, debug=getOption("oce.debug"), \dots)}
+\usage{drawpalette(zlim, zlab="", breaks, col, top=0, bottom=0, draw.contours=FALSE, debug=getOption("oce.debug"), \dots)}
 
 \arguments{
     \item{zlim}{two-element vector containing the lower and upper limits of z.
@@ -18,6 +18,8 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oce.colors.jet}} for a rainbow.}
+    \item{top}{extra space to insert at top of palette, in inches}
+    \item{bottom}{extra space to insert at bottom of palette, in inches}
     \item{draw.contours}{boolean, \code{TRUE} to get contours on the
         palette, at the colour breaks.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a

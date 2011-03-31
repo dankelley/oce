@@ -1232,20 +1232,23 @@ drawpalette <- function(zlim,
                         zlab="",
                         breaks,
                         col,
+                        top=0, bottom=0,
                         draw.contours=FALSE,
                         debug=getOption("oce.debug"),
                         ...)
 {
-    debug <- min(5, max(debug, 0))
+    debug <- min(1, max(debug, 0))
     gave.zlim <- !missing(zlim)
     gave.breaks <- !missing(breaks)
     if (gave.zlim)
-        oce.debug(debug, "\b\bpalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
+        oce.debug(debug, "\b\bdrawpalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
     else
         oce.debug(debug, "palette() with no arguments: set space to right of a graph\n")
     oce.debug(debug, if (gave.breaks) "gave breaks\n" else "did not give breaks\n")
     omai <- par("mai")
+    oce.debug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
     omar <- par("mar")
+    oce.debug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
     device.width <- par("din")[1]
     oce.debug(debug, "device.width = ", device.width, " inches\n")
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
@@ -1291,9 +1294,9 @@ drawpalette <- function(zlim,
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }
-    the.mai <- c(omai[1],
+    the.mai <- c(omai[1]+bottom,
                  widths$main + widths$mar.lhs + widths$palette.separation,
-                 omai[3],
+                 omai[3]+top,
                  widths$mar.rhs)
     oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
     the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
@@ -1314,8 +1317,6 @@ drawpalette <- function(zlim,
         if (draw.contours)
             abline(h=contours)
         box()
-        if (debug > 0)
-            print(palette)
         axis(side=4, at=if (is.null(contours)) contours else pretty(palette), mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
@@ -1327,13 +1328,13 @@ drawpalette <- function(zlim,
     the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
     oce.debug(debug, "original par(mai)=", format(omai, digits=2), "\n")
     oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), "\n")
-    oce.debug(debug, "\b\b} # palette()\n")
     oce.debug(debug, "drawpalette orig mar=",par('mar'),"\n")
     if (gave.zlim)
         par(new=TRUE, mai=the.mai)
     else
         par(mai=the.mai)
     oce.debug(debug, "drawpalette at end mar=",par('mar'),"\n")
+    oce.debug(debug, "\b\b} # drawpalette()\n")
     invisible()
 }
 
