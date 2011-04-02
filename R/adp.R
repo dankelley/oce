@@ -1,4 +1,4 @@
-## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+# vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
 remove.ship.motion <- function(x)
 {
@@ -513,7 +513,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 } else if ("amp" %in% names(x$data$ma)) {
                     z <- as.numeric(x$data$ma$amp[,,which[w]-8])
                     dim(z) <- dim(x$data$ma$amp)[1:2]
-                    zlim <- c(0, max(x$data$ma$amp))
+                    zlim <- c(0, max(as.numeric(x$data$ma$amp)))
                     zlab <- c(expression(amp[1]),expression(amp[2]),expression(amp[3]))[which[w]-8]
                 }
             } else {
