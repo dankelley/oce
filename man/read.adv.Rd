@@ -291,7 +291,7 @@ d <- oce.edit(d, "heading", 0)
 d <- oce.edit(d, "pitch", 0)
 d <- oce.edit(d, "roll", 0)
 d <- oce.edit(d, "serial.number", "202h")
-enu <- xyz.to.enu(d)
+enu <- xyz.to.enu.adv(d)
 plot(enu, which=c("u1", "u2", "u3", "temperature"))
 }
 }

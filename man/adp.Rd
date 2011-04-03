@@ -20,8 +20,8 @@ beam <- read.oce(
   to=as.POSIXct("2008-06-27", tz="UTC"),
   by="10:00", 
   latitude=47.88126, longitude=-69.73433)
-xyz <- beam.to.xyz(beam)
-adp <- xyz.to.enu(xyz, declination=-18.1)
+xyz <- beam.to.xyz.adp(beam)
+adp <- xyz.to.enu.adp(xyz, declination=-18.1)
 }
 
 library(oce)
