@@ -308,6 +308,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     latitude <- longitude <- NULL
     segment <- 0
     while (TRUE) {
+        oce.debug(debug, "\n")
         record <- record + 1
         if ((o + 53) > file.size)       # FIXME could be more clever on eof
             break
@@ -329,6 +330,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         oce.debug(debug, "mbr=", paste(mbr, collapse=" "), "\n")
         ## ignore if not in focus box
         intersects.box <- !(mbr[1] > lonlim[2] | mbr[2] > latlim[2] | mbr[3] < lonlim[1] | mbr[4] < latlim[1])
+        oce.debug(debug, "intersects.box=", intersects.box, "\n")
         number.parts <- readBin(buf[o + 45:48], "integer", n=1, size=4, endian="little")
         oce.debug(debug, "number.parts=", number.parts, "\n")
         number.points <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little", signed=FALSE)
