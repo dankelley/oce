@@ -244,6 +244,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     ##     http://dl.maptools.org/dl/shapelib/shapefile.pdf
     ## [2] Wikipedia page on shapefile format
     ##     http://en.wikipedia.org/wiki/Shapefile#Shapefile_shape_format_.28.shp.29
+    ## Shapefile for Canada:
+    ## http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm
     oce.debug(debug, "\b\bread.shape() {\n")
     shape.type.list <- c("nullshape",
                          "point", "not used",
@@ -335,19 +337,24 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         oce.debug(debug, "number.parts=", number.parts, "\n")
         number.points <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little", signed=FALSE)
         oce.debug(debug, "number.points=", number.points, "\n")
-        part.offset <- readBin(buf[o + 53+0:(-1+4*number.parts)], "integer", n=number.parts, size=4, endian="little", signed=FALSE)
-        ##oce.debug(debug, "part.offset=", part.offset, "\n")
-        xy <- matrix(readBin(buf[o + 53 + 4 * number.parts + 0:(-1 + 2 * number.points * 8)], "double", n=number.points*2, size=8), ncol=2, byrow=TRUE)
-        look <- c(1 + part.offset, number.points)
-        for (part in 1:number.parts) {
-            segment <- segment + 1
-            if (monitor) {
-                cat(".")
-                if (!(segment %% 50)) cat(segment, "\n")
+        if (intersects.box) {
+            part.offset <- readBin(buf[o + 53+0:(-1+4*number.parts)],
+                                   "integer", n=number.parts, size=4, endian="little", signed=FALSE)
+            xy <- matrix(readBin(buf[o + 53 + 4 * number.parts + 0:(-1 + 2 * number.points * 8)],
+                                 "double", n=number.points*2, size=8), ncol=2, byrow=TRUE)
+            look <- c(1 + part.offset, number.points)
+            for (part in 1:number.parts) {
+                segment <- segment + 1
+                if (monitor){
+                    segment <- segment + 1
+                    cat(".")
+                    if (!(segment %% 50))
+                        cat(segment, "\n")
+                }
+                rows <- look[part]:(-1 + look[part+1])
+                latitude <- c(latitude, NA, xy[rows,2])
+                longitude <- c(longitude, NA, xy[rows,1])
             }
-            rows <- look[part]:(-1 + look[part+1])
-            latitude <- c(latitude, NA, xy[rows,2])
-            longitude <- c(longitude, NA, xy[rows,1])
         }
         o <- o + 53 + 4 * number.parts + 2 * number.points * 8 - 1
     }
