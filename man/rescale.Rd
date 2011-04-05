@@ -6,11 +6,17 @@
 
 \description{Rescale values to lie in a given range}
 
-\usage{rescale(x, lim=c(0,1))}
+\usage{rescale(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)}
 
 \arguments{
     \item{x}{a numeric vector.}
-    \item{lim}{two-element vector giving the range of the result.}
+    \item{xlow}{\code{x} value to correspond to \code{rlow}.  If not given, it will be
+        calculated as the minimum value of \code{x}} 
+    \item{xhigh}{\code{x} value to correspond to \code{rhigh}.  If not given, it will be
+        calculated as the maximum value of \code{x}} 
+    \item{rlow}{value of the result corresponding to \code{x} equal to \code{xlow}.}
+    \item{rhigh}{value of the result corresponding to \code{x} equal to \code{xhigh}.}
+    \item{clip}{logical, set to \code{TRUE} to clip the result to the range \code{rlow} to \code{rhigh}.}
 }
 
 \details{This is helpful in e.g. developing a color scale for an image plot.}
@@ -21,7 +27,7 @@
 x <- runif(1000, min=-1, max=1)
 y <- runif(1000, min=-1, max=1)
 drawpalette(zlim=c(-2,2), zlab=expression(x^2+y^2), col=oce.colors.jet)
-col <- oce.colors.jet(100)[rescale(x^2+y^2, c(1, 100))]
+col <- oce.colors.jet(256)[rescale(x^2+y^2, -2, 2, 1, 256)]
 plot(x, y, col=col, cex=4, pch=20)
 }
 

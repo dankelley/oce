@@ -1,8 +1,17 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-rescale <- function(x, lim=c(0,1))
+# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     r <- range(x, na.rm=TRUE)
-    lim[1] + (lim[2] - lim[1]) * (x - r[1]) / (r[2] - r[1])
+    if (missing(xlow)) 
+        xlow <- min(x, na.rm=TRUE) 
+    if (missing(xhigh)) 
+        xhigh <- max(x, na.rm=TRUE) 
+    rval <- rlow + (rhigh - rlow) * (x - xlow) / (xhigh - xlow)
+    if (clip) {
+        rval <- ifelse(rval < rlow, rlow, rval)
+        rval <- ifelse(rval > rhigh, rhigh, rval)
+    } 
+    rval
 }
 
 retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
