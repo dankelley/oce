@@ -1,29 +1,24 @@
+/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
 
 /* 
-1. compile from commandline:
-::
+   library(oce)
+   system("R CMD SHLIB stutter_time.c")
 
-    R CMD SHLIB stutter_time.c
-   
-2. test R code
-::
+   dyn.load("stutter_time.so")
+   .Call("stutter_time", 0:3, 8)
 
-    library(oce)
-    dyn.load("stutter_time.so")
-    .Call("stutter_time", 0:3, 8)
+   system.time(as.vector(t(outer(seq(0,1e7), seq(0,7/8,1/8), "+"))))
 
-3. speed tests
-::
-    > system.time(as.vector(t(outer(seq(0,1e7), seq(0,7/8,1/8), "+"))))
-        user  system elapsed 
-       4.056   1.907   5.923
+   user  system elapsed 
+   4.056   1.907   5.923
 
-    > system.time(.Call("stutter_time", 0:1e7, 8))
-        user  system elapsed 
-       0.599   0.308   0.899 
+   system.time(.Call("stutter_time", 0:1e7, 8))
+
+   user  system elapsed 
+   0.599   0.308   0.899 
 
 */
 

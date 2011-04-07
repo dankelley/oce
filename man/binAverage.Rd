@@ -18,20 +18,14 @@
 
 \details{The \code{y} vector is averaged in bins defined for \code{x}.}
 
-\value{A vector of \code{y} averages in the designated \code{x} bins.}
+\value{A list with two elements: \code{x}, the mid-points of the bins, and \code{y}, the average \code{y} value in the bins.}
 
 \examples{
 library(oce)
-x <- 1:60 + 0.5
-y <- 2 * x
-xmin <- 10
-xmax <- 40
-xinc <- 10
-binned <- binAverage(x, y, xmin, xmax, xinc)
-plot(x, y)
-points(xinc/2 + seq(xmin, xmax-xinc, xinc), binned, col='red', cex=3)
-lines(xinc/2 + seq(xmin, xmax-xinc, xinc), binned, col='red')
-abline(v=seq(xmin, xmax, xinc))
+data(co2)
+plot(co2)
+avg <- binAverage(time(co2), co2, 1950, 2000, 2)
+lines(avg$x, avg$y, col='red')
 }
 
 \author{Dan Kelley}

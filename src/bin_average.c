@@ -44,5 +44,7 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     for (int b = 0; b < nb; b++) {
         if (num[b] > 0)
             means[b] = means[b] / num[b];
+        else
+            means[b] = NA_REAL;
     }
 }

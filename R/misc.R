@@ -1,8 +1,16 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
+    if (xmax <= xmin)
+        stop("must have xmax > xmin")
+    if (xinc <= 0)
+        stop("must have xinc > 0")
     nb <- floor((xmax - xmin) / xinc)
-    .C("bin_average", length(x), as.double(x), as.double(y), xmin, xmax, xinc, means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
+    if (nb < 1)
+        stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
+    xx <- seq(xmin, xmax-xinc, xinc) + xinc / 2
+    yy <- .C("bin_average", length(x), as.double(x), as.double(y), xmin, xmax, xinc, means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
+    list(x=xx, y=yy)
 }
 
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
