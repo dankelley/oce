@@ -1,4 +1,5 @@
 0.1-83
+- add binAverage()
 - fill.gap(): add 'rule' argument (analogous to same for approx())
 - add rescale()
 - read.pt(): fix timing error; use as.pt() to create return value

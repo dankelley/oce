@@ -1,4 +1,10 @@
 # vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+binAverage <- function(x, y, xmin, xmax, xinc)
+{
+    nb <- floor((xmax - xmin) / xinc)
+    .C("bin_average", length(x), as.double(x), as.double(y), xmin, xmax, xinc, means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
+}
+
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     r <- range(x, na.rm=TRUE)

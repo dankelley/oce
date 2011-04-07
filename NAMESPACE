@@ -15,6 +15,7 @@ export(
        draw.isopycnals,
        to.enu.adp,
        beam.to.xyz.adp,
+       binAverage,
        xyz.to.enu.adp,
        enu.to.other.adp,
        beam.attenuate.adp,
