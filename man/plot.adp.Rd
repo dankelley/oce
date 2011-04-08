@@ -213,6 +213,9 @@
     \item \code{which=51} to \code{54} (or \code{"bottom.u1"} to
       \code{"bottom.u4"}) for bottom velocity from beams 1 to 4.
 
+    \item \code{which=55} (or \code{"heaving"} for time-integrated,
+    depth-averaged, vertical velocity (i.e. heaving)
+
     }
     In addition to the above, there are some groupings defined:
     \itemize{

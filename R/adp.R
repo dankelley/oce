@@ -1,4 +1,4 @@
-# vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+                                        # vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
 remove.ship.motion <- function(x)
 {
@@ -431,15 +431,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             ## 50 to 54 only work for bottom-tracking devices
             else if (ww == "bottom.u" ) which2[w] <- 50 # average of all beams
             else if (ww == "bottom.u1") which2[w] <- 51 # beam1
-            else if (ww == "bottom.u2") which2[w] <- 52 # beam1
-            else if (ww == "bottom.u3") which2[w] <- 53 # beam1
-            else if (ww == "bottom.u4") which2[w] <- 54 # beam1
+            else if (ww == "bottom.u2") which2[w] <- 52 # beam2
+            else if (ww == "bottom.u3") which2[w] <- 53 # beam3
+            else if (ww == "bottom.u4") which2[w] <- 54 # beam4
+            else if (ww == "heaving") which2[2] <- 55
             else stop("unknown 'which':", ww)
         }
     }
     which <- which2
     images <- 1:12
-    timeseries <- 13:22
+    timeseries <- c(13:22, 40:44, 50:54, 55)
     spatial <- 23:27
     speed <- 28
 
@@ -745,13 +746,23 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     else
                         warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
-            draw.time.range <- FALSE
-            if (margins.as.image && use.layout)  { # FIXME: I think this should be deleted
-                ## blank plot, to get axis length same as for images
-                omar <- par("mar")
-                par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
-                plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
-                par(mar=omar)
+            if (which[w] %in% 55) { # heaving
+                if (have.time.images)
+                    drawpalette(debug=debug-1)
+                dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1]) 
+                oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
+                            xaxs="i",
+                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            draw.time.range=draw.time.range,
+                            type='l', ylab="Heaving [m]")
+                draw.time.range <- FALSE
+                if (margins.as.image && use.layout)  { # FIXME: I think this should be deleted
+                    ## blank plot, to get axis length same as for images
+                    omar <- par("mar")
+                    par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
+                    plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+                    par(mar=omar)
+                }
             }
         } else if (which[w] %in% spatial) {                   # various spatial types
             if (which[w] == 23) {    # progressive vector
@@ -1030,7 +1041,7 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
         stop("method is only for adp objects")
     if (x$metadata$oce.coordinate != "xyz")
         stop("input must be in xyz coordinates")
-    
+
     res <- x
     heading <- res$data$ts$heading
     pitch <- res$data$ts$pitch
