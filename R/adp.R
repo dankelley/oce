@@ -747,22 +747,33 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] %in% 55) { # heaving
+                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1]) 
                 oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
+                            xlim=if(gave.xlim) xlim[w,] else tlim,
+                            ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
+                            col=col[w],
+                            lwd=lwd[w],
+                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                            main=main[w], 
+                            ylab="Heaving [m]",
+                            type=type,
+                            mgp=mgp,
                             mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range,
-                            type='l', ylab="Heaving [m]")
+                            adorn=adorn[w], ...)
                 draw.time.range <- FALSE
-                if (margins.as.image && use.layout)  { # FIXME: I think this should be deleted
-                    ## blank plot, to get axis length same as for images
-                    omar <- par("mar")
-                    par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
-                    plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
-                    par(mar=omar)
-                }
+            }
+            ## FIXME delete the next block, after testing.
+            if (margins.as.image && use.layout)  { # FIXME: I think this should be deleted
+                ## blank plot, to get axis length same as for images
+                omar <- par("mar")
+                par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
+                plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+                par(mar=omar)
             }
         } else if (which[w] %in% spatial) {                   # various spatial types
             if (which[w] == 23) {    # progressive vector
@@ -924,6 +935,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 warning("cannot evaluate adorn[", w, "]\n")
         }
     }
+    par(cex=opar$cex)
     oce.debug(debug, "\b\b\b} # plot.adp()\n")
     invisible()
 }
