@@ -1,4 +1,4 @@
-                                        # vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
 remove.ship.motion <- function(x)
 {
@@ -434,7 +434,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             else if (ww == "bottom.u2") which2[w] <- 52 # beam2
             else if (ww == "bottom.u3") which2[w] <- 53 # beam3
             else if (ww == "bottom.u4") which2[w] <- 54 # beam4
-            else if (ww == "heaving") which2[2] <- 55
+            else if (ww == "heaving") which2[w] <- 55
             else stop("unknown 'which':", ww)
         }
     }
