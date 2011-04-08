@@ -327,7 +327,6 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      oce.beam.attenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
     if (number.of.beams == 3) {
-        ## FIXME: using 25 degrees, which is FLAT-OUT wrong
         ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
         ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
         ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
@@ -581,14 +580,15 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
         cat("\nRead", np,  "of the", np, "profiles in", filename[1], "\n")
     S  <- sin(beam.angle * pi / 180)
     C  <- cos(beam.angle * pi / 180)
+    ## FIXME: use the transformation.matrix, if it has been discovered in a header
     if (orientation == "upward") {
         ## OAR explains the method of determining the matrix.
         transformation.matrix <- rbind(c( 2/3/S,       -1/3/S, -1/3/S),
-                                       c(     0,  1/sqrt(3)/S, -1/sqrt(3)/S),
+                                       c(     0, -1/sqrt(3)/S, 1/sqrt(3)/S),
                                        c( 1/3/C,        1/3/C,  1/3/C))
     } else {
         transformation.matrix <- rbind(c( 2/3/S,       -1/3/S, -1/3/S),
-                                       c(     0, -1/sqrt(3)/S,  1/sqrt(3)/S),
+                                       c(     0,  1/sqrt(3)/S, -1/sqrt(3)/S),
                                        c(-1/3/C,       -1/3/C, -1/3/C))
     }
     metadata <- list(manufacturer="sontek",

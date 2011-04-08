@@ -1085,16 +1085,20 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
         heading <- heading - 90
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "configuration: upward-looking\n")
-            pitch <- (-pitch)
-            roll <- (-roll)
+            warning("sontek ADP using pitch and roll tweaks")
+            tmp <- pitch
+            pitch <- roll
+            roll <- -tmp
             starboard <- res$data$ma$v[,,1] 
-            forward <- -res$data$ma$v[,,2]
-            mast <- -res$data$ma$v[,,3]
-            oce.debug(debug, "heading=heading=90; roll=-roll; pitch=-pitch; S=X; F=-Y; M=-Z\n")
+            forward <- res$data$ma$v[,,2]
+            mast <- res$data$ma$v[,,3]
+            oce.debug(debug, "TEMPORARILY, heading=heading-90; pitch is taken to be roll; roll is taken to be -pitch\n")
         } else if (res$metadata$orientation == "downward") {
-            oce.debug(debug, "configuration: downward-looking\n")
-            pitch <- (-pitch)
-            roll <- (-roll)
+            oce.debug(debug, "configuration: downward-looking FIXME: this could be wrong\n")
+            warning("sontek ADP using pitch and roll tweaks")
+            tmp <- pitch
+            pitch <- roll
+            roll <- -tmp
             starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
