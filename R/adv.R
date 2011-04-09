@@ -1858,9 +1858,27 @@ beam.to.xyz.adv <- function(x, debug=getOption("oce.debug"))
     x
 }
 
-xyz.to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
+## adv: acoustic doppler velocimeters.
+## 
+## Case | Mfr.   | Instr. | Cabled | horiz.case | Orient. |   H  |  P |  R |  S |  F |  M
+## ---- | ------ | ------ | ------ | ---------- | ------- | ---- | -- | -- | -- | -- | --
+## 1    | Nortek | vector |    no  |       -    |     up  | H-90 |  R | -P |  X | -Y | -Z
+## 2    | Nortek | vector |    no  |       -    |   down  | H-90 |  R | -P |  X |  Y |  Z
+## 3    | Nortek | vector |   yes  |     yes    |     up  | H-90 |  R | -P |  X |  Y |  Z
+## 4    | Nortek | vector |   yes  |     yes    |   down  | H-90 |  R |  P |  X | -Y | -Z
+## 5    | Nortek | vector |   yes  |      no    |     up  |      |    |    |    |    |   
+## 6    | Nortek | vector |   yes  |      no    |   down  |      |    |    |    |    |   
+## 7    | Sontek |  adv   |    -   |       -    |     up  | H-90 |  R | -P |  X | -Y | -Z
+## 8    | Sontek |  adv   |    -   |       -    |   down  | H-90 |  R | -P |  X |  Y |  Z
+xyz.to.enu.adv <- function(x, declination=0,
+                           cabled=FALSE, horizontal.case, sensor.orientation,
+                           debug=getOption("oce.debug"))
 {
-    oce.debug(debug, "\b\bxyz.to.enu.adv(x, declination=", declination, ",debug) {\n")
+    oce.debug(debug, "\b\bxyz.to.enu.adv(x, declination=", declination,
+              ",cabled=",cabled,
+              ",horizontal.case=",if (missing(horizontal.case)) "(not provided)" else horizontal.case,
+              ",sensor.orientation=",if (missing(sensor.orientation)) "(not provided)" else sensor.orientation,
+              ",debug) {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oce.coordinate != "xyz")
@@ -1891,43 +1909,99 @@ xyz.to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
     }
-    ##print(x$metadata)
+    ## Adjust various things, so that the xyz-to-enu formulae (based on RDI) will work 
+    ##
+    ## The various cases are defined by help(xyz.to.enu.adv).
+    if (missing(sensor.orientation))
+        sensor.orientation  <- x$metadata$orientation
     if (1 == length(agrep("nortek", x$metadata$manufacturer))) {
-        ## Adjust the heading, so that the formulae (based on RDI) will work here
-        ## FIXME: should check if cabeled or not.
-        if (x$metadata$orientation == "upward") {
-            heading <- heading - 90
-            pitch <- - pitch
-            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
-        } else if (x$metadata$orientation == "downward") {
-            heading <- heading - 90
-            pitch <- - pitch
-            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
+        if (!cabled) {
+            if (sensor.orientation == "upward") {
+                oce.debug(debug, "Case 1: Nortek vector velocimeter with upward-pointing sensor attached directly to pressure case.\n")
+                oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
+                heading <- heading - 90
+                tmp <- pitch
+                pitch <- roll
+                roll <- -tmp
+                starboard <- x$data$ma$v[,1]
+                forward <- -x$data$ma$v[,2]
+                mast <- -x$data$ma$v[,3]
+            } else if (sensor.orientation == "downward") {
+                oce.debug(debug, "Case 2: Nortek vector velocimeter with downward-pointing sensor attached directly to pressure case.\n")
+                oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
+                heading <- heading - 90
+                tmp <- pitch
+                pitch <- roll
+                roll <- -tmp
+                starboard <- x$data$ma$v[,1]
+                forward <- x$data$ma$v[,2]
+                mast <- x$data$ma$v[,3]
+            } else {
+                stop("need sensor orientation to be 'upward' or 'downward', not '", sensor.orientation,"'")
+            }
         } else {
-            stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
+            ## vector cabelled: cases 3 to 6
+            if (missing(horizontal.case))
+                stop("must give horizontal.case for cabled Nortek Vector (cases 3 to 6)")
+            if (!is.logical(horizontal.case))
+                stop("must give horizontal.case as TRUE or FALSE")
+            if (horizontal.case) {
+                if (sensor.orientation == "upward") {
+                    oce.debug(debug, "Case 3: Nortek vector velocimeter with upward-pointing sensor, cabled to a horizontal pressure case.\n")
+                    oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
+                    heading <- heading - 90
+                    tmp <- pitch
+                    pitch <- roll
+                    roll <- -tmp
+                    starboard <- x$data$ma$v[,1]
+                    forward <- x$data$ma$v[,2]
+                    mast <- x$data$ma$v[,3]
+                } else if (sensor.orientation == "downward") {
+                    oce.debug(debug, "Case 4: Nortek vector velocimeter with downward-pointing sensor, cabled to a horizontal pressure case.\n")
+                    oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=pitch, S=X, F=-Y, and M=-Z.\n")
+                    heading <- heading - 90
+                    tmp <- pitch
+                    pitch <- roll
+                    roll <- tmp
+                    starboard <- x$data$ma$v[,1]
+                    forward <- x$data$ma$v[,2]
+                    mast <- x$data$ma$v[,3]
+                } else {
+                    stop("need sensor orientation to be 'upward' or 'downward', not '", sensor.orientation,"'")
+                }
+            } else {
+                stop("cannot handle cases 5 and 6 (vector velocimeter cabled to a vertical case)")
+            }
         }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) {
-        ## Adjust the heading, so that the formulae (based on RDI) will work here
-        ## FIXME: should check up vs down, non-cabelled vs cabelled.
-        if (x$metadata$orientation == "upward") {
+        if (cabled)
+            stop("cannot handle the case of a cabled Sontek unit (does it even exist?)")
+        if (sensor.orientation == "upward") {
+            oce.debug(debug, "Case 7: Sontek ADV velocimeter with upward-pointing sensor.\n")
+            oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
             heading <- heading - 90
-            pitch <- - pitch
-            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
-        } else if (x$metadata$orientation == "downward") {
+            tmp <- pitch
+            pitch <- roll
+            roll <- -tmp
+            starboard <- x$data$ma$v[,1]
+            forward <- -x$data$ma$v[,2]
+            mast <- -x$data$ma$v[,3]
+        } else if (sensor.orientation == "downward") {
+            oce.debug(debug, "Case 8: Sontek ADV velocimeter with downward-pointing sensor.\n")
+            oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
             heading <- heading - 90
-            pitch <- - pitch
-            oce.debug(debug, "used heading=heading=90; pitch=-pitch\n")
+            tmp <- pitch
+            pitch <- roll
+            roll <- -tmp
+            starboard <- x$data$ma$v[,1]
+            forward <- x$data$ma$v[,2]
+            mast <- x$data$ma$v[,3]
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
+    } else {
+        stop("unknown type of instrument; x$metadata$manufacturer must contain either \"sontek\" or \"nortek\"")
     }
-    if (x$metadata$orientation == "downward") { #FIXME: I think this is plain wrong; should change sign of row 2 and 3 (??)
-        warning("FIXME: xyz.to.enu.adv() should switch signs of pitch and roll, because unit is oriented downward. BUT IS THIS CORRECT??")
-    }
-    ## FIXME: should be defining starboard, forward, mast in the above devices-specific blocks
-    starboard <- x$data$ma$v[,1]
-    forward <- x$data$ma$v[,2]
-    mast <- x$data$ma$v[,3]
     np <- dim(x$data$ma$v)[1]
     enu <- .C("sfm_enu",
               as.integer(length(heading)), # need not equal np
