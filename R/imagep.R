@@ -178,8 +178,7 @@ imagep <- function(x, y, z,
         if (class(t) == "try-error")
             warning("cannot evaluate adorn='", adorn, "'\n")
     }
-    par(mar=omar, cex=ocex)
-    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    par(cex=ocex)
     oce.debug(debug, "\b\b} # imagep()\n")
     invisible()
 }
