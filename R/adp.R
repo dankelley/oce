@@ -1045,6 +1045,14 @@ beam.to.xyz.adp <- function(x, debug=getOption("oce.debug"))
     res
 }
 
+## Case | Mfr    | Instr.|  Orient. |   H  |           P            |  R |   S |  F |  M
+## ---- | ------ | ----- |  ------- | ---- |  --------------------- | -- |  -- | -- | --
+## 1    | RDI    |  ADCP |      up  |    H |  arctan(tan(P)*cos(R)) |  R |  -X |  Y | -Z
+## 2    | RDI    |  ADCP |    down  |    H |  arctan(tan(P)*cos(R)) | -R |   X |  Y |  Z
+## 3    | Nortek |   ADP |      up  | H-90 |          -P            | -R |   X |  Y |  Z
+## 4    | Nortek |   ADP |    down  | H-90 |          -P            | -R |   X |  Y |  Z
+## 5    | Sontek |   ADP |      up  | H-90 |          -P            | -R |   X |  Y |  Z
+## 6    | Sontek |   ADP |    down  | H-90 |          -P            | -R |   X |  Y |  Z
 xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -1062,38 +1070,39 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
     ## There are three instrument.type values, ("teledyn rdi", "nortek", and "sontek"), and
     ## three orientation values ("upward", "downward", and "sideward").
     if (1 == length(agrep("rdi", x$metadata$manufacturer, ignore.case=TRUE))) { # "teledyn rdi"
-        oce.debug(debug, "instrument: Teledyne-RDI adcp\n")
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
         if (res$metadata$orientation == "upward") {
-            oce.debug(debug, "configuration: upward-looking\n")
+            oce.debug(debug, "Case 1: RDI ADCP with upward-pointing sensor.\n")
+            oce.debug(debug, "        Using S=-X, F=Y, and M=-Z.\n")
             ## As an alternative to the next three lines, could just add 180 degrees to roll
             starboard <- -res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- -res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            oce.debug(debug, "S=-X; F=Y; M=-Z\n")
         } else if (res$metadata$orientation == "downward") {
-            oce.debug(debug, "configuration: downward-looking\n")
+            oce.debug(debug, "Case 2: RDI ADCP with downward-pointing sensor.\n")
+            oce.debug(debug, "        Using roll=-roll, S=X, F=Y, and M=Z.\n")
             roll <- -roll
             starboard <- res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            oce.debug(debug, "roll=-roll; S=X; F=Y; M=Z\n")
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
     } else if (1 == length(agrep("nortek", x$metadata$manufacturer))) { # "nortek"
-        oce.debug(debug, "Nortek adp\n")
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
-        heading <- heading - 90
         if (res$metadata$orientation == "upward") {
-            oce.debug(debug, "configuration: upward-looking\n")
+            oce.debug(debug, "Case 3: Nortek ADP with upward-pointing sensor.\n")
+            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+            heading <- heading - 90
             pitch <- -pitch
             roll <- -roll
             starboard <- res$data$ma$v[,,1] 
-            forward <- -res$data$ma$v[,,2]
-            mast <- -res$data$ma$v[,,3]
+            forward <- res$data$ma$v[,,2]
+            mast <- res$data$ma$v[,,3]
         } else if (res$metadata$orientation == "downward") {
-            oce.debug(debug, "configuration: downward-looking\n")
+            oce.debug(debug, "Case 4: Nortek ADP with downward-pointing sensor.\n")
+            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+            heading <- heading - 90
             pitch <- -pitch
             roll <- -roll
             starboard <- res$data$ma$v[,,1]
@@ -1105,23 +1114,21 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
         oce.debug(debug, "Sontek adp\n")
         ## h/p/r and s/f/m mimic Sontek from Clark Richards pers. comm. 2011-03-14
-        heading <- heading - 90
         if (res$metadata$orientation == "upward") {
-            oce.debug(debug, "configuration: upward-looking\n")
-            warning("sontek ADP using pitch and roll tweaks")
-            tmp <- pitch
-            pitch <- roll
-            roll <- -tmp
+            oce.debug(debug, "Case 5: Sontek ADP with upward-pointing sensor.\n")
+            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+            heading <- heading - 90
+            pitch <- -pitch
+            roll <- -roll
             starboard <- res$data$ma$v[,,1] 
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
-            oce.debug(debug, "TEMPORARILY, heading=heading-90; pitch is taken to be roll; roll is taken to be -pitch\n")
         } else if (res$metadata$orientation == "downward") {
-            oce.debug(debug, "configuration: downward-looking FIXME: this could be wrong\n")
-            warning("sontek ADP using pitch and roll tweaks")
-            tmp <- pitch
-            pitch <- roll
-            roll <- -tmp
+            oce.debug(debug, "Case 6: Sontek ADP with downward-pointing sensor.\n")
+            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+            heading <- heading - 90
+            pitch <- -pitch
+            roll <- -roll
             starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]

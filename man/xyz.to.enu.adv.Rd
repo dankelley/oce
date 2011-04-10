@@ -38,36 +38,33 @@
 \details{The coordinate transformation is done using the heading, pitch,
   and roll information contained within \code{x}.  The algorithm is
   similar to that used for Teledyne/RDI ADCP units, taking into account
-  the different definitions of heading in the two cases.
+  the different definitions of heading, pitch, and roll as they are defined for
+  the velocimeters.
 
   Generally, the transformation must be done on a time-by-time basis,
   which is a slow operation.  However, this function checks whether the
-  vectors for heading, pitch and roll, are all of unit length, and in
-  that case, the calculation time is reduced by an order of magnitude.
-  This situation of singleton vectors is not uncommon, because the
-  orientation data can be noisy, requiring the user to substitute
-  cleaned-up values, and if the instrument is moored on a steady
-  platform, it makes sense to supply single values.  Note that the
-  angles are held in \code{data$ts.slow} for Nortek instruments and
-  \code{data$ts} for Sontek instruments.
+  vectors for heading, pitch and roll, are all of unit length, and in that
+  case, the calculation is altered, resulting in shorter executation times.
+  Note that the angles are held in \code{data$ts.slow} for Nortek instruments
+  and \code{data$ts} for Sontek instruments.
 
-  To indicate the change in coordinate, the value of
-  \code{metadata$oce.coordinate} is changed from \code{xyz} to \code{enu}, and
-  this is noticed by e.g. \code{\link{plot.adv}}.
+  Since the documentation provided by instrument manufacturers
+  can be vague on the coordinate transformations, the method used here 
+  had to be developed indirectly.  (This is in contrast to the RDI ADCP
+  instruments, for which there are clear instructions.)
+  documents that manufacturers provide.  If results seem incorrect (e.g. if
+  currents go east instead of west), users should examine the code in detail
+  for the case at hand.  The first step is to set \code{debug} to 1, so that
+  the processing will print a trail of processing steps.  The next step should
+  be to consult the table below, to see if it matches the understanding (or
+  empirical tests) of the user.  It should not be difficult to tailor the code,
+  if needed.
 
-  Users are cautioned that this step in processing is tricky, because it is
-  difficult to get clear indications on processing steps from the documents
-  that manufacturers provide.  If results seem incorrect (e.g. if currents go
-  east instead of west), users should examine the code in detail for the case
-  at hand.  The first step is to set \code{debug} to 1, so that the processing
-  will print a trail of processing steps.  The next step should be to consult
-  the table below, to see if it matches the instrument and its configuration.
-
-  This table results from examination of documentation provided by
-  manufacturers, and of discussion on user groups.  This analysis was done by
-  Clark Richards, a PhD student at Dalhousie University [reference 2].  The
-  results are probably most correct for the instruments dealth with in his
-  thesis.
+  The code handles every case individually, based on the table given below.
+  The table comes from Clark Richards, a PhD student at Dalhousie University
+  [2], who developed it based on instrument documentation, discussion on user
+  groups, and analysis of measurements acquired with Nortek and Sontek
+  velocimeters in the SLEIWEX experiment [3].
 
   The column labelled ``Cabled'' indicates whether the sensor and the pressure
   case are connected with a flexible cable, and the column labelled ``H.case''
@@ -75,9 +72,12 @@
   properties are not discoverable in the headers of the data files, and so they
   must be supplied with the arguments \code{cabled} and \code{horizontal.case}.
   The source code refers to the information in this table by case numbers.
-  (Cases 5 and 6 are not handled.)  Angle abbreviations: heading ``H,'' pitch
-  ``P,'' and roll ``R''.  Instrument coordinates: x ``X,'' y ``Y,'', and z
-  ``Z.'' Ship coordinates: starboard ``S,'' forward ``F,'' and mast ``M.''
+  (Cases 5 and 6 are not handled.)  Angles are abbreviated as follows:: heading
+  ``H,'' pitch ``P,'' and roll ``R''.  Entries X, Y and Z refer to instrument
+  coordinates of the same names.  Entries S, F and M refer to so-called ship
+  coordinates starboard, forward, and mast; it is these that are used together
+  with a rotation matrix to get velocity components in the east, north, and
+  upward directions.
 
 \tabular{rrrrrrrrrrrr}{
 \strong{Case} \tab \strong{Mfr.} \tab \strong{Instr.} \tab \strong{Cabled} \tab \strong{H. case} \tab \strong{Orient.} \tab \strong{H}  \tab \strong{P} \tab \strong{R} \tab \strong{S} \tab \strong{F} \tab \strong{M}\cr 
@@ -100,7 +100,8 @@
 \references{
     \enumerate{
 \item \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
-\item Clark Richards, 2010, PhD Dalhousie University Department of Oceanography.
+\item Clark Richards, 2011, PhD Dalhousie University Department of Oceanography.
+\item The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
     }
 }
 
