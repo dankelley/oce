@@ -301,6 +301,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     oce.debug(debug, "early in plot.adp:\n")
     oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    gave.col <- !missing(col)
     if (!missing(ylim))
         oce.debug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
     if (!inherits(x, "adp"))
@@ -524,7 +525,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 imagep(x=tt, y=x$data$ss$distance, z=z,
                        zlim=zlim,
                        flip.y=flip.y,
-                       col=if (missing(col)) oce.colors.palette(128, 1) else col,
+                       col=if (gave.col) col else oce.colors.palette(128, 1),
                        ylab=resizable.label("distance"),
                        xlab="Time",
                        zlab=zlab,
@@ -542,12 +543,11 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 lines(x$data$ts$time, bottom)
             draw.time.range <- FALSE
         } else if (which[w] %in% timeseries) { # time-series types
-            if (missing(col)) col <- rep("black", length.out=nw) else col <- rep(col, length.out=nw)
+            col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
             oce.debug(debug, "graph", w, "is a timeseries\n")
-            par(mgp=mgp, mar=mar, cex=cex)
+            ##par(mgp=mgp, mar=mar, cex=cex)
             tlim <- range(x$data$ts$time)
             if (which[w] == 13) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
@@ -556,6 +556,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],
+                            cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
                             ylab=resizable.label("S"),
@@ -565,7 +566,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
             if (which[w] == 14) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
@@ -586,7 +586,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             debug=debug-1)
             }
             if (which[w] == 15) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 oce.debug(debug, "pressure plot. col=", col[w], "\n")
@@ -596,6 +595,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],
+                            cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
                             ylab=resizable.label("p"),
@@ -605,7 +605,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
             if (which[w] == 16) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading,
@@ -614,6 +613,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],
+                            cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
                             ylab=resizable.label("heading"),
@@ -623,7 +623,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
             if (which[w] == 17) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
@@ -632,6 +631,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],
+                            cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
                             ylab=resizable.label("pitch"),
@@ -641,7 +641,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
             if (which[w] == 18) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll,
@@ -650,6 +649,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],
+                            cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
                             ylab=resizable.label("roll"),
@@ -659,7 +659,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
             if (which[w] == 19) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 0)
@@ -669,6 +668,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 xaxs="i",
                                 col=col[w],
                                 lwd=lwd[w],
+                                cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
                                 ylab=ad.beam.name(x, 1),
@@ -681,7 +681,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 1)
@@ -691,6 +690,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 xaxs="i",
                                 col=col[w],
                                 lwd=lwd[w],
+                                cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
                                 ylab=ad.beam.name(x, 2),
@@ -703,7 +703,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         warning("cannot plot beam/velo 2 because the device has only ", x$metadata$number.of.beams, " beams")
             }
             if (which[w] == 21) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 2)
@@ -713,6 +712,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 xaxs="i",
                                 col=col[w],
                                 lwd=lwd[w],
+                                cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
                                 ylab=ad.beam.name(x, 3),
@@ -725,7 +725,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         warning("cannot plot beam/velo 3 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] == 22) {
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 if (x$metadata$number.of.beams > 3)
@@ -735,6 +734,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 xaxs="i",
                                 col=col[w],
                                 lwd=lwd[w],
+                                cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w], 
                                 ylab=ad.beam.name(x, 4),
@@ -747,7 +747,6 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         warning("cannot plot beam/velo 4 because the device has only", x$metadata$number.of.beams, "beams")
             }
             if (which[w] %in% 55) { # heaving
-                par(cex=cex*(1 - min(nw / 8, 1/4)))
                 if (have.time.images)
                     drawpalette(debug=debug-1)
                 dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1]) 
@@ -757,6 +756,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],
+                            cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w], 
                             ylab="Heaving [m]",
@@ -796,7 +796,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 v[is.na(v)] <- 0
                 x.dist <- cumsum(u) * dt / m.per.km
                 y.dist <- cumsum(v) * dt / m.per.km
-                plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=if (missing(col)) "black" else col, ...)
+                plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=if (gave.col) col else "black", ...)
             } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)
@@ -842,7 +842,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             oce.debug(debug, "uv type plot\n")
             if (n < 5000 || (!missing(use.smoothScatter) && !use.smoothScatter)) {
                 if ("type" %in% names(dots)) {
-                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (missing(col)) "black" else col,
+                    plot(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1, col=if (gave.col) col else "black",
                          xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                          ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                          ...)
@@ -851,7 +851,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                          xlim=if(gave.xlim) xlim[w,] else range(u, na.rm=TRUE),
                          ylim=if(gave.ylim) ylim[w,] else range(v, na.rm=TRUE),
                          ...)
-                    points(u, v, cex=cex/2, col=if (missing(col)) "black" else col)
+                    points(u, v, cex=cex/2, col=if (gave.col) col else "black")
                 }
             } else {
                 smoothScatter(u, v, xlab="u [m/s]", ylab="v [m/s]", asp=1,
@@ -872,7 +872,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
                 rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
                 xxyy <- rotate %*% rbind(xx, yy)
-                col <- if (!missing(col)) col else "darkblue"
+                col <- if (gave.col) col else "darkblue"
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                 if (which[w] >= 30) {
