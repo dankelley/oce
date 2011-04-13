@@ -1045,14 +1045,6 @@ beam.to.xyz.adp <- function(x, debug=getOption("oce.debug"))
     res
 }
 
-## Case | Mfr    | Instr.|  Orient. |   H  |           P            |  R |   S |  F |  M
-## ---- | ------ | ----- |  ------- | ---- |  --------------------- | -- |  -- | -- | --
-## 1    | RDI    |  ADCP |      up  |    H |  arctan(tan(P)*cos(R)) |  R |  -X |  Y | -Z
-## 2    | RDI    |  ADCP |    down  |    H |  arctan(tan(P)*cos(R)) | -R |   X |  Y |  Z
-## 3    | Nortek |   ADP |      up  | H-90 |          -P            | -R |   X |  Y |  Z
-## 4    | Nortek |   ADP |    down  | H-90 |          -P            | -R |   X |  Y |  Z
-## 5    | Sontek |   ADP |      up  | H-90 |          -P            | -R |   X |  Y |  Z
-## 6    | Sontek |   ADP |    down  | H-90 |          -P            | -R |   X |  Y |  Z
 xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
 {
     debug <- if (debug > 0) 1 else 0
@@ -1092,22 +1084,24 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "Case 3: Nortek ADP with upward-pointing sensor.\n")
-            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+            oce.debug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
             heading <- heading - 90
-            pitch <- -pitch
-            roll <- -roll
+            tmp <- pitch
+            pitch <- roll
+            roll <- -tmp
             starboard <- res$data$ma$v[,,1] 
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
         } else if (res$metadata$orientation == "downward") {
             oce.debug(debug, "Case 4: Nortek ADP with downward-pointing sensor.\n")
-            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+            oce.debug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
             heading <- heading - 90
-            pitch <- -pitch
-            roll <- -roll
+            tmp <- pitch
+            pitch <- roll
+            roll <- -tmp
             starboard <- res$data$ma$v[,,1]
-            forward <- res$data$ma$v[,,2]
-            mast <- res$data$ma$v[,,3]
+            forward <- -res$data$ma$v[,,2]
+            mast <- -res$data$ma$v[,,3]
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
