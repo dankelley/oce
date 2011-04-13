@@ -43,8 +43,8 @@
 \strong{Case} \tab \strong{Mfr.} \tab \strong{Instr.} \strong{Orient.} \tab \strong{H}  \tab \strong{P} \tab \strong{R} \tab \strong{S} \tab \strong{F} \tab \strong{M}\cr 
 1 \tab RDI    \tab  ADCP \tab    up \tab    H \tab  arctan(tan(P)*cos(R)) \tab  R \tab  -X \tab  Y \tab -Z\cr
 2 \tab RDI    \tab  ADCP \tab  down \tab    H \tab  arctan(tan(P)*cos(R)) \tab -R \tab   X \tab  Y \tab  Z\cr
-3 \tab Nortek \tab   ADP \tab    up \tab H-90 \tab          -P            \tab -R \tab   X \tab  Y \tab  Z\cr
-4 \tab Nortek \tab   ADP \tab  down \tab H-90 \tab          -P            \tab -R \tab   X \tab  Y \tab  Z\cr
+3 \tab Nortek \tab   ADP \tab    up \tab H-90 \tab           R            \tab -P \tab   X \tab  Y \tab  Z\cr
+4 \tab Nortek \tab   ADP \tab  down \tab H-90 \tab           R            \tab -P \tab   X \tab -Y \tab -Z\cr
 5 \tab Sontek \tab   ADP \tab    up \tab H-90 \tab          -P            \tab -R \tab   X \tab  Y \tab  Z\cr
 6 \tab Sontek \tab   ADP \tab  down \tab H-90 \tab          -P            \tab -R \tab   X \tab  Y \tab  Z\cr
 } 
