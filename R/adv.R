@@ -1945,7 +1945,6 @@ xyz.to.enu.adv <- function(x, declination=0,
                     starboard <- x$data$ma$v[,1]
                     forward <- x$data$ma$v[,2]
                     mast <- x$data$ma$v[,3]
-                    cat("nhead", length(heading), "nstarboard", length(starboard), "\n")
                 } else if (sensor.orientation == "downward") {
                     oce.debug(debug, "Case 4: Nortek vector velocimeter with downward-pointing sensor, cabled to a horizontal pressure case.\n")
                     oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=pitch, S=X, F=-Y, and M=-Z.\n")

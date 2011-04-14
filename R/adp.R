@@ -66,7 +66,7 @@ ad.beam.name <- function(x, which)
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      latitude=NA, longitude=NA,
-                     type=c("rdi", "nortek", "sontek"),
+                     manufacturer=c("rdi", "nortek", "sontek"),
                      debug=getOption("oce.debug"),
                      monitor=TRUE, despike=FALSE,
                      log.action, ...)
@@ -75,17 +75,17 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     type <- match.arg(type)
     if (monitor)
         cat(file, "\n", ...)
-    if (type == "rdi")
+    if (manufacturer == "rdi")
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
                      latitude=latitude, longitude=longitude,
                      debug=debug-1, monitor=monitor, despike=despike,
                      log.action=log.action, ...)
-    else if (type == "nortek")
+    else if (manufacturer == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
                         log.action=log.action, ...)
-    else if (type == "sontek")
+    else if (manufacturer == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
@@ -749,23 +749,23 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             if (which[w] %in% 55) { # heaving
                 if (have.time.images)
                     drawpalette(debug=debug-1)
-                dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1]) 
-                oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
-                            xlim=if(gave.xlim) xlim[w,] else tlim,
-                            ylim=if(gave.ylim) ylim[w,],
-                            xaxs="i",
-                            col=col[w],
-                            lwd=lwd[w],
-                            cex=cex*(1 - min(nw / 8, 1/4)),
-                            cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                            main=main[w], 
-                            ylab="Heaving [m]",
-                            type=type,
-                            mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            draw.time.range=draw.time.range,
-                            adorn=adorn[w], ...)
-                draw.time.range <- FALSE
+            dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1]) 
+            oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
+                        xlim=if(gave.xlim) xlim[w,] else tlim,
+                        ylim=if(gave.ylim) ylim[w,],
+                        xaxs="i",
+                        col=col[w],
+                        lwd=lwd[w],
+                        cex=cex*(1 - min(nw / 8, 1/4)),
+                        cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                        main=main[w], 
+                        ylab="Heaving [m]",
+                        type=type,
+                        mgp=mgp,
+                        mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                        draw.time.range=draw.time.range,
+                        adorn=adorn[w], ...)
+            draw.time.range <- FALSE
             }
             ## FIXME delete the next block, after testing.
             if (margins.as.image && use.layout)  { # FIXME: I think this should be deleted
@@ -1107,24 +1107,51 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
         }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
         oce.debug(debug, "Sontek adp\n")
-        if (res$metadata$orientation == "upward") {
-            oce.debug(debug, "Case 5: Sontek ADP with upward-pointing sensor.\n")
-            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
-            heading <- heading - 90
-            pitch <- -pitch
-            roll <- -roll
-            starboard <- res$data$ma$v[,,1] 
-            forward <- res$data$ma$v[,,2]
-            mast <- res$data$ma$v[,,3]
-        } else if (res$metadata$orientation == "downward") {
-            oce.debug(debug, "Case 6: Sontek ADP with downward-pointing sensor.\n")
-            oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
-            heading <- heading - 90
-            pitch <- -pitch
-            roll <- -roll
-            starboard <- res$data$ma$v[,,1]
-            forward <- res$data$ma$v[,,2]
-            mast <- res$data$ma$v[,,3]
+        if (!("type" %in% x$metadata) || x$metadata$type == "adp")  { 
+            if (res$metadata$orientation == "upward") {
+                oce.debug(debug, "Case 5: Sontek ADP with upward-pointing sensor.\n")
+                oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+                heading <- heading - 90
+                pitch <- -pitch
+                roll <- -roll
+                starboard <- res$data$ma$v[,,1] 
+                forward <- res$data$ma$v[,,2]
+                mast <- res$data$ma$v[,,3]
+            } else if (res$metadata$orientation == "downward") {
+                oce.debug(debug, "Case 6: Sontek ADP with downward-pointing sensor.\n")
+                oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
+                heading <- heading - 90
+                pitch <- -pitch
+                roll <- -roll
+                starboard <- res$data$ma$v[,,1]
+                forward <- res$data$ma$v[,,2]
+                mast <- res$data$ma$v[,,3] 
+            } else 
+                stop("orientation must be \"upward\" or \"downward\", not \"", res$metadata$orientation, "\"")
+        } else if (x$metadata$type == "pcadp")  { 
+            if (res$metadata$orientation == "upward") {
+                oce.debug(debug, "Case 7: Sontek PCADP with upward-pointing sensor.\n")
+                oce.debug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
+                heading <- heading - 90
+                tmp <- pitch
+                pitch <- roll
+                roll <- -tmp
+                starboard <- res$data$ma$v[,,1] 
+                forward <- res$data$ma$v[,,2]
+                mast <- res$data$ma$v[,,3]
+            } else if (res$metadata$orientation == "downward") {
+                oce.debug(debug, "Case 8: Sontek PCADP with downward-pointing sensor.\n")
+                oce.debug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
+                heading <- heading - 90
+                tmp <- pitch
+                pitch <- roll
+                roll <- -tmp
+                starboard <- res$data$ma$v[,,1] 
+                forward <- res$data$ma$v[,,2]
+                mast <- res$data$ma$v[,,3]
+            } else {
+                stop("metadat$type must be \"adp\" or \"pcadp\", not \"", x$metadata$type, "\"")
+            }
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }

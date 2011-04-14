@@ -47,6 +47,8 @@
 4 \tab Nortek \tab   ADP \tab  down \tab H-90 \tab           R            \tab -P \tab   X \tab -Y \tab -Z\cr
 5 \tab Sontek \tab   ADP \tab    up \tab H-90 \tab          -P            \tab -R \tab   X \tab  Y \tab  Z\cr
 6 \tab Sontek \tab   ADP \tab  down \tab H-90 \tab          -P            \tab -R \tab   X \tab  Y \tab  Z\cr
+7 \tab Sontek \tab PCADP \tab    up \tab H-90 \tab           R            \tab -P \tab   X \tab  Y \tab  Z\cr
+8 \tab Sontek \tab PCADP \tab  down \tab H-90 \tab           R            \tab -P \tab   X \tab  Y \tab  Z\cr
 } 
 
     Finally, a standardized rotation matrix is used to convert from ship

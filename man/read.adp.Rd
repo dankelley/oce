@@ -12,7 +12,7 @@
 \usage{
 read.adp(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
-  type=c("rdi", "nortek", "sontek"),
+  manufacturer=c("rdi", "nortek", "sontek"),
   debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oce.tz"),
@@ -32,6 +32,7 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
                       latitude=NA, longitude=NA,
+                      type=c("adp","pcadp"),
                       beam.angle=25, orientation,
                       monitor=TRUE, log.action,
                       debug=getOption("oce.debug")) 
@@ -56,27 +57,26 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
     this is a string representing a time interval, in colon-separated
     format (MM:SS), then this interval is divided by the sampling interval, to
     get the stride length.}
-  \item{type}{a character string indicating th type of file.}
+  \item{manufacturer}{a character string indicating the manufacturer, used 
+    by the general function \code{read.adp} to select a subsidiary 
+   function to use, such as \code{read.adp.nortek}.}
+  \item{type}{a character string indicating the type of file.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
-  \item{latitude}{optional signed number indicating the latitude in 
-    degrees North.}
-  \item{longitude}{optional signed number indicating the longitude in 
-    degrees East.}
-  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
-    moderate amount of debugging information, or to 2 to get more.} 
+  \item{latitude}{optional signed number indicating the latitude in degrees
+      North.} \item{longitude}{optional signed number indicating the longitude
+      in degrees East.} \item{debug}{a flag that turns on debugging.  Set to 1
+      to get a moderate amount of debugging information, or to 2 to get more.}
   \item{beam.angle}{angle between instrument axis and beams, in degrees.}
   \item{orientation}{optional string, which over-rides the value inferred from
       the data file.  Possible values are \code{"upward"} and
       \code{"downward"}.  This is only used for \code{read.adp.sontek.serial}.}
-  \item{monitor}{boolean, set to \code{TRUE} to provide an indication
-    (with numbers and dots) of every profile read.}
-  \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
-    to clean anomalous spikes in heading, etc.}
-  \item{log.action}{if provided, the action item to be stored in the
-    log.  (Typically only provided for internal calls; the default that
-    it provides is better for normal calls by a user.)}
-  \item{\dots}{additional arguments, passed to called routines.}
-}
+  \item{monitor}{boolean, set to \code{TRUE} to provide an indication (with
+      numbers and dots) of every profile read.} \item{despike}{if \code{TRUE},
+      \code{\link{despike}} will be used to clean anomalous spikes in heading,
+      etc.} \item{log.action}{if provided, the action item to be stored in the
+      log.  (Typically only provided for internal calls; the default that it
+      provides is better for normal calls by a user.)} \item{\dots}{additional
+      arguments, passed to called routines.} }
 
 \details{Reads a binary-format ADP file.  Three types can be handled at
   the moment: the Teledyne-RDI Workhorse instrument using firmware

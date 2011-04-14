@@ -310,6 +310,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     oce.debug(debug, "slant.angle=",slant.angle,"; type=", type, "\n")
     beam.angle <- if (slant.angle == "?") 25 else slant.angle
     metadata <- list(manufacturer="sontek",
+                     type=type,
                      filename=filename,
                      serial.number=if (exists('serial.number')) serial.number else "?",
                      latitude=latitude,
@@ -369,6 +370,7 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
 
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                    latitude=NA, longitude=NA,
+                                   type=c("adp", "pcadp"),
                                    beam.angle=25, orientation,
                                    monitor=TRUE, log.action,
                                    debug=getOption("oce.debug"))
@@ -594,7 +596,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                                        c(-1/3/C,       -1/3/C, -1/3/C))
     }
     metadata <- list(manufacturer="sontek",
-                     instrument.type="adp",
+                     type="adp",
                      serial.number=serial.number,
                      filename=filename,
                      latitude=latitude, longitude=longitude,
