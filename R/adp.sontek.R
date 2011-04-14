@@ -278,17 +278,19 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     cat(i, "\n")
             }
         }
+        rm(v_, a_, q_)
         if (monitor)
             cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n")
         if (type == "pcadp")
             v <- v / 10                # it seems pcadp is in 0.1mm/s
         ma <- list(v=v, a=a, q=q)
+        rm(v, a, q)
     } else {
         ma <- NULL
     }
     ## interpolate headings (which may be less frequent than profiles ... FIXME: really???)
     nheading <- length(heading)
-    nv <- dim(v)[1]
+    nv <- dim(ma$v)[1]
     if (nheading != nv) {
         warning("read.adp.sontek() interpolating ", nheading, " heading/pitch/roll values to the ", nv, " velocity profiles")
         oce.debug(debug, "BEFORE: length(heading)=", nheading, ", nv=", nv, "\n")
@@ -327,21 +329,21 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      oce.beam.attenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
     if (number.of.beams == 3) {
-        ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
-        ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
-        ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
         S  <- 1 / (3 * sin(beam.angle * pi / 180)) # 0.7887339
         CS <- 1 / cos(30*pi/180) / sin(beam.angle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
         C  <- 1 / (3 * cos(beam.angle * pi / 180))             # 0.3677926
-        metadata$transformation.matrix <- matrix(c(2*S,  -S,  -S,
-                                                   0  , -CS,  CS,
-                                                   C  ,   C,   C),
-                                                 nrow=3, byrow=TRUE)
-        ## For later use, RC says that the PC-ADP uses
-        ## T =  2.576  -1.288  -1.288
-        ##      0.000  -2.230   2.230
-        ##      0.345   0.345   0.345
-        ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
+        if (metadata$orientation == "downward") {
+            metadata$transformation.matrix <- matrix(c(2*S,  -S,  -S,
+                                                       0  ,  CS, -CS,
+                                                       -C ,  -C,  -C),
+                                                     nrow=3, byrow=TRUE)
+        } else if (metadata$orientation == "upward") {
+            metadata$transformation.matrix <- matrix(c(2*S,  -S,  -S,
+                                                       0  , -CS,  CS,
+                                                       C  ,   C,   C),
+                                                     nrow=3, byrow=TRUE)
+        } else 
+            stop("unknown orientientation ", metadata$orientation, "; must be \"upward\" or \"downward\"")
     } else
         stop("can only handle 3-beam devices")
     if (missing(log.action))

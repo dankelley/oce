@@ -1107,7 +1107,6 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
         }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
         oce.debug(debug, "Sontek adp\n")
-        ## h/p/r and s/f/m mimic Sontek from Clark Richards pers. comm. 2011-03-14
         if (res$metadata$orientation == "upward") {
             oce.debug(debug, "Case 5: Sontek ADP with upward-pointing sensor.\n")
             oce.debug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")

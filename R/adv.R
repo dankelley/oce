@@ -1858,22 +1858,11 @@ beam.to.xyz.adv <- function(x, debug=getOption("oce.debug"))
     x
 }
 
-## adv: acoustic doppler velocimeters.
-## 
-## Case | Mfr.   | Instr. | Cabled | horiz.case | Orient. |   H  |  P |  R |  S |  F |  M
-## ---- | ------ | ------ | ------ | ---------- | ------- | ---- | -- | -- | -- | -- | --
-## 1    | Nortek | vector |    no  |       -    |     up  | H-90 |  R | -P |  X | -Y | -Z
-## 2    | Nortek | vector |    no  |       -    |   down  | H-90 |  R | -P |  X |  Y |  Z
-## 3    | Nortek | vector |   yes  |     yes    |     up  | H-90 |  R | -P |  X |  Y |  Z
-## 4    | Nortek | vector |   yes  |     yes    |   down  | H-90 |  R |  P |  X | -Y | -Z
-## 5    | Nortek | vector |   yes  |      no    |     up  |      |    |    |    |    |   
-## 6    | Nortek | vector |   yes  |      no    |   down  |      |    |    |    |    |   
-## 7    | Sontek |  adv   |    -   |       -    |     up  | H-90 |  R | -P |  X | -Y | -Z
-## 8    | Sontek |  adv   |    -   |       -    |   down  | H-90 |  R | -P |  X |  Y |  Z
 xyz.to.enu.adv <- function(x, declination=0,
                            cabled=FALSE, horizontal.case, sensor.orientation,
                            debug=getOption("oce.debug"))
 {
+    ## See help(xyzto.enu.adv) for details of the cases.
     oce.debug(debug, "\b\bxyz.to.enu.adv(x, declination=", declination,
               ",cabled=",cabled,
               ",horizontal.case=",if (missing(horizontal.case)) "(not provided)" else horizontal.case,
@@ -1895,10 +1884,10 @@ xyz.to.enu.adv <- function(x, declination=0,
             pitch <- x$data$ts.slow$pitch
             roll <- x$data$ts.slow$roll
         } else {
-            oce.debug(debug, "adv data has time-varying heading, pitch, and roll\n")
             t0 <- as.numeric(x$data$ts.slow$time[1])    # arbitrary; done in case approx hates large x values
             t.fast <- as.numeric(x$data$ts$time) - t0
             t.slow <- as.numeric(x$data$ts.slow$time) - t0
+            oce.debug(debug, "since data has ts.slow, had to interpolate from ", length(t.slow), " to ", length(t.fast), " data")
             heading <- approx(t.slow, x$data$ts.slow$heading, xout=t.fast)$y
             pitch <- approx(t.slow, x$data$ts.slow$pitch, xout=t.fast)$y
             roll <- approx(t.slow, x$data$ts.slow$roll, xout=t.fast)$y
@@ -1956,6 +1945,7 @@ xyz.to.enu.adv <- function(x, declination=0,
                     starboard <- x$data$ma$v[,1]
                     forward <- x$data$ma$v[,2]
                     mast <- x$data$ma$v[,3]
+                    cat("nhead", length(heading), "nstarboard", length(starboard), "\n")
                 } else if (sensor.orientation == "downward") {
                     oce.debug(debug, "Case 4: Nortek vector velocimeter with downward-pointing sensor, cabled to a horizontal pressure case.\n")
                     oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=pitch, S=X, F=-Y, and M=-Z.\n")
