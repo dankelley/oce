@@ -15,27 +15,27 @@ read.adv(file, from=1, to, by=1, tz=getOption("oce.tz"),
   header=TRUE,
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  debug=getOption("oce.debug"), monitor=TRUE, logAction)
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"), 
   type="vector",
   header=TRUE,
   latitude=NA, longitude=NA,
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  debug=getOption("oce.debug"), monitor=TRUE, logAction)
 read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
   type="default",
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  debug=getOption("oce.debug"), monitor=TRUE, logAction)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"),
   header=TRUE, 
   latitude=NA, longitude=NA,
   type="",
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
+  debug=getOption("oce.debug"), monitor=TRUE, logAction)
 read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
   coordinate.system="xyz",
   transformation.matrix,
   latitude=NA, longitude=NA,
-  debug=getOption("oce.debug"), log.action)
+  debug=getOption("oce.debug"), logAction)
 }
 
 \arguments{
@@ -95,7 +95,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     of the header.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of every data burst read.}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{logAction}{if provided, the action item to be stored in the
     log.  This parameter is typically only provided for internal
     calls; the default that it provides is better for normal calls by
     a user.}

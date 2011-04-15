@@ -4,8 +4,8 @@ as.coastline <- function(latitude, longitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
     data <- data.frame(longitude=longitude, latitude=latitude)
-    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=NULL, processing.log=log.item)
+    log.item <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=NULL, processingLog=log.item)
     class(res) <- c("coastline", "oce")
     res
 }
@@ -56,7 +56,7 @@ plot.coastline <- function (x,
         asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
         yr <- center[1] + span * c(-1/2, 1/2) / 111.11
         xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
-        oce.debug(debug, "gave center and span; calculated xr=",xr," and yr=",yr,"\n")  
+        oce.debug(debug, "gave center and span; calculated xr=",xr," and yr=",yr,"\n")
     } else {
         if (missing(asp)) {
             if ("ylim" %in% names(dots))
@@ -173,12 +173,12 @@ plot.coastline <- function (x,
 read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
                            debug=getOption("oce.debug"),
                            monitor=FALSE,
-                           log.action)
+                           logAction)
 {
     file <- full.filename(file)
     type <- match.arg(type)
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
     if (type == "shapefile")
         return(read.coastline.shapefile(file, monitor=monitor, debug=debug))
     if (type == "R" || type == "S") {
@@ -196,7 +196,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
             on.exit(close(file))
         }
         data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
-        res <- list(data=data, metadata=list(fillable=FALSE), processing.log=log.item)
+        res <- list(data=data, metadata=list(fillable=FALSE), processingLog=log.item)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oce.debug(debug, "method is mapgen\nheader:", header, "\n")
@@ -226,7 +226,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
         }
         lonlat <- matrix(lonlat, ncol=2,byrow=TRUE)
         data <- data.frame(longitude=lonlat[,1], latitude=lonlat[,2])
-        res <- list(data=data, metadata=list(fillable=FALSE), processing.log=log.item)
+        res <- list(data=data, metadata=list(fillable=FALSE), processingLog=log.item)
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
@@ -237,7 +237,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
 read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
                                      debug=getOption("oce.debug"),
                                      monitor=FALSE,
-                                     log.action)
+                                     logAction)
 {
     ## References:
     ## [1] ESRI Shapefile Technical Description. March 1998.
@@ -360,10 +360,10 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     data <- list(longitude=longitude, latitude=latitude)
     oce.debug(debug, "\b\b} # read.shapefile()\n")
-    if (missing(log.action))
-        log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction))
+        logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("coastline", "oce")
     oce.debug(debug, "\b\b} # read.shape()\n")
     res
@@ -378,7 +378,7 @@ summary.coastline <- function(object, ...)
     res <- list(length=length(object$data$longitude),
                 missing=sum(is.na(object$data$longitude)),
                 fives=fives,
-                processing.log=processing.log.summary(object))
+                processingLog=processingLog.summary(object))
     fives[1,] <- fivenum(object$data$latitude, na.rm=TRUE)
     fives[2,] <- fivenum(object$data$longitude, na.rm=TRUE)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
@@ -395,7 +395,7 @@ print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),..
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    cat("\n* Processing log::\n\n", ...)
-    cat(x$processing.log, ...)
+    cat("\n* processingLog::\n\n", ...)
+    cat(x$processingLog, ...)
     invisible(x)
 }

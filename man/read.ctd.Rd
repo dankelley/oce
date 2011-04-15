@@ -10,11 +10,11 @@
 
 \usage{
 read.ctd(file, type=NULL, columns=NULL, station=NULL, 
-  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oce.debug"), logAction, \dots)
 read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
-  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oce.debug"), logAction, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
-  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oce.debug"), logAction, \dots)
 }
 
 \arguments{
@@ -39,7 +39,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of line of data read.  (This may be useful in debugging problems in
     reading files that are misconfigured.)}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{logAction}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}

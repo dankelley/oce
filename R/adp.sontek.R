@@ -2,7 +2,7 @@
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             latitude=NA, longitude=NA,
                             type=c("adp", "pcadp"),
-                            debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action, ...)
+                            debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, logAction, ...)
 {
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
@@ -27,7 +27,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             sec100 <- as.integer(buf[profile.start[middle]+24])     # FIXME: determine whether this is 1/100th second
             sec <- as.integer(buf[profile.start[middle]+25])
             t <- ISOdatetime(year, month, day, hour, min, sec+sec100/100, tz=tz)
-            oce.debug(debug, "t=", format(t), 
+            oce.debug(debug, "t=", format(t),
                       " [year=", year, " month=", month, " day=", day, " hour=", hour, " sec=", second, "sec100=", sec100, "]\n")
             if (t.find < t)
                 upper <- middle
@@ -89,7 +89,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         nbeams <- as.integer(buf[27])
         oce.debug(debug, "nbeams=", nbeams, "\n")
         beam.geometry <- as.integer(buf[28])
-        oce.debug(debug, "beam.geometry=", beam.geometry, 
+        oce.debug(debug, "beam.geometry=", beam.geometry,
                   "; 0 (2 beams); 1 (3 beams), 2 (4 beams with 1 vertical), 3 (4 beams, Janus)\n")
         slant.angle <- readBin(buf[29:30], "integer", n=1, size=2, signed=FALSE) / 10
         oce.debug(debug, "slant.angle=",slant.angle,"\n")
@@ -238,10 +238,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (type == "pcadp") {
         nbeam.max <- 4                 # Max number of beams, not actual number
         header.length <- header.length + 2 * (8 + nbeam.max) + 2 * nbeam.max + nbeam.max
-        ## Below is C code from Sontek, for pulse-coherent adp (2-byte little-endian 
-        ## integers).  FIXME: should perhaps read these things, but this is not a 
+        ## Below is C code from Sontek, for pulse-coherent adp (2-byte little-endian
+        ## integers).  FIXME: should perhaps read these things, but this is not a
         ## high priority, since in the data file for which the code was originally
-        ## developed, all distances were set to 123 mm and all velocities to 
+        ## developed, all distances were set to 123 mm and all velocities to
         ## 9999 mm/s, suggestive of insignificant, place-holder values.
         ##
         ##typedef struct
@@ -344,10 +344,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         ## and these are by the same formulae, with 25 switched to 15 (different beam angle)
     } else
         stop("can only handle 3-beam devices")
-    if (missing(log.action))
-        log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction))
+        logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("sontek", "adp", "oce")
     res
 }
@@ -368,7 +368,7 @@ sontek.time <- function(t, tz=getOption("oce.tz"))
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                                    latitude=NA, longitude=NA,
                                    beam.angle=25, orientation,
-                                   monitor=TRUE, log.action,
+                                   monitor=TRUE, logAction,
                                    debug=getOption("oce.debug"))
 {
     ## Data format is described in
@@ -425,7 +425,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                            ", by=", by,
                            ", latitude=", latitude, ", longitude=", longitude,
                            ", monitor=", monitor,
-                           ", log.action=(not shown), debug=", debug, ") {\n", sep=""))
+                           ", logAction=(not shown), debug=", debug, ") {\n", sep=""))
     nfile <- length(file)
     if (nfile > 1) {                   # handle multiple files
         oce.debug(debug, "handling multiple files\n")
@@ -601,7 +601,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                      measurement.end=np, # FIXME: should fill in
                      measurement.deltat=mean(diff(as.numeric(time))),
                      subsample.start=0, # FIXME: should fill in
-                     subsample.end=np, 
+                     subsample.end=np,
                      subsample.deltat=mean(diff(as.numeric(time))),
                      frequency=NA, # FIXME
                      number.of.samples=np,
@@ -617,9 +617,9 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                          pressure=rep(0, length(temperature))),
                  ss=list(distance=distance),
                  ma=list(v=v,vstd=vstd,amp=amp)) # velo, velo stddev, amplitude
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("sontek", "adp", "oce")
     res
 }

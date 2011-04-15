@@ -16,15 +16,15 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     r <- range(x, na.rm=TRUE)
-    if (missing(xlow)) 
-        xlow <- min(x, na.rm=TRUE) 
-    if (missing(xhigh)) 
-        xhigh <- max(x, na.rm=TRUE) 
+    if (missing(xlow))
+        xlow <- min(x, na.rm=TRUE)
+    if (missing(xhigh))
+        xhigh <- max(x, na.rm=TRUE)
     rval <- rlow + (rhigh - rlow) * (x - xlow) / (xhigh - xlow)
     if (clip) {
         rval <- ifelse(rval < rlow, rlow, rval)
         rval <- ifelse(rval > rhigh, rhigh, rval)
-    } 
+    }
     rval
 }
 
@@ -48,7 +48,7 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         oce.debug(debug, "retiming x$data$ts.slow$time\n")
         rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (as.numeric(x$data$ts.slow$time) - as.numeric(t0))
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$processingLog <- processingLogAdd(rval$processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # retime.adv()\n")
     rval
@@ -737,7 +737,7 @@ undrift.time <- function(x, slow.end = 0, tname="time")
         }
         rval$data <- out
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$processingLog <- processingLogAdd(rval$processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -817,7 +817,7 @@ add.column <- function (x, data, name)
     rval <- x
     rval$data <- data.frame(x$data, data)
     names(rval$data) <- c(names(x$data), name)
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$processingLog <- processingLogAdd(rval$processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -915,7 +915,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -955,7 +955,7 @@ oce.smooth <- function(x, ...)
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -1147,7 +1147,7 @@ apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.de
     } else {
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$processingLog <- processingLogAdd(rval$processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # apply.magnetic.declination\n")
     rval

@@ -6,13 +6,13 @@
 
 \description{Read a data file created by a LOBO instrument.}
 
-\usage{read.lobo(file, cols=7, log.action)}
+\usage{read.lobo(file, cols=7, logAction)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
   \item{cols}{number of columns in dataset.}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{logAction}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
 }

@@ -16,7 +16,7 @@ use.heading <- function(b, g, add=0)
     b.t <- as.numeric(b$data$ts$time) - t0 # FIXME: what if heading in ts.slow?
     g.t <- as.numeric(g$data$ts$time) - t0 # FIXME: what if heading in ts.slow?
     res$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -71,7 +71,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             res <- list(index=keep)
         } else {
             for (name in names(res$data$ts)) {
-                if (length(res$data$ts[[name]]) > 1) 
+                if (length(res$data$ts[[name]]) > 1)
                     res$data$ts[[name]] <- res$data$ts[[name]][keep]
             }
         }
@@ -393,7 +393,7 @@ oce.edit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x$processing.log <- processing.log.add(x$processing.log,
+    x$processingLog <- processingLogAdd(x$processingLog,
                                            paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b}\n")
     x
@@ -527,7 +527,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             }
             data <- list(station=station)
             metadata <- list(header=x$metadata$header,section.id=x$metadata$section.id,station.id=stn,latitude=lat,longitude=lon)
-            rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
+            rval <- list(data=data, metadata=metadata, processingLog=x$processingLog)
             class(rval) <- c("section", "oce")
         } else {                        # subset within the stations
             subset.string <- deparse(substitute(subset))
@@ -564,7 +564,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 metadata <- list(header=x$metadata$header,
                                  section.id=x$metadata$section.id,
                                  station.id=stn,latitude=lat,longitude=lon)
-                rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
+                rval <- list(data=data, metadata=metadata, processingLog=x$processingLog)
                 class(rval) <- c("section", "oce")
             } else {
                 n <- length(x$data$station)
@@ -651,7 +651,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         rval$data <- x$data[r,]
     }
     oce.debug(debug, "\b\b} # subset.oce\n")
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$processingLog <- processingLogAdd(rval$processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -664,7 +664,7 @@ summary.oce <- function(object, ...)
     print(summary(object$data))
     cat("\nMetadata:\n")
     print(object$metadata)
-    processing.log.summary(object)
+    processingLog.summary(object)
     return(invisible(object))
 }
 
@@ -793,37 +793,37 @@ magic <- function(file, debug=getOption("oce.debug"))
 read.oce <- function(file, ...)
 {
     type <- magic(file)
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    if (type == "shapefile") 
+    logAction <- paste(deparse(match.call()), sep="", collapse="")
+    if (type == "shapefile")
         stop("cannot read shapefiles")
-    if (type == "adp/rdi")               
-        return(read.adp.rdi(file, log.action=log.action, ...))
+    if (type == "adp/rdi")
+        return(read.adp.rdi(file, logAction=logAction, ...))
     if (type == "adp/sontek")
-        return(read.adp.sontek(file, log.action=log.action, ...)) # FIXME is pcadcp different?
+        return(read.adp.sontek(file, logAction=logAction, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
         stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, log.action=log.action, ...))
+        return(read.adp.nortek(file, logAction=logAction, ...))
     if (type == "adv/nortek/vector")
-        return(read.adv.nortek(file, log.action=log.action, ...))
+        return(read.adv.nortek(file, logAction=logAction, ...))
     if (type == "adv/sontek/adr")
-        return(read.adv.sontek.adr(file, log.action=log.action, ...))
+        return(read.adv.sontek.adr(file, logAction=logAction, ...))
     ## FIXME need adv/sontek (non adr)
     if (type == "interocean/s4")
-        return(read.cm.s4(file, log.action=log.action, ...))
+        return(read.cm.s4(file, logAction=logAction, ...))
     if (type == "ctd/sbe/19")
-        return(read.ctd.sbe(file, log.action=log.action, ...))
-    if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, log.action=log.action, ...))
+        return(read.ctd.sbe(file, logAction=logAction, ...))
+    if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, logAction=logAction, ...))
     if (type == "coastline")
-        return(read.coastline(file, type="mapgen", log.action=log.action, ...))
+        return(read.coastline(file, type="mapgen", logAction=logAction, ...))
     if (type == "sealevel")
-        return(read.sealevel(file, log.action=log.action, ...))
+        return(read.sealevel(file, logAction=logAction, ...))
     if (type == "topo")
-        return(read.topo(file, log.action=log.action, ...))
+        return(read.topo(file, logAction=logAction, ...))
     if (type == "pt")
-        return(read.pt(file, log.action=log.action, ...))
+        return(read.pt(file, logAction=logAction, ...))
     if (type == "section")
-        return(read.section(file, log.action=log.action, ...))
+        return(read.section(file, logAction=logAction, ...))
     stop("unknown file type \"", type, "\"")
 }
 
@@ -1195,7 +1195,7 @@ number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
         return((as.numeric(t) - as.numeric(tref)) + tref)
-    } 
+    }
     if (type == "matlab") {
         ## R won't take a day "0", so subtract one
         return(as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1)))
@@ -1209,7 +1209,7 @@ number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
                             "1992-07-01", "1993-07-01", "1994-07-01", "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01",
                             "2008-01-01"), format="%Y-%m-%d", tz="UTC")
         t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
-        for (l in 1:length(leaps)) 
+        for (l in 1:length(leaps))
             t <- t - ifelse(t >= leaps[l], 1, 0)
         t
     } else {

@@ -3,7 +3,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      header=TRUE,
                      latitude=NA, longitude=NA,
                      start, deltat,
-                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                     debug=getOption("oce.debug"), monitor=TRUE, logAction)
 {
     type = match.arg(type)
     ## FIXME: all these read.adv variants should have the same argument list
@@ -11,20 +11,20 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
                         latitude=latitude, longitude=longitude,
-                        debug=debug, monitor=monitor, log.action=log.action)
+                        debug=debug, monitor=monitor, logAction=logAction)
     else if (type == "sontek") # guess
         read.adv.sontek.serial(file=file, from=from, to=to, by=by, tz=tz,
                                latitude=latitude, longitude=longitude,
                                start=start, deltat=deltat,
-                               debug=debug, monitor=monitor, log.action=log.action)
+                               debug=debug, monitor=monitor, logAction=logAction)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
                             latitude=latitude, longitude=longitude,
-                            debug=debug, log.action=log.action)
+                            debug=debug, logAction=logAction)
     else if (type == "sontek.text")
         read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
                              latitude=latitude, longitude=longitude,
-                             debug=debug, log.action=log.action)
+                             debug=debug, logAction=logAction)
     else
         stop("read.adv() cannot understand type = \"", type, "\"")
 }
@@ -33,7 +33,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                             type="vector",
                             header=TRUE,
                             latitude=NA, longitude=NA,
-                            debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                            debug=getOption("oce.debug"), monitor=TRUE, logAction)
 {
     ## abbreviations:
     ##   SIG=System Integrator Guide
@@ -41,7 +41,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$ts$time, etc.
 
-    oce.debug(debug, "\b\bread.adv.nortek(file=\"", file, "\", type=\"", type, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", type=\"", type, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep="")
+    oce.debug(debug, "\b\bread.adv.nortek(file=\"", file, "\", type=\"", type, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", type=\"", type, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", logAction=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (is.numeric(by)   && by   < 1)
@@ -114,8 +114,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      oce.beam.attenuated=FALSE,
                      deploy.name=header$user$deploy.name,
                      comments=header$user$comments)
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
     bisect.nortek.vector.sd <- function(t.find, add=0, debug=0) { # t.find=time add=offset debug=debug
         oce.debug(debug, "\n")
@@ -428,7 +428,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                  ts.slow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
                  ##ss=list(distance=0),   # FIXME: why even have this?
                  ma=list(v=v, a=a, c=c))
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("nortek", "adv", "oce")
     oce.debug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
     res
@@ -438,7 +438,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                                    type="default",
                                    latitude=NA, longitude=NA,
                                    start, deltat,
-                                   debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                                   debug=getOption("oce.debug"), monitor=TRUE, logAction)
 {
     oce.debug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
@@ -449,7 +449,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                            if (!missing(deltat)) sprintf(", deltat=%f, ", deltat),
                            "debug=", debug,
                            ", monitor=", monitor,
-                           ", log.action=(not shown)) {\n", sep=""))
+                           ", logAction=(not shown)) {\n", sep=""))
     if (missing(start))
         stop("must supply start, a POSIXct time (or suitable string for the time, in UTC) at which the first observation was made")
     if (is.numeric(start))
@@ -566,9 +566,9 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                  ##ss=list(distance=0),
                  ma=list(v=v,a=a,c=c))
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("sontek", "adv", "oce")
     res
 }
@@ -577,7 +577,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                                 header=TRUE,
                                 latitude=NA, longitude=NA,
                                 type="",
-                                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                                debug=getOption("oce.debug"), monitor=TRUE, logAction)
 {
     bisect.adv.sontek.adr <- function(t.find, add=0, debug=0) {
         oce.debug(debug, "bisect.adv.sontek.adr(t.find=", format(t.find), ", add=", add, "\n")
@@ -1016,9 +1016,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                          pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("sontek", "adv", "oce")
     res
 }
@@ -1026,7 +1026,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
 read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
                                  coordinate.system="xyz", transformation.matrix,
                                  latitude=NA, longitude=NA,
-                                 debug=getOption("oce.debug"), log.action)
+                                 debug=getOption("oce.debug"), logAction)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the
@@ -1155,9 +1155,9 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                      oce.coordinate=coordinate.system,
                      coordinate.system=coordinate.system)
     warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("sontek", "adv", "oce")
     res
 }
@@ -1220,7 +1220,7 @@ summary.adv <- function(object, ...)
                 coordinate.system=object$metadata$coordinate.system,
                 oce.coordinate=object$metadata$oce.coordinate,
                 fives=fives,
-                processing.log=processing.log.summary(object))
+                processingLog=processingLog.summary(object))
     if (inherits(object, "nortek")) {
         res$software.version <- object$metadata$software.version
         res$internal.code.version <- object$metadata$internal.code.version
@@ -1287,9 +1287,9 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     cat("\n",...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    ##cat("\n* Processing log\n\n", ...)
+    ##cat("\n* processingLog\n\n", ...)
     cat("\n")
-    print(x$processing.log, ...)
+    print(x$processingLog, ...)
     invisible(x)
 }
 
@@ -1852,22 +1852,22 @@ beam.to.xyz.adv <- function(x, debug=getOption("oce.debug"))
     x$data$ma$v[,2] <- v
     x$data$ma$v[,3] <- w
     x$metadata$oce.coordinate <- "xyz"
-    x$processing.log <- processing.log.add(x$processing.log,
+    x$processingLog <- processingLogAdd(x$processingLog,
                                            paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # beam.to.xyz.adv()\n")
     x
 }
 
 ## adv: acoustic doppler velocimeters.
-## 
+##
 ## Case | Mfr.   | Instr. | Cabled | horiz.case | Orient. |   H  |  P |  R |  S |  F |  M
 ## ---- | ------ | ------ | ------ | ---------- | ------- | ---- | -- | -- | -- | -- | --
 ## 1    | Nortek | vector |    no  |       -    |     up  | H-90 |  R | -P |  X | -Y | -Z
 ## 2    | Nortek | vector |    no  |       -    |   down  | H-90 |  R | -P |  X |  Y |  Z
 ## 3    | Nortek | vector |   yes  |     yes    |     up  | H-90 |  R | -P |  X |  Y |  Z
 ## 4    | Nortek | vector |   yes  |     yes    |   down  | H-90 |  R |  P |  X | -Y | -Z
-## 5    | Nortek | vector |   yes  |      no    |     up  |      |    |    |    |    |   
-## 6    | Nortek | vector |   yes  |      no    |   down  |      |    |    |    |    |   
+## 5    | Nortek | vector |   yes  |      no    |     up  |      |    |    |    |    |
+## 6    | Nortek | vector |   yes  |      no    |   down  |      |    |    |    |    |
 ## 7    | Sontek |  adv   |    -   |       -    |     up  | H-90 |  R | -P |  X | -Y | -Z
 ## 8    | Sontek |  adv   |    -   |       -    |   down  | H-90 |  R | -P |  X |  Y |  Z
 xyz.to.enu.adv <- function(x, declination=0,
@@ -1909,7 +1909,7 @@ xyz.to.enu.adv <- function(x, declination=0,
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
     }
-    ## Adjust various things, so that the xyz-to-enu formulae (based on RDI) will work 
+    ## Adjust various things, so that the xyz-to-enu formulae (based on RDI) will work
     ##
     ## The various cases are defined by help(xyz.to.enu.adv).
     if (missing(sensor.orientation))
@@ -2007,7 +2007,7 @@ xyz.to.enu.adv <- function(x, declination=0,
               as.integer(length(heading)), # need not equal np
               as.double(heading + declination),
               as.double(pitch),
-              as.double(roll), 
+              as.double(roll),
               as.integer(np),
               as.double(starboard),
               as.double(forward),
@@ -2021,7 +2021,7 @@ xyz.to.enu.adv <- function(x, declination=0,
     x$data$ma$v[,2] <- enu$north
     x$data$ma$v[,3] <- enu$up
     x$metadata$oce.coordinate <- "enu"
-    x$processing.log <- processing.log.add(x$processing.log,
+    x$processingLog <- processingLogAdd(x$processingLog,
                                            paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # xyz.to.enu.adv()\n")
     x
@@ -2039,7 +2039,7 @@ enu.to.other.adv <- function(x, heading=0, pitch=0, roll=0)
               as.integer(length(heading)), # need not equal np
               as.double(heading),
               as.double(pitch),
-              as.double(roll), 
+              as.double(roll),
               as.integer(np),
               as.double(x$data$ma$v[,1]),
               as.double(x$data$ma$v[,2]),
@@ -2053,7 +2053,7 @@ enu.to.other.adv <- function(x, heading=0, pitch=0, roll=0)
     x$data$ma$v[,2] <- other$v2new
     x$data$ma$v[,3] <- other$v3new
     x$metadata$oce.coordinate <- "other"
-    x$processing.log <- processing.log.add(x$processing.log,
+    x$processingLog <- processingLogAdd(x$processingLog,
                                            paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # enu.to.other.adv()\n")
     x

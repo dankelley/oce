@@ -8,7 +8,7 @@
 
 \usage{ as.pt(time, temperature, pressure,
       filename="", instrument.type="rbr", serial.number="",
-      log.action, debug=getOption("oce.debug"))}
+      logAction, debug=getOption("oce.debug"))}
 
 \arguments{
   \item{time}{a vector of times for the data.}
@@ -17,7 +17,7 @@
   \item{filename}{optional name of file containing the data}
   \item{instrument.type}{type of instrument}
   \item{serial.number}{serial number for instrument}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{logAction}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}

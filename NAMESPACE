@@ -92,10 +92,10 @@ export(
        plot.section,
        plot.tidem,
        plot.windrose,
-       processing.log.add,
-       processing.log.append,
-       processing.log.item,
-       processing.log.summary,
+       processingLogAdd,
+       processingLogAppend,
+       processingLogItem,
+       processingLogSummary,
        pt.patm,
        pt.trim,
        pwelch,
@@ -179,7 +179,7 @@ S3method(plot, pt)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
-S3method(print, processing.log.summary)
+S3method(print, processingLogSummary)
 S3method(print, summary.adp)
 S3method(print, summary.adv)
 S3method(print, summary.cm)

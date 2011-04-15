@@ -44,8 +44,8 @@ as.sealevel <- function(elevation,
                      units=units,
                      n=length(t),
                      deltat=deltat)
-    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- list(data=data, metadata=metadata, processing.log=log.item)
+    log.item <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    rval <- list(data=data, metadata=metadata, processingLog=log.item)
     class(rval) <- c("sealevel", "oce")
     rval
 }
@@ -216,7 +216,7 @@ plot.sealevel <- function(x, which=1:4,
 }
 
 
-read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOption("oce.debug"))
+read.sealevel <- function(file, tz=getOption("oce.tz"), logAction, debug=getOption("oce.debug"))
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- full.filename(file)
@@ -357,9 +357,9 @@ read.sealevel <- function(file, tz=getOption("oce.tz"), log.action, debug=getOpt
                      n=length(time),
                      deltat=as.numeric(difftime(time[2], time[1], units="hours")))
 
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    rval <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    rval <- list(data=data, metadata=metadata, processingLog=log.item)
     class(rval) <- c("sealevel", "oce")
     rval
 }
@@ -382,7 +382,7 @@ summary.sealevel <- function(object, ...)
                 end.time=max(object$data$time, na.rm=TRUE),
                 gmt.offset=if (is.na(object$metadata$GMT.offset)) "?" else object$metadata$GMT.offset,
                 fives=fives,
-                processing.log=processing.log.summary(object))
+                processingLog=processingLog.summary(object))
     fives[1,] <- fivenum(object$data$elevation, na.rm=TRUE)
     rownames(fives) <- "Sea level"
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
@@ -407,7 +407,7 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat(paste("* GMT offset:          ", x$gmt.offset, "\n"), ...)
     cat("* Statistics::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    cat("\n* Processing log::\n\n", ...)
-    cat(x$processing.log, ...)
+    cat("\n* processingLog::\n\n", ...)
+    cat(x$processingLog, ...)
     invisible(x)
 }

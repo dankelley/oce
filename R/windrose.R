@@ -21,8 +21,8 @@ as.windrose <- function(x, y, dtheta = 15)
     }
     data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
     metadata <- list(dtheta=dtheta)
-    log <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, processing.log=log)
+    log <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, processingLog=log)
     class(res) <- c("windrose", "oce")
     res
 }
@@ -129,7 +129,7 @@ summary.windrose <- function(object, ...)
     res <- list(n=n,
                 dtheta=object$metadata$dtheta,
                 fives=fives,
-                processing.log=processing.log.summary(object))
+                processingLog=processingLog.summary(object))
     for (i in 1:n) {
         fives[i,] <- object$data$fivenum[i,]
     }
@@ -146,7 +146,7 @@ print.summary.windrose <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("* Have n=", x$n, "angles, separated by dtheta=", x$dtheta,"\n\n")
     cat("* Statistics by angle::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    cat("\n* Processing log::\n\n", ...)
-    cat(x$processing.log, ...)
+    cat("\n* processingLog::\n\n", ...)
+    cat(x$processingLog, ...)
     invisible(x)
 }

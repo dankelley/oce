@@ -1,12 +1,12 @@
-\name{processing.log.add}
+\name{processingLogAdd}
 
-\alias{processing.log.add}
+\alias{processingLogAdd}
 
 \title{Add an item to a processing log}
 
 \description{Add an item to a processing log}
 
-\usage{processing.log.add(pl, action="")}
+\usage{processingLogAdd(pl, action="")}
 
 \arguments{
   \item{pl}{a processing log.  If \code{NULL}, a new processing log is
@@ -22,7 +22,7 @@
 \examples{
 data(ctd)
 ctd$metadata$latitude <- ctd$metadata$latitude + 1
-ctd$processing.log <- processing.log.add(ctd$processing.log, "correct latitude")
+ctd$processing.log <- processingLogAdd(ctd$processing.log, "correct latitude")
 }
 
 \author{Dan Kelley}

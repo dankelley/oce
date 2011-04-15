@@ -1,12 +1,12 @@
-\name{processing.log.append}
+\name{processingLogAppend}
 
-\alias{processing.log.append}
+\alias{processingLogAppend}
 
 \title{Copy an object, but with an updated processing log.}
 
 \description{Append an item to a processing log}
 
-\usage{processing.log.append(x, action="")}
+\usage{processingLogAppend(x, action="")}
 
 \arguments{
   \item{x}{an \code{oce} object.}
@@ -21,7 +21,7 @@
 \examples{
 data(ctd)
 ctd$metadata$latitude <- ctd$metadata$latitude + 1
-ctd <- processing.log.append(ctd, "correct latitude")
+ctd <- processingLogAppend(ctd, "correct latitude")
 }
 
 \author{Dan Kelley}

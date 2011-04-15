@@ -13,27 +13,27 @@
 read.adp(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("rdi", "nortek", "sontek"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, logAction,
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, logAction,
   \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("aquadopp high resolution"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, logAction,
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, logAction,
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
                       latitude=NA, longitude=NA,
                       beam.angle=25, orientation,
-                      monitor=TRUE, log.action,
+                      monitor=TRUE, logAction,
                       debug=getOption("oce.debug")) 
 }
 
@@ -72,7 +72,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
     (with numbers and dots) of every profile read.}
   \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
     to clean anomalous spikes in heading, etc.}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{logAction}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}

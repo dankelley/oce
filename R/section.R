@@ -13,7 +13,7 @@ section.sort <- function(section, by=c("station.id", "distance"))
     } else {
 	stop("argument 'by' is incorrect")
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$processingLog <- processingLogAdd(rval$processingLog,
 					      paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -91,8 +91,8 @@ make.section <- function(item, ...)
 		     station.id=stn,
 		     latitude=lat,
 		     longitude=lon)
-    log.item <- processing.log.item(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    log.item <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("section", "oce")
     res
 }
@@ -114,7 +114,7 @@ make.section <- function(item, ...)
     res$metadata$latitude <- c(res$metadata$latitude, station$metadata$latitude)
     res$metadata$longitude <- c(res$metadata$longitude, station$metadata$longitude)
     res$metadata$station.id <- c(res$metadata$station.id, station$metadata$station)
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
 					     paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -455,9 +455,9 @@ plot.section <- function(x,
     invisible()
 }
 
-read.section <- function(file, section.id="", flags, 
+read.section <- function(file, section.id="", flags,
 			 ship="", scientist="", institute="",
-			 debug=getOption("oce.debug"), log.action)
+			 debug=getOption("oce.debug"), logAction)
 {
     if (is.character(file)) {
 	filename <- file
@@ -473,7 +473,7 @@ read.section <- function(file, section.id="", flags,
 	on.exit(close(file))
     }
     ## flag=2 for good data [WOCE]
-    if (missing(flags)) 
+    if (missing(flags))
 	flags <- c(2)
     # Skip header
     lines <- readLines(file)
@@ -512,32 +512,32 @@ read.section <- function(file, section.id="", flags,
 	data[l - header.length,] <- contents[col.start:nv]
 	## FIXME: maybe should just scan this thing; it might work better anyway
     }
-    if (length(which(var.names=="CTDPRS"))) 
+    if (length(which(var.names=="CTDPRS")))
 	pressure <- as.numeric(data[,which(var.names=="CTDPRS") - col.start + 1])
     else
 	stop("no column named \"CTDPRS\"")
-    if (length(which(var.names=="CTDTMP"))) 
+    if (length(which(var.names=="CTDTMP")))
 	temperature <- as.numeric(data[,which(var.names=="CTDTMP") - col.start + 1])
     else
 	stop("no column named \"CTDTMP\"")
     ## Salinity is tricky.  There are two possibilities, in WOCE
     ## files, and each has a flag.  Here, we prefer CTDSAL, but if it
     ## has a bad flag value, we try SALNTY as a second option.  But
-    ## if both CTDSAL and SALNTY are flagged, we just give up on the 
+    ## if both CTDSAL and SALNTY are flagged, we just give up on the
     ## depth.
-    if (length(which(var.names=="CTDSAL"))) 
+    if (length(which(var.names=="CTDSAL")))
 	ctdsal <- as.numeric(data[,which(var.names=="CTDSAL") - col.start + 1])
     else
 	stop("no column named \"CTDSAL\"")
-    if (length(which(var.names=="CTDSAL_FLAG_W"))) 
+    if (length(which(var.names=="CTDSAL_FLAG_W")))
 	ctdsal.flag <- as.numeric(data[,which(var.names=="CTDSAL_FLAG_W") - col.start + 1])
     else
 	stop("no column named \"CTDSAL_FLAG_W\"")
-    if (length(which(var.names=="SALNTY"))) 
+    if (length(which(var.names=="SALNTY")))
 	salnty <- as.numeric(data[,which(var.names=="SALNTY") - col.start + 1])
     else
 	stop("no column named \"SALNTY\"")
-    if (length(which(var.names=="SALNTY_FLAG_W"))) 
+    if (length(which(var.names=="SALNTY_FLAG_W")))
 	salnty.flag <- as.numeric(data[,which(var.names=="SALNTY_FLAG_W") - col.start + 1])
     else
 	stop("no column named \"SALNTY_FLAG_W\"")
@@ -569,7 +569,7 @@ read.section <- function(file, section.id="", flags,
 	select <- which(station.id == station.list[i])
 	# "199309232222"
 	# "1993-09-23 22:22:00"
-	time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""), 
+	time[i] <- as.numeric(strptime(paste(stn.date[select[1]], stn.time[select[1]], sep=""),
 				       "%Y%m%d%H%M", tz="UTC")) - trefn
 	stn[i] <- sub("^ *", "", station.id[select[1]])
 	lat[i] <- latitude[select[1]]
@@ -601,10 +601,10 @@ read.section <- function(file, section.id="", flags,
     data <- list(station=station)
     metadata <-
     list(header=header,section.id=section.id,station.id=stn,latitude=lat,longitude=lon,date=time+tref)
-    if (missing(log.action))
-	log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction))
+	logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    res <- list(data=data, metadata=metadata, processingLog=log.item)
     class(res) <- c("section", "oce")
     res
 }
@@ -656,7 +656,7 @@ section.grid <- function(section, p, method=c("approx","boxcar","lm"),
 	##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
 	##cat("\n")
     }
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
 					     paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # section.grid\n")
     res
@@ -712,7 +712,7 @@ section.smooth <- function(section, df, debug=getOption("oce.debug"), ...)
 	res$data$station[[s]]$data$sigma.theta <- sigma.theta.mat[,s]
     }
     class(res) <- c("section", "oce")
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
 					     paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # section.smooth()\n")
     res
@@ -726,7 +726,7 @@ summary.section <- function(object, ...)
     stn.sum <- matrix(nrow=num.stations, ncol=5)
     res <- list(section.id=object$metadata$section.id,
 		num.stations=num.stations,
-		stn.sum=stn.sum, processing.log="?")
+		stn.sum=stn.sum, processingLog="?")
     lon1 <- object$data$station[[1]]$metadata$longitude
     lat1 <- object$data$station[[1]]$metadata$latitude
     for (i in 1:num.stations) {
@@ -746,7 +746,7 @@ summary.section <- function(object, ...)
     colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
     rownames(stn.sum) <- object$metadata$station.id
     res$stn.sum <- stn.sum
-    res$processing.log <- processing.log.summary(object)
+    res$processingLog <- processingLog.summary(object)
     class(res) <- "summary.section"
     res
 }
@@ -761,8 +761,8 @@ print.summary.section <- function(x, digits=max(6, getOption("digits") - 1), ...
     } else {
 	cat("contains no stations.\n")
     }
-    cat("Processing Log:\n", ...)
-    cat(x$processing.log, ...)
+    cat("ProcessingLog:\n", ...)
+    cat(x$processingLog, ...)
     invisible(x)
 }
 

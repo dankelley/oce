@@ -4,7 +4,7 @@
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                     type=c("s4"),
                     latitude=NA, longitude=NA,
-                    debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+                    debug=getOption("oce.debug"), monitor=TRUE, logAction, ...)
 {
     if (debug > 2)
         debug <- 2
@@ -17,14 +17,14 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
                    latitude=latitude, longitude=longitude,
-                   debug=debug-1, monitor=monitor, log.action=log.action, ...)
+                   debug=debug-1, monitor=monitor, logAction=logAction, ...)
     else
         stop("unknown type of current meter")
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                        latitude=NA, longitude=NA,
-                       debug=getOption("oce.debug"), monitor=TRUE, log.action, ...)
+                       debug=getOption("oce.debug"), monitor=TRUE, logAction, ...)
 {
     if (debug > 1)
         debug <- 1
@@ -89,11 +89,11 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     d <- read.table(file, skip=skip, sep='\t', stringsAsFactors=FALSE)
     col.north <- 5
     col.east <- 6
-    col.conductivity <- 13 
-    col.temperature <- 13 
+    col.conductivity <- 13
+    col.temperature <- 13
     col.depth <- 14
     col.heading <- 17
-    col.salinity <- 19 
+    col.salinity <- 19
     if (found.names) {
         names <- names[1:dim(d)[2]]
         col.east <- which(names == "Veast")
@@ -158,10 +158,10 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ts <- list(sample=sample[keep], time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
     metadata$measurement.end <- ts$time[length(ts$time)]
     data <- list(ts=ts)
-    if (missing(log.action))
-        log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    rval <- list(metadata=metadata, data=data, processing.log=log.item)
+    if (missing(logAction))
+        logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    rval <- list(metadata=metadata, data=data, processingLog=log.item)
     class(rval) <- c("cm", "s4", "oce")
     oce.debug(debug, "\b\b} # read.cm()\n")
     rval
@@ -186,7 +186,7 @@ summary.cm <- function(object, ...)
     res$measurement.start <- object$metadata$measurement.start
     res$measurement.end <- object$metadata$measurement.end
     res$measurement.deltat <- object$metadata$measurement.deltat
-    res$processing.log <- processing.log.summary(object)
+    res$processingLog <- processingLog.summary(object)
     ts.names <- names(object$data$ts)
     print(ts.names)
     fives <- matrix(nrow=(-1+length(ts.names)), ncol=5)
@@ -233,9 +233,9 @@ print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 x$number.of.cells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    ##cat("\n* Processing log::\n\n", ...)
+    ##cat("\n* processingLog::\n\n", ...)
     cat("\n")
-    print(x$processing.log, ...)
+    print(x$processingLog, ...)
     invisible(x)
 }
 

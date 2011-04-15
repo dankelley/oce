@@ -6,7 +6,7 @@
 \usage{ read.section(file, section.id="", flags, 
              ship="", scientist="", institute="",
              debug=getOption("oce.debug"),
-  log.action)}
+  logAction)}
 
 \arguments{
   \item{file}{a file containing a set of CTD observations.  At present, only 
@@ -28,7 +28,7 @@
     read.}
   \item{debug}{logical. If \code{TRUE}, print some information that 
     might be helpful during debugging.}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{logAction}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
 }

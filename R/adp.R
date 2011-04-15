@@ -9,7 +9,7 @@ remove.ship.motion <- function(x)
     for (beam in 1:number.of.beams) {
         rval$data$ma$v[,,beam] <- rval$data$ma$v[,,beam] - rval$data$ma$bottom.velocity[,beam]
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$processingLog <- processingLogAdd(rval$processingLog,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -69,7 +69,7 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                      type=c("rdi", "nortek", "sontek"),
                      debug=getOption("oce.debug"),
                      monitor=TRUE, despike=FALSE,
-                     log.action, ...)
+                     logAction, ...)
 {
     oce.debug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)
@@ -79,17 +79,17 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
                      latitude=latitude, longitude=longitude,
                      debug=debug-1, monitor=monitor, despike=despike,
-                     log.action=log.action, ...)
+                     logAction=logAction, ...)
     else if (type == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
-                        log.action=log.action, ...)
+                        logAction=logAction, ...)
     else if (type == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
-                        log.action=log.action, ...)
+                        logAction=logAction, ...)
 }
 
 summary.adp <- function(object, ...)
@@ -159,7 +159,7 @@ summary.adp <- function(object, ...)
         res$orientation <- object$metadata$orientation
         res$coordinate.system <- object$metadata$coordinate.system
         res$oce.coordinate <- object$metadata$oce.coordinate
-        res$processing.log <- processing.log.summary(object)
+        res$processingLog <- processingLog.summary(object)
         if (have.data) {
             ts.names <- names(object$data$ts)
             ma.names <- names(object$data$ma)
@@ -265,12 +265,12 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("\n",...)
         cat("* Statistics of subsample\n  ::\n\n", ...)
         cat(show.fives(x, indent='     '), ...)
-        ##cat("\n* Processing log::\n\n", ...)
+        ##cat("\n* processingLog::\n\n", ...)
         cat("\n")
-        print(x$processing.log, ...)
+        print(x$processingLog, ...)
     } else {
         cat("* There are no profiles in this file\n")
-        print(x$processing.log, ...)
+        print(x$processingLog, ...)
     }
     invisible(x)
 }
@@ -289,7 +289,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                      margins.as.image=FALSE,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
-                     xlim, ylim, 
+                     xlim, ylim,
                      control,
                      use.layout=FALSE,
                      main="",
@@ -618,7 +618,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             main=main[w],
                             ylab=resizable.label("heading"),
                             type=type,
-                            mgp=mgp, 
+                            mgp=mgp,
                             mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             draw.time.range=draw.time.range, adorn=adorn[w])
             }
@@ -736,7 +736,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 lwd=lwd[w],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                                main=main[w], 
+                                main=main[w],
                                 ylab=ad.beam.name(x, 4),
                                 type=type,
                                 mgp=mgp,
@@ -749,7 +749,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             if (which[w] %in% 55) { # heaving
                 if (have.time.images)
                     drawpalette(debug=debug-1)
-                dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1]) 
+                dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1])
                 oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -758,7 +758,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             lwd=lwd[w],
                             cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
-                            main=main[w], 
+                            main=main[w],
                             ylab="Heaving [m]",
                             type=type,
                             mgp=mgp,
@@ -977,7 +977,7 @@ beam.attenuate.adp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getO
         res$data$ma$a[,,beam] <- as.raw(tmp)
     }
     res$metadata$oce.beam.attenuated <- TRUE
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # beamAttenuate.adp()\n")
     res
@@ -1039,7 +1039,7 @@ beam.to.xyz.adp <- function(x, debug=getOption("oce.debug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oce.coordinate <- "xyz"
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b\b} # adp.beam.to.xyz()\n")
     res
@@ -1089,7 +1089,7 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
             tmp <- pitch
             pitch <- roll
             roll <- -tmp
-            starboard <- res$data$ma$v[,,1] 
+            starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
         } else if (res$metadata$orientation == "downward") {
@@ -1114,7 +1114,7 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
             heading <- heading - 90
             pitch <- -pitch
             roll <- -roll
-            starboard <- res$data$ma$v[,,1] 
+            starboard <- res$data$ma$v[,,1]
             forward <- res$data$ma$v[,,2]
             mast <- res$data$ma$v[,,3]
         } else if (res$metadata$orientation == "downward") {
@@ -1144,7 +1144,7 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
                   as.integer(length(x$data$ts$heading)), # need not equal np
                   as.double(heading + declination),
                   as.double(pitch),
-                  as.double(roll), 
+                  as.double(roll),
                   as.integer(np),
                   as.double(starboard[,c]),
                   as.double(forward[,c]),
@@ -1159,7 +1159,7 @@ xyz.to.enu.adp <- function(x, declination=0, debug=getOption("oce.debug"))
         res$data$ma$v[,c,3] <- enu$up
     }
     res$metadata$oce.coordinate <- "enu"
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b\b} # xyz.to.enu.adp()\n")
     res
@@ -1179,7 +1179,7 @@ enu.to.other.adp <- function(x, heading=0, pitch=0, roll=0)
                     as.integer(length(heading)),
                     as.double(heading),
                     as.double(pitch),
-                    as.double(roll), 
+                    as.double(roll),
                     as.integer(np),
                     as.double(x$data$ma$v[,c,1]),
                     as.double(x$data$ma$v[,c,2]),
@@ -1194,8 +1194,8 @@ enu.to.other.adp <- function(x, heading=0, pitch=0, roll=0)
         res$data$ma$v[,c,3] <- other$v3new
     }
     res$metadata$oce.coordinate <- "other"
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    res$processing.log <- processing.log.add(res$processing.log,
+    logAction <- paste(deparse(match.call()), sep="", collapse="")
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }

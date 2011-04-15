@@ -236,7 +236,7 @@ if (0){
     oce.debug(debug, "\b\b} # plot.topo()\n")
 }
 
-read.topo <- function(file, log.action, ...)
+read.topo <- function(file, logAction, ...)
 {
     nh <- 6
     header <- readLines(file, n=nh)
@@ -249,12 +249,12 @@ read.topo <- function(file, log.action, ...)
     longitude <- lon.ll + cellsize * seq(0, ncols-1)
     latitude <- lat.ll + cellsize * seq(0, nrows-1)
     z <- t(zz[dim(zz)[1]:1,])
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    as.topo(longitude, latitude, z, filename=file, log.action=log.item)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    as.topo(longitude, latitude, z, filename=file, logAction=log.item)
 }
 
-as.topo <- function(longitude, latitude, z, filename="", log.action)
+as.topo <- function(longitude, latitude, z, filename="", logAction)
 {
     ncols <- length(longitude)
     nrows <- length(latitude)
@@ -267,9 +267,9 @@ as.topo <- function(longitude, latitude, z, filename="", log.action)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
     data <- list(longitude=longitude, latitude=latitude, z=z)
     metadata <- list(filename=file, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    rval <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    rval <- list(data=data, metadata=metadata, processingLog=log.item)
     class(rval) <- c("topo", "oce")
     rval
 }
@@ -281,7 +281,7 @@ summary.topo <- function(object, ...)
     res <- list(lat.range=range(object$data$lat, na.rm=TRUE),
                 lon.range=range(object$data$lon, na.rm=TRUE),
                 z.range=range(object$data$z, na.rm=TRUE),
-                processing.log=processing.log.summary(object))
+                processingLog=processingLog.summary(object))
     class(res) <- "summary.topo"
     res
 }
@@ -295,7 +295,7 @@ print.summary.topo <- function(x, digits=max(6, getOption("digits") - 1), ...)
         " to ", format(x$lon.range[2], digits), "\n")
     cat("elevation range:", format(x$z.range[1], digits=digits),
         " to ", format(x$z.range[2], digits), "\n")
-    cat("Processing Log:\n", ...)
-    cat(x$processing.log, ...)
+    cat("ProcessingLog:\n", ...)
+    cat(x$processingLog, ...)
     invisible(x)
 }

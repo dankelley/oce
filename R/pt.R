@@ -1,7 +1,7 @@
 as.pt <- function(time, temperature, pressure,
                   filename="",
                   instrument.type="rbr", serial.number="",
-                  log.action, debug=getOption("oce.debug"))
+                  logAction, debug=getOption("oce.debug"))
 {
     debug <- min(debug, 1)
     oce.debug(debug, "\bas.pt(..., filename=\"", filename, "\", serial.number=\"", serial.number, "\")\n", sep="")
@@ -18,10 +18,10 @@ as.pt <- function(time, temperature, pressure,
     metadata <- list(filename=filename,
                      instrument.type=instrument.type,
                      serial.number=serial.number)
-    if (missing(log.action))
-        log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    rval <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(logAction))
+        logAction <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- processingLogItem(logAction)
+    rval <- list(data=data, metadata=metadata, processingLog=log.item)
     class(rval) <- c("pt", "oce")
     oce.debug(debug, "\b} # as.pt()\n", sep="")
     rval
@@ -169,7 +169,7 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
     invisible()
 }
 
-read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=getOption("oce.debug"))
+read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),logAction,debug=getOption("oce.debug"))
 {
     debug <- max(0, min(debug, 2))
     oce.debug(debug, "\b\bread.pt(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...)\n", sep="")
@@ -272,13 +272,13 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     oce.debug(debug, "file has", length(d), "items; assuming", nvar, "items per line, based on first line\n")
     dim(d) <- c(nvar, n)
     if (nvar == 2) {
-        time <- measurement.start + seq(from=0, to=n-1) * measurement.deltat 
+        time <- measurement.start + seq(from=0, to=n-1) * measurement.deltat
         Tcol <- 1
         pcol <- 2
     } else if (nvar == 4) {
         ## This time conversion is the slowest part of this function.  With R 2.13.0a working on
         ## a 620524-long vector: strptime() took 24s on a particular machine, and
-        ## as.POSIXct() took 104s.  So, use strptime(), if the first time seems 
+        ## as.POSIXct() took 104s.  So, use strptime(), if the first time seems
         ## to be in a stanadard format.
         if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1,1])))
             time <- strptime(paste(d[1,], d[2,]), format="%Y/%m/%d %H:%M:%S", tz=tz)
@@ -314,7 +314,7 @@ read.pt <- function(file,from=1,to,by=1,tz=getOption("oce.tz"),log.action,debug=
     as.pt(time, temperature, pressure, instrument.type="rbr",
           serial.number=serial.number,
           filename=filename,
-          log.action=paste(deparse(match.call()), sep="", collapse=""),
+          logAction=paste(deparse(match.call()), sep="", collapse=""),
           debug=debug-1)
 }
 
@@ -331,10 +331,10 @@ summary.pt <- function(object, ...)
     res <- list(filename=object$metadata$filename,
                 serial.number=object$metadata$serial.number,
                 fives=fives,
-                tstart=object$data$ts$time[1], 
-                tend=object$data$ts$time[length(object$data$ts$time)], 
-                deltat=as.numeric(object$data$ts$time[2]) - as.numeric(object$data$ts$time[1]), 
-                processing.log=processing.log.summary(object))
+                tstart=object$data$ts$time[1],
+                tend=object$data$ts$time[length(object$data$ts$time)],
+                deltat=as.numeric(object$data$ts$time[2]) - as.numeric(object$data$ts$time[1]),
+                processingLog=processingLog.summary(object))
     class(res) <- "summary.pt"
     res
 }
@@ -350,9 +350,9 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 1 / x$deltat), ...)
     cat("* Statistics of subsample::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    ##cat("\n* Processing log::\n\n", ...)
+    ##cat("\n* processingLog::\n\n", ...)
     cat("\n")
-    print(x$processing.log, ...)
+    print(x$processingLog, ...)
     invisible(x)
 }
 
@@ -411,7 +411,7 @@ pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oce.deb
     for (name in names(x$data$ts))
         res$data$ts[[name]] <- subset(x$data$ts[[name]], keep)
     res$data$ts$pressure <- res$data$ts$pressure - 10.1325 # remove avg sealevel pressure
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$processingLog <- processingLogAdd(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     oce.debug(debug, "\b\b} # pt.trim()n")
     res

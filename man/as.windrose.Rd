@@ -27,7 +27,7 @@
   }
   \item{metadata}{a list containing \code{dtheta}, the size of the 
       angle category, in degrees}
-  \item{processing.log}{a processing log, in the standard \code{oce} format.}
+  \item{processingLog}{a processing log, in the standard \code{oce} format.}
 }
 
 \seealso{Use \code{\link{plot.windrose}} to produce a summary plot, and

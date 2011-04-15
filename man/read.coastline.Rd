@@ -9,9 +9,9 @@
 
 \usage{
 read.coastline(file, type=c("R","S","mapgen","shapefile"),
-  debug=getOption("oce.debug"), monitor=FALSE, log.action)
+  debug=getOption("oce.debug"), monitor=FALSE, logAction)
 read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
-  debug=getOption("oce.debug"), monitor=FALSE, log.action)
+  debug=getOption("oce.debug"), monitor=FALSE, logAction)
 
 }
 
@@ -24,7 +24,7 @@ read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
   \item{lonlim}{as \code{latlim}, but a signed longitude.}
   \item{monitor}{print a dot for every coastline segment read (ignored
     except for reading "shapefile" type)}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{logAction}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
 }
