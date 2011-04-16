@@ -11,12 +11,12 @@
      asp,
      center, span,
      expand=1.5,
-     mgp=getOption("oce.mgp"), 
+     mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
      bg,
      fill='lightgray',
      axes=TRUE,
-     debug=getOption("oce.debug"),
+     debug=getOption("oceDebug"),
      \dots)}
 
 \arguments{
@@ -82,8 +82,8 @@
 
 \examples{
 library(oce)
-data(coastline.world)
-plot(coastline.world)
+data(coastlineWorld)
+plot(coastlineWorld)
 }
 
 \author{Dan Kelley}

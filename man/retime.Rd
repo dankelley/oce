@@ -6,7 +6,7 @@
 
 \description{Adjust the time within Oce object}
 
-\usage{retime(x, a, b, t0, debug=getOption("oce.debug"))}
+\usage{retime(x, a, b, t0, debug=getOption("oceDebug"))}
 
 \arguments{
     \item{x}{an \code{oce} object (presently, this must be of class

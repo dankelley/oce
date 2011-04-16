@@ -9,9 +9,9 @@
 
 \usage{
 read.coastline(file, type=c("R","S","mapgen","shapefile"),
-  debug=getOption("oce.debug"), monitor=FALSE, logAction)
+  debug=getOption("oceDebug"), monitor=FALSE, history)
 read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
-  debug=getOption("oce.debug"), monitor=FALSE, logAction)
+  debug=getOption("oceDebug"), monitor=FALSE, history)
 
 }
 
@@ -24,7 +24,7 @@ read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
   \item{lonlim}{as \code{latlim}, but a signed longitude.}
   \item{monitor}{print a dot for every coastline segment read (ignored
     except for reading "shapefile" type)}
-  \item{logAction}{if provided, the action item to be stored in the
+  \item{history}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
 }
@@ -52,7 +52,7 @@ which is a \code{\link[base]{list}} containing
     }
   }
   \item{metadata}{a NULL item that may be used in a future version.}
-  \item{processing.log}{A processing log, in the standard \code{oce} format.}
+  \item{history}{A history of processing, in the standard \code{oce} format.}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an

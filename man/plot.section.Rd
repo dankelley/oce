@@ -11,9 +11,9 @@
      at=NULL,
      labels=TRUE,
      grid=FALSE,
-     contour.levels=NULL,
-     contour.labels=NULL,
-     station.indices,
+     contourLevels=NULL,
+     contourLabels=NULL,
+     stationIndices,
      coastline=NULL,
      xlim=NULL,
      ylim=NULL,
@@ -23,21 +23,21 @@
      ytype="depth",
      legend.loc="bottomright",
      adorn=NULL,
-     mgp=getOption("oce.mgp"),
+     mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
-     debug=getOption("oce.debug"),
+     debug=getOption("oceDebug"),
      \dots)
 }
 
 \arguments{
   \item{x}{a \code{section} object, e.g. as created by
-    \code{\link{make.section}}.}
+    \code{\link{makeSection}}.}
   \item{which}{list of desired plot types.  There may be up to four
     panels in total, and the desired plots are placed in these panels,
     in reading order. Set \code{which=1} or \code{"temperature"} to
     contour temperature, to \code{2} or \code{"salinity"} to contour
-    salinity, to \code{3} or \code{"sigma.theta"} to contour
-    sigma.theta, or to \code{4} or \code{"map"} to plot a map of station
+    salinity, to \code{3} or \code{"sigmaTheta"} to contour
+    \code{sigmaTheta}, or to \code{4} or \code{"map"} to plot a map of station
     locations.  If only one panel is plotted, \code{par} is not
     adjusted, which makes it easy to add to the plot with subsequent
     plotting commands.}
@@ -50,11 +50,11 @@
     the x axis, or a vector that is a list of labels to be placed at the x
     positions indicated by \code{at}.} 
   \item{grid}{if \code{TRUE}, points are drawn at data locations.}
-  \item{contour.levels}{if not \code{NULL}, and if a \code{field} was
+  \item{contourLevels}{if not \code{NULL}, and if a \code{field} was
     specified, this specifies contour levels (see details)}
-  \item{contour.labels}{if not \code{NULL}, and if a \code{field} was
+  \item{contourLabels}{if not \code{NULL}, and if a \code{field} was
     specified, this specifies contour labels (see details)}
-  \item{station.indices}{optional list of the indices of stations to
+  \item{stationIndices}{optional list of the indices of stations to
     use.  Note that an index is \emph{not} a station number, e.g. to
     show the first 4 stations, use \code{station.indices=1:4}.}
   \item{coastline}{optional \code{coastline} to be used in a station
@@ -116,7 +116,7 @@
 
 \value{None.}
 
-\seealso{Sections may be created with \code{\link{make.section}} or
+\seealso{Sections may be created with \code{\link{makeSection}} or
   \code{\link{read.section}}, and may be summarized with
   \code{\link{summary.section}}.}
 
@@ -124,17 +124,17 @@
 library(oce)
 # Halifax Harbour
 data(section)
-data(coastline.hal)
-plot(section, coastline=coastline.hal)
+data(coastlineHalifax)
+plot(section, coastline=coastlineHalifax)
 
 # Gulf Stream
 data(a03)
-Gulf.Stream <- subset(a03, indices=124:102)
-Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0,2000,100))
-data(coastline.world)
-plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
+GS <- subset(a03, indices=124:102)
+GSg <- sectionGrid(GS, p=seq(0,2000,100))
+data(coastlineWorld)
+plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
 # Illustate adornment
-plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60),
+plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
      adorn=expression({abline(v=200,col='blue')}))
 }
 

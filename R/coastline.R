@@ -4,8 +4,8 @@ as.coastline <- function(latitude, longitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
     data <- data.frame(longitude=longitude, latitude=latitude)
-    log.item <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=NULL, processingLog=log.item)
+    log.item <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=NULL, history=log.item)
     class(res) <- c("coastline", "oce")
     res
 }
@@ -15,16 +15,16 @@ plot.coastline <- function (x,
                             asp,
                             center, span,
                             expand=1.5,
-                            mgp=getOption("oce.mgp"),
+                            mgp=getOption("oceMgp"),
                             mar=c(mgp[1]+1,mgp[1]+1,1,1),
                             bg,
                             fill='lightgray',
                             axes=TRUE,
-                            debug=getOption("oce.debug"),
+                            debug=getOption("oceDebug"),
                             ...)
 {
     opar <- par(no.readonly = TRUE)
-    oce.debug(debug, "\b\bplot.coastline(...,",
+    oceDebug(debug, "\b\bplot.coastline(...,",
               "center=", if(missing(center)) "(missing)" else paste("c(", paste(center, collapse=","), ")"),
               "span=", if(missing(span)) "(missing)" else span, ", ...) {\n")
     if (is.list(x) && "latitude" %in% names(x)) {
@@ -56,7 +56,7 @@ plot.coastline <- function (x,
         asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
         yr <- center[1] + span * c(-1/2, 1/2) / 111.11
         xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
-        oce.debug(debug, "gave center and span; calculated xr=",xr," and yr=",yr,"\n")
+        oceDebug(debug, "gave center and span; calculated xr=",xr," and yr=",yr,"\n")
     } else {
         if (missing(asp)) {
             if ("ylim" %in% names(dots))
@@ -67,8 +67,8 @@ plot.coastline <- function (x,
         ## Expand
         xr0 <- range(x$data$longitude, na.rm=TRUE)
         yr0 <- range(x$data$latitude, na.rm=TRUE)
-        oce.debug(debug, "xr0=", xr0, "\n")
-        oce.debug(debug, "yr0=", yr0, "\n")
+        oceDebug(debug, "xr0=", xr0, "\n")
+        oceDebug(debug, "yr0=", yr0, "\n")
         if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
             xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
             yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
@@ -81,18 +81,18 @@ plot.coastline <- function (x,
     ## tendency of plot() to produce latitudes past the poles.
     ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
     asp.page <- par("pin")[2] / par("pin")[1] # dy / dx
-    oce.debug(debug, "par('pin')=",par('pin'), "asp=",asp,"asp.page=", asp.page, "\n")
+    oceDebug(debug, "par('pin')=",par('pin'), "asp=",asp,"asp.page=", asp.page, "\n")
     if (asp < asp.page) {
-        oce.debug(debug, "type 1 (will narrow x range)\n")
+        oceDebug(debug, "type 1 (will narrow x range)\n")
         d <- asp / asp.page * diff(xr)
         xr <- mean(xr) + d * c(-1/2, 1/2)
-        oce.debug(debug, "xr narrowed to:", xr, "\n")
+        oceDebug(debug, "xr narrowed to:", xr, "\n")
         ## xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
     } else {
-        oce.debug(debug, "type 2 (will narrow y range)\n")
+        oceDebug(debug, "type 2 (will narrow y range)\n")
         d <- asp / asp.page * diff(yr)
         yr <- mean(yr) + d * c(-1/2, 1/2)
-        oce.debug(debug, "yr narrowed to:", yr, "\n")
+        oceDebug(debug, "yr narrowed to:", yr, "\n")
         ##yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
     }
     if (xr[1] < (-180))
@@ -103,17 +103,16 @@ plot.coastline <- function (x,
         yr[1] <- (-90)
     if (yr[2] >  90)
         yr[2] <- 90
-    oce.debug(debug, "xr:", xr, "\n")
-    oce.debug(debug, "yr:", yr, "\n")
-    if (!missing(bg)) {
+    oceDebug(debug, "xr:", xr, "\n")
+    oceDebug(debug, "yr:", yr, "\n")
+    if (!missing(bg) && x$metadata$fillable) {
         plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
         usr <- par("usr")
         polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
         par(new=TRUE)
     }
-    oce.debug(debug, "xr=", xr, "yr=",yr,"\n")
-    plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i",
-         axes=FALSE, ...)
+    oceDebug(debug, "xr=", xr, "yr=",yr,"\n")
+    plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
     if (axes) {
         if (1 == prod(par('mfrow')) * prod(par('mfcol'))) {
             if (FALSE) { ## FIXME: why does this not work?
@@ -127,8 +126,8 @@ plot.coastline <- function (x,
                     yr.pretty <- seq(-90, 90, 45)
                 if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
                     xr.pretty <- seq(-180, 180, 45)
-                oce.debug(debug, "xr.pretty=", xr.pretty, "\n")
-                oce.debug(debug, "yr.pretty=", yr.pretty, "\n")
+                oceDebug(debug, "xr.pretty=", xr.pretty, "\n")
+                oceDebug(debug, "yr.pretty=", yr.pretty, "\n")
                 axis(1, at=xr.pretty, pos=yr.pretty[1])
                 axis(3, at=xr.pretty, pos=max(yr.pretty), labels=FALSE)
                 axis(2, at=yr.pretty, pos=xr.pretty[1])
@@ -145,13 +144,13 @@ plot.coastline <- function (x,
         }
     }
     yaxp <- par("yaxp")
-    oce.debug(debug, "par(yaxp)",par("yaxp"),"\n")
-    oce.debug(debug, "par(pin)",par("pin"),"\n")
+    oceDebug(debug, "par(yaxp)",par("yaxp"),"\n")
+    oceDebug(debug, "par(pin)",par("pin"),"\n")
     if (yaxp[1] < -90 | yaxp[2] > 90) {
         ##opin <- par("pin")
-        oce.debug(debug, "inside pin=", par("pin"), " yaxp=",yaxp,"\n")
+        oceDebug(debug, "inside pin=", par("pin"), " yaxp=",yaxp,"\n")
         yscale <- 180 / (yaxp[2] - yaxp[1])
-        ##oce.debug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
+        ##oceDebug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
         ##        par(pin=c(opin[1], yscale*opin[2]))
         if (!is.null(fill) && !is.null(x$metadata$fillable) && x$metadata$fillable)
             polygon(x$data$longitude, x$data$latitude, col=fill, ...)
@@ -159,26 +158,27 @@ plot.coastline <- function (x,
             lines(x$data$longitude, x$data$latitude, ...)
         ##par("pin"=opin)
     } else {
-        if (!is.null(fill) && !is.null(x$metadata$fillable))
+        if (!is.null(fill) && !is.null(x$metadata$fillable) && x$metadata$fillable)
             polygon(x$data$longitude, x$data$latitude, col=fill, ...)
         else
             lines(x$data$longitude, x$data$latitude, ...)
     }
-    oce.debug(debug, "lat lim:", range(x$data$latitude,na.rm=TRUE), "\n")
-    oce.debug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
-    oce.debug(debug, "\b\b} # plot.coastline()\n")
+    oceDebug(debug, "lat lim:", range(x$data$latitude,na.rm=TRUE), "\n")
+    oceDebug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
+    oceDebug(debug, "\b\b} # plot.coastline()\n")
     invisible()
 }
 
 read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
-                           debug=getOption("oce.debug"),
+                           debug=getOption("oceDebug"),
                            monitor=FALSE,
-                           logAction)
+                           history)
 {
-    file <- full.filename(file)
+    oceDebug(debug, "\b\bread.coastline() {\n")
+    file <- fullFilename(file)
     type <- match.arg(type)
-    if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processingLogItem(logAction)
+    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- historyItem(history)
     if (type == "shapefile")
         return(read.coastline.shapefile(file, monitor=monitor, debug=debug))
     if (type == "R" || type == "S") {
@@ -186,7 +186,8 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
         ## e.g. data from http://rimmer.ngdc.noaa.gov/coast/
         ## e.g. "~/data/Coastline/wcl_1_5000000.dat")
         if (is.character(file)) {
-            file <- full.filename(file)
+            file <- fullFilename(file)
+            file <- file(file, "r")
             on.exit(close(file))
         }
         if (!inherits(file, "connection"))
@@ -196,10 +197,10 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
             on.exit(close(file))
         }
         data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
-        res <- list(data=data, metadata=list(fillable=FALSE), processingLog=log.item)
+        res <- list(data=data, metadata=list(fillable=FALSE), history=log.item)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
-        oce.debug(debug, "method is mapgen\nheader:", header, "\n")
+        oceDebug(debug, "method is mapgen\nheader:", header, "\n")
         separator <- NULL
                                         # mapgen    # -b
                                         # matlab	nan nan
@@ -226,18 +227,19 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
         }
         lonlat <- matrix(lonlat, ncol=2,byrow=TRUE)
         data <- data.frame(longitude=lonlat[,1], latitude=lonlat[,2])
-        res <- list(data=data, metadata=list(fillable=FALSE), processingLog=log.item)
+        res <- list(data=data, metadata=list(fillable=FALSE), history=log.item)
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
     class(res) <- c("coastline", "oce")
+    oceDebug(debug, "\b\b} # read.coastline()\n")
     res
 }
 
 read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
-                                     debug=getOption("oce.debug"),
+                                     debug=getOption("oceDebug"),
                                      monitor=FALSE,
-                                     logAction)
+                                     history)
 {
     ## References:
     ## [1] ESRI Shapefile Technical Description. March 1998.
@@ -246,7 +248,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     ##     http://en.wikipedia.org/wiki/Shapefile#Shapefile_shape_format_.28.shp.29
     ## Shapefile for Canada:
     ## http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm
-    oce.debug(debug, "\b\bread.shape() {\n")
+    oceDebug(debug, "\b\bread.shape() {\n")
     shape.type.list <- c("nullshape",
                          "point", "not used",
                          "polyline", "not used",
@@ -265,9 +267,9 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     lonlim <- sort(lonlim)
     latlim <- sort(latlim)
 
-    oce.debug(debug, "\b\bread.shapefile(file=\"", file, "\", ...) {\n", sep="")
+    oceDebug(debug, "\b\bread.shapefile(file=\"", file, "\", ...) {\n", sep="")
     if (is.character(file)) {
-        filename <- full.filename(file)
+        filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -280,7 +282,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     }
     seek(file, 0, "end")
     file.size <- seek(file, 0, "start")
-    oce.debug(debug, "file.size=", file.size, "as determined from the operating system\n")
+    oceDebug(debug, "file.size=", file.size, "as determined from the operating system\n")
     buf <- readBin(file, "raw", file.size)
     ## main header is always 100 bytes [ESRI White paper page 3]
     header <- buf[1:100]
@@ -288,11 +290,11 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     if (field.code != 9994)
         stop("first four bytes of file must yield 9994 (as a big-endian integer) but yield ", field.code, "\n")
     file.size.header <- 2*readBin(buf[25:28], "integer", n=1, size=4, endian="big") # it's in 2-byte words
-    oce.debug(debug, "file.size.header=", file.size.header, "as interpreted from header\n")
+    oceDebug(debug, "file.size.header=", file.size.header, "as interpreted from header\n")
     if (file.size.header != file.size)
         warning("file size is ", file.size, " but the header suggests it to be ", file.size.header, "; using the former")
     shape.type.file <- readBin(buf[33:36], "integer", n=1, size=4, endian="little")
-    oce.debug(debug, "shape.type.file=", shape.type.file, "\n")
+    oceDebug(debug, "shape.type.file=", shape.type.file, "\n")
     if (shape.type.file != 5)
         stop("can only deal with shape-type 5 (polygon) in this version of the software\n")
     xmin <- readBin(buf[37+0:7], "double", n=1, size=8, endian="little")
@@ -300,7 +302,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     xmax <- readBin(buf[53+0:7], "double", n=1, size=8, endian="little")
     ymax <- readBin(buf[61+0:7], "double", n=1, size=8, endian="little")
     metadata <- list(filename=filename, fillable=TRUE)
-    oce.debug(debug, sprintf("xmin=%.4f xmax=%.4f ymin=%.4f ymax=%.4f\n", xmin, xmax, ymin, ymax))
+    oceDebug(debug, sprintf("xmin=%.4f xmax=%.4f ymin=%.4f ymax=%.4f\n", xmin, xmax, ymin, ymax))
     ##
     ## RECORD BY RECORD
     ##
@@ -310,33 +312,33 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     latitude <- longitude <- NULL
     segment <- 0
     while (TRUE) {
-        oce.debug(debug, "\n")
+        oceDebug(debug, "\n")
         record <- record + 1
         if ((o + 53) > file.size)       # FIXME could be more clever on eof
             break
         ## each record has an 8-byte header followed by data
         record.number <- readBin(buf[o + 1:4], "integer", n=1, size=4, endian="big")
-        oce.debug(debug, "record.number=", record.number, "\n")
+        oceDebug(debug, "record.number=", record.number, "\n")
         record.length <- readBin(buf[o + 5:8], "integer", n=1, size=4, endian="big")
-        oce.debug(debug, "record.length=", record.length, "\n")
+        oceDebug(debug, "record.length=", record.length, "\n")
         shape.type <- readBin(buf[o + 9:12], "integer", n=1, size=4, endian="little")
         if (shape.type == 0)
             break                       # all done
         if (shape.type != shape.type.file)
             stop("record ", record, " has shape type ", shape.type, ", which does not match file value ", shape.type.file)
         ##print(data.frame(0:31, shape.type.list))
-        oce.debug(debug, "shape.type=", shape.type, "i.e.", shape.type.list[1+shape.type], "\n")
+        oceDebug(debug, "shape.type=", shape.type, "i.e.", shape.type.list[1+shape.type], "\n")
         ## minimum bounding rectangle, number of parts, number of points, parts, points
         ## MBR is xmin ymin xmax ymax
         mbr <- readBin(buf[o + 13:44], "double", n=4, size=8, endian="little", signed=TRUE)
-        oce.debug(debug, "mbr=", paste(mbr, collapse=" "), "\n")
+        oceDebug(debug, "mbr=", paste(mbr, collapse=" "), "\n")
         ## ignore if not in focus box
         intersects.box <- !(mbr[1] > lonlim[2] | mbr[2] > latlim[2] | mbr[3] < lonlim[1] | mbr[4] < latlim[1])
-        oce.debug(debug, "intersects.box=", intersects.box, "\n")
+        oceDebug(debug, "intersects.box=", intersects.box, "\n")
         number.parts <- readBin(buf[o + 45:48], "integer", n=1, size=4, endian="little")
-        oce.debug(debug, "number.parts=", number.parts, "\n")
+        oceDebug(debug, "number.parts=", number.parts, "\n")
         number.points <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little", signed=FALSE)
-        oce.debug(debug, "number.points=", number.points, "\n")
+        oceDebug(debug, "number.points=", number.points, "\n")
         if (intersects.box) {
             part.offset <- readBin(buf[o + 53+0:(-1+4*number.parts)],
                                    "integer", n=number.parts, size=4, endian="little", signed=FALSE)
@@ -359,13 +361,13 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         o <- o + 53 + 4 * number.parts + 2 * number.points * 8 - 1
     }
     data <- list(longitude=longitude, latitude=latitude)
-    oce.debug(debug, "\b\b} # read.shapefile()\n")
-    if (missing(logAction))
-        logAction <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processingLogItem(logAction)
-    res <- list(data=data, metadata=metadata, processingLog=log.item)
+    oceDebug(debug, "\b\b} # read.shapefile()\n")
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=log.item)
     class(res) <- c("coastline", "oce")
-    oce.debug(debug, "\b\b} # read.shape()\n")
+    oceDebug(debug, "\b\b} # read.shape()\n")
     res
 }
 
@@ -378,7 +380,7 @@ summary.coastline <- function(object, ...)
     res <- list(length=length(object$data$longitude),
                 missing=sum(is.na(object$data$longitude)),
                 fives=fives,
-                processingLog=processingLog.summary(object))
+                history=object$history)
     fives[1,] <- fivenum(object$data$latitude, na.rm=TRUE)
     fives[2,] <- fivenum(object$data$longitude, na.rm=TRUE)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
@@ -395,7 +397,7 @@ print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),..
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    cat("\n* processingLog::\n\n", ...)
-    cat(x$processingLog, ...)
+    cat("\n")
+    print(summary(x$history))
     invisible(x)
 }

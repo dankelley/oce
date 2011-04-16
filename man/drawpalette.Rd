@@ -6,7 +6,7 @@
 
 \description{Draw a palette on the right-hand side of plot device}
 
-\usage{drawpalette(zlim, zlab="", breaks, col, top=0, bottom=0, draw.contours=FALSE, debug=getOption("oce.debug"), \dots)}
+\usage{drawpalette(zlim, zlab="", breaks, col, top=0, bottom=0, draw.contours=FALSE, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
     \item{zlim}{two-element vector containing the lower and upper limits of z.
@@ -53,7 +53,7 @@
     This may eventually be used by \code{\link{imagep}}.
 }
 \examples{
-par(mgp=getOption("oce.mgp"))
+par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,1,1))
 par(mfrow=c(4,1))
 

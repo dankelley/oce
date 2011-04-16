@@ -15,12 +15,12 @@
      pch = 21,
      rotate.rho.labels = FALSE,
      connect.points = FALSE,
-     use.smoothScatter = FALSE,
+     useSmoothScatter = FALSE,
      xlab,
      ylab,
      Slim,
      Tlim,
-     mgp=getOption("oce.mgp"),
+     mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
      lwd.rho=par("lwd"), lty.rho=par("lty"),
      \dots)
@@ -41,7 +41,7 @@
   \item{pch}{code for symbols on graph.}
   \item{rotate.rho.labels}{if TRUE, labels in right-hand margin are written vertically}
   \item{connect.points}{if TRUE, the points are connected with line segments, in sequence}
-  \item{use.smoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}
+  \item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}
   \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
   \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
   \item{Slim}{optional limits for salinity axis, otherwise inferred from data.}

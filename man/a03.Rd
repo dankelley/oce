@@ -17,10 +17,10 @@
 library(oce)
 # Gulf Stream (note that section runs east to west)
 data(a03)
-Gulf.Stream <- subset(a03, indices=124:102)
-Gulf.Stream.gridded <- section.grid(Gulf.Stream, p=seq(0, 5000, 100))
-data(coastline.world)
-plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
+GS <- subset(a03, indices=124:102)
+GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
+data(coastlineWorld)
+plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
 }
 
 \usage{data(a03)}
@@ -29,7 +29,7 @@ plot(Gulf.Stream.gridded, coastline=coastline.world, map.xlim=c(-80,-60))
 This is based on a WOCE file downloaded from a server, as below:
 \preformatted{
 a03 <- read.section("http://cchdo.ucsd.edu/data/onetime/atlantic/a03/a03_hy1.csv", 
-	            section.id="a03",
+	            sectionId="a03",
                     ship="R/V Professor Multanovskiy", 
 		    scientist="Vladimir Tereschenkov",
 		    institute="SIO")

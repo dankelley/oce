@@ -7,8 +7,8 @@
 \description{Read an pt temperature-depth recorder file, producing an object of type \code{pt}.}
 
 \usage{
-read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"), 
-        logAction, debug=getOption("oce.debug"))}
+read.pt(file, from=1, to, by=1, tz=getOption("oceTz"), 
+        history, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -26,9 +26,9 @@ read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"),
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
-  \item{tz}{time zone.  The default value, \code{oce.tz}, is set to \code{UTC} 
+  \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
-  \item{logAction}{if provided, the action item to be stored in the
+  \item{history}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
@@ -59,7 +59,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"),
 	data, because the data may have been decimated.}
     }
   }
-  \item{processing.log}{a processing log, in the standard \code{oce} format.}
+  \item{history}{a history of processing, in the standard \code{oce} format.}
 }
 
 \section{Implementation notes}{The end time for measurement

@@ -74,7 +74,7 @@ plot.lobo.TS <- function(lobo, ...)
 
 plot.lobo <- function(x,
                       adorn=NULL,
-                      mgp=getOption("oce.mgp"),
+                      mgp=getOption("oceMgp"),
                       mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
                       ...)
 {
@@ -120,7 +120,7 @@ plot.lobo <- function(x,
 }
 
 
-read.lobo <- function(file, cols=7, logAction) {
+read.lobo <- function(file, cols=7, history) {
     header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
                                         # find columns. BUG: assumes names don't change
@@ -160,9 +160,9 @@ read.lobo <- function(file, cols=7, logAction) {
         fluorescence <- fill.out(fluorescence, len)
         data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
         metadata <- list(header=header)
-        if (missing(logAction)) logAction <- paste(deparse(match.call()), sep="", collapse="")
-        log.item <- processingLogItem(logAction)
-        res <- list(data=data, metadata=metadata, processingLog=log.item)
+        if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
+        log.item <- historyItem(history)
+        res <- list(data=data, metadata=metadata, history=log.item)
         class(res) = c("lobo", "oce")
         res
     } else {
@@ -178,7 +178,7 @@ summary.lobo <- function(object, ...)
     fives <- matrix(nrow=dim[2]-1, ncol=5) # skipping time
     res <- list(time.range=range(object$data$time, na.rm=TRUE),
                 fives=fives,
-                processingLog=processingLog.summary(object))
+                history=object$history)
     for (i in 2:dim[2])
         fives[i-1,] <- fivenum(object$data[,i], na.rm=TRUE)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
@@ -196,6 +196,6 @@ print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("\n",...)
     cat("* Statistics::\n\n", ...)
     cat(show.fives(x, indent='     '), ...)
-    cat("\n* processingLog::\n\n", ...)
-    cat(x$processingLog, ...)
+    cat("\n* history::\n\n", ...)
+    print(summary(x$history))
 }

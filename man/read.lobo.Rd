@@ -6,13 +6,13 @@
 
 \description{Read a data file created by a LOBO instrument.}
 
-\usage{read.lobo(file, cols=7, logAction)}
+\usage{read.lobo(file, cols=7, history)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
   \item{cols}{number of columns in dataset.}
-  \item{logAction}{if provided, the action item to be stored in the
+  \item{history}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
 }
@@ -46,7 +46,7 @@
     }
   }
   \item{metadata}{a list containing \code{header}, the header from the data file.}
-  \item{processing.log}{A processing log, in the standard \code{oce} format.}
+  \item{history}{a history of processing, in the standard \code{oce} format.}
 }
 
 \note{The \code{oce} author was unable to find a description of the data format, and so

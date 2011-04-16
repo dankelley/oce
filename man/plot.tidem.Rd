@@ -10,7 +10,7 @@
      which=1,
      label.if=NULL, 
      log="",
-     mgp=getOption("oce.mgp"), 
+     mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
      ...)}
 
@@ -40,8 +40,8 @@
 
 \examples{
 library(oce)
-data(sealevel.hal)
-tide <- tidem(sealevel.hal)
+data(sealevelHalifax)
+tide <- tidem(sealevelHalifax)
 plot(tide)
 }
 
