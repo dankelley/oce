@@ -6,7 +6,7 @@
 
 \description{Find the type of an oceanographic data file.}
 
-\usage{magic(file, debug=getOption("oce.debug"))}
+\usage{magic(file, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the

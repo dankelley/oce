@@ -1,10 +1,10 @@
 # Test of geodesic and earth-related calculations
 library(oce)
 
-d <- geod.dist(45, 10, 46, 10)
+d <- geodDist(45, 10, 46, 10)
 stopifnot(all.equal.numeric(d, 111.1415, 1e-4))
 
-xy <- geod.xy(46,0,45,0)/1000
+xy <- geodXy(46,0,45,0)/1000
 stopifnot(all.equal(xy$x,     0, 1e-4))
 stopifnot(all.equal(xy$y, 111.1, 1e-3))
 

@@ -6,9 +6,9 @@
 \usage{
 as.ctd(salinity, temperature, pressure, quality, 
    ship="", scientist="", institute="", address="", cruise="", station="", 
-   date="", start.time="", recovery="",
+   date="", startTime="", recovery="",
    latitude=NA, longitude=NA, 
-   water.depth=NA, sample.interval=NA, src="")
+   waterDepth=NA, sampleInterval=NA, src="")
 }
 \arguments{
   \item{salinity}{Salinity through the water column, or a data frame
@@ -31,12 +31,12 @@ as.ctd(salinity, temperature, pressure, quality,
   \item{cruise}{optional string containing a cruise identifier.}
   \item{station}{optional string containing a station identifier.}
   \item{date}{optional string containing the date at which the profile was started.}
-  \item{start.time}{optional string containing the start time.}
+  \item{startTime}{optional string containing the start time.}
   \item{recovery}{optional string indicating the recovery time.}
   \item{latitude}{optional numerical value containing the latitude in decimal degrees, positive in the northern hemisphere.}
   \item{longitude}{optional numerical value containing longitude in decimal degrees, positive in the eastern hemisphere.}
-  \item{water.depth}{optional numerical value indicating the water depth in metres.}
-  \item{sample.interval}{optional numerical value indicating the time
+  \item{waterDepth}{optional numerical value indicating the water depth in metres.}
+  \item{sampleInterval}{optional numerical value indicating the time
     between samples in the profile.}
   \item{src}{optional string indicating data source}
 }
@@ -45,7 +45,7 @@ as.ctd(salinity, temperature, pressure, quality,
   pressure, to create a \code{ctd} object, e.g. so that
   \code{\link{plot.ctd}} can be used to make a standard four-panel plot,
   or so that a section can be constructed with
-  \code{\link{make.section}}.  Normally, the input vectors will be of
+  \code{\link{makeSection}}.  Normally, the input vectors will be of
   the same length, but \code{as.ctd} can also handle cases in which one
   or two of these is of unit length.  For example, if only a temperature
   profile is available, \code{as.ctd(35, T, p)} could be used to
@@ -61,10 +61,10 @@ as.ctd(salinity, temperature, pressure, quality,
   and \code{\link{plot.ctd.scan}} produces scan plots that may help with
   data editing.  Extraneous data such as those collected during upcasts
   and equilibration intervals may be trimmed with
-  \code{\link{ctd.trim}}, and the data may be cast onto specified
-  pressure levels with \code{\link{ctd.decimate}}.  Low-level
-  manipulation may be done with \code{\link{ctd.add.column}} and
-  \code{\link{ctd.update.header}}, as well as by direct manipulation of
+  \code{\link{ctdTrim}}, and the data may be cast onto specified
+  pressure levels with \code{\link{ctdDecimate}}.  Low-level
+  manipulation may be done with \code{\link{ctdAddColumn}} and
+  \code{\link{ctdUpdateHeader}}, as well as by direct manipulation of
   the items within \code{ctd} objects.}
 
 \examples{

@@ -12,201 +12,201 @@
 ## 1. "spare" at offset 74 (page 31) now seems to be salinity
 ## 2. extra byte
 ## 3. should state the order of headers at the start, not end
-## 4. should state the algorithms to infer cell size, blanking distance, etc. from file
-## 5. beam angle should be in data file
+## 4. should state the algorithms to infer cellSize, blankingDistance, etc. from file
+## 5. beamAngle should be in data file
 ## 6. generally, docs should indicate everything that is in the files, e.g. (prominently!)
-##    the beam angles in the 'head' configuration section.
-## 7. the C code suggests the velocity scale is in the second bit of conf.hMode
+##    the beamAngles in the 'head' configuration section.
+## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
-decode.header.nortek <- function(buf, debug=getOption("oce.debug"), ...)
+decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 {
-    oce.debug(debug, "decode.header.nortek() entry; buf[1:20]=",buf[1:20],"\n")
-    deg.to.rad <- atan2(1, 1) / 45
-    sync.code <- as.raw(0xa5)
-    id.hardware.configuration <- as.raw(0x05)
-    id.head.configuration <- as.raw(0x04)
-    id.user.configuration <- as.raw(0x00)
-    header.length.hardware <- 48
-    header.length.head <- 224
-    header.length.user <- 512
+    oceDebug(debug, "decodeHeaderNortek() entry; buf[1:20]=",buf[1:20],"\n")
+    degToRad <- atan2(1, 1) / 45
+    syncCode <- as.raw(0xa5)
+    idHardwareConfiguration <- as.raw(0x05)
+    idHeadConfiguration <- as.raw(0x04)
+    idUserConfiguration <- as.raw(0x00)
+    headerLengthHardware <- 48
+    headerLengthHead <- 224
+    headerLengthUser <- 512
     hardware <- head <- user <- list()
     o <- 0                              # offset
     for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
-        oce.debug(debug, "\n")
-        oce.debug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
-        if (buf[o+1] != sync.code)
-            stop("expecting sync code 0x", sync.code, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
-        if (buf[o+2] == id.hardware.configuration) {         # see page 29 of System Integrator Guide
-            oce.debug(debug, "\n\bHARDWARE CONFIGURATION\n")
+        oceDebug(debug, "\n")
+        oceDebug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
+        if (buf[o+1] != syncCode)
+            stop("expecting syncCode 0x", syncCode, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
+        if (buf[o+2] == idHardwareConfiguration) {         # see page 29 of System Integrator Guide
+            oceDebug(debug, "\n\bHARDWARE CONFIGURATION\n")
             hardware$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2, endian="little")
             if (hardware$size != 24)
                 stop("size of hardware header expected to be 24 two-byte words, but got ", hardware$size)
-            if (2 * hardware$size != header.length.hardware)
-                stop("size of hardware header expected to be ", header.length.hardware, "but got ", hardware$size)
-            oce.debug(debug, "hardware$size=", hardware$size, "\n")
-            hardware$serial.number <- gsub(" *$", "", paste(readBin(buf[o+5:18], "character", n=14, size=1), collapse=""))
-            oce.debug(debug, "hardware$serial.number", hardware$serial.number, "\n")
+            if (2 * hardware$size != headerLengthHardware)
+                stop("size of hardware header expected to be ", headerLengthHardware, "but got ", hardware$size)
+            oceDebug(debug, "hardware$size=", hardware$size, "\n")
+            hardware$serialNumber <- gsub(" *$", "", paste(readBin(buf[o+5:18], "character", n=14, size=1), collapse=""))
+            oceDebug(debug, "hardware$serialNumber", hardware$serialNumber, "\n")
             hardware$config <- readBin(buf[o+19:20], "raw", n=2, size=1)
-            oce.debug(debug, "hardware$config:", hardware$config, "\n")
+            oceDebug(debug, "hardware$config:", hardware$config, "\n")
             hardware$frequency <- readBin(buf[o+21:22], "integer", n=1, size=2, endian="little", signed=FALSE) # not used
-            oce.debug(debug, "hardware$frequency:", hardware$frequency, "\n")
-            hardware$pic.version <- readBin(buf[o+23:24], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "hardware$pic.version=", hardware$pic.version, "\n")
-            hardware$hw.revision <- readBin(buf[o+25:26], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "hardware$hw.revision=", hardware$hw.revision, "\n")
-            hardware$rec.size <- readBin(buf[o+27:28], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "hardware$rec.size=", hardware$rec.size, "\n")
-            hardware$velocity.range <- readBin(buf[o+29:30], "integer", n=1, size=2, signed=FALSE, endian="little")
-            oce.debug(debug, "hardware$velocity.range=", hardware$velocity.range, "\n")
-            hardware$fw.version <- as.numeric(paste(readBin(buf[o+43:46], "character", n=4, size=1), collapse=""))
-            oce.debug(debug, "hardware$fw.version=", hardware$fw.version, "\n")
+            oceDebug(debug, "hardware$frequency:", hardware$frequency, "\n")
+            hardware$picVersion <- readBin(buf[o+23:24], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "hardware$picVersion=", hardware$picVersion, "\n")
+            hardware$hwRevision <- readBin(buf[o+25:26], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "hardware$hwRevision=", hardware$hwRevision, "\n")
+            hardware$recSize <- readBin(buf[o+27:28], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "hardware$recSize=", hardware$recSize, "\n")
+            hardware$velocityRange <- readBin(buf[o+29:30], "integer", n=1, size=2, signed=FALSE, endian="little")
+            oceDebug(debug, "hardware$velocityRange=", hardware$velocityRange, "\n")
+            hardware$fwVersion <- as.numeric(paste(readBin(buf[o+43:46], "character", n=4, size=1), collapse=""))
+            oceDebug(debug, "hardware$fw.version=", hardware$fw.version, "\n")
             o <- o + 2 * hardware$size
-        } else if (buf[o+2] == id.head.configuration) {     # see page 30 of System Integrator Guide
-            oce.debug(debug, "\n\bHEAD CONFIGURATION\n")
-            ##buf <- readBin(file, "raw", header.length.head)
+        } else if (buf[o+2] == idHeadConfiguration) {     # see page 30 of System Integrator Guide
+            oceDebug(debug, "\n\bHEAD CONFIGURATION\n")
+            ##buf <- readBin(file, "raw", headerLengthHead)
             head$size <- readBin(buf[o+3:4], "integer",signed=FALSE, n=1, size=2)
-            if (2 * head$size != header.length.head)
-                stop("size of head header expected to be ", header.length.head, "but got ", head$size)
-            oce.debug(debug, "head$size=", head$size, "\n")
-            head$config <- byte2binary(buf[o+5:6], endian="little")
-            oce.debug(debug, "head$config=", head$config, "\n")
-            head$config.pressure.sensor <- substr(head$config[1], 1, 1) == "1"
-            oce.debug(debug, "head$config.pressure.sensor=", head$config.pressure.sensor,"\n")
-            head$config.magnetometer.sensor <- substr(head$config[1], 2, 2) == "1"
-            oce.debug(debug, "head$config.magnetometer.sensor=", head$config.magnetometer.sensor,"\n")
-            head$config.tilt.sensor <- substr(head$config[1], 3, 3) == "1"
-            oce.debug(debug, "head$config.tilt.sensor=", head$config.tilt.sensor,"\n")
-            head$tilt.sensor.orientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
-            oce.debug(debug, "head$tilt.sensor.orientation=", head$tilt.sensor.orientation, "\n")
+            if (2 * head$size != headerLengthHead)
+                stop("size of head header expected to be ", headerLengthHead, "but got ", head$size)
+            oceDebug(debug, "head$size=", head$size, "\n")
+            head$config <- byteToBinary(buf[o+5:6], endian="little")
+            oceDebug(debug, "head$config=", head$config, "\n")
+            head$configPressureSensor <- substr(head$config[1], 1, 1) == "1"
+            oceDebug(debug, "head$configPressureSensor=", head$configPressureSensor,"\n")
+            head$configMagnetometerSensor <- substr(head$config[1], 2, 2) == "1"
+            oceDebug(debug, "head$configMagnetometerSensor=", head$configMagnetometerSensor,"\n")
+            head$configTiltSensor <- substr(head$config[1], 3, 3) == "1"
+            oceDebug(debug, "head$configTiltSensor=", head$configTiltSensor,"\n")
+            head$tiltSensorOrientation <- if (substr(head$config[1], 4, 4) == "1") "downward" else "upward"
+            oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
             head$frequency <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "head$frequency=", head$frequency, "kHz\n")
+            oceDebug(debug, "head$frequency=", head$frequency, "kHz\n")
             head$head.type <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "head$head.type=", head$head.type, "\n")
-            head$head.serial.number <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
-            oce.debug(debug, "head$head.serial.number=", head$head.serial.number, "\n")
+            oceDebug(debug, "head$head.type=", head$head.type, "\n")
+            head$headSerialNumber <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
+            oceDebug(debug, "head$headSerialNumber=", head$headSerialNumber, "\n")
             ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 119;
-            ## the inference of beam.angles and transformation.matrix is drawn from other code.
-            ## Since I don't trust any of this, I hard-wire beam angle in at the end.
-            head$beam.angles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE)
+            ## the inference of beamAngles and transformationMatrix is drawn from other code.
+            ## Since I don't trust any of this, I hard-wire beamAngle in at the end.
+            head$beamAngles <- readBin(buf[o+23:30], "integer", n=4, size=2, endian="little", signed=TRUE)
 
-            oce.debug(debug, "head$beam.angles=", head$beam.angles, "(deg)\n")
+            oceDebug(debug, "head$beamAngles=", head$beamAngles, "(deg)\n")
             ## Transformation matrix (before division by 4096)
             ## FIXME: should we change the sign of rows 2 and 3 if pointed down??
-            head$transformation.matrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little") ,
+            head$transformationMatrix <- matrix(readBin(buf[o+31:48], "integer", n=9, size=2, endian="little") ,
                                                  nrow=3, byrow=TRUE) / 4096
-            oce.debug(debug, "head$transformation.matrix\n")
-            oce.debug(debug, format(head$transformation.matrix[1,], width=15), "\n")
-            oce.debug(debug, format(head$transformation.matrix[2,], width=15), "\n")
-            oce.debug(debug, format(head$transformation.matrix[3,], width=15), "\n")
-            head$number.of.beams <- readBin(buf[o+221:222], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "head$number.of.beams=", head$number.of.beams, "\n")
+            oceDebug(debug, "head$transformationMatrix\n")
+            oceDebug(debug, format(head$transformationMatrix[1,], width=15), "\n")
+            oceDebug(debug, format(head$transformationMatrix[2,], width=15), "\n")
+            oceDebug(debug, format(head$transformationMatrix[3,], width=15), "\n")
+            head$numberOfBeams <- readBin(buf[o+221:222], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "head$numberOfBeams=", head$numberOfBeams, "\n")
             o <- o + 2 * head$size
-        } else if (buf[o+2] == id.user.configuration) {     # User Configuration [p30-32 of System Integrator Guide]
-            oce.debug(debug, "\n\bUSER CONFIGURATION\n")
+        } else if (buf[o+2] == idUserConfiguration) {     # User Configuration [p30-32 of System Integrator Guide]
+            oceDebug(debug, "\n\bUSER CONFIGURATION\n")
             user$size <- readBin(buf[o+3:4], what="integer", n=1, size=2, endian="little")
-            if (2 * user$size != header.length.user)
-                stop("size of user header expected to be ", header.length.user, "but got ", user$size)
-            ##buf <- readBin(file, "raw", header.length.user)
+            if (2 * user$size != headerLengthUser)
+                stop("size of user header expected to be ", headerLengthUser, "but got ", user$size)
+            ##buf <- readBin(file, "raw", headerLengthUser)
             user$T1 <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
             user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "user$T1=", user$T1, "; user$T2=", user$T2, "\n")
-            user$transmit.pulse.length <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "user$transmit.pulse.length=", user$transmit.pulse.lengthu, "in counts\n")
-            user$blanking.distance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "user$blanking.distance=", user$blanking.distance, "in counts\n")
-            user$time.between.pings <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "user$time.between.pings=", user$time.between.pings, "in counts\n")
-            user$number.of.beam.sequences.per.burst <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "user$number.of.beam.sequences.per.burst=", user$number.of.beam.sequences.per.burst, "in counts\n")
-            user$time.between.beam.sequences <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "user$time.between.beam.sequences=", user$time.between.beam.sequences, "in counts\n")
+            oceDebug(debug, "user$T1=", user$T1, "; user$T2=", user$T2, "\n")
+            user$transmitPulseLength <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLengthu, "in counts\n")
+            user$blankingDistance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$blankingDistance=", user$blankingDistance, "in counts\n")
+            user$timeBetweenPings <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
+            user$numberOfBeamSequencesPerBurst <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$numberOfBeamSequencesPerBurst=", user$numberOfBeamSequencesPerBurst, "in counts\n")
+            user$timeBetweenBeamSequences <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$timeBetweenBeamSequences=", user$timeBetweenBeamSequences, "in counts\n")
             user$NPings <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "user$NPings=", user$NPings, "\n")
+            oceDebug(debug, "user$NPings=", user$NPings, "\n")
             user$AvgInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "user$AvgInterval=", user$AvgInterval, "in seconds\n")
-            user$number.of.beams <- readBin(buf[o+19:20], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "user$number.of.beams=", user$number.of.beams, "\n")
-            user$measurement.interval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "user$measurement.interval=", user$measurement.interval, "\n")
+            oceDebug(debug, "user$AvgInterval=", user$AvgInterval, "in seconds\n")
+            user$numberOfBeams <- readBin(buf[o+19:20], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "user$numberOfBeams=", user$numberOfBeams, "\n")
+            user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "user$measurementInterval=", user$measurementInterval, "\n")
             user$deploy.name <- readBin(buf[o+41:47], "character", n=1, size=6)
-            oce.debug(debug, "user$deploy.name=", user$deploy.name, "\n")
+            oceDebug(debug, "user$deploy.name=", user$deploy.name, "\n")
             user$comments <- readBin(buf[o+257+0:179], "character", n=1, size=180)
-            oce.debug(debug, "user$comments=", user$comments, "\n")
+            oceDebug(debug, "user$comments=", user$comments, "\n")
 
-            user$mode <- byte2binary(buf[o+59:60], endian="little")
-            oce.debug(debug, "user$mode: ", user$mode, "\n")
-            user$velocity.scale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.00001
-            oce.debug(debug, "user$velocity.scale: ", user$velocity.scale, "\n")
+            user$mode <- byteToBinary(buf[o+59:60], endian="little")
+            oceDebug(debug, "user$mode: ", user$mode, "\n")
+            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.00001
+            oceDebug(debug, "user$velocityScale: ", user$velocityScale, "\n")
             tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
-            if (tmp.cs == 0) user$coordinate.system <- "enu" # page 31 of System Integrator Guide
-            else if (tmp.cs == 1) user$coordinate.system <- "xyz"
-            else if (tmp.cs == 2) user$coordinate.system <- "beam"
-            else stop("unknown coordinate system ", tmp.cs)
-            oce.debug(debug, "user$coordinate.system: ", user$coordinate.system, "\n")
-            user$number.of.cells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "user$number.of.cells: ", user$number.of.cells, "\n")
+            if (tmp.cs == 0) user$coordinateSystem <- "enu" # page 31 of System Integrator Guide
+            else if (tmp.cs == 1) user$coordinateSystem <- "xyz"
+            else if (tmp.cs == 2) user$coordinateSystem <- "beam"
+            else stop("unknown coordinateSystem ", tmp.cs)
+            oceDebug(debug, "user$coordinateSystem: ", user$coordinateSystem, "\n")
+            user$numberOfCells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "user$numberOfCells: ", user$numberOfCells, "\n")
             user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oce.debug(debug, "user$hBinLength: ", user$hBinLength, "\n")
+            oceDebug(debug, "user$hBinLength: ", user$hBinLength, "\n")
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
                 ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
-                user$cell.size <- cos(25*pi/180) * user$hBinLength * 0.000052734375
+                user$cellSize <- cos(25*pi/180) * user$hBinLength * 0.000052734375
             } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) { # FIXME: use head$frequency or hardware$frequency?
                 ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
-                user$cell.size <- cos(25*pi/180) * user$hBinLength *0.0000263671875
+                user$cellSize <- cos(25*pi/180) * user$hBinLength *0.0000263671875
             } else {
-                user$cell.size <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
+                user$cellSize <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
             }
-            oce.debug(debug, "cell.size=", user$cell.size, "m (FIXME: no docs on this)\n")
-            user$measurement.interval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
-            oce.debug(debug, "measurement.interval=", user$measurement.interval, "\n")
+            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: no docs on this)\n")
+            user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "measurementInterval=", user$measurementInterval, "\n")
 
             ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                user$blanking.distance <- cos(25*deg.to.rad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
             } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
-                user$blanking.distance <- cos(25*deg.to.rad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
             } else {
-                user$blanking.distance <- 0
+                user$blankingDistance <- 0
             }
-            oce.debug(debug, "blanking.distance=", user$blanking.distance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
-            user$deployment.name <- readBin(buf[o+41:46], "character")
-            user$sw.version <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
-            oce.debug(debug, "sw.version=", user$sw.version,"\n")
+            oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
+            user$deploymentName <- readBin(buf[o+41:46], "character")
+            user$swVersion <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
+            oceDebug(debug, "swVersion=", user$swVersion,"\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1
-            oce.debug(debug, "salinity=", user$salinity,"\n")
+            oceDebug(debug, "salinity=", user$salinity,"\n")
             o <- o + 2 * user$size
         } else {
-            stop("cannot understand byte 0x", buf[o+1], "; expecting one of the following: 0x", id.hardware.configuration, " [hardware configuration] 0x", id.head.configuration, " [head configuration] or 0x", id.user.configuration, " [user configuration]\n")
+            stop("cannot understand byte 0x", buf[o+1], "; expecting one of the following: 0x", idHardwareConfiguration, " [hardware configuration] 0x", idHeadConfiguration, " [head configuration] or 0x", idUserConfiguration, " [user configuration]\n")
         }
     }
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
-read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("aquadopp high resolution"),
-                            debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE,
-                            log.action, ...)
+                            debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
+                            history, ...)
 {
-    bisect.adp.nortek <- function(t.find, add=0, debug=0) {
-        oce.debug(debug, "bisect.adp.nortek(t.find=", format(t.find), ", add=", add, "\n")
-        len <- length(profile.start)
+    bisectAdpNortek <- function(t.find, add=0, debug=0) {
+        oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
+        len <- length(profileStart)
         lower <- 1
         upper <- len
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle  <- floor((upper + lower) / 2)
-            minute  <- bcd2integer(buf[profile.start[middle] + 4])
-            second  <- bcd2integer(buf[profile.start[middle] + 5])
-            day     <- bcd2integer(buf[profile.start[middle] + 6])
-            hour    <- bcd2integer(buf[profile.start[middle] + 7])
-            year    <- bcd2integer(buf[profile.start[middle] + 8])
+            minute  <- bcdToInteger(buf[profileStart[middle] + 4])
+            second  <- bcdToInteger(buf[profileStart[middle] + 5])
+            day     <- bcdToInteger(buf[profileStart[middle] + 6])
+            hour    <- bcdToInteger(buf[profileStart[middle] + 7])
+            year    <- bcdToInteger(buf[profileStart[middle] + 8])
             year    <- year + ifelse(year >= 90, 1900, 2000)
-            month   <- bcd2integer(buf[profile.start[middle] + 9])
-            sec1000 <- bcd2integer(buf[profile.start[middle] + 10])
+            month   <- bcdToInteger(buf[profileStart[middle] + 9])
+            sec1000 <- bcdToInteger(buf[profileStart[middle] + 10])
             t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=tz)
-            oce.debug(debug, "t=", format(t), "| (from data", sprintf("%4d-%02d-%02d", year, month, day), sprintf("%02d:%02d:%02d.%03d", hour, minute, second, sec1000), ") | pass", format(pass, width=2), "/", passes, " | middle=", middle, "(", middle/upper*100, "%)\n")
+            oceDebug(debug, "t=", format(t), "| (from data", sprintf("%4d-%02d-%02d", year, month, day), sprintf("%02d:%02d:%02d.%03d", hour, minute, second, sec1000), ") | pass", format(pass, width=2), "/", passes, " | middle=", middle, "(", middle/upper*100, "%)\n")
             if (t.find < t)
                 upper <- middle
             else
@@ -217,24 +217,24 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         middle <- middle + add          # may use add to extend before and after window
         if (middle < 1) middle <- 1
         if (middle > len) middle <- len
-        minute  <- bcd2integer(buf[profile.start[middle] + 4])
-        second  <- bcd2integer(buf[profile.start[middle] + 5])
-        day     <- bcd2integer(buf[profile.start[middle] + 6])
-        hour    <- bcd2integer(buf[profile.start[middle] + 7])
-        year    <- bcd2integer(buf[profile.start[middle] + 8])
+        minute  <- bcdToInteger(buf[profileStart[middle] + 4])
+        second  <- bcdToInteger(buf[profileStart[middle] + 5])
+        day     <- bcdToInteger(buf[profileStart[middle] + 6])
+        hour    <- bcdToInteger(buf[profileStart[middle] + 7])
+        year    <- bcdToInteger(buf[profileStart[middle] + 8])
         year    <- year + ifelse(year >= 90, 1900, 2000)
-        month   <- bcd2integer(buf[profile.start[middle] + 9])
-        sec1000 <- bcd2integer(buf[profile.start[middle] + 10])
+        month   <- bcdToInteger(buf[profileStart[middle] + 9])
+        sec1000 <- bcdToInteger(buf[profileStart[middle] + 10])
         t <- ISOdatetime(year, month, day, hour, minute, second + sec1000/1000, tz=tz)
-        oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profile.start[middle], "\n")
+        oceDebug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profileStart[middle], "\n")
         return(list(index=middle, time=t))
     }
-    oce.debug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
-    from.keep <- from
-    to.keep <- to
-    sync.code <- as.raw(0xa5)
+    oceDebug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
+    fromKeep <- from
+    toKeep <- to
+    syncCode <- as.raw(0xa5)
     if (is.character(file)) {
-        filename <- full.filename(file)
+        filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -250,127 +250,125 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     seek(file, 0, "start")
     ## go to the end, so the next seek (to get to the data) reveals file length
     seek(file, where=0, origin="end")
-    file.size <- seek(file, where=0)
-    oce.debug(debug, "file.size=", file.size, "\n")
-    buf <- readBin(file, what="raw", n=file.size, size=1)
-    header <- decode.header.nortek(buf, debug=debug-1)
-    number.of.beams <- header$number.of.beams
-    number.of.cells <- header$number.of.cells
-    bin1.distance <- header$bin1.distance
-    xmit.pulse.length <- header$xmit.pulse.length
-    cell.size <- header$cell.size
-    ##profiles.in.file <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
-    oce.debug(debug, "profile data at buf[", header$offset, "] et seq.\n")
-    profile.start <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
-    profiles.in.file <- length(profile.start)
-    oce.debug(debug, "profiles.in.file=", profiles.in.file, "\n")
-    measurement.start <- ISOdatetime(2000+bcd2integer(buf[profile.start[1]+8]), # year FIXME: have to check if before 1990
-                                  bcd2integer(buf[profile.start[1]+9]), # month
-                                  bcd2integer(buf[profile.start[1]+6]), # day
-                                  bcd2integer(buf[profile.start[1]+7]), # hour
-                                  bcd2integer(buf[profile.start[1]+4]), # min
-                                  bcd2integer(buf[profile.start[1]+5]), # sec
+    fileSize <- seek(file, where=0)
+    oceDebug(debug, "fileSize=", fileSize, "\n")
+    buf <- readBin(file, what="raw", n=fileSize, size=1)
+    header <- decodeHeaderNortek(buf, debug=debug-1)
+    numberOfBeams <- header$numberOfBeams
+    numberOfCells <- header$numberOfCells
+    bin1Distance <- header$bin1Distance
+    xmitPulseLength <- header$xmitPulseLength
+    cellSize <- header$cellSize
+    ##profilesInFile <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
+    oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
+    profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
+    profilesInFile <- length(profileStart)
+    oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
+    measurementStart <- ISOdatetime(2000+bcdToInteger(buf[profileStart[1]+8]), # year FIXME: have to check if before 1990
+                                    bcdToInteger(buf[profileStart[1]+9]), # month
+                                    bcdToInteger(buf[profileStart[1]+6]), # day
+                                    bcdToInteger(buf[profileStart[1]+7]), # hour
+                                    bcdToInteger(buf[profileStart[1]+4]), # min
+                                    bcdToInteger(buf[profileStart[1]+5]), # sec
+                                    tz=tz)
+    measurementEnd <- ISOdatetime(2000+bcdToInteger(buf[profileStart[profilesInFile]+8]), # year FIXME: have to check if before 1990
+                                  bcdToInteger(buf[profileStart[profilesInFile]+9]), # month
+                                  bcdToInteger(buf[profileStart[profilesInFile]+6]), # day
+                                  bcdToInteger(buf[profileStart[profilesInFile]+7]), # hour
+                                  bcdToInteger(buf[profileStart[profilesInFile]+4]), # min
+                                  bcdToInteger(buf[profileStart[profilesInFile]+5]), # sec
                                   tz=tz)
-    measurement.end <- ISOdatetime(2000+bcd2integer(buf[profile.start[profiles.in.file]+8]), # year FIXME: have to check if before 1990
-                                bcd2integer(buf[profile.start[profiles.in.file]+9]), # month
-                                bcd2integer(buf[profile.start[profiles.in.file]+6]), # day
-                                bcd2integer(buf[profile.start[profiles.in.file]+7]), # hour
-                                bcd2integer(buf[profile.start[profiles.in.file]+4]), # min
-                                bcd2integer(buf[profile.start[profiles.in.file]+5]), # sec
-                                tz=tz)
-    measurement.deltat <- as.numeric(
-                                     ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
-                                                 bcd2integer(buf[profile.start[2]+9]), # month
-                                                 bcd2integer(buf[profile.start[2]+6]), # day
-                                                 bcd2integer(buf[profile.start[2]+7]), # hour
-                                                 bcd2integer(buf[profile.start[2]+4]), # min
-                                                 bcd2integer(buf[profile.start[2]+5]), # sec
-                                                 tz=tz)) - as.numeric(measurement.start)
+    measurementDeltat <- as.numeric(ISOdatetime(2000+bcdToInteger(buf[profileStart[2]+8]), # year FIXME: have to check if before 1990
+                                                bcdToInteger(buf[profileStart[2]+9]), # month
+                                                bcdToInteger(buf[profileStart[2]+6]), # day
+                                                bcdToInteger(buf[profileStart[2]+7]), # hour
+                                                bcdToInteger(buf[profileStart[2]+4]), # min
+                                                bcdToInteger(buf[profileStart[2]+5]), # sec
+                                                tz=tz)) - as.numeric(measurementStart)
 
-    oce.debug(debug, "ORIG measurement.deltat=", measurement.deltat, "\n")
+    oceDebug(debug, "ORIG measurement.deltat=", measurementDeltat, "\n")
 
-    measurement.deltat <- (as.numeric(measurement.end) - as.numeric(measurement.start)) / profiles.in.file
+    measurementDeltat <- (as.numeric(measurementEnd) - as.numeric(measurementStart)) / profilesInFile
 
-    oce.debug(debug, "NEW  measurement.deltat=", measurement.deltat, "\n")
-
+    oceDebug(debug, "NEW  measurementDeltat=", measurementDeltat, "\n")
 
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        from.pair <- bisect.adp.nortek(from, -1, debug-1)
-        from <- from.index <- from.pair$index
-        to.pair <- bisect.adp.nortek(to, 1, debug-1)
-        to <- to.index <- to.pair$index
-        oce.debug(debug, "  from=", format(from.pair$t), " yields profile.start[", from.index, "]\n",
-                  "  to  =", format(to.pair$t),   " yields profile.start[", to.index, "]\n",
+        fromPair <- bisectAdpNortek(from, -1, debug-1)
+        from <- fromIndex <- fromPair$index
+        toPair <- bisectAdpNortek(to, 1, debug-1)
+        to <- toIndex <- toPair$index
+        oceDebug(debug, "  from=", format(fromPair$t), " yields profileStart[", fromIndex, "]\n",
+                  "  to  =", format(toPair$t),   " yields profileStart[", toIndex, "]\n",
                   "  by=", by, "s\n",
-                  "profile.start[1:10]=", profile.start[1:10],"\n",
-                  "profile.start[",from.pair$index, "]=", profile.start[from.pair$index], "at time", format(from.pair$t), "\n",
-                  "profile.start[",  to.pair$index, "]=", profile.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
-        time1 <- ISOdatetime(2000+bcd2integer(buf[profile.start[1]+8]), # year FIXME: have to check if before 1990
-                             bcd2integer(buf[profile.start[1]+9]), # month
-                             bcd2integer(buf[profile.start[1]+6]), # day
-                             bcd2integer(buf[profile.start[1]+7]), # hour
-                             bcd2integer(buf[profile.start[1]+4]), # min
-                             bcd2integer(buf[profile.start[1]+5]), # sec
+                  "profileStart[1:10]=", profileStart[1:10],"\n",
+                  "profileStart[",fromPair$index, "]=", profileStart[fromPair$index], "at time", format(fromPair$t), "\n",
+                  "profileStart[",  toPair$index, "]=", profileStart[  toPair$index], "at time", format(  toPair$t), "\n")
+        time1 <- ISOdatetime(2000+bcdToInteger(buf[profileStart[1]+8]), # year FIXME: have to check if before 1990
+                             bcdToInteger(buf[profileStart[1]+9]), # month
+                             bcdToInteger(buf[profileStart[1]+6]), # day
+                             bcdToInteger(buf[profileStart[1]+7]), # hour
+                             bcdToInteger(buf[profileStart[1]+4]), # min
+                             bcdToInteger(buf[profileStart[1]+5]), # sec
                              tz=tz)
-        time2 <- ISOdatetime(2000+bcd2integer(buf[profile.start[2]+8]), # year FIXME: have to check if before 1990
-                             bcd2integer(buf[profile.start[2]+9]), # month
-                             bcd2integer(buf[profile.start[2]+6]), # day
-                             bcd2integer(buf[profile.start[2]+7]), # hour
-                             bcd2integer(buf[profile.start[2]+4]), # min
-                             bcd2integer(buf[profile.start[2]+5]), # sec
+        time2 <- ISOdatetime(2000+bcdToInteger(buf[profileStart[2]+8]), # year FIXME: have to check if before 1990
+                             bcdToInteger(buf[profileStart[2]+9]), # month
+                             bcdToInteger(buf[profileStart[2]+6]), # day
+                             bcdToInteger(buf[profileStart[2]+7]), # hour
+                             bcdToInteger(buf[profileStart[2]+4]), # min
+                             bcdToInteger(buf[profileStart[2]+5]), # sec
                              tz=tz)
         dt <- as.numeric(difftime(time2, time1, units="secs"))
-        oce.debug(debug, "dt=", dt, "s; at this stage, by=", by,"(not interpreted yet)\n")
-        profile.start <- profile.start[profile.start[from.index] < profile.start & profile.start < profile.start[to.index]]
+        oceDebug(debug, "dt=", dt, "s; at this stage, by=", by,"(not interpreted yet)\n")
+        profileStart <- profileStart[profileStart[fromIndex] < profileStart & profileStart < profileStart[toIndex]]
         if (is.character(by))
-            by <- floor(0.5 + ctime.to.seconds(by) / dt)
-        oce.debug(debug, "by=",by,"profiles (after change)\n")
-        profile.start <- profile.start[seq(1, length(profile.start), by=by)]
-        oce.debug(debug, 'dt=',dt,'\n', 'by=',by, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
+            by <- floor(0.5 + ctimeToSeconds(by) / dt)
+        oceDebug(debug, "by=",by,"profiles (after change)\n")
+        profileStart <- profileStart[seq(1, length(profileStart), by=by)]
+        oceDebug(debug, 'dt=',dt,'\n', 'by=',by, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
     } else {
-        from.index <- from
-        to.index <- to
-        if (to.index < 1 + from.index)
+        fromIndex <- from
+        toIndex <- to
+        if (toIndex < 1 + fromIndex)
             stop("need more separation between from and to")
         if (is.character(by))
             stop("cannot have string for 'by' if 'from' and 'to' are integers")
-        profile.start <- profile.start[seq(from=from, to=to, by=by)]
-        oce.debug(debug, "profile.start[1:10] after indexing:", profile.start[1:10], "\n")
+        profileStart <- profileStart[seq(from=from, to=to, by=by)]
+        oceDebug(debug, "profileStart[1:10] after indexing:", profileStart[1:10], "\n")
     }
-    profiles.to.read <- length(profile.start)
-    oce.debug(debug, "profiles.to.read=",profiles.to.read,"\n")
-    profile.start2 <- sort(c(profile.start, profile.start+1)) # use this to subset for 2-byte reads
-    number.of.cells <- header$user$number.of.cells
-    number.of.beams <- header$head$number.of.beams
-    oce.debug(debug, "number.of.cells=", number.of.cells,"\n")
-    oce.debug(debug, "number.of.beams=", number.of.beams,"\n")
-    items <-  number.of.cells *  number.of.beams
-    time <- ISOdatetime(2000+bcd2integer(buf[profile.start+8]), # year FIXME: have to check if before 1990
-                        bcd2integer(buf[profile.start+9]), # month
-                        bcd2integer(buf[profile.start+6]), # day
-                        bcd2integer(buf[profile.start+7]), # hour
-                        bcd2integer(buf[profile.start+4]), # min
-                        bcd2integer(buf[profile.start+5]), # sec
+    profilesToRead <- length(profileStart)
+    oceDebug(debug, "profilesToRead=",profilesToRead,"\n")
+    profileStart2 <- sort(c(profileStart, profileStart+1)) # use this to subset for 2-byte reads
+    numberOfCells <- header$user$numberOfCells
+    numberOfBeams <- header$head$numberOfBeams
+    oceDebug(debug, "numberOfCells=", numberOfCells,"\n")
+    oceDebug(debug, "numberOfBeams=", numberOfBeams,"\n")
+    items <-  numberOfCells *  numberOfBeams
+    time <- ISOdatetime(2000+bcdToInteger(buf[profileStart+8]), # year FIXME: have to check if before 1990
+                        bcdToInteger(buf[profileStart+9]), # month
+                        bcdToInteger(buf[profileStart+6]), # day
+                        bcdToInteger(buf[profileStart+7]), # hour
+                        bcdToInteger(buf[profileStart+4]), # min
+                        bcdToInteger(buf[profileStart+5]), # sec
                         tz=tz)
     class(time) <- c("POSIXt", "POSIXct") # FIXME do we need this?
     attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
-    heading <- 0.1 * readBin(buf[profile.start2 + 18], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    pitch <- 0.1 * readBin(buf[profile.start2 + 20], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    roll <- 0.1 * readBin(buf[profile.start2 + 22], what="integer", n=profiles.to.read, size=2, endian="little", signed=TRUE)
-    pressure.MSB <- readBin(buf[profile.start + 24], what="integer", n=profiles.to.read, size=1, endian="little", signed=FALSE)
-    pressure.LSW <- readBin(buf[profile.start2 + 26], what="integer", n=profiles.to.read, size=2, endian="little", signed=FALSE)
+    heading <- 0.1 * readBin(buf[profileStart2 + 18], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
+    pitch <- 0.1 * readBin(buf[profileStart2 + 20], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
+    roll <- 0.1 * readBin(buf[profileStart2 + 22], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
+    pressure.MSB <- readBin(buf[profileStart + 24], what="integer", n=profilesToRead, size=1, endian="little", signed=FALSE)
+    pressure.LSW <- readBin(buf[profileStart2 + 26], what="integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
     pressure <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
-    temperature <- 0.01 * readBin(buf[profile.start2 + 28], what="integer", n=profiles.to.read, size=2, endian="little")
-    v <- array(double(), dim=c(profiles.to.read, number.of.cells,  number.of.beams))
-    a <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # echo amplitude
-    q <- array(raw(), dim=c(profiles.to.read,  number.of.cells,  number.of.beams)) # correlation
-    for (i in 1:profiles.to.read) {
-        o <- profile.start[i] + 54 ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
-        ##oce.debug(debug, 'getting data chunk',i,' at file position',o,'\n')
+    temperature <- 0.01 * readBin(buf[profileStart2 + 28], what="integer", n=profilesToRead, size=2, endian="little")
+    v <- array(double(), dim=c(profilesToRead, numberOfCells,  numberOfBeams))
+    a <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # echo amplitude
+    q <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # correlation
+    for (i in 1:profilesToRead) {
+        o <- profileStart[i] + 54 ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
+        ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
         v[i,,] <- matrix(0.001 * readBin(buf[o + seq(0, 2*items-1)], "integer", n=items, size=2, endian="little", signed=TRUE),
-                         ncol=number.of.beams, byrow=FALSE)
+                         ncol=numberOfBeams, byrow=FALSE)
         o <- o + items * 2
         a[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=items, byrow=TRUE)
         o <- o + items
@@ -380,11 +378,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
             if (!(i %% 50)) cat(i, "\n", ...)
         }
     }
-    if (monitor) cat("\nRead", profiles.to.read,  "of the", profiles.in.file, "profiles in", filename, "\n", ...)
+    if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
     data <- list(ma=list(v=v, a=a, q=q),
-                 ss=list(distance=seq(header$user$blanking.distance,
-                         by=header$user$cell.size,
-                         length.out=header$user$number.of.cells)),
+                 ss=list(distance=seq(header$user$blankingDistance,
+                         by=header$user$cellSize,
+                         length.out=header$user$numberOfCells)),
                  ts=list(time=time,
                  pressure=pressure,
                  temperature=temperature,
@@ -392,49 +390,49 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
                  pitch=pitch,
                  roll=roll))
     metadata <- list(manufacturer="nortek",
-                     instrument.type="aquadopp-hr",
+                     instrumentType="aquadopp-hr",
                      filename=filename,
                      manufacturer="nortek",
                      latitude=latitude,
                      longitude=longitude,
-                     measurement.start=measurement.start,
-                     measurement.end=measurement.end,
-                     measurement.deltat=measurement.deltat,
-                     subsample.start=time[1],
-                     subsample.end=time[length(time)],
-                     subsample.deltat=as.numeric(time[2]) - as.numeric(time[1]),
+                     measurementStart=measurementStart,
+                     measurementEnd=measurementEnd,
+                     measurementDeltat=measurementDeltat,
+                     subsampleStart=time[1],
+                     subsampleEnd=time[length(time)],
+                     subsampleDeltat=as.numeric(time[2]) - as.numeric(time[1]),
                      size=header$head$size,
-                     number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
-                     serial.number=header$hardware$serial.number,
+                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
+                     serialNumber=header$hardware$serialNumber,
                      frequency=header$head$frequency,
-                     internal.code.version=header$hardware$pic.version,
-                     hardware.revision=header$hardware$hw.revision,
-                     rec.size=header$hardware$rec.size,
-                     velocity.range=header$hardware$velocity.range,
-                     firmware.version=header$hardware$fw.version,
+                     internalCodeVersion=header$hardware$picVersion,
+                     hardwareRevision=header$hardware$hwRevision,
+                     recSize=header$hardware$recSize,
+                     velocityRange=header$hardware$velocityRange,
+                     firmwareVersion=header$hardware$fwVersion,
                      config=header$hardware$config,
-                     config.pressure.sensor=header$head$config.pressure.sensor,
-                     config.magnetometer.sensor=header$head$config.magnetometer.sensor,
-                     config.tilt.sensor=header$head$config.tilt.sensor,
-                     beam.angle=25,     # FIXME: may change with new devices
-                     tilt.sensor.orientation=header$head$tilt.sensor.orientation,
-                     orientation=header$head$tilt.sensor.orientation,
+                     configPressureSensor=header$head$configPressureSensor,
+                     configMagnetometerSensor=header$head$configMagnetometerSensor,
+                     configTiltSensor=header$head$configTiltSensor,
+                     beamAngle=25,     # FIXME: may change with new devices
+                     tiltSensorOrientation=header$head$tiltSensorOrientation,
+                     orientation=header$head$tiltSensorOrientation,
                      frequency=header$head$frequency,
-                     head.serial.number=header$head$head.serial.number,
-                     bin1.distance=header$user$blanking.distance, # FIXME: is this right?
-                     blanking.distance=header$user$blanking.distance,
-                     measurement.interval=header$user$measurement.interval,
-                     transformation.matrix=header$head$transformation.matrix,
-                     deployment.name=header$user$deployment.name,
-                     cell.size=header$user$cell.size,
-                     velocity.scale=header$user$velocity.scale,
-                     coordinate.system=header$user$coordinate.system,
-                     oce.coordinate=header$user$coordinate.system,
-                     oce.beam.attenuated=FALSE
+                     headSerialNumber=header$head$headSerialNumber,
+                     bin1Distance=header$user$blankingDistance, # FIXME: is this right?
+                     blankingDistance=header$user$blankingDistance,
+                     measurementInterval=header$user$measurementInterval,
+                     transformationMatrix=header$head$transformationMatrix,
+                     deploymentName=header$user$deploymentName,
+                     cellSize=header$user$cellSize,
+                     velocityScale=header$user$velocityScale,
+                     coordinateSystem=header$user$coordinateSystem,
+                     oceCoordinate=header$user$coordinateSystem,
+                     oceBeamAttenuated=FALSE
                      )
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
+    res <- list(data=data, metadata=metadata, history=historyItem(history))
     class(res) <- c("nortek", "adp", "oce")
     res
 }                                       # read.adp.nortek()

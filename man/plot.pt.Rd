@@ -10,13 +10,13 @@
      which=1:4, title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
-     draw.time.range=getOption("oce.draw.time.range"),
-     abbreviate.time.range=getOption("oce.abbreviate.time.range"),
-     use.smoothScatter=FALSE,
-     mgp=getOption("oce.mgp"),
+     drawTimeRange=getOption("oceDrawTimeRange"),
+     abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
+     useSmoothScatter=FALSE,
+     mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      main="",
-     debug=getOption("oce.debug"),
+     debug=getOption("oceDebug"),
      \dots)}
 
 \arguments{
@@ -45,14 +45,14 @@
     more lines are to be added later.)}
   \item{xlab}{optional label for x axis.}
   \item{ylab}{optional label for y axis.}
-  \item{draw.time.range}{boolean that applies to panels with time as the
+  \item{drawTimeRange}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
-  \item{abbreviate.time.range}{boolean that applies to panels with time
+  \item{abbreviateTimeRange}{boolean that applies to panels with time
     as the horizontal axis, indicating whether to abbreviate the second
     time in the time range (e.g. skipping the year, month, day, etc. if
     it's the same as the start time).}
-  \item{use.smoothScatter}{a boolean to cause
+  \item{useSmoothScatter}{a boolean to cause
     \code{\link{smoothScatter}} to be used for profile plots, instead of
     \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and

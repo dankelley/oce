@@ -5,7 +5,7 @@
 
 \usage{
 plot.windrose(x, type=c("count","mean","median","fivenum"),
-              mgp=getOption("oce.mgp"), 
+              mgp=getOption("oceMgp"), 
               mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]), col, \dots)}
 
 \arguments{

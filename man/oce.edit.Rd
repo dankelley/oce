@@ -1,11 +1,11 @@
-\name{oce.edit}
-\alias{oce.edit}
+\name{oceEdit}
+\alias{oceEdit}
 \title{Edit an oce object}
 \description{Edit an element of a oce object}
-\usage{oce.edit(x, item, value, action,
-         reason="", person="", debug=getOption("oce.debug"))}
+\usage{oceEdit(x, item, value, action,
+         reason="", person="", debug=getOption("oceDebug"))}
 \arguments{
-\item{x}{an \code{oce} object.  The exact action of \code{oce.edit} depends
+\item{x}{an \code{oce} object.  The exact action of \code{oceEdit} depends
   on the \code{\link{class}} of \code{x}; see \dQuote{Details}.}
 \item{item}{if supplied, a character string naming an item in the
   object's metadata (see \dQuote{Details}).}
@@ -31,7 +31,7 @@
   Examples.
 
   3. Applied to an \code{adv} object (i.e. data from an acoustic
-     velocimeter), \code{oce.edit} treats items named \code{heading},
+     velocimeter), \code{oceEdit} treats items named \code{heading},
      \code{pitch}, \code{roll} appropriately, depending on the type of
      \code{adv} instrument used.  (This is necessary because different
      manufacturers produce different forms of these items, i.e. Nortek
@@ -51,9 +51,9 @@
 \examples{
 library(oce)
 data(ctd)
-ctd2 <- oce.edit(ctd, item="latitude", value=47.8879,
+ctd2 <- oceEdit(ctd, item="latitude", value=47.8879,
                  reason="illustration", person="Dan Kelley")
-ctd3 <- oce.edit(ctd, action= "x$data$pressure <- x$data$pressure - 1")
+ctd3 <- oceEdit(ctd, action= "x$data$pressure <- x$data$pressure - 1")
 }
 \author{Dan Kelley}
 \keyword{misc}

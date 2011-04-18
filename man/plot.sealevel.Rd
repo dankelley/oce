@@ -7,11 +7,11 @@
 \description{Plot a summary diagram for sealevel data.}
 
 \usage{\method{plot}{sealevel}(x, which=1:4, adorn=NULL,
-     draw.time.range=getOption("oce.draw.time.range"),
-     mgp=getOption("oce.mgp"), 
+     drawTimeRange=getOption("oceDrawTimeRange"),
+     mgp=getOption("oceMgp"), 
      mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
-     margins.as.image=FALSE,
-     debug=getOption("oce.debug"),
+     marginsAsImage=FALSE,
+     debug=getOption("oceDebug"),
      \dots)}
 
 \arguments{
@@ -28,7 +28,7 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels. (See
     \dQuote{Examples}.)}
-  \item{draw.time.range}{boolean that applies to panels with time as the
+  \item{drawTimeRange}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
@@ -36,7 +36,7 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
+  \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the
     right of time-series plots, matching the space used up by a palette
     in an \code{\link{imagep}} plot.}
   \item{debug}{a flag that turns on debugging, if it exceeds 0.}
@@ -63,12 +63,12 @@
 
 \examples{
 library(oce)
-data(sealevel.hal)
+data(sealevelHalifax)
 # Overall plot
-plot(sealevel.hal)
+plot(sealevelHalifax)
 
 # Illustrate storm surge during Hurricane Juan
-plot(sealevel.hal,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
+plot(sealevelHalifax,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
 abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
 }

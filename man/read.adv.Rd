@@ -10,32 +10,32 @@
 \description{Read an ADV data file, producing an object of type \code{adv}.}
 
 \usage{
-read.adv(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv(file, from=1, to, by=1, tz=getOption("oceTz"),
   type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
   header=TRUE,
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"), 
+  debug=getOption("oceDebug"), monitor=TRUE, history)
+read.adv.nortek(file, from=1, to, by=1, tz=getOption("oceTz"), 
   type="vector",
   header=TRUE,
   latitude=NA, longitude=NA,
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
+  debug=getOption("oceDebug"), monitor=TRUE, history)
+read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   type="default",
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oce.tz"),
+  debug=getOption("oceDebug"), monitor=TRUE, history)
+read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oceTz"),
   header=TRUE, 
   latitude=NA, longitude=NA,
   type="",
-  debug=getOption("oce.debug"), monitor=TRUE, log.action)
-read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
-  coordinate.system="xyz",
-  transformation.matrix,
+  debug=getOption("oceDebug"), monitor=TRUE, history)
+read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
+  coordinateSystem="xyz",
+  transformationMatrix,
   latitude=NA, longitude=NA,
-  debug=getOption("oce.debug"), log.action)
+  debug=getOption("oceDebug"), history)
 }
 
 \arguments{
@@ -77,9 +77,9 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     a vector of file names.}
   \item{deltat}{the time between samples. (This is mandatory if
     \code{header=FALSE}.)}
-  \item{coordinate.system}{character string indicating coordinate system, one
+  \item{coordinateSystem}{character string indicating coordinate system, one
     of \code{"beam"}, \code{"xyz"}, \code{"enu"} or \code{"other"}.}
-  \item{transformation.matrix}{transformation matrix to use in
+  \item{transformationMatrix}{transformation matrix to use in
     converting beam coordinates to xyz coordinates.  This will over-ride
     the matrix in the file header, if there is one.  An example is
     \code{rbind(c(2.710,
@@ -95,7 +95,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
     of the header.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of every data burst read.}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{history}{if provided, the action item to be stored in the
     log.  This parameter is typically only provided for internal
     calls; the default that it provides is better for normal calls by
     a user.}
@@ -214,7 +214,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
   contains measurements made with an ADV device.  This is a list
   containing lists named \code{metadata}, \code{data}, and
-  \code{processing.log}.  The \code{data} list contains lists \code{ts},
+  \code{history}.  The \code{data} list contains lists \code{ts},
   potentially (for Nortek Vector units) \code{ts.slow}, and \code{ma}
   (matrices of velocity, etc).  These are as \code{adp} objects, except
   for the presence of \code{ts.slow}, for timeseries that vary on a slow
@@ -224,8 +224,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
 
 \seealso{Objects of class \code{adv} may be plotted with
   \code{\link{plot.adv}} or summarized with \code{\link{summary.adv}}.
-  Coordinate transformations are done with \code{\link{beam.to.xyz.adv}},
-  \code{\link{xyz.to.enu.adv}}, and \code{\link{enu.to.other.adv}}, in
+  Coordinate transformations are done with \code{\link{beamToXyzAdv}},
+  \code{\link{xyzToEnuAdv}}, and \code{\link{enuToOtherAdv}}, in
   that order.}
 
 \examples{
@@ -251,7 +251,7 @@ d <- read.adv.sontek.adr(
   to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
 w <- ts(d$data$ma$v[,3], deltat=1/d$metadata$sampling.rate) # z component
 par(mfrow=c(2,2))
-par(mgp=getOption("oce.mgp"))
+par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,2,1))
 plot(w)
 plot(d$data$ts$time, sqrt(d$data$ma$v[,1]^2+d$data$ma$v[,2]^2),
@@ -279,19 +279,19 @@ library(oce)
 table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
                     from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
                     to=as.POSIXct("2008-07-01 2:00:00", tz="UTC"))
-d <- read.adv.sontek.serial(file=table$filename, start=table$start.time, deltat=1/10)
-d <- oce.edit(d, "coordinate.system", "xyz") # original coordinate
-d <- oce.edit(d, "oce.coordinate", "xyz")    # present coordinate
+d <- read.adv.sontek.serial(file=table$filename, start=table$startTime, deltat=1/10)
+d <- oceEdit(d, "coordinateSystem", "xyz") # original coordinate
+d <- oceEdit(d, "oceCoordinate", "xyz")    # present coordinate
 # Note that the transformation matrix varies from instrument to instrument.
-d <- oce.edit(d, "transformation.matrix", rbind(c(11033,-8503,-5238),
-                                                c(347,-32767,9338),
-                                                c(-1418, -1476, -1333)) / 4096)
-d <- oce.edit(d, "orientation", "upward")
-d <- oce.edit(d, "heading", 0)
-d <- oce.edit(d, "pitch", 0)
-d <- oce.edit(d, "roll", 0)
-d <- oce.edit(d, "serial.number", "202h")
-enu <- xyz.to.enu.adv(d)
+d <- oceEdit(d, "transformationMatrix", rbind(c(11033,-8503,-5238),
+                                              c(347,-32767,9338),
+                                              c(-1418, -1476, -1333)) / 4096)
+d <- oceEdit(d, "orientation", "upward")
+d <- oceEdit(d, "heading", 0)
+d <- oceEdit(d, "pitch", 0)
+d <- oceEdit(d, "roll", 0)
+d <- oceEdit(d, "serial.number", "202h")
+enu <- xyzToEnuAdv(d)
 plot(enu, which=c("u1", "u2", "u3", "temperature"))
 }
 }

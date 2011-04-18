@@ -10,32 +10,32 @@
 \description{Read an ADP data file, producing an object of type \code{adp}.}
 
 \usage{
-read.adp(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
   \dots)
-read.adp.rdi(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
   \dots)
-read.adp.nortek(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("aquadopp high resolution"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
   \dots)
-read.adp.sontek(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
-  debug=getOption("oce.debug"), monitor=TRUE, despike=FALSE, log.action,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
   \dots)
-read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
                       latitude=NA, longitude=NA,
-                      type=c("adp","pcadp"),
-                      beam.angle=25, orientation,
-                      monitor=TRUE, log.action,
-                      debug=getOption("oce.debug")) 
+                      type=c("adp", "pcadp"),
+                      beamAngle=25, orientation,
+                      monitor=TRUE, history,
+                      debug=getOption("oceDebug")) 
 }
 
 \arguments{
@@ -60,23 +60,27 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
   \item{manufacturer}{a character string indicating the manufacturer, used 
     by the general function \code{read.adp} to select a subsidiary 
    function to use, such as \code{read.adp.nortek}.}
-  \item{type}{a character string indicating the type of file.}
+  \item{type}{a character string indicating the type of instrument.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
-  \item{latitude}{optional signed number indicating the latitude in degrees
-      North.} \item{longitude}{optional signed number indicating the longitude
-      in degrees East.} \item{debug}{a flag that turns on debugging.  Set to 1
-      to get a moderate amount of debugging information, or to 2 to get more.}
-  \item{beam.angle}{angle between instrument axis and beams, in degrees.}
+  \item{latitude}{optional signed number indicating the latitude in 
+    degrees North.}
+  \item{longitude}{optional signed number indicating the longitude in 
+    degrees East.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
+  \item{beamAngle}{angle between instrument axis and beams, in degrees.}
   \item{orientation}{optional string, which over-rides the value inferred from
       the data file.  Possible values are \code{"upward"} and
       \code{"downward"}.  This is only used for \code{read.adp.sontek.serial}.}
-  \item{monitor}{boolean, set to \code{TRUE} to provide an indication (with
-      numbers and dots) of every profile read.} \item{despike}{if \code{TRUE},
-      \code{\link{despike}} will be used to clean anomalous spikes in heading,
-      etc.} \item{log.action}{if provided, the action item to be stored in the
-      log.  (Typically only provided for internal calls; the default that it
-      provides is better for normal calls by a user.)} \item{\dots}{additional
-      arguments, passed to called routines.} }
+  \item{monitor}{boolean, set to \code{TRUE} to provide an indication
+    (with numbers and dots) of every profile read.}
+  \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
+    to clean anomalous spikes in heading, etc.}
+  \item{history}{if provided, the action item to be stored in the
+    log.  (Typically only provided for internal calls; the default that
+    it provides is better for normal calls by a user.)}
+  \item{\dots}{additional arguments, passed to called routines.}
+}
 
 \details{Reads a binary-format ADP file.  Three types can be handled at
   the moment: the Teledyne-RDI Workhorse instrument using firmware
@@ -165,19 +169,19 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oce.tz"),
   Several functions are provided to manipulate \code{adp} objects.  For
   example, in many research applications, the records are stored in beam
   coordinates, instead of the further-processed forms such as instrument
-  or enu coordinates.  Accordingly, \code{\link{beam.to.xyz.adp}} is
+  or enu coordinates.  Accordingly, \code{\link{beamToXyzAdp}} is
   provided, convert the velocity portions of \code{adp} objects from
   beam coordinates to xyz-based (also called ship-based or
   instrument-based) coordinates.  Similarly,
-  \code{\link{xyz.to.enu.adp}} converts from xyz to enu
+  \code{\link{xyzToEnuAdp}} converts from xyz to enu
   coordinates, taking into account the varying orientation of an
   instrument attached to a ship or a mobile mooring.  For applications
   in which enu-based coordinates are not desired (e.g. if a coordinate
   is to be aligned with the local coastline or a mean current),
-  \code{\link{enu.to.other.adp}} is provided, to convert from enu
+  \code{\link{enuToOtherAdp}} is provided, to convert from enu
   coordinates to another coordinate system. 
 
- Another convenience function is \code{\link{beam.attenuate.adp}},
+ Another convenience function is \code{\link{beamAttenuateAdp}},
 which performs a correction for \eqn{r^2}{r^2} beam spreading.}
 
 \examples{

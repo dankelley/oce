@@ -10,11 +10,11 @@
 
 \usage{
 read.ctd(file, type=NULL, columns=NULL, station=NULL, 
-  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
 read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
-  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
-  monitor=FALSE, debug=getOption("oce.debug"), log.action, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
 }
 
 \arguments{
@@ -39,7 +39,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of line of data read.  (This may be useful in debugging problems in
     reading files that are misconfigured.)}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{history}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}
@@ -110,18 +110,18 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
       \item{\code{cruise}}{name of cruise.}
       \item{\code{station}}{station number or name.}
       \item{\code{date}}{date of lowering of CTD into the water.}
-      \item{\code{start.time}}{time when instrument started recording data.}
+      \item{\code{startTime}}{time when instrument started recording data.}
       \item{\code{latitude}}{latitude, in decimal degrees, positive
 	north of equator.}
       \item{\code{longitude}}{longitude, in decimal degrees, positive if
 	east of Greenwich and west of dateline.}
       \item{\code{recovery}}{date of recovery of CTD.}
-      \item{\code{water.depth}}{the water depth at the site.}
-      \item{\code{sample.interval}}{time interval between samples, in
+      \item{\code{waterDepth}}{the water depth at the site.}
+      \item{\code{sampleInterval}}{time interval between samples, in
 	seconds.}
     }
   }
-  \item{processing.log}{a processing log, in the standard \code{oce} format.}
+  \item{history}{a history of processing, in the standard \code{oce} format.}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an alternative to this.
@@ -132,10 +132,10 @@ Overview plots may be made with \code{\link{plot.ctd}}, while
 \code{\link{plot.TS}} produces TS plots and
 \code{\link{plot.ctd.scan}} produces scan plots that may help with data editing.
 Extraneous data such as those collected during upcasts and equilibration intervals
-may be trimmed with \code{\link{ctd.trim}},
-and the data may be cast onto specified pressure levels with \code{\link{ctd.decimate}}.
-Low-level manipulation may be done with \code{\link{ctd.add.column}}
-and \code{\link{ctd.update.header}}, as well as by direct manipulation of the items
+may be trimmed with \code{\link{ctdTrim}},
+and the data may be cast onto specified pressure levels with \code{\link{ctdDecimate}}.
+Low-level manipulation may be done with \code{\link{ctdAddColumn}}
+and \code{\link{ctdUpdateHeader}}, as well as by direct manipulation of the items
 within \code{ctd} objects.
 
 In many cases, CTD instruments are set up to report dates in English.

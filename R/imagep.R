@@ -10,9 +10,9 @@ imagep <- function(x, y, z,
                    xlab="", ylab="", zlab="",
                    breaks, col,
                    draw.contours=TRUE,
-                   draw.time.range=getOption("oce.draw.time.range"),
+                   drawTimeRange=getOption("oceDrawTimeRange"),
                    draw.palette=TRUE,
-                   mgp=getOption("oce.mgp"),
+                   mgp=getOption("oceMgp"),
                    mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
                          mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
                          mgp[2]+1/2,
@@ -22,13 +22,13 @@ imagep <- function(x, y, z,
                    adorn,
                    axes=TRUE,
                    main="",
-                   debug=getOption("oce.debug"),
+                   debug=getOption("oceDebug"),
                    ...)
 {
-    oce.debug(debug, "\b\bimagep() {\n")
-    oce.debug(debug, paste("  xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep=""))
-    oce.debug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oce.debug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oceDebug(debug, "\b\bimagep() {\n")
+    oceDebug(debug, paste("  xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep=""))
+    oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (missing(x))
         stop("must supply x")
     if (missing(y))
@@ -48,7 +48,7 @@ imagep <- function(x, y, z,
     par(mgp=mgp, mar=mar, cex=cex)
     omai <- par("mai")
     device.width <- par("din")[1]
-    oce.debug(debug, sprintf("paper width: %.2f inches\n", device.width))
+    oceDebug(debug, sprintf("paper width: %.2f inches\n", device.width))
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
     tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
 
@@ -93,9 +93,9 @@ imagep <- function(x, y, z,
                      widths$main + widths$mar.lhs + widths$palette.separation,
                      omai[3],
                      widths$mar.rhs)
-        oce.debug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
+        oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
         the.mai <- clipmin(the.mai, 0.1)         # just in case
-        oce.debug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
+        oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
         par(mai=the.mai, cex=cex)
         if (!gave.breaks) {
             if (missing(zlim)) {
@@ -132,8 +132,8 @@ imagep <- function(x, y, z,
         the.mai <- clipmin(the.mai, 0.1)         # just in case
         if (debug > 0)
             str(widths)
-        oce.debug(debug, "original value of par(mai)=", format(omai, digits=2), "\n")
-        oce.debug(debug, "MAIN: setting     par(mai)=", format(the.mai, digits=2), "\n")
+        oceDebug(debug, "original value of par(mai)=", format(omai, digits=2), "\n")
+        oceDebug(debug, "MAIN: setting     par(mai)=", format(the.mai, digits=2), "\n")
         par(new=TRUE, mai=the.mai, cex=cex)
     }
 
@@ -151,7 +151,7 @@ imagep <- function(x, y, z,
         }
         box()
         if (axes) {
-            oce.axis.POSIXct(side=1, x=x, cex=cex, cex.axis=cex, cex.lab=cex, draw.time.range=draw.time.range, mar=mar, mgp=mgp)
+            oce.axis.POSIXct(side=1, x=x, cex=cex, cex.axis=cex, cex.lab=cex, drawTimeRange=drawTimeRange, mar=mar, mgp=mgp)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
     } else {
@@ -179,6 +179,6 @@ imagep <- function(x, y, z,
             warning("cannot evaluate adorn='", adorn, "'\n")
     }
     par(cex=ocex)
-    oce.debug(debug, "\b\b} # imagep()\n")
+    oceDebug(debug, "\b\b} # imagep()\n")
     invisible()
 }

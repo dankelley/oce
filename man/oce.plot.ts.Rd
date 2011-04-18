@@ -6,23 +6,23 @@
 \description{Plot a time-series, obeying the timezone and possibly drawing the range in the top-left margin}
 
 \usage{
-oce.plot.ts(x, y, draw.time.range=TRUE, xaxs="r", grid=TRUE, adorn=NULL,
+oce.plot.ts(x, y, drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL,
   fill=FALSE,
   xlab="", ylab="", 
   cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
-  mgp=getOption("oce.mgp"),
+  mgp=getOption("oceMgp"),
   mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
   mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
   type="l",
   main="",
   despike=FALSE,
-  debug=getOption("oce.debug"),
+  debug=getOption("oceDebug"),
   \dots)}
 
 \arguments{
 \item{x}{the times of observations.}
 \item{y}{the observations.}
-\item{draw.time.range}{a boolean, set to \code{TRUE} to indicate the range of times 
+\item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of times 
   in the top-left margin.}
 \item{xaxs}{character indicating whether image should extend to edge
   of x axis (with value \code{"i"}) or not; see

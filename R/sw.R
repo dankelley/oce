@@ -228,7 +228,7 @@ sw.z <- function(pressure, latitude=45, degrees=TRUE)
     -sw.depth(pressure=pressure, latitude=latitude, degrees=degrees)
 }
 
-sw.dynamic.height <- function(x, reference.pressure=2000)
+swDynamicHeight <- function(x, reference.pressure=2000)
 {
     height <- function(ctd, reference.pressure)
     {
@@ -251,7 +251,7 @@ sw.dynamic.height <- function(x, reference.pressure=2000)
         h <- vector("numeric", ns)
         for (i in 1:ns) {               # FIXME: avoid loops
 ##            cat("i=",i,"\n")
-            d[i] <- geod.dist(x$data$station[[i]]$metadata$latitude, x$data$station[[i]]$metadata$longitude, lat0, lon0)
+            d[i] <- geodDist(x$data$station[[i]]$metadata$latitude, x$data$station[[i]]$metadata$longitude, lat0, lon0)
             h[i] <- height(x$data$station[[i]], reference.pressure)
         }
         return(list(distance=d, height=h))

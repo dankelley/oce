@@ -8,9 +8,9 @@
       xlab="", ylab="", zlab="",
       breaks, col,
       draw.contours=TRUE,
-      draw.time.range=getOption("oce.draw.time.range"),
+      drawTimeRange=getOption("oceDrawTimeRange"),
       draw.palette=TRUE,
-      mgp=getOption("oce.mgp"),
+      mgp=getOption("oceMgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
             mgp[2]+1/2, 
@@ -21,7 +21,7 @@
       adorn,
       axes=TRUE,
       main="",
-      debug=getOption("oce.debug"),
+      debug=getOption("oceDebug"),
       \dots)
 }
 \arguments{
@@ -42,7 +42,7 @@
   \item{draw.contours}{boolean, \code{TRUE} to get contours on the
     image, and palette, at the colour breaks.  Images with a great deal
     of high-wavenumber variation look poor with contours.}
-  \item{draw.time.range}{boolean, only used if the \code{x} axis is a
+  \item{drawTimeRange}{boolean, only used if the \code{x} axis is a
     time.  If \code{TRUE}, then an indication of the time range of the
     data (not the axis) is indicated at the top-left margin of the
     graph.  This is useful because the labels on time axes only indicate

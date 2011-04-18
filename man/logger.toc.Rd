@@ -7,7 +7,7 @@
 \description{Decode table-of-contents file from a datalogger, of the
   sort used by some researchers at Dalhousie University.}
 
-  \usage{logger.toc(dir, from, to, debug=getOption("oce.debug"))}
+  \usage{logger.toc(dir, from, to, debug=getOption("oceDebug"))}
 
   \arguments{
     \item{dir}{name of a directory containing a single table-of-contents
@@ -46,7 +46,7 @@ print(table)
 }
 
 \value{A list with two elements: \code{filename}, a vector of file
-  names, and \code{start.time}, a vector of \code{\link{POSIXct}} times
+  names, and \code{startTime}, a vector of \code{\link{POSIXct}} times
   indicating the (real) times of the first datum in the corresponding
   files.}
 

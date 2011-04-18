@@ -6,7 +6,7 @@
 
 \description{Subset an oce object}
 
-\usage{\method{subset}{oce}(x, subset, indices=NULL, debug=getOption("oce.debug"), \dots)}
+\usage{\method{subset}{oce}(x, subset, indices=NULL, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
