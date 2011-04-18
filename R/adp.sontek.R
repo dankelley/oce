@@ -327,17 +327,28 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      oceBeamAttenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
     if (numberOfBeams == 3) {
-        ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
-        ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
-        ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
-        S  <- 1 / (3 * sin(beamAngle * pi / 180)) # 0.7887339
-        CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
-        C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
-        warning("*****FIXME: check up and down; also read it and check*****")
-        metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
-                                                  0  , -CS,  CS,
-                                                  C  ,   C,   C),
-                                                nrow=3, byrow=TRUE)
+        if (metadata$orientation == "upward") {
+            ##S  <- 1 / (3 * sin(25 * pi / 180))             # 0.7887339
+            ##CS <- 1 / cos(30*pi/180) / sin(25*pi/180) / 2  # 1.366127 (30deg from 3-beam pattern)
+            ##C  <- 1 / (3 * cos(25 * pi / 180))             # 0.3677926
+            S  <- 1 / (3 * sin(beamAngle * pi / 180)) # 0.7887339
+            CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
+            C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
+            warning("*****FIXME: check up and down; also read it and check*****")
+            metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
+                                                      0  , -CS,  CS,
+                                                      C  ,   C,   C),
+                                                    nrow=3, byrow=TRUE)
+        } else {
+            S  <- 1 / (3 * sin(beamAngle * pi / 180)) # 0.7887339
+            CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
+            C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
+            warning("*****FIXME: check up and down; also read it and check*****")
+            metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
+                                                      0  ,  CS, -CS,
+                                                     -C  ,  -C,  -C),
+                                                    nrow=3, byrow=TRUE)
+        }
         ## For later use, RC says that the PC-ADP uses
         ## T =  2.576  -1.288  -1.288
         ##      0.000  -2.230   2.230
