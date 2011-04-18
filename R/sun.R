@@ -1,4 +1,4 @@
-sun.angle <- function(t, lat, lon, use.refraction=TRUE)
+sunAngle <- function(t, lat, lon, use.refraction=TRUE)
 {
     if (missing(t))
         stop("must provide t")

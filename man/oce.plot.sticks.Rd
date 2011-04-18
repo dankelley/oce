@@ -7,7 +7,7 @@
 
 \usage{
 oce.plot.sticks(x, y, u, v, yscale=1, add=FALSE, length=1/20,
-                mgp=getOption("oce.mgp"),
+                mgp=getOption("oceMgp"),
                 mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
                 \dots)}
 \arguments{

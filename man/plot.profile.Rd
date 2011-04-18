@@ -22,8 +22,8 @@
              lwd,
              xaxs="r", yaxs="r",
              cex=1,
-             use.smoothScatter=FALSE,
-             mgp=getOption("oce.mgp"),
+             useSmoothScatter=FALSE,
+             mgp=getOption("oceMgp"),
              mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
 \dots)
 }
@@ -37,7 +37,7 @@
       \item{\code{density}}{Profile of density (expressed as
 	\eqn{\sigma_\theta}{sigma_theta}).}
       \item{\code{index}}{Index of sample (very useful for working with
-	\code{\link{ctd.trim}}).}
+	\code{\link{ctdTrim}}).}
       \item{\code{S+T}}{Profile of salinity and temperature within a
 	single axis frame.}
       \item{\code{N2}}{Profile of square of buoyancy frequency
@@ -78,7 +78,7 @@
   \item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
   \item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
   \item{cex}{size of symbols}
-  \item{use.smoothScatter}{boolean, set to \code{TRUE} to use 
+  \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and

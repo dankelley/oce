@@ -6,10 +6,9 @@
 
 \title{ADP (acoustic-doppler profiler) dataset}
 
-\description{This is a sampling of measurements made with an
-  upward-pointing ADP (acoustic doppler current profiler) manufactured
-  by Teledyne-RDI, as part of the St Lawrence Internal Wave Experiment
-  (SLEIWEX).}
+\description{This is a sampling of measurements made with an upward-pointing
+    ADP (acoustic doppler current profiler) manufactured by Teledyne-RDI, as
+    part of the St Lawrence Internal Wave Experiment (SLEIWEX).}
 
 \examples{
 \dontrun{
@@ -20,8 +19,8 @@ beam <- read.oce(
   to=as.POSIXct("2008-06-27", tz="UTC"),
   by="10:00", 
   latitude=47.88126, longitude=-69.73433)
-xyz <- beam.to.xyz.adp(beam)
-adp <- xyz.to.enu.adp(xyz, declination=-18.1)
+xyz <- beamToXyzAdp(beam)
+adp <- xyzToEnuAdp(xyz, declination=-18.1)
 }
 
 library(oce)
@@ -36,9 +35,9 @@ plot(adp, which=15:18)
 # Do currents line up with bathymetry?
 par(mfrow=c(1,2))
 plot(adp, which="uv+ellipse+arrow")
-data(coastline.sle)
+data(coastlineSLE)
 # plot local area
-plot(coastline.sle, center=c(adp$metadata$latitude,adp$metadata$longitude),
+plot(coastlineSLE, center=c(adp$metadata$latitude,adp$metadata$longitude),
   span=50)
 points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
 }

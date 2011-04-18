@@ -6,7 +6,7 @@
 
 \description{Fit a tidal model to a timeseries.}
 
-\usage{tidem(sl, constituents, latitude=NULL, start.time, rc=1, quiet=TRUE)}
+\usage{tidem(sl, constituents, latitude=NULL, startTime, rc=1, quiet=TRUE)}
 
 \arguments{
   \item{sl}{a \code{sealevel} object, or a list of numbers indicating sealevel.}
@@ -14,7 +14,7 @@
 	the fit is done (see \dQuote{Details}.)}  
   \item{latitude}{if provided, the latitude of the observations.  If not
 	provided, \code{tidem} will try to infer this from \code{sl}.}
-  \item{start.time}{optional the start time for the series.  If not provided,
+  \item{startTime}{optional the start time for the series.  If not provided,
 	this is taken as the first time of the first sample, which is
 	inferred as 0 for the case where \code{sl} is a simple list, and
 	inferred as the time of the first sample, if \code{sl} is a
@@ -122,7 +122,7 @@
     open question.} 
 }
 
-\section{Test with data(sealevel.tuk)}{
+\section{Test with \code{data(sealevelTuktoyaktuk)}}{
 
 \strong{Note: this is only a preliminary test, since
 \code{tidem} does not yet do nodal corrections, and also since
@@ -138,19 +138,18 @@ within \code{T_TIDE} gives 0.4904m \eqn{\pm}{+/-} 0.037m and phase
 Under the same conditions, the test given below results in 
 amplitude 0.50072m and phase 143.1.
 \preformatted{
-  data(sealevel.tuk)
-  tuk.tide <- tidem(sealevel.tuk)
-  summary(tuk.tide)
+  data(sealevelTuktoyaktuk)
+  tide <- tidem(sealevelTuktoyaktuk)
+  summary(tide)
 }
 
 } % section
 
 \seealso{\code{\link{summary.tidem}} summarizes a "\code{tide}" object,
   \code{\link{plot.tidem}} plots one, and \code{\link{predict.tidem}}
-  makes predictions from one.  As for the input, sealevel
-  objects may be created with \code{\link{as.sealevel}} or
-  \code{\link{read.sealevel}}.  See notes at \code{\link{sealevel.tuk}},
-  which is test data set.
+  makes predictions from one.  As for the input, sealevel objects may be
+  created with \code{\link{as.sealevel}} or \code{\link{read.sealevel}}.  See
+  notes at \code{\link{sealevelTuktoyaktuk}}, which is test data set.
 }
 
 \examples{
@@ -168,15 +167,15 @@ plot(tide)
 t <- seq(0, 10*86400, 3600)		# 10 days
 eta <- sin(0.080511401 * t * 2 * pi / 3600)
 sl <- as.sealevel(eta,t+as.POSIXct("2009-02-13 00:00:00", tz="GMT"))
-m <- tidem(sl, start.time=as.POSIXct("2009-02-13 00:00:00", tz="GMT"))
+m <- tidem(sl, startTime=as.POSIXct("2009-02-13 00:00:00", tz="GMT"))
 # Check: only M2 has non-negligible amplitude
 summary(m)
 
 # The demonstration time series from Foreman (1977),
 # also used in T_TIDE (Pawlowicz, 2002).
-data(sealevel.tuk)
-tide.tuk <- tidem(sealevel.tuk)
-summary(tide.tuk)
+data(sealevelTuktoyaktuk)
+tide <- tidem(sealevelTuktoyaktuk)
+summary(tide)
 }
 
 \references{

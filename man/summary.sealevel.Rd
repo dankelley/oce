@@ -35,8 +35,8 @@
 
 \examples{
 library(oce)
-data(sealevel.hal)
-summary(sealevel.hal)
+data(sealevelHalifax)
+summary(sealevelHalifax)
 }
 
 \author{Dan Kelley}

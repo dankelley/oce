@@ -10,13 +10,13 @@
      which=c(1, 2, 7, 9),
      type="l",
      adorn=NULL,
-     draw.time.range=getOption("oce.draw.time.range"),
-     draw.zero.line=FALSE,
-     mgp=getOption("oce.mgp"),
+     drawTimeRange=getOption("oceDrawTimeRange"),
+     drawZeroLine=FALSE,
+     mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      small=2000,
      main="",
-     debug=getOption("oce.debug"),
+     debug=getOption("oceDebug"),
      \dots)
 }
 
@@ -29,10 +29,10 @@
     \item{adorn}{optional list of \code{\link{expression}}s to be performed
         immediately after drawing the panels. (See \code{\link{plot.adp}} for
         an example.)}
-    \item{draw.time.range}{boolean that applies to panels with time as the
+    \item{drawTimeRange}{boolean that applies to panels with time as the
         horizontal axis, indicating whether to draw the time range in 
         the top-left margin of the plot.}
-    \item{draw.zero.line}{boolean that indicates whether to draw zero
+    \item{drawZeroLine}{boolean that indicates whether to draw zero
         lines on velocities.}
     \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
         also for \code{par(mar)}, computed from this.  The default is

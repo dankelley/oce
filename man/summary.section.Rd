@@ -16,7 +16,7 @@
 \arguments{
   \item{object}{an object of class \code{"section"}, usually, a result of a
     call to \code{\link{read.section}}, \code{\link{read.oce}}, or
-    \code{\link{make.section}}.}
+    \code{\link{makeSection}}.}
   \item{x}{an object of class \code{"summary.section"}, usually, a
     result of a call to \code{summary.section}.}
   \item{digits}{the number of significant digits to use when printing.}
@@ -27,7 +27,7 @@
   locations, distance along track, etc.}
 
 \seealso{A \code{section} object may be created by using
-  \code{\link{make.section}} to assemble individual \code{ctd} objects,
+  \code{\link{makeSection}} to assemble individual \code{ctd} objects,
   or it may be created by reading a section data file with
   \code{\link{read.section}}.}
 

@@ -2,7 +2,7 @@
 \alias{pt.trim}
 \title{Trim start/end portions of a pt cast}
 \description{Trim start/end portions of a pt cast.}
-\usage{pt.trim(x, method="water", parameters=NULL, debug=getOption("oce.debug"))}
+\usage{pt.trim(x, method="water", parameters=NULL, debug=getOption("oceDebug"))}
 \arguments{
   \item{x}{A \code{pt} object, e.g. as read by \code{\link{read.pt}}.}
   \item{method}{Various methods exist, some of which use parameters:

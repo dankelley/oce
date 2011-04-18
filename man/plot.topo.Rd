@@ -20,9 +20,9 @@
      land.lty,
      land.lwd,
      legend.loc="topright", 
-     mgp=getOption("oce.mgp"),
+     mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
-     debug=getOption("oce.debug"),
+     debug=getOption("oceDebug"),
      \dots)}
 
 \arguments{

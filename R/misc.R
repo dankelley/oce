@@ -1,4 +1,4 @@
-# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (xmax <= xmin)
@@ -16,19 +16,19 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     r <- range(x, na.rm=TRUE)
-    if (missing(xlow)) 
-        xlow <- min(x, na.rm=TRUE) 
-    if (missing(xhigh)) 
-        xhigh <- max(x, na.rm=TRUE) 
+    if (missing(xlow))
+        xlow <- min(x, na.rm=TRUE)
+    if (missing(xhigh))
+        xhigh <- max(x, na.rm=TRUE)
     rval <- rlow + (rhigh - rlow) * (x - xlow) / (xhigh - xlow)
     if (clip) {
         rval <- ifelse(rval < rlow, rlow, rval)
         rval <- ifelse(rval > rhigh, rhigh, rval)
-    } 
+    }
     rval
 }
 
-retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
+retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
 {
     if (missing(x))
         stop("must give argument 'x'")
@@ -38,19 +38,19 @@ retime <- function(x, a, b, t0, debug=getOption("oce.debug"))
         stop("must give argument 'b'")
     if (missing(t0))
         stop("must give argument 't0'")
-    oce.debug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
+    oceDebug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
     rval <- x
     if ("ts" %in% names(x$data)) {
-        oce.debug(debug, "retiming x$data$ts$time")
+        oceDebug(debug, "retiming x$data$ts$time")
         rval$data$ts$time <- x$data$ts$time + a + b * (as.numeric(x$data$ts$time) - as.numeric(t0))
     }
-    if ("ts.slow" %in% names(x$data)) {
-        oce.debug(debug, "retiming x$data$ts.slow$time\n")
-        rval$data$ts.slow$time <- x$data$ts.slow$time + a + b * (as.numeric(x$data$ts.slow$time) - as.numeric(t0))
+    if ("tsSlow" %in% names(x$data)) {
+        oceDebug(debug, "retiming x$data$tsSlow$time\n")
+        rval$data$tsSlow$time <- x$data$tsSlow$time + a + b * (as.numeric(x$data$tsSlow$time) - as.numeric(t0))
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
-                                              paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # retime.adv()\n")
+    rval$history <- historyAdd(rval$history,
+                               paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b\b} # retime.adv()\n")
     rval
 }
 
@@ -145,7 +145,7 @@ unabbreviate.year <- function(year)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
 
-logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
+logger.toc <- function(dir, from, to, debug=getOption("oceDebug"))
 {
     if (missing(dir))
         stop("need a 'dir', naming a directory containing a file with suffix .TBL, and also data files named in that file")
@@ -154,9 +154,9 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
         stop("could not locate a .TBL file in direcory ", dir)
     tref <- as.POSIXct("2010-01-01", tz="UTC") # arbitrary time, to make integers
     file.code <- NULL
-    start.time <- NULL
+    startTime <- NULL
     for (tbl.file in tbl.files) {
-        oce.debug(debug, tbl.file)
+        oceDebug(debug, tbl.file)
         lines <- readLines(paste(dir, tbl.file, sep="/"))
         if (length(lines) < 1)
             stop("found no data in file ", paste(dir, tbl.file, sep="/"))
@@ -172,9 +172,9 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
                 t <- as.POSIXct(strptime(paste(year, month, day, hms), "%Y %b %d %H:%M:%S", tz="UTC"))
                 len <- nchar(filename)
                 code <- substr(filename, len-6, len)
-                oce.debug(debug, s, "(", code, format(t), ")\n")
+                oceDebug(debug, s, "(", code, format(t), ")\n")
                 file.code <- c(file.code, code)
-                start.time <- c(start.time, as.numeric(t) - as.numeric(tref))
+                startTime <- c(startTime, as.numeric(t) - as.numeric(tref))
             }
         }
     }
@@ -182,18 +182,18 @@ logger.toc <- function(dir, from, to, debug=getOption("oce.debug"))
     lprefix <- nchar(prefix)
     prefix <- substr(prefix, 1, lprefix-7)
     filename <- paste(dir, paste(prefix, file.code, sep=""), sep="/")
-    start.time <- as.POSIXct(start.time + tref)
-    oce.debug(debug, "from=", format(from), "\n")
-    oce.debug(debug, "to=", format(to), "\n")
+    startTime <- as.POSIXct(startTime + tref)
+    oceDebug(debug, "from=", format(from), "\n")
+    oceDebug(debug, "to=", format(to), "\n")
     if (!missing(from) && !missing(to)) {
-        oce.debug(debug, "got", length(file.code), "candidate files")
-        ok <- from <= start.time & start.time <= to
-        oce.debug(debug, "ok=", ok, "\n")
+        oceDebug(debug, "got", length(file.code), "candidate files")
+        ok <- from <= startTime & startTime <= to
+        oceDebug(debug, "ok=", ok, "\n")
         filename <- filename[ok]
-        start.time <- start.time[ok]
-        oce.debug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
+        startTime <- startTime[ok]
+        oceDebug(debug, "taking into account the times, ended up with", length(file.code), "files\n")
     }
-    list(filename=filename, start.time=start.time)
+    list(filename=filename, startTime=startTime)
 }
 
 angle.remap <- function(theta)
@@ -219,7 +219,7 @@ unwrap.angle <- function(angle)
     list(mean=res.mean, median=res.median)
 }
 
-oce.spectrum <- function(x, ...)
+oceSpectrum <- function(x, ...)
 {
     args <- list(...)
     want.plot <- FALSE
@@ -237,7 +237,7 @@ oce.spectrum <- function(x, ...)
     invisible(rval)
 }
 
-vector.show <- function(v, msg, digits=5)
+vectorShow <- function(v, msg, digits=5)
 {
     n <- length(v)
     if (missing(msg))
@@ -262,14 +262,14 @@ vector.show <- function(v, msg, digits=5)
     }
 }
 
-full.filename <- function(filename)
+fullFilename <- function(filename)
 {
     first.char <- substr(filename, 1, 1)
     if (first.char == '/' || first.char == '~')
         return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
-matrix.smooth <- function(m)
+matrixSmooth <- function(m)
 {
     if (missing(m))
         stop("must provide matrix 'm'")
@@ -327,12 +327,12 @@ resizable.label <- function(item=c("S", "T", "p", "z", "distance", "heading", "p
     if (fraction < 0.8) full else abbreviated
 }
 
-latlon.format <- function(lat, lon, digits=max(6, getOption("digits") - 1))
+latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
     rval <- vector("character", n)
     if (!is.numeric(lat) || !is.numeric(lon))
-        return ("(non-numeric lat or lon)")
+        return(paste("non-numeric lat (", lat, ") or lon (", lon, ")", sep=""))
     for (i in 1:n) {
         if (is.na(lat[i]) || is.na(lon[i]))
             rval[i] <- ""
@@ -346,7 +346,7 @@ latlon.format <- function(lat, lon, digits=max(6, getOption("digits") - 1))
     rval
 }
 
-lat.format <- function(lat, digits=max(6, getOption("digits") - 1))
+latFormat <- function(lat, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lat)
     if (n < 1) return("")
@@ -361,7 +361,7 @@ lat.format <- function(lat, digits=max(6, getOption("digits") - 1))
     rval
 }
 
-lon.format <- function(lon, digits=max(6, getOption("digits") - 1))
+lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
 {
     n <- length(lon)
     if (n < 1) return("")
@@ -480,7 +480,7 @@ gravity <- function(latitude=45, degrees=TRUE)
     9.780318*(1.0+5.3024e-3*sin(latitude)^2-5.9e-6*sin(2*latitude)^2)
 }
 
-make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=FALSE)
+makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=FALSE)
 {
     type <- match.arg(type)
     if (missing(m))
@@ -512,7 +512,7 @@ make.filter <- function(type=c("blackman-harris", "rectangular", "hamming", "han
     return(kernel(coef=coef, m=length(coef)-1, name=paste("Blackman-Harris(", m, ")", sep="")))
 }
 
-oce.filter <- function(x, a=1, b, zero.phase=FALSE)
+oceFilter <- function(x, a=1, b, zero.phase=FALSE)
 {
     if (missing(x))
         stop("must supply x")
@@ -535,7 +535,7 @@ oce.filter <- function(x, a=1, b, zero.phase=FALSE)
 ## The answer is returned in the same units as a; here in meters.
 ##
 ## Patterned after R code donated by Darren Gillis
-geod.xy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
+geodXy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
@@ -579,7 +579,7 @@ geod.xy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     data.frame(x, y)
 }
 
-geod.dist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
+geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
@@ -720,10 +720,10 @@ undrift.time <- function(x, slow.end = 0, tname="time")
     nt <- length(time)
     if (nt < 2) warning("too few data to to undrift time; returning object unaltered")
     else {
-        sample.interval <- as.numeric(difftime(time[2], time[1], units="s"))
+        sampleInterval <- as.numeric(difftime(time[2], time[1], units="s"))
         nt <- length(time)
-        nt.out <- floor(0.5 + nt + slow.end / sample.interval)
-        time.out <- seq.POSIXt(from=time[1], by=sample.interval, length.out=nt.out)
+        nt.out <- floor(0.5 + nt + slow.end / sampleInterval)
+        time.out <- seq.POSIXt(from=time[1], by=sampleInterval, length.out=nt.out)
         i <- seq(from=1, by=1, length.out=nt)
         i.out <- seq(from=1, to=nt, length.out = nt.out)
         out <- data.frame(array(dim=c(nt.out, dim(x$data)[2])))
@@ -737,12 +737,12 @@ undrift.time <- function(x, slow.end = 0, tname="time")
         }
         rval$data <- out
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$history <- historyAdd(rval$history,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
-fill.gap <- function(x, method=c("linear"), rule=1)
+fillGap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
         stop("only works for numeric 'x'")
@@ -817,68 +817,76 @@ add.column <- function (x, data, name)
     rval <- x
     rval$data <- data.frame(x$data, data)
     names(rval$data) <- c(names(x$data), name)
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$history <- historyAdd(rval$history,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
-decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
+decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
-    oce.debug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
+    oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
     do.filter <- !missing(filter)
     if (missing(to))
         to <- length(x$data$ts[[1]])
     select <- seq(from=1, to=to, by=by)
-    oce.debug(debug, vector.show(select, "select:"))
+    oceDebug(debug, vectorShow(select, "select:"))
     if (inherits(x, "adp")) {
-        oce.debug(debug, "decimate() on an ADP object\n")
+        oceDebug(debug, "decimate() on an ADP object\n")
         nts <- length(x$data$ts)
         for (its in 1:nts) {
-            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
             if (names(x$data$ts)[[its]] != "time" && do.filter) {
                 tmp <- mean(x$data$ts[[its]], na.rm=TRUE)
                 res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE, sides=2) + tmp
             }
             res$data$ts[[its]] <- x$data$ts[[its]][select]
-            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
         }
         nma <- length(x$data$ma)
+        nbeam <- dim(x$data$ma[[1]])[3]
+        ndepth <- dim(x$data$ma[[1]])[2]
+        names <- names(x$data$ma)
+        oceDebug(debug, "nbeam=",nbeam, "; ndepth=",ndepth, "\n")
         for (ma in 1:nma) {
             dim <- dim(x$data$ma[[ma]])
-            nbeam <- dim[3]
-            ndepth <- dim[2]
-            oce.debug(debug, "ma=", ma, "; nbeam=", nbeam, "; ndepth=", ndepth, "\n")
-            if (do.filter) {
-                raw <- is.raw(x$data$ma[[ma]])
-                for (depth in 1:ndepth) {
-                    for (beam in 1:nbeam) {
-                        oce.debug(debug, "depth=", depth, "; beam=", beam, "\n")
-                        if (raw) {
-                            tmp <- filter(as.numeric(x$data$ma[[ma]][,depth,beam]), filter, circular=TRUE)
-                            tmp[tmp < 0] <- 0
-                            tmp[tmp > 255] <- 255
-                            res$data$ma[[ma]][,depth,beam] <- as.raw(tmp)
-                        } else {
-                            res$data$ma[[ma]][,depth,beam] <- filter(x$data$ma[[ma]][,depth,beam], filter, circular=TRUE)
+            oceDebug(debug, "ma=", ma, " contains", names[ma], ", which is being smoothed and decimated\n")
+            if (3 == length(dim)) {
+                oceDebug(debug, "processing\n")
+                if (do.filter) {
+                    raw <- is.raw(x$data$ma[[ma]])
+                    for (depth in 1:ndepth) {
+                        for (beam in 1:nbeam) {
+                            ##oceDebug(debug, "depth=", depth, "; beam=", beam, "\n")
+                            if (raw) {
+                                tmp <- filter(as.numeric(x$data$ma[[ma]][,depth,beam]), filter, circular=TRUE)
+                                tmp[tmp < 0] <- 0
+                                tmp[tmp > 255] <- 255
+                                res$data$ma[[ma]][,depth,beam] <- as.raw(tmp)
+                            } else {
+                                res$data$ma[[ma]][,depth,beam] <- filter(x$data$ma[[ma]][,depth,beam], filter, circular=TRUE)
+                            }
                         }
                     }
                 }
+                res$data$ma[[ma]] <- res$data$ma[[ma]][select,,]
+            } else {
+                res$data$ma[[ma]] <- res$data$ma[[ma]][select,]
+                warning("data$ma$", names[ma], " is decimated only; FIXME: add code to smooth first.")
             }
-            res$data$ma[[ma]] <- res$data$ma[[ma]][select,,]
         }
     } else if (inherits(x, "adv")) { # FIXME: the (newer) adp code is probably better than this ADV code
-        oce.debug(debug, "decimate() on an ADV object\n")
+        oceDebug(debug, "decimate() on an ADV object\n")
         nts <- length(x$data$ts)
         for (its in 1:nts) {
-            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
             if (names(x$data$ts)[[its]] == "time" || !do.filter)
                 res$data$ts[[its]] <- x$data$ts[[its]][select]
             else
                 res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE)[select]
-            oce.debug(debug, vector.show(res$data$ts[[its]], names(res$data$ts)[its]))
+            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
         }
         num.ma <- length(x$data$ma)
         for (v in 1:num.ma) {
@@ -915,12 +923,12 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oce.debug"))
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$history <- historyAdd(res$history,
                                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
-oce.smooth <- function(x, ...)
+oceSmooth <- function(x, ...)
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -955,7 +963,7 @@ oce.smooth <- function(x, ...)
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    res$processing.log <- processing.log.add(res$processing.log,
+    res$history <- historyAdd(res$history,
                                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -988,7 +996,7 @@ stickplot <- function(t, x, y, ...)
     ##points(xx[ones],yy[ones],col="red")
 }
 
-bcd2integer <- function(x, endian=c("little", "big"))
+bcdToInteger <- function(x, endian=c("little", "big"))
 {
     endian <- match.arg(endian)
     x <- as.integer(x)
@@ -997,7 +1005,7 @@ bcd2integer <- function(x, endian=c("little", "big"))
     if (endian=="little") 10*byte1 + byte2 else byte1 + 10*byte2
 }
 
-byte2binary <- function(x, endian=c("little", "big"))
+byteToBinary <- function(x, endian=c("little", "big"))
 {
     onebyte2binary <- function(x)
     {
@@ -1068,7 +1076,7 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
                 fmt <- paste("%.", abs(digits), "f", sep="")
             else
                 fmt <- "%.f"
-            oce.debug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
+            oceDebug(debug, "pm=", pm, ";pmr=", pmr, "; scale=", scale, "pm/scale=", pm/scale, "round(pm/scale)=", round(pm/scale), "\n", " x=", x,  "; x/scale=", x/scale, "digits=",digits,"fmt=", fmt, "\n")
             paste(sprintf(fmt, sign*x), "(", pmr, ")", sep="")
         }
     }
@@ -1128,11 +1136,11 @@ integer2ascii <- function(i)
       "\xfe", "\xff")[i+1]
 }
 
-apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.debug"))
+applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oce.debug(debug, "\b\bapply.magnetic.declination(x,declination=", declination, ") {\n", sep="")
+    oceDebug(debug, "\b\bapplyMagneticDeclination(x,declination=", declination, ") {\n", sep="")
     if (inherits(x, "cm")) {
-        oce.debug(debug, "object is of type 'cm'\n")
+        oceDebug(debug, "object is of type 'cm'\n")
         rval <- x
         S <- sin(-declination * pi / 180)
         C <- cos(-declination * pi / 180)
@@ -1140,20 +1148,20 @@ apply.magnetic.declination <- function(x, declination=0, debug=getOption("oce.de
         uv.r <- r %*% rbind(x$data$ts$u, x$data$ts$v)
         rval$data$ts$u <- uv.r[1,]
         rval$data$ts$v <- uv.r[2,]
-        oce.debug(debug, "originally, first u:", x$data$ts$u[1:3], "\n")
-        oce.debug(debug, "originally, first v:", x$data$ts$v[1:3], "\n")
-        oce.debug(debug, "after application, first u:", rval$data$ts$u[1:3], "\n")
-        oce.debug(debug, "after application, first v:", rval$data$ts$v[1:3], "\n")
+        oceDebug(debug, "originally, first u:", x$data$ts$u[1:3], "\n")
+        oceDebug(debug, "originally, first v:", x$data$ts$v[1:3], "\n")
+        oceDebug(debug, "after application, first u:", rval$data$ts$u[1:3], "\n")
+        oceDebug(debug, "after application, first v:", rval$data$ts$v[1:3], "\n")
     } else {
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    rval$history <- historyAdd(rval$history,
                                               paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # apply.magnetic.declination\n")
+    oceDebug(debug, "\b\b} # applyMagneticDeclination\n")
     rval
 }
 
-magnetic.declination <- function(lat, lon, date)
+magneticDeclination <- function(lat, lon, date)
 {
     if (missing(lat) || missing(lon) || missing(date))
         stop("must provide lat, lon, and date")
@@ -1185,7 +1193,7 @@ magnetic.declination <- function(lat, lon, date)
     rval
 }
 
-seconds.to.ctime <- function(sec)
+secondsToCtime <- function(sec)
 {
     if (sec < 60)
         return(sprintf("00:00:%02d", sec))
@@ -1201,7 +1209,7 @@ seconds.to.ctime <- function(sec)
     return(sprintf("%02d:%02d:%02d", hour, min, sec))
 }
 
-ctime.to.seconds <- function(ctime)
+ctimeToSeconds <- function(ctime)
 {
     if (length(grep(":", ctime)) > 0) {
         parts <- as.numeric(strsplit(ctime, ":")[[1]])
@@ -1241,7 +1249,7 @@ show.fives <- function(x, indent="    ")
     res
 }
 
-oce.debug <- function(debug=0, ...)
+oceDebug <- function(debug=0, ...)
 {
     debug <- if (debug > 4) 4 else max(0, floor(debug + 0.5))
     if (debug > 0) {
@@ -1257,23 +1265,23 @@ drawpalette <- function(zlim,
                         col,
                         top=0, bottom=0,
                         draw.contours=FALSE,
-                        debug=getOption("oce.debug"),
+                        debug=getOption("oceDebug"),
                         ...)
 {
     debug <- min(1, max(debug, 0))
     gave.zlim <- !missing(zlim)
     gave.breaks <- !missing(breaks)
     if (gave.zlim)
-        oce.debug(debug, "\b\bdrawpalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
+        oceDebug(debug, "\b\bdrawpalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
     else
-        oce.debug(debug, "palette() with no arguments: set space to right of a graph\n")
-    oce.debug(debug, if (gave.breaks) "gave breaks\n" else "did not give breaks\n")
+        oceDebug(debug, "palette() with no arguments: set space to right of a graph\n")
+    oceDebug(debug, if (gave.breaks) "gave breaks\n" else "did not give breaks\n")
     omai <- par("mai")
-    oce.debug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
+    oceDebug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
     omar <- par("mar")
-    oce.debug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
+    oceDebug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
     device.width <- par("din")[1]
-    oce.debug(debug, "device.width = ", device.width, " inches\n")
+    oceDebug(debug, "device.width = ", device.width, " inches\n")
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
     tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
 
@@ -1287,7 +1295,7 @@ drawpalette <- function(zlim,
     widths$main <- device.width - widths$mar.lhs - widths$palette.separation - widths$palette.width - widths$mar.rhs
     if (debug > 0) {
         for (n in names(widths)) {
-            oce.debug(debug, " width$", n, " = ", widths[[n]], "\n", sep="")
+            oceDebug(debug, " width$", n, " = ", widths[[n]], "\n", sep="")
         }
     }
     contours <- NULL
@@ -1321,9 +1329,9 @@ drawpalette <- function(zlim,
                  widths$main + widths$mar.lhs + widths$palette.separation,
                  omai[3]+top,
                  widths$mar.rhs)
-    oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
+    oceDebug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
     the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
-    oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
+    oceDebug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
     if (gave.zlim) {
         par(mai=the.mai)
         if (!gave.breaks) {
@@ -1349,15 +1357,15 @@ drawpalette <- function(zlim,
                  omai[3],
                  widths$palette.separation + widths$palette.width + widths$mar.rhs)
     the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
-    oce.debug(debug, "original par(mai)=", format(omai, digits=2), "\n")
-    oce.debug(debug, "setting  par(mai)=", format(the.mai, digits=2), "\n")
-    oce.debug(debug, "drawpalette orig mar=",par('mar'),"\n")
+    oceDebug(debug, "original par(mai)=", format(omai, digits=2), "\n")
+    oceDebug(debug, "setting  par(mai)=", format(the.mai, digits=2), "\n")
+    oceDebug(debug, "drawpalette orig mar=",par('mar'),"\n")
     if (gave.zlim)
         par(new=TRUE, mai=the.mai)
     else
         par(mai=the.mai)
-    oce.debug(debug, "drawpalette at end mar=",par('mar'),"\n")
-    oce.debug(debug, "\b\b} # drawpalette()\n")
+    oceDebug(debug, "drawpalette at end mar=",par('mar'),"\n")
+    oceDebug(debug, "\b\b} # drawpalette()\n")
     invisible()
 }
 

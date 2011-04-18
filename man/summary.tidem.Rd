@@ -46,8 +46,8 @@
 \examples{
 library(oce)
 # Halifax data
-data(sealevel.hal)
-tide <- tidem(sealevel.hal)
+data(sealevelHalifax)
+tide <- tidem(sealevelHalifax)
 summary(tide)
 }
 

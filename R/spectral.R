@@ -1,5 +1,5 @@
 pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
-                   debug=getOption("oce.debug"), ...)
+                   debug=getOption("oceDebug"), ...)
 {
     hamming.local <- function (n) # avoid having to pull in the signal library
     {
@@ -30,7 +30,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     gave.window <- !missing(window)
     gave.nfft <- !missing(nfft)
     gave.fs <- !missing(fs)
-    oce.debug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, ...) {\n",
+    oceDebug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, ...) {\n",
                              if (gave.window) window else "(not given)",
                              if (gave.nfft) nfft else "(not given)",
                              if (gave.fs) fs else "(not given)"))
@@ -76,7 +76,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         noverlap <- floor(window.len / 2)
     }
     step <- floor(window.len - noverlap + 1)
-    oce.debug(debug, "window.len=",window.len,"  step=",step,"  noverlap=", noverlap, "  x.len=", x.len, "\n")
+    oceDebug(debug, "window.len=",window.len,"  step=",step,"  noverlap=", noverlap, "  x.len=", x.len, "\n")
     if (step < 1)
         stop("overlap cannot exceed segment length")
     i0 <- 1
@@ -96,7 +96,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     if (!("detrend" %in% names.args))
         args$detrend <- TRUE
     while (TRUE) {
-        oce.debug(debug, "  subspectrum at indices ", start, "to", end, "\n")
+        oceDebug(debug, "  subspectrum at indices ", start, "to", end, "\n")
         xx <- ts(window * x[start:end], frequency=fs)
         args$x <- xx
         s <- do.call(spectrum, args=args)
@@ -111,7 +111,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     }
     nrow <- max(1, nrow)
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
-    oce.debug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
-    oce.debug(debug, "\b\b} # pwelch()\n")
+    oceDebug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
+    oceDebug(debug, "\b\b} # pwelch()\n")
     list(freq=freq, spec=2*apply(psd, 2, mean), nwindow=nrow)
 }
