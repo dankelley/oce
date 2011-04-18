@@ -999,6 +999,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res <- x
         if (is.null(x$metadata$transformationMatrix))
             stop("missing x$metadata$transformationMatrix")
+        oceDebug(debug, "manufacturer: rdi\n")
         tm <- x$metadata$transformationMatrix
         if (!all.equal(dim(tm), c(4,4)))
             stop("x$metadata$transformationMatrix must be a 4x4 matrix")
@@ -1019,6 +1020,9 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         tm <- x$metadata$transformationMatrix
         if (!all.equal(dim(tm), c(3, 3)))
             stop("x$metadata$transformationMatrix must be a 3x3 matrix")
+        oceDebug(debug, "manufacturer: nortek; transformationMatrix is as given below\n")
+        if (debug > 0)
+            print(tm)
         res <- x
         V <- x$data$ma$v[,,1:3]
         res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
@@ -1032,6 +1036,9 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         tm <- x$metadata$transformationMatrix
         if (!all.equal(dim(tm), c(3, 3)))
             stop("x$metadata$transformationMatrix must be a 3x3 matrix")
+        oceDebug(debug, "manufacturer: sontek; transformationMatrix is as given below\n")
+        if (debug > 0)
+            print(tm)
         res <- x
         V <- x$data$ma$v[,,1:3]
         res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
@@ -1041,9 +1048,8 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oceCoordinate <- "xyz"
-    res$history <- historyAdd(res$history,
-                              paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b\b} # adpBeamToXyz()\n")
+    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b\b\b} # beamToXyzAdp()\n")
     res
 }
 
@@ -1108,8 +1114,6 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) { # "sontek"
-        oceDebug(debug, "Sontek adp\n")
-        ## h/p/r and s/f/m mimic Sontek from Clark Richards pers. comm. 2011-03-14
         if (res$metadata$orientation == "upward") {
             oceDebug(debug, "Case 5: Sontek ADP with upward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
@@ -1135,9 +1139,9 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         stop("unrecognized manufacturer; should be 'teledyne rdi', 'sontek', or 'nortek', but is '",
              x$metadata$manufacturer, "'")
     }
-    oceDebug(debug, vectorShow(heading, "heading"))
-    oceDebug(debug, vectorShow(pitch, "pitch"))
-    oceDebug(debug, vectorShow(roll, "roll"))
+    oceDebug(debug, vectorShow(heading, "heading (after adjustment)"))
+    oceDebug(debug, vectorShow(pitch, "pitch (after adjustment)"))
+    oceDebug(debug, vectorShow(roll, "roll (after adjustment)"))
     np <- dim(x$data$ma$v)[1]           # number of profiles
     nc <- dim(x$data$ma$v)[2]           # numberOfCells
     ## ADP and ADV calculations are both handled by sfm_enu
@@ -1161,8 +1165,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res$data$ma$v[,c,3] <- enu$up
     }
     res$metadata$oceCoordinate <- "enu"
-    res$history <- historyAdd(res$history,
-                              paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
     res
 }
