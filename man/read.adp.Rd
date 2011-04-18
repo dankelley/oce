@@ -32,10 +32,7 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
                       latitude=NA, longitude=NA,
-<<<<<<< HEAD
-=======
                       type=c("adp", "pcadp"),
->>>>>>> develop
                       beamAngle=25, orientation,
                       monitor=TRUE, history,
                       debug=getOption("oceDebug")) 
