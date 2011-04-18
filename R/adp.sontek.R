@@ -383,9 +383,9 @@ sontek.time <- function(t, tz=getOption("oceTz"))
 read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    latitude=NA, longitude=NA,
                                    type=c("adp", "pcadp"),
-                                   beam.angle=25, orientation,
-                                   monitor=TRUE, log.action,
-                                   debug=getOption("oce.debug"))
+                                   beamAngle=25, orientation,
+                                   monitor=TRUE, history,
+                                   debug=getOption("oceDebug"))
 {
     ## Data format is described in
     ##   SonTek/YSI

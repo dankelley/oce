@@ -12,7 +12,7 @@
 \usage{
 read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
-  type=c("rdi", "nortek", "sontek"),
+  manufacturer=c("rdi", "nortek", "sontek"),
   debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -32,6 +32,10 @@ read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
                       latitude=NA, longitude=NA,
+<<<<<<< HEAD
+=======
+                      type=c("adp", "pcadp"),
+>>>>>>> develop
                       beamAngle=25, orientation,
                       monitor=TRUE, history,
                       debug=getOption("oceDebug")) 
@@ -59,7 +63,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{manufacturer}{a character string indicating the manufacturer, used 
     by the general function \code{read.adp} to select a subsidiary 
    function to use, such as \code{read.adp.nortek}.}
-  \item{type}{a character string indicating the type of file.}
+  \item{type}{a character string indicating the type of instrument.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{latitude}{optional signed number indicating the latitude in 
     degrees North.}

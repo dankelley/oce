@@ -67,10 +67,9 @@ ad.beam.name <- function(x, which)
 
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      latitude=NA, longitude=NA,
-                     type=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oceDebug"),
-                     monitor=TRUE, despike=FALSE,
-                     history, ...)
+                     manufacturer=c("rdi", "nortek", "sontek"),
+                     debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+                     ...)
 {
     oceDebug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
     type <- match.arg(type)
