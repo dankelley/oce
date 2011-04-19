@@ -22,9 +22,15 @@ xyzToEnu <- function(x, ...)
 enuToOther <- function(x, ...)
 {
     if (inherits(x, "adp"))
+<<<<<<< HEAD
         enuToOther(x, ...)
     else if (inherits(x, "adv"))
         enuToOther(x, ...)
+=======
+        enuToEnuOther(x, ...)
+    else if (inherits(x, "adv"))
+        enuToEnuOther(x, ...)
+>>>>>>> c98c5b54b6449aeeb7f8fa040b330d443e372d3e
     else
         stop("class of object must inherit from either 'adv' or 'adp'")
 }
