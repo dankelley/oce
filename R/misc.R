@@ -722,7 +722,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
     else {
         sampleInterval <- as.numeric(difftime(time[2], time[1], units="s"))
         nt <- length(time)
-        nt.out <- floor(0.5 + nt + slow.end / sampleInterval)
+        nt.out <- floor(0.5 + nt + slowEnd / sampleInterval)
         time.out <- seq.POSIXt(from=time[1], by=sampleInterval, length.out=nt.out)
         i <- seq(from=1, by=1, length.out=nt)
         i.out <- seq(from=1, to=nt, length.out = nt.out)
