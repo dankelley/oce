@@ -38,7 +38,7 @@
   \item{breaks}{the z values for breaks in the colour scheme.}
   \item{col}{either a vector of colours corresponding to the breaks, of length
      1 plus the number of breaks, or a function specifying colours,
-     e.g. \code{\link{oce.colors.jet}} for a rainbow.}
+     e.g. \code{\link{oceColorsJet}} for a rainbow.}
   \item{draw.contours}{boolean, \code{TRUE} to get contours on the
     image, and palette, at the colour breaks.  Images with a great deal
     of high-wavenumber variation look poor with contours.}

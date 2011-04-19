@@ -1,12 +1,12 @@
-\name{angle.remap}
+\name{angleRemap}
 
-\alias{angle.remap}
+\alias{angleRemap}
 
 \title{Convert an angle from the 0:360 range to -180:180}
 
 \description{Convert an angle from the 0:360 range to -180:180}
 
-\usage{angle.remap(theta)}
+\usage{angleRemap(theta)}
 
 \arguments{
     \item{theta}{an angle (in degrees) that is in the range from 0 to 360
@@ -34,7 +34,7 @@ heading <- 360 + rnorm(n, sd=10)
 heading <- ifelse(heading > 360, heading - 360, heading)
 x <- 1:n
 plot(x, heading, ylim=c(-10, 360), type='l', col='lightgray', lwd=10)
-lines(x, angle.remap(heading))
+lines(x, angleRemap(heading))
 }
 
 \author{Dan Kelley}

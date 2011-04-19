@@ -1,13 +1,13 @@
-\name{show.fives}
+\name{showFives}
 
-\alias{show.fives}
+\alias{showFives}
 
 
 \title{Show summary-style fivenum stats}
 
 \description{Show summary-style fivenum stats}
 
-\usage{show.fives(x, indent="    ")}
+\usage{showFives(x, indent="    ")}
 
 \arguments{
   \item{x}{a list that contains an item named \code{fives}, which is a
@@ -27,7 +27,7 @@
 library(oce)
 data(ptr)
 s <- summary(ptr)
-show.fives(s)
+showFives(s)
 }
 
 \author{Dan Kelley}

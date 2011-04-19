@@ -1,53 +1,53 @@
-\name{oce.colors}
+\name{oceColors}
 
-\alias{oce.colors.jet}
-\alias{oce.colors.gebco}
-\alias{oce.colors.two}
-\alias{oce.colors.palette}
+\alias{oceColorsJet}
+\alias{oceColorsGebco}
+\alias{oceColorsTwo}
+\alias{oceColorsPalette}
 
 \title{Create a palette of colours}
 
 \description{Create a palette of colours}
 
 \usage{
-oce.colors.palette(n, which=1)
+oceColorsPalette(n, which=1)
 
-oce.colors.gebco(n=9, region=c("water", "land", "both"),
+oceColorsGebco(n=9, region=c("water", "land", "both"),
 	type=c("fill","line"))
 
-oce.colors.jet(n)
+oceColorsJet(n)
 
-oce.colors.two(n, low=2/3, high=0, smax=1, alpha = 1)
+oceColorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
 
 }
 
 \arguments{
 \item{n}{the number of colors (\eqn{\ge 1}{>=1}) to be in the palette.}
-\item{which}{an identifier for the palette, for \code{oce.colors.palette}.}
-\item{region}{the region characteristic, for \code{oce.colors.gebco}.}
-\item{type}{the type of item drawn, for \code{oce.colors.gebco}.}
-\item{low}{the hue, in [0,1], for the low end of a \code{oce.colors.two}
+\item{which}{an identifier for the palette, for \code{oceColorsPalette}.}
+\item{region}{the region characteristic, for \code{oceColorsGebco}.}
+\item{type}{the type of item drawn, for \code{oceColorsGebco}.}
+\item{low}{the hue, in [0,1], for the low end of a \code{oceColorsTwo}
   scale.}
-\item{high}{the hue, in [0,1], for the high end of a \code{oce.colors.two}
+\item{high}{the hue, in [0,1], for the high end of a \code{oceColorsTwo}
   scale.}
-\item{smax}{the maximum saturation, in [0,1], for the colors of \code{oce.colors.two}.}
-\item{alpha}{the alpha value, in [0,1], for the colors of \code{oce.colors.two}.}
+\item{smax}{the maximum saturation, in [0,1], for the colors of \code{oceColorsTwo}.}
+\item{alpha}{the alpha value, in [0,1], for the colors of \code{oceColorsTwo}.}
 }
 
 \details{
 
-  \code{oce.colors.palette} provides a variety of pre-defined palettes.
+  \code{oceColorsPalette} provides a variety of pre-defined palettes.
   \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
   \code{which}=2 yields the ColorBrewer diverging RYB scheme.  (Each is
   interpolated from the 11-class schemes provided on this site.)
 
-  \code{oce.colors.gebco} provides palettes that mimic the GEBCO altas
+  \code{oceColorsGebco} provides palettes that mimic the GEBCO altas
   colours, with shades of blue for water and of brown for land.
 
-  \code{oce.colors.jet} provides a palette similar to the Matlab
+  \code{oceColorsJet} provides a palette similar to the Matlab
   \dQuote{jet} palette.
 
-  \code{oce.colors.two} provides a two-tone palette that fades to white
+  \code{oceColorsTwo} provides a two-tone palette that fades to white
   at central values.
 }
 
@@ -56,10 +56,10 @@ library(oce)
 opar <- par(no.readonly = TRUE)
 x <- array(1:1000, dim=c(1,1000))
 par(mfrow=c(1,4))
-image(x, col=oce.colors.two(100), main="oce.colors.two")
-image(x, col=oce.colors.jet(100), main="oce.colors.jet")
-image(x, col=oce.colors.gebco(100), main="oce.colors.gebco")
-image(x, col=oce.colors.palette(100), main="oce.colors.palette")
+image(x, col=oceColorsTwo(100), main="oceColorsTwo")
+image(x, col=oceColorsJet(100), main="oceColorsJet")
+image(x, col=oceColorsGebco(100), main="oceColorsGebco")
+image(x, col=oceColorsPalette(100), main="oceColorsPalette")
 par(opar)
 }
 

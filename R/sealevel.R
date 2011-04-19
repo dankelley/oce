@@ -410,7 +410,7 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat(paste("*    \"     endTime:   ",x$endTime, "\n"), ...)
     cat(paste("* GMT offset:          ", if (is.null(x$GMTOffset)) "unknown" else x$GMTOffset, "\n", sep=""), ...)
     cat("* Statistics::\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     print(summary(x$history))
     invisible(x)
 }

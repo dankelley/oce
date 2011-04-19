@@ -1,12 +1,12 @@
-\name{unwrap.angle}
+\name{unwrapAngle}
 
-\alias{unwrap.angle}
+\alias{unwrapAngle}
 
 \title{Unwrap an angle that suffers modulo-360 problems}
 
 \description{Unwrap an angle that suffers modulo-360 problems}
 
-\usage{unwrap.angle(angle)}
+\usage{unwrapAngle(angle)}
 
 \arguments{
   \item{angle}{an angle (in degrees) that is thought be near 360
@@ -34,7 +34,7 @@ library(oce)
 true <- 355
 a <- true + rnorm(100, sd=10)
 a <- ifelse(a > 360, a - 360, a)
-a2 <- unwrap.angle(a)
+a2 <- unwrapAngle(a)
 par(mar=c(3,3,5,3))
 hist(a, breaks=360)
 abline(v=a2$mean, col="blue", lty="dashed")

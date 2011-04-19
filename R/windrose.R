@@ -145,7 +145,7 @@ print.summary.windrose <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("Windrose data\n-------------\n\n")
     cat("* Have n=", x$n, "angles, separated by dtheta=", x$dtheta,"\n\n")
     cat("* Statistics by angle::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     cat("\n* history::\n\n", ...)
     print(summary(x$history))
     invisible(x)

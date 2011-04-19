@@ -232,7 +232,7 @@ print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                 x$numberOfCells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     ##cat("\n* history::\n\n", ...)
     cat("\n")
     print(summary(x$history))

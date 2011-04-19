@@ -17,7 +17,7 @@
     \item{breaks}{the z values for breaks in the colour scheme.}
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
-        e.g. \code{\link{oce.colors.jet}} for a rainbow.}
+        e.g. \code{\link{oceColorsJet}} for a rainbow.}
     \item{top}{extra space to insert at top of palette, in inches}
     \item{bottom}{extra space to insert at bottom of palette, in inches}
     \item{draw.contours}{boolean, \code{TRUE} to get contours on the
@@ -57,17 +57,17 @@ par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,1,1))
 par(mfrow=c(4,1))
 
-drawpalette(zlim=c(0,1),col=oce.colors.jet(5))
-plot(1:5, 1:5, col=oce.colors.jet(5)[1:5],pch=20,cex=5,xlab='x', ylab='y', main='test 1')
+drawpalette(zlim=c(0,1),col=oceColorsJet(5))
+plot(1:5, 1:5, col=oceColorsJet(5)[1:5],pch=20,cex=5,xlab='x', ylab='y', main='test 1')
 
 ## put space for palette to right of next graph (so x scales line up in stacked plot)
 drawpalette()
-plot(1:10, 1:10, col=oce.colors.palette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 2')
+plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 2')
 
-drawpalette(zlim=c(0,1),zlab="Image Scale",col=oce.colors.palette)
-plot(1:10, 1:10, lwd=2, bg=oce.colors.palette(10)[1:10],pch=21,cex=5,col='black',xlab='x', ylab='y', main='test 3')
+drawpalette(zlim=c(0,1),zlab="Image Scale",col=oceColorsPalette)
+plot(1:10, 1:10, lwd=2, bg=oceColorsPalette(10)[1:10],pch=21,cex=5,col='black',xlab='x', ylab='y', main='test 3')
 drawpalette(zlab="Image Scale")
-plot(1:10, 1:10, col=oce.colors.palette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 4')
+plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 4')
 
 }
 \author{Dan Kelley}

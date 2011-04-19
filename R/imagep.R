@@ -84,7 +84,7 @@ imagep <- function(x, y, z,
         breaks.orig <- breaks
     }
     if (missing(col))
-        col <- oce.colors.palette(n=length(breaks)-1)
+        col <- oceColorsPalette(n=length(breaks)-1)
     if (is.function(col))
         col <- col(n=length(breaks)-1)
 

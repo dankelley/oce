@@ -1288,7 +1288,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     }
     cat("\n",...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     ##cat("\n* history\n\n", ...)
     cat("\n")
     print(summary(x$history))

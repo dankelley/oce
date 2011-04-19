@@ -135,7 +135,7 @@ rangelimit <- function(x, min, max)
     }
     ifelse(max < x | x < min, NA, x)
 }
-unabbreviate.year <- function(year)
+unabbreviateYear <- function(year)
 {
     ## handle e.g. 2008 as 2008 (full year), 8 (year-2000 offset), or 108 (year 1900 offset)
     ##cat("year[1]=",year[1])
@@ -196,27 +196,27 @@ logger.toc <- function(dir, from, to, debug=getOption("oceDebug"))
     list(filename=filename, startTime=startTime)
 }
 
-angle.remap <- function(theta)
+angleRemap <- function(theta)
 {
-    to.rad <- atan2(1, 1) / 45
-    atan2(sin(to.rad * theta), cos(to.rad * theta)) / to.rad
+    toRad <- atan2(1, 1) / 45
+    atan2(sin(toRad * theta), cos(toRad * theta)) / toRad
 }
 
-unwrap.angle <- function(angle)
+unwrapAngle <- function(angle)
 {
-    to.rad <- atan2(1, 1) / 45
-    angle <- angle * to.rad
+    toRad <- atan2(1, 1) / 45
+    angle <- angle * toRad
     S <- sin(angle)
     C <- cos(angle)
     Smean <- mean(S, na.rm=TRUE)
     Smedian <- median(S, na.rm=TRUE)
     Cmean <- mean(C, na.rm=TRUE)
     Cmedian <- median(C, na.rm=TRUE)
-    res.mean <- atan2(Smean, Cmean)/to.rad
-    res.median <- atan2(Smedian, Cmedian)/to.rad
-    res.mean <- if (res.mean < 0) res.mean + 360 else res.mean
-    res.median <- if (res.median < 0) res.median + 360 else res.median
-    list(mean=res.mean, median=res.median)
+    resMean <- atan2(Smean, Cmean)/toRad
+    resMedian <- atan2(Smedian, Cmedian)/toRad
+    resMean <- if (resMean < 0) resMean + 360 else resMean
+    resMedian <- if (resMedian < 0) resMedian + 360 else resMedian
+    list(mean=resMean, median=resMedian)
 }
 
 oceSpectrum <- function(x, ...)
@@ -708,7 +708,7 @@ coriolis <- function(lat, degrees=TRUE)
     1.458423010785138e-4 * sin(lat)
 }
 
-undrift.time <- function(x, slow.end = 0, tname="time")
+undriftTime <- function(x, slowEnd = 0, tname="time")
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -756,7 +756,7 @@ fillGap <- function(x, method=c("linear"), rule=1)
     res
 }
 
-oce.colors.gebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
+oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill","line"))
 {
     region <- match.arg(region)
     type <- match.arg(type)
@@ -1224,7 +1224,7 @@ ctimeToSeconds <- function(ctime)
     s
 }
 
-show.fives <- function(x, indent="    ")
+showFives <- function(x, indent="    ")
 {
     if (!("fives" %in% names(x)))
         stop("'x' has no item named 'fives'")
@@ -1321,7 +1321,7 @@ drawpalette <- function(zlim,
             breaks[length(breaks)] <- zrange[2]
         }
         if (missing(col))
-            col <- oce.colors.palette(n=length(breaks)-1)
+            col <- oceColorsPalette(n=length(breaks)-1)
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }

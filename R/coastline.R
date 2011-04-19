@@ -396,7 +396,7 @@ print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),..
     cat("* Number of points:", x$length, ", of which", x$missing, "are NA (e.g. separating islands).\n")
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     cat("\n")
     print(summary(x$history))
     invisible(x)

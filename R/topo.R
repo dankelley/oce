@@ -178,7 +178,7 @@ if (0){
         }
         nz <- length(water.z)
         if (missing(water.col))
-            water.col <- oce.colors.gebco(nz, "water", "line")
+            water.col <- oceColorsGebco(nz, "water", "line")
         if (missing(water.lty))
             water.lty <- rep(par("lty"), nz)
         else if (length(water.lty) == 1)
@@ -208,7 +208,7 @@ if (0){
         nz <- length(land.z)
         if (nz > 0) {
             if (missing(land.col))
-                land.col <- oce.colors.gebco(nz, "land", "line")
+                land.col <- oceColorsGebco(nz, "land", "line")
             if (missing(land.lty))
                 land.lty <- rep(par("lty"), nz)
             else if (length(land.lty) == 1)

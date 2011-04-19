@@ -77,12 +77,12 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
   \code{\link{plot.pt}}, and summarized with \code{\link{summary.pt}},
   both of which are generic functions.  In-air samples (collected before
   and after deployment) may be removed in a crude way with
-  \code{\link{pt.trim}}, but the best scheme is to use
+  \code{\link{ptTrim}}, but the best scheme is to use
   \code{\link{subset.oce}}, based on a temporal window.  Removal of the
   atmospheric component of pressure is best done by the user, using
   measured records of atmospheric pressure.  However, if such data are
   unavailable, and if the p-T data set contains pre- and post-deployment
-  data, \code{\link{pt.patm}} may provide a useful estimate of
+  data, \code{\link{ptPatm}} may provide a useful estimate of
   atmospheric pressure.}
 
 \examples{
