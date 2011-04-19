@@ -215,10 +215,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   contains measurements made with an ADV device.  This is a list
   containing lists named \code{metadata}, \code{data}, and
   \code{history}.  The \code{data} list contains lists \code{ts},
-  potentially (for Nortek Vector units) \code{ts.slow}, and \code{ma}
+  potentially (for Nortek Vector units) \code{tsSlow}, and \code{ma}
   (matrices of velocity, etc).  These are as \code{adp} objects, except
-  for the presence of \code{ts.slow}, for timeseries that vary on a slow
-  timescale, e.g. on Nortek Vector units, \code{ts.slow} holds
+  for the presence of \code{tsSlow}, for timeseries that vary on a slow
+  timescale, e.g. on Nortek Vector units, \code{tsSlow} holds
   \code{heading}, \code{pitch}, \code{roll}, and \code{temperature},
   while \code{ts} holds only \code{pressure}.  }
 

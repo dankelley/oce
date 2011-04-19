@@ -179,7 +179,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
 
     ## FIXME: probably would save time to read all elements at once.  Instrument to check
-    RTC.year <- unabbreviate.year(readBin(VLD[5], "integer", n=1, size=1))
+    RTC.year <- unabbreviateYear(readBin(VLD[5], "integer", n=1, size=1))
     RTC.month <- readBin(VLD[6], "integer", n=1, size=1)
     RTC.day <- readBin(VLD[7], "integer", n=1, size=1)
     RTC.hour <- readBin(VLD[8], "integer", n=1, size=1)
@@ -279,7 +279,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            year   <- unabbreviate.year(readBin(buf[profileStart[middle] +  4], what="integer", n=1, size=1, signed=FALSE))
+            year   <- unabbreviateYear(readBin(buf[profileStart[middle] +  4], what="integer", n=1, size=1, signed=FALSE))
             month  <- readBin(buf[profileStart[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
             day    <- readBin(buf[profileStart[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
             hour   <- readBin(buf[profileStart[middle] +  7], what="integer", n=1, size=1, signed=FALSE)
@@ -300,7 +300,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             middle <- 1
         if (middle > len)
             middle <- len
-        t <- ISOdatetime(unabbreviate.year(readBin(buf[profileStart[middle]+4],"integer",size=1,signed=FALSE,endian="little")),
+        t <- ISOdatetime(unabbreviateYear(readBin(buf[profileStart[middle]+4],"integer",size=1,signed=FALSE,endian="little")),
                          as.integer(buf[profileStart[middle]+5]), # month
                          as.integer(buf[profileStart[middle]+6]), # day
                          as.integer(buf[profileStart[middle]+7]), # hour
@@ -349,7 +349,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         profilesInFile <- length(profileStart)
         oceDebug(debug, "profilesInFile=", profilesInFile, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
         if (profilesInFile > 0)  {
-            measurementStart <- ISOdatetime(unabbreviate.year(as.integer(buf[profileStart[1]+4])),
+            measurementStart <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[1]+4])),
                                             as.integer(buf[profileStart[1]+5]), # month
                                             as.integer(buf[profileStart[1]+6]), # day
                                             as.integer(buf[profileStart[1]+7]), # hour
@@ -357,7 +357,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                             as.integer(buf[profileStart[1]+9]), # sec
                                             tz=tz)
             oceDebug(debug, "measurementStart:", format(measurementStart), "\n")
-            measurementEnd <- ISOdatetime(unabbreviate.year(as.integer(buf[profileStart[profilesInFile]+4])),
+            measurementEnd <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[profilesInFile]+4])),
                                           as.integer(buf[profileStart[profilesInFile]+5]), # month
                                           as.integer(buf[profileStart[profilesInFile]+6]), # day
                                           as.integer(buf[profileStart[profilesInFile]+7]), # hour
@@ -366,7 +366,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                           tz=tz)
             oceDebug(debug, "measurementEnd:", format(measurementEnd), "\n")
             ## FIXME: assumes uniform time interval (ok, but document it)
-            measurementDeltat <- as.numeric(ISOdatetime(unabbreviate.year(as.integer(buf[profileStart[2]+4])),
+            measurementDeltat <- as.numeric(ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[2]+4])),
                                                          as.integer(buf[profileStart[2]+5]), # month
                                                          as.integer(buf[profileStart[2]+6]), # day
                                                          as.integer(buf[profileStart[2]+7]), # hour
@@ -491,7 +491,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     break
                 }
             }
-            time <- ISOdatetime(unabbreviate.year(as.integer(buf[profileStart+4])), # year
+            time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
                                 as.integer(buf[profileStart+5]),      # month
                                 as.integer(buf[profileStart+6]),      # day
                                 as.integer(buf[profileStart+7]),      # hour

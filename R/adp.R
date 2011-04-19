@@ -265,7 +265,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         }
         cat("\n",...)
         cat("* Statistics of subsample\n  ::\n\n", ...)
-        cat(show.fives(x, indent='     '), ...)
+        cat(showFives(x, indent='     '), ...)
         ##cat("\n* history::\n\n", ...)
         cat("\n")
         print(summary(x$history))
@@ -526,12 +526,12 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 imagep(x=tt, y=x$data$ss$distance, z=z,
                        zlim=zlim,
                        flip.y=flip.y,
-                       col=if (gave.col) col else oce.colors.palette(128, 1),
+                       col=if (gave.col) col else oceColorsPalette(128, 1),
                        ylab=resizable.label("distance"),
                        xlab="Time",
                        zlab=zlab,
                        drawTimeRange=drawTimeRange,
-                       draw.contours=FALSE,
+                       drawContours=FALSE,
                        adorn=adorn[w],
                        mgp=mgp,
                        mar=mar,

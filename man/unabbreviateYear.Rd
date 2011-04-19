@@ -1,12 +1,12 @@
-\name{unabbreviate.year}
+\name{unabbreviateYear}
 
-\alias{unabbreviate.year}
+\alias{unabbreviateYear}
 
 \title{Determine year from various abbreviations}
 
 \description{Determine year from various abbreviations}
 
-\usage{unabbreviate.year(year)}
+\usage{unabbreviateYear(year)}
 
 \arguments{
   \item{year}{a year, or vector of years, possibly abbreviated}
@@ -20,7 +20,7 @@
   1960.}
 
 \examples{
-full.year <- unabbreviate.year(c(99, 8, 108))
+fullYear <- unabbreviateYear(c(99, 8, 108))
 }
 
 \author{Dan Kelley}

@@ -29,7 +29,7 @@ summary.history <- function(object, ...)
         res <- NULL
         for (i in 1:n) {
             kludge <- gsub(", [   ]*", ", ", object$action[i]) # FIXME: why are these spaces there?
-            res <- c(res, paste("  *", paste(format(number.as.POSIXct(object$time[i])),
+            res <- c(res, paste("  *", paste(format(numberAsPOSIXct(object$time[i])),
                                              " UTC: ``", kludge, "``\n",sep="")))
         }
     } else {

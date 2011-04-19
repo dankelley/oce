@@ -1,6 +1,6 @@
-\name{use.heading}
+\name{useHeading}
 
-\alias{use.heading}
+\alias{useHeading}
 
 \title{Replace the heading for one instrument with the heading for
   another}
@@ -8,7 +8,7 @@
 \description{Replace the heading for one instrument with the heading for
   another.}
 
-\usage{use.heading(b, g, add=0)}
+\usage{useHeading(b, g, add=0)}
 
 \arguments{
   \item{b}{object holding data from an instrument whose heading is

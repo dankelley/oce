@@ -351,14 +351,14 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 format(x$tend), attr(x$tend, "tzone"),
                 1 / x$deltat), ...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     ##cat("\n* history::\n\n", ...)
     cat("\n")
     print(summary(x$history))
     invisible(x)
 }
 
-pt.patm <- function(x, dp=0.5)
+ptPatm <- function(x, dp=0.5)
 {
     p <- if (inherits(x, "pt")) x$data$ts$pressure else x
     sap <- 10.1325                      # standard atm pressure
@@ -372,9 +372,9 @@ pt.patm <- function(x, dp=0.5)
         c(sap, median(p), mean(p), weighted.mean(p, w))
 }
 
-pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
+ptTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bpt.trim() {\n")
+    oceDebug(debug, "\b\bptTrim() {\n")
     if (!inherits(x, "pt"))
         stop("method is only for pt objects")
     res <- x
@@ -415,6 +415,6 @@ pt.trim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebu
     res$data$ts$pressure <- res$data$ts$pressure - 10.1325 # remove avg sealevel pressure
     res$history <- historyAdd(res$history,
                               paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # pt.trim()n")
+    oceDebug(debug, "\b\b} # ptTrim()n")
     res
 }

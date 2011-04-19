@@ -9,9 +9,9 @@ imagep <- function(x, y, z,
                    flip.y=FALSE,
                    xlab="", ylab="", zlab="",
                    breaks, col,
-                   draw.contours=TRUE,
+                   drawContours=TRUE,
                    drawTimeRange=getOption("oceDrawTimeRange"),
-                   draw.palette=TRUE,
+                   drawPalette=TRUE,
                    mgp=getOption("oceMgp"),
                    mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
                          mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -84,11 +84,11 @@ imagep <- function(x, y, z,
         breaks.orig <- breaks
     }
     if (missing(col))
-        col <- oce.colors.palette(n=length(breaks)-1)
+        col <- oceColorsPalette(n=length(breaks)-1)
     if (is.function(col))
         col <- col(n=length(breaks)-1)
 
-    if (draw.palette) {
+    if (drawPalette) {
         the.mai <- c(omai[1],
                      widths$main + widths$mar.lhs + widths$palette.separation,
                      omai[3],
@@ -117,14 +117,14 @@ imagep <- function(x, y, z,
                   col=col,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
         }
-        if (draw.contours)
+        if (drawContours)
             abline(h=breaks)
         box()
         axis(side=4, at=pretty(palette), cex.axis=cex) # FIXME: decide on font size
     }
 
     ## main image
-    if (draw.palette) {
+    if (drawPalette) {
         the.mai <- c(omai[1],
                      widths$mar.lhs,
                      omai[3],
@@ -170,7 +170,7 @@ imagep <- function(x, y, z,
     }
     if (main != "")
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
-    if (draw.contours)
+    if (drawContours)
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
     if (!missing(adorn)) {

@@ -1,5 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-use.heading <- function(b, g, add=0)
+useHeading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b$data$ts))
         stop("'from' does not have any heading data (in b$data$ts$heading)")
@@ -833,7 +833,7 @@ read.oce <- function(file, ...)
     stop("unknown file type \"", type, "\"")
 }
 
-oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
     if ((n <- as.integer(n[1])) > 0) {
@@ -851,7 +851,7 @@ oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
     else character(0)
 }
 
-oce.colors.jet <- function(n)
+oceColorsJet <- function(n)
 {
     if ((n <- as.integer(n[1])) > 0) {
         ## matlab::jet, cleaned of matlab:: calls
@@ -874,7 +874,7 @@ oce.colors.jet <- function(n)
     else character(0)
 }
 
-oce.colors.palette <- function(n, which=1)
+oceColorsPalette <- function(n, which=1)
 {
     if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
@@ -1195,7 +1195,7 @@ oceBisect <- function(f, xleft, xright, dx, debug=getOption("oceDebug"))
     xmiddle
 }
 
-number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
+numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {

@@ -195,7 +195,7 @@ print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
         "to", format(x$time.range[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
     cat("\n",...)
     cat("* Statistics::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     cat("\n* history::\n\n", ...)
     print(summary(x$history))
 }

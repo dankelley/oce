@@ -26,8 +26,8 @@
 \examples{
 x <- runif(1000, min=-1, max=1)
 y <- runif(1000, min=-1, max=1)
-drawpalette(zlim=c(0,2), zlab=expression(x^2+y^2), col=oce.colors.jet)
-col <- oce.colors.jet(256)[rescale(x^2+y^2, rlow=1, rhigh=256)]
+drawpalette(zlim=c(0,2), zlab=expression(x^2+y^2), col=oceColorsJet)
+col <- oceColorsJet(256)[rescale(x^2+y^2, rlow=1, rhigh=256)]
 plot(x, y, col=col, cex=4, pch=20)
 }
 

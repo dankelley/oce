@@ -34,7 +34,7 @@
     \dQuote{Details} for the meanings of various values of
     \code{which}.}
   \item{col}{optional indication of colour(s) to use.  If not provided,
-    the default for images is \code{oce.colors.palette(128,1)}, and for
+    the default for images is \code{oceColorsPalette(128,1)}, and for
     lines and points is black.}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
     \code{\link{imagep}} call that is used to create the image.  If

@@ -1,8 +1,8 @@
-\name{pt.trim}
-\alias{pt.trim}
+\name{ptTrim}
+\alias{ptTrim}
 \title{Trim start/end portions of a pt cast}
 \description{Trim start/end portions of a pt cast.}
-\usage{pt.trim(x, method="water", parameters=NULL, debug=getOption("oceDebug"))}
+\usage{ptTrim(x, method="water", parameters=NULL, debug=getOption("oceDebug"))}
 \arguments{
   \item{x}{A \code{pt} object, e.g. as read by \code{\link{read.pt}}.}
   \item{method}{Various methods exist, some of which use parameters:
@@ -46,7 +46,7 @@
 \seealso{
   The \code{pt} object may be read with \code{\link{read.pt}}.
   \code{\link{plot.pt}} is very useful in providing guidance
-  for trimming with \code{pt.trim}.
+  for trimming with \code{ptTrim}.
 }
 
 \examples{
@@ -55,8 +55,8 @@ library(oce)
 d <- read.oce(
  "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/manufacturer/pt_rbr_011855.dat",
  by=600)
-d.trimmed <- pt.trim(d)
-plot(d.trimmed)
+dTrimmed <- ptTrim(d)
+plot(dTrimmed)
 }
 }
 

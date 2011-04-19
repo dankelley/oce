@@ -38,7 +38,7 @@ plot(apply(adp$data$ma$a,2,mean),adp$data$ss$distance,type='l',xlim=c(0,256))
 lines(apply(adp.att$data$ma$a,2,mean),adp$data$ss$distance,type='l',col='red')
 legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 ## Image
-plot(adp.att, which="amplitude",col=oce.colors.jet(100))
+plot(adp.att, which="amplitude",col=oceColorsJet(100))
 }
 
 \references{The coefficient to convert to decibels is a personal

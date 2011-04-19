@@ -1,12 +1,12 @@
-\name{number.as.POSIXct}
+\name{numberAsPOSIXct}
 
-\alias{number.as.POSIXct}
+\alias{numberAsPOSIXct}
 
 \title{Convert a numeric time to a POSIXct time}
 
 \description{Convert a numeric time to a POSIXct time}
 
-\usage{number.as.POSIXct(t, type=c("unix", "matlab", "gps"), tz="UTC")}
+\usage{numberAsPOSIXct(t, type=c("unix", "matlab", "gps"), tz="UTC")}
 
 \arguments{
 
@@ -33,9 +33,9 @@
 \value{A \code{\link{POSIXct}} time.}
 
 \examples{
-cat("In Unix, time=0 (seconds) means ", format(number.as.POSIXct(0)), "\n")
-cat("In Matlab, time=1 (days) means ", format(number.as.POSIXct(1, type="matlab")), "\n")
-cat("Canada Day 2001 was", format(number.as.POSIXct(cbind(566,345615), type="gps")), "\n")
+cat("In Unix, time=0 (seconds) means ", format(numberAsPOSIXct(0)), "\n")
+cat("In Matlab, time=1 (days) means ", format(numberAsPOSIXct(1, type="matlab")), "\n")
+cat("Canada Day 2001 was", format(numberAsPOSIXct(cbind(566,345615), type="gps")), "\n")
 }
 
 \author{Dan Kelley}

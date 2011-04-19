@@ -1300,7 +1300,7 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* No. of levels:      ",       x$levels,  "\n", ...)
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
+    cat(showFives(x, indent='     '), ...)
     print(summary(x$history))
     invisible(x)
 }

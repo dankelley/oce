@@ -1,5 +1,5 @@
 library(oce)
-stopifnot(number.as.POSIXct(719529, "matlab")==ISOdatetime(1970,1,1,0,0,0,tz="UTC"))
+stopifnot(numberAsPOSIXct(719529, "matlab")==ISOdatetime(1970,1,1,0,0,0,tz="UTC"))
 
 buf <- as.raw(c(0xa5, 0x11, 0xaa, 0xa5, 0x11, 0x00))
 stopifnot(all(c(1,4) == matchBytes(buf, 0xa5, 0x11)))
@@ -15,5 +15,5 @@ stopifnot(all.equal.numeric(matlab.res, oceFilter(x, a, b)))
 stopifnot(all.equal.numeric(-16.80410, magneticDeclination(44+55/60,-(69+46/60),2008),1e-3))
 
 # GPS time
-stopifnot(number.as.POSIXct(cbind(604,134351), type="gps") == as.POSIXct("2011-03-21 13:18:56",tz="UTC"))
+stopifnot(numberAsPOSIXct(cbind(604,134351), type="gps") == as.POSIXct("2011-03-21 13:18:56",tz="UTC"))
 

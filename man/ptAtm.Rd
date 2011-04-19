@@ -1,8 +1,8 @@
-\name{pt.patm}
-\alias{pt.patm}
+\name{ptPatm}
+\alias{ptPatm}
 \title{Estimate atmospheric pressure in pt record}
 \description{Estimate atmospheric pressure in pt record}
-\usage{pt.patm(x, dp=0.5)}
+\usage{ptPatm(x, dp=0.5)}
 \arguments{
   \item{x}{A \code{pt} object, or a list of pressures (in decibars).}
   \item{dp}{Half-width of pressure window to be examined (in decibars).}
@@ -25,7 +25,7 @@
 \examples{
 library(oce)
 data(ptr)
-print(pt.patm(ptr))
+print(ptPatm(ptr))
 }
 
 \author{Dan Kelley}
