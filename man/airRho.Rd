@@ -1,12 +1,12 @@
-\name{air.rho}
+\name{airRho}
 
-\alias{air.rho}
+\alias{airRho}
 
 \title{Air density}
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of air.}
 
-\usage{air.rho(temperature, pressure, humidity)}
+\usage{airRho(temperature, pressure, humidity)}
 
 \arguments{
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
@@ -23,7 +23,7 @@
 \examples{
 degC <- seq(0,30,length.out=100)
 p <- seq(98,102,length.out=100) * 1e3
-contour(x=degC, y=p, z=outer(degC,p,air.rho), labcex=1)
+contour(x=degC, y=p, z=outer(degC,p,airRho), labcex=1)
 }
 
 \references{

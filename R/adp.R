@@ -52,7 +52,7 @@ is.enu <- function(x)
     }
 }
 
-ad.beam.name <- function(x, which)
+beamName <- function(x, which)
 {
     if (x$metadata$oceCoordinate == "beam")
         c("beam 1", "beam 2", "beam 3", "beam 4")[which]
@@ -497,7 +497,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                     ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
                 else rep(TRUE, length(x$data$ss$distance))
                 zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
-                zlab <- if (missing(titles)) ad.beam.name(x, which[w]) else titles[w]
+                zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
             } else if (which[w] %in% 5:(4+x$metadata$numberOfBeams)) { # amplitude
                 z <- as.numeric(x$data$ma$a[,,which[w]-4])
                 dim(z) <- dim(x$data$ma$a)[1:2]
@@ -672,7 +672,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 1),
+                                ylab=beamName(x, 1),
                                 type=type,
                                 mgp=mgp,
                                 mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -694,7 +694,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 2),
+                                ylab=beamName(x, 2),
                                 type=type,
                                 mgp=mgp,
                                 mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -716,7 +716,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 3),
+                                ylab=beamName(x, 3),
                                 type=type,
                                 mgp=mgp,
                                 mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -738,7 +738,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 4),
+                                ylab=beamName(x, 4),
                                 type=type,
                                 mgp=mgp,
                                 mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -801,21 +801,21 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 1), ylab="Distance [m]", type='l', ...)
+                plot(value, x$data$ss$distance, xlab=beamName(x, 1), ylab="Distance [m]", type='l', ...)
             } else if (which[w] == 25) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,2], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 2), ylab="Distance [m]", type='l', ...)
+                plot(value, x$data$ss$distance, xlab=beamName(x, 2), ylab="Distance [m]", type='l', ...)
             } else if (which[w] == 26) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                 value <- apply(x$data$ma$v[,,3], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 3), ylab="Distance [m]", type='l', ...)
+                plot(value, x$data$ss$distance, xlab=beamName(x, 3), ylab="Distance [m]", type='l', ...)
                 ##grid()
             } else if (which[w] == 27) {
                 if (x$metadata$numberOfBeams > 3) {
                     par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                     value <- apply(x$data$ma$v[,,4], 2, mean, na.rm=TRUE)
-                    plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 4), ylab="Distance [m]", type='l', ...)
+                    plot(value, x$data$ss$distance, xlab=beamName(x, 4), ylab="Distance [m]", type='l', ...)
                     ##grid()
                 } else {
                     warning("cannot use which=27 because this device did not have 4 beams")

@@ -276,9 +276,9 @@ par(opar)
 # Example 3
 # Sontek ADV dataset, chopped into one-hour files by a data logger.
 library(oce)
-table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
-                    from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
-                    to=as.POSIXct("2008-07-01 2:00:00", tz="UTC"))
+table <- loggerToc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
+                   from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
+                   to=as.POSIXct("2008-07-01 2:00:00", tz="UTC"))
 d <- read.adv.sontek.serial(file=table$filename, start=table$startTime, deltat=1/10)
 d <- oceEdit(d, "coordinateSystem", "xyz") # original coordinate
 d <- oceEdit(d, "oceCoordinate", "xyz")    # present coordinate

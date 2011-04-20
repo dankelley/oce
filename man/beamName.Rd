@@ -1,13 +1,13 @@
-\name{ad.beam.name}
+\name{beamName}
 
-\alias{ad.beam.name}
+\alias{beamName}
 
 \title{Name an acoustic-doppler beam.}
 
 \description{Name a beam for an acoustic-doppler device, adjusting for
   beam number and for coordinate system.}
 
-\usage{ad.beam.name(x, which)}
+\usage{beamName(x, which)}
 
 \arguments{
   \item{x}{an acoustic-doppler object, inheriting from class

@@ -1,13 +1,13 @@
-\name{logger.toc}
+\name{loggerToc}
 
-\alias{logger.toc}
+\alias{loggerToc}
 
 \title{Decode table-of-contents file from a datalogger}
 
 \description{Decode table-of-contents file from a datalogger, of the
   sort used by some researchers at Dalhousie University.}
 
-  \usage{logger.toc(dir, from, to, debug=getOption("oceDebug"))}
+  \usage{loggerToc(dir, from, to, debug=getOption("oceDebug"))}
 
   \arguments{
     \item{dir}{name of a directory containing a single table-of-contents
@@ -38,7 +38,7 @@
 
 \examples{
 \dontrun{
-table <- logger.toc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
+table <- loggerToc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
 from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
     to=as.POSIXct("2008-07-01 12:00:00", tz="UTC"))
 print(table)

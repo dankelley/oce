@@ -268,7 +268,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), history, debug=getOption(
         latitude      <- as.numeric(strsplit(header[3], ",")[[1]][2])
         longitude     <- as.numeric(strsplit(header[4], ",")[[1]][2])
         tz            <- strsplit(header[6], ",")[[1]][2] # needed for get GMT offset
-        GMTOffset     <- GMT.offset.from.tz(tz)
+        GMTOffset     <- GMTOffsetFromTz(tz)
         x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE, skip=headerLength)
         if (length(grep("[0-9]{4}/", x$V1[1])) > 0) {
             oceDebug(debug, "Date format is year/month/day hour:min with hour in range 1:24\n")

@@ -145,7 +145,7 @@ unabbreviateYear <- function(year)
     ifelse(year > 1800, year, ifelse(year > 50, year + 1900, year + 2000))
 }
 
-logger.toc <- function(dir, from, to, debug=getOption("oceDebug"))
+loggerToc <- function(dir, from, to, debug=getOption("oceDebug"))
 {
     if (missing(dir))
         stop("need a 'dir', naming a directory containing a file with suffix .TBL, and also data files named in that file")
@@ -376,7 +376,7 @@ lonFormat <- function(lon, digits=max(6, getOption("digits") - 1))
     rval
 }
 
-GMT.offset.from.tz <- function(tz)
+GMTOffsetFromTz <- function(tz)
 {
     ## Data are from
     ##   http://www.timeanddate.com/library/abbreviations/timezones/

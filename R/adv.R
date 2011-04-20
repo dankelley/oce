@@ -1465,7 +1465,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
             y <- as.numeric(x$data$ma$v[,which[w]])
             if (have.brushCorrelation && type == "p") {
                 good <- as.numeric(x$data$ma$c[,which[w]]) >= brushCorrelation
-                oce.plot.ts(x$data$ts$time[good], y[good], ylab=ad.beam.name(x, which[w]),
+                oce.plot.ts(x$data$ts$time[good], y[good], ylab=beamName(x, which[w]),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
@@ -1480,7 +1480,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
                 points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=colBrush)
             } else {
-                oce.plot.ts(x$data$ts$time, y, ylab=ad.beam.name(x, which[w]),
+                oce.plot.ts(x$data$ts$time, y, ylab=beamName(x, which[w]),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,

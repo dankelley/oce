@@ -1,8 +1,8 @@
-\name{GMT.offset.from.tz}
-\alias{GMT.offset.from.tz}
+\name{GMTOffsetFromTz}
+\alias{GMTOffsetFromTz}
 \title{Determine time offset from timezone}
 \description{Determine time offset from timezone}
-\usage{GMT.offset.from.tz(tz)}
+\usage{GMTOffsetFromTz(tz)}
 \arguments{
 \item{tz}{a timezone, e.g. \code{UTC}.}
 }
@@ -19,7 +19,7 @@
 
 \examples{
 library(oce)
-cat("Atlantic Standard Time is ", GMT.offset.from.tz("AST"), "hours after UTC")
+cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
 }
 \author{Dan Kelley}
 \keyword{misc}

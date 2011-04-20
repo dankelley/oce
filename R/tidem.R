@@ -62,12 +62,12 @@ plot.tidem <- function(x,
 }
 
 
-tidem.vuf <- function(t, j, lat=NULL)
+tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
     data("tidedata")
     tidedata   <- get("tidedata",   pos=globalenv())
-    a <- tidem.astron(t)
+    a <- tidemAstron(t)
 
     if (debug > 0) print(a)
 
@@ -152,7 +152,7 @@ tidem.vuf <- function(t, j, lat=NULL)
     list(v=v, u=u, f=f)
 }
 
-                                        #function [v,u,f]=t_vuf(ctime,ju,lat);
+                                        #function [v,u,f]=tVuf(ctime,ju,lat);
                                         #% T_VUF Computes nodal modulation corrections.
                                         #% [V,U,F]=T_VUF(DATE,JU,LAT) returns the astronomical phase V, the
                                         #% nodal phase modulation U, and the nodal amplitude correction F at
@@ -266,7 +266,7 @@ tidem.vuf <- function(t, j, lat=NULL)
                                         #end;
 
 
-tidem.astron <- function(t)
+tidemAstron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
     debug <- FALSE
@@ -467,7 +467,7 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
     }
 
     if (is.null(latitude)) latitude <- sl$metadata$latitude
-    vuf <- tidem.vuf(centraltime, c(0, index), latitude)
+    vuf <- tidemVuf(centraltime, c(0, index), latitude)
     vu <- c(0, (vuf$v + vuf$u) * 360)
     phase2 <- phase - vu                # FIXME: plus or minus??
     negate <- phase2 < 0
