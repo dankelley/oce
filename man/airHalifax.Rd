@@ -1,12 +1,12 @@
-\name{air.hal}
+\name{airHalifax}
 \docType{data}
-\alias{air.hal}
+\alias{airHalifax}
 \title{Time-series of wind and temperature at Halifax, Canada.}
 \description{A sample air dataset in the form of a data frame with columns
   containing \code{t}, 
   containing \code{u}, 
   containing \code{v}, and
   containing \code{temperature}.}
-\usage{data(air.hal)}
+\usage{data(airHalifax)}
 \author{Dan Kelley}
 \keyword{misc}
