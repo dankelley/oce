@@ -1211,12 +1211,14 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
         ## http://en.wikipedia.org/wiki/Leap_second
-        leaps <- strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01", "1989-01-01", "1990-01-01",
-                            "1992-07-01", "1993-07-01", "1994-07-01", "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01",
-                            "2008-01-01"), format="%Y-%m-%d", tz="UTC")
+        leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
+                                       "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
+                                       "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01"),
+                                     format="%Y-%m-%d", tz="UTC"))
         t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
-        for (l in 1:length(leaps))
+        for (l in 1:length(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
+        }
         t
     } else {
         stop("type must be \"unix\", \"matlab\" or \"GPS\"")
