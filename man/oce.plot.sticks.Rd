@@ -56,12 +56,12 @@ oce.plot.sticks(x, y, u, v, xlim=c(-2, 2), ylim=c(-2, 2))
 rm(n, x, y, theta, u, v)
 
 # Oceanographic example
-data(air.hal)
-attach(air.hal)
+data(airHalifax)
+attach(airHalifax)
 oce.plot.ts(t, temperature, type='l', ylim=c(0,25), ylab=resizableLabel("T"))
 oce.plot.sticks(t, rep(5, length(u)), u, v, yscale=2, add=TRUE)
 legend("bottomright", legend="Velocity scale: 2 m/s per degC", bg="white")
-detach(air.hal)
+detach(airHalifax)
 }
 
 \author{Dan Kelley}
