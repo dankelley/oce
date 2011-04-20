@@ -18,12 +18,12 @@ as.sealevel <- function(elevation,
         stop("must supply sealevel height, elevation, in metres")
     n <- length(elevation)
     if (missing(time)) {              # construct hourly from time "zero"
-        start <- as.POSIXct("0000-01-01 00:00:00", tz="GMT")
-        time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="GMT")
+        start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
+        time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="UTC")
         if (is.na(GMTOffset))
             GMTOffset <- 0 # FIXME: do I want to do this?
     } else {
-        time <- as.POSIXct(time, tz="GMT") # FIXME: should this be GMT?
+        time <- as.POSIXct(time, tz="UTC")
     }
     data <- data.frame(time=time, elevation=elevation)
     if (missing(deltat))

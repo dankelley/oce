@@ -1,7 +1,7 @@
 historyAdd <- function(h, action="")
 {
     res <- if (is.null(h)) list(time=NULL, action=NULL) else h
-    res$time <- c(res$time, as.POSIXct(Sys.time(), tz="GMT"))
+    res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
     res$action <- c(res$action, action)
     class(res) <- "history"
     res
@@ -10,7 +10,7 @@ historyAdd <- function(h, action="")
 historyAppend <- function(x, action="")
 {
     res <- x
-    res$history$time <- c(res$history$time, as.POSIXct(Sys.time(), tz="GMT"))
+    res$history$time <- c(res$history$time, as.POSIXct(Sys.time(), tz="UTC"))
     res$history$action <- c(res$history$action, action)
     res
 }

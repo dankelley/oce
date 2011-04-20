@@ -270,7 +270,7 @@ tidem.astron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
     debug <- FALSE
-    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT"), units="days"))
+    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="UTC"), units="days"))
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
 
@@ -287,7 +287,7 @@ tidem.astron <- function(t)
 
     oceDebug(debug, "astro=",astro,"\n")
 
-    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="GMT", units="days")
+    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days")
 
     oceDebug(debug, "rem2=",rem,"\n")
 
@@ -414,11 +414,11 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
     nt <- length(sl$data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-    hour <- unclass(as.POSIXct(sl$data$time, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
+    hour <- unclass(as.POSIXct(sl$data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
     centralindex <- floor(length(sl$data$t) / 2)
     ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
     ##    hour2pi <- 2 * pi * hour.wrt.centre
-    hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="GMT"))/3600)
+    hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
     hour2pi <- 2 * pi * hour.offset
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
@@ -458,7 +458,7 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
     if (!quiet) cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
 
-    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="GMT")
+    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="UTC")
     if (!quiet) {
         cat("centraltime=")
         print(centraltime)
