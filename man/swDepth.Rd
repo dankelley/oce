@@ -1,15 +1,15 @@
-\name{sw.depth}
+\name{swDepth}
 
-\alias{sw.depth}
-\alias{sw.z}
+\alias{swDepth}
+\alias{swZ}
 
 \title{Water depth}
 
 \description{Compute depth from pressure and latitude.}
 
 \usage{
-sw.depth(pressure, latitude=45, degrees=TRUE)
-sw.z(pressure, latitude=45, degrees=TRUE)
+swDepth(pressure, latitude=45, degrees=TRUE)
+swZ(pressure, latitude=45, degrees=TRUE)
 }
 
 \arguments{
@@ -27,11 +27,11 @@ sw.z(pressure, latitude=45, degrees=TRUE)
 
   Check value: 9712.653 m for 10,000 dbar at 30 deg latitude.}
 
-\value{For \code{sw.depth}, depth below the ocean surface, in metres.
-  For \code{sw.z}, the negative of the depth, i.e. the distance above
+\value{For \code{swDepth}, depth below the ocean surface, in metres.
+  For \code{swZ}, the negative of the depth, i.e. the distance above
   the surface.}
 
-\examples{d <- sw.depth(10, 45)}
+\examples{d <- swDepth(10, 45)}
 
 \references{Unesco 1983. Algorithms for computation of fundamental
       properties of seawater, 1983. \emph{Unesco Tech. Pap. in

@@ -217,7 +217,7 @@ plot.section <- function(x,
 	    par(xaxs="i", yaxs="i")
 	    ylab <- if ("ylab" %in% names(list(...)))
 		list(...)$ylab
-	    else { if (which.ytype==1) resizable.label("p") else "Depth [ m ]" }
+	    else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
 	    if (is.null(at)) {
 		plot(xxrange, yyrange,
 		     xaxs="i", yaxs="i",
@@ -393,7 +393,7 @@ plot.section <- function(x,
     }
 
     if (which.ytype == 1) yy <- rev(-x$data$station[[stationIndices[1]]]$data$pressure)
-    else if (which.ytype == 2) yy <- rev(-sw.depth(x$data$station[[stationIndices[1]]]$data$pressure))
+    else if (which.ytype == 2) yy <- rev(-swDepth(x$data$station[[stationIndices[1]]]$data$pressure))
     else stop("unknown ytype")
 
     oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
@@ -685,31 +685,31 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
     res$metadata$stationId <- section$metadata$stationId[o]
     res$data$station <- section$data$station[o]
     x <- geodDist(res)
-    temperature.mat <- array(dim=c(nprs, nstn))
-    salinity.mat <- array(dim=c(nprs, nstn))
-    sigma.theta.mat <- array(dim=c(nprs, nstn))
+    temperatureMat <- array(dim=c(nprs, nstn))
+    salinityMat <- array(dim=c(nprs, nstn))
+    sigmaThetaMat <- array(dim=c(nprs, nstn))
     for (s in 1:nstn) {
-	temperature.mat[,s] <- res$data$station[[s]]$data$temperature
-	salinity.mat[,s] <- res$data$station[[s]]$data$salinity
-	sigma.theta.mat[,s] <- res$data$station[[s]]$data$sigmaTheta
+	temperatureMat[,s] <- res$data$station[[s]]$data$temperature
+	salinityMat[,s] <- res$data$station[[s]]$data$salinity
+	sigmaThetaMat[,s] <- res$data$station[[s]]$data$sigmaTheta
     }
     for (p in 1:nprs) {
-	ok <- !is.na(temperature.mat[p,]) ## FIXME: ok to infer missingness from temperature alone?
+	ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
 	nok <- sum(ok)
 	iok <- (1:nstn)[ok]
 	if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
-	    temperature.mat[p,] <- predict(smooth.spline(x[ok], temperature.mat[p,ok], df=df, ...), x)$y
-	    salinity.mat[p,]    <- predict(smooth.spline(x[ok],    salinity.mat[p,ok], df=df, ...), x)$y
-	    sigma.theta.mat[p,] <- predict(smooth.spline(x[ok], sigma.theta.mat[p,ok], df=df, ...), x)$y
+	    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], df=df, ...), x)$y
+	    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], df=df, ...), x)$y
+	    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], df=df, ...), x)$y
 	    ##oceDebug(debug, p, "dbar: smoothing, based on", nok, "good values\n")
 	} else {
 	    ##oceDebug(debug, "pessure index=", p, ": not smoothing, since have only", nok, "good values\n")
 	}
     }
     for (s in 1:nstn) {
-	res$data$station[[s]]$data$temperature <- temperature.mat[,s]
-	res$data$station[[s]]$data$salinity <- salinity.mat[,s]
-	res$data$station[[s]]$data$sigmaTheta <- sigma.theta.mat[,s]
+	res$data$station[[s]]$data$temperature <- temperatureMat[,s]
+	res$data$station[[s]]$data$salinity <- salinityMat[,s]
+	res$data$station[[s]]$data$sigmaTheta <- sigmaThetaMat[,s]
     }
     class(res) <- c("section", "oce")
     res$history <- historyAdd(res$history,

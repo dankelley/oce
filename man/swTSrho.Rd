@@ -1,12 +1,12 @@
-\name{sw.T.S.rho}
+\name{swTSrho}
 
-\alias{sw.T.S.rho}
+\alias{swTSrho}
 
 \title{Seawater temperature from salinity and density}
 
 \description{Compute \emph{in-situ} temperature, given salinity, density, and pressure.}
 
-\usage{sw.T.S.rho(salinity, density, pressure)}
+\usage{swTSrho(salinity, density, pressure)}
 
 \arguments{
   \item{salinity}{\emph{in-situ} salinity [PSU]}
@@ -20,10 +20,10 @@
 
 \value{\emph{In-situ} temperature [\eqn{^\circ C}{degC}].}
 
-\seealso{\code{\link{sw.S.T.rho}}}
+\seealso{\code{\link{swSTrho}}}
 
 \examples{
-temperature <- sw.T.S.rho(35, 23, 0)
+temperature <- swTSrho(35, 23, 0)
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for

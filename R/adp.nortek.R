@@ -353,7 +353,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         bcdToInteger(buf[profileStart+5]), # sec
                         tz=tz)
     class(time) <- c("POSIXt", "POSIXct") # FIXME do we need this?
-    attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
+    attr(time, "tzone") <- getOption("oceTz") # Q: does file hold the zone?
     heading <- 0.1 * readBin(buf[profileStart2 + 18], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     pitch <- 0.1 * readBin(buf[profileStart2 + 20], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     roll <- 0.1 * readBin(buf[profileStart2 + 22], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)

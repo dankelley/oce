@@ -1,12 +1,12 @@
-\name{sw.rho}
+\name{swRho}
 
-\alias{sw.rho}
+\alias{swRho}
 
 \title{Seawater density}
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{sw.rho(salinity, temperature=NULL, pressure=NULL)}
+\usage{swRho(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -30,12 +30,12 @@
 \value{\emph{In-situ} density [kg/m\eqn{^3}{^3}].}
 
 \seealso{Related density routines include
-\code{\link{sw.sigma}}, 
-\code{\link{sw.sigma.t}}, and
-\code{\link{sw.sigma.theta}}. 
+\code{\link{swSigma}}, 
+\code{\link{swSigmaT}}, and
+\code{\link{swSigmaTheta}}. 
 }
 
-\examples{ rho <- sw.rho(35, 13, 1000) # 1030.818}
+\examples{ rho <- swRho(35, 13, 1000) # 1030.818}
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
  computation of fundamental properties of seawater. \emph{Unesco

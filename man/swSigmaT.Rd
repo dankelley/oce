@@ -1,13 +1,13 @@
-\name{sw.sigma.t}
+\name{swSigmaT}
 
-\alias{sw.sigma.t}
+\alias{swSigmaT}
 
 \title{Seawater quasi-potential density anomaly}
 
 \description{Compute \eqn{\sigma_t}{sigma-t}, a rough estimate of
   potential density of seawater, minus 1000 kg/m\eqn{^3}{^3}.}
 
-\usage{sw.sigma.t(salinity, temperature=NULL, pressure=NULL)}
+\usage{swSigmaT(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -30,12 +30,12 @@
 
 \value{Quasi-potential density anomaly [kg/m\eqn{^3}{^3}].}
 
-\seealso{Related density routines include: \code{\link{sw.rho}}, 
-  \code{\link{sw.sigma}}, and
-  \code{\link{sw.sigma.theta}}.
+\seealso{Related density routines include: \code{\link{swRho}}, 
+  \code{\link{swSigma}}, and
+  \code{\link{swSigmaTheta}}.
 }
 
-\examples{sigma.t <- sw.sigma.t(35, 13, 1000)}
+\examples{sigmat <- swSigmaT(35, 13, 1000)}
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
  computation of fundamental properties of seawater. \emph{Unesco

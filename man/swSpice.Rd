@@ -1,12 +1,12 @@
-\name{sw.spice}
+\name{swSpice}
 
-\alias{sw.spice}
+\alias{swSpice}
 
 \title{Seawater spiciness}
 
 \description{Compute seawater "spice" (a variable orthogonal to density in TS space)}
 
-\usage{sw.spice(salinity, temperature=NULL, pressure=NULL)}
+\usage{swSpice(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -32,7 +32,7 @@
   \eqn{\pi(S,t,p)}{pi(S,t,p)}. } \value{ Spice [kg/m\eqn{^3}{^3}]. }
 
 \examples{
-spice <- sw.spice(35, 10, 0) # 1.1 by eye, from Flament's fig2
+spice <- swSpice(35, 10, 0) # 1.1 by eye, from Flament's fig2
 }
 
 \references{P. Flament, 2002.

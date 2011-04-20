@@ -294,7 +294,7 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizable.label <- function(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
+resizableLabel <- function(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -652,7 +652,7 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
     res / 1000
 }
 
-interp.barnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
+interpBarnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
                           xr=NULL, yr=NULL, gamma=0.5, iterations=2)
 {
     n <- length(x)
@@ -802,7 +802,7 @@ header <- function(x)
     return(x$metadata$header)
 }
 
-add.column <- function (x, data, name)
+addColumn <- function (x, data, name)
 {
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")

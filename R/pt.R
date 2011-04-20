@@ -91,7 +91,7 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
         oceDebug(debug, "which[", w, "]=", which[w], "\n")
         if (which[w] == 1) {
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
-                 ylab=resizable.label("T", "y"),
+                 ylab=resizableLabel("T", "y"),
                  type='l',
                  xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
@@ -103,7 +103,7 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
             axis(2)
         } else if (which[w] == 3) {     # pressure timeseries
             oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
-                 ylab=resizable.label("p", "y"),
+                 ylab=resizableLabel("p", "y"),
                  type='l',
                  xlim=if (missing(tlim)) range(x$data$ts$time, na.rm=TRUE) else tlim,
                  ylim=if (missing(plim)) range(x$data$ts$pressure, na.rm=TRUE) else plim,
@@ -144,8 +144,8 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
             par(mar=mar)
         } else if (which[w] == 4) {     # "profile"
             args <- list(x=x$data$ts$temperature, y=x$data$ts$pressure,
-                         xlab=resizable.label("T"),
-                         ylab=resizable.label("p"),
+                         xlab=resizableLabel("T"),
+                         ylab=resizableLabel("p"),
                          xlim=if (missing(Tlim)) range(x$data$ts$temperature, na.rm=TRUE) else Tlim,
                          ylim=if (missing(plim)) rev(range(x$data$ts$pressure, na.rm=TRUE)) else plim,
                          ...)

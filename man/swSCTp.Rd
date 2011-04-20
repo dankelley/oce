@@ -1,12 +1,12 @@
-\name{sw.S.C.T.p}
+\name{swSCTp}
 
-\alias{sw.S.C.T.p}
+\alias{swSCTp}
 
 \title{Seawater salinity from conductivity ratio, temperature and pressure}
 
 \description{Compute salinity, given conductivity ratio, temperature, and pressure.}
 
-\usage{sw.S.C.T.p(conductivity, temperature, pressure)}
+\usage{swSCTp(conductivity, temperature, pressure)}
 
 \arguments{
   \item{conductivity}{conductivity ratio [unitless]}
@@ -24,12 +24,12 @@
 
 \value{Salinity [PSU].}
 
-\seealso{\code{\link{sw.conductivity}}}
+\seealso{\code{\link{swConductivity}}}
 
 \examples{
-print(sw.S.C.T.p(1,15,2000))   # 34.25045
-print(sw.S.C.T.p(1.2,20,2000)) # 37.24563
-print(sw.S.C.T.p(0.65,5,1500)) # 27.99535
+print(swSCTp(1,15,2000))   # 34.25045
+print(swSCTp(1.2,20,2000)) # 37.24563
+print(swSCTp(0.65,5,1500)) # 27.99535
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for

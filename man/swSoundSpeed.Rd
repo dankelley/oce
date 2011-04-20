@@ -1,12 +1,12 @@
-\name{sw.sound.speed}
+\name{swSoundSpeed}
 
-\alias{sw.sound.speed}
+\alias{swSoundSpeed}
 
 \title{Seawater sound speed}
 
 \description{Compute the seawater speed of sound.}
 
-\usage{sw.sound.speed(salinity, temperature=NULL, pressure=NULL)}
+\usage{swSoundSpeed(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -28,7 +28,7 @@
 \value{Sound speed [m/s].}
 
 \examples{
-s <- sw.sound.speed(40, 40, 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
+s <- swSoundSpeed(40, 40, 10000) # 1731.995 (p48 of Fofonoff + Millard 1983)
 }
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for

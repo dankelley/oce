@@ -1,14 +1,12 @@
-\name{sw.beta}
+\name{swSpecificHeat}
 
-\alias{sw.beta}
+\alias{swSpecificHeat}
 
-\title{Seawater haline contraction coefficient}
+\title{Seawater specific heat}
 
-\description{Compute \eqn{\beta}{beta} using McDougall's (1987)
-  algorithm. NOTE: this conflicts with base::beta, so be sure to prefix
-  as sw.beta().}
+\description{Compute specific heat of seawater.}
 
-\usage{sw.beta(salinity, temperature, pressure, is.theta=FALSE)}
+\usage{swSpecificHeat(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -18,22 +16,27 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{seawater pressure [dbar]}
-  \item{is.theta}{Set TRUE if temperature is theta or FALSE if temperature is in-situ}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
   temperature and pressure values are extracted from it, and used for
-  the calculation.}
+  the calculation.
 
-\value{Value in 1/psu.}
+  Based on matlab code on
+  \url{ftp://acoustics.whoi.edu/pub/Matlab/oceans}, which was in turn
+  based on Millero et al (1973, 1981).  }
+
+\value{Specific heat \eqn{J kg^{-1}\,^\circ C^{-1}}{J/(kg degC)}}
 
 \examples{
-# 0.72088e-3 (from p1964 of McDougall 1987)
-sw.beta(40, 10, 4000, is.theta=TRUE)  
+CP <- swSpecificHeat(40, 40, 10000)	# 3949.500
 }
 
-\references{McDougall, T.J. 1987. "Neutral Surfaces" Journal of Physical
-  Oceanography vol 17 pages 1950-1964}
+\references{
+Millero et. al., J. Geophys. Res. 78 (1973), 4499-4507
+
+Millero et. al., UNESCO report 38 (1981), 99-188.
+}
 
 \author{Dan Kelley}
 

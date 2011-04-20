@@ -36,7 +36,7 @@ as.ctd <- function(salinity, temperature, pressure, quality,
                        temperature=temperature,
                        pressure=pressure,
                        quality=quality,
-                       sigmaTheta=sw.sigma.theta(salinity, temperature, pressure))
+                       sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
     metadata <- list(
                      header=NULL,
                      filename=NULL,
@@ -597,7 +597,7 @@ plot.ctd.scan <- function(x,
     if (xxlen != length(x$data$pressure))
         stop(paste("length mismatch.  '", name, "' has length ", xxlen, " but pressure has length ", length(x$data$pressure),sep=""))
     plot(x$data[[name]], x$data$pressure,
-         xlab=name, ylab=resizable.label("p", "y"),
+         xlab=name, ylab=resizableLabel("p", "y"),
          type="l", col=p.col, axes=FALSE)
     mtext(paste("Station", x$metadata$station), side=3, adj=1)
     mtext(latlonFormat(x$metadata$latitude, x$metadata$longitude, digits=5), side=3, adj=0)
@@ -622,14 +622,14 @@ plot.ctd.scan <- function(x,
     box()
     grid(NULL, NA, col="brown")
 
-    mtext(resizable.label("T", "y"), side = 2, line = 2, col = T.col)
+    mtext(resizableLabel("T", "y"), side = 2, line = 2, col = T.col)
 
     usr <- par("usr")
     Sr <- range(x$data$salinity, na.rm=TRUE)
     usr[3:4] <- Sr + c(-1, 1) * 0.04 * diff(Sr)
     par(usr=usr)
     lines(x$data[[name]], x$data$salinity, col=S.col)
-    mtext(resizable.label("S", "y"), side = 4, line = 2, col = S.col)
+    mtext(resizableLabel("S", "y"), side = 4, line = 2, col = S.col)
     axis(4,col=S.col, col.axis = S.col, col.lab = S.col)
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
@@ -839,7 +839,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     pressure[pressure == missing.value] <- NA
     salinity[salinity == missing.value] <- NA
     temperature[temperature == missing.value] <- NA
-    sigmaTheta <- sw.sigma.theta(salinity, temperature, pressure)
+    sigmaTheta <- swSigmaTheta(salinity, temperature, pressure)
 
     data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta)
     names <- c("pressure", "salinity", "temperature", "sigmaTheta", "oxygen")
@@ -1185,10 +1185,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     if (!found.salinity) {
         if (found.conductivity.ratio) {
             warning("cannot find 'salinity' in this file; calculating from T, C, and p");
-            S <- sw.S.C.T.p(data$conductivityratio, data$temperature, data$pressure)
+            S <- swSCTp(data$conductivityratio, data$temperature, data$pressure)
         } else if (found.conductivity) {
             warning("cannot find 'salinity' in this file; calculating from T, C-ratio, and p");
-            S <- sw.S.C.T.p(data$conductivity/conductivity.standard, data$temperature, data$pressure)
+            S <- swSCTp(data$conductivity/conductivity.standard, data$temperature, data$pressure)
         } else {
             stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
         }
@@ -1196,10 +1196,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     }
     if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
         g <- if (found.header.latitude) gravity(latitude) else 9.8
-        rho0 <- sw.sigma.theta(median(res$data$salinity), median(res$data$temperature), rep(0, length(res$data$salinity)))
+        rho0 <- swSigmaTheta(median(res$data$salinity), median(res$data$temperature), rep(0, length(res$data$salinity)))
         res <- ctdAddColumn(res, res$data$depth * g * rho0 / 1e4, "pressure", "Pressure", "dbar")
     }
-    res <- ctdAddColumn(res, sw.sigma.theta(res$data$salinity, res$data$temperature, res$data$pressure), "sigmaTheta",
+    res <- ctdAddColumn(res, swSigmaTheta(res$data$salinity, res$data$temperature, res$data$pressure), "sigmaTheta",
                           "Sigma Theta", "kg/m^3")
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res
@@ -1340,16 +1340,16 @@ plot.TS <- function (x,
     axis.name.loc <- mgp[1]
     if (useSmoothScatter) {
         smoothScatter(x$data$salinity, x$data$temperature,
-                      xlab = if (missing(xlab)) resizable.label("S","x") else xlab,
-                      ylab = if (missing(ylab)) resizable.label("T","y") else ylab,
+                      xlab = if (missing(xlab)) resizableLabel("S","x") else xlab,
+                      ylab = if (missing(ylab)) resizableLabel("T","y") else ylab,
                       xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
                                         #cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
                       xlim=Slim, ylim=Tlim,
                       ...)
     } else {
         plot(x$data$salinity, x$data$temperature,
-             xlab = if (missing(xlab)) resizable.label("S","x") else xlab,
-             ylab = if (missing(ylab)) resizable.label("T","y") else ylab,
+             xlab = if (missing(xlab)) resizableLabel("S","x") else xlab,
+             ylab = if (missing(ylab)) resizableLabel("T","y") else ylab,
              xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
              cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
              xlim=Slim, ylim=Tlim,
@@ -1363,7 +1363,7 @@ plot.TS <- function (x,
     drawIsopycnals(rho.levels=rho.levels, rotate.rho.labels=rotate.rho.labels, rho1000=rho1000, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
-    lines(Sr, sw.T.freeze(salinity=Sr, pressure=0), col="darkblue")
+    lines(Sr, swTFreeze(salinity=Sr, pressure=0), col="darkblue")
 }
 
 drawIsopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
@@ -1374,8 +1374,8 @@ drawIsopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, 
     S.axis.max <- usr[2]
     T.axis.min <- usr[3]
     T.axis.max <- usr[4]
-    rho.corners <- sw.sigma(c(S.axis.min, S.axis.max, S.axis.min, S.axis.max),
-                            c(T.axis.min, T.axis.min, T.axis.max, T.axis.max),
+    rho.corners <- swSigma(c(S.axis.min, S.axis.max, S.axis.min, S.axis.max),
+                           c(T.axis.min, T.axis.min, T.axis.max, T.axis.max),
                             rep(0,4))
     rho.min <- min(rho.corners, na.rm=TRUE)
     rho.max <- max(rho.corners, na.rm=TRUE)
@@ -1392,7 +1392,7 @@ drawIsopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, 
     cex.par <- par("cex")               # need to scale text() differently than mtext()
     for (rho in rho.list) {
         rho.label <- if (rho1000) 1000+rho else rho
-        s.line <- sw.S.T.rho(t.line, rep(rho, t.n), rep(0, t.n))
+        s.line <- swSTrho(t.line, rep(rho, t.n), rep(0, t.n))
         ok <- !is.na(s.line) # crazy T can give crazy S
         s.ok <- s.line[ok]
         t.ok <- t.line[ok]
@@ -1436,10 +1436,10 @@ plot.profile <- function (x,
         stop("method is only for ctd objects")
     dots <- list(...)
     ytype <- match.arg(ytype)
-    pname <- if (ytype == "pressure") resizable.label("p", "y") else if (ytype == "z") resizable.label("z", "y")
+    pname <- if (ytype == "pressure") resizableLabel("p", "y") else if (ytype == "z") resizableLabel("z", "y")
     par(mgp=mgp, mar=mar)
     if (missing(ylim))
-        ylim <- if (ytype == "pressure") rev(range(x$data$pressure, na.rm=TRUE)) else range(-sw.depth(x), na.rm=TRUE)
+        ylim <- if (ytype == "pressure") rev(range(x$data$pressure, na.rm=TRUE)) else range(-swDepth(x), na.rm=TRUE)
     axis.name.loc <- par("mgp")[1]
     know.time.unit <- FALSE
     if ("time" %in% names(x$data)) {
@@ -1455,12 +1455,12 @@ plot.profile <- function (x,
     if (ytype == "pressure")
         y <- x$data$pressure
     else if (ytype == "z")
-        y <- sw.z(x$data$pressure)
+        y <- swZ(x$data$pressure)
     if (xtype == "index") {
         index <- 1:length(x$data$pressure)
         plot(index, x$data$pressure, ylim=ylim, xlab = "index", ylab = pname, type='l', xaxs=xaxs, yaxs=yaxs)
     } else if (xtype == "density+time") {
-        st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         if (missing(densitylim)) densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
@@ -1486,7 +1486,7 @@ plot.profile <- function (x,
         }
     } else if (xtype == "density+dpdt") {
         if (missing(densitylim)) densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
-        st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -1523,12 +1523,12 @@ plot.profile <- function (x,
             axis(2)
             axis(3)
             box()
-            mtext(resizable.label("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
             plot(x$data$salinity, y,
                  xlim=Slim, ylim=ylim,
                  type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
-            mtext(resizable.label("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
             box()
@@ -1557,12 +1557,12 @@ plot.profile <- function (x,
             axis(2)
             axis(3)
             box()
-            mtext(resizable.label("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
             plot(x$data$temperature, y,
                  xlim=Tlim, ylim=ylim,
                  type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
-            mtext(resizable.label("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
             box()
@@ -1584,7 +1584,7 @@ plot.profile <- function (x,
             }
         }
     } else if (xtype == "density") {
-        st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         if (missing(densitylim)) densitylim <- range(st, na.rm=TRUE)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
@@ -1602,7 +1602,7 @@ plot.profile <- function (x,
         lines(x$data$sigmaTheta, y, col = col.rho, lwd=lwd)
     } else if (xtype == "density+N2") {
         if (missing(densitylim)) densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
-        st <- sw.sigma.theta(x$data$salinity, x$data$temperature, x$data$pressure)
+        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -1612,7 +1612,7 @@ plot.profile <- function (x,
         box()
         lines(st, y, col = col.rho, lwd=lwd)
         par(new = TRUE)
-        N2 <- sw.N2(x$data$pressure, st, xaxs=xaxs, yaxs=yaxs)
+        N2 <- swN2(x$data$pressure, st, xaxs=xaxs, yaxs=yaxs)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         plot(N2, y,
              xlim=N2lim, ylim=ylim,
@@ -1626,7 +1626,7 @@ plot.profile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- sw.N2(x$data$pressure, x$data$sigmaTheta, xaxs=xaxs, yaxs=yaxs)
+        N2 <- swN2(x$data$pressure, x$data$sigmaTheta, xaxs=xaxs, yaxs=yaxs)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
         plot(N2, y,
              xlim=N2lim, ylim=ylim,
@@ -1650,7 +1650,7 @@ plot.profile <- function (x,
              xlim=Tlim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
-        mtext(resizable.label("T", "x"),
+        mtext(resizableLabel("T", "x"),
               side = 3, line = axis.name.loc, col = col.temperature, cex=par("cex"))
         axis(2)
         box()
@@ -1660,7 +1660,7 @@ plot.profile <- function (x,
              xlim=Slim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
-        mtext(resizable.label("S", "x"),
+        mtext(resizableLabel("S", "x"),
               side = 1, line = axis.name.loc, col = col.salinity, cex=par("cex"))
         box()
         if (grid) {
@@ -1675,7 +1675,7 @@ plot.profile <- function (x,
         plot(x$data[, w], y, ylim=ylim,
              type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3)
-        mtext(resizable.label("p"), side = 2, line = axis.name.loc, cex=par("cex"))
+        mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
         mtext(x$metadata$label[w], side=3, line=axis.name.loc, cex=par("cex"))
         axis(2)
         box()

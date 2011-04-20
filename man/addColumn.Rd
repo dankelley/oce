@@ -1,8 +1,8 @@
-\name{add.column}
-\alias{add.column}
+\name{addColumn}
+\alias{addColumn}
 \title{Add a column to an oce object}
 \description{Add a column to an oce object's \code{data}.}
-\usage{add.column(x, data, name)}
+\usage{addColumn(x, data, name)}
 
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -21,10 +21,8 @@ objects.}
 \examples{
 library(oce)
 data(ctd) 
-sigthe <- sw.sigma.theta(ctd$data$salinity,
-	ctd$data$temperature,
-	ctd$data$pressure);
-new <- add.column(ctd, sigthe, "sigmatheta")
+st <- swSigmaTheta(ctd$data$salinity, ctd$data$temperature, ctd$data$pressure);
+new <- addColumn(ctd, st, "sigmatheta")
 }
 
 \author{Dan Kelley}

@@ -1,3 +1,5 @@
+0.2-1
+- camel-case non-generic function and argument names
 0.1-83
 - add binAverage()
 - fill.gap(): add 'rule' argument (analogous to same for approx())

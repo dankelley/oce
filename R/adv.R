@@ -1569,7 +1569,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
             rm(y)                       # space may be tight
         } else if (which[w] == 14 || which[w] == "temperature") {
             if (haveTsSlow) {
-                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$temperature, ylab=resizable.label("T", "y"),
+                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$temperature, ylab=resizableLabel("T", "y"),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tslim,
@@ -1582,7 +1582,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             debug=debug-1,
                             ...)
             } else {
-                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab=resizable.label("T", "y"),
+                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab=resizableLabel("T", "y"),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
@@ -1596,7 +1596,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
             }
         } else if (which[w] == 15 || which[w] == "pressure") {
-            oce.plot.ts(x$data$ts$time, x$data$ts$pressure, ylab=resizable.label("p", "y"),
+            oce.plot.ts(x$data$ts$time, x$data$ts$pressure, ylab=resizableLabel("p", "y"),
                         drawTimeRange=drawTimeRange,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,

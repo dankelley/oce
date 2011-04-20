@@ -1,25 +1,25 @@
-sw.N2 <- function(pressure, sigma.theta=NULL, ...) # BUG: think more about best density measure
+swN2 <- function(pressure, sigmaTheta=NULL, ...) # BUG: think more about best density measure
 {
     if (inherits(pressure, "ctd")) {
-        sigma.theta <- sw.sigma.theta(pressure$data$salinity, pressure$data$temperature, pressure$data$pressure)
+        sigmaTheta <- swSigmaTheta(pressure$data$salinity, pressure$data$temperature, pressure$data$pressure)
         pressure <- pressure$data$pressure # over-writes pressure
     }
     args <- list(...)
     depths <- length(pressure)
     df <- if (is.null(args$df)) min(floor(length(pressure)/10), 15) else args$df;
-    ok <- !is.na(pressure) & !is.na(sigma.theta)
+    ok <- !is.na(pressure) & !is.na(sigmaTheta)
     if (depths > 4) {
-	sigma.theta.smooth <- smooth.spline(pressure[ok], sigma.theta[ok], df=df)
-	sigma.theta.deriv <- rep(NA, length(pressure))
-	sigma.theta.deriv[ok] <- predict(sigma.theta.smooth, pressure[ok], deriv = 1)$y
+	sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
+	sigmaThetaDeriv <- rep(NA, length(pressure))
+	sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
     } else {
-	sigma.theta.smooth <- as.numeric(smooth(sigma.theta[ok]))
-	sigma.theta.deriv <- c(0, diff(sigma.theta.smooth) / diff(pressure))
+	sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
+	sigmaThetaDeriv <- c(0, diff(sigmaThetaSmooth) / diff(pressure))
     }
-    ifelse(ok, 9.8 * 9.8 * 1e-4 * sigma.theta.deriv, NA)
+    ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
 }
 
-sw.S.C.T.p <- function(conductivity, temperature, pressure)
+swSCTp <- function(conductivity, temperature, pressure)
 {
     dim <- dim(conductivity)
     nC <- length(conductivity)
@@ -40,7 +40,7 @@ sw.S.C.T.p <- function(conductivity, temperature, pressure)
     rval
 }
 
-sw.S.T.rho <- function(temperature, density, pressure) # FIXME: should be vectorized for speed
+swSTrho <- function(temperature, density, pressure) # FIXME: should be vectorized for speed
 {
     dim <- dim(temperature)
     nt <- length(temperature)
@@ -64,7 +64,7 @@ sw.S.T.rho <- function(temperature, density, pressure) # FIXME: should be vector
     rval
 }
 
-sw.T.S.rho <- function(salinity, density, pressure) # FIXME: should be vectorized
+swTSrho <- function(salinity, density, pressure) # FIXME: should be vectorized
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -95,7 +95,7 @@ sw.T.S.rho <- function(salinity, density, pressure) # FIXME: should be vectorize
     rval
 }
 
-sw.T.freeze <- function(salinity, pressure=NULL)
+swTFreeze <- function(salinity, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -106,7 +106,7 @@ sw.T.freeze <- function(salinity, pressure=NULL)
     (-.0575+1.710523e-3*sqrt(abs(salinity))-2.154996e-4*salinity)*salinity-7.53e-4*pressure
 }
 
-sw.alpha <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
+swAlpha <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -120,10 +120,10 @@ sw.alpha <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE
     nS <- length(salinity)
     if (is.null(pressure))
         pressure <- rep(0, nS)
-    sw.alpha.over.beta(salinity, temperature, pressure, is.theta) * sw.beta(salinity, temperature, pressure, is.theta)
+    swAlphaOverBeta(salinity, temperature, pressure, isTheta) * swBeta(salinity, temperature, pressure, isTheta)
 }
 
-sw.alpha.over.beta <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
+swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -147,8 +147,8 @@ sw.alpha.over.beta <- function(salinity, temperature=NULL, pressure=NULL, is.the
         np <- nS
         p <- rep(pressure[1], np)
     }
-    if (!is.theta)
-        t = sw.theta(salinity, temperature, pressure)
+    if (!isTheta)
+        t = swTheta(salinity, temperature, pressure)
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
     rval <- .C("sw_alpha_over_beta",
@@ -162,7 +162,7 @@ sw.alpha.over.beta <- function(salinity, temperature=NULL, pressure=NULL, is.the
     rval
 }
 
-sw.beta <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
+swBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -176,8 +176,8 @@ sw.beta <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
     dim <- dim(salinity)
     nS <- length(salinity)
     nt <- length(temperature)
-    if (!is.theta)
-        temperature = sw.theta(salinity, temperature, pressure)
+    if (!isTheta)
+        temperature = swTheta(salinity, temperature, pressure)
     if (is.null(pressure))
         pressure <- rep(0, nS)
     np <- length(pressure)
@@ -201,7 +201,7 @@ sw.beta <- function(salinity, temperature=NULL, pressure=NULL, is.theta = FALSE)
     rval
 }
 
-sw.conductivity <- function (salinity, temperature=NULL, pressure=NULL)
+swConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 {
     if (inherits(salinity, "ctd")) {
         temperature <- salinity$data$temperature
@@ -211,7 +211,7 @@ sw.conductivity <- function (salinity, temperature=NULL, pressure=NULL)
     return(0.57057 * (1 + temperature * (0.003 - 1.025e-05 * temperature) + 0.000653 * pressure - 0.00029 * salinity))
 }
 
-sw.depth <- function(pressure, latitude=45, degrees=TRUE)
+swDepth <- function(pressure, latitude=45, degrees=TRUE)
 {
     if (inherits(pressure, "ctd")) {
         latitude <- abs(pressure$metadata$latitude)
@@ -223,25 +223,25 @@ sw.depth <- function(pressure, latitude=45, degrees=TRUE)
     (((-1.82e-15*pressure+2.279e-10)*pressure-2.2512e-5)*pressure+9.72659)*pressure / gr
 }
 
-sw.z <- function(pressure, latitude=45, degrees=TRUE)
+swZ <- function(pressure, latitude=45, degrees=TRUE)
 {
-    -sw.depth(pressure=pressure, latitude=latitude, degrees=degrees)
+    -swDepth(pressure=pressure, latitude=latitude, degrees=degrees)
 }
 
-swDynamicHeight <- function(x, reference.pressure=2000)
+swDynamicHeight <- function(x, referencePressure=2000)
 {
-    height <- function(ctd, reference.pressure)
+    height <- function(ctd, referencePressure)
     {
         if (sum(!is.na(ctd$data$pressure)) < 2) return(NA) # cannot integrate then
         g <- if (is.na(ctd$metadata$latitude)) 9.8 else gravity(ctd$metadata$latitude)
         np <- length(ctd$data$pressure)
-        rho <- sw.rho(ctd)
+        rho <- swRho(ctd)
         if (sum(!is.na(rho)) < 2) return(NA)
         ## 1e4 converts decibar to Pa
-        dzdp <- ((1/rho - 1/sw.rho(rep(35,np),rep(0,np),ctd$data$pressure))/g)*1e4
+        dzdp <- ((1/rho - 1/swRho(rep(35,np),rep(0,np),ctd$data$pressure))/g)*1e4
 ##        print(summary(ctd))
         integrand <- approxfun(ctd$data$pressure, dzdp, rule=2)
-        integrate(integrand, 0, reference.pressure)$value
+        integrate(integrand, 0, referencePressure)$value
     }
     if (inherits(x, "section")) {
         lon0 <- x$data$station[[1]]$metadata$longitude
@@ -252,17 +252,17 @@ swDynamicHeight <- function(x, reference.pressure=2000)
         for (i in 1:ns) {               # FIXME: avoid loops
 ##            cat("i=",i,"\n")
             d[i] <- geodDist(x$data$station[[i]]$metadata$latitude, x$data$station[[i]]$metadata$longitude, lat0, lon0)
-            h[i] <- height(x$data$station[[i]], reference.pressure)
+            h[i] <- height(x$data$station[[i]], referencePressure)
         }
         return(list(distance=d, height=h))
     } else if (inherits(x, "ctd")) {
-        return(height(x, reference.pressure))
+        return(height(x, referencePressure))
     } else {
         stop("method only works for 'section' or 'ctd' objects")
     }
 }
 
-sw.lapse.rate <- function(salinity, temperature=NULL, pressure=NULL)
+swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -294,7 +294,7 @@ sw.lapse.rate <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-sw.rho <- function(salinity, temperature=NULL, pressure=NULL)
+swRho <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -331,7 +331,7 @@ sw.rho <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-sw.sigma <- function(salinity, temperature=NULL, pressure=NULL)
+swSigma <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -340,10 +340,10 @@ sw.sigma <- function(salinity, temperature=NULL, pressure=NULL)
         pressure <- salinity$data$pressure
         salinity <- salinity$data$salinity # note: this destroys the ctd object
     }
-    sw.rho(salinity, temperature, pressure) - 1000
+    swRho(salinity, temperature, pressure) - 1000
 }
 
-sw.sigma.t <- function(salinity, temperature=NULL, pressure=NULL)
+swSigmaT <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -352,11 +352,11 @@ sw.sigma.t <- function(salinity, temperature=NULL, pressure=NULL)
         pressure <- salinity$data$pressure
         salinity <- salinity$data$salinity # note: this destroys the ctd object
     }
-    p.top <- rep(0, length(salinity))
-    sw.rho(salinity, temperature, p.top) - 1000
+    ptop <- rep(0, length(salinity))
+    swRho(salinity, temperature, ptop) - 1000
 }
 
-sw.sigma.theta <- function(salinity, temperature=NULL, pressure=NULL)
+swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -365,11 +365,11 @@ sw.sigma.theta <- function(salinity, temperature=NULL, pressure=NULL)
         pressure <- salinity$data$pressure
         salinity <- salinity$data$salinity # note: this destroys the ctd object
     }
-    p.top <- rep(0, length(salinity))
-    sw.rho(salinity, sw.theta(salinity, temperature, pressure), p.top) - 1000
+    ptop <- rep(0, length(salinity))
+    swRho(salinity, swTheta(salinity, temperature, pressure), ptop) - 1000
 }
 
-sw.sound.speed <- function(salinity, temperature=NULL, pressure=NULL)
+swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -408,7 +408,7 @@ sw.sound.speed <- function(salinity, temperature=NULL, pressure=NULL)
 
 ## Source= http://sam.ucsd.edu/sio210/propseawater/ppsw_fortran/ppsw.f
 ## check value: cpsw = 3849.500 j/(kg deg. c) for s = 40 (ipss-78),
-sw.specific.heat <- function(salinity, temperature=NULL, pressure=NULL)
+swSpecificHeat <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -442,7 +442,7 @@ sw.specific.heat <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-sw.spice <- function(salinity, temperature=NULL, pressure=NULL)
+swSpice <- function(salinity, temperature=NULL, pressure=NULL)
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -479,7 +479,7 @@ sw.spice <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-sw.theta <- function(salinity, temperature=NULL, pressure=NULL, reference.pressure=0, method=c("unesco", "bryden"))
+swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure=0, method=c("unesco", "bryden"))
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -513,11 +513,11 @@ sw.theta <- function(salinity, temperature=NULL, pressure=NULL, reference.pressu
     } else {
         if (method == "unesco") {
                                         # sometimes have just a single value
-            npref <- length(reference.pressure)
+            npref <- length(referencePressure)
             if (npref == 1)
-                reference.pressure <- rep(reference.pressure[1], nS)
+                referencePressure <- rep(referencePressure[1], nS)
             rval <- .C("theta_UNESCO_1983",
-                       as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure), as.double(reference.pressure),
+                       as.integer(nS), as.double(salinity), as.double(temperature), as.double(pressure), as.double(referencePressure),
                        value = double(nS),
                        NAOK=TRUE, PACKAGE = "oce")$value
         } else {
@@ -528,7 +528,7 @@ sw.theta <- function(salinity, temperature=NULL, pressure=NULL, reference.pressu
     rval
 }
 
-sw.viscosity <- function(salinity, temperature=NULL)
+swViscosity <- function(salinity, temperature=NULL)
 {
     if (inherits(salinity, "ctd")) {
         temperature <-  salinity$data$temperature

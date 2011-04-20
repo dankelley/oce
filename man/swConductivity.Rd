@@ -1,12 +1,12 @@
-\name{sw.conductivity}
+\name{swConductivity}
 
-\alias{sw.conductivity}
+\alias{swConductivity}
 
 \title{Seawater conductivity}
 
 \description{Compute seawater conductivity, in \eqn{W m^{-1\circ}C^{-1}}{W/(m*degC)}}
 
-\usage{sw.conductivity(salinity, temperature=NULL, pressure=NULL)}
+\usage{swConductivity(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
   \item{salinity}{salinity [PSU], or a \code{ctd} object, in which case
@@ -37,8 +37,8 @@ for fresh water.
 
 \examples{
  library(oce)
- cond <- sw.conductivity(10,35,100); # 0.618569
- diffusivity <- cond / (sw.rho(10,35,100) * sw.specific.heat(10,35,100))
+ cond <- swConductivity(10,35,100); # 0.618569
+ diffusivity <- cond / (swRho(10,35,100) * swSpecificHeat(10,35,100))
 }
 
 \references{Caldwell, Douglas R., 1974. Thermal conductivity of
