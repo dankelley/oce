@@ -92,8 +92,8 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
     case to case, and so it is important to refer to them by name.
     The following vectors are normally present: \code{data$pressure},
     \code{data$salinity}, \code{data$temperature}, and
-    \code{data$sigma.theta}. (\eqn{\sigma_\theta}{sigma-theta} is calculated
-    using \code{\link{sw.sigma.theta}}.)}
+    \code{data$sigmatheta}. (\eqn{\sigma_\theta}{sigma-theta} is calculated
+    using \code{\link{swSigmaTheta}}.)}
   \item{metadata}{a list containing the following items
     \describe{
       \item{\code{header}}{the header itself, normally containing

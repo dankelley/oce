@@ -1,6 +1,6 @@
-\name{resizable.label}
+\name{resizableLabel}
 
-\alias{resizable.label}
+\alias{resizableLabel}
 
 \title{Provide axis names in adjustable sizes}
 
@@ -8,7 +8,7 @@
   instead of Temperature.}
 
 \usage{
-resizable.label(item=c("S", "T", "p", "z", "distance",
+resizableLabel(item=c("S", "T", "p", "z", "distance",
   "heading", "pitch", "roll"),
   axis=c("x", "y"))}
 

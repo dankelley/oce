@@ -111,20 +111,20 @@ produces different sorts of plots for different sorts of \verb@x@ objects.
 \index{seawater properties, calculations of}
 
 The \verb@oce@ package provides many functions for dealing with
-seawater properties. Perhaps the most used is \verb@sw.rho(S,T,p)@,
+seawater properties. Perhaps the most used is \verb@swRho(S,T,p)@,
 which computes seawater density $\rho=\rho(salinity, temperature,
 pressure)$, where salinity follows the practical salinity scale,
 $temperature$ is \emph{in-situ} temperature in $^\circ$C, and
 $pressure$ is seawater pressure, i.e. the excess over atmospheric
 pressure, in dbar.  (This and similar functions starts with the
-letters \verb@sw.@ to designate that they relate to seawater
+letters \verb@sw@ to designate that they relate to seawater
 properties; a future version of \verb@oce@ may provide air properties,
 with functions names starting with \verb@air.@) The result is a number
 in the order of $1000$\,kg/m$^3$.  For many purposes, Oceanographers
 prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$,
-provided with \verb@sw.sigma(salinity,temperature,pressure)@, or its
+provided with \verb@swSigma(salinity,temperature,pressure)@, or its
 adiabatic cousin $\sigma_\theta$, provided with
-\verb@sw.sigma.theta(salinity,temperature,pressure)@.
+\verb@swSigmaTheta(salinity,temperature,pressure)@.
 
 \looseness=1
 \index{dynamic height}
@@ -132,27 +132,27 @@ Most of the functions use the UNESCO formulations of seawater properties, but ne
 may be added as they come into use in the literature.
 A partial list of seawater functions is as follows:
 \verb@swDynamicHeight@ (dynamic height),
-\verb@sw.N2@ (buoyancy frequency),
-\verb@sw.S.C.T.p@ (salinity from conductivity, temperature and pressure),
-\verb@sw.S.T.rho@ (salinity from temperature and density),
-\verb@sw.T.S.rho@ (temperature from salinity and density),
-\verb@sw.T.freeze@ (freezing temperature),
-\verb@sw.alpha@ (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
-\verb@sw.beta@ (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
-\verb@sw.alpha.over.beta@ ($\alpha/\beta$),
-\verb@sw.conductivity@ (conductivity from $S$, $T$ and $p$),
-\verb@sw.depth@ (depth from $p$ and latitude),
-\verb@sw.lapse.rate@ (adiabatic lapse rate),
-\verb@sw.rho@ (density $\rho$ from $S$, $T$ and $p$),
-\verb@sw.sigma@ ($\rho-1000$\,kg/m$^3$),
-\verb@sw.sigma.t@ ($\sigma$ with $p$ set to zero and temperature unaltered),
-\verb@sw.sigma.theta@ ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
-\verb@sw.sound.speed@ (speed of sound),
-\verb@sw.specific.heat@ (specific heat),
-\verb@sw.spice@ (a quantity used in double-diffusive research),
-\verb@sw.theta@ (potential temperature $\theta$),
+\verb@swN2@ (buoyancy frequency),
+\verb@swSCTp@ (salinity from conductivity, temperature and pressure),
+\verb@swSTrho@ (salinity from temperature and density),
+\verb@swTSrho@ (temperature from salinity and density),
+\verb@swTFreeze@ (freezing temperature),
+\verb@swAlpha@ (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
+\verb@swBeta@ (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
+\verb@swAlphaOverBeta@ ($\alpha/\beta$),
+\verb@swConductivity@ (conductivity from $S$, $T$ and $p$),
+\verb@swDepth@ (depth from $p$ and latitude),
+\verb@swLapseRate@ (adiabatic lapse rate),
+\verb@swRho@ (density $\rho$ from $S$, $T$ and $p$),
+\verb@swSigma@ ($\rho-1000$\,kg/m$^3$),
+\verb@swSigmaT@ ($\sigma$ with $p$ set to zero and temperature unaltered),
+\verb@swSigmaTheta@ ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
+\verb@swSoundSpeed@ (speed of sound),
+\verb@swSpecificHeat@ (specific heat),
+\verb@swSpice@ (a quantity used in double-diffusive research),
+\verb@swTheta@ (potential temperature $\theta$),
 and
-\verb@sw.viscosity@ (viscosity).
+\verb@swViscosity@ (viscosity).
 Details and examples are provided in the documentation of these functions.
 
 
@@ -656,10 +656,10 @@ open-source software.
 \workedanswer{1}{Seawater properties}
 <<>>=
 library(oce)
-sw.rho(34, 10, 100)
-sw.theta(34, 10, 100)
-sw.rho(34, sw.theta(34, 10, 100), 0)
-sw.rho(34, sw.theta(34, 10, 100, 200), 200)
+swRho(34, 10, 100)
+swTheta(34, 10, 100)
+swRho(34, swTheta(34, 10, 100), 0)
+swRho(34, swTheta(34, 10, 100, 200), 200)
 plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 

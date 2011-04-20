@@ -98,7 +98,7 @@
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
-    example is to set \code{df}, for use in \link{sw.N2} calculations.} 
+    example is to set \code{df}, for use in \link{swN2} calculations.} 
 }
 
 \details{Creates a multi-panel summary plot of data measured in a CTD

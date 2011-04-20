@@ -58,7 +58,7 @@ rm(n, x, y, theta, u, v)
 # Oceanographic example
 data(air.hal)
 attach(air.hal)
-oce.plot.ts(t, temperature, type='l', ylim=c(0,25), ylab=resizable.label("T"))
+oce.plot.ts(t, temperature, type='l', ylim=c(0,25), ylab=resizableLabel("T"))
 oce.plot.sticks(t, rep(5, length(u)), u, v, yscale=2, add=TRUE)
 legend("bottomright", legend="Velocity scale: 2 m/s per degC", bg="white")
 detach(air.hal)

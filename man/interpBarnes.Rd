@@ -1,12 +1,12 @@
-\name{interp.barnes}
+\name{interpBarnes}
 
-\alias{interp.barnes}
+\alias{interpBarnes}
 
 \title{Grid data using Barnes algorithm}
 
 \description{Grid data using Barnes algorithm.}
 
-\usage{interp.barnes(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, 
+\usage{interpBarnes(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, 
 gamma=0.5, iterations=2)}
 
 \arguments{
@@ -44,7 +44,7 @@ library(oce)
 
 # Contouring example, with wind-speed data from Koch et al. (1983)
 data(wind)
-u <- interp.barnes(wind$x, wind$y, wind$u)
+u <- interpBarnes(wind$x, wind$y, wind$u)
 contour(u$xg, u$yg, u$zg, col="red", labcex=1)
 text(wind$x, wind$y, wind$u, cex=0.7, col="blue")
 
@@ -54,7 +54,7 @@ p <- ctd$data$pressure
 y <- rep(1, length(p)) # fake y data, with arbitrary value
 S <- ctd$data$salinity
 pg <- pretty(p, n=100)
-g <- interp.barnes(p, y, S, xg=pg, xr=2)
+g <- interpBarnes(p, y, S, xg=pg, xr=2)
 plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 lines(g$zg, g$xg, col="red")
 }

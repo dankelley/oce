@@ -1,13 +1,14 @@
-\name{sw.alpha.over.beta}
+\name{swAlpha}
 
-\alias{sw.alpha.over.beta}
+\alias{swAlpha}
 
-\title{Ratio of seawater thermal expansion coefficient to haline contraction coefficient}
+\title{Seawater thermal expansion coefficient}
 
-\description{Compute \eqn{\alpha/\beta}{alpha/beta} using McDougall's (1987) algorithm.}
+\description{Compute \eqn{\alpha}{alpha}, the seawater thermal expansion
+  coefficient, as the product of \eqn{\alpha/\beta}{alpha/beta} and
+  \eqn{\beta}{beta}, each calculated from McDougall's (1987) algorithm.}
 
-\usage{sw.alpha.over.beta(salinity, temperature=NULL, pressure=NULL,
-                   is.theta=FALSE)}
+\usage{swAlpha(salinity, temperature=NULL, pressure=NULL, isTheta=FALSE)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -17,18 +18,18 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
-  \item{is.theta}{Set TRUE if t is theta or FALSE if t is in-situ}
+  \item{isTheta}{Set TRUE if t is theta or FALSE if t is in-situ}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
   temperature and pressure values are extracted from it, and used for
   the calculation.}
 
-\value{Value in psu/\eqn{^\circ}{deg}C.}
+\value{Value in 1/degC.}
 
 \examples{
- # 0.3476 (from p1964 of McDougall 1987)
- ab <- sw.alpha.over.beta(40, 10, 4000, is.theta=TRUE) 
+ # 2.5060e-4 (inferred from p1964 of McDougall 1987)
+ a <- swAlpha(40, 10, 4000) 
 }
 
 \references{McDougall, T.J. 1987. "Neutral Surfaces" Journal of Physical

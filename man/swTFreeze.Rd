@@ -1,12 +1,12 @@
-\name{sw.T.freeze}
+\name{swTFreeze}
 
-\alias{sw.T.freeze}
+\alias{swTFreeze}
 
 \title{Seawater freezing temperature}
 
 \description{Compute freezing temperature of seawater.}
 
-\usage{sw.T.freeze(salinity, pressure=NULL)}
+\usage{swTFreeze(salinity, pressure=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] or a \code{ctd} object from which
@@ -21,7 +21,7 @@
 \value{Temperature [\eqn{^\circ}{deg}C]}
 
 \examples{
- T.freeze <-  sw.T.freeze(40, 500) # -2.588567 degC
+ Tf <- swTFreeze(40, 500) # -2.588567 degC
 }
 
 \references{UNESCO tech. papers in the marine science no. 28. 1978

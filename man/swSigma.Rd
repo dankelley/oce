@@ -1,13 +1,13 @@
-\name{sw.sigma}
+\name{swSigma}
 
-\alias{sw.sigma}
+\alias{swSigma}
 
 \title{Seawater density anomaly}
 
 \description{Compute \eqn{\sigma}{sigma}, the \emph{in-situ} density of
   seawater, minus 1000 kg/m\eqn{^3}{^3}.} 
 
-\usage{sw.sigma(salinity, temperature=NULL, pressure=NULL)}
+\usage{swSigma(salinity, temperature=NULL, pressure=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -30,14 +30,14 @@
 
 \value{\emph{In-situ} density anomaly [kg/m\eqn{^3}{^3}].}
 
-\seealso{Related density routines include: \code{\link{sw.rho}} to
-  calculate in-situ density, \code{\link{sw.sigma.t}} to calculate an
+\seealso{Related density routines include: \code{\link{swRho}} to
+  calculate in-situ density, \code{\link{swSigmaT}} to calculate an
   archaic quantity found in old textbooks, and
-  \code{\link{sw.sigma.theta}} to calculate potential density anomaly
+  \code{\link{swSigmaTheta}} to calculate potential density anomaly
   relative to the surface pressure.  If you are thinking of using
-  \code{sw.sigma}, you probably want \code{\link{sw.sigma.theta}}.}
+  \code{swSigma}, you probably want \code{\link{swSigmaTheta}}.}
 
-\examples{sig <- sw.sigma(35, 13, 1000)	# 30.818}
+\examples{sig <- swSigma(35, 13, 1000)	# 30.818}
 
 \references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
  computation of fundamental properties of seawater. \emph{Unesco

@@ -1,13 +1,13 @@
-\name{sw.theta}
+\name{swTheta}
 
-\alias{sw.theta}
+\alias{swTheta}
 
 \title{Seawater potential temperature}
 
 \description{Compute \eqn{\theta}{theta}, the potential temperature of
   seawater.}
 
-\usage{sw.theta(salinity, temperature=NULL, pressure=NULL, reference.pressure=0,
+\usage{swTheta(salinity, temperature=NULL, pressure=NULL, referencePressure=0,
          method=c("unesco","bryden"))}
 
 \arguments{
@@ -18,7 +18,7 @@
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
-  \item{reference.pressure}{reference pressure [dbar]}
+  \item{referencePressure}{reference pressure [dbar]}
   \item{method}{algorithm to be used (see details)}
 }
 
@@ -29,7 +29,7 @@
   The potential temperature is defined to be the temperature that a
   water parcel of salinity \code{S}, \emph{in-situ} temperature \code{t}
   and pressure \code{p} would have if were to be moved adiabatically to
-  a location with pressure \code{reference.pressure}. This quantity is
+  a location with pressure \code{referencePressure}. This quantity is
   commonly denoted \eqn{\theta}{theta} in the oceanographic literature.
 
   The \code{"bryden"} method, based on Bryden (1973), calculates
@@ -45,22 +45,22 @@
 
 \seealso{The corresponding potential density anomaly
 \eqn{\sigma_\theta}{sigma-theta} can be calculated with
-\code{\link{sw.sigma.theta}}.
+\code{\link{swSigmaTheta}}.
 }
 
 \examples{
 library(oce)
-cat("unesco example:",sw.theta(35, 13, 1000),"\n")
-cat("bryden example:",sw.theta(35, 13, 1000, "bryden"),"\n")
+cat("unesco example:",swTheta(35, 13, 1000),"\n")
+cat("bryden example:",swTheta(35, 13, 1000, "bryden"),"\n")
 
-print(sw.theta(40,40,10000,0,"unesco")) # 36.89073 (Fofonoff et al., 1983)
+print(swTheta(40,40,10000,0,"unesco")) # 36.89073 (Fofonoff et al., 1983)
 	
 # Demonstrate that the methods agree to a couple of
 # millidegrees over a typical span of values
 S <- c(30,30,38,38)
 T <- c(-2,-2,30,30)
 p <- 1000 * runif(n=4)
-print(max(abs(sw.theta(S,T,p) - sw.theta(S,T,p,0,"bryden"))))
+print(max(abs(swTheta(S,T,p) - swTheta(S,T,p,0,"bryden"))))
 }
 
 \references{Bryden, H. L., 1973. New polynomials for thermal expansion,

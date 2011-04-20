@@ -1,12 +1,12 @@
-\name{sw.viscosity}
+\name{swViscosity}
 
-\alias{sw.viscosity}
+\alias{swViscosity}
 
 \title{Seawater viscosity}
 
 \description{Compute viscosity of seawater, in \eqn{Pa\cdot s}{Pa*s}}
 
-\usage{sw.viscosity(salinity, temperature=NULL)}
+\usage{swViscosity(salinity, temperature=NULL)}
 
 \arguments{
   \item{salinity}{either salinity [PSU] (in which case
@@ -32,7 +32,7 @@
 
 \value{Viscosity of seawater in \eqn{Pa\cdot s}{Pa*s}.  Divide by density to get kinematic viscosity in \eqn{m^2/s}{m^2/s}.}
 \examples{
- v <- sw.viscosity(30,10); # 0.001383779
+ v <- swViscosity(30,10); # 0.001383779
 }
 
 \references{N. Ernest Dorsey (1940), \emph{Properties of ordinary

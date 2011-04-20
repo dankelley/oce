@@ -121,12 +121,12 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     u <- d[, col.east] / 100
     v <- d[, col.north] / 100
     heading <- d[, col.heading]
-    conductivity <- d[, col.conductivity] / 100 / (sw.conductivity(35, 15, 0)) # cond. ratio
+    conductivity <- d[, col.conductivity] / 100 / (swConductivity(35, 15, 0)) # cond. ratio
     temperature <- d[, col.temperature]
     depth <- d[, col.depth]
     calculate.salinity.from.conductivity <- TRUE # FIXME: why is "Sal" so wrong in the sample file?
     if (calculate.salinity.from.conductivity)
-        salinity <- sw.S.C.T.p(conductivity, temperature, depth) # FIXME: should really be pressure
+        salinity <- swSCTp(conductivity, temperature, depth) # FIXME: should really be pressure
     else
         salinity <- d[, col.salinity]
     sample <- as.numeric(d[, 1])
@@ -375,10 +375,10 @@ plot.cm <- function(x,
                         type=type, xlab="", ylab="Depth [m]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 8) {
             oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
-                        type=type, xlab="", ylab=resizable.label("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                        type=type, xlab="", ylab=resizableLabel("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 9) {
             oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
-                        type=type, xlab="", ylab=resizable.label("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
+                        type=type, xlab="", ylab=resizableLabel("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 10) {
             oce.plot.ts(x$data$ts$time, x$data$ts$heading,
                         type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
