@@ -1,9 +1,9 @@
-read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
                      latitude=NA, longitude=NA,
                      start, deltat,
-                     debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                     debug=getOption("oceDebug"), monitor=TRUE, history)
 {
     type = match.arg(type)
     ## FIXME: all these read.adv variants should have the same argument list
@@ -11,29 +11,29 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         header=header,
                         latitude=latitude, longitude=longitude,
-                        debug=debug, monitor=monitor, log.action=log.action)
+                        debug=debug, monitor=monitor, history=history)
     else if (type == "sontek") # guess
         read.adv.sontek.serial(file=file, from=from, to=to, by=by, tz=tz,
                                latitude=latitude, longitude=longitude,
                                start=start, deltat=deltat,
-                               debug=debug, monitor=monitor, log.action=log.action)
+                               debug=debug, monitor=monitor, history=history)
     else if (type == "sontek.adr")
         read.adv.sontek.adr(file=file, from=from, to=to, by=by, tz=tz,
                             latitude=latitude, longitude=longitude,
-                            debug=debug, log.action=log.action)
+                            debug=debug, history=history)
     else if (type == "sontek.text")
         read.adv.sontek.text(basefile=file, from=from, to=to, by=by, tz=tz,
                              latitude=latitude, longitude=longitude,
-                             debug=debug, log.action=log.action)
+                             debug=debug, history=history)
     else
         stop("read.adv() cannot understand type = \"", type, "\"")
 }
 
-read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             type="vector",
                             header=TRUE,
                             latitude=NA, longitude=NA,
-                            debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                            debug=getOption("oceDebug"), monitor=TRUE, history)
 {
     ## abbreviations:
     ##   SIG=System Integrator Guide
@@ -41,7 +41,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$ts$time, etc.
 
-    oce.debug(debug, "\b\bread.adv.nortek(file=\"", file, "\", type=\"", type, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", type=\"", type, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", log.action=(not shown)) {\n", sep="")
+    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", type=\"", type, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", type=\"", type, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", history=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (is.numeric(by)   && by   < 1)
@@ -52,7 +52,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
         stop("argument \"to\" must be 1 or larger")
 
     if (is.character(file)) {
-        filename <- full.filename(file)
+        filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -66,100 +66,102 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     type <- match.arg(type)
     if (!header)
         stop("header must be TRUE")
-    oce.debug(debug, "  read.adv.nortek() about to read header\n")
-    oce.debug(debug, "  read.adv.nortek() finished reading header\n")
+    oceDebug(debug, "  read.adv.nortek() about to read header\n")
+    oceDebug(debug, "  read.adv.nortek() finished reading header\n")
                                         # find file length
     seek(file, 0, "end")
-    file.size <- seek(file, 0, "start")
-    oce.debug(debug, "  file.size=", file.size, "\n")
-    buf <- readBin(file, "raw", file.size)
-    header <- decode.header.nortek(buf, debug=debug-1)
+    fileSize <- seek(file, 0, "start")
+    oceDebug(debug, "  fileSize=", fileSize, "\n")
+    buf <- readBin(file, "raw", fileSize)
+    header <- decodeHeaderNortek(buf, debug=debug-1)
     if (debug > 1) {                    # Note: need high debugging to get this
         cat("\nheader is as follows:\n")
         str(header)
     }
     metadata <- list(manufacturer="nortek",
-                     instrument.type="vector",
+                     instrumentType="vector",
                      filename=filename,
                      latitude=latitude, longitude=longitude,
-                     measurement.start=NA, # FIXME
-                     measurement.end=NA,   # FIXME
-                     sampling.rate=NA, # FIXME
-                     number.of.beams=header$head$number.of.beams, # FIXME: check that this is correct
-                     serial.number=header$hardware$serial.number,
+                     measurementStart=NA, # FIXME
+                     measurementEnd=NA,   # FIXME
+                     samplingRate=NA, # FIXME
+                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
+                     serialNumber=header$hardware$serialNumber,
                      frequency=header$head$frequency,
-                     internal.code.version=header$hardware$pic.version,
-                     software.version=header$user$sw.version,
-                     hardware.revision=header$hardware$hw.revision,
-                     rec.size=header$hardware$rec.size,
-                     velocity.range=header$hardware$velocity.range,
-                     firmware.version=header$hardware$fw.version,
+                     internalCodeVersion=header$hardware$picVersion,
+                     softwareVersion=header$user$swVersion,
+                     hardwareRevision=header$hardware$hwRevision,
+                     recSize=header$hardware$recSize,
+                     velocityRange=header$hardware$velocityRange,
+                     firmwareVersion=header$hardware$fwVersion,
                      config=header$hardware$config,
-                     config.pressure.sensor=header$head$config.pressure.sensor,
-                     config.magnetometer.sensor=header$head$config.magnetometer.sensor,
-                     config.tilt.sensor=header$head$config.tilt.sensor,
-                     beam.angle=25,     # FIXME: should read from file
-                     tilt.sensor.orientation=header$head$tilt.sensor.orientation,
+                     configPressureSensor=header$head$configPressureSensor,
+                     configMagnetometerSensor=header$head$configMagnetometerSensor,
+                     configTiltSensor=header$head$configTiltSensor,
+                     beamAngle=25,     # FIXME: should read from file
+                     tiltSensorOrientation=header$head$tiltSensorOrientation,
                      frequency=header$head$frequency,
-                     head.serial.number=header$head$head.serial.number,
-                     bin1.distance=header$user$blanking.distance, # FIXME: is this right?
-                     blanking.distance=header$user$blanking.distance,
-                     measurement.interval=header$user$measurement.interval,
-                     transformation.matrix=header$head$transformation.matrix,
-                     deployment.name=header$user$deployment.name,
-                     cell.size=header$user$cell.size,
-                     velocity.scale=header$user$velocity.scale,
-                     coordinate.system=header$user$coordinate.system,
-                     oce.coordinate=header$user$coordinate.system,
-                     oce.beam.attenuated=FALSE,
-                     deploy.name=header$user$deploy.name,
+                     headSerialNumber=header$head$headSerialNumber,
+                     bin1Distance=header$user$blankingDistance, # FIXME: is this right?
+                     blankingDistance=header$user$blankingDistance,
+                     measurementInterval=header$user$measurementInterval,
+                     transformationMatrix=header$head$transformationMatrix,
+                     deploymentName=header$user$deploymentName,
+                     cellSize=header$user$cellSize,
+                     velocityScale=header$user$velocityScale,
+                     coordinateSystem=header$user$coordinateSystem,
+                     oceCoordinate=header$user$coordinateSystem,
+                     oceBeamAttenuated=FALSE,
+                     deployName=header$user$deployName,
                      comments=header$user$comments)
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
+    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- historyItem(history)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
-    bisect.nortek.vector.sd <- function(t.find, add=0, debug=0) { # t.find=time add=offset debug=debug
-        oce.debug(debug, "\n")
-        oce.debug(debug, "bisect.nortek.vector.sd(t.find=", format(t.find), ", add=", add, ", debug=", debug, ")\n")
-        vsd.len <- length(vsd.start)
+    bisectNortekVectorSd <- function(tFind, add=0, debug=0) { # tFind=time add=offset debug=debug
+        oceDebug(debug, "\n")
+        oceDebug(debug, "bisectNortekVectorSd(tFind=", format(tFind), ", add=", add, ", debug=", debug, ")\n")
+        vsdLen <- length(vsdStart)
         lower <- 1
-        upper <- vsd.len
-        passes <- floor(10 + log(vsd.len, 2)) # won't need this many; only do this to catch coding errors
+        upper <- vsdLen
+        passes <- floor(10 + log(vsdLen, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[middle]+8]),  # year
-                             bcd2integer(buf[vsd.start[middle]+9]), # month
-                             bcd2integer(buf[vsd.start[middle]+6]), # day
-                             bcd2integer(buf[vsd.start[middle]+7]), # hour
-                             bcd2integer(buf[vsd.start[middle]+4]), # min
-                             bcd2integer(buf[vsd.start[middle]+5]), # sec
+            t <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[middle]+8]),  # year
+                             bcdToInteger(buf[vsdStart[middle]+9]), # month
+                             bcdToInteger(buf[vsdStart[middle]+6]), # day
+                             bcdToInteger(buf[vsdStart[middle]+7]), # hour
+                             bcdToInteger(buf[vsdStart[middle]+4]), # min
+                             bcdToInteger(buf[vsdStart[middle]+5]), # sec
                              tz=tz)
-            if (t.find < t)
+            if (tFind < t)
                 upper <- middle
             else
                 lower <- middle
             if (upper - lower < 2)
                 break
-            oce.debug(debug, "examine: t=", format(t), " middle=", middle, " lower=", lower, " upper=", upper, " pass=", pass, " of max=", passes, "\n")
+            oceDebug(debug, "examine: t=", format(t), " middle=", middle, " lower=", lower, " upper=", upper, " pass=", pass, " of max=", passes, "\n")
         }
         middle <- middle + add
-        if (middle < 1) middle <- 1
-        if (middle > vsd.len) middle <- vsd.len
-        t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[middle]+8]),  # year
-                         bcd2integer(buf[vsd.start[middle]+9]), # month
-                         bcd2integer(buf[vsd.start[middle]+6]), # day
-                         bcd2integer(buf[vsd.start[middle]+7]), # hour
-                         bcd2integer(buf[vsd.start[middle]+4]), # min
-                         bcd2integer(buf[vsd.start[middle]+5]), # sec
+        if (middle < 1)
+            middle <- 1
+        if (middle > vsdLen)
+            middle <- vsdLen
+        t <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[middle]+8]),  # year
+                         bcdToInteger(buf[vsdStart[middle]+9]), # month
+                         bcdToInteger(buf[vsdStart[middle]+6]), # day
+                         bcdToInteger(buf[vsdStart[middle]+7]), # hour
+                         bcdToInteger(buf[vsdStart[middle]+4]), # min
+                         bcdToInteger(buf[vsdStart[middle]+5]), # sec
                          tz=tz)
-        oce.debug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", vsd.start[middle], "\n")
+        oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", vsdStart[middle], "\n")
         return(list(index=middle, time=t)) # index is within vsd
     }
     ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
-    vvd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
-    vsd.start <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
-    ##TEST## .vsd <<- buf[vsd.start[1] + seq(0, 27)] # FIXME: remove
+    vvdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
+    vsdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+    ##TEST## .vsd <<- buf[vsdStart[1] + seq(0, 27)] # FIXME: remove
     ## FIXME: determine whether to use the velocity scale in next line, or other value.
-    oce.debug(debug, "VSD", paste("0x", format(as.raw(buf[vsd.start[1]+0:27])),sep=""), "\n")
+    oceDebug(debug, "VSD", paste("0x", format(as.raw(buf[vsdStart[1]+0:27])),sep=""), "\n")
 
     ## Velocity scale.  Nortek's System Integrator Guide (p36) says
     ## the velocity scale is in bit 1 of "status" byte (at offset 23)
@@ -175,29 +177,29 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     ## factors, namely 1mm/s and 0.1mm/s.  Starting on 2010-09-13, the
     ## present function started using this possibility of two scale
     ## factors, as determined in the next code line, following p36.
-    metadata$velocity.scale <- if ("0" == substr(byte2binary(buf[vsd.start[1] + 23], endian="big"), 7, 7)) 1e-3 else 0.1e-3
-    oce.debug(debug, "velocity scale:", metadata$velocity.scale, "m/s (from VSD header byte 24, 0x",
-              as.raw(buf[vsd.start[1] + 23]), "(bit 7 of",
-              byte2binary(buf[vsd.start[1] + 23], endian="big"), ")\n")
+    metadata$velocityScale <- if ("0" == substr(byteToBinary(buf[vsdStart[1] + 23], endian="big"), 7, 7)) 1e-3 else 0.1e-3
+    oceDebug(debug, "velocity scale:", metadata$velocityScale, "m/s (from VSD header byte 24, 0x",
+              as.raw(buf[vsdStart[1] + 23]), "(bit 7 of",
+              byteToBinary(buf[vsdStart[1] + 23], endian="big"), ")\n")
 
     ## Measurement start and end times.
-    vsd.len <- length(vsd.start)
-    metadata$measurement.start <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1]+8]),  # year
-                                              bcd2integer(buf[vsd.start[1]+9]), # month
-                                              bcd2integer(buf[vsd.start[1]+6]), # day
-                                              bcd2integer(buf[vsd.start[1]+7]), # hour
-                                              bcd2integer(buf[vsd.start[1]+4]), # min
-                                              bcd2integer(buf[vsd.start[1]+5]), # sec
+    vsdLen <- length(vsdStart)
+    metadata$measurementStart <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[1]+8]),  # year
+                                              bcdToInteger(buf[vsdStart[1]+9]), # month
+                                              bcdToInteger(buf[vsdStart[1]+6]), # day
+                                              bcdToInteger(buf[vsdStart[1]+7]), # hour
+                                              bcdToInteger(buf[vsdStart[1]+4]), # min
+                                              bcdToInteger(buf[vsdStart[1]+5]), # sec
                                               tz=tz)
-    metadata$measurement.end <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[vsd.len]+8]),  # year
-                                            bcd2integer(buf[vsd.start[vsd.len]+9]), # month
-                                            bcd2integer(buf[vsd.start[vsd.len]+6]), # day
-                                            bcd2integer(buf[vsd.start[vsd.len]+7]), # hour
-                                            bcd2integer(buf[vsd.start[vsd.len]+4]), # min
-                                            bcd2integer(buf[vsd.start[vsd.len]+5]), # sec
-                                            tz=tz)
-    vvd.len <- length(vvd.start)
-    metadata$measurement.deltat <- (as.numeric(metadata$measurement.end) - as.numeric(metadata$measurement.start)) / (vvd.len - 1)
+    metadata$measurementEnd <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[vsdLen]+8]),  # year
+                                           bcdToInteger(buf[vsdStart[vsdLen]+9]), # month
+                                           bcdToInteger(buf[vsdStart[vsdLen]+6]), # day
+                                           bcdToInteger(buf[vsdStart[vsdLen]+7]), # hour
+                                           bcdToInteger(buf[vsdStart[vsdLen]+4]), # min
+                                           bcdToInteger(buf[vsdStart[vsdLen]+5]), # sec
+                                           tz=tz)
+    vvdLen <- length(vvdStart)
+    metadata$measurementDeltat <- (as.numeric(metadata$measurementEnd) - as.numeric(metadata$measurementStart)) / (vvdLen - 1)
 
     if (missing(to))
         stop("must supply 'to'")
@@ -206,241 +208,241 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        from.pair <- bisect.nortek.vector.sd(from, -1, debug-1)
-        from <- from.index <- from.pair$index
-        to.pair <- bisect.nortek.vector.sd(to, 1, debug-1)
-        to <- to.index <- to.pair$index
-        by.time <- ctime.to.seconds(by)
-        oce.debug(debug,
-                  "  from=", format(from.pair$t), " yields vsd.start[", from.index, "]\n",
-                  "  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n",
-                  "  by=", by, "by.time=", by.time, "s\n",
-                  "vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n",
-                  "vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
-        two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
-                                 bcd2integer(buf[vsd.start[1:2]+9]), # month
-                                 bcd2integer(buf[vsd.start[1:2]+6]), # day
-                                 bcd2integer(buf[vsd.start[1:2]+7]), # hour
-                                 bcd2integer(buf[vsd.start[1:2]+4]), # min
-                                 bcd2integer(buf[vsd.start[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
+        fromPair <- bisectNortekVectorSd(from, -1, debug-1)
+        from <- fromIndex <- fromPair$index
+        toPair <- bisectNortekVectorSd(to, 1, debug-1)
+        to <- toIndex <- toPair$index
+        byTime <- ctimeToSeconds(by)
+        oceDebug(debug,
+                  "  from=", format(fromPair$t), " yields vsdStart[", fromIndex, "]\n",
+                  "  to  =", format(toPair$t),   " yields vsdStart[", toIndex, "]\n",
+                  "  by=", by, "byTime=", byTime, "s\n",
+                  "vsdStart[",fromPair$index, "]=", vsdStart[fromPair$index], "at time", format(fromPair$t), "\n",
+                  "vsdStart[",  toPair$index, "]=", vsdStart[  toPair$index], "at time", format(  toPair$t), "\n")
+        twoTimes <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[1:2]+8]),  # year
+                                 bcdToInteger(buf[vsdStart[1:2]+9]), # month
+                                 bcdToInteger(buf[vsdStart[1:2]+6]), # day
+                                 bcdToInteger(buf[vsdStart[1:2]+7]), # hour
+                                 bcdToInteger(buf[vsdStart[1:2]+4]), # min
+                                 bcdToInteger(buf[vsdStart[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
                                  tz=tz)
-        vsd.dt <- as.numeric(two.times[2]) - as.numeric(two.times[1]) # FIXME: need # samples per burst here
+        vsd.dt <- as.numeric(twoTimes[2]) - as.numeric(twoTimes[1]) # FIXME: need # samplesPerBurst here
 
-        ## Next two lines suggest that readBin() can be used instead of bcd2integer ... I imagine it would be faster
-        ##cat("month=", readBin(buf[vsd.start[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
-        ##cat("month=", bcd2integer(buf[vsd.start[1]+9]), "(as bcd)\n")
+        ## Next two lines suggest that readBin() can be used instead of bcdToInteger ... I imagine it would be faster
+        ##cat("month=", readBin(buf[vsdStart[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
+        ##cat("month=", bcdToInteger(buf[vsdStart[1]+9]), "(as bcd)\n")
 
-        oce.debug(debug, "nrecords=", readBin(buf[vsd.start[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
-        oce.debug(debug, "vsd.dt=",vsd.dt,"(from two.times)\n")
+        oceDebug(debug, "nrecords=", readBin(buf[vsdStart[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
+        oceDebug(debug, "vsd.dt=",vsd.dt,"(from twoTimes)\n")
 
-        vvd.start <- vvd.start[vsd.start[from.index] <= vvd.start & vvd.start <= vsd.start[to.index]]
-        vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
+        vvdStart <- vvdStart[vsdStart[fromIndex] <= vvdStart & vvdStart <= vsdStart[toIndex]]
+        vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
         ## find vvd region that lies inside the vsd [from, to] region.
-        vvd.start.from <- max(1, vvd.start[vvd.start < from.pair$index])
-        vvd.start.to   <- min(length(vvd.start), vvd.start[vvd.start > to.pair$index])
+        vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
+        vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
     } else {
         ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
         if (inherits(from, "POSIXt")) {
             if (!inherits(to, "POSIXt"))
                 stop("if 'from' is POSIXt, then 'to' must be, also")
-            from.pair <- bisect.nortek.vector.sd(from, -1, debug-1)
-            from <- from.index <- from.pair$index
-            to.pair <- bisect.nortek.vector.sd(to, 1, debug-1)
-            to <- to.index <- to.pair$index
-            by.time <- ctime.to.seconds(by)
-            oce.debug(debug,
-                      "  from=", format(from.pair$t), " yields vsd.start[", from.index, "]\n",
-                      "  to  =", format(to.pair$t),   " yields vsd.start[", to.index, "]\n",
-                      "  by=", by, "by.time=", by.time, "s\n",
-                      "vsd.start[",from.pair$index, "]=", vsd.start[from.pair$index], "at time", format(from.pair$t), "\n",
-                      "vsd.start[",  to.pair$index, "]=", vsd.start[  to.pair$index], "at time", format(  to.pair$t), "\n")
-            two.times <- ISOdatetime(2000 + bcd2integer(buf[vsd.start[1:2]+8]),  # year
-                                     bcd2integer(buf[vsd.start[1:2]+9]), # month
-                                     bcd2integer(buf[vsd.start[1:2]+6]), # day
-                                     bcd2integer(buf[vsd.start[1:2]+7]), # hour
-                                     bcd2integer(buf[vsd.start[1:2]+4]), # min
-                                     bcd2integer(buf[vsd.start[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
+            fromPair <- bisectNortekVectorSd(from, -1, debug-1)
+            from <- fromIndex <- fromPair$index
+            toPair <- bisectNortekVectorSd(to, 1, debug-1)
+            to <- toIndex <- toPair$index
+            byTime <- ctimeToSeconds(by)
+            oceDebug(debug,
+                      "  from=", format(fromPair$t), " yields vsdStart[", fromIndex, "]\n",
+                      "  to  =", format(toPair$t),   " yields vsdStart[", toIndex, "]\n",
+                      "  by=", by, "byTime=", byTime, "s\n",
+                      "vsdStart[",fromPair$index, "]=", vsdStart[fromPair$index], "at time", format(fromPair$t), "\n",
+                      "vsdStart[",  toPair$index, "]=", vsdStart[  toPair$index], "at time", format(  toPair$t), "\n")
+            twoTimes <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart[1:2]+8]),  # year
+                                     bcdToInteger(buf[vsdStart[1:2]+9]), # month
+                                     bcdToInteger(buf[vsdStart[1:2]+6]), # day
+                                     bcdToInteger(buf[vsdStart[1:2]+7]), # hour
+                                     bcdToInteger(buf[vsdStart[1:2]+4]), # min
+                                     bcdToInteger(buf[vsdStart[1:2]+5]), # sec  NOTE: nortek files lack fractional seconds
                                      tz=tz)
-            vsd.dt <- as.numeric(two.times[2]) - as.numeric(two.times[1]) # FIXME: need # samples per burst here
-            ## Next two lines suggest that readBin() can be used instead of bcd2integer ... I imagine it would be faster
-            ##cat("month=", readBin(buf[vsd.start[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
-            ##cat("month=", bcd2integer(buf[vsd.start[1]+9]), "(as bcd)\n")
-            oce.debug(debug, "nrecords=", readBin(buf[vsd.start[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
-            oce.debug(debug, "vsd.dt=",vsd.dt,"(from two.times)\n")
-            vvd.start <- vvd.start[vsd.start[from.index] < vvd.start & vvd.start < vsd.start[to.index]]
-            vvd.dt <- vsd.dt * (to.index - from.index) / length(vvd.start)
-            oce.debug(debug,
-                      'vvd.dt=',vvd.dt,'\n',
+            vsd.dt <- as.numeric(twoTimes[2]) - as.numeric(twoTimes[1]) # FIXME: need # samplesPerBurst here
+            ## Next two lines suggest that readBin() can be used instead of bcdToInteger ... I imagine it would be faster
+            ##cat("month=", readBin(buf[vsdStart[1]+9], "integer", n=1, size=1, endian="little"), "(as readBin)\n")
+            ##cat("month=", bcdToInteger(buf[vsdStart[1]+9]), "(as bcd)\n")
+            oceDebug(debug, "nrecords=", readBin(buf[vsdStart[1]+10:11], "integer", n=1, size=2, endian="little"), "\n")
+            oceDebug(debug, "vsd.dt=",vsd.dt,"(from twoTimes)\n")
+            vvdStart <- vvdStart[vsdStart[fromIndex] < vvdStart & vvdStart < vsdStart[toIndex]]
+            vvdDt <- vsd.dt * (toIndex - fromIndex) / length(vvdStart)
+            oceDebug(debug,
+                      'vvdDt=',vvdDt,'\n',
                       'by=',by, "1/by=",1/by,"\n",
-                      "vvd.start after indexing:\n",
-                      str(vvd.start))
+                      "vvdStart after indexing:\n",
+                      str(vvdStart))
             ## find vvd region that lies inside the vsd [from, to] region.
-            vvd.start.from <- max(1, vvd.start[vvd.start < from.pair$index])
-            vvd.start.to   <- min(length(vvd.start), vvd.start[vvd.start > to.pair$index])
+            vvdStartFrom <- max(1, vvdStart[vvdStart < fromPair$index])
+            vvdStartTo   <- min(length(vvdStart), vvdStart[vvdStart > toPair$index])
         } else {
-            oce.debug(debug, 'numeric values for args from=',from,'to=',to,'by=', by, '\n')
-            from.index <- from
-            to.index <- to
-            if (to.index < 1 + from.index)
+            oceDebug(debug, 'numeric values for args from=',from,'to=',to,'by=', by, '\n')
+            fromIndex <- from
+            toIndex <- to
+            if (toIndex < 1 + fromIndex)
                 stop("need more separation between from and to")
-            oce.debug(debug, "from.index=", from.index, "to.index=", to.index, "\n")
-            oce.debug(debug, vector.show(vvd.start, "before subset, vvd.start is"))
-            vvd.start <- vvd.start[from.index:to.index]
-            oce.debug(debug, vector.show(vvd.start, "    ... later, vvd.start is"))
-            oce.debug(debug, vector.show(vsd.start, "before subset, vsd.start is"))
-            vsd.start.from <- which(vvd.start[1] < vsd.start)[1]
-            vsd.start.to <- which(vsd.start > vvd.start[length(vvd.start)])[1]
-            oce.debug(debug, "vsd.start.from=", vsd.start.from, "and vsd.start.to=", vsd.start.to, "(raw)\n")
-            vsd.start <- vsd.start[seq(vsd.start.from, vsd.start.to)]
-            oce.debug(debug, vector.show(vsd.start, "    ... later, vsd.start is"))
+            oceDebug(debug, "fromIndex=", fromIndex, "toIndex=", toIndex, "\n")
+            oceDebug(debug, vectorShow(vvdStart, "before subset, vvdStart is"))
+            vvdStart <- vvdStart[fromIndex:toIndex]
+            oceDebug(debug, vectorShow(vvdStart, "    ... later, vvdStart is"))
+            oceDebug(debug, vectorShow(vsdStart, "before subset, vsdStart is"))
+            vsdStartFrom <- which(vvdStart[1] < vsdStart)[1]
+            vsdStartTo <- which(vsdStart > vvdStart[length(vvdStart)])[1]
+            oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(raw)\n")
+            vsdStart <- vsdStart[seq(vsdStartFrom, vsdStartTo)]
+            oceDebug(debug, vectorShow(vsdStart, "    ... later, vsdStart is"))
         }
     }
-    oce.debug(debug, "about to trim vsd.start, based on vvd.start[1]=", vvd.start[1], " and vvd.start[length(vvd.start)]=", vvd.start[length(vvd.start)], "\n")
-    oce.debug(debug, vector.show(vsd.start, "before trimming, vsd.start:"))
-    oce.debug(debug, "from=", from, "to=", to, "\n")
+    oceDebug(debug, "about to trim vsdStart, based on vvdStart[1]=", vvdStart[1], " and vvdStart[length(vvdStart)]=", vvdStart[length(vvdStart)], "\n")
+    oceDebug(debug, vectorShow(vsdStart, "before trimming, vsdStart:"))
+    oceDebug(debug, "from=", from, "to=", to, "\n")
 
     ## Find spanning subset, expanded a little for now
-    subset.start <- which.max(vvd.start[1] < vsd.start)
-    if (subset.start > 1)
-        subset.start <- subset.start - 1 # extend a bit (for now)
-    subset.end <- which.min(vsd.start < vvd.start[length(vvd.start)])
-    oce.debug(debug, "first guess: subset.end=", subset.end, "\n")
+    subsetStart <- which.max(vvdStart[1] < vsdStart)
+    if (subsetStart > 1)
+        subsetStart <- subsetStart - 1 # extend a bit (for now)
+    subsetEnd <- which.min(vsdStart < vvdStart[length(vvdStart)])
+    oceDebug(debug, "first guess: subsetEnd=", subsetEnd, "\n")
 
-    if (subset.end < length(vsd.start))
-        subset.end <- subset.end + 1
+    if (subsetEnd < length(vsdStart))
+        subsetEnd <- subsetEnd + 1
 
-    oce.debug(debug, "try start vsd.start[subset.start=", subset.start, "] = ", vsd.start[subset.start], "\n")
-    oce.debug(debug, "try end   vsd.start[subset.end=  ", subset.end,   "] = ", vsd.start[subset.end],   "\n")
-    oce.debug(debug, vector.show(vsd.start, "before trimming, vsd.start:"))
-    vsd.start <- vsd.start[seq(subset.start, subset.end-1, 1)]
-    oce.debug(debug, vector.show(vsd.start, "after  trimming, vsd.start:"))
+    oceDebug(debug, "try start vsdStart[subsetStart=", subsetStart, "] = ", vsdStart[subsetStart], "\n")
+    oceDebug(debug, "try end   vsdStart[subsetEnd=  ", subsetEnd,   "] = ", vsdStart[subsetEnd],   "\n")
+    oceDebug(debug, vectorShow(vsdStart, "before trimming, vsdStart:"))
+    vsdStart <- vsdStart[seq(subsetStart, subsetEnd-1, 1)]
+    oceDebug(debug, vectorShow(vsdStart, "after  trimming, vsdStart:"))
 
-    if (2 > length(vsd.start))
+    if (2 > length(vsdStart))
         stop("need at least 2 velocity-system-data chunks to determine the timing; try increasing the difference between 'from' and 'to'")
 
-    if (to.index <= from.index)
+    if (toIndex <= fromIndex)
         stop("no data in specified range from=", format(from), " to=", format(to))
 
     ## we make the times *after* trimming, because this is a slow operation
     ## NOTE: the ISOdatetime() call takes 60% of the entire time for this function.
-    vsd.t <- ISOdatetime(2000 + bcd2integer(buf[vsd.start+8]),  # year
-                         bcd2integer(buf[vsd.start+9]), # month
-                         bcd2integer(buf[vsd.start+6]), # day
-                         bcd2integer(buf[vsd.start+7]), # hour
-                         bcd2integer(buf[vsd.start+4]), # min
-                         bcd2integer(buf[vsd.start+5]), # sec
+    vsd.t <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart+8]),  # year
+                         bcdToInteger(buf[vsdStart+9]), # month
+                         bcdToInteger(buf[vsdStart+6]), # day
+                         bcdToInteger(buf[vsdStart+7]), # hour
+                         bcdToInteger(buf[vsdStart+4]), # min
+                         bcdToInteger(buf[vsdStart+5]), # sec
                          tz=tz)
 
-    oce.debug(debug, "reading Nortek Vector, and using timezone: ", tz, "\n")
+    oceDebug(debug, "reading Nortek Vector, and using timezone: ", tz, "\n")
 
-    ## update metadata$measurement.deltat
-    metadata$measurement.deltat <- mean(diff(as.numeric(vsd.t)), na.rm=TRUE) * length(vsd.start) / length(vvd.start) # FIXME
+    ## update metadata$measurementDeltat
+    metadata$measurementDeltat <- mean(diff(as.numeric(vsd.t)), na.rm=TRUE) * length(vsdStart) / length(vvdStart) # FIXME
 
-    vsd.len <- length(vsd.start)
-    vsd.start2 <- sort(c(vsd.start, 1 + vsd.start))
-    heading <- 0.1 * readBin(buf[vsd.start2 + 14], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(heading, "heading"))
-    pitch <-   0.1 * readBin(buf[vsd.start2 + 16], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(pitch, "pitch"))
-    roll <-    0.1 * readBin(buf[vsd.start2 + 18], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(roll, "roll"))
-    temperature <- 0.01 * readBin(buf[vsd.start2 + 20], "integer", size=2, n=vsd.len, signed=TRUE, endian="little")
-    oce.debug(debug, vector.show(temperature, "temperature"))
+    vsdLen <- length(vsdStart)
+    vsdStart2 <- sort(c(vsdStart, 1 + vsdStart))
+    heading <- 0.1 * readBin(buf[vsdStart2 + 14], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
+    oceDebug(debug, vectorShow(heading, "heading"))
+    pitch <-   0.1 * readBin(buf[vsdStart2 + 16], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
+    oceDebug(debug, vectorShow(pitch, "pitch"))
+    roll <-    0.1 * readBin(buf[vsdStart2 + 18], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
+    oceDebug(debug, vectorShow(roll, "roll"))
+    temperature <- 0.01 * readBin(buf[vsdStart2 + 20], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
+    oceDebug(debug, vectorShow(temperature, "temperature"))
     ## byte 22 is an error code
     ## byte 23 is status, with bit 0 being orientation (p36 of Nortek's System Integrator Guide)
-    status <- buf[vsd.start[floor(0.5*length(vsd.start))] + 23]
-    metadata$orientation <- if ("0" == substr(byte2binary(status, endian="big"), 1, 1)) "upward" else "downward"
+    status <- buf[vsdStart[floor(0.5*length(vsdStart))] + 23]
+    metadata$orientation <- if ("0" == substr(byteToBinary(status, endian="big"), 1, 1)) "upward" else "downward"
     ##
-    metadata$burst.length <- round(length(vvd.start) / length(vsd.start), 0) # FIXME: surely this is in the header (?!?)
-    oce.debug(debug, vector.show(metadata$burst.length, "burst.length"))
-    vvd.start2 <- sort(c(vvd.start, 1 + vvd.start))
-    vvd.len <- length(vvd.start)          # FIXME: should be subsampled with 'by' ... but how???
-    p.MSB <- as.numeric(buf[vvd.start + 4])
-    p.LSW <- readBin(buf[vvd.start2 + 6], "integer", size=2, n=vvd.len, signed=FALSE, endian="little")
+    metadata$burstLength <- round(length(vvdStart) / length(vsdStart), 0) # FIXME: surely this is in the header (?!?)
+    oceDebug(debug, vectorShow(metadata$burstLength, "burstLength"))
+    vvdStart2 <- sort(c(vvdStart, 1 + vvdStart))
+    vvdLen <- length(vvdStart)          # FIXME: should be subsampled with 'by' ... but how???
+    p.MSB <- as.numeric(buf[vvdStart + 4])
+    p.LSW <- readBin(buf[vvdStart2 + 6], "integer", size=2, n=vvdLen, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
-    oce.debug(debug, vector.show(pressure, "pressure"))
-    v <- array(dim=c(vvd.len, 3))
-    v[,1] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 10], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")
-    v[,2] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 12], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")
-    v[,3] <- metadata$velocity.scale * readBin(buf[vvd.start2 + 14], "integer", size=2, n=vvd.len, signed=TRUE, endian="little")
+    oceDebug(debug, vectorShow(pressure, "pressure"))
+    v <- array(dim=c(vvdLen, 3))
+    v[,1] <- metadata$velocityScale * readBin(buf[vvdStart2 + 10], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,2] <- metadata$velocityScale * readBin(buf[vvdStart2 + 12], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,3] <- metadata$velocityScale * readBin(buf[vvdStart2 + 14], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
     if (debug > 0) {
-        oce.debug(debug, "v[", dim(v), "] begins...\n")
-        print(matrix(as.numeric(v[1:min(3,vvd.len),]), ncol=3))
+        oceDebug(debug, "v[", dim(v), "] begins...\n")
+        print(matrix(as.numeric(v[1:min(3,vvdLen),]), ncol=3))
     }
-    a <- array(raw(), dim=c(vvd.len, 3))
-    a[,1] <- buf[vvd.start + 16]
-    a[,2] <- buf[vvd.start + 17]
-    a[,3] <- buf[vvd.start + 18]
+    a <- array(raw(), dim=c(vvdLen, 3))
+    a[,1] <- buf[vvdStart + 16]
+    a[,2] <- buf[vvdStart + 17]
+    a[,3] <- buf[vvdStart + 18]
     if (debug > 0) {
-        oce.debug(debug, "a[", dim(a), "] begins...\n")
-        print(matrix(as.numeric(a[1:min(3,vvd.len),]), ncol=3))
+        oceDebug(debug, "a[", dim(a), "] begins...\n")
+        print(matrix(as.numeric(a[1:min(3,vvdLen),]), ncol=3))
     }
-    c <- array(raw(), dim=c(vvd.len, 3))
-    c[,1] <- buf[vvd.start + 19]
-    c[,2] <- buf[vvd.start + 20]
-    c[,3] <- buf[vvd.start + 21]
+    c <- array(raw(), dim=c(vvdLen, 3))
+    c[,1] <- buf[vvdStart + 19]
+    c[,2] <- buf[vvdStart + 20]
+    c[,3] <- buf[vvdStart + 21]
     if (debug > 0) {
         cat("c[", dim(c), "] begins...\n")
-        print(matrix(as.numeric(c[1:min(3,vvd.len),]), ncol=3))
+        print(matrix(as.numeric(c[1:min(3,vvdLen),]), ncol=3))
     }
     sec <- as.numeric(vsd.t) - as.numeric(vsd.t[1])
     vds <- var(diff(sec))
     if (!is.na(vds) & 0 != vds)
         warning("the times in the file are not equi-spaced, but they are taken to be so")
-    vvd.sec <- .Call("stutter_time", sec, 8)
-    oce.debug(debug, vector.show(vvd.sec, "vvd.sec"))
-    oce.debug(debug, vector.show(vsd.start, "vsd.start"))
-    oce.debug(debug, vector.show(vvd.start, "vvd.start"))
+    vvdSec <- .Call("stutter_time", sec, 8)
+    oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
+    oceDebug(debug, vectorShow(vsdStart, "vsdStart"))
+    oceDebug(debug, vectorShow(vvdStart, "vvdStart"))
     rm(buf)
     gc()
     ## subset using 'by'
     by.orig <- by
     if (is.character(by)) {
-        oce.debug(debug, "by='",by,"' given as argument to read.adv.nortek()\n",sep="")
-        oce.debug(debug, " ... infer to be", ctime.to.seconds(by), "s\n")
-        by <- ctime.to.seconds(by) / metadata$measurement.deltat
-        oce.debug(debug, " ... so step by" ,by,"through the data\n")
+        oceDebug(debug, "by='",by,"' given as argument to read.adv.nortek()\n",sep="")
+        oceDebug(debug, " ... infer to be", ctimeToSeconds(by), "s\n")
+        by <- ctimeToSeconds(by) / metadata$measurementDeltat
+        oceDebug(debug, " ... so step by" ,by,"through the data\n")
     }
-    len <- length(vvd.start)
+    len <- length(vvdStart)
     look <- seq(1, len, by=by)
-    oce.debug(debug, "length(vvd.start)=",length(vvd.start),"\n")
-    vvd.start.orig <- vvd.start
-    vvd.start <- vvd.start[look]
-    oce.debug(debug, "length(vvd.start)=",length(vvd.start),"(after 'look'ing) with by=", by, "\n")
-    ##heading <- approx(vsd.start, heading, xout=vvd.start, rule=2)$y
-    ##pitch <- approx(vsd.start, pitch, xout=vvd.start, rule=2)$y
-    ##roll <- approx(vsd.start, roll, xout=vvd.start, rule=2)$y
-    ##temperature <- approx(vsd.start, temperature, xout=vvd.start, rule=2)$y
-    vvd.sec <- vvd.sec[look]
+    oceDebug(debug, "length(vvdStart)=",length(vvdStart),"\n")
+    vvdStart.orig <- vvdStart
+    vvdStart <- vvdStart[look]
+    oceDebug(debug, "length(vvdStart)=",length(vvdStart),"(after 'look'ing) with by=", by, "\n")
+    ##heading <- approx(vsdStart, heading, xout=vvdStart, rule=2)$y
+    ##pitch <- approx(vsdStart, pitch, xout=vvdStart, rule=2)$y
+    ##roll <- approx(vsdStart, roll, xout=vvdStart, rule=2)$y
+    ##temperature <- approx(vsdStart, temperature, xout=vvdStart, rule=2)$y
+    vvdSec <- vvdSec[look]
     pressure <- pressure[look]          # only output at burst headers, not with velo
     v <- v[look,]
     a <- a[look,]
     c <- c[look,]
-    ##oce.debug(debug, "vvd.sec=", vvd.sec[1], ",", vvd.sec[2], "...\n")
-    ##cat(vector.show(vsd.t[1:10]))
-    ## vsd at 1Hz; vvd at sampling rate
-    time <- vvd.sec + vsd.t[1]
+    ##oceDebug(debug, "vvdSec=", vvdSec[1], ",", vvdSec[2], "...\n")
+    ##cat(vectorShow(vsd.t[1:10]))
+    ## vsd at 1Hz; vvd at samplingRate
+    time <- vvdSec + vsd.t[1]
     ##print(attributes(time)) # is time out somehow?
     ##print(time[1])
     data <- list(ts=list(time=time,
                          ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
                          pressure=pressure),
-                 ts.slow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
+                 tsSlow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
                  ##ss=list(distance=0),   # FIXME: why even have this?
                  ma=list(v=v, a=a, c=c))
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    res <- list(data=data, metadata=metadata, history=log.item)
     class(res) <- c("nortek", "adv", "oce")
-    oce.debug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
+    oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
     res
 }
 
-read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),
+read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                    type="default",
                                    latitude=NA, longitude=NA,
                                    start, deltat,
-                                   debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                                   debug=getOption("oceDebug"), monitor=TRUE, history)
 {
-    oce.debug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
+    oceDebug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
                            ", by=", by,
@@ -449,9 +451,9 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                            if (!missing(deltat)) sprintf(", deltat=%f, ", deltat),
                            "debug=", debug,
                            ", monitor=", monitor,
-                           ", log.action=(not shown)) {\n", sep=""))
+                           ", history=(not shown)) {\n", sep=""))
     if (missing(start))
-        stop("must supply start, a POSIXct time (or suitable string for the time, in UTC) at which the first observation was made")
+        stop("must supply start, a POSIXct time (or suitable string for time, in UTC) at which the first observation was made")
     if (is.numeric(start))
         stop("'start' must be a string, or a POSIXt time")
     if (is.character(start))
@@ -463,27 +465,27 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     if (nstart != nfile)
         stop("length of 'file' must equal length of 'start', but they are ", nfile, " and ", nstart, " respectively")
     warning("cannot infer coordinate system, etc., since header=FALSE; see documentation.")
-    oce.debug(debug, "time series is inferred to start at", format(start[1]), "\n")
+    oceDebug(debug, "time series is inferred to start at", format(start[1]), "\n")
     if (is.character(deltat))
-        deltat <- ctime.to.seconds(deltat)
-    oce.debug(debug, "time series is inferred to have data every", deltat, "s\n")
+        deltat <- ctimeToSeconds(deltat)
+    oceDebug(debug, "time series is inferred to have data every", deltat, "s\n")
 
     if (nstart > 1) {                   # handle multiple files
-        oce.debug(debug, "handling multiple files\n")
+        oceDebug(debug, "handling multiple files\n")
         buf <- NULL
         for (i in 1:nfile) {
-            oce.debug(debug, "loading \"", file[i], "\" (start.time ", format(start[i]), " ", attr(start[i], "tzone"), ")\n", sep="")
-            this.file <- file(file[i], "rb")
-            seek(this.file, 0, "end", rw="read")
-            file.size <- seek(this.file, 0, origin="start", rw="read")
-            oce.debug(debug, "file.size=",file.size,"\n")
-            buf <- c(buf, readBin(this.file, what="raw", n=file.size, endian="little"))
-            close(this.file)
+            oceDebug(debug, "loading \"", file[i], "\" (startTime ", format(start[i]), " ", attr(start[i], "tzone"), ")\n", sep="")
+            thisFile <- file(file[i], "rb")
+            seek(thisFile, 0, "end", rw="read")
+            fileSize <- seek(thisFile, 0, origin="start", rw="read")
+            oceDebug(debug, "fileSize=",fileSize,"\n")
+            buf <- c(buf, readBin(thisFile, what="raw", n=fileSize, endian="little"))
+            close(thisFile)
         }
         filename <- paste("(\"", file[i], "\", ...)", sep="")
     } else {                            # handle single file (which might be a connection, etc)
         if (is.character(file)) {
-            filename <- full.filename(file)
+            filename <- fullFilename(file)
             file <- file(file, "rb")
             on.exit(close(file))
         }
@@ -496,22 +498,22 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
         }
         ## read whole file into buffer
         seek(file, 0, "end", rw="read")
-        file.size <- seek(file, 0, origin="start", rw="read")
-        oce.debug(debug, "filesize=",file.size,"\n")
-        buf <- readBin(file, what="raw", n=file.size, endian="little")
+        fileSize <- seek(file, 0, origin="start", rw="read")
+        oceDebug(debug, "filesize=",fileSize,"\n")
+        buf <- readBin(file, what="raw", n=fileSize, endian="little")
     }
 
     p <- .Call("ldc_sontek_adv_22", buf, 0) # the 0 means to get all pointers to data chunks
     pp <- sort(c(p, p+1))
     len <- length(p)
-    oce.debug(debug, "dp:", paste(unique(diff(p)), collapse=","), "\n")
-    serial.number <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
-    serial.number <- .Call("unwrap_sequence_numbers", serial.number, 2)
-    velocity.scale <- 0.1e-3
+    oceDebug(debug, "dp:", paste(unique(diff(p)), collapse=","), "\n")
+    serialNumber <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
+    serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
+    velocityScale <- 0.1e-3
     v <- array(numeric(), dim=c(len, 3))
-    v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
-    v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
-    v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocity.scale
+    v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
     a <- array(raw(), dim=c(len, 3))
     a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
     a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
@@ -533,27 +535,27 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
     ## [1,] 11100.160 -5771.264  -5320.704
     ## [2,]   290.816  9715.712 -10002.432
     ## [3,]  1409.024  1409.024   1409.024
-    ##transformation.matrix <- rbind(c(11100, -5771,  -5321),
-    ##                               c(  291,  9716, -10002),
-    ##                               c( 1409,  1409,   1409)) / 4096
-    transformation.matrix <- NULL
-    time <- start[1] + (serial.number - serial.number[1]) * deltat
+    ##transformationMatrix <- rbind(c(11100, -5771,  -5321),
+    ##                              c(  291,  9716, -10002),
+    ##                              c( 1409,  1409,   1409)) / 4096
+    transformationMatrix <- NULL
+    time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
-                     instrument.type="adv",
-                     serial.number="?",
+                     instrumentType="adv",
+                     serialNumber="?",
                      filename=filename,
                      latitude=latitude,
                      longitude=longitude,
-                     transformation.matrix=transformation.matrix,
-                     measurement.start=time[1],
-                     measurement.end=time[length(time)],
-                     measurement.deltat=deltat,
-                     subsample.start=time[1],
-                     subsample.end=mean(diff(as.numeric(time))),
-                     subsample.deltat=deltat,
-                     coordinate.system="xyz", # guess
-                     oce.coordinate="xyz",    # guess
+                     transformationMatrix=transformationMatrix,
+                     measurementStart=time[1],
+                     measurementEnd=time[length(time)],
+                     measurementDeltat=deltat,
+                     subsampleStart=time[1],
+                     subsampleEnd=mean(diff(as.numeric(time))),
+                     subsampleDeltat=deltat,
+                     coordinateSystem="xyz", # guess
+                     oceCoordinate="xyz",    # guess
                      orientation="upward") # guess
 
     nt <- length(time)
@@ -566,49 +568,49 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oce.tz"
                  ##ss=list(distance=0),
                  ma=list(v=v,a=a,c=c))
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
+    log.item <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=log.item)
     class(res) <- c("sontek", "adv", "oce")
     res
 }
 
-read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"),      # FIXME (two timescales)
+read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),      # FIXME (twoTimescales)
                                 header=TRUE,
                                 latitude=NA, longitude=NA,
                                 type="",
-                                debug=getOption("oce.debug"), monitor=TRUE, log.action)
+                                debug=getOption("oceDebug"), monitor=TRUE, history)
 {
-    bisect.adv.sontek.adr <- function(t.find, add=0, debug=0) {
-        oce.debug(debug, "bisect.adv.sontek.adr(t.find=", format(t.find), ", add=", add, "\n")
-        len <- length(burst.time)
+    bisectAdvSontekAdr <- function(tFind, add=0, debug=0) {
+        oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")
+        len <- length(burstTime)
         lower <- 1
         upper <- len
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            t <- burst.time[middle]
-            if (t.find < t)
+            t <- burstTime[middle]
+            if (tFind < t)
                 upper <- middle
             else
                 lower <- middle
             if (upper - lower < 2)
                 break
-            oce.debug(debug, paste("burst.time[", middle, "] = ", format(t), " (at pass ", pass, " of ", passes, ")\n", sep=""))
+            oceDebug(debug, paste("burstTime[", middle, "] = ", format(t), " (at pass ", pass, " of ", passes, ")\n", sep=""))
         }
         middle <- middle + add          # may use add to extend before and after window
         if (middle < 1) middle <- 1
         if (middle > len) middle <- len
-        t <- burst.time[middle]
-        oce.debug(debug, "result: t=", format(t), "\n")
+        t <- burstTime[middle]
+        oceDebug(debug, "result: t=", format(t), "\n")
         return(list(index=middle, time=t))
     }
 
     ## The binary format is documented in Appendix 2.2.3 of the Sontek ADV
     ## operation Manual - Firmware Version 4.0 (Oct 1997).
-    oce.debug(debug, "read.adv.sontek.adr() ENTRY\n")
+    oceDebug(debug, "read.adv.sontek.adr() ENTRY\n")
     if (is.character(file)) {
-        filename <- full.filename(file)
+        filename <- fullFilename(file)
         file <- file(file, "rb")
         on.exit(close(file))
     }
@@ -621,91 +623,91 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     }
     ## read whole file into 'buf'
     seek(file, 0, "end", rw="read")
-    file.size <- seek(file, 0, origin="start", rw="read")
-    oce.debug(debug, "filesize=",file.size,"\n")
-    buf <- readBin(file, what="raw", n=file.size, endian="little")
+    fileSize <- seek(file, 0, origin="start", rw="read")
+    oceDebug(debug, "filesize=",fileSize,"\n")
+    buf <- readBin(file, what="raw", n=fileSize, endian="little")
 
     ## Read header, or create a nominal default one.
-    ##  24 bytes hardware configuration ("AdvSystemConfigType" in the docs)
-    ## 164 bytes probe configuration ("AdvConfType" in the docs)
+    ##  24 bytes hardwareConfiguration ("AdvSystemConfigType" in the docs)
+    ## 164 bytes probeConfiguration ("AdvConfType" in the docs)
     ## 253 bytes deployment setup ("AdvDeploymentSetupType" in the docs)
-    hardware.configuration.length <- 24
-    probe.configuration.length <- 164
-    deployment.parameters.length <- 253
-    burst.header.length <- 60
-    checksum.length <- 2
-    data.length <- 22                   # FIXME: this should be determined based on the headers
+    hardwareConfigurationLength <- 24
+    probeConfigurationLength <- 164
+    deploymentParametersLength <- 253
+    burstHeaderLength <- 60
+    checksumLength <- 2
+    dataLength <- 22                   # FIXME: this should be determined based on the headers
     metadata <- list(manufacturer="sontek",
-                     instrument.type="adv", # FIXME or "adr"???
+                     instrumentType="adv", # FIXME or "adr"???
                      filename=filename,
                      latitude=latitude, longitude=longitude,
-                     measurement.deltat=1,
-                     velocity.scale.factor=1)
+                     measurementDeltat=1,
+                     velocityScaleFactor=1)
     if (header) {
         ##
         ## Slice out three headers
         ##
-        hardware.configuration <- buf[1:hardware.configuration.length]
-        probe.configuration <- buf[hardware.configuration.length + 1:probe.configuration.length]
-        deployment.parameters <- buf[hardware.configuration.length+probe.configuration.length+1:deployment.parameters.length]
+        hardwareConfiguration <- buf[1:hardwareConfigurationLength]
+        probeConfiguration <- buf[hardwareConfigurationLength + 1:probeConfigurationLength]
+        deploymentParameters <- buf[hardwareConfigurationLength+probeConfigurationLength+1:deploymentParametersLength]
 
         ##
-        ## Analyze "hardware configuration" header
+        ## Analyze "hardwareConfiguration" header
         ##
-        metadata$cpu.software.ver.num <- 0.1 * as.numeric(hardware.configuration[1])
-        oce.debug(debug, "cpu.software.ver.num=", metadata$cpu.software.ver.num, "\n")
+        metadata$cpuSoftwareVerNum <- 0.1 * as.numeric(hardwareConfiguration[1])
+        oceDebug(debug, "cpuSoftwareVerNum=", metadata$cpuSoftwareVerNum, "\n")
 
-        metadata$dsp.software.ver.num <- 0.1 * as.numeric(hardware.configuration[2])
-        oce.debug(debug, "dsp.software.ver.num=", metadata$dsp.software.ver.num, "\n")
+        metadata$dspSoftwareVerNum <- 0.1 * as.numeric(hardwareConfiguration[2])
+        oceDebug(debug, "dspSoftwareVerNum=", metadata$dspSoftwareVerNum, "\n")
 
-        metadata$orientation <- c("downward", "upward", "sideways")[1 + as.numeric(hardware.configuration[4])]
-        oce.debug(debug, "orientation=", metadata$orientation, "\n")
+        metadata$orientation <- c("downward", "upward", "sideways")[1 + as.numeric(hardwareConfiguration[4])]
+        oceDebug(debug, "orientation=", metadata$orientation, "\n")
 
-        metadata$compass.installed <- as.integer(hardware.configuration[5]) == 1
-        oce.debug(debug, "compass.installed=", metadata$compass.installed, "\n")
-        if (!metadata$compass.installed)
+        metadata$compassInstalled <- as.integer(hardwareConfiguration[5]) == 1
+        oceDebug(debug, "compassInstalled=", metadata$compassInstalled, "\n")
+        if (!metadata$compassInstalled)
             stop("cannot handle data files for ADV files that lack compass data")
 
-        metadata$recorder.installed <- if (as.integer(hardware.configuration[6]) == 1) TRUE else FALSE;
-        oce.debug(debug, "recorder.installed=", metadata$recorder.installed, "\n")
+        metadata$recorderInstalled <- if (as.integer(hardwareConfiguration[6]) == 1) TRUE else FALSE;
+        oceDebug(debug, "recorderInstalled=", metadata$recorderInstalled, "\n")
 
-        metadata$thermometer.installed <- as.integer(hardware.configuration[7]) == 1
-        oce.debug(debug, "thermometer.installed=", metadata$thermometer.installed, "\n")
-        if (!metadata$thermometer.installed)
+        metadata$thermometerInstalled <- as.integer(hardwareConfiguration[7]) == 1
+        oceDebug(debug, "thermometerInstalled=", metadata$thermometerInstalled, "\n")
+        if (!metadata$thermometerInstalled)
             stop("cannot handle data files for ADV files that lack thermometer data")
 
-        metadata$pressure.installed <- as.integer(hardware.configuration[8]) == 1
-        oce.debug(debug, "pressure.installed=", metadata$pressure.installed, "\n")
-        if (!metadata$pressure.installed)
+        metadata$pressureInstalled <- as.integer(hardwareConfiguration[8]) == 1
+        oceDebug(debug, "pressureInstalled=", metadata$pressureInstalled, "\n")
+        if (!metadata$pressureInstalled)
             stop("cannot handle data files for ADV files that lack pressure data")
 
         ## we report pressure in dbar, so use the fact that 1 nanobar/count = 1e-8 dbar/count
-        metadata$pressure.scale <- 1e-8 * readBin(hardware.configuration[9:12], "integer", size=4, n=1, endian="little", signed=FALSE)
-        oce.debug(debug, "pressure.scale=", metadata$pressure.scale,"dbar/count (header gives in nanobar/count)\n")
+        metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little", signed=FALSE)
+        oceDebug(debug, "pressureScale=", metadata$pressureScale,"dbar/count (header gives in nanobar/count)\n")
 
         ## we report pressure in dbar, so use the fact that 1 microbar = 1e-5 dbar
-        metadata$pressure.offset <- 1e-5 * readBin(hardware.configuration[13:16], "integer", size=4, n=1, endian="little", signed=TRUE)
-        oce.debug(debug, "pressure.offset=", metadata$pressure.offset,"dbar (header gives in microbar)\n")
+        metadata$pressureOffset <- 1e-5 * readBin(hardwareConfiguration[13:16], "integer", size=4, n=1, endian="little", signed=TRUE)
+        oceDebug(debug, "pressureOffset=", metadata$pressureOffset,"dbar (header gives in microbar)\n")
 
-        metadata$compass.offset <- readBin(hardware.configuration[23:24], "integer", size=2, n=1, endian="little", signed=TRUE)
-        oce.debug(debug, "compass offset=", metadata$compass.offset,"(degrees to East of North)\n")
+        metadata$compassOffset <- readBin(hardwareConfiguration[23:24], "integer", size=2, n=1, endian="little", signed=TRUE)
+        oceDebug(debug, "compassOffset=", metadata$compassOffset,"(degrees to East of North)\n")
 
-        metadata$press.freq.offset <- as.integer(hardware.configuration[25])
-        oce.debug(debug, "press.freq.offset=", metadata$press.freq.offset,"(\"Frequency Pres Sensor Offset\" in docs)\n")
+        metadata$pressFreqOffset <- as.integer(hardwareConfiguration[25])
+        oceDebug(debug, "pressFreqOffset=", metadata$pressFreqOffset,"(\"Frequency Pres Sensor Offset\" in docs)\n")
 
-        metadata$ext.sensor.installed <- as.integer(hardware.configuration[26])
-        oce.debug(debug, "ext.sensor.installed=", metadata$ext.sensor.installed,"(\"0=None, 1=Standard (ch 1/3)\" in docs)\n")
+        metadata$extSensorInstalled <- as.integer(hardwareConfiguration[26])
+        oceDebug(debug, "extSensorInstalled=", metadata$extSensorInstalled,"(\"0=None, 1=Standard (ch 1/3)\" in docs)\n")
 
-        metadata$ext.press.installed <- as.integer(hardware.configuration[27])
-        oce.debug(debug, "ext.press.installed=", metadata$ext.press.installed,"(1=Paros 2=Druck 3=ParosFreq)\n")
+        metadata$extPressInstalled <- as.integer(hardwareConfiguration[27])
+        oceDebug(debug, "extPressInstalled=", metadata$extPressInstalled,"(1=Paros 2=Druck 3=ParosFreq)\n")
 
         ## we report pressure in dbar, so use the fact that 1 pbar = 1e-11 dbar
-        metadata$pressure.scale.2 <- 1e-11 * readBin(hardware.configuration[28:29], "integer", size=2, n=1, endian="little", signed=TRUE)
-        oce.debug(debug, "pressure.scale.2=", metadata$pressure.scale.2,"dbar/count^2 (file gives in picobar/count^2)\n")
+        metadata$pressureScale2 <- 1e-11 * readBin(hardwareConfiguration[28:29], "integer", size=2, n=1, endian="little", signed=TRUE)
+        oceDebug(debug, "pressureScale2=", metadata$pressureScale2,"dbar/count^2 (file gives in picobar/count^2)\n")
 
 
         ##
-        ## Analyze "probe configuration" header
+        ## Analyze "probeConfiguration" header
         ## Docs (p102 of Sontek-ADV-op-man-2001.pdf) say as follows (the initial index number is mine):
         ## [1] unsigned char FileType
         ## [2] unsigned char FileVer
@@ -717,201 +719,201 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
         ## [18:19] int ProbeNBeams
         ## ...
 
-        metadata$serial.number <- paste(readBin(probe.configuration[11:16],"character",n=5,size=1), collapse="")  # "B373H"
-        oce.debug(debug, "serial.number=",metadata$serial.number,"\n")
+        metadata$serialNumber <- paste(readBin(probeConfiguration[11:16],"character",n=5,size=1), collapse="")  # "B373H"
+        oceDebug(debug, "serialNumber=",metadata$serialNumber,"\n")
 
-        metadata$probe.type <- readBin(probe.configuration[17], "integer", n=1, size=1)
-        oce.debug(debug, "probe.type=", metadata$probe.type, "(\"3/2-d orientation\", according to the docs)\n")
+        metadata$probeType <- readBin(probeConfiguration[17], "integer", n=1, size=1)
+        oceDebug(debug, "probeType=", metadata$probeType, "(\"3/2-d orientation\", according to the docs)\n")
 
-        metadata$probe.size <- readBin(probe.configuration[18], "integer", n=1, size=1)
-        oce.debug(debug, "probe.size=", metadata$probe.size, "(0 means 5cm; 1 means 10cm probe, according to docs)\n")
+        metadata$probeSize <- readBin(probeConfiguration[18], "integer", n=1, size=1)
+        oceDebug(debug, "probeSize=", metadata$probeSize, "(0 means 5cm; 1 means 10cm probe, according to docs)\n")
 
-        metadata$number.of.beams <- readBin(probe.configuration[19:20], "integer", n=1, size=2, endian="little")
-        oce.debug(debug, "number.of.beams=", metadata$number.of.beams, "(should be 3)\n")
-        if (metadata$number.of.beams != 3)
-            warning("number of beams should be 3, but it is ", metadata$number.of.beams, " ... reseting to 3")
+        metadata$numberOfBeams <- readBin(probeConfiguration[19:20], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "numberOfBeams=", metadata$numberOfBeams, "(should be 3)\n")
+        if (metadata$numberOfBeams != 3)
+            warning("number of beams should be 3, but it is ", metadata$numberOfBeams, " ... reseting to 3")
 
-        metadata$probe.nom.peak.pos <- readBin(probe.configuration[21:22], "integer", n=1, size=2, endian="little")
-        oce.debug(debug, "probe.nom.peak.pos=", metadata$probe.nom.peak.pos, "(not used here)\n")
+        metadata$probeNomPeakPos <- readBin(probeConfiguration[21:22], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeNomPeakPos=", metadata$probeNomPeakPos, "(not used here)\n")
 
-        metadata$probe.nsamp <- readBin(probe.configuration[23:24], "integer", n=1, size=2, endian="little")
-        oce.debug(debug, "probe.nsamp=", metadata$probe.nsamp, "(not used here)\n")
+        metadata$probeNsamp <- readBin(probeConfiguration[23:24], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeNsamp=", metadata$probeNsamp, "(not used here)\n")
 
-        metadata$probe.samp.interval <- readBin(probe.configuration[25:26], "integer", n=1, size=2, endian="little")
-        oce.debug(debug, "probe.samp.interval=", metadata$probe.samp.interval, "(not used here)\n")
+        metadata$probeSampInterval <- readBin(probeConfiguration[25:26], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeSampInterval=", metadata$probeSampInterval, "(not used here)\n")
 
-        metadata$probe.pulse.lag <- readBin(probe.configuration[27:56], "integer", n=15, size=2, endian="little")
-        oce.debug(debug, "probe.pulse.lag=", metadata$probe.pulse.lag, "([5][3], not used here)\n")
+        metadata$probePulseLag <- readBin(probeConfiguration[27:56], "integer", n=15, size=2, endian="little")
+        oceDebug(debug, "probePulseLag=", metadata$probePulseLag, "([5][3], not used here)\n")
 
-        metadata$probe.nxmit <- readBin(probe.configuration[57:86], "integer", n=15, size=2, endian="little")
-        oce.debug(debug, "probe.nxmit=", metadata$probe.nxmit, "([5][3], not used here)\n")
+        metadata$probeNxmit <- readBin(probeConfiguration[57:86], "integer", n=15, size=2, endian="little")
+        oceDebug(debug, "probeNxmit=", metadata$probeNxmit, "([5][3], not used here)\n")
 
-        metadata$probe.lag.delay <- readBin(probe.configuration[87:116], "integer", n=15, size=2, endian="little")
-        oce.debug(debug, "probe.lag.delay=", metadata$probe.lag.delay, "([5][3], not used here)\n")
+        metadata$probeLagDelay <- readBin(probeConfiguration[87:116], "integer", n=15, size=2, endian="little")
+        oceDebug(debug, "probeLagDelay=", metadata$probeLagDelay, "([5][3], not used here)\n")
 
-        metadata$probe.beam.delay <- readBin(probe.configuration[117:118], "integer", n=1, size=2, endian="little")
-        oce.debug(debug, "probe.beam.delay=", metadata$probe.beam.delay, "(not used here)\n")
+        metadata$probeBeamDelay <- readBin(probeConfiguration[117:118], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probeBeamDelay=", metadata$probeBeamDelay, "(not used here)\n")
 
-        metadata$probe.ping.delay <- readBin(probe.configuration[119:120], "integer", n=1, size=2, endian="little")
-        oce.debug(debug, "probe.ping.delay=", metadata$probe.ping.delay, "(not used here)\n")
+        metadata$probePingDelay <- readBin(probeConfiguration[119:120], "integer", n=1, size=2, endian="little")
+        oceDebug(debug, "probePingDelay=", metadata$probePingDelay, "(not used here)\n")
 
-        metadata$transformation.matrix <- matrix(readBin(probe.configuration[121:157], "numeric", n=9, size=4, endian="little"),
+        metadata$transformationMatrix <- matrix(readBin(probeConfiguration[121:157], "numeric", n=9, size=4, endian="little"),
                                                  nrow=3, byrow=TRUE)
-        oce.debug(debug, "transformation matrix:\n")
-        oce.debug(debug, "  ", format(metadata$transformation.matrix[1,], width=10, digits=5, justify="right"), "\n")
-        oce.debug(debug, "  ", format(metadata$transformation.matrix[2,], width=10, digits=5, justify="right"), "\n")
-        oce.debug(debug, "  ", format(metadata$transformation.matrix[3,], width=10, digits=5, justify="right"), "\n")
+        oceDebug(debug, "transformation matrix:\n")
+        oceDebug(debug, "  ", format(metadata$transformationMatrix[1,], width=10, digits=5, justify="right"), "\n")
+        oceDebug(debug, "  ", format(metadata$transformationMatrix[2,], width=10, digits=5, justify="right"), "\n")
+        oceDebug(debug, "  ", format(metadata$transformationMatrix[3,], width=10, digits=5, justify="right"), "\n")
 
         ## [158:161] float XmitRecDist
         ## [162:165] float CalCw
         ## FIXME why is this not 164 bytes in total?
 
         ##
-        ## Analyze "deployment parameters" header
+        ## Analyze "deploymentParameters" header
 
-        if (deployment.parameters[1]!=0x12)
-            stop("first byte of deployment-parameters header should be 0x12 but it is 0x", deployment.parameters[1])
+        if (deploymentParameters[1]!=0x12)
+            stop("first byte of deploymentParameters header should be 0x12 but it is 0x", deploymentParameters[1])
 
-        if (deployment.parameters[2]!=0x01)
-            stop("first byte of deployment-parameters header should be 0x01 but it is 0x", deployment.parameters[2])
+        if (deploymentParameters[2]!=0x01)
+            stop("first byte of deploymentParameters header should be 0x01 but it is 0x", deploymentParameters[2])
 
-        metadata$velocity.range.index <- as.numeric(deployment.parameters[20])
-        oce.debug(debug, "velocity.range.index=", metadata$velocity.range.index, "\n")
-        if (metadata$velocity.range.index == 4)
-            metadata$velocity.scale.factor <- 2 # range indices 1 through 3 have factor 1
+        metadata$velocityRangeIndex <- as.numeric(deploymentParameters[20])
+        oceDebug(debug, "velocityRangeIndex=", metadata$velocityRangeIndex, "\n")
+        if (metadata$velocityRangeIndex == 4)
+            metadata$velocityScaleFactor <- 2 # range indices 1 through 3 have factor 1
 
-        coordinate.system.code <- as.integer(deployment.parameters[22]) # 1 (0=beam 1=xyz 2=ENU)
-        metadata$coordinate.system <- c("beam", "xyz", "enu")[1+coordinate.system.code]
-        metadata$oce.coordinate <- metadata$coordinate.system
-        oce.debug(debug, "coordinate.system=", metadata$coordinate.system, "\n")
-        if (metadata$coordinate.system == "beam")
+        coordinateSystemCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
+        metadata$coordinateSystem <- c("beam", "xyz", "enu")[1+coordinateSystemCode]
+        metadata$oceCoordinate <- metadata$coordinateSystem
+        oceDebug(debug, "coordinateSystem=", metadata$coordinateSystem, "\n")
+        if (metadata$coordinateSystem == "beam")
             stop("cannot handle beam coordinates")
 
-        ## bug: docs say sampling rate in units of 0.1Hz, but the SLEIWEX-2008-m3 data file is in 0.01Hz
+        ## bug: docs say samplingRate in units of 0.1Hz, but the SLEIWEX-2008-m3 data file is in 0.01Hz
 
-        sampling.rate <- 0.01*readBin(deployment.parameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (sampling.rate[2] != 0 || sampling.rate[3] != 0)
-            warning("ignoring non-zero items 2 and/or 3 of sampling.rate vector")
-        metadata$sampling.rate <- sampling.rate[1]
-        if (metadata$sampling.rate < 0)
-            stop("sampling rate must be a positive integer, but got ", metadata$sampling.rate)
-        metadata$measurement.deltat <- 1 / metadata$sampling.rate
-        metadata$burst.interval <- readBin(deployment.parameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (metadata$burst.interval[2] !=0 || metadata$burst.interval[3] != 0)
-            warning("ignoring non-zero items 2 and/or 3 in burst.interval vector")
-        metadata$burst.interval <- metadata$burst.interval[1]
-        metadata$samples.per.burst <- readBin(deployment.parameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE)
-        if (metadata$samples.per.burst[2] !=0 || metadata$samples.per.burst[3] != 0)
-            warning("ignoring non-zero items 2 and/or 3 in samples.per.burst vector")
-        metadata$samples.per.burst <- metadata$samples.per.burst[1]
-        if (metadata$samples.per.burst < 0)
-            stop("samples.per.burst must be a positive integer, but got ", metadata$samples.per.burst)
-        metadata$deployment.name <- paste(integer2ascii(as.integer(deployment.parameters[49:57])), collapse="")
-        metadata$comments1 <- paste(integer2ascii(as.integer(deployment.parameters[66:125])), collapse="")
-        metadata$comments2 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
-        metadata$comments3 <- paste(integer2ascii(as.integer(deployment.parameters[126:185])), collapse="")
+        samplingRate <- 0.01*readBin(deploymentParameters[23:28], "integer", n=3, size=2, endian="little", signed=FALSE)
+        if (samplingRate[2] != 0 || samplingRate[3] != 0)
+            warning("ignoring non-zero items 2 and/or 3 of samplingRate vector")
+        metadata$samplingRate <- samplingRate[1]
+        if (metadata$samplingRate < 0)
+            stop("samplingRate must be a positive integer, but got ", metadata$samplingRate)
+        metadata$measurementDeltat <- 1 / metadata$samplingRate
+        metadata$burstInterval <- readBin(deploymentParameters[29:34], "integer", n=3, size=2, endian="little", signed=FALSE)
+        if (metadata$burstInterval[2] !=0 || metadata$burstInterval[3] != 0)
+            warning("ignoring non-zero items 2 and/or 3 in burstInterval vector")
+        metadata$burstInterval <- metadata$burstInterval[1]
+        metadata$samplesPerBurst <- readBin(deploymentParameters[35:40], "integer", n=3, size=2, endian="little", signed=FALSE)
+        if (metadata$samplesPerBurst[2] !=0 || metadata$samplesPerBurst[3] != 0)
+            warning("ignoring non-zero items 2 and/or 3 in samplesPerBurst vector")
+        metadata$samplesPerBurst <- metadata$samplesPerBurst[1]
+        if (metadata$samplesPerBurst < 0)
+            stop("samplesPerBurst must be a positive integer, but got ", metadata$samplesPerBurst)
+        metadata$deploymentName <- paste(integer2ascii(as.integer(deploymentParameters[49:57])), collapse="")
+        metadata$comments1 <- paste(integer2ascii(as.integer(deploymentParameters[66:125])), collapse="")
+        metadata$comments2 <- paste(integer2ascii(as.integer(deploymentParameters[126:185])), collapse="")
+        metadata$comments3 <- paste(integer2ascii(as.integer(deploymentParameters[126:185])), collapse="")
     }                                   # if (header)
 
     ## Use 3-byte flag to find bursts in buf.  Then find their times, and # samples in each.
     ## Note: checking not just on the 2 "official" bytes, but also on third (3c=60=number of bytes in header)
-    burst.bufindex <- matchBytes(buf, 0xA5, 0x11, 0x3c)
+    burstBufindex <- matchBytes(buf, 0xA5, 0x11, 0x3c)
 
-    oce.debug(debug, "burst.bufindex[1:10]=", paste(burst.bufindex[1:10], collapse=" "), "\n")
+    oceDebug(debug, "burstBufindex[1:10]=", paste(burstBufindex[1:10], collapse=" "), "\n")
 
-    nbursts <- length(burst.bufindex)
-    metadata$number.of.bursts <- nbursts
+    nbursts <- length(burstBufindex)
+    metadata$numberOfBursts <- nbursts
 
-    burst.bufindex2 <- sort(c(burst.bufindex, 1 + burst.bufindex))
-    year <- readBin(buf[burst.bufindex2 + 18], "integer", n=nbursts, size=2, endian="little", signed=FALSE)
-    day <- as.integer(buf[burst.bufindex+20])
-    month <- as.integer(buf[burst.bufindex+21])
-    minute <- as.integer(buf[burst.bufindex+22])
-    hour <- as.integer(buf[burst.bufindex+23])
-    sec100 <- as.integer(buf[burst.bufindex+24])
-    sec <- as.integer(buf[burst.bufindex+25])
-    burst.time <- as.POSIXct(ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz))
-    oce.debug(debug, "burst.time ranges", paste(range(burst.time), collapse=" to "), "\n")
-    nbursts <- length(burst.time)
-    samples.per.burst <- readBin(buf[burst.bufindex2 + 30], "integer", size=2, n=nbursts, endian="little", signed=FALSE)
-    oce.debug(debug, "samples.per.burst[1:10]=", paste(samples.per.burst[1:10], collapse=" "), "\n")
+    burstBufindex2 <- sort(c(burstBufindex, 1 + burstBufindex))
+    year <- readBin(buf[burstBufindex2 + 18], "integer", n=nbursts, size=2, endian="little", signed=FALSE)
+    day <- as.integer(buf[burstBufindex+20])
+    month <- as.integer(buf[burstBufindex+21])
+    minute <- as.integer(buf[burstBufindex+22])
+    hour <- as.integer(buf[burstBufindex+23])
+    sec100 <- as.integer(buf[burstBufindex+24])
+    sec <- as.integer(buf[burstBufindex+25])
+    burstTime <- as.POSIXct(ISOdatetime(year=year, month=month, day=day, hour=hour, min=minute, sec=sec+0.01*sec100, tz=tz))
+    oceDebug(debug, "burstTime ranges", paste(range(burstTime), collapse=" to "), "\n")
+    nbursts <- length(burstTime)
+    samplesPerBurst <- readBin(buf[burstBufindex2 + 30], "integer", size=2, n=nbursts, endian="little", signed=FALSE)
+    oceDebug(debug, "samplesPerBurst[1:10]=", paste(samplesPerBurst[1:10], collapse=" "), "\n")
 
     ## ".extended" refers to a burst sequence to which a final item has been appended,
     ## to allow the use of approx() for various things.
-    burst.time.extended <- c(burst.time, burst.time[nbursts] + samples.per.burst[nbursts] / metadata$sampling.rate)
-    attr(burst.time.extended, "tzone") <- attr(burst.time, "tzone")
+    burstTimeExtended <- c(burstTime, burstTime[nbursts] + samplesPerBurst[nbursts] / metadata$samplingRate)
+    attr(burstTimeExtended, "tzone") <- attr(burstTime, "tzone")
 
-    metadata$measurement.start <- min(burst.time.extended)
-    metadata$measurement.end <- max(burst.time.extended)
-    metadata$measurement.deltat <- (as.numeric(burst.time[length(burst.time)]) - as.numeric(burst.time[1])) / sum(samples.per.burst)
+    metadata$measurementStart <- min(burstTimeExtended)
+    metadata$measurementEnd <- max(burstTimeExtended)
+    metadata$measurementDeltat <- (as.numeric(burstTime[length(burstTime)]) - as.numeric(burstTime[1])) / sum(samplesPerBurst)
 
-    oce.debug(debug, "burst.time.extended ranges", paste(range(burst.time.extended), collapse=" to "), "\n")
+    oceDebug(debug, "burstTimeExtended ranges", paste(range(burstTimeExtended), collapse=" to "), "\n")
 
     ## Sample indices (not buf indices) of first sample in each burst
-    burst.sampleindex.extended <- c(1, cumsum(samples.per.burst))
-    burst.sampleindex <- burst.sampleindex.extended[-length(burst.sampleindex.extended)]
-    oce.debug(debug, "burst.sampleindex[1:10]=", paste(burst.sampleindex[1:10], collapse=" "), "\n")
+    burstSampleIndex.extended <- c(1, cumsum(samplesPerBurst))
+    burstSampleIndex <- burstSampleIndex.extended[-length(burstSampleIndex.extended)]
+    oceDebug(debug, "burstSampleIndex[1:10]=", paste(burstSampleIndex[1:10], collapse=" "), "\n")
 
-    ## Map from sample number to burst number
+    ## Map from sample number toBurst number
     burst <- 1:nbursts
     if (debug > 0)
-        print(data.frame(burst, burst.time, burst.bufindex)[1:5,])
+        print(data.frame(burst, burstTime, burstBufindex)[1:5,])
 
     ## Interpret 'from', 'to', and 'by', possibly integers, POSIX times, or strings for POSIX tiems
-    from.keep <- from
-    to.keep <- to
+    fromKeep <- from
+    toKeep <- to
     if (inherits(from, "POSIXt")) {
         if (!inherits(to, "POSIXt"))
             stop("if 'from' is POSIXt, then 'to' must be, also")
-        from.to.POSIX <- TRUE
-        from.pair <- bisect.adv.sontek.adr(from, add=-1, debug=debug-1)
-        from.burst <- from.pair$index
-        oce.debug(debug, "from.keep=", format(from.keep), " yields burst.time[", from.burst, "]=", format(from.pair$t), "\n")
-        to.pair <- bisect.adv.sontek.adr(to, add=1, debug=debug-1)
-        to.burst <- to.pair$index
-        oce.debug(debug, "to.keep=", format(to.keep), " yields burst.time[", to.burst, "]=", format(to.pair$t), "\n")
+        fromToPOSIX <- TRUE
+        fromPair <- bisectAdvSontekAdr(from, add=-1, debug=debug-1)
+        fromBurst <- fromPair$index
+        oceDebug(debug, "fromKeep=", format(fromKeep), " yields burstTime[", fromBurst, "]=", format(fromPair$t), "\n")
+        toPair <- bisectAdvSontekAdr(to, add=1, debug=debug-1)
+        toBurst <- toPair$index
+        oceDebug(debug, "toKeep=", format(toKeep), " yields burstTime[", toBurst, "]=", format(toPair$t), "\n")
         ## burst offsets  FIXME: do we need these?
-        from.burst.offset <- floor(0.5 + (as.numeric(from) - as.numeric(burst.time[from.burst])) * metadata$sampling.rate)
-        to.burst.offset <- floor(0.5 + (as.numeric(to) - as.numeric(burst.time[to.burst-1])) * metadata$sampling.rate)
-        oce.debug(debug, "from.burst.offset=", from.burst.offset, "to.burst.offset=",to.burst.offset,"\n")
-        from.index <- 1
-        to.index <- sum(samples.per.burst[from.burst:to.burst])
-        oce.debug(debug, "from.index=", from.index, "to.index=", to.index, "\n")
+        fromBurstOffset <- floor(0.5 + (as.numeric(from) - as.numeric(burstTime[fromBurst])) * metadata$samplingRate)
+        toBurstOffset <- floor(0.5 + (as.numeric(to) - as.numeric(burstTime[toBurst-1])) * metadata$samplingRate)
+        oceDebug(debug, "fromBurstOffset=", fromBurstOffset, "toBurstOffset=",toBurstOffset,"\n")
+        fromIndex <- 1
+        toIndex <- sum(samplesPerBurst[fromBurst:toBurst])
+        oceDebug(debug, "fromIndex=", fromIndex, "toIndex=", toIndex, "\n")
     } else {
-        from.to.POSIX <- FALSE
-        from.index <- from
-        to.index <- to
-        ## Determine bursts, and offsets within bursts, for from.index and to.index
-        tmp <- approx(burst.sampleindex, burst, from.index)$y
+        fromToPOSIX <- FALSE
+        fromIndex <- from
+        toIndex <- to
+        ## Determine bursts, and offsets within bursts, for fromIndex and toIndex
+        tmp <- approx(burstSampleIndex, burst, fromIndex)$y
         if (is.na(tmp))
-            stop("from index", from, " is not in this file")
-        from.burst <- floor(tmp)
-        from.burst.offset <- floor(0.5 + (tmp - from.burst)*samples.per.burst[from.burst])
-        oce.debug(debug, "from is at index", from.index, "which is in burst", from.burst, ", at offset", from.burst.offset, "\n")
-        tmp <- approx(burst.sampleindex, burst, to.index)$y
+            stop("fromIndex", from, " is not in thisFile")
+        fromBurst <- floor(tmp)
+        fromBurstOffset <- floor(0.5 + (tmp - fromBurst)*samplesPerBurst[fromBurst])
+        oceDebug(debug, "from is at index", fromIndex, "which is in burst", fromBurst, ", at offset", fromBurstOffset, "\n")
+        tmp <- approx(burstSampleIndex, burst, toIndex)$y
         if (is.na(tmp))
-            stop("to index", from, " is not in this file")
-        to.burst <- floor(tmp)
-        to.burst.offset <- floor(0.5 + (tmp - to.burst)*samples.per.burst[to.burst])
-        oce.debug(debug, "to is at index", to.index, "which is in burst", to.burst, ", at offset", to.burst.offset, "\n")
+            stop("toIndex", from, " is not in thisFile")
+        toBurst <- floor(tmp)
+        toBurstOffset <- floor(0.5 + (tmp - toBurst)*samplesPerBurst[toBurst])
+        oceDebug(debug, "to is at index", toIndex, "which is in burst", toBurst, ", at offset", toBurstOffset, "\n")
     }
 
     ## Set up focus region (not needed; just saves some subscripts later)
-    focus <- unique(seq(from.burst, to.burst)) # collapse, e.g. if in same burst
-    burst.focus <- burst[focus]
-    oce.debug(debug, "burst.focus=", paste(burst.focus, collapse=" "), "\n")
-    nbursts.focus <- length(burst.focus)
-    burst.bufindex.focus <- burst.bufindex[focus]
-    burst.time.focus <- burst.time[focus]
-    samples.per.burst.focus <- samples.per.burst[focus]
+    focus <- unique(seq(fromBurst, toBurst)) # collapse, e.g. if in same burst
+    burstFocus <- burst[focus]
+    oceDebug(debug, "burstFocus=", paste(burstFocus, collapse=" "), "\n")
+    nburstsFocus <- length(burstFocus)
+    burstBufindexFocus <- burstBufindex[focus]
+    burstTimeFocus <- burstTime[focus]
+    samplesPerBurstFocus <- samplesPerBurst[focus]
 
     if (debug > 0)
-        print(data.frame(burst.focus, burst.time.focus, burst.bufindex.focus, samples.per.burst.focus))
+        print(data.frame(burstFocus, burstTimeFocus, burstBufindexFocus, samplesPerBurstFocus))
 
     ## set up to read everything in every relevant burst (trim later)
-    oce.debug(debug, "sum(samplers.burst.focus)", sum(samples.per.burst.focus), "vs", nbursts * as.numeric(burst.time[2]-burst.time[1])*metadata$sampling.rate,"\n")
+    oceDebug(debug, "sum(samplers.burstFocus)", sum(samplesPerBurstFocus), "vs", nbursts * as.numeric(burstTime[2]-burstTime[1])*metadata$samplingRate,"\n")
 
-    ntotal <- sum(samples.per.burst.focus)
-    oce.debug(debug, "ntotal=", ntotal, "\n")
+    ntotal <- sum(samplesPerBurstFocus)
+    oceDebug(debug, "ntotal=", ntotal, "\n")
     v <- array(numeric(), dim=c(ntotal, 3))
     time <- array(numeric(), dim=c(ntotal, 1))
     heading <- array(numeric(), dim=c(ntotal, 1))
@@ -921,21 +923,21 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     pressure <- array(numeric(), dim=c(ntotal, 1))
     a <- array(raw(), dim=c(ntotal, 3))
     c <- array(raw(), dim=c(ntotal, 3))
-    row.offset <- 0
+    rowOffset <- 0
 
-    oce.debug(debug, "data.length=", data.length, "\n")
-    oce.debug(debug, "burst.header.length=",burst.header.length,"\n")
+    oceDebug(debug, "dataLength=", dataLength, "\n")
+    oceDebug(debug, "burstHeaderLength=",burstHeaderLength,"\n")
 
-    oce.debug(debug, "burst.bufindex.focus:", paste(burst.bufindex.focus, collapse=" "), "\n")
+    oceDebug(debug, "burstBufindexFocus:", paste(burstBufindexFocus, collapse=" "), "\n")
 
-    for (b in 1:nbursts.focus) {
-        n <- samples.per.burst.focus[b]
-        oce.debug(debug, "burst", b, "at", format(burst.time.focus[b]), "data start at byte", burst.bufindex.focus[b]+burst.header.length, "n=",n,"\n")
-        buf.subset <- buf[burst.bufindex.focus[b]+burst.header.length+0:(-1+data.length*n)]
-        m <- matrix(buf.subset, ncol=data.length, byrow=TRUE)
+    for (b in 1:nburstsFocus) {
+        n <- samplesPerBurstFocus[b]
+        oceDebug(debug, "burst", b, "at", format(burstTimeFocus[b]), "data start at byte", burstBufindexFocus[b]+burstHeaderLength, "n=",n,"\n")
+        bufSubset <- buf[burstBufindexFocus[b]+burstHeaderLength+0:(-1+dataLength*n)]
+        m <- matrix(bufSubset, ncol=dataLength, byrow=TRUE)
         if (n != dim(m)[1])
-            stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", data.length)
-        r <- row.offset + 1:n
+            stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", dataLength)
+        r <- rowOffset + 1:n
         v[r,1] <- 1e-4 * readBin(t(m[,1:2]), "integer", n=n, size=2, signed=TRUE, endian="little")
         v[r,2] <- 1e-4 * readBin(t(m[,3:4]), "integer", n=n, size=2, signed=TRUE, endian="little")
         v[r,3] <- 1e-4 * readBin(t(m[,5:6]), "integer", n=n, size=2, signed=TRUE, endian="little")
@@ -945,9 +947,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
         c[r,1] <- m[,10]
         c[r,2] <- m[,11]
         c[r,3] <- m[,12]
-        time[r] <- as.numeric(burst.time.focus[b]) + seq(0, n-1) / metadata$sampling.rate
+        time[r] <- as.numeric(burstTimeFocus[b]) + seq(0, n-1) / metadata$samplingRate
         ##cat(sprintf("%.2f %.2f %.2f\n", time[r[1]], time[r[2]], time[r[3]]))
-        ##cat("time=", format(time[r[1]]), ";", format(burst.time.focus[b]), "\n")
+        ##cat("time=", format(time[r[1]]), ";", format(burstTimeFocus[b]), "\n")
         ##print(range(time[r]))
         heading[r] <- 0.1 * readBin(as.raw(t(m[,13:14])), "integer", n=n, size=2, signed=TRUE, endian="little")
         pitch[r] <-   0.1 * readBin(as.raw(t(m[,15:16])), "integer", n=n, size=2, signed=TRUE, endian="little")
@@ -956,9 +958,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
 
         ## Pressure, using quadratic conversion from counts
         p.count <- readBin(as.raw(t(m[,21:22])), "integer", n=n, size=2, signed=FALSE, endian="little")
-        pressure[r] <- metadata$pressure.offset + p.count * (metadata$pressure.scale + p.count * metadata$pressure.scale.2)
+        pressure[r] <- metadata$pressureOffset + p.count * (metadata$pressureScale + p.count * metadata$pressureScale2)
 
-        row.offset <- row.offset + n
+        rowOffset <- rowOffset + n
         if (monitor) {
             cat(".")
             if (!(b %% 50))
@@ -967,39 +969,39 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
     }
     if (monitor)
         cat("\n")
-    rm(buf, buf.subset, m)              # clean up, in case space is tight
+    rm(buf, bufSubset, m)              # clean up, in case space is tight
     class(time) <- c("POSIXt", "POSIXct")
-    attr(time, "tzone") <- attr(burst.time.focus[1], "tzone")
-    oce.debug(debug, "burst.time[1]=", format(burst.time.focus[1]), "\n   times=", format(time[1:20]),"\n")
+    attr(time, "tzone") <- attr(burstTimeFocus[1], "tzone")
+    oceDebug(debug, "burstTime[1]=", format(burstTimeFocus[1]), "\n   times=", format(time[1:20]),"\n")
     ## Subset data to match the provided 'from', 'to' and 'by'
-    if (from.to.POSIX) {
+    if (fromToPOSIX) {
         iii <- from <= time & time <= to
         if (is.character(by)) {
-            subsampling.rate <- floor(0.5 + ctime.to.seconds(by) * metadata$sampling.rate)
-            oce.debug(debug, paste(" by = '", by, "' yields subsampling.rate=", subsampling.rate, "\n"), sep="")
+            subsamplingRate <- floor(0.5 + ctimeToSeconds(by) * metadata$samplingRate)
+            oceDebug(debug, paste(" by = '", by, "' yields subsamplingRate=", subsamplingRate, "\n"), sep="")
             samples <- 1:length(iii)
-            oce.debug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
-            iii <- iii & !(samples %% subsampling.rate)
-            oce.debug(debug, "after  interpreting 'by', iii true for", sum(iii), "cases\n")
-            ##!(1:100)%%metadata$sampling.rate
-            oce.debug(debug, "'by' is character, so subsampling by", floor(0.5 + ctime.to.seconds(by) * metadata$sampling.rate), "\n")
+            oceDebug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
+            iii <- iii & !(samples %% subsamplingRate)
+            oceDebug(debug, "after  interpreting 'by', iii true for", sum(iii), "cases\n")
+            ##!(1:100)%%metadata$samplingRate
+            oceDebug(debug, "'by' is character, so subsampling by", floor(0.5 + ctimeToSeconds(by) * metadata$samplingRate), "\n")
         }
     } else {
-        indices <- seq(from.index, to.index) # FIXME: ignoring 'by'
-        oce.debug(debug, "indices[1:10]=", paste(indices[1:10], collapse=" "), "\n")
-        time <- approx(burst.sampleindex.extended, burst.time.extended - burst.time[1], indices)$y + burst.time[1]
+        indices <- seq(fromIndex, toIndex) # FIXME: ignoring 'by'
+        oceDebug(debug, "indices[1:10]=", paste(indices[1:10], collapse=" "), "\n")
+        time <- approx(burstSampleIndex.extended, burstTimeExtended - burstTime[1], indices)$y + burstTime[1]
         if (any(is.na(time)))
             warning("some times are NA; this is an internal coding error")
-        focus.from <- from.burst.offset
-        focus.to <- to.burst.offset + sum(samples.per.burst.focus[-length(samples.per.burst.focus)])
-        oce.debug(debug, "focus.from=",focus.from, "focus.to=", focus.to,"\n")
-        iii <- seq(focus.from, focus.to, by=by)
+        focusFrom <- fromBurstOffset
+        focusto <- toBurstOffset + sum(samplesPerBurstFocus[-length(samplesPerBurstFocus)])
+        oceDebug(debug, "focusFrom=",focusFrom, "focusto=", focusto,"\n")
+        iii <- seq(focusFrom, focusto, by=by)
     }
-    oce.debug(debug, "iii=", iii[1], iii[2], "...", iii[-1+length(iii)], iii[length(iii)], "\n")
+    oceDebug(debug, "iii=", iii[1], iii[2], "...", iii[-1+length(iii)], iii[length(iii)], "\n")
     if (any(iii < 0))
         stop("got negative numbers in iii, which indicates a coding problem; range(iii)=",paste(range(iii), collapse=" to "))
-    oce.debug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
-    v <- v[iii,] * metadata$velocity.scale.factor
+    oceDebug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
+    v <- v[iii,] * metadata$velocityScaleFactor
     a <- a[iii,]
     c <- c[iii,]
     time <- time[iii]
@@ -1016,17 +1018,18 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oce.tz"), 
                          pressure=pressure),
                  ##ss=list(distance=0),
                  ma=list(v=v, a=a, c=c))
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
+    history <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=history)
     class(res) <- c("sontek", "adv", "oce")
     res
 }
 
-read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.tz"),
-                                 coordinate.system="xyz", transformation.matrix,
+read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz"),
+                                 coordinateSystem="xyz", transformationMatrix,
                                  latitude=NA, longitude=NA,
-                                 debug=getOption("oce.debug"), log.action)
+                                 debug=getOption("oceDebug"), history)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the
@@ -1034,7 +1037,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
     if (by != 1)
         stop("must have \"by\"=1, in this version of the package")
     suffices <- c("hd1", "ts1")
-    items.per.sample <- 16
+    itemsPerSample <- 16
     if (missing(basefile))
         stop("need to supply a basefile, e.g. \"A\" to read \"A.hd1\" and \"A.ts1\"")
 
@@ -1043,17 +1046,17 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
 
     ## The hd1 file holds per-burst information
     hdt <-  read.table(hd)
-    number.of.bursts <- dim(hdt)[1]
-    oce.debug(debug, "number of bursts: ", number.of.bursts, "\n")
+    numberOfBursts <- dim(hdt)[1]
+    oceDebug(debug, "numberOfBursts: ", numberOfBursts, "\n")
     t <- ISOdatetime(year=hdt[,2], month=hdt[,3], day=hdt[,4], hour=hdt[,5], min=hdt[,6], sec=hdt[,7], tz=tz)
     if (inherits(from, "POSIXt")) {
         ignore <- t < from
         if (sum(ignore) == 0)
             stop("no data in this time interval, starting at time ", from, "\n")
-        from.burst <- which(ignore == FALSE)[1]
-        oce.debug(debug, "\"from\" is burst number", from.burst, "at", format(t[from.burst]), "\n")
+        fromBurst <- which(ignore == FALSE)[1]
+        oceDebug(debug, "\"from\" is burst number", fromBurst, "at", format(t[fromBurst]), "\n")
     } else {
-        from.burst <- from + 1          # 0 means first burst
+        fromBurst <- from + 1          # 0 means first burst
     }
     if (missing(to)) {
         stop("must supply \"to\"")
@@ -1062,11 +1065,11 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
             ignore <- t < to
             if (sum(ignore) == 0)
                 stop("no data in this time interval, starting at time ", to, "\n")
-            to.burst <- which(ignore == FALSE)[1] + 1 # add 1 since we'll chop later
-            to.burst <- min(to.burst, length(t))
-            oce.debug(debug, "\"to\" is burst number", to.burst, "at", format(t[to.burst]), "\n")
+            toBurst <- which(ignore == FALSE)[1] + 1 # add 1 since we'll chop later
+            toBurst <- min(toBurst, length(t))
+            oceDebug(debug, "\"to\" is burst number", toBurst, "at", format(t[toBurst]), "\n")
         } else {
-            to.burst <- to
+            toBurst <- to
         }
     }
     ##voltage <- hdt[,14]
@@ -1076,43 +1079,43 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
     spb <- hdt[1,9]                      # FIXME may this change over time?
     sr <- spb / 3600
 
-    ts.file <- file(ts, "rb")
-    on.exit(close(ts.file))
-    if (!inherits(ts.file, "connection"))
-        stop("argument `ts.file' must be a character string or connection")
+    tsFile <- file(ts, "rb")
+    on.exit(close(tsFile))
+    if (!inherits(tsFile, "connection"))
+        stop("argument `tsFile' must be a character string or connection")
 
     ## Examine ".ts1" file to see if we can deal with it.
-    seek(ts.file, where=0, origin="end")
-    bytes.in.file <- seek(ts.file, where=0, origin="start")
-    oce.debug(debug, "length of \".", suffices[2], "\" file: ",bytes.in.file," bytes\n")
-    look <- min(5000, bytes.in.file)
-    b <- readBin(ts.file, "raw", n=look)
+    seek(tsFile, where=0, origin="end")
+    bytesInFile <- seek(tsFile, where=0, origin="start")
+    oceDebug(debug, "length of \".", suffices[2], "\" file: ",bytesInFile," bytes\n")
+    look <- min(5000, bytesInFile)
+    b <- readBin(tsFile, "raw", n=look)
     newlines <- which(b == 0x0a)
     if (0 != diff(range(fivenum(diff(newlines)))))
         stop("need equal line lengths in ", ts)
     ## Line length
-    bytes.in.sample <- diff(newlines)[1]
-    oce.debug(debug, "line length in \".", suffices[2], "\" file: ", bytes.in.sample, " bytes\n")
+    bytesInSample <- diff(newlines)[1]
+    oceDebug(debug, "line length in \".", suffices[2], "\" file: ", bytesInSample, " bytes\n")
     ## elements per line
-    seek(ts.file, where=newlines[1], origin="start")
-    d <- scan(ts.file, what="character", nlines=1, quiet=TRUE)
-    oce.debug(debug, "first line in \".", suffices[2], "\" file: ", paste(d, collapse=" "), "\n")
-    items.per.line <- length(d)
-    if (items.per.sample != length(d))
-        stop("file \".", suffices[2], "\" should have ", items.per.sample, " elemetns per line, but it has ", length(d))
-    oce.debug(debug, "elements per line in \".", suffices[2], "\" file: ", length(d), "\n")
-    lines.in.file <- bytes.in.file / bytes.in.sample
-    oce.debug(debug, "lines in \".", suffices[2], "\" file: ", lines.in.file, "\n")
+    seek(tsFile, where=newlines[1], origin="start")
+    d <- scan(tsFile, what="character", nlines=1, quiet=TRUE)
+    oceDebug(debug, "first line in \".", suffices[2], "\" file: ", paste(d, collapse=" "), "\n")
+    itemsPerLine <- length(d)
+    if (itemsPerSample != length(d))
+        stop("file \".", suffices[2], "\" should have ", itemsPerSample, " elemetns per line, but it has ", length(d))
+    oceDebug(debug, "elements per line in \".", suffices[2], "\" file: ", length(d), "\n")
+    linesInFile <- bytesInFile / bytesInSample
+    oceDebug(debug, "lines in \".", suffices[2], "\" file: ", linesInFile, "\n")
 
-    samples.per.burst <- lines.in.file / number.of.bursts
-    oce.debug(debug, "samples per burst: ", samples.per.burst, "\n")
+    samplesPerBurst <- linesInFile / numberOfBursts
+    oceDebug(debug, "samplesPerBurst: ", samplesPerBurst, "\n")
 
-    from.byte <- from.burst * samples.per.burst * bytes.in.sample
-    to.byte <- to.burst * samples.per.burst * bytes.in.sample
-    oce.debug(debug, "seek from:", from.byte, "\n", "seek to:", to.byte, "\n")
-    seek(ts.file, where=from.byte, origin="start")
-    ts <- matrix(scan(ts.file, n=items.per.sample*(to.burst - from.burst + 1)*samples.per.burst, quiet=TRUE),
-                 ncol=items.per.sample, byrow=TRUE)
+    fromByte <- fromBurst * samplesPerBurst * bytesInSample
+    toByte <- toBurst * samplesPerBurst * bytesInSample
+    oceDebug(debug, "seek from:", fromByte, "\n", "seek to:", toByte, "\n")
+    seek(tsFile, where=fromByte, origin="start")
+    ts <- matrix(scan(tsFile, n=itemsPerSample*(toBurst - fromBurst + 1)*samplesPerBurst, quiet=TRUE),
+                 ncol=itemsPerSample, byrow=TRUE)
     len <- dim(ts)[1]
     v <- array(numeric(), dim=c(len, 3))
     v[,1] <- ts[,3] / 100
@@ -1129,7 +1132,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
     temperature <- ts[,15]
     pressure <- ts[,16]
     rm(ts)                              # may run tight on space
-    tt <- seq(t[from.burst], t[to.burst], length.out=len)
+    tt <- seq(t[fromBurst], t[toBurst], length.out=len)
     ## trim to the requested interval
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
     data <- list(ts=list(time=tt[ok],
@@ -1141,23 +1144,22 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oce.t
                  ##ss=list(distance=0),
                  ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
     metadata <- list(manufacturer="sontek",
-                     instrument.type="adv", # FIXME or "adr"?
+                     instrumentType="adv", # FIXME or "adr"?
                      latitude=latitude, longitude=longitude,
-                     cpu.software.ver.num=metadata$cpu.software.ver.num,
-                     dsp.software.ver.num=metadata$dsp.software.ver.num,
+                     cpuSoftwareVerNum=metadata$cpuSoftwareVerNum,
+                     dspSoftwareVerNum=metadata$dspSoftwareVerNum,
                      filename=basefile,
-                     transformation.matrix=if(!missing(transformation.matrix)) transformation.matrix else NULL,
-                     number.of.samples=length(data$x),
-                     number.of.beams=3,
+                     transformationMatrix=if(!missing(transformationMatrix)) transformationMatrix else NULL,
+                     numberOfSamples=length(data$x),
+                     numberOfBeams=3,
                      orientation="upward", # FIXME: guessing on the orientation
                      deltat=as.numeric(difftime(tt[2], tt[1], units="secs")),
-                     subsample.start=data$t[1],
-                     oce.coordinate=coordinate.system,
-                     coordinate.system=coordinate.system)
+                     subsampleStart=data$t[1],
+                     oceCoordinate=coordinateSystem,
+                     coordinateSystem=coordinateSystem)
     warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
-    if (missing(log.action)) log.action <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- processing.log.item(log.action)
-    res <- list(data=data, metadata=metadata, processing.log=log.item)
+    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
+    res <- list(data=data, metadata=metadata, history=historyItem(history))
     class(res) <- c("sontek", "adv", "oce")
     res
 }
@@ -1166,27 +1168,27 @@ summary.adv <- function(object, ...)
 {
     if (!inherits(object, "adv"))
         stop("method is only for adv objects")
-    ts.names <- names(object$data$ts)
-    nrow <- length(ts.names) - 1          # the -1 is for 'time'
-    have.ts.slow <- "ts.slow" %in% names(object$data)
-    if (have.ts.slow) {
-        ts.slow.names <- names(object$data$ts.slow)
-        nrow <- nrow + length(ts.slow.names) - 1 # the -1 is for 'time'
+    tsNames <- names(object$data$ts)
+    nrow <- length(tsNames) - 1          # the -1 is for 'time'
+    haveTsSlow <- "tsSlow" %in% names(object$data)
+    if (haveTsSlow) {
+        tsSlow.names <- names(object$data$tsSlow)
+        nrow <- nrow + length(tsSlow.names) - 1 # the -1 is for 'time'
     }
     ma.names <- names(object$data$ma)
     nrow <- nrow + length(ma.names)
     fives <- matrix(nrow=nrow, ncol=5)
     ii <- 1
-    for (name in ts.names) {
+    for (name in tsNames) {
         if (name != "time") {
             fives[ii,] <- fivenum(as.numeric(object$data$ts[[name]]), na.rm=TRUE)
             ii <- ii + 1
         }
     }
-    if (have.ts.slow) {
-        for (name in ts.slow.names) {
+    if (haveTsSlow) {
+        for (name in tsSlow.names) {
             if (name != "time") {
-                fives[ii,] <- fivenum(as.numeric(object$data$ts.slow[[name]]), na.rm=TRUE)
+                fives[ii,] <- fivenum(as.numeric(object$data$tsSlow[[name]]), na.rm=TRUE)
                 ii <- ii + 1
             }
         }
@@ -1195,44 +1197,44 @@ summary.adv <- function(object, ...)
         fives[ii,] <- fivenum(as.numeric(object$data$ma[[name]]), na.rm=TRUE)
         ii <- ii + 1
     }
-    if (have.ts.slow)
-        rownames(fives) <- c(ts.names[ts.names != "time"], ts.slow.names[ts.slow.names != "time"], ma.names)
+    if (haveTsSlow)
+        rownames(fives) <- c(tsNames[tsNames != "time"], tsSlow.names[tsSlow.names != "time"], ma.names)
     else
-        rownames(fives) <- c(ts.names[ts.names != "time"], ma.names)
+        rownames(fives) <- c(tsNames[tsNames != "time"], ma.names)
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
-                number.of.beams=if (!is.null(object$metadata$number.of.beams)) object$metadata$number.of.beams else 3,
+                numberOfBeams=if (!is.null(object$metadata$numberOfBeams)) object$metadata$numberOfBeams else 3,
                 latitude=object$metadata$latitude,
                 longitude=object$metadata$longitude,
                 orientation=object$metadata$orientation,
-                velocity.range.index=object$metadata$velocity.range.index,
-                transformation.matrix=object$metadata$transformation.matrix,
-                sampling.rate=object$metadata$sampling.rate,
-                measurement.start=object$metadata$measurement.start,
-                measurement.end=object$metadata$measurement.end,
-                measurement.deltat=object$metadata$measurement.deltat,
-                subsample.start=min(object$data$ts$time, na.rm=TRUE),
-                subsample.end=max(object$data$ts$time, na.rm=TRUE),
-                subsample.deltat=mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE),
-                instrument.type=object$metadata$instrument.type,
-                serial.number=object$metadata$serial.number,
-                number.of.samples=length(object$data$ts$time),
-                coordinate.system=object$metadata$coordinate.system,
-                oce.coordinate=object$metadata$oce.coordinate,
+                velocityRangeIndex=object$metadata$velocityRangeIndex,
+                transformationMatrix=object$metadata$transformationMatrix,
+                samplingRate=object$metadata$samplingRate,
+                measurementStart=object$metadata$measurementStart,
+                measurementEnd=object$metadata$measurementEnd,
+                measurementDeltat=object$metadata$measurementDeltat,
+                subsampleStart=min(object$data$ts$time, na.rm=TRUE),
+                subsampleEnd=max(object$data$ts$time, na.rm=TRUE),
+                subsampleDeltat=mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE),
+                instrumentType=object$metadata$instrumentType,
+                serialNumber=object$metadata$serialNumber,
+                numberOfSamples=length(object$data$ts$time),
+                coordinateSystem=object$metadata$coordinateSystem,
+                oceCoordinate=object$metadata$oceCoordinate,
                 fives=fives,
-                processing.log=processing.log.summary(object))
+                history=object$history)
     if (inherits(object, "nortek")) {
-        res$software.version <- object$metadata$software.version
-        res$internal.code.version <- object$metadata$internal.code.version
-        res$revision.number <- object$metadata$hardware.revision
-        res$burst.length <- object$metadata$burst.length
-        res$deploy.name <- object$metadata$deploy.name
+        res$softwareVersion <- object$metadata$softwareVersion
+        res$internalCodeVersion <- object$metadata$internalCodeVersion
+        res$revisionNumber <- object$metadata$hardwareRevision
+        res$burstLength <- object$metadata$burstLength
+        res$deployName <- object$metadata$deployName
         res$comments <- object$metadata$comments
-        res$head.frequency <- object$metadata$frequency
+        res$headFrequency <- object$metadata$frequency
     } else if (inherits(object, "sontek")) {
-        res$cpu.software.ver.num <- object$metadata$cpu.software.ver.num
-        res$dsp.software.ver.num <- object$metadata$dsp.software.ver.num
-        res$samples.per.burst <- object$metadata$samples.per.burst
+        res$cpuSoftwareVerNum <- object$metadata$cpuSoftwareVerNum
+        res$dspSoftwareVerNum <- object$metadata$dspSoftwareVerNum
+        res$samplesPerBurst <- object$metadata$samplesPerBurst
     }
     class(res) <- "summary.adv"
     res
@@ -1241,55 +1243,55 @@ summary.adv <- function(object, ...)
 print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
 {
     cat("ADV Summary\n-----------\n\n", ...)
-    cat(paste("* Instrument:             ", x$instrument.type, ", serial number ``", x$serial.number, "``\n",sep=""))
+    cat(paste("* Instrument:             ", x$instrumentType, ", serial number ``", x$serialNumber, "``\n",sep=""))
     cat(paste("* Source filename:        ``", x$filename, "``\n", sep=""))
     if ("latitude" %in% names(x)) {
         cat(paste("* Location:              ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
                   if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
     }
     cat(sprintf("* Measurements:           %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                format(x$measurement.start), attr(x$measurement.start, "tzone"),
-                format(x$measurement.end), attr(x$measurement.end, "tzone"),
-                1 / x$measurement.deltat), ...)
+                format(x$measurementStart), attr(x$measurementStart, "tzone"),
+                format(x$measurementEnd), attr(x$measurementEnd, "tzone"),
+                1 / x$measurementDeltat), ...)
     cat(sprintf("* Subsample:              %s %s to %s %s sampled at %.4g Hz (on average)\n",
-                format(x$subsample.start), attr(x$subsample.start, "tzone"),
-                format(x$subsample.end),  attr(x$subsample.end, "tzone"),
-                1 / x$subsample.deltat), ...)
-    ## cat("  Beam angle:           ", x$metadata$beam.angle, "\n")
-    cat("* Number of samples:     ", x$number.of.samples, "\n")
-    cat("* Coordinate system:     ", x$coordinate.system, "[originally],", x$oce.coordinate, "[presently]\n")
+                format(x$subsampleStart), attr(x$subsampleStart, "tzone"),
+                format(x$subsampleEnd),  attr(x$subsampleEnd, "tzone"),
+                1 / x$subsampleDeltat), ...)
+    ## cat("  Beam angle:           ", x$metadata$beamAngle, "\n")
+    cat("* Number of samples:     ", x$numberOfSamples, "\n")
+    cat("* Coordinate system:     ", x$coordinateSystem, "[originally],", x$oceCoordinate, "[presently]\n")
     cat("* Orientation:           ", x$orientation, "\n")
-    if (x$instrument.type == "vector") {
+    if (x$instrumentType == "vector") {
         cat("\n* Nortek vector specific\n\n")
-        cat("  * Internal code version:  ", x$internal.code.version, "\n")
-        cat("  * Revision number:        ", x$revision.number, "\n")
-        cat("  * Software version:       ", x$software.version, "\n")
-        cat("  * Head frequency:         ", x$head.frequency, "kHz\n")
-        ## FIXME: put other info here, e.g. software version, sampling volume, etc.; the manufacturer file is a good guide
-        cat("  * Samples per burst:      ", x$burst.length, "\n") # FIXME: use same names throughout
-        cat("  * Deploy name:            ", x$deploy.name, "\n")
+        cat("  * Internal code version:  ", x$internalCodeVersion, "\n")
+        cat("  * Revision number:        ", x$revisionNumber, "\n")
+        cat("  * Software version:       ", x$softwareVersion, "\n")
+        cat("  * Head frequency:         ", x$headFrequency, "kHz\n")
+        ## FIXME: put other info here, e.g. softwareVersion, sampling volume, etc.; the manufacturer file is a good guide
+        cat("  * Samples per burst:      ", x$burstLength, "\n") # FIXME: use same names throughout
+        cat("  * Deploy name:            ", x$deployName, "\n")
         cat("  * Comments:               ", x$comments, "\n")
-    } else if (x$instrument.type == "sontek adr") {
+    } else if (x$instrumentType == "sontek adr") {
         cat("\n* Sontek adr specific\n\n")
-        cat("  * CPU software version:  ", x$cpu.software.ver.num, "\n")
-        cat("  * DSP software version:  ", x$dsp.software.ver.num, "\n")
-        cat("  * Samples per burst:     ", x$samples.per.burst, "\n")
-        cat("  * Velocity range index:  ", x$velocity.range.index, "\n")
+        cat("  * CPU softwareVersion:  ", x$cpuSoftwareVerNum, "\n")
+        cat("  * DSP softwareVersion:  ", x$dspSoftwareVerNum, "\n")
+        cat("  * Samples per burst:     ", x$samplesPerBurst, "\n")
+        cat("  * Velocity range index:  ", x$velocityRangeIndex, "\n")
     }
-    if (!is.null(x$transformation.matrix)) {
+    if (!is.null(x$transformationMatrix)) {
         cat("\n* Transformation matrix\n  ::\n\n")
-        cat("  ", format(x$transformation.matrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
-        cat("  ", format(x$transformation.matrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
-        cat("  ", format(x$transformation.matrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
-        if (x$number.of.beams > 3)
-            cat("  ", format(x$transformation.matrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
+        cat("  ", format(x$transformationMatrix[1,], width=digits+4, digits=digits, justify="right"), "\n")
+        cat("  ", format(x$transformationMatrix[2,], width=digits+4, digits=digits, justify="right"), "\n")
+        cat("  ", format(x$transformationMatrix[3,], width=digits+4, digits=digits, justify="right"), "\n")
+        if (x$numberOfBeams > 3)
+            cat("  ", format(x$transformationMatrix[4,], width=digits+4, digits=digits, justify="right"), "\n")
     }
     cat("\n",...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
-    ##cat("\n* Processing log\n\n", ...)
+    cat(showFives(x, indent='     '), ...)
+    ##cat("\n* history\n\n", ...)
     cat("\n")
-    print(x$processing.log, ...)
+    print(summary(x$history))
     invisible(x)
 }
 
@@ -1299,25 +1301,25 @@ plot.adv <- function(x, which=c(1:3,14,15),
                      type="l",
                      lwd=par('lwd'),
                      adorn=NULL,
-                     draw.time.range=getOption("oce.draw.time.range"),
-                     draw.zero.line=FALSE,
-                     use.smoothScatter,
-                     mgp=getOption("oce.mgp"),
+                     drawTimeRange=getOption("oceDrawTimeRange"),
+                     drawZeroLine=FALSE,
+                     useSmoothScatter,
+                     mgp=getOption("oceMgp"),
                      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-                     margins.as.image=FALSE,
+                     marginsAsImage=FALSE,
                      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                      xlim, ylim,
-                     brush.correlation, col.brush="red",
+                     brushCorrelation, colBrush="red",
                      main="",
-                     debug=getOption("oce.debug"),
+                     debug=getOption("oceDebug"),
                      ...)
 {
     debug <- min(4, max(0, round(debug)))
-    oce.debug(debug, "\bplot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="")
-    have.brush.correlation <- !missing(brush.correlation)
-    oce.debug(debug, "brush.correlation", if (have.brush.correlation) brush.correlation else "not given", "\n")
-    oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-    oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
+    oceDebug(debug, "\bplot.adv(x, which=c(", paste(which,collapse=","),"), type=\"", type, "\", ...) {\n", sep="")
+    have.brushCorrelation <- !missing(brushCorrelation)
+    oceDebug(debug, "brushCorrelation", if (have.brushCorrelation) brushCorrelation else "not given", "\n")
+    oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     if (!inherits(x, "adv"))
         stop("method is only for adv objects")
     opar <- par(no.readonly = TRUE)
@@ -1346,7 +1348,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
     if (missing(col)) {
         col <- rep("black", length.out=nw)
     } else {
-        col.per.point <- length(col) == length(x$data$ts.slow$time)
+        col.per.point <- length(col) == length(x$data$tsSlow$time)
         if (!col.per.point)
             col <- rep(col, length.out=nw)
     }
@@ -1388,9 +1390,9 @@ plot.adv <- function(x, which=c(1:3,14,15),
         adorn <- rep(adorn, nw)
         adorn.length <- nw
     }
-    oce.debug(debug, "before layout, cex=", par('cex'), "\n")
+    oceDebug(debug, "before layout, cex=", par('cex'), "\n")
     if (nw > 1) {
-        if (margins.as.image) {
+        if (marginsAsImage) {
             w <- 1.5
             lay <- layout(matrix(1:(2*nw), nrow=nw, byrow=TRUE), widths=rep(c(1, lcm(w)), nw))
         } else {
@@ -1398,7 +1400,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
         }
     }
     ## Translate word-style (FIXME: ugly coding)
-    oce.debug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+    oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     which2 <- vector("numeric", nw)
     if (nw == 1) {
         if (which == "velocity")
@@ -1448,23 +1450,23 @@ plot.adv <- function(x, which=c(1:3,14,15),
         }
     }
     which <- which2
-    oce.debug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-    oce.debug(debug, "after layout, cex=", par('cex'), "\n")
-    have.ts.slow <- "ts.slow" %in% names(x$data)
+    oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+    oceDebug(debug, "after layout, cex=", par('cex'), "\n")
+    haveTsSlow <- "tsSlow" %in% names(x$data)
     tlim <- range(x$data$ts$time, na.rm=TRUE)
-    if (have.ts.slow)
-        tslim <- range(x$data$ts.slow$time, na.rm=TRUE)
+    if (haveTsSlow)
+        tslim <- range(x$data$tsSlow$time, na.rm=TRUE)
     for (w in 1:nw) {
         if (w > 1)
             main <- ""
-        oce.debug(debug, "plotting which[", w, "]=", which[w], "\n")
+        oceDebug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar)
         if (which[w] %in% 1:3) {        # u1, u2, u3
             y <- as.numeric(x$data$ma$v[,which[w]])
-            if (have.brush.correlation && type == "p") {
-                good <- as.numeric(x$data$ma$c[,which[w]]) >= brush.correlation
-                oce.plot.ts(x$data$ts$time[good], y[good], ylab=ad.beam.name(x, which[w]),
-                            draw.time.range=draw.time.range,
+            if (have.brushCorrelation && type == "p") {
+                good <- as.numeric(x$data$ma$c[,which[w]]) >= brushCorrelation
+                oce.plot.ts(x$data$ts$time[good], y[good], ylab=beamName(x, which[w]),
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
@@ -1476,10 +1478,10 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             main=main,
                             debug=debug-1,
                             ...)
-                points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=col.brush)
+                points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=colBrush)
             } else {
-                oce.plot.ts(x$data$ts$time, y, ylab=ad.beam.name(x, which[w]),
-                            draw.time.range=draw.time.range,
+                oce.plot.ts(x$data$ts$time, y, ylab=beamName(x, which[w]),
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
@@ -1492,19 +1494,19 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             debug=debug-1,
                             ...)
             }
-            if (draw.zero.line)
+            if (drawZeroLine)
                 abline(h=0)
             rm(y)                       # space may be tight
         } else if (which[w] %in% 5:7) { # a1, a2, a3
             ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
-            oce.debug(debug, "plotting a1, a2, or a3 since which[w] == ", which[w], "\n")
+            oceDebug(debug, "plotting a1, a2, or a3 since which[w] == ", which[w], "\n")
             y <- as.numeric(x$data$ma$a[,which[w]-4])
-            oce.debug(debug, "range(y):", paste(range(y, na.rm=TRUE), sep="-"), "\n")
-            if (have.brush.correlation && type == "p") {
-                good <- as.numeric(x$data$ma$c[,which[w]-4]) >= brush.correlation
+            oceDebug(debug, "range(y):", paste(range(y, na.rm=TRUE), sep="-"), "\n")
+            if (have.brushCorrelation && type == "p") {
+                good <- as.numeric(x$data$ma$c[,which[w]-4]) >= brushCorrelation
                 oce.plot.ts(x$data$ts$time[good], y[good],
                             ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
-                            draw.time.range=draw.time.range,
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
@@ -1515,11 +1517,11 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             main=main,
                             debug=debug-1,
                             ...)
-                points(x$data$ts$time[!good], y[!good], col=col.brush)
+                points(x$data$ts$time[!good], y[!good], col=colBrush)
             } else {
                 oce.plot.ts(x$data$ts$time, y,
                             ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
-                            draw.time.range=draw.time.range,
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
@@ -1534,11 +1536,11 @@ plot.adv <- function(x, which=c(1:3,14,15),
             rm(y)                       # space may be tight
         } else if (which[w] %in% 9:11) { # q1, q2, q3 (named c1, c2, and c3 in the object)
             y <- as.numeric(x$data$ma$c[,which[w]-8])
-            if (have.brush.correlation && type == "p") {
-                good <- as.numeric(x$data$ma$c[,which[w]-8]) >= brush.correlation
+            if (have.brushCorrelation && type == "p") {
+                good <- as.numeric(x$data$ma$c[,which[w]-8]) >= brushCorrelation
                 oce.plot.ts(x$data$ts$time[good], y[good],
                             ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
-                            draw.time.range=draw.time.range,
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
@@ -1549,11 +1551,11 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             main=main,
                             debug=debug-1,
                             ...)
-                points(x$data$ts$time[!good], y[!good], col=col.brush)
+                points(x$data$ts$time[!good], y[!good], col=colBrush)
             } else {
                 oce.plot.ts(x$data$ts$time, y,
                             ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
-                            draw.time.range=draw.time.range,
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(y, na.rm=TRUE),
@@ -1566,12 +1568,12 @@ plot.adv <- function(x, which=c(1:3,14,15),
             }
             rm(y)                       # space may be tight
         } else if (which[w] == 14 || which[w] == "temperature") {
-            if (have.ts.slow) {
-                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$temperature, ylab=resizable.label("T", "y"),
-                            draw.time.range=draw.time.range,
+            if (haveTsSlow) {
+                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$temperature, ylab=resizableLabel("T", "y"),
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$temperature, na.rm=TRUE),
+                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$temperature, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -1580,8 +1582,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             debug=debug-1,
                             ...)
             } else {
-                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab=resizable.label("T", "y"),
-                            draw.time.range=draw.time.range,
+                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab=resizableLabel("T", "y"),
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$temperature, na.rm=TRUE),
@@ -1594,8 +1596,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
             }
         } else if (which[w] == 15 || which[w] == "pressure") {
-            oce.plot.ts(x$data$ts$time, x$data$ts$pressure, ylab=resizable.label("p", "y"),
-                        draw.time.range=draw.time.range,
+            oce.plot.ts(x$data$ts$time, x$data$ts$pressure, ylab=resizableLabel("p", "y"),
+                        drawTimeRange=drawTimeRange,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
                         ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pressure, na.rm=TRUE),
@@ -1607,12 +1609,12 @@ plot.adv <- function(x, which=c(1:3,14,15),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 16 || which[w] == "heading") {
-            if (have.ts.slow) {
-                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$heading, ylab="heading",
-                            draw.time.range=draw.time.range,
+            if (haveTsSlow) {
+                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$heading, ylab="heading",
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$heading, na.rm=TRUE),
+                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$heading, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -1622,7 +1624,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
             } else {
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading, ylab="heading",
-                            draw.time.range=draw.time.range,
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$heading, na.rm=TRUE),
@@ -1635,12 +1637,12 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
             }
         } else if (which[w] == 17 || which[w] == "pitch") {    # pitch
-            if (have.ts.slow) {
-                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$pitch, ylab="pitch",
-                            draw.time.range=draw.time.range,
+            if (haveTsSlow) {
+                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$pitch, ylab="pitch",
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$pitch, na.rm=TRUE),
+                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$pitch, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -1650,7 +1652,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
             } else {
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch, ylab="pitch",
-                            draw.time.range=draw.time.range,
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pitch, na.rm=TRUE),
@@ -1663,12 +1665,12 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
             }
         } else if (which[w] == 18 || which[w] == "roll") {
-            if (have.ts.slow) {
-                oce.plot.ts(x$data$ts.slow$time, x$data$ts.slow$roll, ylab="roll",
-                            draw.time.range=draw.time.range,
+            if (haveTsSlow) {
+                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$roll, ylab="roll",
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts.slow$roll, na.rm=TRUE),
+                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$roll, na.rm=TRUE),
                             type=type,
                             cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                             mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -1678,7 +1680,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             ...)
             } else {
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll, ylab="roll",
-                            draw.time.range=draw.time.range,
+                            drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
                             ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$roll, na.rm=TRUE),
@@ -1695,7 +1697,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
             a <- as.numeric(x$data$ma$a[,1])
             c <- as.numeric(x$data$ma$c[,1])
             n <- length(a)
-            if (n < 2000 || (!missing(use.smoothScatter) && !use.smoothScatter)) {
+            if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(a, c, xlab="Amplitude", ylab="Correlation",
                      xlim=if (gave.xlim) xlim[w,] else range(a),
                      ylim=if (gave.ylim) ylim[w,] else range(c),
@@ -1711,7 +1713,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
             a <- as.numeric(x$data$ma$a[,2])
             c <- as.numeric(x$data$ma$c[,2])
             n <- length(a)
-            if (n < 2000 || (!missing(use.smoothScatter) && !use.smoothScatter)) {
+            if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(a, c, xlab="Amplitude", ylab="Correlation",
                      xlim=if (gave.xlim) xlim[w,] else range(a),
                      ylim=if (gave.ylim) ylim[w,] else range(c),
@@ -1727,7 +1729,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
             a <- as.numeric(x$data$ma$a[,3])
             c <- as.numeric(x$data$ma$c[,3])
             n <- length(a)
-            if (n < 2000 || (!missing(use.smoothScatter) && !use.smoothScatter)) {
+            if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(a, c, xlab="Amplitude", ylab="Correlation",
                      xlim=if (gave.xlim) xlim[w,] else range(a),
                      ylim=if (gave.ylim) ylim[w,] else range(c),
@@ -1757,10 +1759,10 @@ plot.adv <- function(x, which=c(1:3,14,15),
             if (main[w] != "")
                 mtext(main[w], adj=1)
         } else if (which[w] >= 28) {
-            oce.debug(debug, "doing horizontal-velocity diagram\n")
+            oceDebug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- length(x$data$ts$time)
-            if (n < 2000 || (!missing(use.smoothScatter) && !use.smoothScatter)) {
+            if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                      asp=1, xlim=xlim, ylim=ylim, lwd=lwd[w], col=col[w], main=main, ...)
@@ -1794,8 +1796,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
         } else {
             stop("unknown value of \"which\":", which[w])
         }
-        draw.time.range <- FALSE
-        if (margins.as.image)  {
+        drawTimeRange <- FALSE
+        if (marginsAsImage)  {
             ## blank plot, to get axis length same as for images
             omar <- par("mar")
             par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
@@ -1803,111 +1805,111 @@ plot.adv <- function(x, which=c(1:3,14,15),
             par(mar=omar)
         }
     }
-    oce.debug(debug, "\b\b} # plot.adv()\n")
+    oceDebug(debug, "\b\b} # plot.adv()\n")
     invisible()
 }
 
-to.enu.adv <- function(x, declination=0, debug=getOption("oce.debug"))
+toEnuAdv <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oce.debug(debug, "\b\badv.2enu() {\n")
-    coord <- x$metadata$oce.coordinate
+    oceDebug(debug, "\b\badv.2enu() {\n")
+    coord <- x$metadata$oceCoordinate
     if (coord == "beam") {
-        x <- xyz.to.enu.adv(beam.to.xyz.adv(x, debug=debug-1), declination=declination, debug=debug-1)
+        x <- xyzToEnuAdv(beamToXyzAdv(x, debug=debug-1), declination=declination, debug=debug-1)
     } else if (coord == "xyz") {
-        x <- xyz.to.enu.adv(x, declination=declination, debug=debug-1)
+        x <- xyzToEnuAdv(x, declination=declination, debug=debug-1)
     } else if (coord == "enu") {
         ;
     } else {
         warning("adv.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oce.debug(debug, "\b\b} # adv.2enu()\n")
+    oceDebug(debug, "\b\b} # adv.2enu()\n")
     x
 }
 
-beam.to.xyz.adv <- function(x, debug=getOption("oce.debug"))
+beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
 {
-    oce.debug(debug, "\b\bbeam.to.xyz.adv() {\n")
+    oceDebug(debug, "\b\bbeamToXyzAdv() {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "beam")
-        stop("input must be in beam coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    if (is.null(x$metadata$transformation.matrix)) {
+    if (x$metadata$oceCoordinate != "beam")
+        stop("input must be in beam coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
+    if (is.null(x$metadata$transformationMatrix)) {
         cat("How to add a transformation matrix to a velocimeter record named 'x':
-            x$metadata$transformation.matrix <- rbind(c(11100, -5771,  -5321),
-                                                      c(  291,  9716, -10002),
-                                                      c( 1409,  1409,   1409)) / 4096")
-        stop("cannot convert coordinates because metadata$transformation.matrix is NULL (see above).")
+            x$metadata$transformationMatrix <- rbind(c(11100, -5771,  -5321),
+                                                     c(  291,  9716, -10002),
+                                                     c( 1409,  1409,   1409)) / 4096")
+        stop("cannot convert coordinates because metadata$transformationMatrix is NULL (see above).")
     }
-    tm <- x$metadata$transformation.matrix
-    oce.debug(debug, "Transformation matrix:\n")
-    oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[1,1], tm[1,2], tm[1,3]))
-    oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3]))
-    oce.debug(debug, sprintf("%.10f %.10f %.10f\n", tm[3,1], tm[3,2], tm[3,3]))
-    ## Not using the matrix method because it might consume more memory, and measures no faster
-    ## xyz <- tm %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2], x$data$ma$v[,3])
+    tm <- x$metadata$transformationMatrix
+    oceDebug(debug, "Transformation matrix:\n")
+    oceDebug(debug, sprintf("%.10f %.10f %.10f\n", tm[1,1], tm[1,2], tm[1,3]))
+    oceDebug(debug, sprintf("%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3]))
+    oceDebug(debug, sprintf("%.10f %.10f %.10f\n", tm[3,1], tm[3,2], tm[3,3]))
+    ## Not using the matrix method because it might consume more memory, and
+    ## measures no faster xyz <- tm %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2],
+    ## x$data$ma$v[,3])
     u <- tm[1,1] * x$data$ma$v[,1] + tm[1,2] * x$data$ma$v[,2] + tm[1,3] * x$data$ma$v[,3]
     v <- tm[2,1] * x$data$ma$v[,1] + tm[2,2] * x$data$ma$v[,2] + tm[2,3] * x$data$ma$v[,3]
     w <- tm[3,1] * x$data$ma$v[,1] + tm[3,2] * x$data$ma$v[,2] + tm[3,3] * x$data$ma$v[,3]
     x$data$ma$v[,1] <- u
     x$data$ma$v[,2] <- v
     x$data$ma$v[,3] <- w
-    x$metadata$oce.coordinate <- "xyz"
-    x$processing.log <- processing.log.add(x$processing.log,
-                                           paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # beam.to.xyz.adv()\n")
+    x$metadata$oceCoordinate <- "xyz"
+    x$history <- historyAdd(x$history, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b\b} # beamToXyzAdv()\n")
     x
 }
 
-xyz.to.enu.adv <- function(x, declination=0,
-                           cabled=FALSE, horizontal.case, sensor.orientation,
-                           debug=getOption("oce.debug"))
+
+xyzToEnuAdv <- function(x, declination=0,
+                        cabled=FALSE, horizontalCase, sensorOrientation,
+                        debug=getOption("oceDebug"))
 {
-    ## See help(xyzto.enu.adv) for details of the cases.
-    oce.debug(debug, "\b\bxyz.to.enu.adv(x, declination=", declination,
+    oceDebug(debug, "\b\bxyzToEnuAdv(x, declination=", declination,
               ",cabled=",cabled,
-              ",horizontal.case=",if (missing(horizontal.case)) "(not provided)" else horizontal.case,
-              ",sensor.orientation=",if (missing(sensor.orientation)) "(not provided)" else sensor.orientation,
+              ",horizontalCase=",if (missing(horizontalCase)) "(not provided)" else horizontalCase,
+              ",sensorOrientation=",if (missing(sensorOrientation)) "(not provided)" else sensorOrientation,
               ",debug) {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "xyz")
-        stop("input must be in xyz coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
-    have.ts.slow <- "ts.slow" %in% names(x$data)
-    have.steady.angles <- (have.ts.slow && length(x$data$ts.slow$heading)==1 && length(x$data$ts.slow$pitch)==1 && length(x$data$ts.slow$roll)==1) ||
-    (!have.ts.slow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
-    oce.debug(debug, "have.steady.angles=",have.steady.angles,"\n")
-    if (have.ts.slow) {
-        oce.debug(debug, "adv data has data$ts.slow\n")
-        if (have.steady.angles) {
-            oce.debug(debug, "adv data has constant heading, pitch, and roll\n")
-            heading <- x$data$ts.slow$heading
-            pitch <- x$data$ts.slow$pitch
-            roll <- x$data$ts.slow$roll
+    if (x$metadata$oceCoordinate != "xyz")
+        stop("input must be in xyz coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
+    haveTsSlow <- "tsSlow" %in% names(x$data)
+    haveSteadyAngles <- (haveTsSlow && length(x$data$tsSlow$heading)==1 && length(x$data$tsSlow$pitch)==1 && length(x$data$tsSlow$roll)==1) ||
+    (!haveTsSlow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
+    oceDebug(debug, "haveSteadyAngles=",haveSteadyAngles,"\n")
+    if (haveTsSlow) {
+        oceDebug(debug, "adv data has data$tsSlow\n")
+        if (haveSteadyAngles) {
+            oceDebug(debug, "adv data has constant heading, pitch, and roll\n")
+            heading <- x$data$tsSlow$heading
+            pitch <- x$data$tsSlow$pitch
+            roll <- x$data$tsSlow$roll
         } else {
-            t0 <- as.numeric(x$data$ts.slow$time[1])    # arbitrary; done in case approx hates large x values
-            t.fast <- as.numeric(x$data$ts$time) - t0
-            t.slow <- as.numeric(x$data$ts.slow$time) - t0
-            oce.debug(debug, "since data has ts.slow, had to interpolate from ", length(t.slow), " to ", length(t.fast), " data")
-            heading <- approx(t.slow, x$data$ts.slow$heading, xout=t.fast)$y
-            pitch <- approx(t.slow, x$data$ts.slow$pitch, xout=t.fast)$y
-            roll <- approx(t.slow, x$data$ts.slow$roll, xout=t.fast)$y
+            oceDebug(debug, "adv data has time-varying heading, pitch, and roll\n")
+            t0 <- as.numeric(x$data$tsSlow$time[1])    # arbitrary; done in case approx hates large x values
+            tFast <- as.numeric(x$data$ts$time) - t0
+            tSlow <- as.numeric(x$data$tsSlow$time) - t0
+            heading <- approx(tSlow, x$data$tsSlow$heading, xout=tFast)$y
+            pitch <- approx(tSlow, x$data$tsSlow$pitch, xout=tFast)$y
+            roll <- approx(tSlow, x$data$tsSlow$roll, xout=tFast)$y
         }
     } else {
-        oce.debug(debug, "adv data does not have data$ts.slow; time-series data are data$ts\n")
+        oceDebug(debug, "adv data does not have data$tsSlow; time-series data are data$ts\n")
         heading <- x$data$ts$heading
         pitch <- x$data$ts$pitch
         roll <- x$data$ts$roll
     }
-    ## Adjust various things, so that the xyz-to-enu formulae (based on RDI) will work 
+    ## Adjust various things, so that the xyz-to-enu formulae (based on RDI) will work
     ##
-    ## The various cases are defined by help(xyz.to.enu.adv).
-    if (missing(sensor.orientation))
-        sensor.orientation  <- x$metadata$orientation
+    ## The various cases are defined by help(xyzToEnuAdv).
+    if (missing(sensorOrientation))
+        sensorOrientation  <- x$metadata$orientation
     if (1 == length(agrep("nortek", x$metadata$manufacturer))) {
         if (!cabled) {
-            if (sensor.orientation == "upward") {
-                oce.debug(debug, "Case 1: Nortek vector velocimeter with upward-pointing sensor attached directly to pressure case.\n")
-                oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
+            if (sensorOrientation == "upward") {
+                oceDebug(debug, "Case 1: Nortek vector velocimeter with upward-pointing sensor attached directly to pressure case.\n")
+                oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
                 heading <- heading - 90
                 tmp <- pitch
                 pitch <- roll
@@ -1915,9 +1917,9 @@ xyz.to.enu.adv <- function(x, declination=0,
                 starboard <- x$data$ma$v[,1]
                 forward <- -x$data$ma$v[,2]
                 mast <- -x$data$ma$v[,3]
-            } else if (sensor.orientation == "downward") {
-                oce.debug(debug, "Case 2: Nortek vector velocimeter with downward-pointing sensor attached directly to pressure case.\n")
-                oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
+            } else if (sensorOrientation == "downward") {
+                oceDebug(debug, "Case 2: Nortek vector velocimeter with downward-pointing sensor attached directly to pressure case.\n")
+                oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
                 heading <- heading - 90
                 tmp <- pitch
                 pitch <- roll
@@ -1926,18 +1928,18 @@ xyz.to.enu.adv <- function(x, declination=0,
                 forward <- x$data$ma$v[,2]
                 mast <- x$data$ma$v[,3]
             } else {
-                stop("need sensor orientation to be 'upward' or 'downward', not '", sensor.orientation,"'")
+                stop("need sensor orientation to be 'upward' or 'downward', not '", sensorOrientation,"'")
             }
         } else {
             ## vector cabelled: cases 3 to 6
-            if (missing(horizontal.case))
-                stop("must give horizontal.case for cabled Nortek Vector (cases 3 to 6)")
-            if (!is.logical(horizontal.case))
-                stop("must give horizontal.case as TRUE or FALSE")
-            if (horizontal.case) {
-                if (sensor.orientation == "upward") {
-                    oce.debug(debug, "Case 3: Nortek vector velocimeter with upward-pointing sensor, cabled to a horizontal pressure case.\n")
-                    oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
+            if (missing(horizontalCase))
+                stop("must give horizontalCase for cabled Nortek Vector (cases 3 to 6)")
+            if (!is.logical(horizontalCase))
+                stop("must give horizontalCase as TRUE or FALSE")
+            if (horizontalCase) {
+                if (sensorOrientation == "upward") {
+                    oceDebug(debug, "Case 3: Nortek vector velocimeter with upward-pointing sensor, cabled to a horizontal pressure case.\n")
+                    oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
                     heading <- heading - 90
                     tmp <- pitch
                     pitch <- roll
@@ -1945,10 +1947,9 @@ xyz.to.enu.adv <- function(x, declination=0,
                     starboard <- x$data$ma$v[,1]
                     forward <- x$data$ma$v[,2]
                     mast <- x$data$ma$v[,3]
-                    cat("nhead", length(heading), "nstarboard", length(starboard), "\n")
-                } else if (sensor.orientation == "downward") {
-                    oce.debug(debug, "Case 4: Nortek vector velocimeter with downward-pointing sensor, cabled to a horizontal pressure case.\n")
-                    oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=pitch, S=X, F=-Y, and M=-Z.\n")
+                } else if (sensorOrientation == "downward") {
+                    oceDebug(debug, "Case 4: Nortek vector velocimeter with downward-pointing sensor, cabled to a horizontal pressure case.\n")
+                    oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=pitch, S=X, F=-Y, and M=-Z.\n")
                     heading <- heading - 90
                     tmp <- pitch
                     pitch <- roll
@@ -1957,7 +1958,7 @@ xyz.to.enu.adv <- function(x, declination=0,
                     forward <- x$data$ma$v[,2]
                     mast <- x$data$ma$v[,3]
                 } else {
-                    stop("need sensor orientation to be 'upward' or 'downward', not '", sensor.orientation,"'")
+                    stop("need sensor orientation to be 'upward' or 'downward', not '", sensorOrientation,"'")
                 }
             } else {
                 stop("cannot handle cases 5 and 6 (vector velocimeter cabled to a vertical case)")
@@ -1966,9 +1967,9 @@ xyz.to.enu.adv <- function(x, declination=0,
     } else if (1 == length(agrep("sontek", x$metadata$manufacturer))) {
         if (cabled)
             stop("cannot handle the case of a cabled Sontek unit (does it even exist?)")
-        if (sensor.orientation == "upward") {
-            oce.debug(debug, "Case 7: Sontek ADV velocimeter with upward-pointing sensor.\n")
-            oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
+        if (sensorOrientation == "upward") {
+            oceDebug(debug, "Case 7: Sontek ADV velocimeter with upward-pointing sensor.\n")
+            oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
             heading <- heading - 90
             tmp <- pitch
             pitch <- roll
@@ -1976,9 +1977,9 @@ xyz.to.enu.adv <- function(x, declination=0,
             starboard <- x$data$ma$v[,1]
             forward <- -x$data$ma$v[,2]
             mast <- -x$data$ma$v[,3]
-        } else if (sensor.orientation == "downward") {
-            oce.debug(debug, "Case 8: Sontek ADV velocimeter with downward-pointing sensor.\n")
-            oce.debug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
+        } else if (sensorOrientation == "downward") {
+            oceDebug(debug, "Case 8: Sontek ADV velocimeter with downward-pointing sensor.\n")
+            oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
             heading <- heading - 90
             tmp <- pitch
             pitch <- roll
@@ -1997,7 +1998,7 @@ xyz.to.enu.adv <- function(x, declination=0,
               as.integer(length(heading)), # need not equal np
               as.double(heading + declination),
               as.double(pitch),
-              as.double(roll), 
+              as.double(roll),
               as.integer(np),
               as.double(starboard),
               as.double(forward),
@@ -2010,26 +2011,26 @@ xyz.to.enu.adv <- function(x, declination=0,
     x$data$ma$v[,1] <- enu$east
     x$data$ma$v[,2] <- enu$north
     x$data$ma$v[,3] <- enu$up
-    x$metadata$oce.coordinate <- "enu"
-    x$processing.log <- processing.log.add(x$processing.log,
-                                           paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # xyz.to.enu.adv()\n")
+    x$metadata$oceCoordinate <- "enu"
+    x$history <- historyAdd(x$history,
+                            paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b\b} # xyzToEnuAdv()\n")
     x
 }
 
-enu.to.other.adv <- function(x, heading=0, pitch=0, roll=0)
+enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0)
 {
-    oce.debug(debug, "\b\benu.to.other.adv() {\n")
+    oceDebug(debug, "\b\benuToOtherAdv() {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
-    if (x$metadata$oce.coordinate != "enu")
-        stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oce.coordinate, " coordinates")
+    if (x$metadata$oceCoordinate != "enu")
+        stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
     np <- dim(x$data$ma$v)[1]
     other <- .C("sfm_enu",
               as.integer(length(heading)), # need not equal np
               as.double(heading),
               as.double(pitch),
-              as.double(roll), 
+              as.double(roll),
               as.integer(np),
               as.double(x$data$ma$v[,1]),
               as.double(x$data$ma$v[,2]),
@@ -2042,9 +2043,9 @@ enu.to.other.adv <- function(x, heading=0, pitch=0, roll=0)
     x$data$ma$v[,1] <- other$v1new
     x$data$ma$v[,2] <- other$v2new
     x$data$ma$v[,3] <- other$v3new
-    x$metadata$oce.coordinate <- "other"
-    x$processing.log <- processing.log.add(x$processing.log,
-                                           paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b} # enu.to.other.adv()\n")
+    x$metadata$oceCoordinate <- "other"
+    x$history <- historyAdd(x$history,
+                            paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b\b} # enuToOtherAdv()\n")
     x
 }

@@ -12,17 +12,17 @@
     type="l",
     lwd=par('lwd'),
     adorn=NULL,
-    draw.time.range=getOption("oce.draw.time.range"),
-    draw.zero.line=FALSE,
-    use.smoothScatter,
-    mgp=getOption("oce.mgp"),
+    drawTimeRange=getOption("oceDrawTimeRange"),
+    drawZeroLine=FALSE,
+    useSmoothScatter,
+    mgp=getOption("oceMgp"),
     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-    margins.as.image=FALSE,
+    marginsAsImage=FALSE,
     cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
     xlim, ylim,
-    brush.correlation, col.brush="red",
+    brushCorrelation, colBrush="red",
     main="",
-    debug=getOption("oce.debug"),
+    debug=getOption("oceDebug"),
     \dots)
 }
 
@@ -33,7 +33,7 @@
         \dQuote{Details} for the meanings of various values of
         \code{which}.}
     \item{col}{optional indication of colour(s) to use.  If not provided,
-        the default for images is \code{oce.colors.palette(128,1)}, and for
+        the default for images is \code{oceColorsPalette(128,1)}, and for
         lines and points is black.}
     \item{titles}{optional vector of character strings to be used as
         labels for the plot panels.  For images, these strings will be
@@ -46,12 +46,12 @@
     \item{adorn}{optional list of \code{\link{expression}}s to be performed
         immediately after drawing the panels. (See \code{\link{plot.adp}} for
         an example.)}
-    \item{draw.time.range}{boolean that applies to panels with time as the
+    \item{drawTimeRange}{boolean that applies to panels with time as the
         horizontal axis, indicating whether to draw the time range in 
         the top-left margin of the plot.}
-    \item{draw.zero.line}{boolean that indicates whether to draw zero
+    \item{drawZeroLine}{boolean that indicates whether to draw zero
         lines on velocities.}
-    \item{use.smoothScatter}{boolean that indicates whether to use
+    \item{useSmoothScatter}{boolean that indicates whether to use
       \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.
       If not provided a default is used, with \code{\link{smoothScatter}} being
       used if there are more than 2000 points to plot.},
@@ -60,7 +60,7 @@
         tighter than the R default, in order to use more space for the data
         and less for the axes.}
     \item{mar}{value to be used with \code{\link{par}("mar")}.}
-    \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
+    \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the
         right of time-series plots, matching the space used up by a palette
         in an \code{\link{imagep}} plot.}
     \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
@@ -70,13 +70,13 @@
         the rows are used, in order, for the panels of the graph.}
     \item{ylim}{optional 2-element list for \code{ylim}, or 2-column matrix, in which case
         the rows are used, in order, for the panels of the graph.}
-    \item{brush.correlation}{optional number between 0 and 100, indicating
+    \item{brushCorrelation}{optional number between 0 and 100, indicating
         a per-beam correlation threshhold below which data are to be
         considered suspect.  If the plot type is \code{p}, the suspect
         points (velocity, backscatter amplitude, or correlation) will be
         coloured red; otherwise, this argument is ignored.}
-    \item{col.brush}{colour to use for brushed (bad) data, if
-        \code{brush.correlation} is active.}
+    \item{colBrush}{colour to use for brushed (bad) data, if
+        \code{brushCorrelation} is active.}
     \item{main}{main title for plot, used just on the top panel, if there are several panels.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 

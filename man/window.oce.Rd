@@ -2,14 +2,14 @@
 
 \alias{window.oce}
 
-\title{Window an oce object by time}
+\title{Window an oce object by time or distance}
 
-\description{Window an oce object by time}
+\description{Window an oce object by time or distance}
 
 \usage{\method{window}{oce}(x, start = NULL, end = NULL,
      frequency = NULL, deltat = NULL, extend = FALSE,
-     which=c("time","distance"), index.return=FALSE,
-     debug=getOption("oce.debug"), \dots)}
+     which=c("time","distance"), indexReturn=FALSE,
+     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
   \item{x}{an \code{oce} object.}
@@ -26,8 +26,8 @@
     applies the windowing on \code{x$data$ss$distance} (for those
     objects, such as \code{adp}, that have a \code{data$ss$distance}
     component).}
-  \item{index.return}{boolean flag indicating whether to return a list
-    of the "kept" indices for \code{data$ts} and \code{data$ts.slow}
+  \item{indexReturn}{boolean flag indicating whether to return a list
+    of the "kept" indices for \code{data$ts} and \code{data$tsSlow}
     (either of which may be \code{NULL}, if the object lacks those items.}
   \item{debug}{a flag that turns on debugging.}
   \item{\dots}{ignored}
@@ -39,12 +39,12 @@
   distance range.  If \code{which} is \code{"time"}, then the
   \code{start} and \code{end} values may also be provided as POSIX
   times, or character strings indicating times (in time zone
-  given by the value of \code{getOption("oce.tz")}).}
+  given by the value of \code{getOption("oceTz")}).}
 
 \value{Normally, this is new \code{oce} object.  However, if
-  \code{index.return=TRUE}, the return value is two-element list
-  containing items named \code{index} and \code{index.slow}, which are
-  the indices for \code{data$ts} and \code{data$ts.slow} that are within
+  \code{indexReturn=TRUE}, the return value is two-element list
+  containing items named \code{index} and \code{indexSlow}, which are
+  the indices for \code{data$ts} and \code{data$tsSlow} that are within
   the window.}
 
 \seealso{\code{\link{subset.oce}} provides more flexible selection of

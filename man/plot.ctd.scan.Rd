@@ -9,7 +9,7 @@
 
 \usage{plot.ctd.scan(x, name = "scan", 
  S.col = "darkgreen", T.col= "darkred", p.col = "blue",
- adorn=NULL, mgp=getOption("oce.mgp"), \dots)
+ adorn=NULL, mgp=getOption("oceMgp"), \dots)
 }
 
 \arguments{

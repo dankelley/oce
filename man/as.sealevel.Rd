@@ -6,9 +6,9 @@
   a sealevel dataset.
 }
 \usage{as.sealevel(elevation,  time,  header=NULL,
-  station.number=NA, station.version=NA, station.name=NULL,
-  region=NULL, year=NA, latitude=NA, longitude=NA, GMT.offset=NA,
-  decimation.method=NA, reference.offset=NA, reference.code=NA, deltat)
+  stationNumber=NA, stationVersion=NA, stationName=NULL,
+  region=NULL, year=NA, latitude=NA, longitude=NA, GMTOffset=NA,
+  decimationMethod=NA, referenceOffset=NA, referenceCode=NA, deltat)
 }
 \arguments{
   \item{elevation}{a list of sea-level heights in metres, in an hourly sequence.}
@@ -17,9 +17,9 @@
     0000-01-01 00:00:00.}
   \item{header}{a character string as read from first line of a standard
     data file.}
-  \item{station.number}{three-character string giving station number.}
-  \item{station.version}{single character for version of station.}
-  \item{station.name}{the name of station (at most 18 characters).}
+  \item{stationNumber}{three-character string giving station number.}
+  \item{stationVersion}{single character for version of station.}
+  \item{stationName}{the name of station (at most 18 characters).}
   \item{region}{the name of the region or country of station (at most 19
     characters).}
   \item{year}{the year of observation.}
@@ -27,12 +27,12 @@
     equator.}
   \item{longitude}{the longitude in decimal degrees, positive east of
     Greenwich.}
-  \item{GMT.offset}{offset from GMT, in hours.}
-  \item{decimation.method}{a coded value, with 1 meaning filtered, 2
+  \item{GMTOffset}{offset from GMT, in hours.}
+  \item{decimationMethod}{a coded value, with 1 meaning filtered, 2
     meaning a simple average of all samples, 3 meaning spot readings,
     and 4 meaning some other method.}
-  \item{reference.offset}{?}
-  \item{reference.code}{?}
+  \item{referenceOffset}{?}
+  \item{referenceCode}{?}
   \item{deltat}{optional interval between samples, in hours (as for the
     \code{\link{ts}} timeseries function). If this is not provided, and
     \code{t} can be understood as a time, then the difference between
@@ -51,8 +51,8 @@
   summarized with \code{\link{summary.sealevel}}.  Use Summary plots are
   created with \code{\link{plot.sealevel}}.  Tidal models may be fitted
   to sealevel data with \code{\link{tidem}}.  Sample sea-level data sets
-  are provided with \code{data(\link{sealevel.hal})} and
-  \code{data(\link{sealevel.tuk})}.  }
+  are provided with \code{data(\link{sealevelHalifax})} and
+  \code{data(\link{sealevelTuktoyaktuk})}.  }
 
 \examples{
 library(oce)

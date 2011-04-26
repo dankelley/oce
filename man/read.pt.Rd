@@ -7,8 +7,8 @@
 \description{Read an pt temperature-depth recorder file, producing an object of type \code{pt}.}
 
 \usage{
-read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"), 
-        log.action, debug=getOption("oce.debug"))}
+read.pt(file, from=1, to, by=1, tz=getOption("oceTz"), 
+        history, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -26,9 +26,9 @@ read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"),
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
-  \item{tz}{time zone.  The default value, \code{oce.tz}, is set to \code{UTC} 
+  \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{history}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
@@ -51,7 +51,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"),
       \item{\code{header}}{the header itself, as read from the input file.}
       \item{\code{serial.number}}{serial number of instrument, inferred
 	from first line of the header.}
-      \item{\code{logging.start}}{start time for logging, inferred from
+      \item{\code{loggingStart}}{start time for logging, inferred from
 	the header.  Caution: this is often not the first time in the
 	data, because the data may have been subsetted.}
       \item{\code{sample.period}}{seconds between samples, inferred from
@@ -59,7 +59,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"),
 	data, because the data may have been decimated.}
     }
   }
-  \item{processing.log}{a processing log, in the standard \code{oce} format.}
+  \item{history}{a history of processing, in the standard \code{oce} format.}
 }
 
 \section{Implementation notes}{The end time for measurement
@@ -77,12 +77,12 @@ read.pt(file, from=1, to, by=1, tz=getOption("oce.tz"),
   \code{\link{plot.pt}}, and summarized with \code{\link{summary.pt}},
   both of which are generic functions.  In-air samples (collected before
   and after deployment) may be removed in a crude way with
-  \code{\link{pt.trim}}, but the best scheme is to use
+  \code{\link{ptTrim}}, but the best scheme is to use
   \code{\link{subset.oce}}, based on a temporal window.  Removal of the
   atmospheric component of pressure is best done by the user, using
   measured records of atmospheric pressure.  However, if such data are
   unavailable, and if the p-T data set contains pre- and post-deployment
-  data, \code{\link{pt.patm}} may provide a useful estimate of
+  data, \code{\link{ptPatm}} may provide a useful estimate of
   atmospheric pressure.}
 
 \examples{

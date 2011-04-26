@@ -20,7 +20,7 @@ Research}, \bold{15}, 185-193.}
 
 \examples{
 data(RRprofile)
-par(mgp=getOption('oce.mgp'))
+par(mgp=getOption('oceMgp'))
 par(mar=c(3,3,1,1))
 ctd <- as.ctd(RRprofile$salinity, RRprofile$temperature, RRprofile$depth)
 plot(ctd)
@@ -34,7 +34,7 @@ lines(a$y, zz, col='red')
 s <- smooth.spline(RRprofile$depth, RRprofile$temperature)
 lines(predict(s, zz)$y, zz, col='blue')
 legend("topright", lwd=1, col=c("black", "red", "blue"),
-      legend=c("oce.smooth", "approx", "smooth.spline"), cex=2/3)
+      legend=c("oceSmooth", "approx", "smooth.spline"), cex=2/3)
 }
 
 \keyword{misc}

@@ -14,17 +14,17 @@
      type='l',
      ytype=c("profile", "distance"),
      adorn=NULL,
-     draw.time.range=getOption("oce.draw.time.range"),
-     use.smoothScatter,
-     mgp=getOption("oce.mgp"),
+     drawTimeRange=getOption("oceDrawTimeRange"),
+     useSmoothScatter,
+     mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-     margins.as.image=FALSE,
+     marginsAsImage=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim, ylim, 
      control,
-     use.layout=FALSE,
+     useLayout=FALSE,
      main="",
-     debug=getOption("oce.debug"),
+     debug=getOption("oceDebug"),
      \dots)}
 
 \arguments{
@@ -34,7 +34,7 @@
     \dQuote{Details} for the meanings of various values of
     \code{which}.}
   \item{col}{optional indication of colour(s) to use.  If not provided,
-    the default for images is \code{oce.colors.palette(128,1)}, and for
+    the default for images is \code{oceColorsPalette(128,1)}, and for
     lines and points is black.}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
     \code{\link{imagep}} call that is used to create the image.  If
@@ -70,10 +70,10 @@
     as they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
-  \item{draw.time.range}{boolean that applies to panels with time as the
+  \item{drawTimeRange}{boolean that applies to panels with time as the
     horizontal axis, indicating whether to draw the time range in 
     the top-left margin of the plot.}
-  \item{use.smoothScatter}{boolean that indicates whether to use
+  \item{useSmoothScatter}{boolean that indicates whether to use
       \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.
       If not provided a default is used, with \code{\link{smoothScatter}} being
       used if there are more than 2000 points to plot.},
@@ -82,7 +82,7 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{margins.as.image}{boolean, \code{TRUE} to put a wide margin to the
+  \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the
     right of time-series plots, even if there are no images in the \code{which}
     list.  (The margin is made wide if there are some images in the sequence.)}
   \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
@@ -97,7 +97,7 @@
     means to draw the bottom, for downward-pointing units that track the
     bottom) and \code{bin} (for selecting a bin on which to act, as
     explained in \dQuote{Details}).}
-  \item{use.layout}{set to \code{FALSE} to prevent using
+  \item{useLayout}{set to \code{FALSE} to prevent using
     \code{\link{layout}} to set up the plot.  This is needed if the call
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
   \item{main}{main title for plot, used just on the top panel, if there are several panels.}
@@ -126,8 +126,8 @@
       \code{"other"} coordinates, it will be component corresponding to
       east, after rotation (labelled \code{u\'}).  Note that the
       coordinate is set by \code{\link{read.adp}}, or by
-      \code{\link{beam.to.xyz.adp}}, \code{\link{xyz.to.enu.adp}}, or
-      \code{\link{enu.to.other.adp}}.
+      \code{\link{beamToXyzAdp}}, \code{\link{xyzToEnuAdp}}, or
+      \code{\link{enuToOtherAdp}}.
     
     \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
       distance-time images of backscatter intensity of the respective beams.
@@ -258,13 +258,13 @@
   \code{\link{read.adp.nortek}} (for NorTek files).  These files may be
   in beam coordinates, in xyz coordinates, or in enu coordinates.  It is
   common in a scientific setting to use beam coordinates, and so this
-  package offers functions \code{\link{beam.to.xyz.adp}} and
-  \code{\link{xyz.to.enu.adp}} to take the intermediate steps, and
-  \code{\link{enu.to.other.adp}} to go further, e.g. to rotate into a
+  package offers functions \code{\link{beamToXyzAdp}} and
+  \code{\link{xyzToEnuAdp}} to take the intermediate steps, and
+  \code{\link{enuToOtherAdp}} to go further, e.g. to rotate into a
   coordinate system aligned with the shoreline or with an isobath.
 
   The beam stength may be corrected for R-squared spreading with
-  \code{\link{beam.attenuate.adp}}.
+  \code{\link{beamAttenuateAdp}}.
 
   Summaries of ADP data are provided by \code{\link{summary.adp}}.
 

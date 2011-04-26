@@ -8,7 +8,7 @@
 
 \usage{\method{plot}{lobo}(x, 
      adorn=NULL,
-     mgp=getOption("oce.mgp"), 
+     mgp=getOption("oceMgp"), 
      mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
      \dots)}
 

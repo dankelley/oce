@@ -1,5 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-use.heading <- function(b, g, add=0)
+useHeading <- function(b, g, add=0)
 {
     if (!"heading" %in% names(b$data$ts))
         stop("'from' does not have any heading data (in b$data$ts$heading)")
@@ -13,19 +13,21 @@ use.heading <- function(b, g, add=0)
     t0 <- as.numeric(g$data$ts$time[1])
     if (is.na(t0))
         stop("need first element of from$data$ts$time to be non-NA")
-    b.t <- as.numeric(b$data$ts$time) - t0 # FIXME: what if heading in ts.slow?
-    g.t <- as.numeric(g$data$ts$time) - t0 # FIXME: what if heading in ts.slow?
+    b.t <- as.numeric(b$data$ts$time) - t0 # FIXME: what if heading in tsSlow?
+    g.t <- as.numeric(g$data$ts$time) - t0 # FIXME: what if heading in tsSlow?
     res$data$ts$heading <- approx(x=g.t, y=g$data$ts$heading, xout=b.t)$y + add
-    res$processing.log <- processing.log.add(res$processing.log,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
 window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = NULL, extend = FALSE,
-                       which=c("time","distance"), index.return=FALSE,
-                       debug=getOption("oce.debug"), ...)
+                       which=c("time","distance"), indexReturn=FALSE,
+                       debug=getOption("oceDebug"), ...)
 {
-    oce.debug(debug, "\b\bwindow.oce() {\n")
+    oceDebug(debug, "\b\bwindow.oce(...,start=",
+             paste(format(start),collapse=","), ",end=",
+             paste(format(end),collapse=","),
+             ",indexReturn=",indexReturn,",...) {\n")
     if (extend)
         stop("cannot handle extend=TRUE yet")
     if (!is.null(frequency))
@@ -36,14 +38,14 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         stop("must provide start")
     if (is.null(end))
         stop("must provide end")
-    oce.debug(debug, "class of (x) is: ", paste(class(x), collapse=","), "\n")
+    oceDebug(debug, "class of (x) is: ", paste(class(x), collapse=","), "\n")
     res <- x
     which <- match.arg(which)
     nstart <- length(start)
     if (nstart != length(end))
         stop("lengths of 'start' and 'end' must match")
     if (which == "time") {
-        oce.debug(debug, "windowing by time\n")
+        oceDebug(debug, "windowing by time\n")
         if (!("ts" %in% names(x$data))) {
             warning("oce object has no $data$ts vector, so window is returning it unaltered")
             return(x)
@@ -53,45 +55,45 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             return(x)
         }
         if (is.character(start))
-            start <- as.POSIXct(start, tz=getOption("oce.tz"))
+            start <- as.POSIXct(start, tz=getOption("oceTz"))
         if (is.character(end))
-            end <- as.POSIXct(end, tz=getOption("oce.tz"))
-        oce.debug(debug, "tz of start:", attr(start, "tzone"), "\n")
-        oce.debug(debug, "tz of end:", attr(end, "tzone"), "\n")
-        oce.debug(debug, "tz of data$ts$time:", attr(res$data$ts$time, "tzone"), "\n")
+            end <- as.POSIXct(end, tz=getOption("oceTz"))
+        oceDebug(debug, "tz of start:", attr(start, "tzone"), "\n")
+        oceDebug(debug, "tz of end:", attr(end, "tzone"), "\n")
+        oceDebug(debug, "tz of data$ts$time:", attr(res$data$ts$time, "tzone"), "\n")
         nstart <- length(start)
         ## data$ts (note: 'keep' will be re-used for data$ma)
         ntime <- length(x$data$ts$time)
         keep <- rep(FALSE, ntime)
         for (w in 1:nstart) {
             keep <- keep | (start[w] <= res$data$ts$time & res$data$ts$time <= end[w])
-            oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
+            oceDebug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
         }
-        if (index.return) {
+        if (indexReturn) {
             res <- list(index=keep)
         } else {
             for (name in names(res$data$ts)) {
-                if (length(res$data$ts[[name]]) > 1) 
+                if (length(res$data$ts[[name]]) > 1)
                     res$data$ts[[name]] <- res$data$ts[[name]][keep]
             }
         }
-        if ("ts.slow" %in% names(res$data)) {
-            oce.debug(debug, "tz of data$ts.slow$time:", attr(res$data$ts.slow$time, "tzone"), "\n")
-            keep.slow <- rep(FALSE, length(x$data$ts.slow$time)) # note that 'keep' is reserved for use with data$ma
+        if ("tsSlow" %in% names(res$data)) {
+            oceDebug(debug, "tz of data$tsSlow$time:", attr(res$data$tsSlow$time, "tzone"), "\n")
+            keepSlow <- rep(FALSE, length(x$data$tsSlow$time)) # note that 'keep' is reserved for use with data$ma
             for (w in 1:nstart) {
-                keep.slow <- keep.slow | (start[w] <= res$data$ts.slow$time & res$data$ts.slow$time <= end[w])
-                oce.debug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
+                keepSlow <- keepSlow | (start[w] <= res$data$tsSlow$time & res$data$tsSlow$time <= end[w])
+                oceDebug(debug, "data$ts window (start=", format(start[w]), ", end=", format(end[w]), ") retains", sum(keep)/ntime*100, "percent\n")
             }
-            if (index.return) {
-                res$index.slow <- keep.slow
+            if (indexReturn) {
+                res$indexSlow <- keepSlow
             } else {
-                for (name in names(res$data$ts.slow)) {
-                    if (length(res$data$ts.slow[[name]]) > 1)
-                        res$data$ts.slow[[name]] <- res$data$ts.slow[[name]][keep.slow]
+                for (name in names(res$data$tsSlow)) {
+                    if (length(res$data$tsSlow[[name]]) > 1)
+                        res$data$tsSlow[[name]] <- res$data$tsSlow[[name]][keepSlow]
                 }
             }
         }
-        if (index.return)
+        if (indexReturn)
             return(res)
         if ("ma" %in% names(res$data)) {
             for (maname in names(res$data$ma)) {
@@ -105,7 +107,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
             }
         }
     } else if (which == "distance") {
-        oce.debug(debug, "windowing by distance\n")
+        oceDebug(debug, "windowing by distance\n")
         if (!("ss" %in% names(x$data))) {
             warning("oce object has no $data$ss vector, so window is returning it unaltered")
             return(x)
@@ -123,13 +125,15 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
         res$data$ss$distance <- x$data$ss$distance[keep]
         if ("ma" %in% names(res$data)) {
             for (maname in names(res$data$ma)) {
-                res$data$ma[[maname]] <- res$data$ma[[maname]][,keep,]
+                if (maname != "bottomRange" && maname != "bottomVelocity") {
+                    res$data$ma[[maname]] <- res$data$ma[[maname]][,keep,]
+                }
             }
         }
     } else {
         stop("unknown value of which \"", which, "\"") # cannot get here
     }
-    oce.debug(debug, "\b\b} # window.oce()\n")
+    oceDebug(debug, "\b\b} # window.oce()\n")
     res
 }
 
@@ -160,7 +164,7 @@ oce.approx <- function(x, y, xout, method=c("reiniger-ross"))
 }
 
 oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
-                            mgp=getOption("oce.mgp"),
+                            mgp=getOption("oceMgp"),
                             mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
                             ...)
 {
@@ -200,7 +204,7 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 
 oce.plot.ts <- function(x,
                         y,
-                        draw.time.range=TRUE,
+                        drawTimeRange=TRUE,
                         xaxs="r",       # was "i"
                         grid=TRUE,
                         adorn=NULL,
@@ -208,7 +212,7 @@ oce.plot.ts <- function(x,
                         xlab="",
                         ylab="",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
-                        mgp=getOption("oce.mgp"),
+                        mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
                               mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
                               mgp[2]+1,
@@ -216,18 +220,18 @@ oce.plot.ts <- function(x,
                         type="l",
                         main="",
                         despike=FALSE,
-                        debug=getOption("oce.debug"),
+                        debug=getOption("oceDebug"),
                         ...)
 {
     ocex <- par("cex")
     par(cex=cex)
     debug <- min(debug, 4)
-    oce.debug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
-    oce.debug(debug, "mgp=",mgp,"\n")
-    oce.debug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
-    oce.debug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-    oce.debug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
-    oce.debug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
+    oceDebug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
+    oceDebug(debug, "mgp=",mgp,"\n")
+    oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
+    oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
+    oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
     par(mgp=mgp, mar=mar)
     args <- list(...)
 
@@ -248,7 +252,7 @@ oce.plot.ts <- function(x,
              ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
              type=type, ...)
     }
-    xlabs <- oce.axis.POSIXct(1, x=x, draw.time.range=draw.time.range, main=main,
+    xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
                               mgp=mgp, cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                               debug=debug-1, ...)
     if (grid) {
@@ -267,7 +271,7 @@ oce.plot.ts <- function(x,
             warning("cannot evaluate adorn {", format(adorn), "}\n")
     }
     par(cex=ocex)
-    oce.debug(debug, "\b\b} # oce.plot.ts()\n")
+    oceDebug(debug, "\b\b} # oce.plot.ts()\n")
     invisible()
 }
 
@@ -323,10 +327,10 @@ oce.as.POSIXlt <- function (x, tz = "")
     .Internal(as.POSIXlt(x, tz))
 }
 
-oce.edit <- function(x, item, value, action, reason="", person="",
-                     debug=getOption("oce.debug"))
+oceEdit <- function(x, item, value, action, reason="", person="",
+                     debug=getOption("oceDebug"))
 {
-    oce.debug(debug, "\b\boce.edit() {\n")
+    oceDebug(debug, "\b\boceEdit() {\n")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (!missing(item)) {
@@ -335,52 +339,52 @@ oce.edit <- function(x, item, value, action, reason="", person="",
         ##if (!(item %in% names(x$metadata)))
         ## stop("no item named '", item, "' in object's  metadata")
         if (inherits(x, "adv")) {
-            oce.debug(debug, "object is an ADV\n")
+            oceDebug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
             if (hpr) {
                 if (inherits(x, "nortek")) {
-                    oce.debug(debug, "changing data$ts.slow[[", item, "]] of a nortek\n")
-                    x$data$ts.slow[[item]] <- value
+                    oceDebug(debug, "changing data$tsSlow[[", item, "]] of a nortek\n")
+                    x$data$tsSlow[[item]] <- value
                 } else {
-                    oce.debug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
+                    oceDebug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
                     x$data$ts[[item]] <- value
                 }
             } else {
                 if (item %in% names(x$metadata)) {
-                    oce.debug(debug, "changing metadata[[", item, "]]\n")
+                    oceDebug(debug, "changing metadata[[", item, "]]\n")
                     x$metadata[[item]] <- value
                 } else
                     stop("do not know how to handle this item")
             }
         } else if (inherits(x, "adp")) {
-            oce.debug(debug, "object is an ADP\n")
+            oceDebug(debug, "object is an ADP\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
             if (hpr) {
-                oce.debug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
+                oceDebug(debug, "changing data$ts[[", item, "]] of a non-nortek\n")
                 x$data$ts[[item]] <- value
             } else {
                 if (item %in% names(x$metadata)) {
-                    oce.debug(debug, "changing metadata[[", item, "]]\n")
+                    oceDebug(debug, "changing metadata[[", item, "]]\n")
                     x$metadata[[item]] <- value
                 } else
                     stop("do not know how to handle this item")
             }
-        } else if ("instrument.type" %in% names(x$metadata) && x$metadata$instrument.type == "aquadopp-hr") {
-            oce.debug(debug, "About to try editing AQUADOPP ...\n")
-            hpr <- 0 < length(grep("heading|pitch|roll", item)) # FIXME: possibly aquadopp should have ts.slow
+        } else if ("instrumentType" %in% names(x$metadata) && x$metadata$instrumentType == "aquadopp-hr") {
+            oceDebug(debug, "About to try editing AQUADOPP ...\n")
+            hpr <- 0 < length(grep("heading|pitch|roll", item)) # FIXME: possibly aquadopp should have tsSlow
             x$data$ts[[item]] <- value
             if (hpr) {
                 x$data$ts[[item]] <- value
-                oce.debug(debug, " edited x$ts[", item, "]\n", sep="")
+                oceDebug(debug, " edited x$ts[", item, "]\n", sep="")
             } else {
                 if (item %in% names(x$metadata)) {
-                    oce.debug(debug, " edited x$metadata[", item, "]\n", sep="")
+                    oceDebug(debug, " edited x$metadata[", item, "]\n", sep="")
                     x$metadata[item] <- value
                 } else {
                     stop("do not know how to handle this item, named \"", item, "\"\n", sep="")
                 }
             }
-            oce.debug(debug, "...AQUADOPP edited\n")
+            oceDebug(debug, "...AQUADOPP edited\n")
         } else {
             if (item %in% names(x$metadata))
                 x$metadata[item] <- value
@@ -393,9 +397,9 @@ oce.edit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x$processing.log <- processing.log.add(x$processing.log,
+    x$history <- historyAdd(x$history,
                                            paste(deparse(match.call()), sep="", collapse=""))
-    oce.debug(debug, "\b\b}\n")
+    oceDebug(debug, "\b\b} # oceEdit() \n")
     x
 }
 
@@ -409,15 +413,15 @@ oce.write.table <- function (x, file="", ...)
         write.table(x$data, file, ...)
 }
 
-subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), ...)
+subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
 {
     debug <- max(0, min(debug, 1))
-    oce.debug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
+    oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (inherits(x, "cm")) {
         if (!is.null(indices)) {
-            oce.debug(debug, vector.show(keep, "keeping indices"))
+            oceDebug(debug, vectorShow(keep, "keeping indices"))
             rval <- x
             keep <- (1:length(x$data$ts$u))[indices]
             for (name in names(rval$data$ts)) {
@@ -425,12 +429,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             }
         } else if (!missing(subset)) {
             subset.string <- deparse(substitute(subset))
-            oce.debug(debug, "subset.string='", subset.string, "'\n")
+            oceDebug(debug, "subset.string='", subset.string, "'\n")
             if (length(grep("time", subset.string))) {
-                oce.debug(debug, "subsetting a cm by time\n")
+                oceDebug(debug, "subsetting a cm by time\n")
                 ## ts
                 keep <- eval(substitute(subset), x$data$ts, parent.frame())
-                oce.debug(debug, vector.show(keep, "keeping times at indices:"), "\n")
+                oceDebug(debug, vectorShow(keep, "keeping times at indices:"), "\n")
             } else {
                 stop("it makes no sense to subset a \"cm\" object by anything other than time")
             }
@@ -439,48 +443,48 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         }
         rval <- x
         for (name in names(x$data$ts)) {
-            oce.debug(debug, "subsetting x$data$ts[[", name, "]]", sep="")
+            oceDebug(debug, "subsetting x$data$ts[[", name, "]]", sep="")
             rval$data$ts[[name]] <- x$data$ts[[name]][keep]
         }
-        if ("ts.slow" %in% names(x$data)) {
-            oce.debug(debug, "subsetting x$data$ts.slow[[", name, "]]", sep="")
-            keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
-            for (name in names(rval$data$ts.slow)) {
-                if (length(rval$data$ts.slow[[name]]) > 1)
-                    rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
+        if ("tsSlow" %in% names(x$data)) {
+            oceDebug(debug, "subsetting x$data$tsSlow[[", name, "]]", sep="")
+            keepSlow <- eval(substitute(subset), x$data$tsSlow, parent.frame())
+            for (name in names(rval$data$tsSlow)) {
+                if (length(rval$data$tsSlow[[name]]) > 1)
+                    rval$data$tsSlow[[name]] <- x$data$tsSlow[[name]][keepSlow]
             }
         }
     } else if (inherits(x, "adp")) { # FIXME: should be able to select by time or space, maybe others
         if (!is.null(indices)) {
             rval <- x
             keep <- (1:x$metadata$number.of.profiles)[indices]
-            oce.debug(debug, vector.show(keep, "keeping indices"))
+            oceDebug(debug, vectorShow(keep, "keeping indices"))
             stop("this version of oce cannot subset adp data by index")
         } else if (!missing(subset)) {
             subset.string <- deparse(substitute(subset))
-            oce.debug(debug, "subset.string='", subset.string, "'\n")
+            oceDebug(debug, "subset.string='", subset.string, "'\n")
             if (length(grep("time", subset.string))) {
-                oce.debug(debug, "subsetting an adp by time\n")
+                oceDebug(debug, "subsetting an adp by time\n")
                 ##stop("cannot understand the subset; it should be e.g. 'time < as.POSIXct(\"2008-06-26 12:00:00\", tz = \"UTC\")'")
                 keep <- eval(substitute(subset), x$data$ts, parent.frame())
-                oce.debug(debug, vector.show(keep, "keeping bins:"))
-                oce.debug(debug, "number of kept bins:", sum(keep), "\n")
+                oceDebug(debug, vectorShow(keep, "keeping bins:"))
+                oceDebug(debug, "number of kept bins:", sum(keep), "\n")
                 if (sum(keep) < 2)
                     stop("must keep at least 2 profiles")
                 rval <- x
                 for (name in names(x$data$ts)) {
                     rval$data$ts[[name]] <- x$data$ts[[name]][keep]
                 }
-                if ("ts.slow" %in% names(x$data)) {
-                    keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
-                    for (name in names(rval$data$ts.slow)) {
-                        if (length(rval$data$ts.slow[[name]]) > 1)
-                            rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
+                if ("tsSlow" %in% names(x$data)) {
+                    keepSlow <- eval(substitute(subset), x$data$tsSlow, parent.frame())
+                    for (name in names(rval$data$tsSlow)) {
+                        if (length(rval$data$tsSlow[[name]]) > 1)
+                            rval$data$tsSlow[[name]] <- x$data$tsSlow[[name]][keepSlow]
                     }
                 }
                 for (name in names(x$data$ma)) {
-                    oce.debug(debug, "subsetting x$data$", name, "\n")
                     numdim <- length(dim(rval$data$ma[[name]]))
+                    oceDebug(debug, "subsetting x$data$", name, "; numdim=", numdim, "\n")
                     if (numdim == 3)
                         rval$data$ma[[name]] <- x$data$ma[[name]][keep,,]
                     else if (numdim == 2)
@@ -488,9 +492,9 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                     else stop(paste("can only handle 2 or 3 dimensions in data$ma$", name, sep=""))
                 }
             } else if (length(grep("distance", subset.string))) {
-                oce.debug(debug, "subsetting an adp by distance\n")
+                oceDebug(debug, "subsetting an adp by distance\n")
                 keep <- eval(substitute(subset), x$data$ss, parent.frame())
-                oce.debug(debug, vector.show(keep, "keeping bins:"), "\n")
+                oceDebug(debug, vectorShow(keep, "keeping bins:"), "\n")
                 if (sum(keep) < 2)
                     stop("must keep at least 2 bins")
                 rval <- x
@@ -498,11 +502,11 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                     rval$data$ss[[name]] <- x$data$ss[[name]][keep]
                 }
                 for (name in names(x$data$ma)) {
-                    if (name != "bottom.range" && name != "bottom.velocity") {
-                        oce.debug(debug, "subsetting ma[[", name, "]] by distance\n")
+                    if (name != "bottomRange" && name != "bottomVelocity") {
+                        oceDebug(debug, "subsetting ma[[", name, "]] by distance\n")
                         rval$data$ma[[name]] <- x$data$ma[[name]][,keep,]
                     } else {
-                        oce.debug(debug, "skipping ma[[", name, "]] because it cannot be subsetted by distance\n")
+                        oceDebug(debug, "skipping ma[[", name, "]] because it cannot be subsetted by distance\n")
                     }
                 }
             } else {
@@ -520,25 +524,25 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             lat <- vector("numeric", n)
             for (i in 1:n) {
                 ii <- indices[i]
-                stn[i] <- x$metadata$station.id[ii]
+                stn[i] <- x$metadata$stationId[ii]
                 lat[i] <- x$metadata$latitude[ii]
                 lon[i] <- x$metadata$longitude[ii]
                 station[[i]] <- x$data$station[[ii]]
             }
             data <- list(station=station)
-            metadata <- list(header=x$metadata$header,section.id=x$metadata$section.id,station.id=stn,latitude=lat,longitude=lon)
-            rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
+            metadata <- list(header=x$metadata$header,sectionId=x$metadata$sectionId,stationId=stn,latitude=lat,longitude=lon)
+            rval <- list(data=data, metadata=metadata, history=x$history)
             class(rval) <- c("section", "oce")
         } else {                        # subset within the stations
             subset.string <- deparse(substitute(subset))
-            oce.debug(debug, "subset.string='", subset.string, "'\n")
+            oceDebug(debug, "subset.string='", subset.string, "'\n")
             rval <- x
             if (length(grep("distance", subset.string))) {
-                l <- list(distance=geod.dist(rval))
+                l <- list(distance=geodDist(rval))
                 keep <- eval(substitute(subset), l, parent.frame())
                 rval$metadata$latitude <- rval$metadata$latitude[keep]
                 rval$metadata$longitude <- rval$metadata$longitude[keep]
-                rval$metadata$station.id <- rval$metadata$station.id[keep]
+                rval$metadata$stationId <- rval$metadata$stationId[keep]
                 rval$data$station <- rval$data$station[keep]
             } else if (length(grep("latitude", subset.string)) || length(grep("longitude", subset.string))) {
                 n <- length(x$data$station)
@@ -553,7 +557,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 j <- 1
                 for (i in 1:n) {
                     if (keep[i]) {
-                        stn[j] <- x$metadata$station.id[i]
+                        stn[j] <- x$metadata$stationId[i]
                         lat[j] <- x$metadata$latitude[i]
                         lon[j] <- x$metadata$longitude[i]
                         station[[j]] <- x$data$station[[i]]
@@ -562,9 +566,11 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
                 }
                 data <- list(station=station)
                 metadata <- list(header=x$metadata$header,
-                                 section.id=x$metadata$section.id,
-                                 station.id=stn,latitude=lat,longitude=lon)
-                rval <- list(data=data, metadata=metadata, processing.log=x$processing.log)
+                                 sectionId=x$metadata$sectionId,
+                                 stationId=stn,
+                                 latitude=lat,
+                                 longitude=lon)
+                rval <- list(data=data, metadata=metadata, history=x$history)
                 class(rval) <- c("section", "oce")
             } else {
                 n <- length(x$data$station)
@@ -586,7 +592,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         if (missing(subset))
             stop("must specify a 'subset'")
         subset.string <- deparse(substitute(subset))
-        oce.debug(debug, "subset.string='", subset.string, "'\n")
+        oceDebug(debug, "subset.string='", subset.string, "'\n")
         if (debug > 10) {
             cat("\nORIGINALLY:\n\n")
             print(str(x$data$ts))
@@ -595,42 +601,42 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
             cat("\n\n\n")
         }
         if (length(grep("time", subset.string))) {
-            oce.debug(debug, "subsetting an adv object by time\n")
-            oce.debug(debug, "Step 1: subset x$data$ts\n")
-            keep <- eval(substitute(subset), x$data$ts, parent.frame()) # used for $ts and $ma, but $ts.slow gets another
+            oceDebug(debug, "subsetting an adv object by time\n")
+            oceDebug(debug, "Step 1: subset x$data$ts\n")
+            keep <- eval(substitute(subset), x$data$ts, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
             sum.keep <- sum(keep)
             if (sum.keep < 2)
                 stop("must keep at least 2 profiles")
-            oce.debug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
-            oce.debug(debug, vector.show(keep, "keeping bins:"))
+            oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
+            oceDebug(debug, vectorShow(keep, "keeping bins:"))
             rval <- x
             for (name in names(x$data$ts)) {
-                oce.debug(debug, "   subsetting data$ts[[\"", name, "\"]] ", sep="")
+                oceDebug(debug, "   subsetting data$ts[[\"", name, "\"]] ", sep="")
                 if (1 == length(x$data$ts[[name]])) { # no need to do anything for e.g. constant headings
                     rval$data$ts[[name]] <- x$data$ts[[name]]
                 } else {
                     rval$data$ts[[name]] <- x$data$ts[[name]][keep]
                 }
-                oce.debug(debug, "(kept", length(rval$data$ts[[name]]), "of the original", length(x$data$ts[[name]]), "data)\n")
+                oceDebug(debug, "(kept", length(rval$data$ts[[name]]), "of the original", length(x$data$ts[[name]]), "data)\n")
             }
             ##cat("    x:\n");print(str(x$data$ts))
             ##cat("    rval:\n");print(str(rval$data$ts))
-            oce.debug(debug, "after trimming time, first data$ts$time is", format(rval$data$ts$time[1]), attr(rval$data$ts$time[1], "tzone"), "\n")
-            oce.debug(debug, "Step 2: subset x$data$ts.slow (if there is such an item, which is only true for Nortek devices)\n")
-            if ("ts.slow" %in% names(x$data)) {
-                keep.slow <- eval(substitute(subset), x$data$ts.slow, parent.frame())
-                for (name in names(x$data$ts.slow)) {
-                    oce.debug(debug, "   subsetting data$ts.slow[[", name, "]]\n", sep="")
-                    if (1 == length(x$data$ts.slow[[name]])) # no need to do anything for e.g. constant headings
-                        rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]]
+            oceDebug(debug, "after trimming time, first data$ts$time is", format(rval$data$ts$time[1]), attr(rval$data$ts$time[1], "tzone"), "\n")
+            oceDebug(debug, "Step 2: subset x$data$tsSlow (if there is such an item, which is only true for Nortek devices)\n")
+            if ("tsSlow" %in% names(x$data)) {
+                keepSlow <- eval(substitute(subset), x$data$tsSlow, parent.frame())
+                for (name in names(x$data$tsSlow)) {
+                    oceDebug(debug, "   subsetting data$tsSlow[[", name, "]]\n", sep="")
+                    if (1 == length(x$data$tsSlow[[name]])) # no need to do anything for e.g. constant headings
+                        rval$data$tsSlow[[name]] <- x$data$tsSlow[[name]]
                     else
-                        rval$data$ts.slow[[name]] <- x$data$ts.slow[[name]][keep.slow]
+                        rval$data$tsSlow[[name]] <- x$data$tsSlow[[name]][keepSlow]
                 }
-                oce.debug(debug, "after trimming time, first data$ts.slow$time is", format(rval$data$ts.slow$time[1]), attr(rval$data$ts.slow$time[1], "tzone"), "\n")
+                oceDebug(debug, "after trimming time, first data$tsSlow$time is", format(rval$data$tsSlow$time[1]), attr(rval$data$tsSlow$time[1], "tzone"), "\n")
             }
-            oce.debug(debug, "Step 3: subset x$data$ma (e.g. velocity)\n")
+            oceDebug(debug, "Step 3: subset x$data$ma (e.g. velocity)\n")
             for (name in names(x$data$ma)) {
-                oce.debug(debug, "   subsetting data$ma[[", name, "]]\n", sep="")
+                oceDebug(debug, "   subsetting data$ma[[", name, "]]\n", sep="")
                 rval$data$ma[[name]] <- x$data$ma[[name]][keep,]
             }
 
@@ -650,8 +656,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oce.debug"), .
         rval <- x
         rval$data <- x$data[r,]
     }
-    oce.debug(debug, "\b\b} # subset.oce\n")
-    rval$processing.log <- processing.log.add(rval$processing.log,
+    oceDebug(debug, "\b\b} # subset.oce\n")
+    rval$history <- historyAdd(rval$history,
                                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
@@ -664,23 +670,23 @@ summary.oce <- function(object, ...)
     print(summary(object$data))
     cat("\nMetadata:\n")
     print(object$metadata)
-    processing.log.summary(object)
+    print(summary(object))
     return(invisible(object))
 }
 
-magic <- function(file, debug=getOption("oce.debug"))
+magic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
     if (is.character(file)) {
-        oce.debug(debug, "checking filename to see if it matches known patterns\n")
+        oceDebug(debug, "checking filename to see if it matches known patterns\n")
         if (length(grep(".adr$", filename))) {
-            oce.debug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
+            oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
         } else if (length(grep(".s4a.", filename))) {
-            oce.debug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
+            oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
         }
-        oce.debug(debug, " no, so not adv/sontek/adr.\n")
+        oceDebug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
     }
     if (!inherits(file, "connection"))
@@ -689,55 +695,55 @@ magic <- function(file, debug=getOption("oce.debug"))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
-    oce.debug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
-        oce.debug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
+        oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
         return("shapefile")
     }
 
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         ## 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
-            oce.debug(debug, "this is adp/sontek (4 byte match)\n")
+            oceDebug(debug, "this is adp/sontek (4 byte match)\n")
         else
-            oce.debug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
+            oceDebug(debug, "this is adp/sontek (2 byte match, but bytes 3 and 4 should become integer 96)\n")
         return("adp/sontek")
     }
     if (bytes[1] == 0x7f && bytes[2] == 0x7f) {
-        oce.debug(debug, "this is adp/rdi\n")
+        oceDebug(debug, "this is adp/rdi\n")
         return("adp/rdi")
     }
     if (bytes[1] == 0xa5 && bytes[2] == 0x05) {
         ## NorTek files require deeper inspection.  Here, SIG stands for "System Integrator Guide",
         ## Dated Jue 2008 (Nortek Doc No PS100-0101-0608)
         seek(file, 0)
-        oce.debug(debug, "This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
+        oceDebug(debug, "This is probably a nortek file of some sort.  Reading further to see for sure ...\n")
         hardware.configuration <- readBin(file, what="raw", n=48) # FIXME: this hard-wiring is repeated elsewhere
         if (hardware.configuration[1] != 0xa5 || hardware.configuration[2] != 0x05) return("unknown")
-        oce.debug(debug, "hardware.configuration[1:2]", hardware.configuration[1:2], "(expect 0xa5 0x05)\n")
+        oceDebug(debug, "hardware.configuration[1:2]", hardware.configuration[1:2], "(expect 0xa5 0x05)\n")
         head.configuration <- readBin(file, what="raw", n=224)
-        oce.debug(debug, "head.configuration[1:2]", head.configuration[1:2], "(expect 0xa5 0x04)\n")
+        oceDebug(debug, "head.configuration[1:2]", head.configuration[1:2], "(expect 0xa5 0x04)\n")
         if (head.configuration[1] != 0xa5 || head.configuration[2] != 0x04) return("unknown")
         user.configuration <- readBin(file, what="raw", n=512)
-        oce.debug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
+        oceDebug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
         if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
         next.two.bytes <- readBin(file, what="raw", n=2)
-        oce.debug(debug, "next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
+        oceDebug(debug, "next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x12) {
-            oce.debug(debug, "this is adv/nortek/vector\n")
+            oceDebug(debug, "this is adv/nortek/vector\n")
             return("adv/nortek/vector")
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) {
-            oce.debug(debug, "this is adp/nortek/aqudopp\n")
+            oceDebug(debug, "this is adp/nortek/aqudopp\n")
             return("adp/nortek/aquadopp") # p33 SIG
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
-            oce.debug(debug, "this is adp/nortek/aqudoppHR\n")
+            oceDebug(debug, "this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
         } else
             stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
@@ -751,83 +757,83 @@ magic <- function(file, debug=getOption("oce.debug"))
 
     ##if (substr(line, 1, 2) == "\177\177")            return("adp")
     if (substr(line, 1, 3) == "CTD") {
-        oce.debug(debug, "this is ctd/woce/exchange\n")
+        oceDebug(debug, "this is ctd/woce/exchange\n")
         return("ctd/woce/exchange")
     }
     if ("* Sea-Bird" == substr(line, 1, 10))  {
-        oce.debug(debug, "this is ctd/sbe/19\n")
+        oceDebug(debug, "this is ctd/sbe/19\n")
         return("ctd/sbe/19")
     }
     if ("# -b" == substr(line, 1, 4)) {
-        oce.debug(debug, "this is coastline\n")
+        oceDebug(debug, "this is coastline\n")
         return("coastline")
     }
     if ("# Station_Name," == substr(line, 1, 15)) {
-        oce.debug(debug, "this is sealevel\n")
+        oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
     if ("Station_Name," == substr(line, 1, 13)) {
-        oce.debug(debug, "this is sealevel\n")
+        oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
     if (0 < regexpr("^[0-9][0-9][0-9][A-Z] ", line)) {
-        oce.debug(debug, "this is sealevel\n")
+        oceDebug(debug, "this is sealevel\n")
         return("sealevel")
     }
     if (0 < regexpr("^NCOLS[ ]*[0-9]*[ ]*$", line)) {
-        oce.debug(debug, "this is topo\n")
+        oceDebug(debug, "this is topo\n")
         return("topo")
     }
     if ("RBR TDR" == substr(line, 1, 7))  {
-        oce.debug(debug, "this is pt\n")
+        oceDebug(debug, "this is pt\n")
         return("pt")
     }
     if ("BOTTLE"  == substr(line, 1, 6))  {
-        oce.debug(debug, "this is section\n")
+        oceDebug(debug, "this is section\n")
         return("section")
     }
-    oce.debug(debug, "this is unknown\n")
+    oceDebug(debug, "this is unknown\n")
     return("unknown")
 }
 
 read.oce <- function(file, ...)
 {
     type <- magic(file)
-    log.action <- paste(deparse(match.call()), sep="", collapse="")
-    if (type == "shapefile") 
+    history <- paste(deparse(match.call()), sep="", collapse="")
+    if (type == "shapefile")
         stop("cannot read shapefiles")
-    if (type == "adp/rdi")               
-        return(read.adp.rdi(file, log.action=log.action, ...))
+    if (type == "adp/rdi")
+        return(read.adp.rdi(file, history=history, ...))
     if (type == "adp/sontek")
-        return(read.adp.sontek(file, log.action=log.action, ...)) # FIXME is pcadcp different?
+        return(read.adp.sontek(file, history=history, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
         stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, log.action=log.action, ...))
+        return(read.adp.nortek(file, history=history, ...))
     if (type == "adv/nortek/vector")
-        return(read.adv.nortek(file, log.action=log.action, ...))
+        return(read.adv.nortek(file, history=history, ...))
     if (type == "adv/sontek/adr")
-        return(read.adv.sontek.adr(file, log.action=log.action, ...))
+        return(read.adv.sontek.adr(file, history=history, ...))
     ## FIXME need adv/sontek (non adr)
     if (type == "interocean/s4")
-        return(read.cm.s4(file, log.action=log.action, ...))
+        return(read.cm.s4(file, history=history, ...))
     if (type == "ctd/sbe/19")
-        return(read.ctd.sbe(file, log.action=log.action, ...))
-    if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, log.action=log.action, ...))
+        return(read.ctd.sbe(file, history=history, ...))
+    if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, history=history, ...))
     if (type == "coastline")
-        return(read.coastline(file, type="mapgen", log.action=log.action, ...))
+        return(read.coastline(file, type="mapgen", history=history, ...))
     if (type == "sealevel")
-        return(read.sealevel(file, log.action=log.action, ...))
+        return(read.sealevel(file, history=history, ...))
     if (type == "topo")
-        return(read.topo(file, log.action=log.action, ...))
+        return(read.topo(file, history=history, ...))
     if (type == "pt")
-        return(read.pt(file, log.action=log.action, ...))
+        return(read.pt(file, history=history, ...))
     if (type == "section")
-        return(read.section(file, log.action=log.action, ...))
+        return(read.section(file, history=history, ...))
     stop("unknown file type \"", type, "\"")
 }
 
-oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
+oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 {
     ## code borrows heavily from cm.color()
     if ((n <- as.integer(n[1])) > 0) {
@@ -845,7 +851,7 @@ oce.colors.two <- function (n, low=2/3, high=0, smax=1, alpha = 1)
     else character(0)
 }
 
-oce.colors.jet <- function(n)
+oceColorsJet <- function(n)
 {
     if ((n <- as.integer(n[1])) > 0) {
         ## matlab::jet, cleaned of matlab:: calls
@@ -868,7 +874,7 @@ oce.colors.jet <- function(n)
     else character(0)
 }
 
-oce.colors.palette <- function(n, which=1)
+oceColorsPalette <- function(n, which=1)
 {
     if ((n <- as.integer(n[1])) > 0) {
         if (which == 1) {
@@ -910,18 +916,18 @@ oce.colors.palette <- function(n, which=1)
 }
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
-                              draw.time.range=TRUE, abbreviate.time.range=FALSE, draw.frequency=FALSE,
+                              drawTimeRange=TRUE, abbreviateTimeRange=FALSE, draw.frequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               mar=par("mar"),
                               mgp=par("mgp"),
                               main="",
-                              debug=getOption("oce.debug"), ...)
+                              debug=getOption("oceDebug"), ...)
 {
-    oce.debug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
-    oce.debug(debug,"mar=",mar,"\n")
-    oce.debug(debug,"mgp=",mgp,"\n")
-    oce.debug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
-    oce.debug(debug,vector.show(x, "x"))
+    oceDebug(debug, "\boce.axis.POSIXct(...,debug=", debug, ",...) {\n", sep="")
+    oceDebug(debug,"mar=",mar,"\n")
+    oceDebug(debug,"mgp=",mgp,"\n")
+    oceDebug(debug,"cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
+    oceDebug(debug,vectorShow(x, "x"))
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
@@ -939,55 +945,55 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     attr(z, "tzone") <- attr(x, "tzone") # need this because c() makes it local time zone (!)
     rr <- range + as.POSIXct("2000-01-20") - as.numeric(as.POSIXct("2000-01-20"))
     attr(rr, "tzone") <- attr(x, "tzone")
-    oce.debug(debug, "range=",
+    oceDebug(debug, "range=",
               format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
               "UTC to ",
               format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
-    oce.debug(debug, "d=", d, " (time range)\n")
+    oceDebug(debug, "d=", d, " (time range)\n")
     if (d < 60 * 3) {                       # under 3 min
         t.start <- trunc(rr[1]-60, "mins")
         t.end <- trunc(rr[2]+60, "mins")
         z <- seq(t.start, t.end, by="10 sec")
-        oce.debug(debug, "time range is under 3 minutes\n")
-        oce.debug(debug, vector.show(z, "z"))
+        oceDebug(debug, "time range is under 3 minutes\n")
+        oceDebug(debug, vectorShow(z, "z"))
         if (missing(format))
             format <- "%H:%M:%S"
     } else if (d < 60 * 30) {                  # under 30min
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="min")
-        oce.debug(debug, "time range is under 30 min\n")
-        oce.debug(debug, vector.show(z, "z"))
+        oceDebug(debug, "time range is under 30 min\n")
+        oceDebug(debug, vectorShow(z, "z"))
         if (missing(format))
             format <- "%H:%M"
     } else if (d < 60 * 60) {                  # under 1 hour
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
-        oce.debug(debug, vector.show(z, "Time range is under an hour; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under an hour; z="))
         if (missing(format))
             format <- "%H:%M"
     } else if (d < 60 * 60 * 2) {       # under 2 hours
         t.start <- trunc(rr[1]-30, "mins")
         t.end <- trunc(rr[2]+30, "mins")
         z <- seq(t.start, t.end, by="10 min")
-        oce.debug(debug, vector.show(z, "Time range is under 2 hours; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under 2 hours; z="))
         if (missing(format))
             format <- "%H:%M"
     } else if (d < 60 * 60 * 6) {       # under 6 hours, use HM
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="30 min")
-        oce.debug(debug, vector.show(z, "Time range is under 6 hours; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under 6 hours; z="))
         if (missing(format))
             format <- "%H:%M"
     } else if (d < 60 * 60 * 30) {       # under about a day
         t.start <- trunc(rr[1], "hour")
         t.end <- trunc(rr[2] + 3600, "hour")
         z <- seq(t.start, t.end, by="1 hour")
-        oce.debug(debug, vector.show(z, "Time range is under 30 hours, so z="))
+        oceDebug(debug, vectorShow(z, "Time range is under 30 hours, so z="))
         if (missing(format))
             format <- "%H"
     } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
@@ -995,8 +1001,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         z.sub <- seq(t.start, t.end, by="hour")
-        oce.debug(debug, vector.show(z, "Time range is under 3 days; z="))
-        oce.debug(debug, vector.show(z.sub, "Time range is under 3 days; z.sub="))
+        oceDebug(debug, vectorShow(z, "Time range is under 3 days; z="))
+        oceDebug(debug, vectorShow(z.sub, "Time range is under 3 days; z.sub="))
         if (missing(format))
             format <- "%b %d"
     } else if (d <= 60 * 60 * 24 * 5) {        # under 5 days: label day; show 2-h subticks
@@ -1004,8 +1010,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         z.sub <- seq(t.start, t.end, by="2 hour")
-        oce.debug(debug, vector.show(z, "Time range is under 5 days; z="))
-        oce.debug(debug, vector.show(z.sub, "Time range is under 5 days; z.sub="))
+        oceDebug(debug, vectorShow(z, "Time range is under 5 days; z="))
+        oceDebug(debug, vectorShow(z.sub, "Time range is under 5 days; z.sub="))
         if (missing(format))
             format <- "%b %d"
     } else if (d <= 60 * 60 * 24 * 14) { # under 2 weeks: label day; show 12-h subticks
@@ -1013,21 +1019,21 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
         z.sub <- seq(t.start, t.end, by="12 hour")
-        oce.debug(debug, vector.show(z, "Time range is under 2 weeks; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under 2 weeks; z="))
         if (missing(format))
             format <- "%b %d"
     } else if (d <= 60 * 60 * 24 * 31) { # under 1 month: label day
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
-        oce.debug(debug, vector.show(z, "Time range is under a month; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under a month; z="))
         if (missing(format))
             format <- "%b %d"
     } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
-        oce.debug(debug, vector.show(z, "Time range is 4 months; z="))
+        oceDebug(debug, vectorShow(z, "Time range is 4 months; z="))
         if (missing(format))
             format <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
@@ -1038,7 +1044,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         t.start <- trunc(rrl[1], "day")
         t.end <- trunc(rrl[2] + 86400, "day")
         z <- seq(t.start, t.end, by="month")
-        oce.debug(debug, vector.show(z, "Time range is under a year or so; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under a year or so; z="))
         if (missing(format))
             format <- "%b %d"
     } else if (d < 3.1 * 60 * 60 * 24 * 365) { # under about 3 years
@@ -1066,7 +1072,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         attr(z, "tzone") <- attr(x, "tzone")
         if (missing(format))
             format <- "%Y"
-        oce.debug(debug, vector.show(z, "z="))
+        oceDebug(debug, vectorShow(z, "z="))
     }
     if (!mat)
         z <- x[is.finite(x)]
@@ -1074,23 +1080,23 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     ##
     ## FIXME: I was twiddling the numbers, to get more labels, but xaxs="r" fixes that.
     twiddle <- 0.04 * diff(as.numeric(range))  # FIXME: do I need this anymore?
-    oce.debug(debug, "range=",
+    oceDebug(debug, "range=",
               format.POSIXct(rr[1], "%Y-%m-%d %H:%M:%S", tz="UTC"),
               "UTC to ",
               format.POSIXct(rr[2], "%Y-%m-%d %H:%M:%S", tz="UTC"),
               "UTC\n")
     keep <- range[1] <= (z + twiddle) & (z - twiddle) <= range[2]
-    ##oce.debug(debug, vector.show(keep, "keep"))
-    oce.debug(debug, vector.show(z, "z before keep"))
+    ##oceDebug(debug, vectorShow(keep, "keep"))
+    oceDebug(debug, vectorShow(z, "z before keep"))
     z <- z[keep]
-    oce.debug(debug, vector.show(z, "z after keep"))
+    oceDebug(debug, vectorShow(z, "z after keep"))
     if (!is.logical(labels))
         labels <- labels[keep]
     else if (identical(labels, TRUE))
         labels <- format(z, format = format)
     else if (identical(labels, FALSE))
         labels <- rep("", length(z))
-    if (draw.time.range) {
+    if (drawTimeRange) {
         time.range <- par("usr")[1:2]   # axis, not data
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")[1]
@@ -1098,9 +1104,9 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         time.range.data <- range(x, na.rm=TRUE)
         time.range[1] <- max(time.range[1], time.range.data[1])
         time.range[2] <- min(time.range[2], time.range.data[2])
-        tr1 <- format(time.range[1], getOption("oce.time.format"))
-        tr2 <- format(time.range[2], getOption("oce.time.format"))
-        if (abbreviate.time.range) {
+        tr1 <- format(time.range[1], getOption("oceTimeFormat"))
+        tr2 <- format(time.range[2], getOption("oceTimeFormat"))
+        if (abbreviateTimeRange) {
             if (time.range[1]$year == time.range[2]$year) {
                 tr2 <- substr(tr2, 6, nchar(tr2)) # remove the "YYYY-"
                 if (time.range[1]$mon == time.range[2]$mon) {
@@ -1114,10 +1120,10 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         }
         deltat <- mean(diff(as.numeric(x)), na.rm=TRUE)
         ## only show timezone if hours are shown
-        oce.debug(debug, "time.range[1]:", format(time.range[1]), "\n")
-        oce.debug(debug, "round(time.range[1], 'days'):", format(round(time.range[1],'days')), "\n")
-        oce.debug(debug, "time.range[2]:", format(time.range[2]), "\n")
-        oce.debug(debug, "round(time.range[2], 'days'):", format(round(time.range[2],'days')), "\n")
+        oceDebug(debug, "time.range[1]:", format(time.range[1]), "\n")
+        oceDebug(debug, "round(time.range[1], 'days'):", format(round(time.range[1],'days')), "\n")
+        oceDebug(debug, "time.range[2]:", format(time.range[2]), "\n")
+        oceDebug(debug, "round(time.range[2], 'days'):", format(round(time.range[2],'days')), "\n")
         ## The below is not fool-proof, depending on how xlim might have been supplied; see
         ##    https://bugs.r-project.org/bugzilla3/show_bug.cgi?id=14449
         if (time.range[1] == round(time.range[1],"days") && time.range[2] == round(time.range[2],"days")) {
@@ -1127,19 +1133,19 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         }
         if (draw.frequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
-        oce.debug(debug, "label=", label, "\n")
+        oceDebug(debug, "label=", label, "\n")
         mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)
-        oce.debug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
+        oceDebug(debug, "cex.axis=", cex.axis, "; par('cex')=", par('cex'), "\n")
     }
     if (nchar(main) > 0) {
         mtext(main, side=if(side==1) 3 else 1, cex=cex.axis*par('cex'), adj=1)
     }
-    oce.debug(debug, vector.show(z, "z="))
+    oceDebug(debug, vectorShow(z, "z="))
     if (length(z.sub) > 0) {
         axis(side, at = z.sub, line=0, labels = FALSE, tcl=-0.25)
-        oce.debug(debug, vector.show(z.sub, "z.sub="))
+        oceDebug(debug, vectorShow(z.sub, "z.sub="))
     }
-    oce.debug(debug, vector.show(labels, "labels="))
+    oceDebug(debug, vectorShow(labels, "labels="))
     ocex <- par('cex')
     ocex.axis <- par('cex.axis')
     ocex.main <- par('cex.main')
@@ -1148,11 +1154,11 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex=cex, cex.main=cex.main, cex.axis=cex.axis)
     par(cex=ocex, cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
-    oce.debug(debug, "\b\b} # oce.axis.ts()\n")
+    oceDebug(debug, "\b\b} # oce.axis.ts()\n")
     invisible()
 }
 
-oce.bisect <- function(f, xleft, xright, dx, debug=getOption("oce.debug"))
+oceBisect <- function(f, xleft, xright, dx, debug=getOption("oceDebug"))
 {
     if (xleft >= xright)
         stop("xright must exceed xleft")
@@ -1168,34 +1174,34 @@ oce.bisect <- function(f, xleft, xright, dx, debug=getOption("oce.debug"))
     }
     xmiddle <- 0.5 * (xleft + xright)
     npass <- 4 + floor(1 + log2((xright - xleft) / dx))
-    oce.debug(debug, "npass=", npass, "\n")
+    oceDebug(debug, "npass=", npass, "\n")
     for (pass in 1:npass) {
         if (f(xleft) * f(xmiddle) < 0) { # FIXME: should not need to do f(left)
             tmp <- xmiddle
             xmiddle <- 0.5 * (xleft + xmiddle)
             xright <- tmp
-            oce.debug(debug, xleft, "|", xmiddle, "|", xright, "<\n")
+            oceDebug(debug, xleft, "|", xmiddle, "|", xright, "<\n")
         } else {
             tmp <- xmiddle
             xmiddle <- 0.5 * (xmiddle + xright)
             xleft <- tmp
-            oce.debug(debug, ">", xleft, "|", xmiddle, "|", xright, "\n")
+            oceDebug(debug, ">", xleft, "|", xmiddle, "|", xright, "\n")
         }
         if ((xright - xleft) < dx){
-            oce.debug(debug, "got root in pass", pass, "\n")
+            oceDebug(debug, "got root in pass", pass, "\n")
             break
         }
     }
     xmiddle
 }
 
-number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
+numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
         tref <- as.POSIXct("2000-01-01", tz=tz) # arbitrary
         return((as.numeric(t) - as.numeric(tref)) + tref)
-    } 
+    }
     if (type == "matlab") {
         ## R won't take a day "0", so subtract one
         return(as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1)))
@@ -1205,12 +1211,14 @@ number.as.POSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
             stop("for GPS times, 't' must be a two-column matrix, with first col the week, second the second")
         ## Account for leap seconds since the GPS start time in 1980 (for the present week wraparound grouping).
         ## http://en.wikipedia.org/wiki/Leap_second
-        leaps <- strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01", "1989-01-01", "1990-01-01",
-                            "1992-07-01", "1993-07-01", "1994-07-01", "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01",
-                            "2008-01-01"), format="%Y-%m-%d", tz="UTC")
+        leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
+                                       "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
+                                       "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01"),
+                                     format="%Y-%m-%d", tz="UTC"))
         t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
-        for (l in 1:length(leaps)) 
+        for (l in 1:length(leaps)) {
             t <- t - ifelse(t >= leaps[l], 1, 0)
+        }
         t
     } else {
         stop("type must be \"unix\", \"matlab\" or \"GPS\"")

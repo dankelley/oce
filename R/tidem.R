@@ -2,7 +2,7 @@ plot.tidem <- function(x,
                        which=1,
                        label.if=NULL,
                        log="",
-                       mgp=getOption("oce.mgp"),
+                       mgp=getOption("oceMgp"),
                        mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
                        ...)
 {
@@ -58,17 +58,16 @@ plot.tidem <- function(x,
         }
     }
     ##mtext(x$call, side=4, adj=1, cex=2/3)
-    ##mtext(paste("start time:", x$start.time), side=4, adj=0, cex=2/3)
     if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
 }
 
 
-tidem.vuf <- function(t, j, lat=NULL)
+tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
     data("tidedata")
     tidedata   <- get("tidedata",   pos=globalenv())
-    a <- tidem.astron(t)
+    a <- tidemAstron(t)
 
     if (debug > 0) print(a)
 
@@ -80,14 +79,14 @@ tidem.vuf <- function(t, j, lat=NULL)
                      tidedata$const$d6)
 
     ##v=rem( const.doodson*astro+const.semi, 1);
-    oce.debug(debug,
+    oceDebug(debug,
               "doodson[1,]=",doodson[1,],"\n",
               "doodson[2,]=",doodson[2,],"\n",
               "doodson[3,]=",doodson[3,],"\n")
     v <- doodson %*% a$astro + tidedata$const$semi
-    oce.debug(debug, "tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
+    oceDebug(debug, "tidedata$const$semi[",j,"]=",tidedata$const$semi[j],"\n")
     v <- v - trunc(v)
-    oce.debug(debug, "v[1:3]=",v[1:3],"\n")
+    oceDebug(debug, "v[1:3]=",v[1:3],"\n")
     if (!is.null(lat) && !is.na(lat)) {
         if (abs(lat) < 5) lat <- sign(lat) * 5
         slat <- sin(pi * lat / 180)
@@ -100,18 +99,18 @@ tidem.vuf <- function(t, j, lat=NULL)
         uu <- tidedata$sat$deldood %*% a$astro[4:6] + tidedata$sat$phcorr
         uu <- uu - trunc(uu)
 
-        oce.debug(debug, "uu[1:3]=",uu[1:3], "\n")
+        oceDebug(debug, "uu[1:3]=",uu[1:3], "\n")
 
         nsat <- length(tidedata$sat$iconst)
         nfreq <- length(tidedata$const$numsat)
                                         # loop, rather than make a big matrix
-        oce.debug(debug,
+        oceDebug(debug,
                   "tidedata$sat$iconst=", tidedata$sat$iconst, "\n",
                   "length(sat$iconst)=", length(tidedata$sat$iconst),"\n")
         fsum.vec <- vector("numeric", nsat)
         u.vec <- vector("numeric", nsat)
         for (isat in 1:nsat) {
-            oce.debug(debug, "isat=",isat,"\n")
+            oceDebug(debug, "isat=",isat,"\n")
             use <- tidedata$sat$iconst == isat
             fsum.vec[isat] <- 1 + sum(rr[use] * exp(1i * 2 * pi * uu[use]))
             u.vec[isat] <- Arg(fsum.vec[isat]) / 2 / pi
@@ -121,13 +120,13 @@ tidem.vuf <- function(t, j, lat=NULL)
                 cat("u.vec[   ",isat,"]=",u.vec[isat],"       (EXPECT -0.01076294959868)\n")
             }
         }
-        oce.debug(debug,
+        oceDebug(debug,
                   "uvec[",j,"]=", u.vec[j], "\n",
                   "fsum.vec[",j,"]=", fsum.vec[j],"\n")
         f <- abs(fsum.vec)
         u <- Arg(fsum.vec)/2/pi
-        oce.debug(debug, "f=",f,"\n") # FIXME
-        oce.debug(debug, "u=",u,"\n") # FIXME
+        oceDebug(debug, "f=",f,"\n") # FIXME
+        oceDebug(debug, "u=",u,"\n") # FIXME
 
         for (k in which(!is.na(tidedata$const$ishallow))) {
             ik <- tidedata$const$ishallow[k] + 0:(tidedata$const$nshallow[k] - 1)
@@ -153,7 +152,7 @@ tidem.vuf <- function(t, j, lat=NULL)
     list(v=v, u=u, f=f)
 }
 
-                                        #function [v,u,f]=t_vuf(ctime,ju,lat);
+                                        #function [v,u,f]=tVuf(ctime,ju,lat);
                                         #% T_VUF Computes nodal modulation corrections.
                                         #% [V,U,F]=T_VUF(DATE,JU,LAT) returns the astronomical phase V, the
                                         #% nodal phase modulation U, and the nodal amplitude correction F at
@@ -267,15 +266,15 @@ tidem.vuf <- function(t, j, lat=NULL)
                                         #end;
 
 
-tidem.astron <- function(t)
+tidemAstron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
     debug <- FALSE
-    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT"), units="days"))
+    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="UTC"), units="days"))
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
 
-    oce.debug(debug, "d=",formatC(d,digits=10),"D=",D,"a=", a, "\n")
+    oceDebug(debug, "d=",formatC(d,digits=10),"D=",D,"a=", a, "\n")
 
     sc.hc.pc.np.pp <-
         matrix(c(270.434164, 13.1763965268,-0.0000850, 0.000000039,
@@ -286,11 +285,11 @@ tidem.astron <- function(t)
                nrow=5, ncol=4, byrow=TRUE)
     astro <- ((sc.hc.pc.np.pp %*% a) / 360) %% 1
 
-    oce.debug(debug, "astro=",astro,"\n")
+    oceDebug(debug, "astro=",astro,"\n")
 
-    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="GMT", units="days")
+    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days")
 
-    oce.debug(debug, "rem2=",rem,"\n")
+    oceDebug(debug, "rem2=",rem,"\n")
 
     tau <- rem + astro[2,1] - astro[1,1]
     astro <- c(tau, astro)
@@ -301,18 +300,19 @@ tidem.astron <- function(t)
     data.frame(astro=astro, ader=ader)
 }
 
-tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet = TRUE)
+tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet = TRUE)
 {
     if (!inherits(sl, "sealevel")) {
         if (inherits(sl, "numeric"))
             sl <- as.sealevel(sl)
         else stop("cannot deal with 'sl' of class ", class(sl)[1])
     }
-    if (missing(start.time)) start.time <- as.POSIXct(sl$data$t[which(!is.na(sl$data$t))][1], tz="UTC")
+    if (missing(startTime))
+        startTime <- as.POSIXct(sl$data$t[which(!is.na(sl$data$t))][1], tz="UTC")
 
     if (!quiet) {
-        cat("start.time=")
-        print(start.time)
+        cat("startTime=")
+        print(startTime)
         cat("\n")
     }
     cl <- match.call()
@@ -414,11 +414,11 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     nt <- length(sl$data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-    hour <- unclass(as.POSIXct(sl$data$time, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
+    hour <- unclass(as.POSIXct(sl$data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
     centralindex <- floor(length(sl$data$t) / 2)
     ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
     ##    hour2pi <- 2 * pi * hour.wrt.centre
-    hour.offset <- unclass(hour - unclass(as.POSIXct(start.time, tz="GMT"))/3600)
+    hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
     hour2pi <- 2 * pi * hour.offset
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
@@ -458,7 +458,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     if (!quiet) cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
 
-    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="GMT")
+    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="UTC")
     if (!quiet) {
         cat("centraltime=")
         print(centraltime)
@@ -467,7 +467,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
     }
 
     if (is.null(latitude)) latitude <- sl$metadata$latitude
-    vuf <- tidem.vuf(centraltime, c(0, index), latitude)
+    vuf <- tidemVuf(centraltime, c(0, index), latitude)
     vu <- c(0, (vuf$v + vuf$u) * 360)
     phase2 <- phase - vu                # FIXME: plus or minus??
     negate <- phase2 < 0
@@ -478,7 +478,7 @@ tidem <- function(sl, constituents, latitude=NULL, start.time=NULL, rc=1, quiet 
 
     rval <- list(model=model,
                  call=cl,
-                 start.time=as.POSIXct(start.time),
+                 startTime=as.POSIXct(startTime),
                  const=c(1,   index),
                  name=c("Z0", name),
                  freq=c(0,    freq),
@@ -514,7 +514,7 @@ summary.tidem <- function(object, p, constituent, ...)
                           p=p)
     }
     misfit <- sqrt(var(object$model$residuals))
-    rval <- list(fit=fit, start.time=as.POSIXct(object$start.time), call=object$call,
+    rval <- list(fit=fit, startTime=as.POSIXct(object$startTime), call=object$call,
                  misfit=misfit)
     class(rval) <- c("summary.tidem")
     rval
@@ -527,7 +527,7 @@ print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
     cat("\nCall:\n")
     cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n", sep="")
     cat("\nStart time: ",
-        paste(as.character(x$start.time),as.character(attr(x$start.time,"tz"))), "\n")
+        paste(as.character(x$startTime),as.character(attr(x$startTime,"tz"))), "\n")
     cat("RMS misfit to data: ", x$misfit, "\n")
     cat("\nFitted model:\n")
     f <- x$fit[3:6]
@@ -550,7 +550,7 @@ predict.tidem <- function(object, newdata, ...)
             nt <- length(hour)
             x <- array(dim=c(nt, 2 * nc))
             x[,1] <- rep(1, nt)
-            hour.offset <- unclass(hour - unclass(as.POSIXct(object$start.time, tz="UTC"))/3600)
+            hour.offset <- unclass(hour - unclass(as.POSIXct(object$startTime, tz="UTC"))/3600)
             hour2pi <- 2 * pi * hour.offset
             for (i in 1:nc) {
                 omega.t <- freq[i] * hour2pi

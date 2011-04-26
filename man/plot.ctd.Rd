@@ -26,11 +26,11 @@
      latlon.cex=1.5,
      latlon.col="red",
      cex=1,
-     use.smoothScatter=FALSE,
+     useSmoothScatter=FALSE,
      adorn=NULL,
-     mgp=getOption("oce.mgp"),
+     mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
-     debug=getOption("oce.debug"),
+     debug=getOption("oceDebug"),
      \dots)
 }
 \arguments{
@@ -54,7 +54,7 @@
       \item \code{which=7} or \code{which="density+time"} gives a
       profile of density and time
       \item \code{which=8} or \code{which="index"} gives a profile of
-      index number (especially useful for \code{\link{ctd.trim}})
+      index number (especially useful for \code{\link{ctdTrim}})
       \item \code{which=9} or \code{which="salinity"} gives a salinity profile
       \item \code{which=10} or \code{which="temperature"} gives a temperature profile
       \item \code{which=11} or \code{which="density"} gives a density profile
@@ -82,7 +82,7 @@
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
   \item{cex}{size to be used for plot symbols}
-  \item{use.smoothScatter}{boolean, set to \code{TRUE} to use 
+  \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
   \item{adorn}{list of expressions to be executed for the panels in
@@ -98,7 +98,7 @@
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
-    example is to set \code{df}, for use in \link{sw.N2} calculations.} 
+    example is to set \code{df}, for use in \link{swN2} calculations.} 
 }
 
 \details{Creates a multi-panel summary plot of data measured in a CTD
@@ -126,12 +126,12 @@ library(oce)
 data(ctd) 
 plot(ctd)
 
-data(coastline.sle)
+data(coastlineSLE)
 lonlim <- -(69 + c(52, 41) / 60)
 latlim <- 47 + c(48, 58) / 60
 # IAL = Ile aux Lievres
 plot(ctd, which=c(1,2,3,5),
-     coastline=coastline.sle,
+     coastline=coastlineSLE,
      adorn=expression({},{},{},{text(-69.72,47.85,'IAL',pos=4)}))
 
 # Trimming
@@ -143,12 +143,12 @@ abline(v=130)
 abline(v=350)
 # The range 130 to 350 seems good, but you can narrow in
 # by repeating the command below, with differing ranges.
-plot(ctd.trim(ctd.raw, "range",
+plot(ctdTrim(ctd.raw, "range",
   parameters=list(item="index", from=130, to=350)), which=8)
 # See results
-ctd.trimmed <- ctd.trim(ctd.raw, "range",
+ctdTrimmed <- ctdTrim(ctd.raw, "range",
   parameters=list(item="index", from=130, to=350))
-plot(ctd.trimmed)
+plot(ctdTrimmed)
 }
 \author{Dan Kelley}
 \keyword{misc}

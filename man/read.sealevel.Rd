@@ -8,16 +8,16 @@
   vector assumes GMT, regardless of the GMT.offset value.} 
 
 \usage{
-read.sealevel(file, tz=getOption("oce.tz"), 
-              log.action, debug=getOption("oce.debug"))}
+read.sealevel(file, tz=getOption("oceTz"), 
+              history, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.  See Details for the types of files that are recognized.}
-  \item{tz}{time zone.  The default value, \code{oce.tz}, is set to \code{UTC} 
+  \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.  (If a time zone is present in the file header, this will
     supercede the value given here.)}
-  \item{log.action}{if provided, the action item to be stored in the
+  \item{history}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
@@ -71,7 +71,7 @@ read.sealevel(file, tz=getOption("oce.tz"),
       \item{\code{sampling.interval}}{hours between samples in the timeseries.}
     }
   }
-  \item{processing.log}{A processing log, in the standard \code{oce} format.}
+  \item{history}{a history of processing, in the standard \code{oce} format.}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an
@@ -91,7 +91,7 @@ read.sealevel(file, tz=getOption("oce.tz"),
 \examples{
 \dontrun{
 library(oce)
-# sealevel.hal
+# sealevelHalifax
 sl <- read.oce("h275a96.dat")
 summary(sl)
 plot(sl)

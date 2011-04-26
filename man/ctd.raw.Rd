@@ -9,7 +9,7 @@
   time spent near the surface.  Spikes are also clearly evident in the
   pressure record.  With such real-world wrinkles, this dataset provides
   a good example of data that need trimming with
-  \code{\link{ctd.trim}}.}
+  \code{\link{ctdTrim}}.}
 
 \usage{data(ctd.raw)}
 \source{The data were acquired near the centre of 

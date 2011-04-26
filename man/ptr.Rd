@@ -7,12 +7,10 @@
 
 \description{A sample ptr file, created by 
 \preformatted{
-ptr <- read.oce(
- "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/manufacturer/pt_rbr_011855.dat",
- by=600)
-patm <- pt.patm(ptr)[4]
+ptr <- read.oce("/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/manufacturer/pt_rbr_011855.dat", by=600)
+patm <- ptPatm(ptr)[4]
 ptr$data$ts$pressure <- ptr$data$ts$pressure - patm
-ptr <- processing.log.append(ptr, "subtract atmospheric pressure")
+ptr <- historyAppend(ptr, "subtract atmospheric pressure")
 ptr <- window(ptr, start=as.POSIXct("2008-06-26",tz="UTC"), end=as.POSIXct("2008-06-27",tz="UTC"))
 save(ptr, file="ptr.rda")
 }
@@ -33,9 +31,9 @@ function relating to the "t" distribution.
 \seealso{See \code{\link{read.pt}} for reading such files, 
 \code{\link{plot.pt}} for plotting them, 
 \code{\link{summary.pt}} for summarizing them,
-\code{\link{pt.patm}} for determining the atmospheric pressure,
+\code{\link{ptPatm}} for determining the atmospheric pressure,
 and
-\code{\link{pt.trim}} for a crude method of removing in-air samples.}
+\code{\link{ptTrim}} for a crude method of removing in-air samples.}
 
 \examples{
 library(oce)

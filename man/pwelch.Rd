@@ -7,7 +7,7 @@
 \description{Compute periodogram using the Welch (1967) method}
 
 \usage{pwelch(x, window, noverlap, nfft, fs, spectrumtype, esttype,
-     debug=getOption("oce.debug"), \dots)}
+     debug=getOption("oceDebug"), \dots)}
 
 \arguments{
   \item{x}{a vector or timeseries to be analyzed.  If a timeseries,
