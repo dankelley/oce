@@ -160,8 +160,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     data <- list(ts=ts)
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    rval <- list(metadata=metadata, data=data, history=log.item)
+    hitem <- historyItem(history)
+    rval <- list(metadata=metadata, data=data, history=hitem)
     class(rval) <- c("cm", "s4", "oce")
     oceDebug(debug, "\b\b} # read.cm()\n")
     rval

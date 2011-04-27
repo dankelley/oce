@@ -361,8 +361,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         stop("can only handle 3-beam devices")
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("sontek", "adp", "oce")
     res
 }
@@ -633,9 +633,10 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                          pressure=rep(0, length(temperature))),
                  ss=list(distance=distance),
                  ma=list(v=v,vstd=vstd,amp=amp)) # velo, velo stddev, amplitude
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("sontek", "adp", "oce")
     res
 }

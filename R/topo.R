@@ -250,8 +250,8 @@ read.topo <- function(file, history, ...)
     latitude <- lat.ll + cellsize * seq(0, nrows-1)
     z <- t(zz[dim(zz)[1]:1,])
     if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    as.topo(longitude, latitude, z, filename=file, history=log.item)
+    hitem <- historyItem(history)
+    as.topo(longitude, latitude, z, filename=file, history=hitem)
 }
 
 as.topo <- function(longitude, latitude, z, filename="", history)
@@ -268,8 +268,8 @@ as.topo <- function(longitude, latitude, z, filename="", history)
     data <- list(longitude=longitude, latitude=latitude, z=z)
     metadata <- list(filename=file, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
     if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    rval <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(history)
+    rval <- list(data=data, metadata=metadata, history=hitem)
     class(rval) <- c("topo", "oce")
     rval
 }

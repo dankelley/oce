@@ -91,8 +91,8 @@ makeSection <- function(item, ...)
 		     stationId=stn,
 		     latitude=lat,
 		     longitude=lon)
-    log.item <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("section", "oce")
     res
 }
@@ -602,8 +602,8 @@ read.section <- function(file, sectionId="", flags,
     list(header=header,sectionId=sectionId,stationId=stn,latitude=lat,longitude=lon,date=time+tref)
     if (missing(history))
 	history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("section", "oce")
     res
 }

@@ -7,7 +7,7 @@
 \description{Modified version of axis.POSIXct}
 
 \usage{oce.axis.POSIXct(side, x, at, format, labels = TRUE,
-  drawTimeRange=TRUE, abbreviateTimeRange=FALSE, draw.frequency=FALSE,
+  drawTimeRange=TRUE, abbreviateTimeRange=FALSE, drawFrequency=FALSE,
   cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"), 
   mar=par("mar"), mgp=par("mgp"),
   main="", debug=getOption("oceDebug"), ...)}
@@ -20,7 +20,7 @@
   \item{labels}{as for \code{\link{axis.POSIXct}}.}
   \item{drawTimeRange}{boolean, \code{TRUE} to draw a time range on
     the opposite side of the plot.}
-  \item{draw.frequency}{boolean, \code{TRUE} to show the frequency of
+  \item{drawFrequency}{boolean, \code{TRUE} to show the frequency of
     sampling in the data}
   \item{abbreviateTimeRange}{boolean, \code{TRUE} to abbreviate the
     second number in the time range, e.g. dropping the year if it is the

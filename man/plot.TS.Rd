@@ -3,7 +3,7 @@
 \title{Plot temperature-salinity diagram for seawater (CTD) data}
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 \usage{plot.TS(x,
-     rho.levels = 6,
+     rhoLevels = 6,
      grid = TRUE,
      col.grid = "lightgray",
      lty.grid = "dotted",
@@ -13,8 +13,8 @@
      cex.rho = 0.9*par("cex"),
      cex = par("cex"),
      pch = 21,
-     rotate.rho.labels = FALSE,
-     connect.points = FALSE,
+     rotateRhoLabels = FALSE,
+     connectPoints = FALSE,
      useSmoothScatter = FALSE,
      xlab,
      ylab,
@@ -27,9 +27,9 @@
 }
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{rho.levels}{Either a list of density levels for which to draw 
-                    isopycnal lines, or a suggestion for the number of levels.
- 					In the latter case, \code{pretty()} is used to select levels.}
+  \item{rhoLevels}{Either a list of density levels for which to draw isopycnal
+      lines, or a suggestion for the number of levels.  In the latter case,
+      \code{pretty()} is used to select levels.}
   \item{grid}{a flag that can be set to \code{TRUE} to get a grid.}
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}
@@ -39,8 +39,8 @@
   \item{cex.rho}{size of isopycnal labels.}
   \item{cex}{size of symbols on graph.}
   \item{pch}{code for symbols on graph.}
-  \item{rotate.rho.labels}{if TRUE, labels in right-hand margin are written vertically}
-  \item{connect.points}{if TRUE, the points are connected with line segments, in sequence}
+  \item{rotateRhoLabels}{if TRUE, labels in right-hand margin are written vertically}
+  \item{connectPoints}{if TRUE, the points are connected with line segments, in sequence}
   \item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}
   \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
   \item{ylab}{optional label for the y axis, with default "Temperature [C]".}

@@ -114,8 +114,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      oceBeamAttenuated=FALSE,
                      deployName=header$user$deployName,
                      comments=header$user$comments)
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- historyItem(history)
     ## Find the focus time by bisection, based on "sd" (system data, containing a time).
     bisectNortekVectorSd <- function(tFind, add=0, debug=0) { # tFind=time add=offset debug=debug
         oceDebug(debug, "\n")
@@ -430,7 +431,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  tsSlow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
                  ##ss=list(distance=0),   # FIXME: why even have this?
                  ma=list(v=v, a=a, c=c))
-    res <- list(data=data, metadata=metadata, history=log.item)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("nortek", "adv", "oce")
     oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
     res
@@ -568,9 +569,10 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                  ##ss=list(distance=0),
                  ma=list(v=v,a=a,c=c))
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("sontek", "adv", "oce")
     res
 }
