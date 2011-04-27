@@ -32,8 +32,8 @@
 
 \examples{
 library(oce)
-data(topo.maritimes)
-summary(topo.maritimes)
+data(topoWorld)
+summary(topoWorld)
 }
 
 \author{Dan Kelley}

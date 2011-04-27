@@ -27,8 +27,8 @@
 \examples{
 \dontrun{
 library(oce)
-topo.maritimes <- read.topo("~/maritimes.asc")
-plot(topo.maritimes)
+topographyMaritimes <- read.topo("~/topographyMaritimes.asc")
+plot(topographyMaritimes)
 }
 }
 
