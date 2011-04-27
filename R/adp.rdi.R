@@ -196,17 +196,6 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "speedOfSound = ", speedOfSound, "\n")
     if (speedOfSound < 1400 || speedOfSound > 1600)
         warning("speedOfSound is ", speedOfSound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
-    ## Comment out some things not needed here (may be wrong, too)
-    ##depthOfTransducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
-    ##oceDebug(debug, "depthOfTransducer:", depthOfTransducer, "\n")
-    ##heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01 - headingBias
-    ##pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
-    ##roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
-    ##oceDebug(debug, "VLD header has: heading=", heading, "(after subtracting a bias of",
-    ##headingBias, "deg), pitch=", pitch, " roll=", roll, "\n")
-
-    ## Skipping a lot ...
-    ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
          programVersionMajor=programVersionMajor,
@@ -511,7 +500,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
             speedOfSound <- 0.1 * readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
-            depthOfTransducer <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
+            depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
             heading <- 0.01 * readBin(buf[profileStart2 + 18], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE) - header$headingBias
             oceDebug(debug, vectorShow(heading, "heading"))
@@ -549,7 +538,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$oceBeamAttenuated <- FALSE
             metadata$oceCoordinate <- header$coordinateSystem
             metadata$numberOfBeams <- header$numberOfBeams
-            metadata$depthOfTransducer <- mean(depthOfTransducer, na.rm=TRUE)
+            metadata$depth <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both
             ## RDI and CODAS use as we have here.  (And I think RDI
@@ -607,7 +596,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                  pressure=pressure,
                                  temperature=temperature,
                                  salinity=salinity,
-                                 depthOfTransducer=depthOfTransducer,
+                                 depth=depth,
                                  heading=heading,
                                  pitch=pitch,
                                  roll=roll))
@@ -626,8 +615,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata$manufacturer <- "teledyne rdi"
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("rdi", "adp", "oce")
     res
 }

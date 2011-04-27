@@ -916,7 +916,7 @@ oceColorsPalette <- function(n, which=1)
 }
 
 oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
-                              drawTimeRange=TRUE, abbreviateTimeRange=FALSE, draw.frequency=FALSE,
+                              drawTimeRange=TRUE, abbreviateTimeRange=FALSE, drawFrequency=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               mar=par("mar"),
                               mgp=par("mgp"),
@@ -1131,7 +1131,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         } else {
             label <- paste(tr1, attr(time.range[1], "tzone")[1], " to ", tr2,  attr(time.range[2], "tzone")[1], sep="")
         }
-        if (draw.frequency && is.finite(1/deltat))
+        if (drawFrequency && is.finite(1/deltat))
             label <- paste(label, "@", sprintf("%.4g Hz", 1/deltat), sep=" ")
         oceDebug(debug, "label=", label, "\n")
         mtext(label, side=if (side==1) 3 else 1, cex=0.9*cex.axis*par('cex'), adj=0)

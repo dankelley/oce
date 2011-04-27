@@ -4,8 +4,8 @@ as.coastline <- function(latitude, longitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
     data <- data.frame(longitude=longitude, latitude=latitude)
-    log.item <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=NULL, history=log.item)
+    hitem <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=NULL, history=hitem)
     class(res) <- c("coastline", "oce")
     res
 }
@@ -178,7 +178,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
     file <- fullFilename(file)
     type <- match.arg(type)
     if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
+    hitem <- historyItem(history)
     if (type == "shapefile")
         return(read.coastline.shapefile(file, monitor=monitor, debug=debug))
     if (type == "R" || type == "S") {
@@ -197,7 +197,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
             on.exit(close(file))
         }
         data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
-        res <- list(data=data, metadata=list(fillable=FALSE), history=log.item)
+        res <- list(data=data, metadata=list(fillable=FALSE), history=hitem)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
@@ -227,7 +227,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
         }
         lonlat <- matrix(lonlat, ncol=2,byrow=TRUE)
         data <- data.frame(longitude=lonlat[,1], latitude=lonlat[,2])
-        res <- list(data=data, metadata=list(fillable=FALSE), history=log.item)
+        res <- list(data=data, metadata=list(fillable=FALSE), history=hitem)
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
@@ -364,8 +364,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     oceDebug(debug, "\b\b} # read.shapefile()\n")
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("coastline", "oce")
     oceDebug(debug, "\b\b} # read.shape()\n")
     res

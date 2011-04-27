@@ -161,8 +161,8 @@ read.lobo <- function(file, cols=7, history) {
         data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
         metadata <- list(header=header)
         if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-        log.item <- historyItem(history)
-        res <- list(data=data, metadata=metadata, history=log.item)
+        hitem <- historyItem(history)
+        res <- list(data=data, metadata=metadata, history=hitem)
         class(res) = c("lobo", "oce")
         res
     } else {

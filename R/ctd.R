@@ -58,8 +58,8 @@ as.ctd <- function(salinity, temperature, pressure, quality,
                      names=c("salinity", "temperature", "pressure", "sigmaTheta"),
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
                      src=src)
-    log.item <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("ctd", "oce")
     res
 }
@@ -872,8 +872,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                      labels=labels,
                      src=filename)
     if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("ctd", "oce")
     oceDebug(debug, "\b\b} # read.ctd.woce()\n")
     res
@@ -946,7 +946,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     header <- c();
     col.names.inferred <- NULL
     found.temperature <- found.salinity <- found.pressure <- found.depth <- found.scan <-
-        found.time <- foundSigmaTheta <- foundSigmaT <- found.sigma <- 
+        found.time <- foundSigmaTheta <- foundSigmaT <- found.sigma <-
             found.conductivity <- found.conductivity.ratio <- FALSE
     conductivity.standard <- 4.2914
     found.header.latitude <- found.header.longitude <- FALSE
@@ -1177,9 +1177,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      names=names,
                      labels=labels,
                      filename=filename)
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- historyItem(history)
+    res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("ctd", "oce")
     ## Add standard things, if missing
     if (!found.salinity) {
@@ -1307,7 +1308,7 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 
 plot.TS <- function (x,
-                     rho.levels = 6,
+                     rhoLevels = 6,
                      grid = TRUE,
                      col.grid = "lightgray",
                      lty.grid = "dotted",
@@ -1317,8 +1318,8 @@ plot.TS <- function (x,
                      cex.rho = 0.9 * par("cex"),
                      cex=par("cex"),
                      pch=21,
-                     rotate.rho.labels=FALSE,
-                     connect.points=FALSE,
+                     rotateRhoLabels=FALSE,
+                     connectPoints=FALSE,
                      useSmoothScatter=FALSE,
                      xlab, ylab,
                      Slim, Tlim,
@@ -1354,19 +1355,19 @@ plot.TS <- function (x,
              cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
              xlim=Slim, ylim=Tlim,
              ...)
-        if (connect.points)
+        if (connectPoints)
             lines(x$data$salinity, x$data$temperature, col=col, ...)
     }
 
     ## grid, isopycnals, then freezing-point line
     if (grid) grid(col=col.grid, lty=lty.grid)
-    drawIsopycnals(rho.levels=rho.levels, rotate.rho.labels=rotate.rho.labels, rho1000=rho1000, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
+    drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, swTFreeze(salinity=Sr, pressure=0), col="darkblue")
 }
 
-drawIsopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
+drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     usr <- par("usr")
     S.axis.min <- usr[1]
@@ -1379,19 +1380,19 @@ drawIsopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, 
                             rep(0,4))
     rho.min <- min(rho.corners, na.rm=TRUE)
     rho.max <- max(rho.corners, na.rm=TRUE)
-    if (length(rho.levels) == 1) {
-        rho.list <- pretty(c(rho.min, rho.max), n=rho.levels)
+    if (length(rhoLevels) == 1) {
+        rhoList <- pretty(c(rho.min, rho.max), n=rhoLevels)
         ## Trim first and last values, since not in box
-        rho.list <- rho.list[-1]
-        rho.list <- rho.list[-length(rho.list)]
+        rhoList <- rhoList[-1]
+        rhoList <- rhoList[-length(rhoList)]
     } else {
-        rho.list <- rho.levels
+        rhoList <- rhoLevels
     }
     t.n <- 300
     t.line <- seq(T.axis.min, T.axis.max, length.out=t.n)
     cex.par <- par("cex")               # need to scale text() differently than mtext()
-    for (rho in rho.list) {
-        rho.label <- if (rho1000) 1000+rho else rho
+    for (rho in rhoList) {
+        rhoLabel <- if (rho1000) 1000+rho else rho
         s.line <- swSTrho(t.line, rep(rho, t.n), rep(0, t.n))
         ok <- !is.na(s.line) # crazy T can give crazy S
         s.ok <- s.line[ok]
@@ -1399,13 +1400,13 @@ drawIsopycnals <- function(rho.levels=6, rotate.rho.labels=TRUE, rho1000=FALSE, 
         lines(s.ok, t.ok, col = col, lwd=lwd, lty=lty)
         if (s.ok[length(s.ok)] > S.axis.max) { # to right of box
             i <- match(TRUE, s.ok > S.axis.max)
-            if (rotate.rho.labels)
-                mtext(rho.label, side=4, at=t.line[i], line=0.25, cex=cex, col=col)
+            if (rotateRhoLabels)
+                mtext(rhoLabel, side=4, at=t.line[i], line=0.25, cex=cex, col=col)
             else
-                text(usr[2], t.line[i], rho.label, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
+                text(usr[2], t.line[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
         } else { # above box ... if the line got there
             if (max(t.ok) > (T.axis.max - 0.05 * (T.axis.max - T.axis.min)))
-                mtext(rho.label, side=3, at=s.line[t.n], line=0.25, cex=cex, col=col)
+                mtext(rhoLabel, side=3, at=s.line[t.n], line=0.25, cex=cex, col=col)
         }
     }
 }
