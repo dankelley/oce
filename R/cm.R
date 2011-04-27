@@ -60,14 +60,14 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## Skip through the rest of the header, and start paying attention when
     ## row number is 1, 2, and then 3.  These first rows give us the time
     ## sequence.
-    found.names <- FALSE
+    foundNames <- FALSE
     for (skip in 2:20) {
         items <- scan(file, "character",nlines=1,sep="\t", quiet=TRUE) # slow, but just 20 lines, max
         oceDebug(debug, "line", skip, "contains: ", paste(items, collapse=" "), "\n")
         if (items[1] == "Sample #") {
             names <- sub('[ ]+$', '', sub('^[ ]+','', items))
             names <- ifelse(0 == nchar(names), paste("column", 1:length(names), sep=""), names)
-            found.names <- TRUE
+            foundNames <- TRUE
         } else if (items[1] == "1") {
             start.day <- items[2]
         } else if (items[1] == "2") {
@@ -94,7 +94,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     col.depth <- 14
     col.heading <- 17
     col.salinity <- 19
-    if (found.names) {
+    if (foundNames) {
         names <- names[1:dim(d)[2]]
         col.east <- which(names == "Veast")
         if (length(col.east) > 0)
@@ -173,11 +173,11 @@ summary.cm <- function(object, ...)
     if (!inherits(object, "cm"))
         stop("method is only for cm objects")
     if (inherits(object, "s4")) {
-        res.specific <- list(foo="bar")
+        resSpecific <- list(foo="bar")
     } else {
         stop("can only summarize cm objects of sub-type \"s4\", not class ", paste(class(object),collapse=","))
     }
-    res <- res.specific
+    res <- resSpecific
     res$latitude <- object$metadata$latitude
     res$longitude <- object$metadata$longitude
     res$filename <- object$metadata$filename

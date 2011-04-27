@@ -93,10 +93,9 @@
   \item{ylim}{optional 2-element list for \code{ylim}, or 2-column matrix, in which case
     the rows are used, in order, for the panels of the graph.}
   \item{control}{optional list of parameters that may be used for
-    different plot types.  Possibilities are \code{draw.bottom} (which
-    means to draw the bottom, for downward-pointing units that track the
-    bottom) and \code{bin} (for selecting a bin on which to act, as
-    explained in \dQuote{Details}).}
+    different plot types.  Possibilities are \code{drawBottom} (a boolean 
+    that indicates whether to draw the bottom) and \code{bin} (a numeric giving
+    the index of the bin on which to act, as explained in \dQuote{Details}).}
   \item{useLayout}{set to \code{FALSE} to prevent using
     \code{\link{layout}} to set up the plot.  This is needed if the call
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
@@ -201,17 +200,17 @@
       \code{"uv+ellipse"} case, but with an added arrow indicating the
       mean current.
 
-    \item \code{which=40} or \code{"bottom.range"} for average bottom range
+    \item \code{which=40} or \code{"bottom range"} for average bottom range
       from all beams of the instrument.
 
-    \item \code{which=41} to \code{44} (or \code{"bottom.range1"} to
-      \code{"bottom.range1"}) for bottom range from beams 1 to 4.
+    \item \code{which=41} to \code{44} (or \code{"bottom range1"} to
+      \code{"bottom range1"}) for bottom range from beams 1 to 4.
 
-    \item \code{which=50} or \code{"bottom.u"} for average bottom velocity
+    \item \code{which=50} or \code{"bottom velocity"} for average bottom velocity
       from all beams of the instrument.
 
-    \item \code{which=51} to \code{54} (or \code{"bottom.u1"} to
-      \code{"bottom.u4"}) for bottom velocity from beams 1 to 4.
+    \item \code{which=51} to \code{54} (or \code{"bottom velocity1"} to
+      \code{"bottom velocity4"}) for bottom velocity from beams 1 to 4.
 
     \item \code{which=55} (or \code{"heaving"} for time-integrated,
     depth-averaged, vertical velocity (i.e. heaving)
