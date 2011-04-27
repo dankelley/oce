@@ -1,8 +1,8 @@
-\name{topo.maritimes}
+\name{topoMaritimes}
 
 \docType{data}
 
-\alias{topo.maritimes}
+\alias{topoMaritimes}
 
 \title{Topographic dataset, showing Maritime region of Canada}
 
@@ -10,7 +10,7 @@
   portions of the Canadian provinces known as the Maritimes, as well
   as Newfoundland.}
 
-\usage{data(topo.maritimes)}
+\usage{data(topoMaritimes)}
 
 \source{The dataset was downloaded in late 2008 from the NOAA website,
   with a longitude box from 70W to 55W and a latitude box from 43N to

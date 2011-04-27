@@ -871,7 +871,8 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                      names=names,
                      labels=labels,
                      src=filename)
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
+    if (missing(history))
+        history <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- historyItem(history)
     res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("ctd", "oce")
