@@ -327,7 +327,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      oceCoordinate=c("beam", "xyz", "enu", "other")[coordinateSystem+1], # FIXME: check this
                      numberOfBeams=numberOfBeams,
                      beamAngle=beamAngle,
-                     oceBeamAttenuated=FALSE,
+                     oceBeamUnattenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
     if (numberOfBeams == 3) {
         if (metadata$orientation == "upward") {
@@ -625,7 +625,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      coordinateSystem=coordinateSystem,
                      oceCoordinate=coordinateSystem,
                      beamAngle=beamAngle,
-                     oceBeamAttenuated=FALSE,
+                     oceBeamUnattenuated=FALSE,
                      orientation=orientation)
     data <- list(ts=list(time=time,
                          heading=heading, pitch=pitch, roll=roll,
