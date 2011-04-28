@@ -1,3 +1,5 @@
+0.2-2
+- rename beamAttenuateAdp() as beamUnattenuateAdp()
 0.2-1
 - camel-case function and argument names (and, retroactively, this NEWS file)
 0.1-83
