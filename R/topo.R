@@ -241,14 +241,16 @@ read.topo <- function(file, history, ...)
 {
     nh <- 6
     header <- readLines(file, n=nh)
-    ncols <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
-    nrows <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
+    ncol <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
+    nrow <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
     longitudeLowerLeft <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])
     latitudeLowerLeft <- as.numeric(strsplit(header[4],"[ ]+",perl=TRUE)[[1]][2])
     cellSize <- as.numeric(strsplit(header[5],"[ ]+",perl=TRUE)[[1]][2])
-    zz <- as.matrix(read.table(file, header=FALSE, skip=nh),byrow=TRUE)
-    longitude <- longitudeLowerLeft + cellSize * seq(0, ncols-1)
-    latitude <- latitudeLowerLeft + cellSize * seq(0, nrows-1)
+    zz <- as.matrix(read.table(file, header=FALSE, skip=nh), byrow=TRUE)
+    rownames(zz) <- NULL
+    colnames(zz) <- NULL
+    longitude <- longitudeLowerLeft + cellSize * seq(0, ncol-1)
+    latitude <- latitudeLowerLeft + cellSize * seq(0, nrow-1)
     z <- t(zz[dim(zz)[1]:1,])
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
