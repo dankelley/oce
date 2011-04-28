@@ -18,7 +18,12 @@
   latitude and longitude, and 0.1m resolution in the vertical.  The
   data were downloaded with an ascii header and ascii-raster format,
   so that \code{\link{read.topo}} could handle the resultant
-  downloaded file without modification.}
+  downloaded file without modification, as shown below.
+\preformatted{
+library(oce)
+topoMaritimes <- read.topo("topoMaritimes.asc")
+}
+}
 
 \references{\url{http://www.ngdc.noaa.gov/mgg/gdas/gd_designagrid.html}}
 

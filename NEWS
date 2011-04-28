@@ -1,5 +1,5 @@
 0.2-1
-- camel-case appropriate function and argument names (including in this NEWS file)
+- camel-case function and argument names (and, retroactively, this NEWS file)
 0.1-83
 - add binAverage()
 - fillGap(): add 'rule' argument (analogous to same for approx())
