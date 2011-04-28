@@ -8,17 +8,21 @@
 To test this, without building the whole package, do the following.
 
 library(oce)
-lat <-  (44+39/60) + seq(-0.166666, 0.166666, 0.0166666)
-lon <- -(63+36/60) + rep(0, length(lat))
 data(topoMaritimes)
+lat <- seq(43, 53, 1/60)
+lon <- -(63+36/60) + rep(0, length(lat)) # Halifax
 
 system("R CMD SHLIB topo_interpolate.c")
 dyn.load("topo_interpolate.so")
 z <- .Call("topo_interpolate", lat, lon, topoMaritimes$data$latitude, topoMaritimes$data$longitude, topoMaritimes$data$z)
 plot(lat, z, type='l')
+abline(h=0, col='blue') # sealevel
+coasts <- c(44.4906, 45.88075, 46.22400, 46.55009, 49.43337, 49.86243, 50.18852)
+abline(v=coasts, col='red')
+
 */
 
-#define DEBUG
+//#define DEBUG
 
 SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP grid_z)
 {
@@ -39,7 +43,7 @@ SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP gri
         error("topo grid must have at least 2 longitudes");
     int grid_z_len = length(grid_z);
 #ifdef DEBUG
-    Rprintf("lat_len=%d lon_len=%d\n", lat_len, lon_len);
+    Rprintf("lat_len=%d (number of data points)\n", lat_len);
     Rprintf("grid_lat_len=%d grid_lon_len=%d grid_z_len=%d\n", grid_lat_len, grid_lon_len, grid_z_len);
 #endif
     SEXP ans;
@@ -64,9 +68,10 @@ SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP gri
             if (gloni < 0 || gloni > grid_lon_len - 1) {
                 ansp[i] = NA_REAL;
             } else {
-                int look = glati + grid_lat_len * gloni;
+                int look = gloni + grid_lon_len * glati;
 #ifdef DEBUG
-                Rprintf("lat %f lon %f look %d\n", latp[i], lonp[i], look);
+                if (i < 5)
+                    Rprintf("lat %f lon %f look %d\n", latp[i], lonp[i], look);
 #endif
                 if (look < 0 || look > grid_z_len - 1)
                     ansp[i] = NA_REAL;
@@ -75,7 +80,13 @@ SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP gri
             }
         }
     }
-    Rprintf("first e grids %f %f %f\n", grid_zp[0], grid_zp[1], grid_zp[2]);
+#ifdef DEBUG
+    Rprintf("latp      starts %9.4f %9.4f %9.4f\n", latp[0], latp[1], latp[2]);
+    Rprintf("grid_latp starts %9.4f %9.4f %9.4f\n", grid_latp[0], grid_latp[1], grid_latp[2]);
+    Rprintf("lonp      starts %9.4f %9.4f %9.4f\n", lonp[0], lonp[1], lonp[2]);
+    Rprintf("grid_lonp starts %9.4f %9.4f %9.4f\n", grid_lonp[0], grid_lonp[1], grid_lonp[2]);
+    Rprintf("grid_zp   starts %9.4f %9.4f %9.4f\n", grid_zp[0], grid_zp[1], grid_zp[2]);
+#endif
     UNPROTECT(6);
     return(ans);
 }
