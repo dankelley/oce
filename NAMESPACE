@@ -12,7 +12,7 @@ export(
        as.sealevel,
        as.topo,
        as.windrose,
-       beamAttenuateAdp,
+       beamUnattenuateAdp,
        beamToXyz,
        beamToXyzAdp,
        beamToXyzAdv,

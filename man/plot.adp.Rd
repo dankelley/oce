@@ -263,7 +263,7 @@
   coordinate system aligned with the shoreline or with an isobath.
 
   The beam stength may be corrected for R-squared spreading with
-  \code{\link{beamAttenuateAdp}}.
+  \code{\link{beamUnattenuateAdp}}.
 
   Summaries of ADP data are provided by \code{\link{summary.adp}}.
 
