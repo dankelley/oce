@@ -1,4 +1,5 @@
 0.2-2
+- topoInterpolate() added
 - numberAsPOSIXct(): add type 'argos'
 - rename beamAttenuateAdp() as beamUnattenuateAdp()
 

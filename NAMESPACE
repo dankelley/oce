@@ -159,6 +159,7 @@ export(
        toEnu,
        toEnuAdp,
        toEnuAdv,
+       topoInterpolate,
        unabbreviateYear,
        undriftTime,
        unwrapAngle,
