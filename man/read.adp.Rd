@@ -181,7 +181,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \code{\link{enuToOtherAdp}} is provided, to convert from enu
   coordinates to another coordinate system. 
 
- Another convenience function is \code{\link{beamAttenuateAdp}},
+ Another convenience function is \code{\link{beamUnattenuateAdp}},
 which performs a correction for \eqn{r^2}{r^2} beam spreading.}
 
 \examples{

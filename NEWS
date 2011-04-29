@@ -1,5 +1,11 @@
+0.2-2
+- topoInterpolate() added
+- numberAsPOSIXct(): add type 'argos'
+- rename beamAttenuateAdp() as beamUnattenuateAdp()
+
 0.2-1
 - camel-case function and argument names (and, retroactively, this NEWS file)
+
 0.1-83
 - add binAverage()
 - fillGap(): add 'rule' argument (analogous to same for approx())
@@ -8,6 +14,7 @@
 - add as.pt()
 - read.adp.rdi() uses checksums
 - number.as.POSIXct(type="gps"): account for leap seconds
+
 0.1-82
 - remove warning that occurs for R 2.13.0 (alpha)
 - number.as.POSIXct(): accept GPS times
@@ -43,6 +50,7 @@
 - plot.section(): allow strings for 'which'; avoid contouring error if two stations at same distance 
 - plot.ctd() and plot.profile(): add 'use.smoothScatter' argument
 - coriolis(): improve omega value
+
 0.1-81
 - add despike()
 - add range.limit()
@@ -75,17 +83,21 @@
 - fix google-code issue 54 [plot.topo() was resetting par() on exit]
 - fix google-code issue 53 [interp.barnes() gives poor error msg for mismatched x and y]
 - fix google-code issue 52 [plot.section() draws incorrect bottom shape]
+
 0.1-80
 - add sun.angle [not tested yet; needs R reformulation]
 - fix google-code issue 51 [summary.section() does not report water depth]
 - fix google-code issue 50 [non-bug relating to sun elevation]
 - fix google-code issue 49 [demo(TS) broken]
+
 0.1-79
 - fix google-code issue 48 [oce.plot.sticks() ignored page ratio]
 - fix google-code issue 47 [cannot read new MEDS sealevel format]
+
 0.1-78
 - add data(RRprofile)
 - to plot.TS(), add arguments lwd.rho and lty.rho
+
 0.1-77
 - refactor adp code wrt transformation matrices
 - add matrix.smooth()

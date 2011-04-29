@@ -111,7 +111,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      velocityScale=header$user$velocityScale,
                      coordinateSystem=header$user$coordinateSystem,
                      oceCoordinate=header$user$coordinateSystem,
-                     oceBeamAttenuated=FALSE,
+                     oceBeamUnattenuated=FALSE,
                      deployName=header$user$deployName,
                      comments=header$user$comments)
     if (missing(history))

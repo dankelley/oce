@@ -1195,7 +1195,7 @@ oceBisect <- function(f, xleft, xright, dx, debug=getOption("oceDebug"))
     xmiddle
 }
 
-numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
+numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC")
 {
     type <- match.arg(type)
     if (type == "unix") {
@@ -1205,6 +1205,9 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps"), tz="UTC")
     if (type == "matlab") {
         ## R won't take a day "0", so subtract one
         return(as.POSIXct(ISOdatetime(0000, 01, 01, 0, 0, 0, tz=tz) + 86400 * (t - 1)))
+    }
+    if (type == "argos") {
+        return(t * 86400 + as.POSIXct("1900-01-01", tz="UTC"))
     }
     if (type == "gps") {
         if (!is.matrix(t) || dim(t)[2] != 2)

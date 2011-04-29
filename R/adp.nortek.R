@@ -428,7 +428,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      velocityScale=header$user$velocityScale,
                      coordinateSystem=header$user$coordinateSystem,
                      oceCoordinate=header$user$coordinateSystem,
-                     oceBeamAttenuated=FALSE
+                     oceBeamUnattenuated=FALSE
                      )
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")

@@ -1,3 +1,17 @@
+topoInterpolate <- function(latitude, longitude, topo)
+{
+    if (missing(latitude))
+        stop("must supply latitude")
+    if (missing(longitude))
+        stop("must supply longitude")
+    if (missing(topo))
+        stop("must supply topo")
+    if (length(latitude) != length(longitude))
+        stop("lengths of latitude and longitude must match")
+    .Call("topo_interpolate", latitude, longitude, topo$data$latitude, topo$data$longitude, topo$data$z)
+}
+
+
 plot.topo <- function(x,
                       xlab="", ylab="",
                       asp,

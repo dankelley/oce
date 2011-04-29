@@ -535,7 +535,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$measurementEnd <- measurementEnd
             metadata$measurementDeltat <- measurementDeltat
             metadata$filename <- filename
-            metadata$oceBeamAttenuated <- FALSE
+            metadata$oceBeamUnattenuated <- FALSE
             metadata$oceCoordinate <- header$coordinateSystem
             metadata$numberOfBeams <- header$numberOfBeams
             metadata$depth <- mean(depth, na.rm=TRUE)

@@ -122,7 +122,7 @@ summary.adp <- function(object, ...)
                                 pingsPerEnsemble=object$metadata$pingsPerEnsemble,
                                 bin1Distance=object$metadata$bin1Distance,
                                 xmitPulseLength=object$metadata$xmitPulseLength,
-                                oceBeamAttenuated=object$metadata$oceBeamAttenuated,
+                                oceBeamUnattenuated=object$metadata$oceBeamUnattenuated,
                                 beamConfig=object$metadata$beamConfig)
         } else if (1 == length(agrep("sontek", object$metadata$manufacturer, ignore.case=TRUE))) {
             resSpecific <- list(cpuSoftwareVerNum=object$metadata$cpuSoftwareVerNum,
@@ -152,7 +152,7 @@ summary.adp <- function(object, ...)
         res$bin1Distance <- object$metadata$bin1Distance
         res$cellSize <- object$metadata$cellSize
         res$xmitPulseLength <- object$metadata$xmitPulseLength
-        res$oceBeamAttenuated <- object$metadata$oceBeamAttenuated
+        res$oceBeamUnattenuated <- object$metadata$oceBeamUnattenuated
         res$beamAngle <- object$metadata$beamAngle
         res$beamConfig <- object$metadata$beamConfig
         res$transformationMatrix <- object$metadata$transformationMatrix
@@ -226,7 +226,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* Coordinate system: ", x$coordinateSystem, "[originally],", x$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", x$frequency, "kHz\n", ...)
     if (haveData) {
-        cat("* Beams:             ", x$numberOfBeams, if (!is.null(x$oceBeamAttenuated) & x$oceBeamAttenuated) "beams (attenuated)" else "beams (not attenuated)",
+        cat("* Beams:             ", x$numberOfBeams, if (!is.null(x$oceBeamUnattenuated) & x$oceBeamUnattenuated) "beams (attenuated)" else "beams (not attenuated)",
             "oriented", x$orientation, "with angle", x$metadata$beam.angle, "deg to axis\n", ...)
         if (!is.null(x$transformationMatrix)) {
             cat("\n* Transformation matrix\n  ::\n\n")
@@ -958,13 +958,13 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
-beamAttenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oceDebug"))
+beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbeamAttenuateAdp(...) {\n")
+    oceDebug(debug, "\b\bbeamUnattenuateAdp(...) {\n")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
-    if (x$metadata$oceBeamAttenuated)
-        stop("the beams are already attenuated in this dataset")
+    if (x$metadata$oceBeamUnattenuated)
+        stop("the beams are already unattenuated in this dataset")
     res <- x
     numberOfProfiles <- dim(x$data$ma$a)[1]
     oceDebug(debug, "numberOfProfiles=", numberOfProfiles, "\n")
@@ -977,10 +977,10 @@ beamAttenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOpt
         tmp[tmp > 255] <- 255
         res$data$ma$a[,,beam] <- as.raw(tmp)
     }
-    res$metadata$oceBeamAttenuated <- TRUE
+    res$metadata$oceBeamUnattenuated <- TRUE
     res$history <- historyAdd(res$history,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # beamAttenuateAdp()\n")
+    oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
     res
 }
 
