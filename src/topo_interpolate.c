@@ -9,7 +9,7 @@ To test this, without building the whole package, do the following.
 
 library(oce)
 data(topoMaritimes)
-lat <- seq(43, 53, 1/60)
+lat <- seq(43, 53, 1/60/2)
 lon <- -(63+36/60) + rep(0, length(lat)) # Halifax
 
 system("R CMD SHLIB topo_interpolate.c")
@@ -23,6 +23,8 @@ abline(v=coasts, col='red')
 */
 
 //#define DEBUG
+
+#define look(lati, loni) ((loni) + grid_lon_len * (lati))
 
 SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP grid_z)
 {
@@ -68,15 +70,30 @@ SEXP topo_interpolate(SEXP lat, SEXP lon, SEXP grid_lat, SEXP grid_lon, SEXP gri
             if (gloni < 0 || gloni > grid_lon_len - 1) {
                 ansp[i] = NA_REAL;
             } else {
-                int look = gloni + grid_lon_len * glati;
+                int l = look(gloni, glati);
 #ifdef DEBUG
-                if (i < 5)
-                    Rprintf("lat %f lon %f look %d\n", latp[i], lonp[i], look);
 #endif
-                if (look < 0 || look > grid_z_len - 1)
+                if (l < 0 || l > grid_z_len - 1)
                     ansp[i] = NA_REAL;
-                else 
-                    ansp[i] = grid_zp[look];
+                else {
+                    // http://en.wikipedia.org/wiki/Bilinear_interpolation
+                    double x = (lonp[i] - lonp[gloni]) / grid_lon_increment;
+                    double y = (latp[i] - latp[glati]) / grid_lat_increment;
+                    double zll = grid_zp[l];
+                    double zlr = grid_zp[look(gloni+1, glati)];
+                    double zur = grid_zp[look(gloni+1, glati+1)];
+                    double zul = grid_zp[look(gloni  , glati+1)];
+                    x=y=0;
+                    ansp[i] = zll * (1 - x) * (1 - y) +
+                        zlr * x * (1 - y) +
+                        zul * (1 - x) * y +
+                        zur * x * y;
+                    if (i < 5)
+                        Rprintf("lat %f lon %f | glati %d gloni %d | x %f y %f | zll %.1f zlr %.1f zur %.1f zul %.f |  ans %.1f\n",
+                                latp[i], lonp[i], glati, gloni, x, y, 
+                                zll, zlr, zur, zul,
+                                ansp[i]);
+                }
             }
         }
     }
