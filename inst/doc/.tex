@@ -35,6 +35,7 @@
 }
 
 
+\usepackage{Sweave}
 \begin{document}
 
 \title{The OCE package}
@@ -124,7 +125,7 @@ in the order of $1000$\,kg/m$^3$.  For many purposes, Oceanographers
 prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$,
 provided with \verb@swSigma(salinity,temperature,pressure)@, or its
 adiabatic cousin $\sigma_\theta$, provided with
-\verb@swSigmaTheta@.
+\verb@swSigmaTheta(salinity,temperature,pressure)@.
 
 \looseness=1
 \index{dynamic height}
@@ -174,22 +175,28 @@ $100$\,dbar, with salinity $34$\,PSU and temperature 10$^\circ$C?
 To get you started with CTD data, \verb@oce@ provides a sample data set that has
 been trimmed to just the downcast portion of the sampling.  (See the next
 section to learn how to do this trimming.).  The commands
-<<label=ctdplot,eval=FALSE>>=
-library(oce)
-data(ctd)
-plot(ctd)
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(ctd)
+> plot(ctd)
+\end{Sinput}
+\end{Schunk}
 produce Figure~\ref{fig:ctd}. You may also get a summary of the data with
-<<ctdsummary,eval=false>>=
-summary(ctd)
-@
+\begin{Schunk}
+\begin{Sinput}
+> summary(ctd)
+\end{Sinput}
+\end{Schunk}
 
 The object used to hold CTD data stores not just the data, but also the raw
 header sequence, and whatever has been discovered about the dataset by parsing
 the header, use
-<<ctdnames,eval=false>>=
-names(ctd)
-@
+\begin{Schunk}
+\begin{Sinput}
+> names(ctd)
+\end{Sinput}
+\end{Schunk}
 etc.
 
 Of course, you may apply any \verb@R@ techniques to the data in \verb@oce@
@@ -210,9 +217,7 @@ this in action with \verb@?section@.)
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=ctdfig, width=9, height=6, fig=TRUE, echo=FALSE>>=
-<<ctdplot>>
-@
+\includegraphics{-ctdfig}
 \end{center}
 \caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired in
 the St Lawrence Estuary Internal Wave Experiment.  (This dataset has been
@@ -228,16 +233,16 @@ Practicing Oceanographers may be wondering how the CTD cast used in the
 preceding section was trimmed of equilibration-phase and upcast-phase data. Data
 from these sections are spurious and must be trimmed as a first step in
 processing. For example, consider the following code.
-<<label=ctdrawplot,eval=FALSE>>=
-data(ctd.raw)
-plot.ctd.scan(ctd.raw)
-@
+\begin{Schunk}
+\begin{Sinput}
+> data(ctd.raw)
+> plot.ctd.scan(ctd.raw)
+\end{Sinput}
+\end{Schunk}
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.55\textwidth}
-<<label=ctdrawfig,fig=TRUE,width=6, height=4, echo=FALSE>>=
-<<ctdrawplot>>
-@
+\includegraphics{-ctdrawfig}
 \end{center}
 \caption{Scanwise plot of the \texttt{ctd.raw} sample data set.  Note the wild
 spike at the start, the equilibration phase before the downcast, and the
@@ -252,18 +257,22 @@ subsequent upcast sequence.  The x-axis in this plot is the scan number, which
 is a convenient index for extraction of the downcast portion of the profile by
 an essentially manual method, e.g. proceeding with a sequence of commands such
 as
-<<ctdscaneg,eval=false>>=
-plot.ctd.scan(ctdTrim(ctd.raw, "range",
-                      parameters=list(item="scan", from=140, to=250)))
-plot.ctd.scan(ctdTrim(ctd.raw, "range",
-                      parameters=list(item="scan", from=150, to=250)))
-@
+\begin{Schunk}
+\begin{Sinput}
+> plot.ctd.scan(ctdTrim(ctd.raw, "range", parameters = list(item = "scan", 
++     from = 140, to = 250)))
+> plot.ctd.scan(ctdTrim(ctd.raw, "range", parameters = list(item = "scan", 
++     from = 150, to = 250)))
+\end{Sinput}
+\end{Schunk}
 This is the ``gold standard'' method, which is recommended for detailed
 work. However, for quick work, you may find that the automatic downcast
 detection scheme works adequately, e.g.
-<<ctdtrimeg,eval=false>>=
-ctdTrimmed <- ctdTrim(ctd.raw)
-@
+\begin{Schunk}
+\begin{Sinput}
+> ctdTrimmed <- ctdTrim(ctd.raw)
+\end{Sinput}
+\end{Schunk}
 
 It should be noted that \verb@ctdTrim@ inserts entries into the object's log
 file, so that you (or anyone else with whom you share the object) will be able to
@@ -275,9 +284,11 @@ Once the profile has been trimmed, you may wish to use \texttt{ctd.decimate()}
 to smooth the data and interpolate the smoothed results to uniformly-spaced
 pressure values. For example, a quick examination of a file might be done by the
 following:
-<<ctddectrim,eval=false>>=
-plot(ctd.decimate(ctdTrim(read.ctd("stn123.cnv"))))
-@
+\begin{Schunk}
+\begin{Sinput}
+> plot(ctd.decimate(ctdTrim(read.ctd("stn123.cnv"))))
+\end{Sinput}
+\end{Schunk}
 
 \subsection{Example with WOCE archive data}
 
@@ -301,11 +312,13 @@ things, such as plotting the data.
 
 Of course, R provides access to object constituents, so that you are
 free to do such things as
-<<ctdfix1,eval=false>>=
-x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x$metadata$institute <- "SIO" # bad way
-x$metadata$scientist <- "DAM" # bad way
-@
+\begin{Schunk}
+\begin{Sinput}
+> x <- read.ctd("nnsa_00934_00001_ct1.csv", type = "WOCE")
+> x$metadata$institute <- "SIO"
+> x$metadata$scientist <- "DAM"
+\end{Sinput}
+\end{Schunk}
 but it is \emph{bad practice} to alter metadata in such a way, because
 doing so alters the object without altering its documentation.  The
 preferred scheme is to do as follows.
@@ -314,38 +327,45 @@ preferred scheme is to do as follows.
 \index{logged changes to oce objects}
 \index{editing oce objects}
 \index{oce.edit}
-<<ctdfix2,eval=false>>=
-x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oce.edit(x, "institute", "SIO") # better way
-x <- oce.edit(x, "scientist", "DAM") # better way
-@
+\begin{Schunk}
+\begin{Sinput}
+> x <- read.ctd("nnsa_00934_00001_ct1.csv", type = "WOCE")
+> x <- oce.edit(x, "institute", "SIO")
+> x <- oce.edit(x, "scientist", "DAM")
+\end{Sinput}
+\end{Schunk}
 which will store a note about the changes in the object's log.  Even
 better, provide a reason for the change, and sign the change with your
 name:
-<<ctdfix3,eval=false>>=
-x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x <- oce.edit(x, "institute", "SIO", "human-parsed","Dan Kelley") # best way
-x <- oce.edit(x, "scientist", "DAM", "human-parsed","Dan Kelley") # best way
-@
+\begin{Schunk}
+\begin{Sinput}
+> x <- read.ctd("nnsa_00934_00001_ct1.csv", type = "WOCE")
+> x <- oce.edit(x, "institute", "SIO", "human-parsed", "Dan Kelley")
+> x <- oce.edit(x, "scientist", "DAM", "human-parsed", "Dan Kelley")
+\end{Sinput}
+\end{Schunk}
 
 For a real-world example (with warts!), visit
 \url{http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410} and download the zip
 file containing the Arctic section called ``CARINA'', measured in 1994. Expand
 the zip file, enter the directory, and run the code below.
-<<arcticeg,eval=false>>=
-library(oce)
-# Source: http://cchdo.ucsd.edu/data_access?ExpoCode=58JH199410
-files <- system("ls *.csv", intern=TRUE)
-for (i in 1:length(files)) {
-    cat(files[i], "\n")
-    x <- read.ctd(files[i])
-    if (i == 1) {
-        plot.TS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
-    } else {
-        lines(x$data$salinity, x$data$temperature, col="red")
-    }
-}
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> files <- system("ls *.csv", intern = TRUE)
+> for (i in 1:length(files)) {
++     cat(files[i], "\n")
++     x <- read.ctd(files[i])
++     if (i == 1) {
++         plot.TS(x, xlim = c(31, 35.5), ylim = c(-1, 10), type = "l", 
++             col = "red")
++     }
++     else {
++         lines(x$data$salinity, x$data$temperature, col = "red")
++     }
++ }
+\end{Sinput}
+\end{Schunk}
 
 What you'll see is an overall $T$-$S$ diagram for the entire dataset. It may take
 a while, since the dataset contains over 90,000 observations. You may note that,
@@ -353,10 +373,12 @@ even though this is an official, quality-controlled dataset, it is not without
 problems. The graph that is produced by this code has several spurious lines
 oriented horizontally (indicating spurious salinity) and vertically (indicating
 spurious temperature). One way to find such values is to put the lines
-<<rangeg,eval=false>>=
-print(range(x$data$temperature))
-print(range(x$data$salinity))
-@
+\begin{Schunk}
+\begin{Sinput}
+> print(range(x$data$temperature))
+> print(range(x$data$salinity))
+\end{Sinput}
+\end{Schunk}
 after the \verb@read.ctd()@ command. One thing you'll find is that station 987
 has a minimum salinity range of 0.0009 to 987. These values are clearly in
 error, as are the temperatures at this spot in the file. (It is perhaps
@@ -371,11 +393,13 @@ is to highlight how this package can be used with real-world data.
 
 \subsection{Section plots}
 The commands
-<<label=sectionplot,eval=FALSE>>=
-data(section)
-data(coastlineHalifax)
-plot(section, coastline=coastlineHalifax)
-@
+\begin{Schunk}
+\begin{Sinput}
+> data(section)
+> data(coastlineHalifax)
+> plot(section, coastline = coastlineHalifax)
+\end{Sinput}
+\end{Schunk}
 will plot a summary diagram containing sections of
 $T$, $S$, and $\sigma_\theta$, along with a chart indicating station
 locations. In addition to such overview diagrams, \verb@plot@ can also create
@@ -391,15 +415,16 @@ individual plots of individual properties.
 The Halifax section is supplied in a pre-gridded format, but some datasets have
 different pressure levels at each station.  For such cases, the
 \verb@sectionGrid@ function may be used, e.g.
-<<label=sectionplota03,eval=FALSE>>=
-# File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
-# a03 <- read.section("a03_hy1.csv")
-data(a03)
-GS <- subset(a03, indices=124:102)
-GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
-data(coastlineWorld)
-plot(GSg, coastline=coastlineWorld, map.xlim=c(-85,-(64+13/60)))
-@
+\begin{Schunk}
+\begin{Sinput}
+> data(a03)
+> GS <- subset(a03, indices = 124:102)
+> GSg <- sectionGrid(GS, p = seq(0, 1600, 25))
+> data(coastlineWorld)
+> plot(GSg, coastline = coastlineWorld, map.xlim = c(-85, -(64 + 
++     13/60)))
+\end{Sinput}
+\end{Schunk}
 produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was
 travelling westward from the Mediterranean towards North America, taking 124
 stations in total; the \verb@indices@ value selects the last few
@@ -410,9 +435,7 @@ right angles.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=1\textwidth}
-<<label=sectionfiga03,fig=TRUE,width=8, height=9.5, echo=FALSE>>=
-<<sectionplota03>>
-@
+\includegraphics{-sectionfiga03}
 \end{center}
 \caption{\label{fig:sectiona03}
   Portion of the CTD section designated A03, showing the Gulf Sream region.  The
@@ -436,19 +459,19 @@ The only real advantage over plotting things yourself is that latitude and
 longitude are scaled to give natural shapes near the centre of the plot.
 
 Bathymetric charts, or more generally topographic maps, can be produced easily, e.g. (Figure~\ref{fig:topo})
-<<label=topoplot,eval=FALSE>>=
-library(oce)
-data(topoMaritimes)
-plot(topoMaritimes, center=c(46,-62), span=800,
-    water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
-    lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(topoMaritimes)
+> plot(topoMaritimes, xlim = c(-66, -58), ylim = c(44, 50), water.z = c(-50, 
++     -100, -150, -200, -300, -400, -500, -1000, -2000), lwd.water = c(1, 
++     1, 1, 1, 1, 1, 1.5, 1.5, 1.5))
+\end{Sinput}
+\end{Schunk}
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.8\textwidth}
-<<label=topofig,fig=TRUE,width=7, height=4, echo=FALSE>>=
-<<topoplot>>
-@
+\setkeys{Gin}{width=0.7\textwidth}
+\includegraphics{-topofig}
 \end{center}
 \caption{Topography of eastern Canada, centred on Les \^{i}les de la Madeleine.}
 \label{fig:topo}
@@ -462,12 +485,13 @@ plot(topoMaritimes, center=c(46,-62), span=800,
 \index{Hurricane Juan!surge seen in time-series of sea level}
 
 The commands
-<<label=sealevelplot,eval=FALSE>>=
-library(oce)
-#sealevel <- read.oce("../../tests/h275a96.dat")
-data(sealevelHalifax)
-plot(sealevelHalifax)
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(sealevelHalifax)
+> plot(sealevelHalifax)
+\end{Sinput}
+\end{Schunk}
 load and graph a build-in dataset of sea-level timeseries. The result, shown in
 Figure~\ref{fig:sealevel}, is a four-panel plot. The top panel is a timeseries
 view that provides an overview of the entire data set. The second panel is
@@ -479,9 +503,7 @@ narrow-banded constituents quite visible.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.8\textwidth}
-<<label=sealevelfig,fig=TRUE,width=7,height=5,echo=FALSE>>=
-<<sealevelplot>>
-@
+\includegraphics{-sealevelfig}
 \end{center}
 \caption{Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike
 in September is the storm surge associated with Hurricane Juan, regarded by the
@@ -545,11 +567,13 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 
 \section{Temperature-Depth Recorder data}
 The commands
-<<label=ptplot,eval=FALSE>>=
-library(oce)
-data(ptr)
-plot(ptr, useSmoothScatter=TRUE)
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(ptr)
+> plot(ptr)
+\end{Sinput}
+\end{Schunk}
 produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
 measurements made during St Lawrence Estuary Internal Wave Experiment, a
 CFCAS-funded research program in which the \texttt{oce} author was a principal
@@ -560,9 +584,7 @@ graph contains in-air as well as in-water data.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=0.66\textwidth}
-<<label=ptfig ,fig=TRUE, width=7, height=5, echo=FALSE>>=
-<<ptplot>>
-@
+\includegraphics{-ptfig}
 \end{center}
 \caption{Measurements made with a pressure-temperature recorder in the
   St Lawrence Estuary.  Note that the record contains in-air
@@ -581,20 +603,22 @@ then remove the atmospheric pressure from the signal.}
 \section{Acoustic Doppler Current Profiler data}
 \index{ADP}
 The commands
-<<label=adpplot, eval=FALSE>>=
-library(oce)
-data(adp)
-plot(adp, which=1,
-  adorn=expression({lines(x$data$ts$time, x$data$ts$pressure, col='green', lwd=2)}))
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(adp)
+> plot(adp, which = 1:2, adorn = expression({
++     lines(x$data$ts$time, x$data$ts$pressure, col = "green", 
++         lwd = 2)
++ }))
+\end{Sinput}
+\end{Schunk}
 produce Figure~\ref{fig:adp}, showing currents made
 in the St Lawrence Estuary Internal Wave Experiment.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=adpfig, fig=TRUE, width=7, height=3, echo=FALSE>>=
-<<adpplot>>
-@
+\includegraphics{-adpfig}
 \end{center}
 \caption{Measurements made with an ADP in the
   St Lawrence Estuary.  The data were recorded in beam format, so a two-step
@@ -654,96 +678,132 @@ open-source software.
 \vspace{2cm plus 2cm minus 2cm}
 \section*{Answers to exercises}
 \workedanswer{1}{Seawater properties}
-<<>>=
-library(oce)
-swRho(34, 10, 100)
-swTheta(34, 10, 100)
-swRho(34, swTheta(34, 10, 100), 0)
-swRho(34, swTheta(34, 10, 100, 200), 200)
-plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> swRho(34, 10, 100)
+\end{Sinput}
+\begin{Soutput}
+[1] 1026.624
+\end{Soutput}
+\begin{Sinput}
+> swTheta(34, 10, 100)
+\end{Sinput}
+\begin{Soutput}
+[1] 9.988598
+\end{Soutput}
+\begin{Sinput}
+> swRho(34, swTheta(34, 10, 100), 0)
+\end{Sinput}
+\begin{Soutput}
+[1] 1026.173
+\end{Soutput}
+\begin{Sinput}
+> swRho(34, swTheta(34, 10, 100, 200), 200)
+\end{Sinput}
+\begin{Soutput}
+[1] 1027.074
+\end{Soutput}
+\begin{Sinput}
+> plot.TS(as.ctd(c(30, 40), c(-2, 20), rep(0, 2)), grid = TRUE, 
++     col = "white")
+\end{Sinput}
+\end{Schunk}
 
 \workedanswer{2}{Profile plots}
 Although one may argue as to the limits of the pycnocline, for illustration let us say it is in 5bar to 12dbar range.  One way to do this is
-<<>>=
-library(oce)
-data(ctd)
-pycnocline <- ctdTrim(ctd, "range",
-                      parameters=list(item="pressure", from=5, to=12))
-plot.profile(pycnocline, type="density+N2")
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(ctd)
+> pycnocline <- ctdTrim(ctd, "range", parameters = list(item = "pressure", 
++     from = 5, to = 12))
+> plot.profile(pycnocline, type = "density+N2")
+\end{Sinput}
+\end{Schunk}
 and another is
 \index{subset!extracting a portion of a profile}
-<<>>=
-library(oce)
-data(ctd)
-pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
-plot.profile(pycnocline, type="density+N2")
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(ctd)
+> pycnocline <- subset(ctd, 5 <= pressure & pressure <= 12)
+> plot.profile(pycnocline, type = "density+N2")
+\end{Sinput}
+\end{Schunk}
 
 \index{section!extracting profile data from}
 \workedanswer{3}{TS diagram for section data}
-<<>>=
-library(oce)
-data(section)
-SS <- TT <- pp <- id <- NULL
-n <- length(section$data$station)
-for (i in 1:n) {
-	stn <- section$data$station[[i]] # save typing
-	SS <- c(SS, stn$data$salinity)
-	TT <- c(TT, stn$data$temperature)
-	pp <- c(pp, stn$data$pressure)
-	id <- c(id, rep(i, length(stn$data$pressure)))
-}
-ctd <- as.ctd(SS, TT, pp)
-plot.TS(ctd, col=hsv(0.7*id/n), cex=2, pch=21)
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(section)
+> SS <- TT <- pp <- id <- NULL
+> n <- length(section$data$station)
+> for (i in 1:n) {
++     stn <- section$data$station[[i]]
++     SS <- c(SS, stn$data$salinity)
++     TT <- c(TT, stn$data$temperature)
++     pp <- c(pp, stn$data$pressure)
++     id <- c(id, rep(i, length(stn$data$pressure)))
++ }
+> ctd <- as.ctd(SS, TT, pp)
+> plot.TS(ctd, col = hsv(0.7 * id/n), cex = 2, pch = 21)
+\end{Sinput}
+\end{Schunk}
 
 \workedanswer{4}{Gulf Stream}
 (Try \verb@?swDynamicHeight@ for hints on smoothing.)
 \index{Gulf Stream!geostrophic calculation}
 \index{subset!extracting stations from a section}
-<<>>=
-library(oce)
-data(a03)
-GS <- subset(a03, indices=124:102)
-dh <- swDynamicHeight(GS)
-par(mfrow=c(2,1))
-plot(dh$distance, dh$height, type='b', xlab="", ylab="Dyn. Height [m]")
-grid()
-# 1e3 metres per kilometre
-f <- coriolis(GS$data$station[[1]]$metadata$latitude)
-g <- gravity(GS$data$station[[1]]$metadata$latitude)
-v <- diff(dh$height)/diff(dh$distance) * g / f / 1e3
-plot(dh$distance[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
-grid()
-abline(h=0)
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(a03)
+> GS <- subset(a03, indices = 124:102)
+> dh <- swDynamicHeight(GS)
+> par(mfrow = c(2, 1))
+> plot(dh$distance, dh$height, type = "b", xlab = "", ylab = "Dyn. Height [m]")
+> grid()
+> f <- coriolis(GS$data$station[[1]]$metadata$latitude)
+> g <- gravity(GS$data$station[[1]]$metadata$latitude)
+> v <- diff(dh$height)/diff(dh$distance) * g/f/1000
+> plot(dh$distance[-1], v, type = "l", col = "blue", xlab = "Distance [km]", 
++     ylab = "Velocity [m/s]")
+> grid()
+> abline(h = 0)
+\end{Sinput}
+\end{Schunk}
 \workedanswer{5}{Halifax sealevel during Hurricane Juan.}
 \index{Hurricane Juan!worked example of sea-level plot}
 \index{sea level!during Hurricane Juan}
 A web search will tell you that Hurricane Juan hit about midnight, 2003-sep-28.
 The author can verify that the strongest winds occurred a bit after midnight -- that was the time
 he moved to a room without windows, in fear of flying glass.
-<<>>=
-library(oce)
-data(sealevelHalifax)
-# Focus on 2003-Sep-28 to 29th, the time when Hurricane Juan caused flooding
-plot(sealevelHalifax,which=1,xlim=as.POSIXct(c("2003-09-24","2003-10-05"), tz="UTC"))
-abline(v=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
-mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="red")
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(sealevelHalifax)
+> plot(sealevelHalifax, which = 1, xlim = as.POSIXct(c("2003-09-24", 
++     "2003-10-05"), tz = "UTC"))
+> abline(v = as.POSIXct("2003-09-29 04:00:00", tz = "UTC"), col = "red")
+> mtext("Hurricane\nJuan", at = as.POSIXct("2003-09-29 04:00:00", 
++     tz = "UTC"), col = "red")
+\end{Sinput}
+\end{Schunk}
 
 \workedanswer{6}{Sealevel spectrum}
 Notice the use of \verb@(object)$data$(item)@ here.  All \verb@oce@ objects are lists,
 and all of them contain a \verb@data@ element of a similar form to this.
-<<>>=
-library(oce)
-data(sealevelHalifax)
-spectrum(sealevelHalifax$data$elevation, spans=c(3,7))
-abline(v=1/12.42)
-mtext("M2",at=1/12.42,side=3)
-@
+\begin{Schunk}
+\begin{Sinput}
+> library(oce)
+> data(sealevelHalifax)
+> spectrum(sealevelHalifax$data$elevation, spans = c(3, 7))
+> abline(v = 1/12.42)
+> mtext("M2", at = 1/12.42, side = 3)
+\end{Sinput}
+\end{Schunk}
 
 \workedanswer{7}{Pressure-temperature Recorder plot}
 \index{subset!using with pt data}
@@ -760,9 +820,11 @@ to be contoured).
 
 The best plan is simply to plot the data interactively, and then to
 narrow in on start and end times by plotting trial values, e.g.
-<<>>=
-abline(v=as.POSIXct("2008-06-25 00:00:00"),col="red")
-@
+\begin{Schunk}
+\begin{Sinput}
+> abline(v = as.POSIXct("2008-06-25 00:00:00"), col = "red")
+\end{Sinput}
+\end{Schunk}
 with arrow keys being used to repeat commands that get edited as the
 key times are located.
 
