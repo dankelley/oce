@@ -1,12 +1,12 @@
-\name{drawpalette}
+\name{drawPalette}
 
-\alias{drawpalette}
+\alias{drawPalette}
 
 \title{Draw a palette on the right-hand side of plot device}
 
 \description{Draw a palette on the right-hand side of plot device}
 
-\usage{drawpalette(zlim, zlab="", breaks, col, top=0, bottom=0, drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
+\usage{drawPalette(zlim, zlab="", breaks, col, top=0, bottom=0, drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
     \item{zlim}{two-element vector containing the lower and upper limits of z.
@@ -32,7 +32,7 @@
     \emph{This is an early version, which may be removed if it does not prove
         useful.  The calling arguments may be changed also.}
 
-    In the normal use, \code{drawpalette} draws an image palette near the
+    In the normal use, \code{drawPalette} draws an image palette near the
     right-hand side of the plotting device, and then adjusts the global margin
     settings in such a way as to cause the next plot to appear to the left of
     the palette. The function can also be used, if \code{zlim} is not provided,
@@ -57,16 +57,16 @@ par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,1,1))
 par(mfrow=c(4,1))
 
-drawpalette(zlim=c(0,1),col=oceColorsJet(5))
+drawPalette(zlim=c(0,1),col=oceColorsJet(5))
 plot(1:5, 1:5, col=oceColorsJet(5)[1:5],pch=20,cex=5,xlab='x', ylab='y', main='test 1')
 
 ## put space for palette to right of next graph (so x scales line up in stacked plot)
-drawpalette()
+drawPalette()
 plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 2')
 
-drawpalette(zlim=c(0,1),zlab="Image Scale",col=oceColorsPalette)
+drawPalette(zlim=c(0,1),zlab="Image Scale",col=oceColorsPalette)
 plot(1:10, 1:10, lwd=2, bg=oceColorsPalette(10)[1:10],pch=21,cex=5,col='black',xlab='x', ylab='y', main='test 3')
-drawpalette(zlab="Image Scale")
+drawPalette(zlab="Image Scale")
 plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 4')
 
 }

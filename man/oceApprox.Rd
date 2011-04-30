@@ -1,11 +1,11 @@
-\name{oce.approx}
-\alias{oce.approx}
+\name{oceApprox}
+\alias{oceApprox}
 \title{Interpolate with Reiniger-Ross algorithm}
 
 \description{Interpolate with weighted-parabola method developed by
   Reiniger and Ross (1968).} 
 
-\usage{oce.approx(x, y, xout, method=c("reiniger-ross"))}
+\usage{oceApprox(x, y, xout, method=c("reiniger-ross"))}
 
 \arguments{
   \item{x}{the independent variable (z or p, usually).}
@@ -41,7 +41,7 @@ library(oce)
 data(RRprofile)
 zz <- seq(0,2000,5)
 plot(RRprofile$temperature, RRprofile$depth, ylim=c(500,0), xlim=c(2,11))
-TT <- oce.approx(RRprofile$depth, RRprofile$temperature, zz)
+TT <- oceApprox(RRprofile$depth, RRprofile$temperature, zz)
 lines(TT, zz)
 }
 

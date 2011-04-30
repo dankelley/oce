@@ -132,7 +132,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
         for (datum.name in data.names) {
             if (datum.name != "pressure") {
                 yvar <- x$data[[datum.name]]
-                pred <- oce.approx(xvar, yvar, pt)
+                pred <- oceApprox(xvar, yvar, pt)
                 data.new[[datum.name]] <- pred
             }
         }

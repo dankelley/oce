@@ -135,18 +135,18 @@ plot(ctd, which=c(1,2,3,5),
      adorn=expression({},{},{},{text(-69.72,47.85,'IAL',pos=4)}))
 
 # Trimming
-data(ctd.raw)
-plot(ctd.raw, which=8)
+data(ctdRaw)
+plot(ctdRaw, which=8)
 abline(v=100)
 abline(v=120)
 abline(v=130)
 abline(v=350)
 # The range 130 to 350 seems good, but you can narrow in
 # by repeating the command below, with differing ranges.
-plot(ctdTrim(ctd.raw, "range",
+plot(ctdTrim(ctdRaw, "range",
   parameters=list(item="index", from=130, to=350)), which=8)
 # See results
-ctdTrimmed <- ctdTrim(ctd.raw, "range",
+ctdTrimmed <- ctdTrim(ctdRaw, "range",
   parameters=list(item="index", from=130, to=350))
 plot(ctdTrimmed)
 }

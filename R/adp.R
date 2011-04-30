@@ -550,7 +550,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             tlim <- range(x$data$ts$time)
             if (which[w] == 13) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -568,7 +568,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 14) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -588,7 +588,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 15) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oceDebug(debug, "pressure plot. col=", col[w], "\n")
                 oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -607,7 +607,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 16) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -625,7 +625,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 17) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -643,7 +643,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 18) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -661,7 +661,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 19) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -683,7 +683,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 20) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 1)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -705,7 +705,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 21) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 2)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -727,7 +727,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 22) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 3)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -749,7 +749,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] %in% 55) { # heaving
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1])
                 oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
                             xlim=if(gave.xlim) xlim[w,] else tlim,

@@ -229,8 +229,8 @@ preceding section was trimmed of equilibration-phase and upcast-phase data. Data
 from these sections are spurious and must be trimmed as a first step in
 processing. For example, consider the following code.
 <<label=ctdrawplot,eval=FALSE>>=
-data(ctd.raw)
-plot.ctd.scan(ctd.raw)
+data(ctdRaw)
+plot.ctd.scan(ctdRaw)
 @
 \begin{figure}
 \begin{center}
@@ -239,7 +239,7 @@ plot.ctd.scan(ctd.raw)
 <<ctdrawplot>>
 @
 \end{center}
-\caption{Scanwise plot of the \texttt{ctd.raw} sample data set.  Note the wild
+\caption{Scanwise plot of the \texttt{ctdRaw} sample data set.  Note the wild
 spike at the start, the equilibration phase before the downcast, and the
 spurious freshening signal near the start of the upcast.  See the text for a
 discussion of how inspection of such graphs can help in trimming CTD data.}
@@ -253,16 +253,16 @@ is a convenient index for extraction of the downcast portion of the profile by
 an essentially manual method, e.g. proceeding with a sequence of commands such
 as
 <<ctdscaneg,eval=false>>=
-plot.ctd.scan(ctdTrim(ctd.raw, "range",
+plot.ctd.scan(ctdTrim(ctdRaw, "range",
                       parameters=list(item="scan", from=140, to=250)))
-plot.ctd.scan(ctdTrim(ctd.raw, "range",
+plot.ctd.scan(ctdTrim(ctdRaw, "range",
                       parameters=list(item="scan", from=150, to=250)))
 @
 This is the ``gold standard'' method, which is recommended for detailed
 work. However, for quick work, you may find that the automatic downcast
 detection scheme works adequately, e.g.
 <<ctdtrimeg,eval=false>>=
-ctdTrimmed <- ctdTrim(ctd.raw)
+ctdTrimmed <- ctdTrim(ctdRaw)
 @
 
 It should be noted that \verb@ctdTrim@ inserts entries into the object's log

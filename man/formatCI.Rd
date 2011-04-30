@@ -1,9 +1,9 @@
-\name{formatci}
-\alias{formatci}
+\name{formatCI}
+\alias{formatCI}
 \title{Format a confidence interval in parenthetic notation}
 \description{Format a confidence interval in parenthetic notation}
 
-\usage{formatci(ci, style=c("+/-", "parentheses"), model, digits=NULL)}
+\usage{formatCI(ci, style=c("+/-", "parentheses"), model, digits=NULL)}
 
 \arguments{
   \item{ci}{optional vector of length 2 or 3.}
@@ -49,8 +49,8 @@
   on pages 25 and 26) suggest halving the number put in parentheses.
 
   The \code{foramtci} function is based on the JCM (2008) notation,
-  i.e. \code{formatci(ci=c(8,12), style="+/-")} yields \code{"10+-2"},
-  and \code{formatci(ci=c(8,12), style="parentheses")} yields
+  i.e. \code{formatCI(ci=c(8,12), style="+/-")} yields \code{"10+-2"},
+  and \code{formatCI(ci=c(8,12), style="parentheses")} yields
   \code{"10(2)"}.
   
   \strong{Note:} if the confidence range exceeds the value, the
@@ -67,7 +67,7 @@
 x <- seq(0, 1, length.out=300)
 y <- rnorm(n=300, mean=10, sd=1) * x
 m <- lm(y~x)
-print(formatci(model=m))
+print(formatCI(model=m))
 }
 
 \author{Dan Kelley}

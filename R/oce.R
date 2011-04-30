@@ -137,7 +137,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     res
 }
 
-oce.approx <- function(x, y, xout, method=c("reiniger-ross"))
+oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
 {
     method <- match.arg(method)
     if (method != "reiniger-ross")
