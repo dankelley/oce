@@ -2,10 +2,10 @@
 
 \alias{xyzToEnuAdv}
 
-\title{Convert ADV from xyz coordinates to enu coordinates}
+\title{Convert ADP or ADV from xyz coordinates to enu coordinates}
 
-\description{Convert ADV velocity components from a xyz-based
-  coordinate system to an enu-based coordinate system.}
+\description{Convert ADP or ADV velocity components from a xyz-based coordinate
+    system to an enu-based coordinate system.}
 
 \usage{xyzToEnuAdv(x, declination=0,
             cabled=FALSE, horizontalCase, sensorOrientation,

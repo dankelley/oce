@@ -29,9 +29,6 @@
 
 \details{
 
-    \emph{This is an early version, which may be removed if it does not prove
-        useful.  The calling arguments may be changed also.}
-
     In the normal use, \code{drawPalette} draws an image palette near the
     right-hand side of the plotting device, and then adjusts the global margin
     settings in such a way as to cause the next plot to appear to the left of
