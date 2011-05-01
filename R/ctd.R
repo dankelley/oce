@@ -1371,43 +1371,44 @@ plot.TS <- function (x,
 drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     usr <- par("usr")
-    S.axis.min <- usr[1]
-    if (S.axis.min < 0.1) S.axis.min <- 0.1 # avoid NaN, which UNESCO density gives for freshwater
-    S.axis.max <- usr[2]
-    T.axis.min <- usr[3]
-    T.axis.max <- usr[4]
-    rho.corners <- swSigma(c(S.axis.min, S.axis.max, S.axis.min, S.axis.max),
-                           c(T.axis.min, T.axis.min, T.axis.max, T.axis.max),
-                            rep(0,4))
-    rho.min <- min(rho.corners, na.rm=TRUE)
-    rho.max <- max(rho.corners, na.rm=TRUE)
+    SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
+    SAxisMax <- usr[2]
+    TAxisMin <- usr[3]
+    TAxisMax <- usr[4]
+    rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
+                          c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
+                          rep(0, 4))
+    rhoMin <- min(rhoCorners, na.rm=TRUE)
+    rhoMax <- max(rhoCorners, na.rm=TRUE)
     if (length(rhoLevels) == 1) {
-        rhoList <- pretty(c(rho.min, rho.max), n=rhoLevels)
+        rhoList <- pretty(c(rhoMin, rhoMax), n=rhoLevels)
         ## Trim first and last values, since not in box
         rhoList <- rhoList[-1]
         rhoList <- rhoList[-length(rhoList)]
     } else {
         rhoList <- rhoLevels
     }
-    t.n <- 300
-    t.line <- seq(T.axis.min, T.axis.max, length.out=t.n)
+    Tn <- 300
+    Tline <- seq(TAxisMin, TAxisMax, length.out=Tn)
     cex.par <- par("cex")               # need to scale text() differently than mtext()
     for (rho in rhoList) {
         rhoLabel <- if (rho1000) 1000+rho else rho
-        s.line <- swSTrho(t.line, rep(rho, t.n), rep(0, t.n))
-        ok <- !is.na(s.line) # crazy T can give crazy S
-        s.ok <- s.line[ok]
-        t.ok <- t.line[ok]
-        lines(s.ok, t.ok, col = col, lwd=lwd, lty=lty)
-        if (s.ok[length(s.ok)] > S.axis.max) { # to right of box
-            i <- match(TRUE, s.ok > S.axis.max)
-            if (rotateRhoLabels)
-                mtext(rhoLabel, side=4, at=t.line[i], line=0.25, cex=cex, col=col)
-            else
-                text(usr[2], t.line[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
-        } else { # above box ... if the line got there
-            if (max(t.ok) > (T.axis.max - 0.05 * (T.axis.max - T.axis.min)))
-                mtext(rhoLabel, side=3, at=s.line[t.n], line=0.25, cex=cex, col=col)
+        Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn))
+        ok <- !is.na(Sline) # crazy T can give crazy S
+        Sok <- Sline[ok]
+        Tok <- Tline[ok]
+        lines(Sok, Tok, col = col, lwd=lwd, lty=lty)
+        if (cex > 0) {
+            if (Sok[length(Sok)] > SAxisMax) { # to right of box
+                i <- match(TRUE, Sok > SAxisMax)
+                if (rotateRhoLabels)
+                    mtext(rhoLabel, side=4, at=Tline[i], line=0.25, cex=cex, col=col)
+                else
+                    text(usr[2], Tline[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
+            } else { # above box ... if the line got there
+                if (max(Tok) > (TAxisMax - 0.05 * (TAxisMax - TAxisMin)))
+                    mtext(rhoLabel, side=3, at=Sline[Tn], line=0.25, cex=cex, col=col)
+            }
         }
     }
 }
