@@ -165,6 +165,7 @@ export(
        unwrapAngle,
        useHeading,
        vectorShow,
+       velocityStatistics,
        window.oce,
        write.ctd,
        xyzToEnu,

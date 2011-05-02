@@ -2,9 +2,9 @@
 
 \alias{beamUnattenuateAdp}
 
-\title{Attenuate ADP beam signal strength}
+\title{Unattenuate ADP beam signal strength}
 
-\description{Attenuate ADP beam signal strength}
+\description{Unattenuate ADP beam signal strength}
 
 \usage{beamUnattenuateAdp(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oceDebug"))}
 

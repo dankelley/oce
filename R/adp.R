@@ -871,7 +871,9 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 xx <- major * cos(theta)
                 yy <- minor * sin(theta)
                 theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-                rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                ##cat("major", major, "minor", minor, "theta0", theta0, "\n")
+                rotate <- rbind(c(cos(theta0), -sin(theta0)),
+                                c(sin(theta0), cos(theta0)))
                 xxyy <- rotate %*% rbind(xx, yy)
                 col <- if (gave.col) col else "darkblue"
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
@@ -883,7 +885,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         max.bin <- dim(x$data$ma$v)[2]
                         if (control$bin > max.bin)
                             stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                        umean <- mean(x$data$ma$v[,control$bin,1], na.rm=TRUE)
+                        umean <- mean(x$data$ma$v[,control$bin,2], na.rm=TRUE)
                         vmean <- mean(x$data$ma$v[,control$bin,2], na.rm=TRUE)
                     } else {
                         umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)

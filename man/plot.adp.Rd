@@ -107,8 +107,9 @@
     be de-spiked with \code{\link{despike}}.}
 }
 
-\details{Creates a multi-panel summary plot of data measured by an ADP
-  cast. The panels are controlled by the \code{which} argument.
+\details{Creates a summary plot of data measured by an acoustic doppler
+    profiler.  This may have one or more panels, with the content being
+    controlled by the \code{which} argument.
 
   \itemize{ 
 
@@ -251,6 +252,8 @@
     on the dock or on the ship as it travelled to the mooring site.
 }
 
+\value{None.}
+
 \seealso{The data are normally read with \code{\link{read.oce}}, which
   is usually able to detect the type of instrument.  If that fails, the
   user should try \code{\link{read.adp.rdi}} (for RDI files) or
@@ -265,7 +268,9 @@
   The beam stength may be corrected for R-squared spreading with
   \code{\link{beamUnattenuateAdp}}.
 
-  Summaries of ADP data are provided by \code{\link{summary.adp}}.
+  Summaries of ADP data are provided by \code{\link{summary.adp}}.  Velocity
+  statistics (e.g. means and variance ellipse) are provided by
+  \code{\link{velocityStatistics}}.
 
   ADP data may be plotted with \code{\link{plot.adp}}.
 }
