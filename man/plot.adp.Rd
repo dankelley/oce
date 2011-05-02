@@ -107,8 +107,9 @@
     be de-spiked with \code{\link{despike}}.}
 }
 
-\details{Creates a multi-panel summary plot of data measured by an ADP
-  cast. The panels are controlled by the \code{which} argument.
+\details{Creates a summary plot of data measured by an acoustic doppler
+    profiler.  This may have one or more panels, with the content being
+    controlled by the \code{which} argument.
 
   \itemize{ 
 
@@ -250,6 +251,14 @@
     at the start and end of the deployment, because they were measured
     on the dock or on the ship as it travelled to the mooring site.
 }
+
+\value{The return value is invisible.  For the sub-case
+    \code{which="uv+ellipse"}, the return value is a list containing items
+    \code{ellipseMajor}, \code{ellipseMinor}, and \code{ellipseAngle}.  For the
+    sub-case \code{which="uv+ellipse+arrow"}, a similar list is returned, but
+    with two additional items, named \code{meanU} and \code{meanV}.  In these
+    sub-cases, the list items correspond to the plotted items.  In all other
+    sub-cases, the return value is \code{NULL}.}
 
 \seealso{The data are normally read with \code{\link{read.oce}}, which
   is usually able to detect the type of instrument.  If that fails, the
