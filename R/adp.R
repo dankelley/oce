@@ -298,6 +298,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      ...)
 {
     debug <- max(0, min(debug, 4))
+    rval <- NULL
     oceDebug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
     oceDebug(debug, "early in plot.adp:\n")
     oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
@@ -878,6 +879,9 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 col <- if (gave.col) col else "darkblue"
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                rval$ellipseMajor <- major
+                rval$ellipseMinor <- minor
+                rval$ellipseAngle <- theta
                 if (which[w] >= 30) {
                     if (!missing(control) && !is.null(control$bin)) {
                         if (control$bin < 1)
@@ -891,6 +895,8 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)
                         vmean <- mean(x$data$ma$v[,,2], na.rm=TRUE)
                     }
+                    rval$meanU <- umean
+                    rval$meanV <- vmean
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
@@ -940,7 +946,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     }
     par(cex=opar$cex)
     oceDebug(debug, "\b\b\b} # plot.adp()\n")
-    invisible()
+    invisible(rval)
 }
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
