@@ -1,6 +1,14 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
+    if (missing(y))
+        stop("must supply 'y'")
+    if (missing(xmin))
+        xmin <- min(as.numeric(x), na.rm=TRUE)
+    if (missing(xmax))
+        xmax <- max(as.numeric(x), na.rm=TRUE)
+    if (missing(xinc))
+        xinc  <- (xmax - xmin) / 10 
     if (xmax <= xmin)
         stop("must have xmax > xmin")
     if (xinc <= 0)
@@ -9,6 +17,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
     if (nb < 1)
         stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
     xx <- seq(xmin, xmax-xinc, xinc) + xinc / 2
+    dyn.load("~/src/R-kelley/oce/src/bin_average.so")
     yy <- .C("bin_average", length(x), as.double(x), as.double(y), xmin, xmax, xinc, means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
     list(x=xx, y=yy)
 }
