@@ -17,7 +17,6 @@ binAverage <- function(x, y, xmin, xmax, xinc)
     if (nb < 1)
         stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
     xx <- seq(xmin, xmax-xinc, xinc) + xinc / 2
-    dyn.load("~/src/R-kelley/oce/src/bin_average.so")
     yy <- .C("bin_average", length(x), as.double(x), as.double(y), xmin, xmax, xinc, means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
     list(x=xx, y=yy)
 }
