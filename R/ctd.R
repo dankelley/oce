@@ -1329,9 +1329,13 @@ plot.TS <- function (x,
                      lwd.rho=par("lwd"), lty.rho=par("lty"),
                      ...)
 {
-    if (!inherits(x, "ctd"))
-        stop("method is only for ctd objects")
-
+    if (!inherits(x, "ctd")) {
+        names<- names(x)
+        if ("temperature" %in% names && "salinity" %in% names)
+            x <- as.ctd(x$salinity, x$temperature, 0)
+        else
+            stop("method is only for ctd objects")
+    }
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
     omar <- par("mar")

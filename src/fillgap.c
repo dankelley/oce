@@ -26,7 +26,7 @@ SEXP fillgap(SEXP x, SEXP rule)
   PROTECT(res = allocVector(REALSXP, xlen));
   unsigned char *isna = (unsigned char *) R_alloc(xlen, sizeof(unsigned char));
   double *resp = REAL(res);
-  int last_ok, next_ok;
+  int last_ok;
   double x_last_ok = 0.0;
   for (i = 0; i < xlen; i++)
     isna[i] = (unsigned char)ISNA(xp[i]);

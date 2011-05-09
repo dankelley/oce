@@ -128,7 +128,7 @@ pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, end
   unsigned char byte2 = 0x16; /* this equal 22 base 10, i.e. the number of bytes in record */
   unsigned int matches = 0;
   unsigned short int check_sum_start = ((unsigned short)0xa5<<8)  | ((unsigned short)0x96); /* manual p96 says 0xA596; assume little-endian */
-  unsigned short int check_sum, desired_check_sum, desired_check_sum2;
+  unsigned short int check_sum, desired_check_sum;
   if (max_lres < 0)
     max_lres = 0;
   for (int i = 0; i < lbuf - byte2; i++) { /* note that we don't look to the very end */

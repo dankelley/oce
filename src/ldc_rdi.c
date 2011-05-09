@@ -55,7 +55,7 @@ SEXP ldc_rdi(SEXP buf, SEXP max)
   unsigned char byte1 = 0x7f;
   unsigned char byte2 = 0x7f; /* this equal 22 base 10, i.e. the number of bytes in record */
   unsigned int matches = 0;
-  unsigned short int check_sum, desired_check_sum, desired_check_sum2;
+  unsigned short int check_sum, desired_check_sum;
   unsigned int bytes_to_check = 0;
 #ifdef DEBUG
   Rprintf("max_lres %d\n", max_lres);

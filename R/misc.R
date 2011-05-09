@@ -21,6 +21,57 @@ binAverage <- function(x, y, xmin, xmax, xinc)
     list(x=xx, y=yy)
 }
 
+extract <- function(x, names)
+{
+    if (!inherits(x, "oce"))
+        stop("method is only for oce objects")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (missing(names))
+        stop("must supply 'names'")
+    rval <- list()
+    if (inherits(x, "section")) {
+        for (name in names) {
+            if (name %in% names(x$metadata)) {
+                item <- NULL
+                for (i in 1:length(x$data$station))
+                    item <- c(item, rep(x$metadata[[name]][[i]], length(x$data$station[[i]]$data$salinity)))
+                rval[[name]] = item
+            } else if (name %in% names(x$data$station[[1]]$data)) {
+                item <- NULL
+                for (i in 1:length(x$data$station))
+                    item <- c(item, x$data$station[[i]]$data[[name]])
+                rval[[name]] <- item
+            } else {
+                warning("'", name, "' not in object")
+            }
+        }
+    } else {
+        for (name in names) {
+            if (name %in% names(x$metadata)) {
+                rval[[name]] = x$metadata[[name]]
+            } else {
+                if (name %in% names(x$data)) {
+                    rval[[name]] = x$data[[name]]
+                } else {
+                    if ("ts" %in% names(x$data) && name %in% names(x$data$ts)) {
+                        rval[[name]] = x$data$ts[[name]]
+                    } else {
+                        if ("tsSlow" %in% names(x$data) && name %in% names(x$data$tsSlow)) {
+                            rval[[name]] = x$data$tsSlow[[name]]
+                        } else {
+                            warning("'", name, "' not in object")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    rval
+}
+
+
+
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
     r <- range(x, na.rm=TRUE)
@@ -260,8 +311,8 @@ vectorShow <- function(v, msg, digits=5)
             } else {
                 paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
             }
-       } else {
-             if (n > 6) {
+        } else {
+            if (n > 6) {
                 paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
             } else {
                 paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
@@ -661,7 +712,7 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
 }
 
 interpBarnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
-                          xr=NULL, yr=NULL, gamma=0.5, iterations=2)
+                         xr=NULL, yr=NULL, gamma=0.5, iterations=2)
 {
     n <- length(x)
     if (length(y) != n)
@@ -746,7 +797,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
         rval$data <- out
     }
     rval$history <- historyAdd(rval$history,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -826,7 +877,7 @@ addColumn <- function (x, data, name)
     rval$data <- data.frame(x$data, data)
     names(rval$data) <- c(names(x$data), name)
     rval$history <- historyAdd(rval$history,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+                               paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -932,7 +983,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
     res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -972,7 +1023,7 @@ oceSmooth <- function(x, ...)
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+                              paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -1164,7 +1215,7 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
     rval$history <- historyAdd(rval$history,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+                               paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # applyMagneticDeclination\n")
     rval
 }

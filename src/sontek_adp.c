@@ -70,7 +70,7 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
   /* Count matches, so we can allocate the right length */
   unsigned int matches = 0;
   unsigned short int check_sum_start = ((unsigned short)0xa5<<8)  | ((unsigned short)0x96); /* manual p96 says 0xA596; assume little-endian */
-  unsigned short int check_sum, desired_check_sum, desired_check_sum2;
+  unsigned short int check_sum, desired_check_sum;
   if (max < 0)
     max = 0;
   /* scan first profile to determine ncell and nbeam */
