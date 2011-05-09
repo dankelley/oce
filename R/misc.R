@@ -1265,6 +1265,7 @@ oceDebug <- function(debug=0, ...)
         ##cat(paste(rep("  ", debug), collapse=""), ...)
     }
     flush.console()
+    invisible()
 }
 
 drawPalette <- function(zlim,
