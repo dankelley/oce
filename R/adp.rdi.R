@@ -34,8 +34,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     programVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     programVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     programVersion <- paste(programVersionMajor, programVersionMinor, sep=".")
-    programVersion.numeric <- as.numeric(programVersion)
-    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersion.numeric,")\n")
+    programVersionNumeric <- as.numeric(programVersion)
+    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersionNumeric,")\n")
     if (programVersion < 16.28)
         warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
