@@ -1,12 +1,12 @@
-\name{integer2ascii}
+\name{integerToAscii}
 
-\alias{integer2ascii}
+\alias{integerToAscii}
 
 \title{Decode integer to corresponding ASCII code}
 
 \description{Decode integer to corresponding ASCII code}
 
-\usage{integer2ascii(i)}
+\usage{integerToAscii(i)}
 
 \arguments{
   \item{i}{an integer, or integer vector.}
@@ -16,7 +16,7 @@
 
 \examples{
 library(oce)
-A <- integer2ascii(65)
+A <- integerToAscii(65)
 cat("A=", A, "\n")
 }
 

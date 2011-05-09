@@ -81,10 +81,10 @@
 }
 \examples{
 library(oce)
-data(ctd.raw) 
-plot(ctd.raw) # barely recognizable, due to pre- and post-cast junk
-plot(ctdTrim(ctd.raw)) # looks like a real profile ...
-plot(ctdDecimate(ctdTrim(ctd.raw),method="boxcar")) # ... smoothed
+data(ctdRaw) 
+plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
+plot(ctdTrim(ctdRaw)) # looks like a real profile ...
+plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
 }
 
 \references{The Seabird CTD instrument is described at

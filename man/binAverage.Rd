@@ -10,15 +10,25 @@
 
 \arguments{
   \item{x}{a vector of numerical values.}
+
   \item{y}{a vector of numerical values.}
-  \item{xmin}{x value at the lower limit of first bin.}
-  \item{xmax}{x value at the upper limit of last bin.}
-  \item{xinc}{width of bins, in terms of x value.}
+
+  \item{xmin}{x value at the lower limit of first bin; the minimum \code{x}
+      will be used if this is not provided.}
+  
+  \item{xmax}{x value at the upper limit of last bin; the maximum \code{x} will
+      be used if this is not provided.}
+ 
+  \item{xinc}{width of bins, in terms of x value; 1/10th of \code{xmax-xmin}
+      will be used if this is not provided.}
+
 }
 
-\details{The \code{y} vector is averaged in bins defined for \code{x}.}
+\details{The \code{y} vector is averaged in bins defined for \code{x}.  Missing
+    values in \code{y} are ignored.}
 
-\value{A list with two elements: \code{x}, the mid-points of the bins, and \code{y}, the average \code{y} value in the bins.}
+\value{A list with two elements: \code{x}, the mid-points of the bins, and
+    \code{y}, the average \code{y} value in the bins.}
 
 \examples{
 library(oce)

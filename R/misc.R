@@ -1,6 +1,14 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
+    if (missing(y))
+        stop("must supply 'y'")
+    if (missing(xmin))
+        xmin <- min(as.numeric(x), na.rm=TRUE)
+    if (missing(xmax))
+        xmax <- max(as.numeric(x), na.rm=TRUE)
+    if (missing(xinc))
+        xinc  <- (xmax - xmin) / 10 
     if (xmax <= xmin)
         stop("must have xmax > xmin")
     if (xinc <= 0)
@@ -126,7 +134,7 @@ despike <- function(x, reference=c("median", "smooth", "trim"), n=4, k=7, min, m
     }
     x
 }
-rangelimit <- function(x, min, max)
+rangeLimit <- function(x, min, max)
 {
     if (missing(min) && missing(max)) {
         minmax <- quantile(x, 0.005, 0.995)
@@ -1035,9 +1043,9 @@ byteToBinary <- function(x, endian=c("little", "big"))
     rval
 }
 
-formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
+formatCI <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
 {
-    formatci.one <- function(ci, style, digits=NULL)
+    formatCI.one <- function(ci, style, digits=NULL)
     {
         debug <- FALSE
         if (missing(ci))
@@ -1093,18 +1101,18 @@ formatci <- function(ci, style=c("+/-", "parentheses"), model, digits=NULL)
             rownames(rval) <- names
             colnames(rval) <- "value"
             for (row in 1:dim(ci)[1]) {
-                rval[row,1] <- formatci.one(ci=ci[row,], style=style, digits=digits)
+                rval[row,1] <- formatCI.one(ci=ci[row,], style=style, digits=digits)
             }
         }
         rval
     } else {
         if (missing(ci))
             stop("must give either ci or model")
-        formatci.one(ci=ci, style=style, digits=digits)
+        formatCI.one(ci=ci, style=style, digits=digits)
     }
 }
 
-integer2ascii <- function(i)
+integerToAscii <- function(i)
 {
     c("", "\001", "\002", "\003", "\004", "\005", "\006", "\a", "\b",
       "\t", "\n", "\v", "\f", "\r", "\016", "\017", "\020", "\021",
@@ -1257,9 +1265,10 @@ oceDebug <- function(debug=0, ...)
         ##cat(paste(rep("  ", debug), collapse=""), ...)
     }
     flush.console()
+    invisible()
 }
 
-drawpalette <- function(zlim,
+drawPalette <- function(zlim,
                         zlab="",
                         breaks,
                         col,
@@ -1272,7 +1281,7 @@ drawpalette <- function(zlim,
     gave.zlim <- !missing(zlim)
     gave.breaks <- !missing(breaks)
     if (gave.zlim)
-        oceDebug(debug, "\b\bdrawpalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
+        oceDebug(debug, "\b\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
     else
         oceDebug(debug, "palette() with no arguments: set space to right of a graph\n")
     oceDebug(debug, if (gave.breaks) "gave breaks\n" else "did not give breaks\n")
@@ -1359,13 +1368,13 @@ drawpalette <- function(zlim,
     the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
     oceDebug(debug, "original par(mai)=", format(omai, digits=2), "\n")
     oceDebug(debug, "setting  par(mai)=", format(the.mai, digits=2), "\n")
-    oceDebug(debug, "drawpalette orig mar=",par('mar'),"\n")
+    oceDebug(debug, "drawPalette orig mar=",par('mar'),"\n")
     if (gave.zlim)
         par(new=TRUE, mai=the.mai)
     else
         par(mai=the.mai)
-    oceDebug(debug, "drawpalette at end mar=",par('mar'),"\n")
-    oceDebug(debug, "\b\b} # drawpalette()\n")
+    oceDebug(debug, "drawPalette at end mar=",par('mar'),"\n")
+    oceDebug(debug, "\b\b} # drawPalette()\n")
     invisible()
 }
 

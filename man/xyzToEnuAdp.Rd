@@ -2,11 +2,11 @@
 
 \alias{xyzToEnuAdp}
 
-\title{Convert ADP from xyz coordinates to enu coordinates}
+\title{Convert ADP or ADV from xyz coordinates to enu coordinates}
 
-\description{Convert ADP velocity components from a xyz-based
-  coordinate system to an enu-based coordinate system, by using
-  the instrument's recording of heading, pitch, and roll.}
+\description{Convert ADP or ADV velocity components from a xyz-based coordinate
+    system to an enu-based coordinate system, by using the instrument's
+    recording of heading, pitch, and roll.}
 
 \usage{xyzToEnuAdp(x, declination=0, debug=getOption("oceDebug"))}
 

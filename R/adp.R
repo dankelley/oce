@@ -298,6 +298,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      ...)
 {
     debug <- max(0, min(debug, 4))
+    rval <- NULL
     oceDebug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
     oceDebug(debug, "early in plot.adp:\n")
     oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
@@ -550,7 +551,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             tlim <- range(x$data$ts$time)
             if (which[w] == 13) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -568,7 +569,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 14) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -588,7 +589,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 15) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oceDebug(debug, "pressure plot. col=", col[w], "\n")
                 oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -607,7 +608,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 16) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$heading,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -625,7 +626,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 17) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -643,7 +644,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 18) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$ts$time, x$data$ts$roll,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
@@ -661,7 +662,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 19) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 0)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -683,7 +684,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 20) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 1)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -705,7 +706,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 21) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 2)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -727,7 +728,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] == 22) {
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 3)
                     oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -749,7 +750,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
             if (which[w] %in% 55) { # heaving
                 if (haveTimeImages)
-                    drawpalette(debug=debug-1)
+                    drawPalette(debug=debug-1)
                 dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1])
                 oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
                             xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -871,11 +872,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 xx <- major * cos(theta)
                 yy <- minor * sin(theta)
                 theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-                rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                ##cat("major", major, "minor", minor, "theta0", theta0, "\n")
+                rotate <- rbind(c(cos(theta0), -sin(theta0)),
+                                c(sin(theta0), cos(theta0)))
                 xxyy <- rotate %*% rbind(xx, yy)
                 col <- if (gave.col) col else "darkblue"
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                rval$ellipseMajor <- major
+                rval$ellipseMinor <- minor
+                rval$ellipseAngle <- theta
                 if (which[w] >= 30) {
                     if (!missing(control) && !is.null(control$bin)) {
                         if (control$bin < 1)
@@ -883,12 +889,14 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                         max.bin <- dim(x$data$ma$v)[2]
                         if (control$bin > max.bin)
                             stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                        umean <- mean(x$data$ma$v[,control$bin,1], na.rm=TRUE)
+                        umean <- mean(x$data$ma$v[,control$bin,2], na.rm=TRUE)
                         vmean <- mean(x$data$ma$v[,control$bin,2], na.rm=TRUE)
                     } else {
                         umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)
                         vmean <- mean(x$data$ma$v[,,2], na.rm=TRUE)
                     }
+                    rval$meanU <- umean
+                    rval$meanV <- vmean
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
@@ -938,7 +946,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     }
     par(cex=opar$cex)
     oceDebug(debug, "\b\b\b} # plot.adp()\n")
-    invisible()
+    invisible(rval)
 }
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))

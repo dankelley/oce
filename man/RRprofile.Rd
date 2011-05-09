@@ -27,7 +27,7 @@ plot(ctd)
 zz <- seq(0,2000,5)
 plot(RRprofile$temperature, RRprofile$depth, ylim=c(500,0), xlim=c(2,11),
      xlab="Temperature", ylab="Depth [m]")
-TT <- oce.approx(RRprofile$depth, RRprofile$temperature, zz)
+TT <- oceApprox(RRprofile$depth, RRprofile$temperature, zz)
 lines(TT, zz)
 a <- approx(RRprofile$depth, RRprofile$temperature, zz)
 lines(a$y, zz, col='red')

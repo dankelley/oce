@@ -1,4 +1,6 @@
 0.2-2
+- velocityStatistics() added
+- new names: oceApprox() integerToAscii() rangeLimit() ctdRaw
 - topoInterpolate() added
 - numberAsPOSIXct(): add type 'argos'
 - rename beamAttenuateAdp() as beamUnattenuateAdp()

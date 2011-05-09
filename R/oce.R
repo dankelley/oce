@@ -137,7 +137,7 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     res
 }
 
-oce.approx <- function(x, y, xout, method=c("reiniger-ross"))
+oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
 {
     method <- match.arg(method)
     if (method != "reiniger-ross")
@@ -224,7 +224,7 @@ oce.plot.ts <- function(x,
                         ...)
 {
     ocex <- par("cex")
-    par(cex=cex)
+    #par(cex=cex)
     debug <- min(debug, 4)
     oceDebug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
     oceDebug(debug, "mgp=",mgp,"\n")
@@ -244,16 +244,16 @@ oce.plot.ts <- function(x,
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
              ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
-             type=type, ...)
+             type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
              ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
-             type=type, ...)
+             type=type, cex=cex, ...)
     }
     xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                              mgp=mgp, cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                              mgp=mgp, cex=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
                               debug=debug-1, ...)
     if (grid) {
         lwd <- par("lwd")
@@ -263,6 +263,7 @@ oce.plot.ts <- function(x,
                col="lightgray", lty="dotted", lwd=lwd)
     }
     box()
+    ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
     axis(2, cex.axis=cex.axis)
     axis(4, labels=FALSE)
     if (!is.null(adorn)) {
@@ -270,7 +271,7 @@ oce.plot.ts <- function(x,
         if (class(t) == "try-error")
             warning("cannot evaluate adorn {", format(adorn), "}\n")
     }
-    par(cex=ocex)
+    ##par(cex=ocex)
     oceDebug(debug, "\b\b} # oce.plot.ts()\n")
     invisible()
 }

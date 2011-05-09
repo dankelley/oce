@@ -1,13 +1,13 @@
-\name{rangelimit}
+\name{rangeLimit}
 
-\alias{rangelimit}
+\alias{rangeLimit}
 
 \title{Substitute NA for data outside a range}
 
 \description{Substitute NA for data outside a range, e.g. to remove wild
 spikes in data.}
 
-\usage{rangelimit(x, min, max)}
+\usage{rangeLimit(x, min, max)}
 
 \arguments{
   \item{x}{vector of values}
@@ -20,7 +20,7 @@ spikes in data.}
 }
 
 \examples{
-ten.to.twenty <- rangelimit(1:100, 10, 20)
+ten.to.twenty <- rangeLimit(1:100, 10, 20)
 }
 
 \author{Dan Kelley}
