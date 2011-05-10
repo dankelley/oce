@@ -32,45 +32,78 @@ extract <- function(x, names)
     rval <- list()
     if (inherits(x, "section")) {
         for (name in names) {
-            if (name %in% names(x$metadata)) {
-                item <- NULL
-                for (i in 1:length(x$data$station))
-                    item <- c(item, rep(x$metadata[[name]][[i]], length(x$data$station[[i]]$data$salinity)))
-                rval[[name]] = item
+            if (name %in% names(x)) {
+                rval[[name]] <- x[[name]]
+            } else if (name %in% names(x$metadata)) {
+                if (name %in% c("longitude", "latitude", "stationId", "date")) {
+                    item <- NULL
+                    for (i in 1:length(x$data$station))
+                        item <- c(item, rep(x$metadata[[name]][[i]], length(x$data$station[[i]]$data$salinity)))
+                    rval[[name]] = item
+                } else {
+                    rval[[name]] = x$metadta[[name]]
+                }
             } else if (name %in% names(x$data$station[[1]]$data)) {
                 item <- NULL
                 for (i in 1:length(x$data$station))
                     item <- c(item, x$data$station[[i]]$data[[name]])
                 rval[[name]] <- item
             } else {
-                warning("'", name, "' not in object")
+                stop("'", name, "' not in object's metadata or data$station[[1]]$data")
+            }
+        }
+    } else if (inherits(x, "adp")) {
+        for (name in names) {
+            if (name %in% names(x)) {
+                rval[[name]] <- x[[name]]
+            } else if (name %in% names(x$metadata)) {
+                rval[[name]] <-  x$metadata[[name]]
+            } else if (name %in% names(x$data$ts)) {
+                rval[[name]] <- x$data$ts[[name]]
+            } else if (name %in% names(x$data$ss)) {
+                rval[[name]] <- x$data$ss[[name]]
+            } else if (name %in% names(x$data$ma)) {
+                rval[[name]] <- x$data$ma[[name]]
+            } else {
+                stop("'", name, "' not in object")
+            }
+        }
+    } else if (inherits(x, "adv")) {
+        for (name in names) {
+            if (name %in% names(x)) {
+                rval[[name]] <- x[[name]]
+            } else if (name %in% names(x$metadata)) {
+                rval[[name]] <-  x$metadata[[name]]
+            } else if (name %in% names(x$data$ts)) {
+                rval[[name]] <- x$data$ts[[name]]
+            } else if (name %in% names(x$data$tsSlow)) { # FIXME shadowed by ts
+                rval[[name]] <- x$data$tsSlow[[name]]
+            } else if (name %in% names(x$data$ma)) {
+                rval[[name]] <- x$data$ma[[name]]
+            } else {
+                stop("'", name, "' not in object")
             }
         }
     } else {
+        ## all other types have 2-level hierarchy
         for (name in names) {
-            if (name %in% names(x$metadata)) {
+            if (name %in% names(x)) {
+                rval[[name]] <- x[[name]]
+            } else if (name %in% names(x$metadata)) {
                 rval[[name]] = x$metadata[[name]]
+            } else if (name %in% names(x$data)) {
+                rval[[name]] = x$data[[name]]
+            } else if ("ts" %in% names(x$data) && name %in% names(x$data$ts)) {
+                rval[[name]] = x$data$ts[[name]]
+            } else if ("tsSlow" %in% names(x$data) && name %in% names(x$data$tsSlow)) { # FIXME ts shadows
+                rval[[name]] = x$data$tsSlow[[name]]
             } else {
-                if (name %in% names(x$data)) {
-                    rval[[name]] = x$data[[name]]
-                } else {
-                    if ("ts" %in% names(x$data) && name %in% names(x$data$ts)) {
-                        rval[[name]] = x$data$ts[[name]]
-                    } else {
-                        if ("tsSlow" %in% names(x$data) && name %in% names(x$data$tsSlow)) {
-                            rval[[name]] = x$data$tsSlow[[name]]
-                        } else {
-                            warning("'", name, "' not in object")
-                        }
-                    }
-                }
+                stop("'", name, "' not in object")
             }
         }
     }
     rval
 }
-
-
 
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {

@@ -1,4 +1,7 @@
 useDynLib(oce)
+import(methods)
+importFrom(utils, head, tail)
+exportMethods(print, plot, head, tail)
 export(
        "+.section",
        beamName,
@@ -174,6 +177,8 @@ export(
        xyzToEnuAdv
        )
 
+S3method(head, adp)
+S3method(tail, adp)
 S3method(plot, adp)
 S3method(plot, adv)
 S3method(plot, cm)

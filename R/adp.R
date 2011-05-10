@@ -1,5 +1,51 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
+head.adp <- function(x, n = 6L, ...)
+{
+    numberOfProfiles <- dim(x$data$ma$v)[1]
+    if (n < 0)
+        look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+    else
+        look <- seq.int(1, min(n, numberOfProfiles))
+    rval <- x
+    for (name in names(x$data$ts))
+        rval$data$ts[[name]] <- x$data$ts[[name]][look]
+    for (name in names(x$data$ma)) {
+        rank <- length(dim(x$data$ma[[name]]))
+        if (2 == rank)
+            rval$data$ma[[name]] <- x$data$ma[[name]][look,]
+        else if (3 == rank)
+            rval$data$ma[[name]] <- x$data$ma[[name]][look,,]
+        else 
+            stop('rank of data$ma[["', name, '"]] must be 2 or 3, but is ', rank)
+    }
+    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval
+}
+
+tail.adp <- function(x, n = 6L, ...)
+{
+    numberOfProfiles <- dim(x$data$ma$v)[1]
+    if (n < 0)
+        look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+    else
+        look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+    rval <- x
+    for (name in names(x$data$ts))
+        rval$data$ts[[name]] <- x$data$ts[[name]][look]
+    for (name in names(x$data$ma)) {
+        rank <- length(dim(x$data$ma[[name]]))
+        if (2 == rank)
+            rval$data$ma[[name]] <- x$data$ma[[name]][look,]
+        else if (3 == rank)
+            rval$data$ma[[name]] <- x$data$ma[[name]][look,,]
+        else 
+            stop('rank of data$ma[["', name, '"]] must be 2 or 3, but is ', rank)
+    }
+    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval 
+}
+
 removeShipMotion <- function(x)
 {
     rval <- x
