@@ -1153,7 +1153,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     omgp <- par('mgp')
     par(cex=cex, cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
-    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex=cex, cex.main=cex.main, cex.axis=cex.axis)
+    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex=cex, cex.main=cex.main, cex.axis=cex.axis, ...)
     par(cex=ocex, cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
     oceDebug(debug, "\b\b} # oce.axis.ts()\n")
     invisible()
