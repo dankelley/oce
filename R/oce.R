@@ -932,7 +932,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     ## This was written because axis.POSIXt in R version 2.8.x did not obey the
     ## time zone in the data.  (Version 2.9.0 obeys the time zone.)
     if (missing(x))
-        stop("must supply x")
+        x <- numberAsPOSIXct(par('usr')[1:2])
     dots <- list(...)
     if ("xlim" %in% names(dots)) {
         ok <- dots$xlim[1] <= x & x <= dots$xlim[2]
