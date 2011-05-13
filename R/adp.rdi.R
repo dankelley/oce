@@ -586,20 +586,20 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (haveBottomTrack) {
                 bottomRange.na <- bottomRange == 0.0
                 bottomRange[bottomRange.na] <- NA
-                ma <- list(v=v, a=a, q=q, g=g, bottomRange=bottomRange, bottomVelocity=bottomVelocity)
             } else {
-                ma <- list(v=v, a=a, q=q, g=g)
+                bottomRange <- NULL
             }
-            data <- list(ma=ma,
-                         ss=list(distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells)),
-                         ts=list(time=time,
-                                 pressure=pressure,
-                                 temperature=temperature,
-                                 salinity=salinity,
-                                 depth=depth,
-                                 heading=heading,
-                                 pitch=pitch,
-                                 roll=roll))
+            data <- list(v=v, a=a, q=q, 
+                         bottomRange=bottomRange, bottomVelocity=bottomVelocity,
+                         distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                         time=time,
+                         pressure=pressure,
+                         temperature=temperature,
+                         salinity=salinity,
+                         depth=depth,
+                         heading=heading,
+                         pitch=pitch,
+                         roll=roll)
         } else {
             warning("There are no profiles in this file.")
             metadata <- header

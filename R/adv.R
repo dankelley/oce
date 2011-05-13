@@ -39,7 +39,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##   SIG=System Integrator Guide
     ##   vvd=vector velocity data [p35 SIG], containing the data: pressure, vel, amp, corr (plus sensemble counter etc)
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
-    ## NOTE: we interpolate from vsd to vvd, to get the final data$ts$time, etc.
+    ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
     oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", type=\"", type, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", type=\"", type, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", history=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
@@ -425,12 +425,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     time <- vvdSec + vsd.t[1]
     ##print(attributes(time)) # is time out somehow?
     ##print(time[1])
-    data <- list(ts=list(time=time,
-                         ##heading=heading, pitch=pitch, roll=roll, temperature=temperature,
-                         pressure=pressure),
-                 tsSlow=list(time=vsd.t, heading=heading, pitch=pitch, roll=roll, temperature=temperature),
-                 ##ss=list(distance=0),   # FIXME: why even have this?
-                 ma=list(v=v, a=a, c=c))
+    data <- list(time=time, pressure=pressure,
+                 timeVsd, heading=heading, pitch=pitch, roll=roll, temperature=temperature,
+                 v=v, a=a, c=c)
     res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("nortek", "adv", "oce")
     oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
@@ -560,14 +557,13 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      orientation="upward") # guess
 
     nt <- length(time)
-    data <- list(ts=list(time=time,
-                         heading=rep(0, nt), # user will need to fill this in
-                         pitch=rep(0, nt), #  user will need to fill this in
-                         roll=rep(0, nt),  # user will need to fill this in
-                         temperature=temperature,
-                         pressure=pressure),
-                 ##ss=list(distance=0),
-                 ma=list(v=v,a=a,c=c))
+    data <- list(time=time, # FIXME: what about other adv time?
+                 heading=rep(0, nt), # user will need to fill this in
+                 pitch=rep(0, nt), #  user will need to fill this in
+                 roll=rep(0, nt),  # user will need to fill this in
+                 temperature=temperature,
+                 pressure=pressure),
+                 v=v,a=a,c=c)
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
@@ -1012,19 +1008,18 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     pitch <- pitch[iii]
     heading <- heading[iii]
     roll <- roll[iii]
-    data <- list(ts=list(time=time,
-                         heading=heading,
-                         pitch=pitch,
-                         roll=roll,
-                         temperature=temperature,
-                         pressure=pressure),
-                 ##ss=list(distance=0),
-                 ma=list(v=v, a=a, c=c))
+    data <- list(time=time,
+                 heading=heading,
+                 pitch=pitch,
+                 roll=roll,
+                 temperature=temperature,
+                 pressure=pressure,
+                 v=v, a=a, c=c)
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
-    history <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=history)
-    class(res) <- c("sontek", "adv", "oce")
+history <- historyItem(history)
+res <- list(data=data, metadata=metadata, history=history)
+class(res) <- c("sontek", "adv", "oce")
     res
 }
 
@@ -1137,14 +1132,13 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     tt <- seq(t[fromBurst], t[toBurst], length.out=len)
     ## trim to the requested interval
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
-    data <- list(ts=list(time=tt[ok],
-                         heading=approx(t, heading, xout=tt, rule=2)$y[ok],
-                         pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
-                         roll=approx(t, roll, xout=tt, rule=2)$y[ok],
-                         temperature=temperature,
-                         pressure=pressure),
-                 ##ss=list(distance=0),
-                 ma=list(v=v[ok,],a=a[ok,],c=c[ok,]))
+    data <- list(time=tt[ok],
+                 heading=approx(t, heading, xout=tt, rule=2)$y[ok],
+                 pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
+                 roll=approx(t, roll, xout=tt, rule=2)$y[ok],
+                 temperature=temperature,
+                 pressure=pressure,
+                 v=v[ok,], a=a[ok,], c=c[ok,])
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv", # FIXME or "adr"?
                      latitude=latitude, longitude=longitude,
@@ -1170,39 +1164,18 @@ summary.adv <- function(object, ...)
 {
     if (!inherits(object, "adv"))
         stop("method is only for adv objects")
-    tsNames <- names(object$data$ts)
-    nrow <- length(tsNames) - 1          # the -1 is for 'time'
-    haveTsSlow <- "tsSlow" %in% names(object$data)
-    if (haveTsSlow) {
-        tsSlow.names <- names(object$data$tsSlow)
-        nrow <- nrow + length(tsSlow.names) - 1 # the -1 is for 'time'
-    }
-    ma.names <- names(object$data$ma)
-    nrow <- nrow + length(ma.names)
+    dataNames <- names(object$data)
+    nrow <- length(dataNames) - 1          # the -1 is for 'time'
+    nrow <- nrow + length(dataNames)
     fives <- matrix(nrow=nrow, ncol=5)
     ii <- 1
-    for (name in tsNames) {
+    for (name in dataNames) {
         if (name != "time") {
-            fives[ii,] <- fivenum(as.numeric(object$data$ts[[name]]), na.rm=TRUE)
+            fives[ii,] <- fivenum(as.numeric(object$data[[name]]), na.rm=TRUE)
             ii <- ii + 1
         }
     }
-    if (haveTsSlow) {
-        for (name in tsSlow.names) {
-            if (name != "time") {
-                fives[ii,] <- fivenum(as.numeric(object$data$tsSlow[[name]]), na.rm=TRUE)
-                ii <- ii + 1
-            }
-        }
-    }
-    for (name in ma.names) {
-        fives[ii,] <- fivenum(as.numeric(object$data$ma[[name]]), na.rm=TRUE)
-        ii <- ii + 1
-    }
-    if (haveTsSlow)
-        rownames(fives) <- c(tsNames[tsNames != "time"], tsSlow.names[tsSlow.names != "time"], ma.names)
-    else
-        rownames(fives) <- c(tsNames[tsNames != "time"], ma.names)
+    rownames(fives) <- dataNames
     colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     res <- list(filename=object$metadata$filename,
                 numberOfBeams=if (!is.null(object$metadata$numberOfBeams)) object$metadata$numberOfBeams else 3,
@@ -1215,12 +1188,12 @@ summary.adv <- function(object, ...)
                 measurementStart=object$metadata$measurementStart,
                 measurementEnd=object$metadata$measurementEnd,
                 measurementDeltat=object$metadata$measurementDeltat,
-                subsampleStart=min(object$data$ts$time, na.rm=TRUE),
-                subsampleEnd=max(object$data$ts$time, na.rm=TRUE),
-                subsampleDeltat=mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE),
+                subsampleStart=min(object$data$time, na.rm=TRUE),
+                subsampleEnd=max(object$data$time, na.rm=TRUE),
+                subsampleDeltat=mean(diff(as.numeric(object$data$time)),na.rm=TRUE),
                 instrumentType=object$metadata$instrumentType,
                 serialNumber=object$metadata$serialNumber,
-                numberOfSamples=length(object$data$ts$time),
+                numberOfSamples=length(object$data$time),
                 coordinateSystem=object$metadata$coordinateSystem,
                 oceCoordinate=object$metadata$oceCoordinate,
                 fives=fives,
@@ -1350,7 +1323,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
     if (missing(col)) {
         col <- rep("black", length.out=nw)
     } else {
-        col.per.point <- length(col) == length(x$data$tsSlow$time)
+        col.per.point <- length(col) == length(x$data$time) # FIXME slow timescale here?
         if (!col.per.point)
             col <- rep(col, length.out=nw)
     }
@@ -1454,20 +1427,18 @@ plot.adv <- function(x, which=c(1:3,14,15),
     which <- which2
     oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     oceDebug(debug, "after layout, cex=", par('cex'), "\n")
-    haveTsSlow <- "tsSlow" %in% names(x$data)
-    tlim <- range(x$data$ts$time, na.rm=TRUE)
-    if (haveTsSlow)
-        tslim <- range(x$data$tsSlow$time, na.rm=TRUE)
+    ## FIXME below here, was using tsSlow
+    tlim <- range(x$data$time, na.rm=TRUE)
     for (w in 1:nw) {
         if (w > 1)
             main <- ""
         oceDebug(debug, "plotting which[", w, "]=", which[w], "\n")
         par(mgp=mgp, mar=mar)
         if (which[w] %in% 1:3) {        # u1, u2, u3
-            y <- as.numeric(x$data$ma$v[,which[w]])
+            y <- as.numeric(x$data$v[,which[w]])
             if (have.brushCorrelation && type == "p") {
-                good <- as.numeric(x$data$ma$c[,which[w]]) >= brushCorrelation
-                oce.plot.ts(x$data$ts$time[good], y[good], ylab=beamName(x, which[w]),
+                good <- as.numeric(x$data$c[,which[w]]) >= brushCorrelation
+                oce.plot.ts(x$data$time[good], y[good], ylab=beamName(x, which[w]),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
@@ -1480,9 +1451,9 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             main=main,
                             debug=debug-1,
                             ...)
-                points(x$data$ts$time[!good], x$data$ma$v[!good,which[w]], col=colBrush)
+                points(x$data$time[!good], x$data$v[!good,which[w]], col=colBrush)
             } else {
-                oce.plot.ts(x$data$ts$time, y, ylab=beamName(x, which[w]),
+                oce.plot.ts(x$data$time, y, ylab=beamName(x, which[w]),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             xlim=if (gave.xlim) xlim[w,] else tlim,
@@ -1502,11 +1473,11 @@ plot.adv <- function(x, which=c(1:3,14,15),
         } else if (which[w] %in% 5:7) { # a1, a2, a3
             ## FIXME/DRY: alter a1,a2,a3 if alter q1,q2,q3, since both almost the same
             oceDebug(debug, "plotting a1, a2, or a3 since which[w] == ", which[w], "\n")
-            y <- as.numeric(x$data$ma$a[,which[w]-4])
+            y <- as.numeric(x$data$a[,which[w]-4])
             oceDebug(debug, "range(y):", paste(range(y, na.rm=TRUE), sep="-"), "\n")
             if (have.brushCorrelation && type == "p") {
-                good <- as.numeric(x$data$ma$c[,which[w]-4]) >= brushCorrelation
-                oce.plot.ts(x$data$ts$time[good], y[good],
+                good <- as.numeric(x$data$c[,which[w]-4]) >= brushCorrelation
+                oce.plot.ts(x$data$time[good], y[good],
                             ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
@@ -1519,9 +1490,9 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             main=main,
                             debug=debug-1,
                             ...)
-                points(x$data$ts$time[!good], y[!good], col=colBrush)
+                points(x$data$time[!good], y[!good], col=colBrush)
             } else {
-                oce.plot.ts(x$data$ts$time, y,
+                oce.plot.ts(x$data$time, y,
                             ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
@@ -1537,10 +1508,10 @@ plot.adv <- function(x, which=c(1:3,14,15),
             }
             rm(y)                       # space may be tight
         } else if (which[w] %in% 9:11) { # q1, q2, q3 (named c1, c2, and c3 in the object)
-            y <- as.numeric(x$data$ma$c[,which[w]-8])
+            y <- as.numeric(x$data$c[,which[w]-8])
             if (have.brushCorrelation && type == "p") {
-                good <- as.numeric(x$data$ma$c[,which[w]-8]) >= brushCorrelation
-                oce.plot.ts(x$data$ts$time[good], y[good],
+                good <- as.numeric(x$data$c[,which[w]-8]) >= brushCorrelation
+                oce.plot.ts(x$data$time[good], y[good],
                             ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
@@ -1553,9 +1524,9 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             main=main,
                             debug=debug-1,
                             ...)
-                points(x$data$ts$time[!good], y[!good], col=colBrush)
+                points(x$data$time[!good], y[!good], col=colBrush)
             } else {
-                oce.plot.ts(x$data$ts$time, y,
+                oce.plot.ts(x$data$time, y,
                             ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
@@ -1570,39 +1541,24 @@ plot.adv <- function(x, which=c(1:3,14,15),
             }
             rm(y)                       # space may be tight
         } else if (which[w] == 14 || which[w] == "temperature") {
-            if (haveTsSlow) {
-                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$temperature, ylab=resizableLabel("T", "y"),
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$temperature, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=if(col.per.point) col else col[w],
-                            main=main,
-                            debug=debug-1,
-                            ...)
-            } else {
-                oce.plot.ts(x$data$ts$time, x$data$ts$temperature, ylab=resizableLabel("T", "y"),
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tlim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$temperature, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=if(col.per.point) col else col[w],
-                            main=main,
-                            debug=debug-1,
-                            ...)
-            }
-        } else if (which[w] == 15 || which[w] == "pressure") {
-            oce.plot.ts(x$data$ts$time, x$data$ts$pressure, ylab=resizableLabel("p", "y"),
+            oce.plot.ts(x$data$time, x$data$temperature, ylab=resizableLabel("T", "y"),
                         drawTimeRange=drawTimeRange,
                         adorn=adorn[w],
                         xlim=if (gave.xlim) xlim[w,] else tlim,
-                        ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pressure, na.rm=TRUE),
+                        ylim=if (gave.ylim) ylim[w,] else range(x$data$temperature, na.rm=TRUE),
+                        type=type,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                        lwd=lwd[w], col=if(col.per.point) col else col[w],
+                        main=main,
+                        debug=debug-1,
+                        ...)
+        } else if (which[w] == 15 || which[w] == "pressure") {
+            oce.plot.ts(x$data$time, x$data$pressure, ylab=resizableLabel("p", "y"),
+                        drawTimeRange=drawTimeRange,
+                        adorn=adorn[w],
+                        xlim=if (gave.xlim) xlim[w,] else tlim,
+                        ylim=if (gave.ylim) ylim[w,] else range(x$data$pressure, na.rm=TRUE),
                         type=type,
                         cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                         mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
@@ -1611,93 +1567,48 @@ plot.adv <- function(x, which=c(1:3,14,15),
                         debug=debug-1,
                         ...)
         } else if (which[w] == 16 || which[w] == "heading") {
-            if (haveTsSlow) {
-                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$heading, ylab="heading",
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$heading, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=if(col.per.point) col else col[w],
-                            main=main,
-                            debug=debug-1,
+            oce.plot.ts(x$data$time, x$data$heading, ylab="heading",
+                        drawTimeRange=drawTimeRange,
+                        adorn=adorn[w],
+                        xlim=if (gave.xlim) xlim[w,] else tlim,
+                        ylim=if (gave.ylim) ylim[w,] else range(x$data$heading, na.rm=TRUE),
+                        type=type,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                        lwd=lwd[w], col=if(col.per.point) col else col[w],
+                        main=main,
+                        debug=debug-1,
                             ...)
-            } else {
-                oce.plot.ts(x$data$ts$time, x$data$ts$heading, ylab="heading",
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tlim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$heading, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=if(col.per.point) col else col[w],
-                            main=main,
-                            debug=debug-1,
-                            ...)
-            }
         } else if (which[w] == 17 || which[w] == "pitch") {    # pitch
-            if (haveTsSlow) {
-                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$pitch, ylab="pitch",
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$pitch, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=if(col.per.point) col else col[w],
-                            main=main,
-                            debug=debug-1,
-                            ...)
-            } else {
-                oce.plot.ts(x$data$ts$time, x$data$ts$pitch, ylab="pitch",
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tlim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$pitch, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=if(col.per.point) col else col[w],
-                            main=main,
-                            debug=debug-1,
-                            ...)
-            }
+            oce.plot.ts(x$data$time, x$data$pitch, ylab="pitch",
+                        drawTimeRange=drawTimeRange,
+                        adorn=adorn[w],
+                        xlim=if (gave.xlim) xlim[w,] else tlim,
+                        ylim=if (gave.ylim) ylim[w,] else range(x$data$pitch, na.rm=TRUE),
+                        type=type,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                        lwd=lwd[w], col=if(col.per.point) col else col[w],
+                        main=main,
+                        debug=debug-1,
+                        ...)
         } else if (which[w] == 18 || which[w] == "roll") {
-            if (haveTsSlow) {
-                oce.plot.ts(x$data$tsSlow$time, x$data$tsSlow$roll, ylab="roll",
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tslim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$tsSlow$roll, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=if(col.per.point) col else col[w],
-                            main=main,
-                            debug=debug-1,
-                            ...)
-            } else {
-                oce.plot.ts(x$data$ts$time, x$data$ts$roll, ylab="roll",
-                            drawTimeRange=drawTimeRange,
-                            adorn=adorn[w],
-                            xlim=if (gave.xlim) xlim[w,] else tlim,
-                            ylim=if (gave.ylim) ylim[w,] else range(x$data$ts$roll, na.rm=TRUE),
-                            type=type,
-                            cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                            mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                            lwd=lwd[w], col=col[w],
-                            main=main,
-                            debug=debug-1,
-                            ...)
-            }
+            oce.plot.ts(x$data$time, x$data$roll, ylab="roll",
+                        drawTimeRange=drawTimeRange,
+                        adorn=adorn[w],
+                        xlim=if (gave.xlim) xlim[w,] else tlim,
+                        ylim=if (gave.ylim) ylim[w,] else range(x$data$roll, na.rm=TRUE),
+                        type=type,
+                        cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                        mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                        lwd=lwd[w], col=col[w],
+                        main=main,
+                        debug=debug-1,
+                        ...)
             ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
         } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
-            a <- as.numeric(x$data$ma$a[,1])
-            c <- as.numeric(x$data$ma$c[,1])
+            a <- as.numeric(x$data$a[,1])
+            c <- as.numeric(x$data$c[,1])
             n <- length(a)
             if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(a, c, xlab="Amplitude", ylab="Correlation",
@@ -1712,8 +1623,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
             }
             mtext("beam 1")
         } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
-            a <- as.numeric(x$data$ma$a[,2])
-            c <- as.numeric(x$data$ma$c[,2])
+            a <- as.numeric(x$data$a[,2])
+            c <- as.numeric(x$data$c[,2])
             n <- length(a)
             if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(a, c, xlab="Amplitude", ylab="Correlation",
@@ -1728,8 +1639,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
             }
             mtext("beam 2")
         } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
-            a <- as.numeric(x$data$ma$a[,3])
-            c <- as.numeric(x$data$ma$c[,3])
+            a <- as.numeric(x$data$a[,3])
+            c <- as.numeric(x$data$c[,3])
             n <- length(a)
             if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(a, c, xlab="Amplitude", ylab="Correlation",
@@ -1745,12 +1656,12 @@ plot.adv <- function(x, which=c(1:3,14,15),
             mtext("beam 3")
         } else if (which[w] == 23 || which[w] == "progressive vector") {    # progressive vector
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            dt <- diff(as.numeric(x$data$ts$time))
+            dt <- diff(as.numeric(x$data$time))
             dt <- c(dt[1], dt)    # make right length by copying first
             dt <- mean(dt, na.rm=TRUE)
             m.per.km <- 1000
-            u <- x$data$ma$v[,1]
-            v <- x$data$ma$v[,2]
+            u <- x$data$v[,1]
+            v <- x$data$v[,2]
             u[is.na(u)] <- 0        # zero out missing
             v[is.na(v)] <- 0
             x.dist <- cumsum(u) * dt / m.per.km
@@ -1763,19 +1674,19 @@ plot.adv <- function(x, which=c(1:3,14,15),
         } else if (which[w] >= 28) {
             oceDebug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- length(x$data$ts$time)
+            n <- length(x$data$time)
             if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
-                plot(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
+                plot(x$data$v[,1], x$data$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                      asp=1, xlim=xlim, ylim=ylim, lwd=lwd[w], col=col[w], main=main, ...)
             } else {
-                smoothScatter(x$data$ma$v[,1], x$data$ma$v[,2], xlab="u [m/s]", ylab="v [m/s]",
+                smoothScatter(x$data$v[,1], x$data$v[,2], xlab="u [m/s]", ylab="v [m/s]",
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                               asp=1, xlim=xlim, ylim=ylim, ...)
             }
             if (which[w] >= 29) {
-                ok <- !is.na(x$data$ma$v[,1]) & !is.na(x$data$ma$v[,2])
-                e <- eigen(cov(data.frame(u=x$data$ma$v[ok,1], v=x$data$ma$v[ok,2])))
+                ok <- !is.na(x$data$v[,1]) & !is.na(x$data$v[,2])
+                e <- eigen(cov(data.frame(u=x$data$v[ok,1], v=x$data$v[ok,2])))
                 major <- sqrt(e$values[1])
                 minor <- sqrt(e$values[2])
                 theta <- seq(0, 2*pi, length.out=360/5)
@@ -1787,8 +1698,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col="darkblue")
                 if (which[w] >= 30) {
-                    umean <- mean(x$data$ma$v[,1], na.rm=TRUE)
-                    vmean <- mean(x$data$ma$v[,2], na.rm=TRUE)
+                    umean <- mean(x$data$v[,1], na.rm=TRUE)
+                    vmean <- mean(x$data$v[,2], na.rm=TRUE)
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
@@ -1848,14 +1759,14 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
     oceDebug(debug, sprintf("%.10f %.10f %.10f\n", tm[2,1], tm[2,2], tm[2,3]))
     oceDebug(debug, sprintf("%.10f %.10f %.10f\n", tm[3,1], tm[3,2], tm[3,3]))
     ## Not using the matrix method because it might consume more memory, and
-    ## measures no faster xyz <- tm %*% rbind(x$data$ma$v[,1], x$data$ma$v[,2],
-    ## x$data$ma$v[,3])
-    u <- tm[1,1] * x$data$ma$v[,1] + tm[1,2] * x$data$ma$v[,2] + tm[1,3] * x$data$ma$v[,3]
-    v <- tm[2,1] * x$data$ma$v[,1] + tm[2,2] * x$data$ma$v[,2] + tm[2,3] * x$data$ma$v[,3]
-    w <- tm[3,1] * x$data$ma$v[,1] + tm[3,2] * x$data$ma$v[,2] + tm[3,3] * x$data$ma$v[,3]
-    x$data$ma$v[,1] <- u
-    x$data$ma$v[,2] <- v
-    x$data$ma$v[,3] <- w
+    ## measures no faster xyz <- tm %*% rbind(x$data$v[,1], x$data$v[,2],
+    ## x$data$v[,3])
+    u <- tm[1,1] * x$data$v[,1] + tm[1,2] * x$data$v[,2] + tm[1,3] * x$data$v[,3]
+    v <- tm[2,1] * x$data$v[,1] + tm[2,2] * x$data$v[,2] + tm[2,3] * x$data$v[,3]
+    w <- tm[3,1] * x$data$v[,1] + tm[3,2] * x$data$v[,2] + tm[3,3] * x$data$v[,3]
+    x$data$v[,1] <- u
+    x$data$v[,2] <- v
+    x$data$v[,3] <- w
     x$metadata$oceCoordinate <- "xyz"
     x$history <- historyAdd(x$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # beamToXyzAdv()\n")
@@ -1876,32 +1787,13 @@ xyzToEnuAdv <- function(x, declination=0,
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
-    haveTsSlow <- "tsSlow" %in% names(x$data)
-    haveSteadyAngles <- (haveTsSlow && length(x$data$tsSlow$heading)==1 && length(x$data$tsSlow$pitch)==1 && length(x$data$tsSlow$roll)==1) ||
-    (!haveTsSlow && length(x$data$ts$heading) == 1 && length(x$data$ts$pitch) == 1 && length(x$data$ts$roll) == 1)
+    haveSteadyAngles <- length(x$data$heading) == 1 && length(x$data$pitch) == 1 && length(x$data$roll) == 1
     oceDebug(debug, "haveSteadyAngles=",haveSteadyAngles,"\n")
-    if (haveTsSlow) {
-        oceDebug(debug, "adv data has data$tsSlow\n")
-        if (haveSteadyAngles) {
-            oceDebug(debug, "adv data has constant heading, pitch, and roll\n")
-            heading <- x$data$tsSlow$heading
-            pitch <- x$data$tsSlow$pitch
-            roll <- x$data$tsSlow$roll
-        } else {
-            oceDebug(debug, "adv data has time-varying heading, pitch, and roll\n")
-            t0 <- as.numeric(x$data$tsSlow$time[1])    # arbitrary; done in case approx hates large x values
-            tFast <- as.numeric(x$data$ts$time) - t0
-            tSlow <- as.numeric(x$data$tsSlow$time) - t0
-            heading <- approx(tSlow, x$data$tsSlow$heading, xout=tFast)$y
-            pitch <- approx(tSlow, x$data$tsSlow$pitch, xout=tFast)$y
-            roll <- approx(tSlow, x$data$tsSlow$roll, xout=tFast)$y
-        }
-    } else {
-        oceDebug(debug, "adv data does not have data$tsSlow; time-series data are data$ts\n")
-        heading <- x$data$ts$heading
-        pitch <- x$data$ts$pitch
-        roll <- x$data$ts$roll
-    }
+    # FIXME: haveTsSlow necessary here
+    oceDebug(debug, "adv data does not have data ts slow; time-series data are data\n")
+    heading <- x$data$heading
+    pitch <- x$data$pitch
+    roll <- x$data$roll
     ## Adjust various things, so that the xyz-to-enu formulae (based on RDI) will work
     ##
     ## The various cases are defined by help(xyzToEnuAdv).
@@ -1916,9 +1808,9 @@ xyzToEnuAdv <- function(x, declination=0,
                 tmp <- pitch
                 pitch <- roll
                 roll <- -tmp
-                starboard <- x$data$ma$v[,1]
-                forward <- -x$data$ma$v[,2]
-                mast <- -x$data$ma$v[,3]
+                starboard <- x$data$v[,1]
+                forward <- -x$data$v[,2]
+                mast <- -x$data$v[,3]
             } else if (sensorOrientation == "downward") {
                 oceDebug(debug, "Case 2: Nortek vector velocimeter with downward-pointing sensor attached directly to pressure case.\n")
                 oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
@@ -1926,9 +1818,9 @@ xyzToEnuAdv <- function(x, declination=0,
                 tmp <- pitch
                 pitch <- roll
                 roll <- -tmp
-                starboard <- x$data$ma$v[,1]
-                forward <- x$data$ma$v[,2]
-                mast <- x$data$ma$v[,3]
+                starboard <- x$data$v[,1]
+                forward <- x$data$v[,2]
+                mast <- x$data$v[,3]
             } else {
                 stop("need sensor orientation to be 'upward' or 'downward', not '", sensorOrientation,"'")
             }
@@ -1946,9 +1838,9 @@ xyzToEnuAdv <- function(x, declination=0,
                     tmp <- pitch
                     pitch <- roll
                     roll <- -tmp
-                    starboard <- x$data$ma$v[,1]
-                    forward <- x$data$ma$v[,2]
-                    mast <- x$data$ma$v[,3]
+                    starboard <- x$data$v[,1]
+                    forward <- x$data$v[,2]
+                    mast <- x$data$v[,3]
                 } else if (sensorOrientation == "downward") {
                     oceDebug(debug, "Case 4: Nortek vector velocimeter with downward-pointing sensor, cabled to a horizontal pressure case.\n")
                     oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=pitch, S=X, F=-Y, and M=-Z.\n")
@@ -1956,9 +1848,9 @@ xyzToEnuAdv <- function(x, declination=0,
                     tmp <- pitch
                     pitch <- roll
                     roll <- tmp
-                    starboard <- x$data$ma$v[,1]
-                    forward <- x$data$ma$v[,2]
-                    mast <- x$data$ma$v[,3]
+                    starboard <- x$data$v[,1]
+                    forward <- x$data$v[,2]
+                    mast <- x$data$v[,3]
                 } else {
                     stop("need sensor orientation to be 'upward' or 'downward', not '", sensorOrientation,"'")
                 }
@@ -1976,9 +1868,9 @@ xyzToEnuAdv <- function(x, declination=0,
             tmp <- pitch
             pitch <- roll
             roll <- -tmp
-            starboard <- x$data$ma$v[,1]
-            forward <- -x$data$ma$v[,2]
-            mast <- -x$data$ma$v[,3]
+            starboard <- x$data$v[,1]
+            forward <- -x$data$v[,2]
+            mast <- -x$data$v[,3]
         } else if (sensorOrientation == "downward") {
             oceDebug(debug, "Case 8: Sontek ADV velocimeter with downward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading=90, pitch=roll, roll=-pitch, S=X, F=Y, and M=Z.\n")
@@ -1986,16 +1878,16 @@ xyzToEnuAdv <- function(x, declination=0,
             tmp <- pitch
             pitch <- roll
             roll <- -tmp
-            starboard <- x$data$ma$v[,1]
-            forward <- x$data$ma$v[,2]
-            mast <- x$data$ma$v[,3]
+            starboard <- x$data$v[,1]
+            forward <- x$data$v[,2]
+            mast <- x$data$v[,3]
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
     } else {
         stop("unknown type of instrument; x$metadata$manufacturer must contain either \"sontek\" or \"nortek\"")
     }
-    np <- dim(x$data$ma$v)[1]
+    np <- dim(x$data$v)[1]
     enu <- .C("sfm_enu",
               as.integer(length(heading)), # need not equal np
               as.double(heading + declination),
@@ -2010,9 +1902,9 @@ xyzToEnuAdv <- function(x, declination=0,
               up = double(np),
               NAOK=TRUE,
               PACKAGE="oce")
-    x$data$ma$v[,1] <- enu$east
-    x$data$ma$v[,2] <- enu$north
-    x$data$ma$v[,3] <- enu$up
+    x$data$v[,1] <- enu$east
+    x$data$v[,2] <- enu$north
+    x$data$v[,3] <- enu$up
     x$metadata$oceCoordinate <- "enu"
     x$history <- historyAdd(x$history,
                             paste(deparse(match.call()), sep="", collapse=""))
@@ -2027,24 +1919,24 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0)
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oceCoordinate != "enu")
         stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
-    np <- dim(x$data$ma$v)[1]
+    np <- dim(x$data$v)[1]
     other <- .C("sfm_enu",
               as.integer(length(heading)), # need not equal np
               as.double(heading),
               as.double(pitch),
               as.double(roll),
               as.integer(np),
-              as.double(x$data$ma$v[,1]),
-              as.double(x$data$ma$v[,2]),
-              as.double(x$data$ma$v[,3]),
+              as.double(x$data$v[,1]),
+              as.double(x$data$v[,2]),
+              as.double(x$data$v[,3]),
               v1new = double(np),
               v2new = double(np),
               v3new = double(np),
               NAOK=TRUE,
               PACKAGE="oce")
-    x$data$ma$v[,1] <- other$v1new
-    x$data$ma$v[,2] <- other$v2new
-    x$data$ma$v[,3] <- other$v3new
+    x$data$v[,1] <- other$v1new
+    x$data$v[,2] <- other$v2new
+    x$data$v[,3] <- other$v3new
     x$metadata$oceCoordinate <- "other"
     x$history <- historyAdd(x$history,
                             paste(deparse(match.call()), sep="", collapse=""))
