@@ -568,20 +568,20 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             for (name in names(x$data)) {
                 if ("distance" == name)
                     next
-                if (length(grep("^time", name)) || is.vector(res$data[[name]])) {
+                if (length(grep("^time", name)) || is.vector(rval$data[[name]])) {
                     if (haveSlow && 1 == length(agrep("Slow$", name))) {
                         oceDebug(debug, "substtting 'slow' variable data$", name, "\n", sep="")
-                        res$data[[name]] <- x$data[[name]][keepSlow]
+                        rval$data[[name]] <- x$data[[name]][keepSlow]
                     } else {
                         oceDebug(debug, "subsetting data$", name, "\n", sep="")
-                        res$data[[name]] <- x$data[[name]][keep]
+                        rval$data[[name]] <- x$data[[name]][keep]
                     }
-                } else if (is.matrix(res$data[[name]])) {
+                } else if (is.matrix(rval$data[[name]])) {
                     oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
-                    res$data[[name]] <- x$data[[name]][keep,]
-                } else if (is.array(res$data[[name]])) {
+                    rval$data[[name]] <- x$data[[name]][keep,]
+                } else if (is.array(rval$data[[name]])) {
                     oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
-                    res$data[[name]] <- x$data[[name]][keep,,]
+                    rval$data[[name]] <- x$data[[name]][keep,,]
                 }
             }
         } else {
