@@ -160,7 +160,7 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
     rval$data$time <- x$data$time + a + b * (as.numeric(x$data$time) - as.numeric(t0))
     if ("timeSlow" %in% names(x$data)) {
         oceDebug(debug, "retiming x$data$timeSlow\n")
-        rval$data$timeSlow <- x$data$timeSlow + a + b * (as.numeric(x$data$timeSlowtime) - as.numeric(t0))
+        rval$data$timeSlow <- x$data$timeSlow + a + b * (as.numeric(x$data$timeSlow) - as.numeric(t0))
     }
     rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # retime.adv()\n")

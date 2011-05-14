@@ -156,7 +156,7 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     keep <- keep[1 <= keep]
     keep <- keep[keep <= n]
     data <- list(sample=sample[keep], time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
-    metadata$measurementEnd <- ts$time[length(ts$time)]
+    metadata$measurementEnd <- time[length(time)]
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- historyItem(history)

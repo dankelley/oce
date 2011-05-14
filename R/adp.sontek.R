@@ -283,14 +283,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n")
         if (type == "pcadp")
             v <- v / 10                # it seems pcadp is in 0.1mm/s
-        ma <- list(v=v, a=a, q=q)
-        rm(v, a, q)
     } else {
-        ma <- NULL
+        stop("please request to read *some* profiles")
     }
     ## interpolate headings (which may be less frequent than profiles ... FIXME: really???)
     nheading <- length(heading)
-    nv <- dim(ma$v)[1]
+    nv <- dim(v)[1]
     if (nheading != nv) {
         warning("read.adp.sontek() interpolating ", nheading, " heading/pitch/roll values to the ", nv, " velocity profiles")
         oceDebug(debug, "BEFORE: length(heading)=", nheading, ", nv=", nv, "\n")
@@ -337,7 +335,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             S  <- 1 / (3 * sin(beamAngle * pi / 180)) # 0.7887339
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
-            warning("*****FIXME: check up and down; also read it and check*****")
+            ## FIXME: check up and down; also read it and check
             metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
                                                       0  , -CS,  CS,
                                                       C  ,   C,   C),

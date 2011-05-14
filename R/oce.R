@@ -551,11 +551,10 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             stop("cannot specify 'indices' for adv objects (not coded yet)")
         if (missing(subset))
             stop("must specify a 'subset'")
-        subsetString <- deparse(substitute(subset))
+        subsetString <- paste(deparse(substitute(subset)), collapse=" ")
         oceDebug(debug, "subsetString='", subsetString, "'\n")
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an adv object by time\n")
-            oceDebug(debug, "Step 1: subset x$data\n")
             keep <- eval(substitute(subset), x$data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
             sum.keep <- sum(keep)
             if (sum.keep < 2)
@@ -563,14 +562,19 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             oceDebug(debug, "keeping", sum.keep, "of the", length(keep), "time slots\n")
             oceDebug(debug, vectorShow(keep, "keeping bins:"))
             rval <- x
-            haveSlow <- "timeSlow" %in% names(x$data)
-            keepSlow <- if (haveSlow) rep(FALSE, length(x$data$timeSlow)) else NULL
+            names <- names(x$data)
+            haveSlow <- "timeSlow" %in% names
+            keep <- eval(substitute(subset), x$data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
+            if (haveSlow) {
+                subsetStringSlow <- gsub("time", "timeSlow", subsetString)
+                keepSlow <-eval(parse(text=subsetStringSlow), x$data, parent.frame())
+            }
             for (name in names(x$data)) {
                 if ("distance" == name)
                     next
                 if (length(grep("^time", name)) || is.vector(rval$data[[name]])) {
-                    if (haveSlow && 1 == length(agrep("Slow$", name))) {
-                        oceDebug(debug, "substtting 'slow' variable data$", name, "\n", sep="")
+                    if (1 == length(agrep("Slow$", name))) {
+                        oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
                         rval$data[[name]] <- x$data[[name]][keepSlow]
                     } else {
                         oceDebug(debug, "subsetting data$", name, "\n", sep="")

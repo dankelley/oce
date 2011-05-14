@@ -214,13 +214,12 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
   contains measurements made with an ADV device.  This is a list
   containing lists named \code{metadata}, \code{data}, and
-  \code{history}.  The \code{data} list contains lists \code{ts},
-  potentially (for Nortek Vector units) \code{tsSlow}, and \code{ma}
-  (matrices of velocity, etc).  These are as \code{adp} objects, except
-  for the presence of \code{tsSlow}, for timeseries that vary on a slow
-  timescale, e.g. on Nortek Vector units, \code{tsSlow} holds
-  \code{heading}, \code{pitch}, \code{roll}, and \code{temperature},
-  while \code{ts} holds only \code{pressure}.  }
+  \code{history}.  The \code{data} list contains items with names corresponding to 
+  \code{adp} objects, with an exception for Nortek data.  Nortek instruments
+  report some things at a time interval that is longer than the velocity sampling, and these
+  are stored in \code{data} as \code{timeSlow}, \code{headingSlow},
+  \code{pitchSlow}, \code{rollSlow}, and \code{temperatureSlow}.
+}
 
 \seealso{Objects of class \code{adv} may be plotted with
   \code{\link{plot.adv}} or summarized with \code{\link{summary.adv}}.
