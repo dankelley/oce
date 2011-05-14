@@ -370,7 +370,7 @@ summary.sealevel <- function(object, ...)
 {
     if (!inherits(object, "sealevel"))
         stop("method is only for sealevel objects")
-    fives <- matrix(nrow=1, ncol=5)
+    threes <- matrix(nrow=1, ncol=3)
     res <- list(number=object$metadata$stationNumber,
                 version=if (is.null(object$metadata$version)) "?" else object$metadata$version,
                 name=object$metadata$stationName,
@@ -384,12 +384,12 @@ summary.sealevel <- function(object, ...)
                 startTime=min(object$data$time, na.rm=TRUE),
                 endTime=max(object$data$time, na.rm=TRUE),
                 gmtOffset=if (is.na(object$metadata$GMTOffset)) "?" else object$metadata$GMTOffset,
-                fives=fives,
+                threes=threes,
                 history=object$history)
-    fives[1,] <- fivenum(object$data$elevation, na.rm=TRUE)
-    rownames(fives) <- "Sea level"
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    res$fives <- fives
+    threes[1,] <- threenum(object$data$elevation)
+    rownames(threes) <- "Sea level"
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    res$threes <- threes
     class(res) <- "summary.sealevel"
     res
 }
@@ -410,7 +410,7 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat(paste("*    \"     endTime:   ",x$endTime, "\n"), ...)
     cat(paste("* GMT offset:          ", if (is.null(x$GMTOffset)) "unknown" else x$GMTOffset, "\n", sep=""), ...)
     cat("* Statistics::\n", ...)
-    cat(showFives(x, indent='     '), ...)
+    cat(showThrees(x, indent='     '), ...)
     print(summary(x$history))
     invisible(x)
 }

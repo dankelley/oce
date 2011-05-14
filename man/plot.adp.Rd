@@ -6,7 +6,7 @@
 
 \description{Plot ADP data.}
 
-\usage{\method{plot}{adp}(x, which=1:dim(x$data$ma$v)[3],
+\usage{\method{plot}{adp}(x, which=1:dim(x$data$v)[3],
      col,
      zlim,
      titles,
@@ -283,7 +283,7 @@ plot(adp, which=1:3)
 plot(adp, which=1:2,
      adorn=expression({
          abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
-         lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='blue')
+         lines(x$data$time, x$data$pressure, lwd=3, col='blue')
      }))
 }
 

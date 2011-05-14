@@ -632,7 +632,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                  time=time,
                  heading=heading, pitch=pitch, roll=roll,
                  temperature=temperature,
-                 pressure=rep(0, length(temperature))),
+                 pressure=rep(0, length(temperature)),
                  distance=distance)
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")

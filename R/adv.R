@@ -426,7 +426,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##print(attributes(time)) # is time out somehow?
     ##print(time[1])
     data <- list(time=time, pressure=pressure,
-                 timeVsd, heading=heading, pitch=pitch, roll=roll, temperature=temperature,
+                 timeVsd=NULL, heading=heading, pitch=pitch, roll=roll, temperature=temperature, # FIXME: what about timeVsd?
                  v=v, a=a, c=c)
     res <- list(data=data, metadata=metadata, history=hitem)
     class(res) <- c("nortek", "adv", "oce")
@@ -562,7 +562,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                  pitch=rep(0, nt), #  user will need to fill this in
                  roll=rep(0, nt),  # user will need to fill this in
                  temperature=temperature,
-                 pressure=pressure),
+                 pressure=pressure,
                  v=v,a=a,c=c)
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
     if (missing(history))
@@ -1167,16 +1167,16 @@ summary.adv <- function(object, ...)
     dataNames <- names(object$data)
     nrow <- length(dataNames) - 1          # the -1 is for 'time'
     nrow <- nrow + length(dataNames)
-    fives <- matrix(nrow=nrow, ncol=5)
+    threes <- matrix(nrow=nrow, ncol=3)
     ii <- 1
     for (name in dataNames) {
         if (name != "time") {
-            fives[ii,] <- fivenum(as.numeric(object$data[[name]]), na.rm=TRUE)
+            threes[ii,] <- threenum(as.numeric(object$data[[name]]))
             ii <- ii + 1
         }
     }
-    rownames(fives) <- dataNames
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(threes) <- dataNames
+    colnames(threes) <- c("Min.", "Mean", "Max.")
     res <- list(filename=object$metadata$filename,
                 numberOfBeams=if (!is.null(object$metadata$numberOfBeams)) object$metadata$numberOfBeams else 3,
                 latitude=object$metadata$latitude,
@@ -1196,7 +1196,7 @@ summary.adv <- function(object, ...)
                 numberOfSamples=length(object$data$time),
                 coordinateSystem=object$metadata$coordinateSystem,
                 oceCoordinate=object$metadata$oceCoordinate,
-                fives=fives,
+                threes=threes,
                 history=object$history)
     if (inherits(object, "nortek")) {
         res$softwareVersion <- object$metadata$softwareVersion
@@ -1263,8 +1263,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
     }
     cat("\n",...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
-    ##cat("\n* history\n\n", ...)
+    cat(showThrees(x, indent='     '), ...)
     cat("\n")
     print(summary(x$history))
     invisible(x)

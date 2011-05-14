@@ -19,7 +19,7 @@
     heading.}
 }
 
-\value{A copy of \code{b}, but with \code{b$data$ts$heading} replaced
+\value{A copy of \code{b}, but with \code{b$data$heading} replaced
   with an angle that result from linear interpolation of the headings in
   \code{g}, and then adding the angle \code{add}.}
 

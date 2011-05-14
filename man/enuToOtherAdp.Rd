@@ -30,7 +30,7 @@
   points up or down, etc.
 }
 
-\value{An object with \code{data$ma$v[,1:3,]} altered appropriately,
+\value{An object with \code{data$v[,1:3,]} altered appropriately,
  and \code{metadata$oce.coordinate} changed from \code{enu} to
   \code{other}.}
 

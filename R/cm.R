@@ -187,23 +187,22 @@ summary.cm <- function(object, ...)
     res$measurementDeltat <- object$metadata$measurementDeltat
     res$history <- object$history
     dataNames <- names(object$data)
-    print(dataNames)
-    fives <- matrix(nrow=(-1+length(dataNames)), ncol=5)
+    three <- matrix(nrow=(-1+length(dataNames)), ncol=3)
     ii <- 1
     for (i in 1:length(dataNames)) {
         if (names(object$data)[i] != "time") {
-            fives[ii,] <- fivenum(object$data[[DataNames[i]]], na.rm=TRUE)
+            threes[ii,] <- threenum(object$data[[dataNames[i]]])
             ii <- ii + 1
         }
     }
-    rownames(fives) <- dataNames[dataNames != "time"]
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(threes) <- dataNames[dataNames != "time"]
+    colnames(threes) <- c("Min.", "Mean", "Max.")
     vDim <- dim(object$data$v)
     res$subsampleStart <- object$data$time[1]
     res$subsampleEndTime <- object$data$time[length(object$data$time)]
     res$subsampleDeltat <- mean(diff(as.numeric(object$data$time)),na.rm=TRUE)
-    res$distance <- object$data$ss$distance
-    res$fives <- fives
+    res$distance <- object$data$distance
+    res$threes <- threes 
     res$time <- object$data$time
     res$dataNames <- names(object$data)
     class(res) <- "summary.cm"
@@ -230,8 +229,7 @@ print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                 x$numberOfCells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
-    ##cat("\n* history::\n\n", ...)
+    cat(showThrees(x, indent='     '), ...)
     cat("\n")
     print(summary(x$history))
     invisible(x)

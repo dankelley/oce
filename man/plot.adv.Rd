@@ -94,13 +94,13 @@
         \item \code{which=4} is not permitted (since ADV are 3-beam devices)
         \item \code{which=5} to \code{7} (or \code{"a1"} to \code{"a3"})
         yield timeseries of the amplitudes of beams 1 to 3.  (Note that
-        the data are called \code{data$ma$a[,1]}, \code{data$ma$a[,2]} and
-        \code{data$ma$a[,3]}, for these three timeseries.)
+        the data are called \code{data$a[,1]}, \code{data$a[,2]} and
+        \code{data$a[,3]}, for these three timeseries.)
         \item \code{which=8} is not permitted (since ADV are 3-beam devices)
         \item \code{which=9} to \code{11} (or \code{"q1"} to \code{"q3"})
         yield timeseries of correlation for beams 1 to 3.  (Note that the
-        data are called \code{data$ma$c[,1]}, \code{data$ma$c[,2]} and
-        \code{data$ma$c[,3]}, for these three timeseries.)
+        data are called \code{data$c[,1]}, \code{data$c[,2]} and
+        \code{data$c[,3]}, for these three timeseries.)
         \item \code{which=12} is not permitted (since ADVs are 3-beam devices)
         \item \code{which=13} is not permitted (since ADVs do not measure salinity)
         \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.

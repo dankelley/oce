@@ -174,7 +174,7 @@ read.pt <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     history, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
-    oceDebug(debug, "\b\bread.pt(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...)\n", sep="")
+    oceDebug(debug, "\b\bread.pt(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="")
     file <- fullFilename(file)
     filename <- file
     if (is.character(file)) {
@@ -313,11 +313,13 @@ read.pt <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     time <- time[look]
     temperature <- as.numeric(d[Tcol, look])
     pressure <- as.numeric(d[pcol, look])
-    as.pt(time, temperature, pressure, instrumentType="rbr",
-          serialNumber=serialNumber,
-          filename=filename,
-          history=paste(deparse(match.call()), sep="", collapse=""),
-          debug=debug-1)
+    rval <- as.pt(time, temperature, pressure, instrumentType="rbr",
+                  serialNumber=serialNumber,
+                  filename=filename,
+                  history=paste(deparse(match.call()), sep="", collapse=""),
+                  debug=debug-1)
+    oceDebug(debug, "\b} # read.pt()\n", sep="")
+    rval
 }
 
 summary.pt <- function(object, ...)
@@ -325,14 +327,14 @@ summary.pt <- function(object, ...)
     if (!inherits(object, "pt"))
         stop("method is only for pt objects")
     time.range <- range(object$data$time, na.rm=TRUE)
-    fives <- matrix(nrow=2, ncol=5)
-    fives[1,] <- fivenum(object$data$temperature, na.rm=TRUE)
-    fives[2,] <- fivenum(object$data$pressure, na.rm=TRUE)
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    rownames(fives) <- c("Temperature", "Pressure")
+    threes <- matrix(nrow=2, ncol=3)
+    threes[1,] <- threenum(object$data$temperature)
+    threes[2,] <- threenum(object$data$pressure)
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    rownames(threes) <- c("Temperature", "Pressure")
     res <- list(filename=object$metadata$filename,
                 serialNumber=object$metadata$serialNumber,
-                fives=fives,
+                threes=threes,
                 tstart=object$data$time[1],
                 tend=object$data$time[length(object$data$time)],
                 deltat=as.numeric(object$data$time[2]) - as.numeric(object$data$time[1]),
@@ -351,8 +353,7 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
                 format(x$tend), attr(x$tend, "tzone"),
                 1 / x$deltat), ...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
-    ##cat("\n* history::\n\n", ...)
+    cat(showThrees(x, indent='     '), ...)
     cat("\n")
     print(summary(x$history))
     invisible(x)

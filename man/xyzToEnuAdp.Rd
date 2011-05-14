@@ -19,7 +19,7 @@
 
 \details{The first step is to
     convert the (x,y,z) velocity components (stored in the three columns of
-    \code{x$data$ma$v[,,1:3]}) into what RDI [1, pages 11 and 12] calls
+    \code{x$data$v[,,1:3]}) into what RDI [1, pages 11 and 12] calls
     "ship" (or "righted") components.  For example, the z coordinate, which may
     point upwards or downwards depending on instrument orientation, is mapped
     onto a "mast" coordinate that points more nearly upwards than
@@ -27,7 +27,7 @@
     "starboard" and "forward", the meanings of which will be clear to 
     mariners.  Once the (x,y,z) velocities are converted to ship
     velocities, the orientation of the instrument is extracted from
-    heading, pitch, and roll vectors stored in \code{x$data$ts}.  These angles
+    heading, pitch, and roll vectors stored in \code{x$data}.  These angles
     are defined differently for RDI and Sontek profilers.
 
     The code handles every case individually, based on the table given below.
@@ -68,12 +68,12 @@ rbind(c( CH*CR + SH*SP*SR,   SH*CP,    CH*SR - SH*SP*CR),
     This matrix is left-multiplied by a matrix with three rows, the top a
     vector of "starboard" values, the middle a vector of "forward" values, and
     the bottom a vector of "mast" values.  Finally, the columns of
-    \code{data$ma$v[,,1:3]} are filled in with the result of the matrix
+    \code{data$v[,,1:3]} are filled in with the result of the matrix
     multiplication.
 
 }
 
-\value{An object with \code{data$ma$v[,,1:3]} altered appropriately,
+\value{An object with \code{data$v[,,1:3]} altered appropriately,
   and \code{metadata$oce.orientation} changed from \code{xyz} to
   \code{enu}.}
 

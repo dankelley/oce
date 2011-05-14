@@ -9,15 +9,20 @@ head.adp <- function(x, n = 6L, ...)
         look <- seq.int(1, min(n, numberOfProfiles))
     rval <- x
     for (name in names(x$data)) {
-        rank <- length(dim(x$data[[name]]))
-        if (1 == rank)
+        if ("distance" == name)
+            next
+        if (is.vector(x$data[[name]])) {
+            cat("doing 'head' of vector named", name, "\n")
+            rval$data[[name]] <- x$data[[name]][look]
+        } else if (is.matrix(x$data[[name]])) {
+            cat("doing 'head' of matrix named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,]
-        else if (2 == rank)
-            rval$data[[name]] <- x$data[[name]][look,]
-        else if (3 == rank)
+        } else if (is.array(x$data[[name]])) {
+            cat("doing 'head' of array named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,,]
-        else 
-            stop('rank of data[["', name, '"]] must be 1, 2 or 3, but is ', rank)
+        } else {
+            rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
+        }
     }
     rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     rval
@@ -32,15 +37,18 @@ tail.adp <- function(x, n = 6L, ...)
         look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
     rval <- x
     for (name in names(x$data)) {
-        rank <- length(dim(x$data[[name]]))
-        if (1 == rank)
+        if (is.vector(x$data[[name]])) {
+            cat("doing 'head' of vector named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look]
-        else if (2 == rank)
+        } else if (is.matrix(x$data[[name]])) {
+            cat("doing 'head' of matrix named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,]
-        else if (3 == rank)
+        } else if (is.array(x$data[[name]])) {
+            cat("doing 'head' of array named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,,]
-        else 
-            stop('rank of data[["', name, '"]] must be 2 or 3, but is ', rank)
+        } else {
+            rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
+        }
     }
     rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     rval 
@@ -208,22 +216,22 @@ summary.adp <- function(object, ...)
         res$history <- object$history
         if (haveData) {
             dataNames <- names(object$data)
-            fives <- matrix(nrow=(-1+length(dataNames)), ncol=5)
+            threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
             ii <- 1
             for (i in 1:length(dataNames)) {
                 if (names(object$data)[i] != "time") {
-                    fives[ii,] <- fivenum(object$data[[dataNames[i]]], na.rm=TRUE)
+                    threes[ii,] <- threenum(object$data[[dataNames[i]]])
                     ii <- ii + 1
                 }
             }
-            rownames(fives) <- c(dataNames[dataNames != "time"])
-            colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+            rownames(threes) <- c(dataNames[dataNames != "time"])
+            colnames(threes) <- c("Min.", "Mean", "Max.")
             v.dim <- dim(object$data$v)
             res$subsampleStart <- object$data$time[1]
             res$subsampleEndTime <- object$data$time[length(object$data$time)]
             res$subsampleDeltat <- mean(diff(as.numeric(object$data$time)),na.rm=TRUE)
             res$distance <- object$data$distance
-            res$fives <- fives
+            res$threes <- threes 
             res$time <- object$data$time
             res$numberOfProfiles <- v.dim[1]
             res$numberOfCells <- v.dim[2]
@@ -282,7 +290,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Instrument subtype:         ", x$instrumentSubtype, "\n", ...)
             cat("  * System configuration:       ", x$metadata$systemConfiguration, "\n", ...)
             cat("  * Software version:           ", paste(x$metadata$programVersionMajor, x$metadata$programVersionMinor, sep="."), "\n", ...)
-            cat("  * CPU board serialNumber:    ", x$metadata$cpuBoardSerialNumber, "\n", ...)
+            cat("  * CPU board serialNumber:     ", x$metadata$cpuBoardSerialNumber, "\n", ...)
             cat("  * Xmit pulse length:          ", x$metadata$xmitPulseLength,"m\n", ...)
             cat("  * Beam pattern:               ", x$metadata$beamPattern, "\n", ...)
             cat("  * Pings per ensemble:         ", x$metadata$pingsPerEnsemble, "\n", ...)
@@ -305,7 +313,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         }
         cat("\n",...)
         cat("* Statistics of subsample\n  ::\n\n", ...)
-        cat(showFives(x, indent='     '), ...)
+        cat(showThrees(x, indent='     '), ...)
         ##cat("\n* history::\n\n", ...)
         cat("\n")
         print(summary(x$history))
@@ -532,11 +540,11 @@ plot.adp <- function(x, which=1:dim(x$data$v)[3],
         oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
-            if (which[w] %in% 1:(0+x$metadata$numberOfBeams)) {    #velocity
+            if (which[w] %in% 1:(x$metadata$numberOfBeams)) {    #velocity
+                oceDebug(debug, "a velocity component image")
                 z <- x$data$v[,,which[w]]
-                y.look <- if (gave.ylim)
-                    ylim.given[1] <= x$data$distance & x$data$distance <= ylim.given[2]
-                else rep(TRUE, length(x$data$distance))
+                y.look <- if (gave.ylim) ylim.given[1] <= x$data$distance & x$data$distance <= ylim.given[2] else rep(TRUE, length(x$data$distance))
+                ##browser()
                 zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                 zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
             } else if (which[w] %in% 5:(4+x$metadata$numberOfBeams)) { # amplitude

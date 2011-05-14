@@ -45,8 +45,9 @@
   which is a slow operation.  However, this function checks whether the
   vectors for heading, pitch and roll, are all of unit length, and in that
   case, the calculation is altered, resulting in shorter executation times.
-  Note that the angles are held in \code{data$tsSlow} for Nortek instruments
-  and \code{data$ts} for Sontek instruments.
+  Note that the angles are held in (\code{data$timeSlow},
+  \code{data$headingSlow}, ...) for Nortek instruments and (\code{data$time},
+  \code{data$heading}, ...) for Sontek instruments.
 
   Since the documentation provided by instrument manufacturers
   can be vague on the coordinate transformations, the method used here 

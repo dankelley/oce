@@ -160,9 +160,9 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
     \item Times from the system chunks are mapped to velocity chunks by
     \emph{assuming} a constant sampling rate for each chunk.  If this
-    assumption is incorrect, then the times in the \code{data$ts$time}
+    assumption is incorrect, then the times in the \code{data$time}
     vector will be incorrect, although the values in the
-    \code{data$ts$pressure} vector will be correct.
+    \code{data$pressure} vector will be correct.
 
     \item Unlike related functions, \code{read.adv.nortek} reads and
     decodes every system chunk, even if a \code{by} argument is
@@ -249,14 +249,14 @@ d <- read.adv.sontek.adr(
   "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr",
   from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
   to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
-w <- ts(d$data$ma$v[,3], deltat=1/d$metadata$sampling.rate) # z component
+w <- ts(d$data$v[,3], deltat=1/d$metadata$sampling.rate) # z component
 par(mfrow=c(2,2))
 par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,2,1))
 plot(w)
-plot(d$data$ts$time, sqrt(d$data$ma$v[,1]^2+d$data$ma$v[,2]^2),
+plot(d$data$time, sqrt(d$data$v[,1]^2+d$data$v[,2]^2),
     type='l', xlab="Time [s]", ylab="Horizontal velocity [m/s]")
-U <- mean(sqrt(d$data$ma$v[,1]^2 + d$data$ma$v[,2]^2))
+U <- mean(sqrt(d$data$v[,1]^2 + d$data$v[,2]^2))
 abline(h=U, col='red')
 mtext(sprintf("U=\%.2fm/s", U), side=4, at=U)
 s <- spectrum(w, spans=c(3,5,7), plot=FALSE)  # just guessing on spans
