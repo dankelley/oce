@@ -22,7 +22,7 @@ plot.lobo.timeseries.TS <- function(lobo,
     if (draw.legend)
         legend("topright",c("S","T"),col=c(S.col,T.col),lwd=2)
     mtext(paste(paste(format(range(lobo$data$time, na.rm=TRUE)), collapse=" to "),
-                attr(lobo$data$ts$time[1], "tzone")),
+                attr(lobo$data$time[1], "tzone")),
           side=3, cex=3/4*par("cex.axis"), adj=0)
     invisible(lobo)
 }
@@ -175,15 +175,15 @@ summary.lobo <- function(object, ...)
     if (!inherits(object, "lobo"))
         stop("method is only for lobo objects")
     dim <- dim(object$data)
-    fives <- matrix(nrow=dim[2]-1, ncol=5) # skipping time
+    threes <- matrix(nrow=dim[2]-1, ncol=3) # skipping time
     res <- list(time.range=range(object$data$time, na.rm=TRUE),
-                fives=fives,
+                threes=threes,
                 history=object$history)
     for (i in 2:dim[2])
-        fives[i-1,] <- fivenum(object$data[,i], na.rm=TRUE)
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    rownames(fives) <- names(object$data[-1]) #skip time, the first column
-    res$fives <- fives
+        threes[i-1,] <- threenum(object$data[,i])
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    rownames(threes) <- names(object$data[-1]) #skip time, the first column
+    res$threes <- threes
     class(res) <- "summary.lobo"
     res
 }
@@ -195,7 +195,7 @@ print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
         "to", format(x$time.range[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
     cat("\n",...)
     cat("* Statistics::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
+    cat(showThrees(x, indent='     '), ...)
     cat("\n* history::\n\n", ...)
     print(summary(x$history))
 }

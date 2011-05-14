@@ -602,7 +602,7 @@ png("adp.png", width=800, height=400, pointsize=20)
 library(oce)
 data(adp)
 plot(adp, which=1,
-  adorn=expression({lines(x$data$ts$time, x$data$ts$pressure, col='green', lwd=2)}))
+  adorn=expression({lines(x$data$time, x$data$pressure, col='green', lwd=2)}))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()

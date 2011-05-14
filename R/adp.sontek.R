@@ -301,12 +301,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         roll <- approx(1:nheading, roll, seq(1,nheading,length.out=nv))$y
         oceDebug(debug, "AFTER:  length(heading)=", length(heading), "\n")
     }
-    data <- list(ma=ma,
-                 ss=list(distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells)),
-                 ts=list(time=time,
-                         temperature=temperature,
-                         pressure=pressure,
-                         heading=heading, pitch=pitch, roll=roll))
+    data <- list(v=v, a=a, q=q,
+                 distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells),
+                 time=time,
+                 temperature=temperature,
+                 pressure=pressure,
+                 heading=heading, pitch=pitch, roll=roll)
     oceDebug(debug, "slant.angle=",slant.angle,"; type=", type, "\n")
     beamAngle <- if (slant.angle == "?") 25 else slant.angle
     metadata <- list(manufacturer="sontek",
@@ -627,12 +627,13 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      beamAngle=beamAngle,
                      oceBeamUnattenuated=FALSE,
                      orientation=orientation)
-    data <- list(ts=list(time=time,
-                         heading=heading, pitch=pitch, roll=roll,
-                         temperature=temperature,
-                         pressure=rep(0, length(temperature))),
-                 ss=list(distance=distance),
-                 ma=list(v=v,vstd=vstd,amp=amp)) # velo, velo stddev, amplitude
+    data <- list(v=v, vstd=vstd, amp=amp,
+                 distance=distance,
+                 time=time,
+                 heading=heading, pitch=pitch, roll=roll,
+                 temperature=temperature,
+                 pressure=rep(0, length(temperature)),
+                 distance=distance)
     if (missing(history))
         history <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- historyItem(history)

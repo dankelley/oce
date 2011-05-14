@@ -22,13 +22,14 @@
   \item{extend}{not permitted yet}
   \item{which}{string containing the name of the quantity on which
     sampling is done.  Possibilities are \code{"time"}, which applies
-    the windowing on \code{x$data$ts$time}, and \code{"distance"}, which
-    applies the windowing on \code{x$data$ss$distance} (for those
-    objects, such as \code{adp}, that have a \code{data$ss$distance}
+    the windowing on \code{x$data$time}, and \code{"distance"}, which
+    applies the windowing on \code{x$data$distance} (for those
+    objects, such as \code{adp}, that have a \code{data$distance}
     component).}
   \item{indexReturn}{boolean flag indicating whether to return a list
-    of the "kept" indices for \code{data$ts} and \code{data$tsSlow}
-    (either of which may be \code{NULL}, if the object lacks those items.}
+    of the "kept" indices for \code{data$time} (and, if it exists,
+    \code{data$timeSlow}).  Either of these lists will be
+    \code{NULL}, if the object lacks the relevant items.}
   \item{debug}{a flag that turns on debugging.}
   \item{\dots}{ignored}
 }
@@ -42,10 +43,9 @@
   given by the value of \code{getOption("oceTz")}).}
 
 \value{Normally, this is new \code{oce} object.  However, if
-  \code{indexReturn=TRUE}, the return value is two-element list
-  containing items named \code{index} and \code{indexSlow}, which are
-  the indices for \code{data$ts} and \code{data$tsSlow} that are within
-  the window.}
+    \code{indexReturn=TRUE}, the return value is two-element list containing
+    items named \code{index} and \code{indexSlow}, which are the indices for
+    \code{data$tme} (and \code{data$timeSlow}, if it exists).}
 
 \seealso{\code{\link{subset.oce}} provides more flexible selection of
 subsets.}

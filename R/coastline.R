@@ -376,16 +376,16 @@ summary.coastline <- function(object, ...)
 {
     if (!inherits(object, "coastline"))
         stop("method is only for coastline objects")
-    fives <- matrix(nrow=2, ncol=5)
+    threes <- matrix(nrow=2, ncol=3)
     res <- list(length=length(object$data$longitude),
                 missing=sum(is.na(object$data$longitude)),
-                fives=fives,
+                threes=threes,
                 history=object$history)
-    fives[1,] <- fivenum(object$data$latitude, na.rm=TRUE)
-    fives[2,] <- fivenum(object$data$longitude, na.rm=TRUE)
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    rownames(fives) <- c("Latitude", "Longitude")
-    res$fives <- fives
+    threes[1,] <- threenum(object$data$latitude)
+    threes[2,] <- threenum(object$data$longitude)
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    rownames(threes) <- c("Latitude", "Longitude")
+    res$threes <- threes 
     class(res) <- "summary.coastline"
     res
 }
@@ -396,7 +396,7 @@ print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),..
     cat("* Number of points:", x$length, ", of which", x$missing, "are NA (e.g. separating islands).\n")
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
+    cat(showThrees(x, indent='     '), ...)
     cat("\n")
     print(summary(x$history))
     invisible(x)

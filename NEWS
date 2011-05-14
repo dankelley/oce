@@ -1,3 +1,7 @@
+0.3-1
+- flatten all data objects to be 1 level thick (for future matlab exports)
+- threenum() added, and used in all summaries (for speed)
+
 0.2-3
 - head.adp() added
 - tail.adp() added

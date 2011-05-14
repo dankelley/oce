@@ -379,16 +379,14 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         }
     }
     if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
-    data <- list(ma=list(v=v, a=a, q=q),
-                 ss=list(distance=seq(header$user$blankingDistance,
-                         by=header$user$cellSize,
-                         length.out=header$user$numberOfCells)),
-                 ts=list(time=time,
+    data <- list(v=v, a=a, q=q,
+                 distance=seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells),
+                 time=time,
                  pressure=pressure,
                  temperature=temperature,
                  heading=heading,
                  pitch=pitch,
-                 roll=roll))
+                 roll=roll)
     metadata <- list(manufacturer="nortek",
                      instrumentType="aquadopp-hr",
                      filename=filename,

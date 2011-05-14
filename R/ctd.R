@@ -1212,12 +1212,10 @@ summary.ctd <- function(object, ...)
     if (!inherits(object, "ctd"))
         stop("method is only for ctd objects")
     dim <- dim(object$data)
-    fives <- matrix(nrow=dim[2], ncol=5)
     res <- list(filename="", systemUploadTime="", date="", institute="",
                 scientist="", ship="", cruise="", latitude=NA, longitude=NA,
                 station="?", startTime=NULL, deployed="", recovery="", waterDepth="",
                 levels="?",
-                fives=fives,
                 history=object$history)
     res$filename <- if (!is.null(object$metadata$filename)) object$metadata$filename else ""
     res$filename.orig <- if (!is.null(object$metadata$filename.orig)) object$metadata$filename.orig else ""
@@ -1239,11 +1237,12 @@ summary.ctd <- function(object, ...)
     res$type <- if (is.null(object$metadata$type)) "" else object$metadata$type
     res$serialNumber <- if (is.null(object$metadata$serialNumber)) "" else object$metadata$serialNumber
     res$levels <- dim[1]
+    threes <- matrix(nrow=dim[2], ncol=3)
     for (v in 1:dim[2])
-        fives[v,] <- fivenum(object$data[,v], na.rm=TRUE)
-    rownames(fives) <- names(object$data)
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    res$fives <- fives
+        threes[v,] <- threenum(object$data[,v])
+    rownames(threes) <- names(object$data)
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    res$threes <- threes 
     res$history <- object$history
     class(res) <- "summary.ctd"
     res
@@ -1302,7 +1301,7 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* No. of levels:      ",       x$levels,  "\n", ...)
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
+    cat(showThrees(x, indent='     '), ...)
     print(summary(x$history))
     invisible(x)
 }
