@@ -922,6 +922,72 @@ header <- function(x)
     return(x$metadata$header)
 }
 
+heading <- function(x, time)
+{
+    if (inherits(x, "adp")) {
+        if (missing(time))
+            return(x$data$heading)
+        else
+            return(approx(x$data$time, x$data$heading, time)$y)
+    } else if (inherits(x, "adv")) {
+        if (missing(time))
+            return(x$data$heading)
+        else {
+            if ("timeSlow" %in% names(x$data)) {
+                return(approx(x$data$timeSlow, x$data$headingSlow, time)$y)
+            } else {
+                return(approx(x$data$time, x$data$heading, time)$y)
+            }
+        }
+    } else {
+        stop("only works for 'adv' and 'adp' objects")
+    }
+}
+
+pitch <- function(x, time)
+{
+    if (inherits(x, "adp")) {
+        if (missing(time))
+            return(x$data$pitch)
+        else
+            return(approx(x$data$time, x$data$pitch, time)$y)
+    } else if (inherits(x, "adv")) {
+        if (missing(time))
+            return(x$data$pitch)
+        else {
+            if ("timeSlow" %in% names(x$data)) {
+                return(approx(x$data$timeSlow, x$data$pitchSlow, time)$y)
+            } else {
+                return(approx(x$data$time, x$data$pitch, time)$y)
+            }
+        }
+    } else {
+        stop("only works for 'adv' and 'adp' objects")
+    }
+}
+
+roll <- function(x, time)
+{
+    if (inherits(x, "adp")) {
+        if (missing(time))
+            return(x$data$roll)
+        else
+            return(approx(x$data$time, x$data$roll, time)$y)
+    } else if (inherits(x, "adv")) {
+        if (missing(time))
+            return(x$data$roll)
+        else {
+            if ("timeSlow" %in% names(x$data)) {
+                return(approx(x$data$timeSlow, x$data$rollSlow, time)$y)
+            } else {
+                return(approx(x$data$time, x$data$roll, time)$y)
+            }
+        }
+    } else {
+        stop("only works for 'adv' and 'adp' objects")
+    }
+}
+
 addColumn <- function (x, data, name)
 {
     if (!inherits(x, "oce"))
