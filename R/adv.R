@@ -84,7 +84,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      latitude=latitude, longitude=longitude,
                      measurementStart=NA, # FIXME
                      measurementEnd=NA,   # FIXME
-                     samplingRate=NA, # FIXME
+                     samplingRate=NA, # FIXME: should fill in for all instruments
                      numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
                      serialNumber=header$hardware$serialNumber,
                      frequency=header$head$frequency,
@@ -1846,11 +1846,17 @@ xyzToEnuAdv <- function(x, declination=0,
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
+    if ("ts" %in% names(x$data) || "ma" %in% names(x$data))
+        stop("cannot handle ADV objects that were created with oce version < 0.3")
     haveSlow <- "timeSlow" %in% names(x$data)
     if (haveSlow) {
-        heading <- x$data$headingSlow
-        pitch <- x$data$pitchSlow
-        roll <- x$data$rollSlow
+        oceDebug(debug, "interpolating slowly-varying heading, pitch, and roll to the quickly-varying velocity times\n")
+        t0 <- as.numeric(x$data$timeSlow[1])    # arbitrary; done in case approx hates large x values
+        tFast <- as.numeric(x$data$time) - t0
+        tSlow <- as.numeric(x$data$timeSlow) - t0
+        heading <- approx(tSlow, x$data$headingSlow, xout=tFast)$y
+        pitch <- approx(tSlow, x$data$pitchSlow, xout=tFast)$y
+        roll <- approx(tSlow, x$data$rollSlow, xout=tFast)$y
     } else {
         heading <- x$data$heading
         pitch <- x$data$pitch
@@ -1954,12 +1960,6 @@ xyzToEnuAdv <- function(x, declination=0,
         stop("unknown type of instrument; x$metadata$manufacturer must contain either \"sontek\" or \"nortek\"")
     }
     np <- dim(x$data$v)[1]
-    if (haveSlow) {
-        oceDebug(debug, "interpolating slowly-varying heading, pitch, and roll to quickly-varying velocity times")
-        pitch <- approx(x$data$timeSlow, x$data$pitchSlow, x$data$time)$y
-        roll <- approx(x$data$timeSlow, x$data$rollSlow, x$data$time)$y
-        heading <- approx(x$data$timeSlow, x$data$headingSlow, x$data$time)$y
-    }
     if (np != length(heading))
         stop("heading length (", length(heading), ") does not match number of velocity samples (", np, ")") 
     enu <- .C("sfm_enu",
