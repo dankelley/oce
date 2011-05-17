@@ -923,66 +923,36 @@ header <- function(x)
 
 "heading<-" <- function(x, value)
 {
-    if (inherits(x, "adv")) { 
-        if ("headingSlow" %in% names(x$data)) {
-            x$data$headingSlow <- value
-        } else if ("heading" %in% names(x$data)) {
-            x$data$heading <- value
-        } else {
-            stop("object has no item named 'data$heading' or 'data$headingSlow'")
-        }
-    } else if (inherits(x, "adp")) { 
-        if ("headingSlow" %in% names(x$data)) { # (just in case ADP objects acquire slow variables)
-            x$data$headingSlow <- value
-        } else if ("heading" %in% names(x$data)) {
-            x$data$heading <- value
-        } else {
-            stop("object has no item named 'data$heading' or 'data$headingSlow'")
-        }
+    if ("headingSlow" %in% names(x$data)) {
+        x$data$headingSlow <- value
+    } else if ("heading" %in% names(x$data)) {
+        x$data$heading <- value
+    } else {
+        stop("object has no item named 'data$heading' or 'data$headingSlow'")
     }
     x
 }
 
 "pitch<-" <- function(x, value)
 {
-    if (inherits(x, "adv")) { 
-        if ("pitchSlow" %in% names(x$data)) {
-            x$data$pitchSlow <- value
-        } else if ("pitch" %in% names(x$data)) {
-            x$data$pitch <- value
-        } else {
-            stop("object has no item named 'data$pitch' or 'data$pitchSlow'")
-        }
-    } else if (inherits(x, "adp")) { 
-        if ("pitchSlow" %in% names(x$data)) { # (just in case ADP objects acquire slow variables)
-            x$data$pitchSlow <- value
-        } else if ("pitch" %in% names(x$data)) {
-            x$data$pitch <- value
-        } else {
-            stop("object has no item named 'data$pitch' or 'data$pitchSlow'")
-        }
+    if ("pitchSlow" %in% names(x$data)) {
+        x$data$pitchSlow <- value
+    } else if ("pitch" %in% names(x$data)) {
+        x$data$pitch <- value
+    } else {
+        stop("object has no item named 'data$pitch' or 'data$pitchSlow'")
     }
     x
 }
 
 "roll<-" <- function(x, value)
 {
-    if (inherits(x, "adv")) { 
-        if ("rollSlow" %in% names(x$data)) {
-            x$data$rollSlow <- value
-        } else if ("roll" %in% names(x$data)) {
-            x$data$roll <- value
-        } else {
-            stop("object has no item named 'data$roll' or 'data$rollSlow'")
-        }
-    } else if (inherits(x, "adp")) { 
-        if ("rollSlow" %in% names(x$data)) { # (just in case ADP objects acquire slow variables)
-            x$data$rollSlow <- value
-        } else if ("roll" %in% names(x$data)) {
-            x$data$roll <- value
-        } else {
-            stop("object has no item named 'data$roll' or 'data$rollSlow'")
-        }
+    if ("rollSlow" %in% names(x$data)) {
+        x$data$rollSlow <- value
+    } else if ("roll" %in% names(x$data)) {
+        x$data$roll <- value
+    } else {
+        stop("object has no item named 'data$roll' or 'data$rollSlow'")
     }
     x
 }
@@ -994,17 +964,19 @@ heading <- function(x, time)
         stop("must supply 'x'")
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time$data)) {
-            time <- x$data$timeSlow
+            time <- time$data$timeSlow
         } else if ("time" %in% names(time$data)) {
-            time <- x$data$time
+            time <- time$data$time
         } else {
             stop("cannot determine time to which to interpolate")
         }
     }
     if (inherits(x, "adp")) {
         if (missing(time)) {
+            cat("x is adp, time not given\n")
             return(x$data$heading)
         } else {
+            cat("x is adp, time given\n")
             return(approx(x$data$time, x$data$heading, time)$y)
         }
     } else if (inherits(x, "adv")) {
@@ -1028,9 +1000,9 @@ pitch <- function(x, time)
         stop("must supply 'x'")
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time$data)) {
-            time <- x$data$timeSlow
+            time <- time$data$timeSlow
         } else if ("time" %in% names(time$data)) {
-            time <- x$data$time
+            time <- time$data$time
         } else {
             stop("cannot determine time to which to interpolate")
         }
@@ -1062,9 +1034,9 @@ roll <- function(x, time)
         stop("must supply 'x'")
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time$data)) {
-            time <- x$data$timeSlow
+            time <- time$data$timeSlow
         } else if ("time" %in% names(time$data)) {
-            time <- x$data$time
+            time <- time$data$time
         } else {
             stop("cannot determine time to which to interpolate")
         }
