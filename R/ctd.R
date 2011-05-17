@@ -79,7 +79,7 @@ ctdAddColumn <- function (x, column, name, label, debug = FALSE)
     res$data[,name] <- column
     res$metadata$names <- c(res$metadata$names, name)
     res$metadata$labels <- c(res$metadata$labels, label)
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -178,8 +178,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
     }
     data.new[["pressure"]] <- pt
     res$data <- data.new
-    res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ctdDecimate()\n")
     res
 }
@@ -285,8 +284,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         res$metadata$waterDepth <- max(res$data$pressure, na.rm=TRUE)
         oceDebug(debug, "inferred water depth of", res$metadata$waterDepth, "from pressure\n")
     }
-    res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ctdTrim()\n")
     res
 }

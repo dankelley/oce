@@ -1,7 +1,8 @@
 0.3-1
-- heading(), pitch(), and roll() added, as l-values and r-values
+- add history() as an l-value
+- add heading(), pitch(), and roll() added, as l-values and r-values
 - flatten all data objects to be 1 level thick (for future matlab exports)
-- threenum() added, and used in all summaries (for speed)
+- add threenum() added, and use it in all summaries (for speed)
 
 0.2-3
 - head.adp() added
@@ -293,7 +294,7 @@
 - add swSoundSpeed()
 
 0.1.62
-- add historyAppend() and related code
+- add historyAppend() (later named history()) and related code
 - improve ctdTrim()
 
 0.1.61

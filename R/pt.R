@@ -414,8 +414,7 @@ ptTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug
     for (name in names(x$data))
         res$data[[name]] <- subset(x$data[[name]], keep)
     res$data$pressure <- res$data$pressure - 10.1325 # remove avg sealevel pressure
-    res$history <- historyAdd(res$history,
-                              paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ptTrim()n")
     res
 }

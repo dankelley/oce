@@ -1827,7 +1827,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
     x$data$v[,2] <- v
     x$data$v[,3] <- w
     x$metadata$oceCoordinate <- "xyz"
-    x$history <- historyAdd(x$history, paste(deparse(match.call()), sep="", collapse=""))
+    x$history <- history(x$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # beamToXyzAdv()\n")
     x
 }
@@ -1980,8 +1980,7 @@ xyzToEnuAdv <- function(x, declination=0,
     x$data$v[,2] <- enu$north
     x$data$v[,3] <- enu$up
     x$metadata$oceCoordinate <- "enu"
-    x$history <- historyAdd(x$history,
-                            paste(deparse(match.call()), sep="", collapse=""))
+    x$history <- history(x$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # xyzToEnuAdv()\n")
     x
 }
@@ -2012,8 +2011,7 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0)
     x$data$v[,2] <- other$v2new
     x$data$v[,3] <- other$v3new
     x$metadata$oceCoordinate <- "other"
-    x$history <- historyAdd(x$history,
-                            paste(deparse(match.call()), sep="", collapse=""))
+    x$history <- history(x$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # enuToOtherAdv()\n")
     x
 }

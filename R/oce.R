@@ -16,7 +16,7 @@ useHeading <- function(b, g, add=0)
     b.t <- as.numeric(b$data$time) - t0 # FIXME: what if heading in tsSlow?
     g.t <- as.numeric(g$data$time) - t0 # FIXME: what if heading in tsSlow?
     res$data$heading <- approx(x=g.t, y=g$data$heading, xout=b.t)$y + add
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -372,8 +372,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x$history <- historyAdd(x$history,
-                                           paste(deparse(match.call()), sep="", collapse=""))
+    x$history <- history(x$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # oceEdit() \n")
     x
 }
@@ -598,7 +597,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         rval$data <- x$data[r,]
     }
     oceDebug(debug, "\b\b} # subset.oce\n")
-    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

@@ -13,7 +13,7 @@ sectionSort <- function(section, by=c("stationId", "distance"))
     } else {
 	stop("argument 'by' is incorrect")
     }
-    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -114,8 +114,7 @@ makeSection <- function(item, ...)
     res$metadata$latitude <- c(res$metadata$latitude, station$metadata$latitude)
     res$metadata$longitude <- c(res$metadata$longitude, station$metadata$longitude)
     res$metadata$stationId <- c(res$metadata$stationId, station$metadata$station)
-    res$history <- historyAdd(res$history,
-					     paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -655,8 +654,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
 	##cat("\n")
     }
-    res$history <- historyAdd(res$history,
-					     paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # sectionGrid\n")
     res
 }
@@ -712,8 +710,7 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
 	res$data$station[[s]]$data$sigmaTheta <- sigmaThetaMat[,s]
     }
     class(res) <- c("section", "oce")
-    res$history <- historyAdd(res$history,
-					     paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # section.smooth()\n")
     res
 }

@@ -24,7 +24,7 @@ head.adp <- function(x, n = 6L, ...)
             rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -50,7 +50,7 @@ tail.adp <- function(x, n = 6L, ...)
             rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     rval 
 }
 
@@ -63,7 +63,7 @@ removeShipMotion <- function(x)
     for (beam in 1:numberOfBeams) {
         rval$data$v[,,beam] <- rval$data$v[,,beam] - rval$data$bottomVelocity[,beam]
     }
-    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -1034,7 +1034,7 @@ beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getO
         res$data$a[,,beam] <- as.raw(tmp)
     }
     res$metadata$oceBeamUnattenuated <- TRUE
-    res$history <- historyAdd(res$history,
+    res$history <- history(res$history,
                                              paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
     res
@@ -1103,7 +1103,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oceCoordinate <- "xyz"
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # beamToXyzAdp()\n")
     res
 }
@@ -1219,7 +1219,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res$data$v[,c,3] <- enu$up
     }
     res$metadata$oceCoordinate <- "enu"
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
     res
 }
@@ -1253,7 +1253,7 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         res$data$v[,c,3] <- other$v3new
     }
     res$metadata$oceCoordinate <- "other"
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
