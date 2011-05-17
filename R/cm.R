@@ -4,7 +4,7 @@
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     latitude=NA, longitude=NA,
-                    debug=getOption("oceDebug"), monitor=TRUE, history, ...)
+                    debug=getOption("oceDebug"), monitor=TRUE, processingLog, ...)
 {
     if (debug > 2)
         debug <- 2
@@ -17,14 +17,14 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (type == "s4")
         read.cm.s4(file=file, from=from, to=to, by=by, tz=tz,
                    latitude=latitude, longitude=longitude,
-                   debug=debug-1, monitor=monitor, history=history, ...)
+                   debug=debug-1, monitor=monitor, processingLog=processingLog, ...)
     else
         stop("unknown type of current meter")
 }
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        latitude=NA, longitude=NA,
-                       debug=getOption("oceDebug"), monitor=TRUE, history, ...)
+                       debug=getOption("oceDebug"), monitor=TRUE, processingLog, ...)
 {
     if (debug > 1)
         debug <- 1
@@ -157,10 +157,10 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     keep <- keep[keep <= n]
     data <- list(sample=sample[keep], time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
     metadata$measurementEnd <- time[length(time)]
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    rval <- list(metadata=metadata, data=data, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    rval <- list(metadata=metadata, data=data, processingLog=hitem)
     class(rval) <- c("cm", "s4", "oce")
     oceDebug(debug, "\b\b} # read.cm()\n")
     rval
@@ -185,7 +185,7 @@ summary.cm <- function(object, ...)
     res$measurementStart <- object$metadata$measurementStart
     res$measurementEnd <- object$metadata$measurementEnd
     res$measurementDeltat <- object$metadata$measurementDeltat
-    res$history <- object$history
+    res$processingLog <- object$processingLog
     dataNames <- names(object$data)
     three <- matrix(nrow=(-1+length(dataNames)), ncol=3)
     ii <- 1
@@ -231,7 +231,7 @@ print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
     cat(showThrees(x, indent='     '), ...)
     cat("\n")
-    print(summary(x$history))
+    print(summary(x$processingLog))
     invisible(x)
 }
 

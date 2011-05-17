@@ -45,8 +45,8 @@ as.sealevel <- function(elevation,
                      units=units,
                      n=length(t),
                      deltat=deltat)
-    logItem <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- list(data=data, metadata=metadata, history=logItem)
+    logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    rval <- list(data=data, metadata=metadata, processingLog=logItem)
     class(rval) <- c("sealevel", "oce")
     rval
 }
@@ -218,7 +218,7 @@ plot.sealevel <- function(x, which=1:4,
 }
 
 
-read.sealevel <- function(file, tz=getOption("oceTz"), history, debug=getOption("oceDebug"))
+read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- fullFilename(file)
@@ -359,9 +359,9 @@ read.sealevel <- function(file, tz=getOption("oceTz"), history, debug=getOption(
                      units=NA,
                      n=length(time),
                      deltat=as.numeric(difftime(time[2], time[1], units="hours")))
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    rval <- list(data=data, metadata=metadata, history=historyItem(history))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    rval <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
     class(rval) <- c("sealevel", "oce")
     rval
 }
@@ -385,7 +385,7 @@ summary.sealevel <- function(object, ...)
                 endTime=max(object$data$time, na.rm=TRUE),
                 gmtOffset=if (is.na(object$metadata$GMTOffset)) "?" else object$metadata$GMTOffset,
                 threes=threes,
-                history=object$history)
+                processingLog=object$processingLog)
     threes[1,] <- threenum(object$data$elevation)
     rownames(threes) <- "Sea level"
     colnames(threes) <- c("Min.", "Mean", "Max.")
@@ -411,6 +411,6 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat(paste("* GMT offset:          ", if (is.null(x$GMTOffset)) "unknown" else x$GMTOffset, "\n", sep=""), ...)
     cat("* Statistics::\n", ...)
     cat(showThrees(x, indent='     '), ...)
-    print(summary(x$history))
+    print(summary(x$processingLog))
     invisible(x)
 }

@@ -1,34 +1,34 @@
-"history<-" <- function(x, value)
+"processingLog<-" <- function(x, value)
 {
     if (inherits(x, "oce")) {
-        h <- list(time=x$history[[1]], value=x$history[[2]]) # using indices to allow renaming
+        h <- list(time=x$processingLog[[1]], value=x$processingLog[[2]]) # using indices to allow renaming
         h$time <- c(h$time, as.POSIXct(Sys.time(), tz="UTC"))
         h$value <- c(h$value, value)
-        class(h) <- "history"
-        x$history <- h
+        class(h) <- "processingLog"
+        x$processingLog <- h
     } else {
         stop("'x' is not an oce object")
     }
     x
 }
 
-history <- function(h, value="")
+processingLog <- function(h, value="")
 {
     res <- if (is.null(h)) list(time=NULL, value=NULL) else h
     res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
     res$value <- c(res$value, value)
-    class(res) <- "history"
+    class(res) <- "processingLog"
     res
 }
 
-historyItem <- function(value="")
+processingLogItem <- function(value="")
 {
     rval <- list(time=c(Sys.time()), value=value)
-    class(rval) <- "history"
+    class(rval) <- "processingLog"
     rval
 }
 
-summary.history <- function(object, ...)
+summary.processingLog <- function(object, ...)
 {
     n <- length(object[[2]])
     if (n > 0) {
@@ -41,11 +41,11 @@ summary.history <- function(object, ...)
     } else {
         res <- "  (none)"
     }
-    class(res) <- "summary.history"
+    class(res) <- "summary.processingLog"
     res
 }
 
-print.summary.history <- function(x, digits = max(6, getOption("digits") - 1), ...)
+print.summary.processingLog <- function(x, digits = max(6, getOption("digits") - 1), ...)
 {
     n <- length(x)
     cat("* History::\n\n", ...)

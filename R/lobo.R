@@ -120,7 +120,7 @@ plot.lobo <- function(x,
 }
 
 
-read.lobo <- function(file, cols=7, history) {
+read.lobo <- function(file, cols=7, processingLog) {
     header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
                                         # find columns. BUG: assumes names don't change
@@ -160,9 +160,9 @@ read.lobo <- function(file, cols=7, history) {
         fluorescence <- fill.out(fluorescence, len)
         data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
         metadata <- list(header=header)
-        if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-        hitem <- historyItem(history)
-        res <- list(data=data, metadata=metadata, history=hitem)
+        if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+        hitem <- processingLogItem(processingLog)
+        res <- list(data=data, metadata=metadata, processingLog=hitem)
         class(res) = c("lobo", "oce")
         res
     } else {
@@ -178,7 +178,7 @@ summary.lobo <- function(object, ...)
     threes <- matrix(nrow=dim[2]-1, ncol=3) # skipping time
     res <- list(time.range=range(object$data$time, na.rm=TRUE),
                 threes=threes,
-                history=object$history)
+                processingLog=object$processingLog)
     for (i in 2:dim[2])
         threes[i-1,] <- threenum(object$data[,i])
     colnames(threes) <- c("Min.", "Mean", "Max.")
@@ -196,6 +196,5 @@ print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("\n",...)
     cat("* Statistics::\n\n", ...)
     cat(showThrees(x, indent='     '), ...)
-    cat("\n* history::\n\n", ...)
-    print(summary(x$history))
+    print(summary(x$processingLog))
 }

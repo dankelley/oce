@@ -1,5 +1,6 @@
 0.3-1
-- add history() as an l-value
+- add processingLog() as an l-value
+- rename history a processingLog
 - add heading(), pitch(), and roll() added, as l-values and r-values
 - flatten all data objects to be 1 level thick (for future matlab exports)
 - add threenum() added, and use it in all summaries (for speed)
@@ -294,7 +295,7 @@
 - add swSoundSpeed()
 
 0.1.62
-- add historyAppend() (later named history()) and related code
+- add historyAppend() (later named processingLogAppend()) and related code
 - improve ctdTrim()
 
 0.1.61

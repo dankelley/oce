@@ -2,7 +2,7 @@
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("adp", "pcadp"),
-                            debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history, ...)
+                            debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog, ...)
 {
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
@@ -357,10 +357,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## and these are by the same formulae, with 25 switched to 15 (different beamAngle)
     } else
         stop("can only handle 3-beam devices")
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("sontek", "adp", "oce")
     res
 }
@@ -382,7 +382,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                    latitude=NA, longitude=NA,
                                    type=c("adp", "pcadp"),
                                    beamAngle=25, orientation,
-                                   monitor=TRUE, history,
+                                   monitor=TRUE, processingLog,
                                    debug=getOption("oceDebug"))
 {
     ## Data format is described in
@@ -439,7 +439,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                            ", by=", by,
                            ", latitude=", latitude, ", longitude=", longitude,
                            ", monitor=", monitor,
-                           ", history=(not shown), debug=", debug, ") {\n", sep=""))
+                           ", processingLog=(not shown), debug=", debug, ") {\n", sep=""))
     nfile <- length(file)
     if (nfile > 1) {                   # handle multiple files
         oceDebug(debug, "handling multiple files\n")
@@ -632,10 +632,10 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                  temperature=temperature,
                  pressure=rep(0, length(temperature)),
                  distance=distance)
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("sontek", "adp", "oce")
     res
 }

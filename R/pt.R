@@ -2,7 +2,7 @@ as.pt <- function(time, temperature, pressure,
                   filename="",
                   instrumentType="rbr",
                   serialNumber="",
-                  history, debug=getOption("oceDebug"))
+                  processingLog, debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
     oceDebug(debug, "\bas.pt(..., filename=\"", filename, "\", serialNumber=\"", serialNumber, "\")\n", sep="")
@@ -19,10 +19,10 @@ as.pt <- function(time, temperature, pressure,
     metadata <- list(filename=filename,
                      instrumentType=instrumentType,
                      serialNumber=serialNumber)
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    historyItem <- historyItem(history)
-    rval <- list(data=data, metadata=metadata, history=historyItem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    processingLogItem <- processingLogItem(processingLog)
+    rval <- list(data=data, metadata=metadata, processingLog=processingLogItem)
     class(rval) <- c("pt", "oce")
     oceDebug(debug, "\b} # as.pt()\n", sep="")
     rval
@@ -171,7 +171,7 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
 }
 
 read.pt <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                    history, debug=getOption("oceDebug"))
+                    processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
     oceDebug(debug, "\b\bread.pt(file=\"", file, "\", from=", format(from), ", to=", if(missing(to))"(not given)" else format(to), ", by=", by, ", tz=\"", tz, "\", ...) {\n", sep="")
@@ -316,7 +316,7 @@ read.pt <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     rval <- as.pt(time, temperature, pressure, instrumentType="rbr",
                   serialNumber=serialNumber,
                   filename=filename,
-                  history=paste(deparse(match.call()), sep="", collapse=""),
+                  processingLog=paste(deparse(match.call()), sep="", collapse=""),
                   debug=debug-1)
     oceDebug(debug, "\b} # read.pt()\n", sep="")
     rval
@@ -338,7 +338,7 @@ summary.pt <- function(object, ...)
                 tstart=object$data$time[1],
                 tend=object$data$time[length(object$data$time)],
                 deltat=as.numeric(object$data$time[2]) - as.numeric(object$data$time[1]),
-                history=object$history)
+                processingLog=object$processingLog)
     class(res) <- "summary.pt"
     res
 }
@@ -355,7 +355,7 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* Statistics of subsample::\n\n", ...)
     cat(showThrees(x, indent='     '), ...)
     cat("\n")
-    print(summary(x$history))
+    print(summary(x$processingLog))
     invisible(x)
 }
 
@@ -414,7 +414,7 @@ ptTrim <- function(x, method="water", parameters=NULL, debug=getOption("oceDebug
     for (name in names(x$data))
         res$data[[name]] <- subset(x$data[[name]], keep)
     res$data$pressure <- res$data$pressure - 10.1325 # remove avg sealevel pressure
-    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ptTrim()n")
     res
 }

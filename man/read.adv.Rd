@@ -15,27 +15,27 @@ read.adv(file, from=1, to, by=1, tz=getOption("oceTz"),
   header=TRUE,
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oceTz"), 
   type="vector",
   header=TRUE,
   latitude=NA, longitude=NA,
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   type="default",
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oceTz"),
   header=TRUE, 
   latitude=NA, longitude=NA,
   type="",
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   coordinateSystem="xyz",
   transformationMatrix,
   latitude=NA, longitude=NA,
-  debug=getOption("oceDebug"), history)
+  debug=getOption("oceDebug"), processingLog)
 }
 
 \arguments{
@@ -95,7 +95,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     of the header.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of every data burst read.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  This parameter is typically only provided for internal
     calls; the default that it provides is better for normal calls by
     a user.}
@@ -214,7 +214,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
   contains measurements made with an ADV device.  This is a list
   containing lists named \code{metadata}, \code{data}, and
-  \code{history}.  The \code{data} list contains items with names corresponding to 
+  \code{processingLog}.  The \code{data} list contains items with names corresponding to 
   \code{adp} objects, with an exception for Nortek data.  Nortek instruments
   report some things at a time interval that is longer than the velocity sampling, and these
   are stored in \code{data} as \code{timeSlow}, \code{headingSlow},

@@ -10,11 +10,11 @@
 
 \usage{
 read.ctd(file, type=NULL, columns=NULL, station=NULL, 
-  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
-  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
-  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 }
 
 \arguments{
@@ -39,7 +39,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of line of data read.  (This may be useful in debugging problems in
     reading files that are misconfigured.)}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}
@@ -53,7 +53,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
   files stored in the exchange format used by the World Ocean
   Circulation Experiment.)
 
-  The funcitons attempt to infer a wide range of meta-information from
+  The functions attempt to infer a wide range of meta-information from
   file headers, but variations in these headers impose some limitations
   on the process.  For example, in the first file tested during
   development, the sampling rate was written as \code{* sample rate = 1
@@ -121,7 +121,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
 	seconds.}
     }
   }
-  \item{history}{a history of processing, in the standard \code{oce} format.}
+  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an alternative to this.

@@ -187,7 +187,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("aquadopp high resolution"),
                             debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
-                            history, ...)
+                            processingLog, ...)
 {
     bisectAdpNortek <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
@@ -428,9 +428,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      oceCoordinate=header$user$coordinateSystem,
                      oceBeamUnattenuated=FALSE
                      )
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, history=historyItem(history))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
     class(res) <- c("nortek", "adp", "oce")
     res
 }                                       # read.adp.nortek()

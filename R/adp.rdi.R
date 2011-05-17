@@ -258,7 +258,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
                          debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
-                         history, ...)
+                         processingLog, ...)
 {
     bisectAdpRdi <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, "\n")
@@ -622,10 +622,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data <- NULL
     }
     metadata$manufacturer <- "teledyne rdi"
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("rdi", "adp", "oce")
     res
 }

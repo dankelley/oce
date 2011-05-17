@@ -24,7 +24,7 @@ head.adp <- function(x, n = 6L, ...)
             rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -50,7 +50,7 @@ tail.adp <- function(x, n = 6L, ...)
             rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval 
 }
 
@@ -63,7 +63,7 @@ removeShipMotion <- function(x)
     for (beam in 1:numberOfBeams) {
         rval$data$v[,,beam] <- rval$data$v[,,beam] - rval$data$bottomVelocity[,beam]
     }
-    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -122,7 +122,7 @@ beamName <- function(x, which)
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      latitude=NA, longitude=NA,
                      manufacturer=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+                     debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
                      ...)
 {
     oceDebug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
@@ -133,17 +133,17 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
                      latitude=latitude, longitude=longitude,
                      debug=debug-1, monitor=monitor, despike=despike,
-                     history=history, ...)
+                     processingLog=processingLog, ...)
     else if (type == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
-                        history=history, ...)
+                        processingLog=processingLog, ...)
     else if (type == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
-                        history=history, ...)
+                        processingLog=processingLog, ...)
 }
 
 summary.adp <- function(object, ...)
@@ -213,7 +213,7 @@ summary.adp <- function(object, ...)
         res$orientation <- object$metadata$orientation
         res$coordinateSystem <- object$metadata$coordinateSystem
         res$oceCoordinate <- object$metadata$oceCoordinate
-        res$history <- object$history
+        res$processingLog <- object$processingLog
         if (haveData) {
             dataNames <- names(object$data)
             threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
@@ -314,12 +314,12 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         cat("\n",...)
         cat("* Statistics of subsample\n  ::\n\n", ...)
         cat(showThrees(x, indent='     '), ...)
-        ##cat("\n* history::\n\n", ...)
+        ##cat("\n* processingLog::\n\n", ...)
         cat("\n")
-        print(summary(x$history))
+        print(summary(x$processingLog))
     } else {
         cat("* There are no profiles in this file\n")
-        print(summary(x$history))
+        print(summary(x$processingLog))
     }
     invisible(x)
 }
@@ -1034,7 +1034,7 @@ beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getO
         res$data$a[,,beam] <- as.raw(tmp)
     }
     res$metadata$oceBeamUnattenuated <- TRUE
-    res$history <- history(res$history,
+    res$processingLog <- processingLog(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
     res
@@ -1103,7 +1103,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oceCoordinate <- "xyz"
-    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # beamToXyzAdp()\n")
     res
 }
@@ -1219,7 +1219,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res$data$v[,c,3] <- enu$up
     }
     res$metadata$oceCoordinate <- "enu"
-    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
     res
 }
@@ -1253,7 +1253,7 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         res$data$v[,c,3] <- other$v3new
     }
     res$metadata$oceCoordinate <- "other"
-    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

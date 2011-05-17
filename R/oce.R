@@ -16,7 +16,7 @@ useHeading <- function(b, g, add=0)
     b.t <- as.numeric(b$data$time) - t0 # FIXME: what if heading in tsSlow?
     g.t <- as.numeric(g$data$time) - t0 # FIXME: what if heading in tsSlow?
     res$data$heading <- approx(x=g.t, y=g$data$heading, xout=b.t)$y + add
-    res$history <- history(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -372,7 +372,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x$history <- history(x$history, paste(deparse(match.call()), sep="", collapse=""))
+    x$processingLog <- processingLog(x$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # oceEdit() \n")
     x
 }
@@ -489,7 +489,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             }
             data <- list(station=station)
             metadata <- list(header=x$metadata$header,sectionId=x$metadata$sectionId,stationId=stn,latitude=lat,longitude=lon)
-            rval <- list(data=data, metadata=metadata, history=x$history)
+            rval <- list(data=data, metadata=metadata, processingLog=x$processingLog)
             class(rval) <- c("section", "oce")
         } else {                        # subset within the stations
             subsetString <- deparse(substitute(subset))
@@ -528,7 +528,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                                  stationId=stn,
                                  latitude=lat,
                                  longitude=lon)
-                rval <- list(data=data, metadata=metadata, history=x$history)
+                rval <- list(data=data, metadata=metadata, processingLog=x$processingLog)
                 class(rval) <- c("section", "oce")
             } else {
                 n <- length(x$data$station)
@@ -597,7 +597,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         rval$data <- x$data[r,]
     }
     oceDebug(debug, "\b\b} # subset.oce\n")
-    rval$history <- history(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -738,37 +738,37 @@ magic <- function(file, debug=getOption("oceDebug"))
 read.oce <- function(file, ...)
 {
     type <- magic(file)
-    history <- paste(deparse(match.call()), sep="", collapse="")
+    processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         stop("cannot read shapefiles")
     if (type == "adp/rdi")
-        return(read.adp.rdi(file, history=history, ...))
+        return(read.adp.rdi(file, processingLog=processingLog, ...))
     if (type == "adp/sontek")
-        return(read.adp.sontek(file, history=history, ...)) # FIXME is pcadcp different?
+        return(read.adp.sontek(file, processingLog=processingLog, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
         stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, history=history, ...))
+        return(read.adp.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/nortek/vector")
-        return(read.adv.nortek(file, history=history, ...))
+        return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")
-        return(read.adv.sontek.adr(file, history=history, ...))
+        return(read.adv.sontek.adr(file, processingLog=processingLog, ...))
     ## FIXME need adv/sontek (non adr)
     if (type == "interocean/s4")
-        return(read.cm.s4(file, history=history, ...))
+        return(read.cm.s4(file, processingLog=processingLog, ...))
     if (type == "ctd/sbe/19")
-        return(read.ctd.sbe(file, history=history, ...))
-    if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, history=history, ...))
+        return(read.ctd.sbe(file, processingLog=processingLog, ...))
+    if (type == "ctd/woce/exchange")      return(read.ctd.woce(file, processingLog=processingLog, ...))
     if (type == "coastline")
-        return(read.coastline(file, type="mapgen", history=history, ...))
+        return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
     if (type == "sealevel")
-        return(read.sealevel(file, history=history, ...))
+        return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
-        return(read.topo(file, history=history, ...))
+        return(read.topo(file, processingLog=processingLog, ...))
     if (type == "pt")
-        return(read.pt(file, history=history, ...))
+        return(read.pt(file, processingLog=processingLog, ...))
     if (type == "section")
-        return(read.section(file, history=history, ...))
+        return(read.section(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
 

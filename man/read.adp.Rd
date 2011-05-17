@@ -13,28 +13,28 @@
 read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("aquadopp high resolution"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
                       latitude=NA, longitude=NA,
                       type=c("adp", "pcadp"),
                       beamAngle=25, orientation,
-                      monitor=TRUE, history,
+                      monitor=TRUE, processingLog,
                       debug=getOption("oceDebug")) 
 }
 
@@ -76,7 +76,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     (with numbers and dots) of every profile read.}
   \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
     to clean anomalous spikes in heading, etc.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}
