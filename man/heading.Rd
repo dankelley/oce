@@ -52,6 +52,8 @@ heading(adp) <- 5 + heading(adp) # add 5 degrees to the heading
 print(heading(adp))
 }
 
+\seealso{Similar accessor functions are \code{\link{time}}, and \code{\link{velocity}}.}
+
 \author{Dan Kelley}
 
 \keyword{misc}

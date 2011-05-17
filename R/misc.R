@@ -1,4 +1,39 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+time.oce <- function(x, ...)
+{
+    which <- if ("which" %in% names(list(...))) list(...)$which else 1
+    if (inherits(x, "adp")) {
+        res <- x$data$time
+    } else if (inherits(x, "adv")) {
+        if (which == 1) {
+            res <- x$data$time
+        } else if (which == 2) {
+            names <- names(x$data)
+            if ("timeSlow" %in% names)
+                res <- x$data$timeSlow
+            else
+                res <- x$data$time
+        } else {
+            stop("unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading timescale")
+        }
+    } else {
+        stop("'x' must be an ADV or ADP object")
+    }
+    res
+}
+
+velocity <- function(x)
+{
+    if (inherits(x, "adp")) {
+        res <- x$data$v
+    } else if (inherits(x, "adv")) {
+        res <- x$data$v
+    } else {
+        stop("'x' must be an ADV or ADP object")
+    }
+    res
+}
+
 filterSomething <- function(x, filter)
 {
     if (is.raw(x)) {
