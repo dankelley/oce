@@ -240,53 +240,39 @@ time.oce <- function(x, ...)
     res
 }
 
-pressure <- function(x)
+hydrographyLocal <- function(x, time, item) # FIXME consider broadening as replacement for extract()
 {
     if (!inherits(x, "oce"))
         stop("'x' must be an oce object")
-    if ("pressure" %in% names(x$data))
-        return(x$data$pressure)
     if (inherits(x, "section")) {
-        pressure <- NULL
-        for (s in seq_along(x$data$station)) {
-            pressure <- c(pressure, x$data$station[[s]]$data$pressure)
+        if (!(item %in% names(x$data$station[[1]]$data)))
+            stop("the station data do not contain an item named \"", item, "\"")
+        rval <- NULL
+        for (station in seq_along(x$data$station)) {
+            rval <- c(rval, x$data$station[[station]]$data[[item]])
         }
-        return(pressure)
+    } else {
+        if (!(item %in% names(x$data)))
+            stop("'x' does not contain data named \"", item, "\"")
+        if (missing(time)) {
+            rval <- x$data[[item]]
+        } else {
+            if (inherits(time, "oce")) {
+                time <- time$data$time # FIXME: if broadening, consider timeSlow also
+            } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
+                stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+            }
+            rval <- approx(time$data$time, x$data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
+        }
     }
-    stop("cannot find pressure in 'x'")
+    rval
 }
 
-salinity <- function(x)
-{
-    if (!inherits(x, "oce"))
-        stop("'x' must be an oce object")
-    if ("salinity" %in% names(x$data))
-        return(x$data$salinity)
-    if (inherits(x, "section")) {
-        salinity <- NULL
-        for (s in seq_along(x$data$station)) {
-            salinity <- c(salinity, x$data$station[[s]]$data$salinity)
-        }
-        return(salinity)
-    }
-    stop("cannot find salinity in 'x'")
-}
+pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
 
-temperature <- function(x)
-{
-    if (!inherits(x, "oce"))
-        stop("'x' must be an oce object")
-    if ("temperature" %in% names(x$data))
-        return(x$data$temperature)
-    if (inherits(x, "section")) {
-        temperature <- NULL
-        for (s in seq_along(x$data$station)) {
-            temperature <- c(temperature, x$data$station[[s]]$data$temperature)
-        }
-        return(temperature)
-    }
-    stop("cannot find temperature in 'x'")
-}
+salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
+
+temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
 
 velocity <- function(x)
 {
