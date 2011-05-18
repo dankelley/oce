@@ -48,7 +48,7 @@ summary.processingLog <- function(object, ...)
 print.summary.processingLog <- function(x, digits = max(6, getOption("digits") - 1), ...)
 {
     n <- length(x)
-    cat("* History::\n\n", ...)
+    cat("* Processing Log::\n\n", ...)
     if (n > 0) {
         for (i in 1:n)
             cat(x[i])
