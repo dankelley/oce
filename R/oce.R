@@ -113,6 +113,10 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     } else {
         stop("unknown value of which \"", which, "\"") # cannot get here
     }
+    if (inherits(x, "adp") || inherits(x, "adv")) {
+        res$metadata$numberOfSamples <- dim(res$data$v)[1]
+        res$metadata$numberOfCells <- dim(res$data$v)[2]
+    }
     oceDebug(debug, "\b\b} # window.oce()\n")
     res
 }
@@ -595,6 +599,10 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         r <- r & !is.na(r)
         rval <- x
         rval$data <- x$data[r,]
+    }
+    if (inherits(x, "adp") || inherits(x, "adv")) {
+        rval$metadata$numberOfSamples <- dim(rval$data$v)[1]
+        rval$metadata$numberOfCells <- dim(rval$data$v)[2]
     }
     oceDebug(debug, "\b\b} # subset.oce\n")
     rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))

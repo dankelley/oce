@@ -81,11 +81,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata <- list(manufacturer="nortek",
                      instrumentType="vector",
                      filename=filename,
-                     latitude=latitude, longitude=longitude,
+                     latitude=latitude,
+                     longitude=longitude,
+                     numberOfSamples=NA, # filled in later
+                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
                      measurementStart=NA, # FIXME
                      measurementEnd=NA,   # FIXME
                      samplingRate=NA, # FIXME: should fill in for all instruments
-                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
                      serialNumber=header$hardware$serialNumber,
                      frequency=header$head$frequency,
                      internalCodeVersion=header$hardware$picVersion,
@@ -425,9 +427,18 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     time <- vvdSec + vsd.t[1]
     ##print(attributes(time)) # is time out somehow?
     ##print(time[1])
-    data <- list(time=time, pressure=pressure,
-                 timeSlow=vsd.t, headingSlow=heading, pitchSlow=pitch, rollSlow=roll, temperatureSlow=temperature,
-                 v=v, a=a, c=c)
+    metadata$numberOfSamples <- dim(v)[1]
+    metadata$numberOfBeams <- dim(v)[2]
+    data <- list(v=v,
+                 a=a,
+                 c=c,
+                 time=time,
+                 pressure=pressure,
+                 timeSlow=vsd.t,
+                 headingSlow=heading,
+                 pitchSlow=pitch,
+                 rollSlow=roll,
+                 temperatureSlow=temperature)
     res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("nortek", "adv", "oce")
     oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
@@ -541,10 +552,12 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv",
-                     serialNumber="?",
                      filename=filename,
                      latitude=latitude,
                      longitude=longitude,
+                     numberOfSamples=dim(v)[1],
+                     numberOfBeams=dim(v)[2],
+                     serialNumber="?",
                      transformationMatrix=transformationMatrix,
                      measurementStart=time[1],
                      measurementEnd=time[length(time)],
@@ -557,13 +570,15 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      orientation="upward") # guess
 
     nt <- length(time)
-    data <- list(time=time, # FIXME: what about other adv time?
+    data <- list(v=v,
+                 a=a,
+                 c=c,
+                 time=time,
                  heading=rep(0, nt), # user will need to fill this in
                  pitch=rep(0, nt), #  user will need to fill this in
                  roll=rep(0, nt),  # user will need to fill this in
                  temperature=temperature,
-                 pressure=pressure,
-                 v=v,a=a,c=c)
+                 pressure=pressure)
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -638,7 +653,10 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv", # FIXME or "adr"???
                      filename=filename,
-                     latitude=latitude, longitude=longitude,
+                     latitude=latitude,
+                     longitude=longitude,
+                     numberOfSamples=NA, # fill in later
+                     numberOfBeams=NA, # fill in later
                      measurementDeltat=1,
                      velocityScaleFactor=1)
     if (header) {
@@ -1008,18 +1026,22 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     pitch <- pitch[iii]
     heading <- heading[iii]
     roll <- roll[iii]
-    data <- list(time=time,
+    metadata$numberOfSamples=dim(v)[1]
+    metadata$numberOfBeams=dim(v)[2]
+    data <- list(v=v,
+                 a=a,
+                 c=c,
+                 time=time,
                  heading=heading,
                  pitch=pitch,
                  roll=roll,
                  temperature=temperature,
-                 pressure=pressure,
-                 v=v, a=a, c=c)
+                 pressure=pressure)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-processingLog <- processingLogItem(processingLog)
-res <- list(data=data, metadata=metadata, processingLog=processingLog)
-class(res) <- c("sontek", "adv", "oce")
+    processingLog <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=processingLog)
+    class(res) <- c("sontek", "adv", "oce")
     res
 }
 
@@ -1132,22 +1154,32 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     tt <- seq(t[fromBurst], t[toBurst], length.out=len)
     ## trim to the requested interval
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
-    data <- list(time=tt[ok],
-                 heading=approx(t, heading, xout=tt, rule=2)$y[ok],
-                 pitch=approx(t, pitch, xout=tt, rule=2)$y[ok],
-                 roll=approx(t, roll, xout=tt, rule=2)$y[ok],
+    v <- v[ok,]
+    a <- a[ok,]
+    c <- c[ok,]
+    tt <- tt[ok]
+    heading <- approx(t, heading, xout=tt, rule=2)$y
+    pitch <- approx(t, pitch, xout=tt, rule=2)$y
+    roll <- approx(t, roll, xout=tt, rule=2)$y
+    data <- list(v,
+                 a,
+                 c,
+                 time=tt,
+                 heading=heading,
+                 pitch=pitch,
+                 roll=roll,
                  temperature=temperature,
-                 pressure=pressure,
-                 v=v[ok,], a=a[ok,], c=c[ok,])
+                 pressure=pressure)
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv", # FIXME or "adr"?
-                     latitude=latitude, longitude=longitude,
+                     filename=basefile,
+                     latitude=latitude,
+                     longitude=longitude,
+                     numberOfSamples=dim(v)[1],
+                     numberOfBeams=dim(v)[2],
                      cpuSoftwareVerNum=metadata$cpuSoftwareVerNum,
                      dspSoftwareVerNum=metadata$dspSoftwareVerNum,
-                     filename=basefile,
                      transformationMatrix=if(!missing(transformationMatrix)) transformationMatrix else NULL,
-                     numberOfSamples=length(data$x),
-                     numberOfBeams=3,
                      orientation="upward", # FIXME: guessing on the orientation
                      deltat=as.numeric(difftime(tt[2], tt[1], units="secs")),
                      subsampleStart=data$t[1],
