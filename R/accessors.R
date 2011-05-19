@@ -245,11 +245,23 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
     if (!inherits(x, "oce"))
         stop("'x' must be an oce object")
     if (inherits(x, "section")) {
-        if (!(item %in% names(x$data$station[[1]]$data)))
-            stop("the station data do not contain an item named \"", item, "\"")
-        rval <- NULL
-        for (station in seq_along(x$data$station)) {
-            rval <- c(rval, x$data$station[[station]]$data[[item]])
+        if (item == "latitude") {
+            rval <- NULL
+            for (i in 1:length(x$data$station)) {
+                rval <- c(rval, rep(x$metadata$latitude[i], length(x$data$station[[i]]$data$salinity)))
+            }
+        } else if (item == "longitude") {
+            rval <- NULL
+            for (i in 1:length(x$data$station)) {
+                rval <- c(rval, rep(x$metadata$longitude[i], length(x$data$station[[i]]$data$salinity)))
+            }
+        } else {
+            if (!(item %in% names(x$data$station[[1]]$data)))
+                stop("the station data do not contain an item named \"", item, "\"")
+            rval <- NULL
+            for (station in seq_along(x$data$station)) {
+                rval <- c(rval, x$data$station[[station]]$data[[item]])
+            }
         }
     } else {
         if (!(item %in% names(x$data)))
