@@ -247,14 +247,12 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
     if (inherits(x, "section")) {
         if (item == "latitude") {
             rval <- NULL
-            for (i in 1:length(x$data$station)) {
+            for (i in 1:length(x$data$station))
                 rval <- c(rval, rep(x$metadata$latitude[i], length(x$data$station[[i]]$data$salinity)))
-            }
         } else if (item == "longitude") {
             rval <- NULL
-            for (i in 1:length(x$data$station)) {
+            for (i in 1:length(x$data$station))
                 rval <- c(rval, rep(x$metadata$longitude[i], length(x$data$station[[i]]$data$salinity)))
-            }
         } else {
             if (!(item %in% names(x$data$station[[1]]$data)))
                 stop("the station data do not contain an item named \"", item, "\"")
@@ -286,9 +284,9 @@ salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
 
-longitude <- function(x, time) hydrographyLocal(x, time, "longitude")
-
 latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
+
+longitude <- function(x, time) hydrographyLocal(x, time, "longitude")
 
 velocity <- function(x)
 {
