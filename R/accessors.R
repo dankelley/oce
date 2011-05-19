@@ -274,6 +274,10 @@ salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
 
+longitude <- function(x, time) hydrographyLocal(x, time, "longitude")
+
+latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
+
 velocity <- function(x)
 {
     if (!inherits(x, "oce"))

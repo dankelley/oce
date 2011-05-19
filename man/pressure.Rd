@@ -3,6 +3,9 @@
 \alias{pressure}
 \alias{salinity}
 \alias{temperature}
+\alias{latitude}
+\alias{longitude}
+
 \concept{data extraction}
 
 \title{Extract pressure, salinity, or temperature from an oce object}
@@ -14,6 +17,8 @@
   pressure(x, time)
   salinity(x, time)
   temperature(x, time)
+  latitude(x, time)
+  longitude(x, time)
 }
 
 \arguments{

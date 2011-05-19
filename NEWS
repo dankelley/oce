@@ -1,5 +1,6 @@
 0.3-1
-- add salinity()
+- add longitude() and latitude()
+- add salinity(), temperature, and pressure()
 - add time() and velocity()
 - add processingLog() as an l-value
 - rename history a processingLog
