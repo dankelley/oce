@@ -1,7 +1,11 @@
 \name{plot.TS}
+
 \alias{plot.TS}
+
 \title{Plot temperature-salinity diagram for seawater (CTD) data}
+
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
+
 \usage{plot.TS(x,
      rhoLevels = 6,
      grid = TRUE,
@@ -25,6 +29,7 @@
      lwd.rho=par("lwd"), lty.rho=par("lty"),
      \dots)
 }
+
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{rhoLevels}{Either a list of density levels for which to draw isopycnal
@@ -64,6 +69,7 @@
   \code{\link{summary.ctd}} summarizes the information, while
   \code{\link{read.ctd}} scans it from a file.
 }
+
 \examples{
 library(oce)
 # Plot TS diagram for a mid-Atlantic station at 36N
@@ -73,5 +79,7 @@ profile <- a03$data$station[[60]] # 124 stations in total
 plot.TS(profile)
 title("Mid-Atlantic at 36N")
 }
+
 \author{Dan Kelley}
+
 \keyword{misc}
