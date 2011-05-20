@@ -76,11 +76,11 @@ weatherplot <- function(id=6358, time=as.POSIXlt(Sys.Date()))
     site <- "http://www.climate.weatheroffice.gc.ca/climateData/bulkdata_e.html"
     time <- as.POSIXlt(time)
     f <- paste(site,
-               "?StationID=", id,
-               "&Year=", time$year+1900,
+               "?timeframe=1&StationID=", id,
+               "&&Year=", time$year+1900,
                "&Month=", time$mon+1,
                "&Day=", time$mday,
-               "&format=csv&type=hly", sep="")
+               "&format=csv", sep="")
     ## Read lines first, to see where header ends.  Cannot parse header, owing
     ## to multi-byte strings there.
     ll <- readLines(f)
