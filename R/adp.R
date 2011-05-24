@@ -12,13 +12,10 @@ head.adp <- function(x, n = 6L, ...)
         if ("distance" == name)
             next
         if (is.vector(x$data[[name]])) {
-            cat("doing 'head' of vector named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look]
         } else if (is.matrix(x$data[[name]])) {
-            cat("doing 'head' of matrix named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,]
         } else if (is.array(x$data[[name]])) {
-            cat("doing 'head' of array named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,,]
         } else {
             rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
@@ -38,13 +35,10 @@ tail.adp <- function(x, n = 6L, ...)
     rval <- x
     for (name in names(x$data)) {
         if (is.vector(x$data[[name]])) {
-            cat("doing 'head' of vector named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look]
         } else if (is.matrix(x$data[[name]])) {
-            cat("doing 'head' of matrix named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,]
         } else if (is.array(x$data[[name]])) {
-            cat("doing 'head' of array named", name, "\n")
             rval$data[[name]] <- x$data[[name]][look,,]
         } else {
             rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
