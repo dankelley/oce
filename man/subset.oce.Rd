@@ -41,10 +41,10 @@ plot(subset(ctd, pressure>10))
 
 # ADP example, subsetted by time and distance
 data(adp)
-adp.near <- subset(adp, distance < 10)
+adpNear <- subset(adp, distance < 10)
 # Note that the data may be accessed directly, as below
-adp.near.early <- subset(adp.near, time < mean(adp.near$data$ts$time))
-plot(adp.near.early)
+adpNearEarly <- subset(adpNear, time < mean(adpNear$data$time))
+plot(adpNearEarly)
 }
 
 \author{Dan Kelley}

@@ -1,25 +1,25 @@
-\name{showFives}
+\name{showThrees}
 
-\alias{showFives}
+\alias{showThrees}
+\alias{threes}
 
 
-\title{Show summary-style fivenum stats}
+\title{Show min, mean, and max values}
 
-\description{Show summary-style fivenum stats}
+\description{Show min, mean, and max values}
 
-\usage{showFives(x, indent="    ")}
+\usage{showThrees(x, indent="    ")}
 
 \arguments{
-  \item{x}{a list that contains an item named \code{fives}, which is a
+  \item{x}{a list that contains an item named \code{threes}, which is a
     matrix, containing data as created with \code{\link{fivenum}},
     with colnames and rownames specified.  See \dQuote{Details}.}
   \item{indent}{a spacer put at the left of each line of the result}
 }
 
 \details{This is a helper function for various \code{summary} functions.
-  The colnames are normally \code{c("Min.", "1st Qu.", "Median", "3rd
-  Qu.", "Max.")}, and the rownames are the names of the variables being
-  summarized.}
+  The colnames are \code{c("Min.", "Mean", "Max.")}, and the rownames are the
+  names of the variables being summarized.}
       
 \value{A multi-line string, suitable for printing.}
 
@@ -27,7 +27,7 @@
 library(oce)
 data(ptr)
 s <- summary(ptr)
-showFives(s)
+showThrees(s)
 }
 
 \author{Dan Kelley}

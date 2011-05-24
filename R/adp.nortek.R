@@ -81,8 +81,8 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
             head$frequency <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "head$frequency=", head$frequency, "kHz\n")
-            head$head.type <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
-            oceDebug(debug, "head$head.type=", head$head.type, "\n")
+            head$headType <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "head$headType=", head$headType, "\n")
             head$headSerialNumber <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
             oceDebug(debug, "head$headSerialNumber=", head$headSerialNumber, "\n")
             ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 119;
@@ -187,7 +187,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("aquadopp high resolution"),
                             debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
-                            history, ...)
+                            processingLog, ...)
 {
     bisectAdpNortek <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
@@ -379,22 +379,23 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         }
     }
     if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
-    data <- list(ma=list(v=v, a=a, q=q),
-                 ss=list(distance=seq(header$user$blankingDistance,
-                         by=header$user$cellSize,
-                         length.out=header$user$numberOfCells)),
-                 ts=list(time=time,
+    data <- list(v=v, a=a, q=q,
+                 distance=seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells),
+                 time=time,
                  pressure=pressure,
                  temperature=temperature,
                  heading=heading,
                  pitch=pitch,
-                 roll=roll))
+                 roll=roll)
     metadata <- list(manufacturer="nortek",
                      instrumentType="aquadopp-hr",
                      filename=filename,
                      manufacturer="nortek",
                      latitude=latitude,
                      longitude=longitude,
+                     numberOfSamples=dim(v)[1],
+                     numberOfCells=dim(v)[2],
+                     numberOfBeams=dim(v)[3],
                      measurementStart=measurementStart,
                      measurementEnd=measurementEnd,
                      measurementDeltat=measurementDeltat,
@@ -402,7 +403,6 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      subsampleEnd=time[length(time)],
                      subsampleDeltat=as.numeric(time[2]) - as.numeric(time[1]),
                      size=header$head$size,
-                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
                      serialNumber=header$hardware$serialNumber,
                      frequency=header$head$frequency,
                      internalCodeVersion=header$hardware$picVersion,
@@ -430,9 +430,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      oceCoordinate=header$user$coordinateSystem,
                      oceBeamUnattenuated=FALSE
                      )
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, history=historyItem(history))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
     class(res) <- c("nortek", "adp", "oce")
     res
 }                                       # read.adp.nortek()

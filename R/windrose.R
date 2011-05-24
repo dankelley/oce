@@ -7,7 +7,7 @@ as.windrose <- function(x, y, dtheta = 15)
     L <- max(R, na.rm=TRUE)
     nt <- 2 * pi / dt
     theta <- count <- mean <- vector("numeric", nt)
-    fivenum <- matrix(0, nt, 5)
+    fives <- matrix(0, nt, 5)
     for (i in 1:nt) {
         theta[i] <- i * dt
         if (theta[i] <= pi)
@@ -17,12 +17,13 @@ as.windrose <- function(x, y, dtheta = 15)
         }
         count[i] <- sum(inside)
         mean[i] <- mean(R[inside], na.rm=TRUE)
-        fivenum[i,] <- fivenum(R[inside], na.rm=TRUE)
+        fives[i,] <- fivenum(R[inside])
     }
-    data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi, count=count, mean=mean, fivenum=fivenum)
+    data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi,
+                 count=count, mean=mean, fives=fives)
     metadata <- list(dtheta=dtheta)
-    log <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, history=log)
+    log <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, processingLog=log)
     class(res) <- c("windrose", "oce")
     res
 }
@@ -90,9 +91,9 @@ plot.windrose <- function(x,
         }
         title(paste("Means (max ", sprintf(max, fmt="%.3g"), ")", sep=""))
     } else if (type == "median") {
-        max <- max(x$data$fivenum[,3], na.rm=TRUE)
+        max <- max(x$data$fives[,5], na.rm=TRUE)
         for (i in 1:nt) {
-            r <- x$data$fivenum[i,3] / max
+            r <- x$data$fives[i,3] / max
             ##cat("t=", t[i], " r=", r, "\n")
             xlist <- c(0, r * cos(t[i] - dt2), r * cos(t[i] + dt2), 0)
             ylist <- c(0, r * sin(t[i] - dt2), r * sin(t[i] + dt2), 0)
@@ -100,13 +101,13 @@ plot.windrose <- function(x,
         }
         title(paste("Medians (max ", sprintf(max,fmt="%.3g"), ")", sep=""))
     } else if (type == "fivenum") {
-        max <- max(x$data$fivenum[,5], na.rm=TRUE)
+        max <- max(x$data$fives[,3], na.rm=TRUE)
         for (i in 1:nt) {
-            for (j in 2:5) {
+            for (j in 2:3) {
                 tm <- t[i] - dt2
                 tp <- t[i] + dt2
-                r0 <- x$data$fivenum[i, j-1] / max
-                r  <- x$data$fivenum[i, j  ] / max
+                r0 <- x$data$fives[i, j-1] / max
+                r  <- x$data$fives[i, j  ] / max
                 xlist <- c(r0 * cos(tm), r * cos(tm), r * cos(tp), r0 * cos(tp))
                 ylist <- c(r0 * sin(tm), r * sin(tm), r * sin(tp), r0 * sin(tp))
                 thiscol <- col[c(2,1,1,2)][j-1]
@@ -125,17 +126,17 @@ summary.windrose <- function(object, ...)
     if (!inherits(object, "windrose"))
         stop("method is only for windrose objects")
     n <- length(object$data$theta)
-    fives <- matrix(nrow=n, ncol=5)
+    threes <- matrix(nrow=n, ncol=3)
     res <- list(n=n,
                 dtheta=object$metadata$dtheta,
-                fives=fives,
-                history=object$history)
+                threes=threes,
+                processingLog=object$processingLog)
     for (i in 1:n) {
-        fives[i,] <- object$data$fivenum[i,]
+        threes[i,] <- c(object$data$fivenum[i,1], object$data$mean[i], object$data$fivenum[i, 5])
     }
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    rownames(fives) <- object$data$theta
-    res$fives <- fives
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    rownames(threes) <- object$data$theta
+    res$threes <- threes
     class(res) <- "summary.windrose"
     res
 }
@@ -145,8 +146,7 @@ print.summary.windrose <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat("Windrose data\n-------------\n\n")
     cat("* Have n=", x$n, "angles, separated by dtheta=", x$dtheta,"\n\n")
     cat("* Statistics by angle::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
-    cat("\n* history::\n\n", ...)
-    print(summary(x$history))
+    cat(showThrees(x, indent='     '), ...)
+    print(summary(x$processingLog))
     invisible(x)
 }

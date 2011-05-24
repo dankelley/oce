@@ -8,7 +8,7 @@
 
 \usage{
 read.pt(file, from=1, to, by=1, tz=getOption("oceTz"), 
-        history, debug=getOption("oceDebug"))}
+        processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -28,7 +28,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
     sampling interval, to get the stride length.}
   \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
@@ -59,7 +59,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
 	data, because the data may have been decimated.}
     }
   }
-  \item{history}{a history of processing, in the standard \code{oce} format.}
+  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \section{Implementation notes}{The end time for measurement

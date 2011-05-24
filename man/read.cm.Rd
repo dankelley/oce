@@ -11,7 +11,7 @@
 read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
         type=c("s4"),
         latitude=NA, longitude=NA,
-        debug=getOption("oceDebug"), monitor=TRUE, history, \dots)
+        debug=getOption("oceDebug"), monitor=TRUE, processingLog, \dots)
 }
 
 \arguments{
@@ -39,7 +39,7 @@ read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{debug}{a flag that turns on debugging.  The value indicates the
     depth within the call stack to which debugging applies.}
   \item{monitor}{ignored at present.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  This parameter is typically only provided for internal
     calls; the default that it provides is better for normal calls by
     a user.}

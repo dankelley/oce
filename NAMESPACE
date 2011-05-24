@@ -1,4 +1,7 @@
 useDynLib(oce)
+import(methods)
+importFrom(utils, head, tail)
+exportMethods(print, plot, head, tail)
 export(
        "+.section",
        beamName,
@@ -34,6 +37,7 @@ export(
        enuToOther,
        enuToOtherAdp,
        enuToOtherAdv,
+       extract,
        fillGap,
        formatCI,
        fullFilename,
@@ -42,6 +46,10 @@ export(
        GMTOffsetFromTz,
        gravity,
        header,
+       heading,
+       "heading<-",
+       "processingLog<-",
+       processingLogItem,
        imagep,
        interpBarnes,
        integerToAscii,
@@ -49,9 +57,11 @@ export(
        is.xyz,
        is.enu,
        latFormat,
+       latitude,
        latlonFormat,
        loggerToc,
        lonFormat,
+       longitude,
        magic,
        magneticDeclination,
        makeFilter,
@@ -76,6 +86,8 @@ export(
        oceSpectrum,
        oce.write.table,
        parseLatLon,
+       pitch,
+       "pitch<-",
        plot.adp,
        plot.adv,
        plot.TS,
@@ -90,10 +102,8 @@ export(
        plot.section,
        plot.tidem,
        plot.windrose,
-       historyAdd,
-       historyAppend,
-       historyItem,
-       summary.history,
+       pressure,
+       summary.processingLog,
        ptPatm,
        ptTrim,
        pwelch,
@@ -122,12 +132,15 @@ export(
        read.section,
        rescale,
        retime,
+       roll,
+       "roll<-",
        secondsToCtime,
        resizableLabel,
+       salinity,
        sectionGrid,
        sectionSmooth,
        sectionSort,
-       showFives,
+       showThrees,
        stickplot,
        subset.oce,
        sunAngle,
@@ -153,9 +166,12 @@ export(
        swTheta,
        swTSrho,
        swViscosity,
+       temperature,
+       threenum,
        tidem,
        tidemAstron,
        tidemVuf,
+       time.oce,
        toEnu,
        toEnuAdp,
        toEnuAdv,
@@ -165,6 +181,7 @@ export(
        unwrapAngle,
        useHeading,
        vectorShow,
+       velocity,
        velocityStatistics,
        window.oce,
        write.ctd,
@@ -173,6 +190,8 @@ export(
        xyzToEnuAdv
        )
 
+S3method(head, adp)
+S3method(tail, adp)
 S3method(plot, adp)
 S3method(plot, adv)
 S3method(plot, cm)
@@ -185,7 +204,7 @@ S3method(plot, pt)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
-S3method(print, summary.history)
+S3method(print, summary.processingLog)
 S3method(print, summary.adp)
 S3method(print, summary.adv)
 S3method(print, summary.cm)

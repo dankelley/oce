@@ -73,7 +73,7 @@ analysis.
   \end{center}
   \caption{\label{f:ctdobject}Sketch of the contents of a \texttt{ctd}
     object. The elements \texttt{data}, \texttt{metadata}, and
-    \texttt{history} are shared by all \texttt{oce} objects, although
+    \texttt{processingLog} are shared by all \texttt{oce} objects, although
     their contents vary from object to object.}
 \end{figure}
 
@@ -94,7 +94,7 @@ As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object is a list
 containing three elements: (a) \texttt{data}, a list or a data frame containing
 the actual data (e.g., for a CTD object, this will contain pressure,
 temperature, etc.), (b) \texttt{metadata}, a list containing data such things as
-file headers, the location of a CTD cast, etc., and (c) \texttt{history},
+file headers, the location of a CTD cast, etc., and (c) \texttt{processingLog},
 a list that documents how the file was created (often by a \texttt{read} or
 \texttt{as} method) and how it was changed thereafter (e.g. by decimating a CTD
 cast).
@@ -204,7 +204,7 @@ data, such as trimming CTD profiles with \verb@ctdTrim()@, but of course you
 may do that sort of work by acting on the data directly, if necessary.  Just
 make sure you realize that the metadata will not be altered if you do that.
 Also, it is a good idea to add log entries to any objects that you change, by
-using the \verb@historyAdd()@ function.  (You can see an example of
+using the \verb@processingLog()@ function.  (You can see an example of
 this in action with \verb@?section@.)
 
 \begin{figure}
@@ -602,7 +602,7 @@ png("adp.png", width=800, height=400, pointsize=20)
 library(oce)
 data(adp)
 plot(adp, which=1,
-  adorn=expression({lines(x$data$ts$time, x$data$ts$pressure, col='green', lwd=2)}))
+  adorn=expression({lines(x$data$time, x$data$pressure, col='green', lwd=2)}))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()

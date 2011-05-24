@@ -1,3 +1,18 @@
+0.3-1
+- add longitude() and latitude()
+- add salinity(), temperature, and pressure()
+- add time() and velocity()
+- add processingLog() as an l-value
+- rename history a processingLog
+- add heading(), pitch(), and roll() added, as l-values and r-values
+- flatten all data objects to be 1 level thick (for future matlab exports)
+- add threenum() added, and use it in all summaries (for speed)
+
+0.2-3
+- head.adp() added
+- tail.adp() added
+- extract() added
+
 0.2-2
 - velocityStatistics() added
 - new names: oceApprox() integerToAscii() rangeLimit() ctdRaw
@@ -283,7 +298,7 @@
 - add swSoundSpeed()
 
 0.1.62
-- add historyAppend() and related code
+- add historyAppend() (later named processingLogAppend()) and related code
 - improve ctdTrim()
 
 0.1.61

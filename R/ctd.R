@@ -58,8 +58,8 @@ as.ctd <- function(salinity, temperature, pressure, quality,
                      names=c("salinity", "temperature", "pressure", "sigmaTheta"),
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
                      src=src)
-    hitem <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, history=hitem)
+    hitem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("ctd", "oce")
     res
 }
@@ -79,7 +79,7 @@ ctdAddColumn <- function (x, column, name, label, debug = FALSE)
     res$data[,name] <- column
     res$metadata$names <- c(res$metadata$names, name)
     res$metadata$labels <- c(res$metadata$labels, label)
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -178,8 +178,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
     }
     data.new[["pressure"]] <- pt
     res$data <- data.new
-    res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ctdDecimate()\n")
     res
 }
@@ -285,8 +284,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         res$metadata$waterDepth <- max(res$data$pressure, na.rm=TRUE)
         oceDebug(debug, "inferred water depth of", res$metadata$waterDepth, "from pressure\n")
     }
-    res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ctdTrim()\n")
     res
 }
@@ -641,9 +639,9 @@ plot.ctd.scan <- function(x,
 ##* Sea-Bird SBE 25 Data File:
 ##CTD,20060609WHPOSIODAM
 
-read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), history, ...)
+read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
+    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     ofile <- file
     filename <- NULL
     if (is.null(type)) {
@@ -670,13 +668,13 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
     }                                   # FIXME: should just use magic() here
     switch(type,
            SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
-                                debug=debug, history=history, ...),
+                                debug=debug, processingLog=processingLog, ...),
            WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
-                                 debug=debug, history=history, ...))
+                                 debug=debug, processingLog=processingLog, ...))
 }
 
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
-                          debug=getOption("oceDebug"), history, ...)
+                          debug=getOption("oceDebug"), processingLog, ...)
 {
     ## FIXME: should have an argument that selects CTDSAL or SALNTY
     oceDebug(debug, "\b\bread.ctd.woce() {\n")
@@ -871,10 +869,10 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                      names=names,
                      labels=labels,
                      src=filename)
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("ctd", "oce")
     oceDebug(debug, "\b\b} # read.ctd.woce()\n")
     res
@@ -918,7 +916,7 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
 
 time.formats <- c("%b %d %Y %H:%M:%s", "%Y%m%d")
 
-read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), history, ...)
+read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monitor=FALSE, debug=getOption("oceDebug"), processingLog, ...)
 {
     oceDebug(debug, "\b\bread.ctd.sbe() {\n")
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
@@ -1178,10 +1176,10 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      names=names,
                      labels=labels,
                      filename=filename)
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("ctd", "oce")
     ## Add standard things, if missing
     if (!found.salinity) {
@@ -1212,13 +1210,11 @@ summary.ctd <- function(object, ...)
     if (!inherits(object, "ctd"))
         stop("method is only for ctd objects")
     dim <- dim(object$data)
-    fives <- matrix(nrow=dim[2], ncol=5)
     res <- list(filename="", systemUploadTime="", date="", institute="",
                 scientist="", ship="", cruise="", latitude=NA, longitude=NA,
                 station="?", startTime=NULL, deployed="", recovery="", waterDepth="",
                 levels="?",
-                fives=fives,
-                history=object$history)
+                processingLog=object$processingLog)
     res$filename <- if (!is.null(object$metadata$filename)) object$metadata$filename else ""
     res$filename.orig <- if (!is.null(object$metadata$filename.orig)) object$metadata$filename.orig else ""
     res$hexfilename <- if (!is.null(object$metadata$hexfilename)) object$metadata$hexfilename else ""
@@ -1239,12 +1235,13 @@ summary.ctd <- function(object, ...)
     res$type <- if (is.null(object$metadata$type)) "" else object$metadata$type
     res$serialNumber <- if (is.null(object$metadata$serialNumber)) "" else object$metadata$serialNumber
     res$levels <- dim[1]
+    threes <- matrix(nrow=dim[2], ncol=3)
     for (v in 1:dim[2])
-        fives[v,] <- fivenum(object$data[,v], na.rm=TRUE)
-    rownames(fives) <- names(object$data)
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    res$fives <- fives
-    res$history <- object$history
+        threes[v,] <- threenum(object$data[,v])
+    rownames(threes) <- names(object$data)
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    res$threes <- threes 
+    res$processingLog <- object$processingLog
     class(res) <- "summary.ctd"
     res
 }
@@ -1302,8 +1299,8 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* No. of levels:      ",       x$levels,  "\n", ...)
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(showFives(x, indent='     '), ...)
-    print(summary(x$history))
+    cat(showThrees(x, indent='     '), ...)
+    print(summary(x$processingLog))
     invisible(x)
 }
 
@@ -1329,9 +1326,13 @@ plot.TS <- function (x,
                      lwd.rho=par("lwd"), lty.rho=par("lty"),
                      ...)
 {
-    if (!inherits(x, "ctd"))
-        stop("method is only for ctd objects")
-
+    if (!inherits(x, "ctd")) {
+        names<- names(x)
+        if ("temperature" %in% names && "salinity" %in% names)
+            x <- as.ctd(x$salinity, x$temperature, 0)
+        else
+            stop("method is only for ctd objects")
+    }
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
     omar <- par("mar")

@@ -15,27 +15,27 @@ read.adv(file, from=1, to, by=1, tz=getOption("oceTz"),
   header=TRUE,
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oceTz"), 
   type="vector",
   header=TRUE,
   latitude=NA, longitude=NA,
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   type="default",
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oceTz"),
   header=TRUE, 
   latitude=NA, longitude=NA,
   type="",
-  debug=getOption("oceDebug"), monitor=TRUE, history)
+  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
 read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   coordinateSystem="xyz",
   transformationMatrix,
   latitude=NA, longitude=NA,
-  debug=getOption("oceDebug"), history)
+  debug=getOption("oceDebug"), processingLog)
 }
 
 \arguments{
@@ -95,7 +95,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     of the header.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of every data burst read.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  This parameter is typically only provided for internal
     calls; the default that it provides is better for normal calls by
     a user.}
@@ -160,9 +160,9 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
     \item Times from the system chunks are mapped to velocity chunks by
     \emph{assuming} a constant sampling rate for each chunk.  If this
-    assumption is incorrect, then the times in the \code{data$ts$time}
+    assumption is incorrect, then the times in the \code{data$time}
     vector will be incorrect, although the values in the
-    \code{data$ts$pressure} vector will be correct.
+    \code{data$pressure} vector will be correct.
 
     \item Unlike related functions, \code{read.adv.nortek} reads and
     decodes every system chunk, even if a \code{by} argument is
@@ -214,13 +214,12 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
   contains measurements made with an ADV device.  This is a list
   containing lists named \code{metadata}, \code{data}, and
-  \code{history}.  The \code{data} list contains lists \code{ts},
-  potentially (for Nortek Vector units) \code{tsSlow}, and \code{ma}
-  (matrices of velocity, etc).  These are as \code{adp} objects, except
-  for the presence of \code{tsSlow}, for timeseries that vary on a slow
-  timescale, e.g. on Nortek Vector units, \code{tsSlow} holds
-  \code{heading}, \code{pitch}, \code{roll}, and \code{temperature},
-  while \code{ts} holds only \code{pressure}.  }
+  \code{processingLog}.  The \code{data} list contains items with names corresponding to 
+  \code{adp} objects, with an exception for Nortek data.  Nortek instruments
+  report some things at a time interval that is longer than the velocity sampling, and these
+  are stored in \code{data} as \code{timeSlow}, \code{headingSlow},
+  \code{pitchSlow}, \code{rollSlow}, and \code{temperatureSlow}.
+}
 
 \seealso{Objects of class \code{adv} may be plotted with
   \code{\link{plot.adv}} or summarized with \code{\link{summary.adv}}.
@@ -249,14 +248,14 @@ d <- read.adv.sontek.adr(
   "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr",
   from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
   to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
-w <- ts(d$data$ma$v[,3], deltat=1/d$metadata$sampling.rate) # z component
+w <- ts(d$data$v[,3], deltat=1/d$metadata$sampling.rate) # z component
 par(mfrow=c(2,2))
 par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,2,1))
 plot(w)
-plot(d$data$ts$time, sqrt(d$data$ma$v[,1]^2+d$data$ma$v[,2]^2),
+plot(d$data$time, sqrt(d$data$v[,1]^2+d$data$v[,2]^2),
     type='l', xlab="Time [s]", ylab="Horizontal velocity [m/s]")
-U <- mean(sqrt(d$data$ma$v[,1]^2 + d$data$ma$v[,2]^2))
+U <- mean(sqrt(d$data$v[,1]^2 + d$data$v[,2]^2))
 abline(h=U, col='red')
 mtext(sprintf("U=\%.2fm/s", U), side=4, at=U)
 s <- spectrum(w, spans=c(3,5,7), plot=FALSE)  # just guessing on spans

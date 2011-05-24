@@ -13,7 +13,7 @@ sectionSort <- function(section, by=c("stationId", "distance"))
     } else {
 	stop("argument 'by' is incorrect")
     }
-    rval$history <- historyAdd(rval$history, paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -91,8 +91,8 @@ makeSection <- function(item, ...)
 		     stationId=stn,
 		     latitude=lat,
 		     longitude=lon)
-    hitem <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=metadata, history=hitem)
+    hitem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("section", "oce")
     res
 }
@@ -114,8 +114,7 @@ makeSection <- function(item, ...)
     res$metadata$latitude <- c(res$metadata$latitude, station$metadata$latitude)
     res$metadata$longitude <- c(res$metadata$longitude, station$metadata$longitude)
     res$metadata$stationId <- c(res$metadata$stationId, station$metadata$station)
-    res$history <- historyAdd(res$history,
-					     paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -456,7 +455,7 @@ plot.section <- function(x,
 
 read.section <- function(file, sectionId="", flags,
 			 ship="", scientist="", institute="",
-			 debug=getOption("oceDebug"), history)
+			 debug=getOption("oceDebug"), processingLog)
 {
     if (is.character(file)) {
 	filename <- file
@@ -600,10 +599,10 @@ read.section <- function(file, sectionId="", flags,
     data <- list(station=station)
     metadata <-
     list(header=header,sectionId=sectionId,stationId=stn,latitude=lat,longitude=lon,date=time+tref)
-    if (missing(history))
-	history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=hitem)
+    if (missing(processingLog))
+	processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("section", "oce")
     res
 }
@@ -655,8 +654,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
 	##cat("\n")
     }
-    res$history <- historyAdd(res$history,
-					     paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # sectionGrid\n")
     res
 }
@@ -712,8 +710,7 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
 	res$data$station[[s]]$data$sigmaTheta <- sigmaThetaMat[,s]
     }
     class(res) <- c("section", "oce")
-    res$history <- historyAdd(res$history,
-					     paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # section.smooth()\n")
     res
 }
@@ -726,7 +723,7 @@ summary.section <- function(object, ...)
     stn.sum <- matrix(nrow=numStations, ncol=5)
     res <- list(sectionId=object$metadata$sectionId,
 		numStations=numStations,
-		stn.sum=stn.sum, history="?")
+		stn.sum=stn.sum, processingLog="?")
     lon1 <- object$data$station[[1]]$metadata$longitude
     lat1 <- object$data$station[[1]]$metadata$latitude
     for (i in 1:numStations) {
@@ -746,7 +743,7 @@ summary.section <- function(object, ...)
     colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
     rownames(stn.sum) <- object$metadata$stationId
     res$stn.sum <- stn.sum
-    res$history <- object$history
+    res$processingLog <- object$processingLog
     class(res) <- "summary.section"
     res
 }
@@ -761,8 +758,7 @@ print.summary.section <- function(x, digits=max(6, getOption("digits") - 1), ...
     } else {
 	cat("contains no stations.\n")
     }
-    cat("* history::\n\n", ...)
-    print(summary(x$history))
+    print(summary(x$processingLog))
     invisible(x)
 }
 

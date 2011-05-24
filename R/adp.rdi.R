@@ -34,8 +34,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     programVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     programVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     programVersion <- paste(programVersionMajor, programVersionMinor, sep=".")
-    programVersion.numeric <- as.numeric(programVersion)
-    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersion.numeric,")\n")
+    programVersionNumeric <- as.numeric(programVersion)
+    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersionNumeric,")\n")
     if (programVersion < 16.28)
         warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
@@ -258,7 +258,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
                          debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
-                         history, ...)
+                         processingLog, ...)
 {
     bisectAdpRdi <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, "\n")
@@ -527,17 +527,21 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, vectorShow(temperature, "temperature"))
             oceDebug(debug, vectorShow(pressure, "pressure"))
             metadata <- header
+            metadata$manufacturer <- "rdi"
+            metadata$instrumentType <- "adcp"
+            metadata$filename <- filename
             metadata$latitude <- latitude
             metadata$longitude <- longitude
-            metadata$bin1Distance <- bin1Distance
-            metadata$xmitPulseLength <- xmitPulseLength
+            metadata$numberOfSamples <- dim(v)[1]
+            metadata$numberOfCells <- dim(v)[2]
+            metadata$numberOfBeams <- dim(v)[3]
             metadata$measurementStart <- measurementStart
             metadata$measurementEnd <- measurementEnd
             metadata$measurementDeltat <- measurementDeltat
-            metadata$filename <- filename
+            metadata$bin1Distance <- bin1Distance
+            metadata$xmitPulseLength <- xmitPulseLength
             metadata$oceBeamUnattenuated <- FALSE
             metadata$oceCoordinate <- header$coordinateSystem
-            metadata$numberOfBeams <- header$numberOfBeams
             metadata$depth <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both
@@ -578,28 +582,37 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                       0        ,          0, -tm.c*tm.a, tm.c*tm.a,
                                                       tm.b     ,       tm.b,       tm.b,      tm.b,
                                                       tm.d     ,       tm.d,      -tm.d,     -tm.d),
-                                                     nrow=4, byrow=TRUE)
-            if (monitor)
+                                                    nrow=4, byrow=TRUE)
+           if (monitor)
                 cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oceTz")
             if (haveBottomTrack) {
                 bottomRange.na <- bottomRange == 0.0
                 bottomRange[bottomRange.na] <- NA
-                ma <- list(v=v, a=a, q=q, g=g, bottomRange=bottomRange, bottomVelocity=bottomVelocity)
+                data <- list(v=v, a=a, q=q, 
+                             bottomRange=bottomRange, bottomVelocity=bottomVelocity,
+                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                             time=time,
+                             pressure=pressure,
+                             temperature=temperature,
+                             salinity=salinity,
+                             depth=depth,
+                             heading=heading,
+                             pitch=pitch,
+                             roll=roll)
             } else {
-                ma <- list(v=v, a=a, q=q, g=g)
+                data <- list(v=v, a=a, q=q, 
+                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                             time=time,
+                             pressure=pressure,
+                             temperature=temperature,
+                             salinity=salinity,
+                             depth=depth,
+                             heading=heading,
+                             pitch=pitch,
+                             roll=roll)
             }
-            data <- list(ma=ma,
-                         ss=list(distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells)),
-                         ts=list(time=time,
-                                 pressure=pressure,
-                                 temperature=temperature,
-                                 salinity=salinity,
-                                 depth=depth,
-                                 heading=heading,
-                                 pitch=pitch,
-                                 roll=roll))
         } else {
             warning("There are no profiles in this file.")
             metadata <- header
@@ -613,10 +626,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data <- NULL
     }
     metadata$manufacturer <- "teledyne rdi"
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("rdi", "adp", "oce")
     res
 }

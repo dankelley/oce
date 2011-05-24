@@ -13,28 +13,28 @@
 read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("aquadopp high resolution"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
                       latitude=NA, longitude=NA,
                       type=c("adp", "pcadp"),
                       beamAngle=25, orientation,
-                      monitor=TRUE, history,
+                      monitor=TRUE, processingLog,
                       debug=getOption("oceDebug")) 
 }
 
@@ -76,7 +76,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     (with numbers and dots) of every profile read.}
   \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
     to clean anomalous spikes in heading, etc.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}
@@ -95,43 +95,31 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
 
   There are three types of element stored in the result's \code{data},
   namely space-series, time-series, and matrix.  These are contained
-  within lists named \code{data$ss}, \code{data$ts} and \code{data$ma},
-  respectively, with contents as follows.
+  within a list named \code{data}, as follows:
   \describe{
-    \item{\code{ss}}{A space-series named \code{distance}, which
+    \item{\code{distance}}{A space-series that 
       stores the distance of cells from the transducer head, in the
       vertical (not slant-wise) direction.}
-    \item{\code{ts}}{A collection time series, each of which has a value
-      for each profile.  The series are as follows.
-      	\describe{
-	  \item{\code{time}}{Times of the profiles, in POSIXct format.}
-	  \item{\code{pressure}}{Pressure, in decibars.}
-	  \item{\code{temperature}}{The temperature, in deg C.}
-	  \item{\code{salinity}}{The salinity, in PSU.  (This may be
-            measured, or just a repeated constant value specified when
-            the equipment was set up.)}
-	  \item{\code{depth.of.transducer}}{The depth of the
-            transducer.}
-	  \item{\code{heading}}{The heading of the instrument, in
-            degrees.}
-	  \item{\code{pitch}}{The pitch of the instrument, in degrees.}
-	  \item{\code{roll}}{The roll of the instrument, in degrees.}
-	}}
-    \item{\code{ma}}{A set of 3D arrays that contain the profile data,
-      as follows.
-      \describe{
-        \item{\code{v}}{The velocity.}
-	\item{\code{a}}{The amplitude of backscatter.}
-	\item{\code{q}}{A measure of the quality of the data,
-   	  e.g. correlation or percent-good.}
-      }
-      The first index corresponds to profile number, the second index
-      to cell number (distance from sensor), and the third to beam
-      number.  Objects of class \code{rdi} typically have 4 beams, while
-      those of type \code{aquadopp} have 3 beams.}
-    }
-    In addition to the \code{data} entry, the \code{metadata} entry
-    holds general information about such things as beam geometry, etc.}
+  \item{\code{time}}{Times of the profiles, in POSIXct format.}
+  \item{\code{pressure}}{Pressure, in decibars.}
+  \item{\code{temperature}}{The temperature, in deg C.}
+  \item{\code{salinity}}{The salinity, in PSU.  (This may be
+      measured, or just a repeated constant value specified when
+      the equipment was set up.)}
+  \item{\code{depth.of.transducer}}{The depth of the
+      transducer.}
+  \item{\code{heading}}{The heading of the instrument, in
+      degrees.}
+  \item{\code{pitch}}{The pitch of the instrument, in degrees.}
+  \item{\code{roll}}{The roll of the instrument, in degrees.}
+  \item{\code{v}}{A 3-D matrix of velocity.  The first index corresponds to
+      profile number, the second to cell number, and the third to beam number.}
+  \item{\code{a}}{A 3-D matrix of backscatter amplitude, corresponding to \code{v}.}
+  \item{\code{q}}{A 3-D matrix of a measure of the quality of the data,
+      corresponding to \code{v}.}
+  }
+  In addition to the \code{data} entry, the \code{metadata} entry
+  holds general information about such things as beam geometry, etc.}
 
 \section{Implementation notes}{
   \itemize{
@@ -142,7 +130,7 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     \code{metadata$heading.bias}.  \strong{Importantly}, this value is
     subtracted from the headings stored in the file, and the result of
     this subtraction is stored in the objects heading value (in
-    \code{data$ts$heading}).
+    \code{data$heading}).
     
     It should be noted that \code{read.adp.rdi()} was tested for
     firmware version 16.30.  For other versions, there may be problems.

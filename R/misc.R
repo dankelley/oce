@@ -1,4 +1,41 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+filterSomething <- function(x, filter)
+{
+    if (is.raw(x)) {
+        x <- as.numeric(x)
+        replace <- mean(x, na.rm=TRUE)
+        x[is.na(x)] <- replace
+        res <- as.integer(filter(x, filter))
+        res <- ifelse(res < 0, 0, res)
+        res <- ifelse(res > 255, 255, res)
+        res <- as.raw(res)
+    } else {
+        replace <- mean(x, na.rm=TRUE)
+        x[is.na(x)] <- replace
+        res <- filter(x, filter)
+    }
+    res
+}
+
+smoothSomething <- function(x, ...)
+{
+    if (is.raw(x)) {
+        x <- as.numeric(x)
+        replace <- mean(x, na.rm=TRUE)
+        x[is.na(x)] <- replace
+        res <- as.integer(smooth(x, ...))
+        res <- ifelse(res < 0, 0, res)
+        res <- ifelse(res > 255, 255, res)
+        res <- as.raw(res)
+    } else {
+        replace <- mean(x, na.rm=TRUE)
+        x[is.na(x)] <- replace
+        res <- smooth(x, ...)
+    }
+    res
+}
+
+
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
@@ -48,18 +85,22 @@ retime <- function(x, a, b, t0, debug=getOption("oceDebug"))
         stop("must give argument 't0'")
     oceDebug(debug, paste("\b\bretime.adv(x, a=", a, ", b=", b, ", t0=\"", format(t0), "\")\n"),sep="")
     rval <- x
-    if ("ts" %in% names(x$data)) {
-        oceDebug(debug, "retiming x$data$ts$time")
-        rval$data$ts$time <- x$data$ts$time + a + b * (as.numeric(x$data$ts$time) - as.numeric(t0))
+    oceDebug(debug, "retiming x$data$time")
+    rval$data$time <- x$data$time + a + b * (as.numeric(x$data$time) - as.numeric(t0))
+    if ("timeSlow" %in% names(x$data)) {
+        oceDebug(debug, "retiming x$data$timeSlow\n")
+        rval$data$timeSlow <- x$data$timeSlow + a + b * (as.numeric(x$data$timeSlow) - as.numeric(t0))
     }
-    if ("tsSlow" %in% names(x$data)) {
-        oceDebug(debug, "retiming x$data$tsSlow$time\n")
-        rval$data$tsSlow$time <- x$data$tsSlow$time + a + b * (as.numeric(x$data$tsSlow$time) - as.numeric(t0))
-    }
-    rval$history <- historyAdd(rval$history,
-                               paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # retime.adv()\n")
     rval
+}
+
+threenum <- function(x)
+{
+    if (is.raw(x))
+        x <- as.numeric(x)
+    c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
 }
 
 normalize <- function(x)
@@ -260,8 +301,8 @@ vectorShow <- function(v, msg, digits=5)
             } else {
                 paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
             }
-       } else {
-             if (n > 6) {
+        } else {
+            if (n > 6) {
                 paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
             } else {
                 paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
@@ -661,7 +702,7 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
 }
 
 interpBarnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
-                          xr=NULL, yr=NULL, gamma=0.5, iterations=2)
+                         xr=NULL, yr=NULL, gamma=0.5, iterations=2)
 {
     n <- length(x)
     if (length(y) != n)
@@ -745,8 +786,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
         }
         rval$data <- out
     }
-    rval$history <- historyAdd(rval$history,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -803,13 +843,6 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
     rgb(r, g, b)
 }
 
-header <- function(x)
-{
-    if (!inherits(x, "oce"))
-        stop("method is only for oce objects")
-    return(x$metadata$header)
-}
-
 addColumn <- function (x, data, name)
 {
     if (!inherits(x, "oce"))
@@ -825,8 +858,7 @@ addColumn <- function (x, data, name)
     rval <- x
     rval$data <- data.frame(x$data, data)
     names(rval$data) <- c(names(x$data), name)
-    rval$history <- historyAdd(rval$history,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -836,84 +868,76 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         stop("method is only for oce objects")
     oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
+    warning("FIXME decimate() not doing anything yet")
+    return(res)
     do.filter <- !missing(filter)
     if (missing(to))
-        to <- length(x$data$ts[[1]])
+        to <- length(x$data$time[[1]])
     select <- seq(from=1, to=to, by=by)
     oceDebug(debug, vectorShow(select, "select:"))
     if (inherits(x, "adp")) {
         oceDebug(debug, "decimate() on an ADP object\n")
-        nts <- length(x$data$ts)
-        for (its in 1:nts) {
-            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
-            if (names(x$data$ts)[[its]] != "time" && do.filter) {
-                tmp <- mean(x$data$ts[[its]], na.rm=TRUE)
-                res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE, sides=2) + tmp
-            }
-            res$data$ts[[its]] <- x$data$ts[[its]][select]
-            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
-        }
-        nma <- length(x$data$ma)
-        nbeam <- dim(x$data$ma[[1]])[3]
-        ndepth <- dim(x$data$ma[[1]])[2]
-        names <- names(x$data$ma)
-        oceDebug(debug, "nbeam=",nbeam, "; ndepth=",ndepth, "\n")
-        for (ma in 1:nma) {
-            dim <- dim(x$data$ma[[ma]])
-            oceDebug(debug, "ma=", ma, " contains", names[ma], ", which is being smoothed and decimated\n")
-            if (3 == length(dim)) {
-                oceDebug(debug, "processing\n")
-                if (do.filter) {
-                    raw <- is.raw(x$data$ma[[ma]])
-                    for (depth in 1:ndepth) {
-                        for (beam in 1:nbeam) {
-                            ##oceDebug(debug, "depth=", depth, "; beam=", beam, "\n")
-                            if (raw) {
-                                tmp <- filter(as.numeric(x$data$ma[[ma]][,depth,beam]), filter, circular=TRUE)
-                                tmp[tmp < 0] <- 0
-                                tmp[tmp > 255] <- 255
-                                res$data$ma[[ma]][,depth,beam] <- as.raw(tmp)
-                            } else {
-                                res$data$ma[[ma]][,depth,beam] <- filter(x$data$ma[[ma]][,depth,beam], filter, circular=TRUE)
-                            }
-                        }
+        nbeam <- dim(x$data$v)[3]
+        for (name in names(x$data)) {
+            if ("distance" == name)
+                next
+            if ("time" == name) {
+                res$data[[name]] <- x$data[[name]][select]
+            } else if (is.vector(x$data[[name]])) {
+                oceDebug(debug, "subsetting x$data$", name, ", which is a vector\n", sep="")
+                if (do.filter)
+                    res$data[[name]] <- filterSomething(x$data[[name]], filter)
+                res$data[[name]] <- res$data[[name]][select]
+            } else if (is.matrix(x$data[[name]])) {
+                dim <- dim(x$data[[name]])
+                for (j in 1: dim[2]) {
+                    oceDebug(debug, "subsetting x$data[[", name, ",", j, "]], which is a matrix\n", sep="")
+                    if (do.filter) 
+                        res$data[[name]][,j] <- filterSomething(x$data[[name]][,j], filter)
+                    res$data[[name]][,j] <- res$data[[name]][,j][select]
+                }
+            } else if (is.array(x$data[[name]])) {
+                dim <- dim(x$data[[name]])
+                for (k in 1:dim[2]) {
+                    for (j in 1: dim[3]) {
+                        oceDebug(debug, "subsetting x$data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
+                        if (do.filter)
+                            res$data[[name]][,j,k] <- filterSomething(x$data[[name]][,j,k], filter)
+                        res$data[[name]][,j,k] <- res$data[[name]][,j,k][select]
                     }
                 }
-                res$data$ma[[ma]] <- res$data$ma[[ma]][select,,]
-            } else {
-                res$data$ma[[ma]] <- res$data$ma[[ma]][select,]
-                warning("data$ma$", names[ma], " is decimated only; FIXME: add code to smooth first.")
             }
         }
     } else if (inherits(x, "adv")) { # FIXME: the (newer) adp code is probably better than this ADV code
         oceDebug(debug, "decimate() on an ADV object\n")
-        nts <- length(x$data$ts)
-        for (its in 1:nts) {
-            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
-            if (names(x$data$ts)[[its]] == "time" || !do.filter)
-                res$data$ts[[its]] <- x$data$ts[[its]][select]
-            else
-                res$data$ts[[its]] <- filter(x$data$ts[[its]], filter, circular=TRUE)[select]
-            oceDebug(debug, vectorShow(res$data$ts[[its]], names(res$data$ts)[its]))
-        }
-        num.ma <- length(x$data$ma)
-        for (v in 1:num.ma) {
-            num.beam <- dim(x$data$ma[[v]])[2] # probably always 3, but let's not guess
-            if (do.filter) {
-                raw <- is.raw(x$data$ma[[v]])
-                for (beam in 1:num.beam) {
-                    if (raw) {
-                        tmp <- filter(as.numeric(x$data$ma[[v]][,beam]), filter, circular=TRUE)
-                        tmp[tmp < 0] <- 0
-                        tmp[tmp > 255] <- 255
-                        res$data$ma[[v]][,beam] <- as.raw(tmp)
-                    } else {
-                        res$data$ma[[v]][,beam] <- filter(x$data$ma[[v]][,beam], filter, circular=TRUE)
+        for (name in names(x$data)) {
+            if ("time" == name) {
+                res$data[[name]] <- x$data[[name]][select]
+            } else if (is.vector(x$data[[name]])) {
+                oceDebug(debug, "subsetting x$data$", name, ", which is a vector\n", sep="")
+                if (do.filter)
+                    res$data[[name]] <- filterSomething(x$data[[name]], filter)
+                res$data[[name]] <- res$data[[name]][select]
+            } else if (is.matrix(x$data[[name]])) {
+                dim <- dim(x$data[[name]])
+                for (j in 1: dim[2]) {
+                    oceDebug(debug, "subsetting x$data[[", name, ",", j, "]], which is a matrix\n", sep="")
+                    if (do.filter) 
+                        res$data[[name]][,j] <- filterSomething(x$data[[name]][,j], filter)
+                    res$data[[name]][,j] <- res$data[[name]][,j][select]
+                }
+            } else if (is.array(x$data[[name]])) {
+                dim <- dim(x$data[[name]])
+                for (k in 1:dim[2]) {
+                    for (j in 1: dim[3]) {
+                        oceDebug(debug, "subsetting x$data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
+                        if (do.filter)
+                            res$data[[name]][,j,k] <- filterSomething(x$data[[name]][,j,k], filter)
+                        res$data[[name]][,j,k] <- res$data[[name]][,j,k][select]
                     }
                 }
-                res$data$ma[[v]] <- res$data$ma[[v]][select,]
             } else {
-                res$data$ma[[v]] <- res$data$ma[[v]][select,]
+                stop("item data[[", name, "]] is not understood; it must be a vector, a matrix, or an array")
             }
         }
     } else if (inherits(x, "ctd")) {
@@ -924,15 +948,14 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     } else if (inherits(x, "pt")) {
         if (do.filter)
             stop("cannot (yet) filter pt data during decimation") # FIXME
-        for (name in names(res$data$ts))
+        for (name in names(res$data))
             res$data[[name]] <- x$data[[name]][select]
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
     if ("deltat" %in% names(x$metadata)) # KLUDGE
         res$metadata$deltat <- by * x$metadata$deltat
-    res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -942,37 +965,37 @@ oceSmooth <- function(x, ...)
         stop("method is only for oce objects")
     res <- x
     if (inherits(x, "adp")) {
-        stop("cannot handle ADP objects (request this from the author)")
+        stop("cannot smooth ADP objects (feel free to request this from the author)")
     } else if (inherits(x, "adv")) {
-        num.ts <- length(x$data$ts)
-        for (v in 1:num.ts) {
-            if (names(x$data$ts)[v] != "time") {
-                res$data$ts[[v]] <- smooth(x$data$ts[[v]], ...)
-            }
-        }
-        num.ma <- length(x$data$ma)
-        for (v in 1:num.ma) {
-            num.beam <- dim(x$data$ma[[v]])[2] # probably always 3, but let's not guess
-            raw <- is.raw(x$data$ma[[v]])
-            for (beam in 1:num.beam) {
-                if (raw) {
-                    tmp <- smooth(as.numeric(x$data$ma[[v]][,beam]), ...)
-                    tmp[tmp < 0] <- 0
-                    tmp[tmp > 255] <- 255
-                    res$data$ma[[v]][,beam] <- as.raw(tmp)
-                } else {
-                    res$data$ma[[v]][,beam] <- smooth(x$data$ma[[v]][,beam], ...)
+        for (name in names(x$data)) {
+            if (length(grep("^time", name)))
+                next
+            if (is.vector(x$data[[name]])) {
+                oceDebug(debug, "smoothing x$data$", name, ", which is a vector\n", sep="")
+                res$data[[name]] <- smooth(x$data[[name]], ...)
+            } else if (is.matrix(x$data[[name]])) {
+                for (j in 1: dim(x$data[[name]])[2]) {
+                    oceDebug(debug, "smoothing x$data[[", name, ",", j, "]], which is a matrix\n", sep="")
+                    res$data[[name,j]] <- smooth(x$data[[name,j]], ...)
+                }
+            } else if (is.array(x$data[[name]])) {
+                dim <- dim(x$data[[name]])
+                for (k in 1:dim[2]) {
+                    for (j in 1: dim[3]) {
+                        oceDebug(debug, "smoothing x$data[[", name, ",", j, "]], which is an arry \n", sep="")
+                        res$data[[name,j,k]] <- smooth(x$data[[name,j,k]], ...)
+                    }
                 }
             }
         }
+        warning("oceSmooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
     } else if (inherits(x, "ctd")) {
         for (name in names(x$data))
             x$data[[name]] <- smooth(x$data[[name]], ...)
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    res$history <- historyAdd(res$history,
-                                             paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -1153,18 +1176,17 @@ applyMagneticDeclination <- function(x, declination=0, debug=getOption("oceDebug
         S <- sin(-declination * pi / 180)
         C <- cos(-declination * pi / 180)
         r <- matrix(c(C, S, -S, C), nrow=2)
-        uv.r <- r %*% rbind(x$data$ts$u, x$data$ts$v)
-        rval$data$ts$u <- uv.r[1,]
-        rval$data$ts$v <- uv.r[2,]
-        oceDebug(debug, "originally, first u:", x$data$ts$u[1:3], "\n")
-        oceDebug(debug, "originally, first v:", x$data$ts$v[1:3], "\n")
-        oceDebug(debug, "after application, first u:", rval$data$ts$u[1:3], "\n")
-        oceDebug(debug, "after application, first v:", rval$data$ts$v[1:3], "\n")
+        uvr <- r %*% rbind(x$data$u, x$data$v)
+        rval$data$u <- uvr[1,]
+        rval$data$v <- uvr[2,]
+        oceDebug(debug, "originally, first u:", x$data$u[1:3], "\n")
+        oceDebug(debug, "originally, first v:", x$data$v[1:3], "\n")
+        oceDebug(debug, "after application, first u:", rval$data$u[1:3], "\n")
+        oceDebug(debug, "after application, first v:", rval$data$v[1:3], "\n")
     } else {
         stop("cannot apply declination to object of class ", paste(class(x), collapse=", "), "\n")
     }
-    rval$history <- historyAdd(rval$history,
-                                              paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # applyMagneticDeclination\n")
     rval
 }
@@ -1232,14 +1254,14 @@ ctimeToSeconds <- function(ctime)
     s
 }
 
-showFives <- function(x, indent="    ")
+showThrees <- function(x, indent="    ")
 {
-    if (!("fives" %in% names(x)))
-        stop("'x' has no item named 'fives'")
-    rownames <- rownames(x$fives)
-    colnames <- colnames(x$fives)
-    data.width <- max(nchar(colnames)) + 5
-    name.width <- max(nchar(rownames(x$fives))) + 2 # space for left-hand column
+    if (!("threes" %in% names(x)))
+        stop("'x' has no item named 'threes'")
+    rownames <- rownames(x$threes)
+    colnames <- colnames(x$threes)
+    data.width <- max(nchar(colnames)) + 10
+    name.width <- max(nchar(rownames(x$threes))) + 4 # space for left-hand column
     ncol <- length(colnames)
     nrow <- length(rownames)
     res <- indent
@@ -1250,7 +1272,7 @@ showFives <- function(x, indent="    ")
     for (irow in 1L:nrow) {
         res <- paste(res, indent, format(rownames[irow], width=name.width), "  ", sep="") # FIXME: should not need the "  "
         for (icol in 1L:ncol) {
-            res <- paste(res, format(x$fives[irow,icol], digits=digits, width=data.width, justify="right"), sep=" ")
+            res <- paste(res, format(x$threes[irow,icol], digits=digits, width=data.width, justify="right"), sep=" ")
         }
         res <- paste(res, "\n", sep="")
     }

@@ -9,7 +9,7 @@
 
 \usage{
 read.sealevel(file, tz=getOption("oceTz"), 
-              history, debug=getOption("oceDebug"))}
+              processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -17,7 +17,7 @@ read.sealevel(file, tz=getOption("oceTz"),
   \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.  (If a time zone is present in the file header, this will
     supercede the value given here.)}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
@@ -71,7 +71,7 @@ read.sealevel(file, tz=getOption("oceTz"),
       \item{\code{sampling.interval}}{hours between samples in the timeseries.}
     }
   }
-  \item{history}{a history of processing, in the standard \code{oce} format.}
+  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an

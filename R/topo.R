@@ -251,7 +251,7 @@ if (0){
     invisible()
 }
 
-read.topo <- function(file, history, ...)
+read.topo <- function(file, processingLog, ...)
 {
     nh <- 6
     header <- readLines(file, n=nh)
@@ -266,13 +266,13 @@ read.topo <- function(file, history, ...)
     longitude <- longitudeLowerLeft + cellSize * seq(0, ncol-1)
     latitude <- latitudeLowerLeft + cellSize * seq(0, nrow-1)
     z <- t(zz[dim(zz)[1]:1,])
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- historyItem(history)
-    as.topo(longitude, latitude, z, filename=file, history=hitem)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    as.topo(longitude, latitude, z, filename=file, processingLog=hitem)
 }
 
-as.topo <- function(longitude, latitude, z, filename="", history)
+as.topo <- function(longitude, latitude, z, filename="", processingLog)
 {
     ncols <- length(longitude)
     nrows <- length(latitude)
@@ -286,9 +286,9 @@ as.topo <- function(longitude, latitude, z, filename="", history)
     data <- list(longitude=longitude, latitude=latitude, z=z)
     metadata <- list(filename=file, ncols=ncols, nrows=nrows,
                      longitudeLowerLeft=longitudeLowerLeft, latitudeLowerLeft=latitudeLowerLeft)
-    if (missing(history))
-        history <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- list(data=data, metadata=metadata, history=history)
+    if (missing(processingLog))
+        processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    rval <- list(data=data, metadata=metadata, processingLog=processingLog)
     class(rval) <- c("topo", "oce")
     rval
 }
@@ -300,7 +300,7 @@ summary.topo <- function(object, ...)
     res <- list(lat.range=range(object$data$lat, na.rm=TRUE),
                 lon.range=range(object$data$lon, na.rm=TRUE),
                 z.range=range(object$data$z, na.rm=TRUE),
-                history=object$history)
+                processingLog=object$processingLog)
     class(res) <- "summary.topo"
     res
 }
@@ -314,6 +314,6 @@ print.summary.topo <- function(x, digits=max(6, getOption("digits") - 1), ...)
         " to ", format(x$lon.range[2], digits), "\n")
     cat("* elevation range:", format(x$z.range[1], digits=digits),
         " to ", format(x$z.range[2], digits), "\n")
-    print(summary(x$history))
+    print(summary(x$processingLog))
     invisible(x)
 }
