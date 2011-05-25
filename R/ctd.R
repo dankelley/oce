@@ -1479,7 +1479,8 @@ plot.profile <- function (x,
         plot(index, x$data$pressure, ylim=ylim, xlab = "index", ylab = pname, type='l', xaxs=xaxs, yaxs=yaxs)
     } else if (xtype == "density+time") {
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
-        if (missing(densitylim)) densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
+        if (missing(densitylim))
+            densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -1503,7 +1504,8 @@ plot.profile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "density+dpdt") {
-        if (missing(densitylim)) densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
+        if (missing(densitylim))
+            densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
@@ -1535,7 +1537,9 @@ plot.profile <- function (x,
         }
     } else if (xtype == "S" || xtype == "salinity") {
         type <- if ("type" %in% names(dots)) dots$type else 'l'
-        if (missing(Slim)) { if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(x$data$salinity, na.rm=TRUE) }
+        if (missing(Slim)) {
+            if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(x$data$salinity, na.rm=TRUE)
+        }
         if (useSmoothScatter) {
             smoothScatter(x$data$salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab=pname, axes=FALSE, ...)
             axis(2)
@@ -1569,7 +1573,9 @@ plot.profile <- function (x,
         }
     } else if (xtype == "T" || xtype == "temperature") {
         type <- if ("type" %in% names(dots)) dots$type else 'l'
-        if (missing(Tlim)) { if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(x$data$temperature, na.rm=TRUE) }
+        if (missing(Tlim)) {
+            if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(x$data$temperature, na.rm=TRUE)
+        }
         if (useSmoothScatter) {
             smoothScatter(x$data$temperature, y, xlim=Tlim, ylim=ylim, xlab="", ylab=pname, axes=FALSE, ...)
             axis(2)
@@ -1603,7 +1609,8 @@ plot.profile <- function (x,
         }
     } else if (xtype == "density") {
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
-        if (missing(densitylim)) densitylim <- range(st, na.rm=TRUE)
+        if (missing(densitylim))
+            densitylim <- range(st, na.rm=TRUE)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
@@ -1645,7 +1652,7 @@ plot.profile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x$data$pressure, x$data$sigmaTheta)#, xaxs=xaxs, yaxs=yaxs)
+        N2 <- swN2(x$data$pressure, x$data$sigmaTheta)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         plot(N2, y,
