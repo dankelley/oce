@@ -1619,7 +1619,8 @@ plot.profile <- function (x,
         }
         lines(x$data$sigmaTheta, y, col = col.rho, lwd=lwd)
     } else if (xtype == "density+N2") {
-        if (missing(densitylim)) densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
+        if (missing(densitylim))
+            densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
@@ -1644,8 +1645,9 @@ plot.profile <- function (x,
             abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "N2") {
-        N2 <- swN2(x$data$pressure, x$data$sigmaTheta, xaxs=xaxs, yaxs=yaxs)
-        if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
+        N2 <- swN2(x$data$pressure, x$data$sigmaTheta)#, xaxs=xaxs, yaxs=yaxs)
+        if (missing(N2lim))
+            N2lim <- range(N2, na.rm=TRUE)
         plot(N2, y,
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE)
