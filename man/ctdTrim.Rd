@@ -32,10 +32,9 @@
 	    warning is printed, and this step is skipped.)}
 	}
       }
-      \item{"index"}{Select values only in indicated list of indices,
-	\emph{e.g.} \code{selection <- ctdTrim(ctd, "range", parameters
-          = list(item="index", from=10, to=30))}
-	selects data points 10, 11, ... 30.}
+      \item{"index"}{Select values only in the list of indices specified in \code{parameters}, 
+        \emph{e.g.} \code{selection <- ctdTrim(ctd, "index", parameters=10:30}
+        selects data points with indices 10, 11, ... 30.}
       \item{"range"}{Select data based on the value of the column named
         \code{parameters$item}.  This may be by range or by critical value.
         By range: select values between \code{parameters$from} (the
@@ -52,7 +51,7 @@
     depth (\code{metadata$water.depth}) is to be determined from the
     maximum of the trimmed pressure.  (This is ignored if the original
     data file contained the water depth in the header.)}
-  \item{parameters}{A list whose elemetns depend on the method; see above.}
+  \item{parameters}{A list whose elements depend on the method; see above.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
 }

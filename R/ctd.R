@@ -126,6 +126,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
                 }
             }
         }
+        data.new[["pressure"]] <- pt
     } else if ("reiniger-ross" == method) {
         oceDebug(debug, "Reiniger-Ross method\n")
         xvar <- x$data[["pressure"]]
@@ -135,6 +136,14 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
                 pred <- oceApprox(xvar, yvar, pt)
                 data.new[[datum.name]] <- pred
             }
+        }
+        data.new[["pressure"]] <- pt
+    } else if ("boxcar" == method) {
+        pcut <- cut(x$data$pressure, c(pt, tail(pt, 1)+diff(pt[1:2])))
+        for (name in data.names) {
+            ## FIXME: we should probably not e averaging scan, flag, etc
+            oceDebug(debug, "decimating", name)
+            data.new[[name]] <- as.vector(sapply(split(x$data[[name]], pcut), mean))
         }
     } else {
         for (i in 1:npt) {
@@ -175,8 +184,8 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
                 }
             }
         }
+        data.new[["pressure"]] <- pt
     }
-    data.new[["pressure"]] <- pt
     res$data <- data.new
     res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ctdDecimate()\n")
@@ -269,14 +278,19 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                 }
             }
         } else if (method == "range") {
+            if (!("item" %in% names(parameters)))
+                stop("'parameters' must be a list containing 'item'")
+            oceDebug(debug, "method='range'; parameters= ", parameters, "\n")
             item <- parameters$item
-            oceDebug(debug, "column", item,"; parameters ", parameters[1], parameters[2], "\n")
-            l <- length(parameters)
-            if (l == 1) { 		# lower limit
-                keep <- (x$data[[item]] >= parameters$from);
-            } else if (l == 2) {	# lower and upper limits
-                keep <- (x$data[[item]] >= parameters$from) & (x$data[[method]] <= parameters$to)
-            }
+            if (!(item %in% names(x$data)))
+                stop("x$data has no item named '", item, "'")
+            keep <- rep(TRUE, n)
+            if ("from" %in% names(parameters))
+                keep <- keep & (x$data[[item]] >= parameters$from)
+            if ("to" %in% names(parameters))
+                keep <- keep & (x$data[[item]] <= parameters$to)
+        } else {
+            stop("'method' not recognized; must be 'index', 'downcast', or 'range'")
         }
     }
     res$data <- subset(x$data, keep)
