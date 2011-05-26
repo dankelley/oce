@@ -193,7 +193,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 ctdTrim <- function(x, method=c("downcast", "index", "range"),
-                    inferWaterDepth=TRUE,
+                    inferWaterDepth=TRUE, removeDepthInversions=TRUE,    
                     parameters, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bctdTrim() {\n")
@@ -299,6 +299,18 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         oceDebug(debug, "inferred water depth of", res$metadata$waterDepth, "from pressure\n")
     }
     res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    if (removeDepthInversions) {
+        badDepths <- c(FALSE, diff(res$data$pressure) <= 0)
+        nbad <- sum(badDepths)
+        if (nbad > 0) {
+            res$data <- res$data[!badDepths,]
+            msg <- sprintf("removed %d levels that had depth inversions", nbad)
+            warning(msg)
+            msg <- sprintf("Note: ctdTrim() removed %d levels that had depth inversions",
+                           nbad)
+            res$processingLog <- processingLog(res$processingLog, msg)
+        }
+    }
     oceDebug(debug, "\b\b} # ctdTrim()\n")
     res
 }
