@@ -15,8 +15,7 @@
      col = par("col"),
      col.rho = "darkgray",
      cex.rho = 0.9*par("cex"),
-     cex = par("cex"),
-     pch = 21,
+     cex = par("cex"), pch = 1,
      rotateRhoLabels = FALSE,
      connectPoints = FALSE,
      useSmoothScatter = FALSE,
@@ -42,8 +41,8 @@
   \item{col}{colour for symbols.}
   \item{col.rho}{colour for isopycnal lines.}
   \item{cex.rho}{size of isopycnal labels.}
-  \item{cex}{size of symbols on graph.}
-  \item{pch}{code for symbols on graph.}
+  \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+  \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{rotateRhoLabels}{if TRUE, labels in right-hand margin are written vertically}
   \item{connectPoints}{if TRUE, the points are connected with line segments, in sequence}
   \item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}

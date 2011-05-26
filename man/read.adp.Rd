@@ -13,28 +13,28 @@
 read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
   \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("aquadopp high resolution"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
-  debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
                       latitude=NA, longitude=NA,
                       type=c("adp", "pcadp"),
                       beamAngle=25, orientation,
-                      monitor=TRUE, processingLog,
+                      monitor=FALSE, processingLog,
                       debug=getOption("oceDebug")) 
 }
 

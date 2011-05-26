@@ -116,7 +116,7 @@ beamName <- function(x, which)
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      latitude=NA, longitude=NA,
                      manufacturer=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog,
+                     debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
                      ...)
 {
     oceDebug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")

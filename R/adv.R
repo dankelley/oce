@@ -3,7 +3,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      header=TRUE,
                      latitude=NA, longitude=NA,
                      start, deltat,
-                     debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+                     debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     type = match.arg(type)
     ## FIXME: all these read.adv variants should have the same argument list
@@ -33,7 +33,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             type="vector",
                             header=TRUE,
                             latitude=NA, longitude=NA,
-                            debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+                            debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     ## abbreviations:
     ##   SIG=System Integrator Guide
@@ -449,7 +449,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                    type="default",
                                    latitude=NA, longitude=NA,
                                    start, deltat,
-                                   debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+                                   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     oceDebug(debug, paste("\b\bread.adv.sontek.serial(file[1]=\"", file[1],
                            "\", from=", format(from),
@@ -592,7 +592,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                                 header=TRUE,
                                 latitude=NA, longitude=NA,
                                 type="",
-                                debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+                                debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     bisectAdvSontekAdr <- function(tFind, add=0, debug=0) {
         oceDebug(debug, "bisectAdvSontekAdr(tFind=", format(tFind), ", add=", add, "\n")

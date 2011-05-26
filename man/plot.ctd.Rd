@@ -26,6 +26,7 @@
      latlon.cex=1.5,
      latlon.col="red",
      cex=1,
+     pch=1,
      useSmoothScatter=FALSE,
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -38,7 +39,7 @@
       list containing items named \code{salinity} and \code{temperature}.}
   \item{which}{list of desired plot types.  
     \itemize{
-      \item \code{which=1} or \code{which="temperature+salinity"} gives
+      \item \code{which=1} or \code{which="salinity+temperature"} gives
       a combined profile of temperature and salinity
       \item \code{which=2} or \code{which="density+N2"} gives a combined
       profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
@@ -82,7 +83,8 @@
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
-  \item{cex}{size to be used for plot symbols}
+  \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+  \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}

@@ -689,7 +689,7 @@ library(oce)
 data(ctd)
 pycnocline <- ctdTrim(ctd, "range",
                       parameters=list(item="pressure", from=5, to=12))
-plot.profile(pycnocline, type="density+N2")
+plot.profile(pycnocline, which="density+N2")
 @
 and another is
 \index{subset!extracting a portion of a profile}
@@ -697,26 +697,34 @@ and another is
 library(oce)
 data(ctd)
 pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
-plot.profile(pycnocline, type="density+N2")
+plot.profile(pycnocline, which="density+N2")
 @
 
 \index{section!extracting profile data from}
 \workedanswer{3}{TS diagram for section data}
+The simplest way is to use accessor functions to extract salinity, etc.
+<<>>=
+library(oce)
+data(section)
+ctd <- as.ctd(salinity(section), temperature(section), pressure(section))
+plot.TS(ctd)
+@
+but the point of \emph{this} exercise is to do the extraction manually, so a
+more appropriate solution is as follows
 <<>>=
 library(oce)
 data(section)
 SS <- TT <- pp <- id <- NULL
 n <- length(section$data$station)
-for (i in 1:n) {
-	stn <- section$data$station[[i]] # save typing
-	SS <- c(SS, stn$data$salinity)
-	TT <- c(TT, stn$data$temperature)
-	pp <- c(pp, stn$data$pressure)
-	id <- c(id, rep(i, length(stn$data$pressure)))
+for (stn in section$data$station) {
+    SS <- c(SS, stn$data$salinity)
+    TT <- c(TT, stn$data$temperature)
+    pp <- c(pp, stn$data$pressure)
 }
 ctd <- as.ctd(SS, TT, pp)
-plot.TS(ctd, col=hsv(0.7*id/n), cex=2, pch=21)
+plot.TS(ctd)
 @
+
 
 \workedanswer{4}{Gulf Stream}
 (Try \verb@?swDynamicHeight@ for hints on smoothing.)
