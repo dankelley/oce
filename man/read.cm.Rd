@@ -11,7 +11,7 @@
 read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
         type=c("s4"),
         latitude=NA, longitude=NA,
-        debug=getOption("oceDebug"), monitor=TRUE, processingLog, \dots)
+        debug=getOption("oceDebug"), monitor=FALSE, processingLog, \dots)
 }
 
 \arguments{

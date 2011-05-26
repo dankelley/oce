@@ -257,7 +257,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
-                         debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
+                         debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE,
                          processingLog, ...)
 {
     bisectAdpRdi <- function(t.find, add=0, debug=0) {

@@ -1584,9 +1584,21 @@ plot.profile <- function (x,
             box()
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
-            plot(x$data$temperature, y,
-                 xlim=Tlim, ylim=ylim,
-                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            ## manipulate args, to avoid duplicates of 'type' and perhaps other things
+            args <- list(...)
+            args$x <- x$data$temperature
+            args$y <- y
+            args$xlim <- Tlim
+            args$ylim <- ylim
+            args$type <- 'n'
+            args$xlab <- ""
+            args$ylab <- pname
+            args$axes <- FALSE
+            args$xaxs <- xaxs
+            args$yaxs <- yaxs
+            if ("debug" %in% names(args))
+                args <- args[-which("debug" == names(args))]
+            do.call("plot", args)
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)

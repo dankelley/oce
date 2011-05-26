@@ -15,22 +15,22 @@ read.adv(file, from=1, to, by=1, tz=getOption("oceTz"),
   header=TRUE,
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+  debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oceTz"), 
   type="vector",
   header=TRUE,
   latitude=NA, longitude=NA,
-  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+  debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   type="default",
   latitude=NA, longitude=NA,
   start, deltat,
-  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+  debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oceTz"),
   header=TRUE, 
   latitude=NA, longitude=NA,
   type="",
-  debug=getOption("oceDebug"), monitor=TRUE, processingLog)
+  debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   coordinateSystem="xyz",
   transformationMatrix,

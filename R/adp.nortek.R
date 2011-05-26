@@ -186,7 +186,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("aquadopp high resolution"),
-                            debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
+                            debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE,
                             processingLog, ...)
 {
     bisectAdpNortek <- function(t.find, add=0, debug=0) {

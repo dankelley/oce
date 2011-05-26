@@ -4,7 +4,7 @@
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     type=c("s4"),
                     latitude=NA, longitude=NA,
-                    debug=getOption("oceDebug"), monitor=TRUE, processingLog, ...)
+                    debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 2)
         debug <- 2
@@ -24,7 +24,7 @@ read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                        latitude=NA, longitude=NA,
-                       debug=getOption("oceDebug"), monitor=TRUE, processingLog, ...)
+                       debug=getOption("oceDebug"), monitor=FALSE, processingLog, ...)
 {
     if (debug > 1)
         debug <- 1

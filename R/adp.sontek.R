@@ -2,7 +2,7 @@
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("adp", "pcadp"),
-                            debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, processingLog, ...)
+                            debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog, ...)
 {
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
@@ -383,7 +383,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                    latitude=NA, longitude=NA,
                                    type=c("adp", "pcadp"),
                                    beamAngle=25, orientation,
-                                   monitor=TRUE, processingLog,
+                                   monitor=FALSE, processingLog,
                                    debug=getOption("oceDebug"))
 {
     ## Data format is described in
