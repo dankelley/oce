@@ -7,7 +7,7 @@
 \description{Plot a CTD profile, in any of several common formats.}
 
 \usage{plot.profile(x,
-             xtype="S", 
+             xtype="salinity+temperature", 
              ytype=c("pressure", "z"),
              col.salinity="darkgreen",
              col.temperature="red",
@@ -21,7 +21,7 @@
              Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
              lwd,
              xaxs="r", yaxs="r",
-             cex=1,
+             cex=1, pch=1,
              useSmoothScatter=FALSE,
              mgp=getOption("oceMgp"),
              mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
@@ -30,10 +30,10 @@
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{xtype}{Type of profile to plot, from the list below.
+  \item{xtype}{Item(s) plotted on the x axis, from the list below.
     \describe{
-      \item{\code{S}}{Profile of salinity.}
-      \item{\code{T}}{Profile of \emph{in-situ} temperature.}
+      \item{\code{salinity}}{Profile of salinity.}
+      \item{\code{temperature}}{Profile of \emph{in-situ} temperature.}
       \item{\code{density}}{Profile of density (expressed as
 	\eqn{\sigma_\theta}{sigma_theta}).}
       \item{\code{index}}{Index of sample (very useful for working with
@@ -77,7 +77,8 @@
   \item{lwd}{lwd value for data line}
   \item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
   \item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
-  \item{cex}{size of symbols}
+  \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+  \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
@@ -99,7 +100,7 @@
 \examples{
 library(oce)
 data(ctd)
-plot.profile(ctd, xtype="T")
+plot.profile(ctd, xtype="temperature")
 }
 
 \author{Dan Kelley}

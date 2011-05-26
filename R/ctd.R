@@ -358,6 +358,7 @@ plot.ctd <- function (x, which = 1:4,
                       lonlim, latlim,
                       latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                       cex=1,
+                      pch=1,
                       useSmoothScatter=FALSE,
                       adorn=NULL,
                       mgp=getOption("oceMgp"),
@@ -434,67 +435,67 @@ plot.ctd <- function (x, which = 1:4,
     }
     for (w in 1:length(which)) {
         if (which[w] == 1 || which[w] == "temperature+salinity")
-            plot.profile(x, xtype = "S+T", Slim=Slim, Tlim=Tlim, ylim=plim,
-                         cex=cex,
+            plot.profile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 2 || which[w] == "density+N2")
-            plot.profile(x, xtype = "density+N2",
+            plot.profile(x, xtype="density+N2",
                          ylim=plim,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 6 || which[w] == "density+dpdt")
             plot.profile(x, xtype="density+dpdt",
                          ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 7 || which[w] == "density+time")
             plot.profile(x, xtype="density+time",
                          ylim=plim, densitylim=densitylim, timelim=timelim,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 8 || which[w] == "index")
             plot.profile(x, xtype="index",
                          ylim=plim,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 9 || which[w] == "salinity")
             plot.profile(x, xtype="salinity",
                          ylim=plim,
                          Slim=Slim,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 10 || which[w] == "temperature") {
             plot.profile(x, xtype="temperature",
                          ylim=plim,
                          Tlim=Tlim,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid, ...)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
         } else if (which[w] == 11 || which[w] == "density")
             plot.profile(x, xtype="density",
                          ylim=plim,
                          grid=grid,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         col.grid=col.grid, lty.grid=lty.grid, ...)
+                         col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 12 || which[w] == "N2")
             plot.profile(x, xtype="N2",
                          ylim=plim,
                          grid=grid,
-                         cex=cex,
+                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         col.grid=col.grid, lty.grid=lty.grid, ...)
+                         col.grid=col.grid, lty.grid=lty.grid)
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
             plot.TS(x, Slim=Slim, Tlim=Tlim,
                     grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                    useSmoothScatter=useSmoothScatter, ...)
+                    useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, ...)
         }
         else if (which[w] == 4 || which[w] == "text") {
             text.item <- function(item, label, cex=0.8) {
@@ -1328,8 +1329,7 @@ plot.TS <- function (x,
                      col = par("col"),
                      col.rho = "darkgray",
                      cex.rho = 0.9 * par("cex"),
-                     cex=par("cex"),
-                     pch=21,
+                     cex=par("cex"), pch=1,
                      rotateRhoLabels=FALSE,
                      connectPoints=FALSE,
                      useSmoothScatter=FALSE,
@@ -1429,7 +1429,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex
 }
 
 plot.profile <- function (x,
-                          xtype = "S",
+                          xtype="salinity+temperature",
                           ytype=c("pressure", "z"),
                           col.salinity = "darkgreen",
                           col.temperature = "red",
@@ -1444,7 +1444,7 @@ plot.profile <- function (x,
                           lwd=par("lwd"),
                           xaxs="r",
                           yaxs="r",
-                          cex=1,
+                          cex=1, pch=1,
                           useSmoothScatter=FALSE,
                           mgp=getOption("oceMgp"),
                           mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
@@ -1483,7 +1483,7 @@ plot.profile <- function (x,
             densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
@@ -1509,7 +1509,7 @@ plot.profile <- function (x,
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
@@ -1521,7 +1521,8 @@ plot.profile <- function (x,
         df <- min(max(x$data$pressure, na.rm=TRUE) / 5, length(x$data$pressure) / 10) # FIXME: adjust params
         dpdt.sm <- smooth.spline(x$data$pressure, dpdt, df=df)
         if (missing(dpdtlim)) dpdtlim <- range(dpdt.sm$y)
-        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt, xaxs=xaxs, yaxs=yaxs)
+        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt,
+             xaxs=xaxs, yaxs=yaxs, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
         if (know.time.unit)
@@ -1549,7 +1550,7 @@ plot.profile <- function (x,
         } else {
             plot(x$data$salinity, y,
                  xlim=Slim, ylim=ylim,
-                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
@@ -1585,7 +1586,7 @@ plot.profile <- function (x,
         } else {
             plot(x$data$temperature, y,
                  xlim=Tlim, ylim=ylim,
-                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
@@ -1613,7 +1614,7 @@ plot.profile <- function (x,
             densitylim <- range(st, na.rm=TRUE)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -1631,7 +1632,7 @@ plot.profile <- function (x,
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         plot(st, y,
              xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
@@ -1670,7 +1671,7 @@ plot.profile <- function (x,
         }
         lines(N2, y, col = col.N2, lwd=lwd)
         abline(v = 0, col = col.N2)
-    } else if (xtype == "S+T") {
+    } else if (xtype == "salinity+temperature") {
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
         plot(x$data$temperature, y,
@@ -1698,8 +1699,8 @@ plot.profile <- function (x,
     } else {
         w <- which(names(x$data) == xtype)
         if (length(w) < 1)
-            stop("unknown type \"", xtype, "\"; try one of: ", paste(names(x$data), collapse=" "))
-        plot(x$data[, w], y, ylim=ylim,
+            stop("unknown which value (\"", xtype, "\")")
+        plot(x$data[[xtype]], y, ylim=ylim,
              type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3)
         mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
