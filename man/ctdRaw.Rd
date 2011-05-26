@@ -16,5 +16,13 @@
 the Bedford Basin of the Halifax Harbour, during an 
 October 2003 field trip of Dalhousie University's 
 Oceanography 4120/5120 class.}
+
 \author{Dan Kelley}
+
+\seealso{See \code{\link{ctd}}, which is derived from this.  See
+    \code{\link{read.ctd}} for the data format, and for a list of the many
+    functions that work with objects of class \code{"ctd"}, of which this is a
+    sample.}
+
+
 \keyword{misc}

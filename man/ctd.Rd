@@ -15,12 +15,11 @@
 ctd <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 }
 
-\source{Peter Galbraith acquired these data during the \acronym{SLEIWEX}
-field program, part of a Dalhousie/IML cooperative study of
-internal-wave mixing in the St Lawrence estuary.}
+\source{This is a trimmed version of the \code{\link{ctdRaw}} dataset.}
 
-\seealso{See \code{\link{read.ctd}} for the data format, and for a list
-  of the many functions that work with objects of class \code{"ctd"}, of
-  which this is a sample.}
+\seealso{See \code{\link{ctdRaw}}, from which this is derived.  See
+    \code{\link{read.ctd}} for the data format, and for a list of the many
+    functions that work with objects of class \code{"ctd"}, of which this is a
+    sample.}
 
 \keyword{misc}
