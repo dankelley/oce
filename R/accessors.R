@@ -284,6 +284,8 @@ salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
 
+sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
+
 latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
 
 longitude <- function(x, time) hydrographyLocal(x, time, "longitude")

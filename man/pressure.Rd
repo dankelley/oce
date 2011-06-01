@@ -2,6 +2,7 @@
 \name{pressure}
 \alias{pressure}
 \alias{salinity}
+\alias{sigmaTheta}
 \alias{temperature}
 \alias{latitude}
 \alias{longitude}
@@ -16,6 +17,7 @@
 \usage{
   pressure(x, time)
   salinity(x, time)
+  sigmaTheta(x, time)
   temperature(x, time)
   latitude(x, time)
   longitude(x, time)
