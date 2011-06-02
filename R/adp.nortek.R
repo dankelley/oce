@@ -112,17 +112,23 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$T1=", user$T1, "; user$T2=", user$T2, "\n")
             user$transmitPulseLength <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLengthu, "in counts\n")
+            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLength, "in counts\n")
+
             user$blankingDistance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$blankingDistance=", user$blankingDistance, "in counts\n")
-            user$timeBetweenPings <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
+
+            user$receiveLength <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$receiveLength=", user$receiveLength, "in counts\n")
+            
+            user$timeBetweenPings <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
-            user$numberOfBeamSequencesPerBurst <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
+
+            user$timeBetweenBurstSequences <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$timeBetweenBurstSequences=", user$timeBetweenBurstSequences, "in counts\n")
+            
+            user$numberOfBeamSequencesPerBurst <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$numberOfBeamSequencesPerBurst=", user$numberOfBeamSequencesPerBurst, "in counts\n")
-            user$timeBetweenBeamSequences <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$timeBetweenBeamSequences=", user$timeBetweenBeamSequences, "in counts\n")
-            user$NPings <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little")
-            oceDebug(debug, "user$NPings=", user$NPings, "\n")
+
             user$AvgInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$AvgInterval=", user$AvgInterval, "in seconds\n")
             user$numberOfBeams <- readBin(buf[o+19:20], "integer", n=1, size=2, endian="little")
