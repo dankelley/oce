@@ -214,11 +214,30 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 \value{An object of \code{\link[base]{class}} \code{"adv"}, which
   contains measurements made with an ADV device.  This is a list
   containing lists named \code{metadata}, \code{data}, and
-  \code{processingLog}.  The \code{data} list contains items with names corresponding to 
+  \code{processingLog}.  
+  
+  The \code{metadata} contains information as given in the following table.
+  The ``Nortek name'' is the name used in the Nortek System Integrator Guide,
+  and the ``Sontek name'' is the name used in the relevant Sontek documentation.
+
+  \tabular{llll}{
+      \strong{\code{metadata} name}\tab \strong{Nortek name} \tab \strong{Sontek name}\tab\strong{Meaning}\cr
+      \code{manufacturer}\tab - \tab - \tab Either \code{"nortek"} or \code{"sontek"}\cr
+      \code{instrumentType}\tab - \tab - \tab Either \code{"vector"} or \code{"adv"}\cr
+      \code{filename}\tab - \tab - \tab Name of data file(s)\cr
+      \code{latitude}\tab - \tab - \tab Latitude of mooring (if applicable)\cr
+      \code{longitude}\tab - \tab - \tab Longitude of mooring (if applicable)\cr
+      \code{numberOfSamples}\tab - \tab - \tab Number of data samples in file\cr
+      \code{numberOfBeams}\tab - \tab - \tab Number of beams (always 3)\cr
+  }
+
+  The \code{data} list contains items with names corresponding to 
   \code{adp} objects, with an exception for Nortek data.  Nortek instruments
   report some things at a time interval that is longer than the velocity sampling, and these
   are stored in \code{data} as \code{timeSlow}, \code{headingSlow},
   \code{pitchSlow}, \code{rollSlow}, and \code{temperatureSlow}.
+
+  The \code{processingLog} is in the standard format.
 }
 
 \seealso{Objects of class \code{adv} may be plotted with
