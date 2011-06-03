@@ -217,8 +217,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   \code{processingLog}.  
   
   The \code{metadata} contains information as given in the following table.
-  The ``Nortek name'' is the name used in the Nortek System Integrator Guide,
-  and the ``Sontek name'' is the name used in the relevant Sontek documentation.
+  The ``Nortek name'' is the name used in the Nortek System Integrator Guide
+  [reference 1] and the ``Sontek name'' is the name used in the relevant Sontek
+  documentation.  Numbers in parentheses indicate page numbers in the relevant
+  documents.
 
   \tabular{llll}{
       \strong{\code{metadata} name}\tab \strong{Nortek name} \tab \strong{Sontek name}\tab\strong{Meaning}\cr
@@ -228,7 +230,9 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
       \code{latitude}\tab - \tab - \tab Latitude of mooring (if applicable)\cr
       \code{longitude}\tab - \tab - \tab Longitude of mooring (if applicable)\cr
       \code{numberOfSamples}\tab - \tab - \tab Number of data samples in file\cr
-      \code{numberOfBeams}\tab - \tab - \tab Number of beams (always 3)\cr
+      \code{numberOfBeams}\tab NBeams (18) \tab - \tab Number of beams (always 3)\cr
+      \code{numberOfBeamSequencesPerBurst}\tab NPings \tab - \tab number of beam sequences per burst\cr
+      \code{measurementInterval}\tab MeasInterval (31) \tab - \tab \cr
   }
 
   The \code{data} list contains items with names corresponding to 
@@ -316,7 +320,10 @@ plot(enu, which=c("u1", "u2", "u3", "temperature"))
 
 \references{
 
-1. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
+1. Nortek AS.  System Integrator Guide (paradopp family of products). June
+2008.  (Doc No: PSI00-0101-0608)
+
+2. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
 Technical Documentation (Sept 1, 2001).
 
 }

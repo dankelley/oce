@@ -291,13 +291,22 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "fromIndex=", fromIndex, "toIndex=", toIndex, "\n")
             oceDebug(debug, vectorShow(vvdStart, "before subset, vvdStart is"))
             vvdStart <- vvdStart[fromIndex:toIndex]
-            oceDebug(debug, vectorShow(vvdStart, "    ... later, vvdStart is"))
+            oceDebug(debug, vectorShow(vvdStart, "after  subset, vvdStart is"))
             oceDebug(debug, vectorShow(vsdStart, "before subset, vsdStart is"))
             vsdStartFrom <- which(vvdStart[1] < vsdStart)[1]
             vsdStartTo <- which(vsdStart > vvdStart[length(vvdStart)])[1]
+            ## ensure not looking after end
+            if (is.na(vsdStartTo))
+                vsdStartTo <- length(vsdStart)
             oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(raw)\n")
             vsdStart <- vsdStart[seq(vsdStartFrom, vsdStartTo)]
-            oceDebug(debug, vectorShow(vsdStart, "    ... later, vsdStart is"))
+            oceDebug(debug, vectorShow(vsdStart, "after  subset, vsdStart is"))
+            if (debug > 10) {
+                o<-10
+                NRecords<-NULL
+               for (i in 1:200) 
+                   NRecords<-c(NRecords, bcdToInteger(readBin(buf[vsdStart[i]+o], "integer", n=1, size=1, signed=FALSE, endian="little")));plot(NRecords,type='s')
+            }
         }
     }
     oceDebug(debug, "about to trim vsdStart, based on vvdStart[1]=", vvdStart[1], " and vvdStart[length(vvdStart)]=", vvdStart[length(vvdStart)], "\n")
