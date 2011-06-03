@@ -142,7 +142,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 
             user$mode <- byteToBinary(buf[o+59:60], endian="little")
             oceDebug(debug, "user$mode: ", user$mode, "\n")
-            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.00001
+            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
             oceDebug(debug, "user$velocityScale: ", user$velocityScale, "\n")
             tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) user$coordinateSystem <- "enu" # page 31 of System Integrator Guide
