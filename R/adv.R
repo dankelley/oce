@@ -305,13 +305,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(after NA check)\n")
             vsdStart <- vsdStart[seq(vsdStartFrom, vsdStartTo)]
             oceDebug(debug, vectorShow(vsdStart, "after  subset, vsdStart is"))
-            if (debug > 20) {
-                o<-10:11
-                NRecords<-NULL
-                for (i in 1:length(vvdhStart)) 
-                    NRecords<-c(NRecords, (readBin(buf[vvdhStart[i]+o], "integer", n=1, size=2, signed=FALSE, endian="little")))
-                plot(NRecords,type='s')
-            }
         }
     }
     oceDebug(debug, "about to trim vsdStart, based on vvdStart[1]=", vvdStart[1], " and vvdStart[length(vvdStart)]=", vvdStart[length(vvdStart)], "\n")
