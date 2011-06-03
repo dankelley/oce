@@ -159,12 +159,14 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", vsdStart[middle], "\n")
         return(list(index=middle, time=t)) # index is within vsd
     }
-    ## system.time() reveals that a 100Meg file is scanned in 0.2s [macpro desktop, circa 2009]
+    ## NOTE: system.time() indicates 0.2s to scan a 100Meg file [macpro desktop, circa 2009]
+
+    ## "vvd" stands for "Vector Velocity Data" [bottom of p35 of SIG]
     vvdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
+    ## "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
+    vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
+    ## "vsd" stands for "Vector System Data" [p36 of SIG]
     vsdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
-    ##TEST## .vsd <<- buf[vsdStart[1] + seq(0, 27)] # FIXME: remove
-    ## FIXME: determine whether to use the velocity scale in next line, or other value.
-    oceDebug(debug, "VSD", paste("0x", format(as.raw(buf[vsdStart[1]+0:27])),sep=""), "\n")
 
     ## Velocity scale.  Nortek's System Integrator Guide (p36) says
     ## the velocity scale is in bit 1 of "status" byte (at offset 23)
@@ -290,22 +292,25 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 stop("need more separation between from and to")
             oceDebug(debug, "fromIndex=", fromIndex, "toIndex=", toIndex, "\n")
             oceDebug(debug, vectorShow(vvdStart, "before subset, vvdStart is"))
+            oceDebug(debug, vectorShow(vsdStart, "before subset, vsdStart is"))
             vvdStart <- vvdStart[fromIndex:toIndex]
             oceDebug(debug, vectorShow(vvdStart, "after  subset, vvdStart is"))
-            oceDebug(debug, vectorShow(vsdStart, "before subset, vsdStart is"))
-            vsdStartFrom <- which(vvdStart[1] < vsdStart)[1]
-            vsdStartTo <- which(vsdStart > vvdStart[length(vvdStart)])[1]
-            ## ensure not looking after end
+            ## ensure that vvdStart pointers are bracketed by vsdStart pointers
+            ## FIXME: but will this invalidate fromIndex and toIndex?
+            vsdStartFrom <- which(vvdStart[1] >= vsdStart)[1]
+            vsdStartTo <- which(vsdStart >= vvdStart[length(vvdStart)])[1]
+            oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(before NA check)\n")
             if (is.na(vsdStartTo))
                 vsdStartTo <- length(vsdStart)
-            oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(raw)\n")
+            oceDebug(debug, "vsdStartFrom=", vsdStartFrom, "and vsdStartTo=", vsdStartTo, "(after NA check)\n")
             vsdStart <- vsdStart[seq(vsdStartFrom, vsdStartTo)]
             oceDebug(debug, vectorShow(vsdStart, "after  subset, vsdStart is"))
-            if (debug > 10) {
-                o<-10
+            if (debug > 20) {
+                o<-10:11
                 NRecords<-NULL
-               for (i in 1:200) 
-                   NRecords<-c(NRecords, bcdToInteger(readBin(buf[vsdStart[i]+o], "integer", n=1, size=1, signed=FALSE, endian="little")));plot(NRecords,type='s')
+                for (i in 1:length(vvdhStart)) 
+                    NRecords<-c(NRecords, (readBin(buf[vvdhStart[i]+o], "integer", n=1, size=2, signed=FALSE, endian="little")))
+                plot(NRecords,type='s')
             }
         }
     }
@@ -314,15 +319,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "from=", from, "to=", to, "\n")
 
     ## Find spanning subset, expanded a little for now
-    subsetStart <- which.max(vvdStart[1] < vsdStart)
+    subsetStart <- head(which(vvdStart[1] < vsdStart), 1)
     if (subsetStart > 1)
         subsetStart <- subsetStart - 1 # extend a bit (for now)
-    subsetEnd <- which.min(vsdStart < vvdStart[length(vvdStart)])
+    subsetEnd <- tail(which(vsdStart < vvdStart[length(vvdStart)]), 1)
     oceDebug(debug, "first guess: subsetEnd=", subsetEnd, "\n")
-
     if (subsetEnd < length(vsdStart))
         subsetEnd <- subsetEnd + 1
-
     oceDebug(debug, "try start vsdStart[subsetStart=", subsetStart, "] = ", vsdStart[subsetStart], "\n")
     oceDebug(debug, "try end   vsdStart[subsetEnd=  ", subsetEnd,   "] = ", vsdStart[subsetEnd],   "\n")
     oceDebug(debug, vectorShow(vsdStart, "before trimming, vsdStart:"))
@@ -401,7 +404,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vds <- var(diff(sec))
     if (!is.na(vds) & 0 != vds)
         warning("the times in the file are not equi-spaced, but they are taken to be so")
-    vvdSec <- .Call("stutter_time", sec, 8)
+    ##BAD: vvdSec <- .Call("stutter_time", sec, 8)
+    vvdSec <- approx(seq(0,1, length.out=length(vsd.t)), vsd.t, seq(0, 1, length.out=length(vvdStart)))$y
     oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
     oceDebug(debug, vectorShow(vsdStart, "vsdStart"))
     oceDebug(debug, vectorShow(vvdStart, "vvdStart"))
@@ -1008,7 +1012,6 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
             oceDebug(debug, "before interpreting 'by', iii true for", sum(iii), "cases\n")
             iii <- iii & !(samples %% subsamplingRate)
             oceDebug(debug, "after  interpreting 'by', iii true for", sum(iii), "cases\n")
-            ##!(1:100)%%metadata$samplingRate
             oceDebug(debug, "'by' is character, so subsampling by", floor(0.5 + ctimeToSeconds(by) * metadata$samplingRate), "\n")
         }
     } else {
@@ -1207,7 +1210,6 @@ summary.adv <- function(object, ...)
         stop("method is only for adv objects")
     dataNames <- names(object$data)
     nrow <- length(dataNames) - 1          # the -1 is for 'time'
-    nrow <- nrow + length(dataNames)
     threes <- matrix(nrow=nrow, ncol=3)
     ii <- 1
     for (name in dataNames) {
@@ -1216,7 +1218,7 @@ summary.adv <- function(object, ...)
             ii <- ii + 1
         }
     }
-    rownames(threes) <- dataNames
+    rownames(threes) <- dataNames[dataNames != "time"]
     colnames(threes) <- c("Min.", "Mean", "Max.")
     res <- list(filename=object$metadata$filename,
                 numberOfBeams=if (!is.null(object$metadata$numberOfBeams)) object$metadata$numberOfBeams else 3,
