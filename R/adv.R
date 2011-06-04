@@ -163,10 +163,14 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     ## "vvd" stands for "Vector Velocity Data" [bottom of p35 of SIG]
     vvdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x10), 24, c(0xb5, 0x8c), 0)
-    ## "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
-    vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
     ## "vsd" stands for "Vector System Data" [p36 of SIG]
     vsdStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x11), 28, c(0xb5, 0x8c), 0)
+    ## "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
+    vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
+
+    timeBurst <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
+
+    ##dan<<-list(buf=buf,vvdStart=vvdStart,vvdhStart=vvdhStart,vsdStart=vsdStart)
 
     ## Velocity scale.  Nortek's System Integrator Guide (p36) says
     ## the velocity scale is in bit 1 of "status" byte (at offset 23)
@@ -333,18 +337,18 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     ## we make the times *after* trimming, because this is a slow operation
     ## NOTE: the ISOdatetime() call takes 60% of the entire time for this function.
-    vsd.t <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart+8]),  # year
-                         bcdToInteger(buf[vsdStart+9]), # month
-                         bcdToInteger(buf[vsdStart+6]), # day
-                         bcdToInteger(buf[vsdStart+7]), # hour
-                         bcdToInteger(buf[vsdStart+4]), # min
-                         bcdToInteger(buf[vsdStart+5]), # sec
-                         tz=tz)
+    vsdTime <- ISOdatetime(2000 + bcdToInteger(buf[vsdStart+8]),  # year
+                           bcdToInteger(buf[vsdStart+9]), # month
+                           bcdToInteger(buf[vsdStart+6]), # day
+                           bcdToInteger(buf[vsdStart+7]), # hour
+                           bcdToInteger(buf[vsdStart+4]), # min
+                           bcdToInteger(buf[vsdStart+5]), # sec
+                           tz=tz)
 
     oceDebug(debug, "reading Nortek Vector, and using timezone: ", tz, "\n")
 
     ## update metadata$measurementDeltat
-    metadata$measurementDeltat <- mean(diff(as.numeric(vsd.t)), na.rm=TRUE) * length(vsdStart) / length(vvdStart) # FIXME
+    metadata$measurementDeltat <- mean(diff(as.numeric(vsdTime)), na.rm=TRUE) * length(vsdStart) / length(vvdStart) # FIXME
 
     vsdLen <- length(vsdStart)
     vsdStart2 <- sort(c(vsdStart, 1 + vsdStart))
@@ -393,12 +397,12 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         cat("c[", dim(c), "] begins...\n")
         print(matrix(as.numeric(c[1:min(3,vvdLen),]), ncol=3))
     }
-    sec <- as.numeric(vsd.t) - as.numeric(vsd.t[1])
+    sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
     vds <- var(diff(sec))
     if (!is.na(vds) & 0 != vds)
         warning("the times in the file are not equi-spaced, but they are taken to be so")
     ##BAD: vvdSec <- .Call("stutter_time", sec, 8)
-    vvdSec <- approx(seq(0,1, length.out=length(vsd.t)), vsd.t, seq(0, 1, length.out=length(vvdStart)))$y
+    vvdSec <- approx(seq(0,1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
     oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
     oceDebug(debug, vectorShow(vsdStart, "vsdStart"))
     oceDebug(debug, vectorShow(vvdStart, "vvdStart"))
@@ -418,21 +422,12 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdStart.orig <- vvdStart
     vvdStart <- vvdStart[look]
     oceDebug(debug, "length(vvdStart)=",length(vvdStart),"(after 'look'ing) with by=", by, "\n")
-    ##heading <- approx(vsdStart, heading, xout=vvdStart, rule=2)$y
-    ##pitch <- approx(vsdStart, pitch, xout=vvdStart, rule=2)$y
-    ##roll <- approx(vsdStart, roll, xout=vvdStart, rule=2)$y
-    ##temperature <- approx(vsdStart, temperature, xout=vvdStart, rule=2)$y
     vvdSec <- vvdSec[look]
-    pressure <- pressure[look]          # only output at burst headers, not with velo
+    pressure <- pressure[look]          # only output at burst headers, not with velo (FIXME: huh??)
     v <- v[look,]
     a <- a[look,]
     c <- c[look,]
-    ##oceDebug(debug, "vvdSec=", vvdSec[1], ",", vvdSec[2], "...\n")
-    ##cat(vectorShow(vsd.t[1:10]))
-    ## vsd at 1Hz; vvd at samplingRate
-    time <- vvdSec + vsd.t[1]
-    ##print(attributes(time)) # is time out somehow?
-    ##print(time[1])
+    time <- vvdSec + (vsdTime[1] - as.numeric(vsdTime[1])) # last just makes it time
     metadata$numberOfSamples <- dim(v)[1]
     metadata$numberOfBeams <- dim(v)[2]
     data <- list(v=v,
@@ -440,7 +435,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  c=c,
                  time=time,
                  pressure=pressure,
-                 timeSlow=vsd.t,
+                 timeBurst=timeBurst,
+                 timeSlow=vsdTime,
                  headingSlow=heading,
                  pitchSlow=pitch,
                  rollSlow=roll,
