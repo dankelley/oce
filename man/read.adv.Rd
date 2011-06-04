@@ -143,42 +143,59 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
 \section{Special considerations for NorTek files.}{
 
-  \enumerate{
+    The data format is inferred from the System Integrator Guide [1].  This
+    document lacks clarity in spots, and so \code{read.adv.nortek} contains
+    some assumptions that should be noted, in case they fail for datasets other
+    than the ones tested to date.
 
-    \item The full file is first read into a buffer.
+    A prominent example is the specification of the sampling rate, stored in
+    \code{metadata$sampingRate} in the return value.  Repeated examination of
+    the System Integrator Guide [1] failed to indicate where this value is
+    stored in the various headers contained in Vector datasets.  In an early
+    version of \code{read.adv.nortek}, the sampling rate was inferred from the
+    mean time between data; this may be a reasonable approximation for data
+    sampled continuously, but it fails completely for burst-mode data.
+    
+    After some experimentation with a few data files, \code{read.adv.nortek}
+    was set up to infer the sampling rate (\code{metadata$samplingRate}) as
+    \code{512/AvgInterval} where \code{AvgInterval} is a part of the ``User
+    Configuration'' header (see page 30 of [1], where the explanation is
+    ``average interval in seconds'').  This formula has no pedigree of any
+    sort; it is a kludge, plain and simple.  It is similar to one in a
+    Nortek-supplied program named \code{Sample.cpp} that exemplifies reading
+    Aquadopp-HR data, except that there, the formula is \code{512/T5}, where
+    ``\code{T5}'' is described as ``time between burst sequences (counts)''
+    (page 30 of [1]).  The reader may ask why the Aquadopp-HR formula was not
+    used, and the answer is a poor one: because that formula yielded sampling
+    rates that were at odds with the text-based data files created by Nortek
+    software.  The reader may ask where the present formula came from, and the
+    answer is an even poorer one: because it produced answers that agreed with
+    text files, for the test data available when \code{read.adv.nortek} was
+    written.  Finally, the reader may ask whether the present formula will
+    change, and the answer is, discouragingly, yes.
 
-    \item Next, velocity chunks (at which velocities are stored, but not
-    heading, etc.), are located within the buffer by using
-    \code{matchBytes(buf, 0xa5, 0x10)}.  \emph{BUG:} the checksum
-    provided in bytes 23 and 24 of these chunks should be examined to
-    discard matches that occur randomly (with probability 1:65025) but
-    this is not done in the present version of the
-    \code{read.adv.nortek} function.
+    There is another important issue, which is determining whether an
+    instrument was set to record in continuous mode or burst mode.  One might
+    infer that \code{TimCtrlReg} in the ``User Configuration'' header (p30 of
+    [1]) determines this, in bits 1 and 2.  However, this cannot be the case,
+    based on examination of those bits in files of the two types.  For this
+    reason, \code{read.adv.nortek} is left to infer the mode by reverse
+    engineering of data files of known configuration.  The kludge in this
+    instance is to examine the ``\code{NRecords}'' item of the ``Vector
+    Velocity Data'' header.    It appears that this is 0 for data collected
+    continuously, and non-zero for data collected in bursts.  
+    
+    Both the reader and writer can be excussed for hoping that future versions
+    of \code{read.adv.nortek} can be based less on guesswork, more on
+    documentation.
 
-    \item System chunks (which hold heading, pitch, etc.) are found with
-    \code{matchBytes(buf, 0xa5, 0x11, 0x0e)}.
-
-    \item Times from the system chunks are mapped to velocity chunks by
-    \emph{assuming} a constant sampling rate for each chunk.  If this
-    assumption is incorrect, then the times in the \code{data$time}
-    vector will be incorrect, although the values in the
-    \code{data$pressure} vector will be correct.
-
-    \item Unlike related functions, \code{read.adv.nortek} reads and
-    decodes every system chunk, even if a \code{by} argument is
-    specified.  This makes this function slow, because decoding times is
-    a slow operation.  (About 60 percent of the execution time is spent
-    calling \code{\link{ISOdatetime}}.)
-
-  }
 }
 
 \section{Special considerations for Sontek files.}{
 
 
-  The binary format is inferred from Appendix 2.2.3 of the Sontek ADV
-  operation Manual, Firmware Version 4.0 (Oct 1997), with the following
-  exceptions and notes.
+  The binary format is inferred from Appendix 2.2.3 of the Sontek ADV operation
+  Manual [3], with the following exceptions and notes.
 
   \enumerate{
 
@@ -325,6 +342,9 @@ plot(enu, which=c("u1", "u2", "u3", "temperature"))
 
 2. SonTek/YSI ADVField/Hydra Acoustic Doppler Velocimeter (Field)
 Technical Documentation (Sept 1, 2001).
+
+3. Appendix 2.2.3 of the Sontek ADV operation Manual, Firmware Version 4.0 (Oct
+1997).
 
 }
 

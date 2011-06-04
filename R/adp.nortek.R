@@ -108,11 +108,8 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             if (2 * user$size != headerLengthUser)
                 stop("size of user header expected to be ", headerLengthUser, "but got ", user$size)
             ##buf <- readBin(file, "raw", headerLengthUser)
-            user$T1 <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T1=", user$T1, "; user$T2=", user$T2, "\n")
             user$transmitPulseLength <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLength, "in counts\n")
+            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLength, "\n")
 
             user$blankingDistance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$blankingDistance=", user$blankingDistance, "in counts\n")
@@ -129,10 +126,14 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$numberOfBeamSequencesPerBurst <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$numberOfBeamSequencesPerBurst=", user$numberOfBeamSequencesPerBurst, "in counts\n")
 
-            user$AvgInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
-            oceDebug(debug, "user$AvgInterval=", user$AvgInterval, "in seconds\n")
+            user$averagingInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "user$averagingInterval=", user$averagingInterval, "in seconds\n")
             user$numberOfBeams <- readBin(buf[o+19:20], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$numberOfBeams=", user$numberOfBeams, "\n")
+
+            user$timCtrlReg <- readBin(buf[o+21:22], "raw", n=2)
+            oceDebug(debug, "user$timCtrlReg=", user$timCtrlReg, "\n")
+            
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$measurementInterval=", user$measurementInterval, "\n")
             user$deployName <- readBin(buf[o+41:47], "character", n=1, size=6)
@@ -163,7 +164,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             } else {
                 user$cellSize <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
             }
-            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: no docs on this)\n")
+            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: no docs on this; guessing from secondhand info/guesses)\n")
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "measurementInterval=", user$measurementInterval, "\n")
 
@@ -260,6 +261,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
     header <- decodeHeaderNortek(buf, debug=debug-1)
+    averagingInterval <- header$user$averagingInterval
     numberOfBeams <- header$numberOfBeams
     numberOfCells <- header$numberOfCells
     bin1Distance <- header$bin1Distance
