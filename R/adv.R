@@ -169,8 +169,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
 
     timeBurst <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
+    recordsBurst <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
 
-    ##dan<<-list(buf=buf,vvdStart=vvdStart,vvdhStart=vvdhStart,vsdStart=vsdStart)
+    dan<<-list(buf=buf,vvdStart=vvdStart,vvdhStart=vvdhStart,vsdStart=vsdStart)
 
     ## Velocity scale.  Nortek's System Integrator Guide (p36) says
     ## the velocity scale is in bit 1 of "status" byte (at offset 23)
@@ -210,7 +211,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdLen <- length(vvdStart)
     metadata$measurementDeltat <- (as.numeric(metadata$measurementEnd) - as.numeric(metadata$measurementStart)) / (vvdLen - 1)
 
-    if (missing(to))
+    toGiven <- !missing(to)
+    if (!toGiven)
         stop("must supply 'to'")
 
     ## Window data buffer, using bisection in case of a variable number of vd between sd pairs.
@@ -352,6 +354,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     vsdLen <- length(vsdStart)
     vsdStart2 <- sort(c(vsdStart, 1 + vsdStart))
+    voltage <- 0.1 * readBin(buf[vsdStart2 + 10], "integer", size=2, n=vsdLen, signed=FALSE, endian="little")
     heading <- 0.1 * readBin(buf[vsdStart2 + 14], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
     oceDebug(debug, vectorShow(heading, "heading"))
     pitch <-   0.1 * readBin(buf[vsdStart2 + 16], "integer", size=2, n=vsdLen, signed=TRUE, endian="little")
@@ -402,7 +405,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (!is.na(vds) & 0 != vds)
         warning("the times in the file are not equi-spaced, but they are taken to be so")
     ##BAD: vvdSec <- .Call("stutter_time", sec, 8)
-    vvdSec <- approx(seq(0,1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
+    vvdSec <- approx(seq(0, 1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
     oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
     oceDebug(debug, vectorShow(vsdStart, "vsdStart"))
     oceDebug(debug, vectorShow(vvdStart, "vvdStart"))
@@ -430,12 +433,16 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     time <- vvdSec + (vsdTime[1] - as.numeric(vsdTime[1])) # last just makes it time
     metadata$numberOfSamples <- dim(v)[1]
     metadata$numberOfBeams <- dim(v)[2]
-    data <- list(v=v,
+    data <- list(v=v,                  # nortek vector
                  a=a,
                  c=c,
                  time=time,
                  pressure=pressure,
+
                  timeBurst=timeBurst,
+                 recordsBurst=recordsBurst,
+                 voltageSlow=voltage,
+
                  timeSlow=vsdTime,
                  headingSlow=heading,
                  pitchSlow=pitch,
@@ -1452,6 +1459,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
             else if (ww == "uv") which2[w] <- 28
             else if (ww == "uv+ellipse") which2[w] <- 29
             else if (ww == "uv+ellipse+arrow") which2[w] <- 30
+            else if (ww == "voltage") which2[w] <- 100
             else stop("unknown 'which':", ww)
         }
     }
@@ -1762,7 +1770,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                  asp=1, lwd=lwd[w], col=col[w], ...)
             if (main[w] != "")
                 mtext(main[w], adj=1)
-        } else if (which[w] >= 28) {
+        } else if (which[w] %in% 28:31) {
             oceDebug(debug, "doing horizontal-velocity diagram\n")
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
             n <- length(x$data$time)
@@ -1797,6 +1805,11 @@ plot.adv <- function(x, which=c(1:3,14,15),
                 if (main[w] != "")
                     mtext(main[w], adj=1)
             }
+        } else if (which[w] == 100 || which[w] == "voltage") {
+            if ("voltageSlow" %in% names(x$data))
+                oce.plot.ts(x$data$timeSlow, x$data$voltageSlow, ylab="Voltage")
+            else
+                warning("no voltage signal to plot")
         } else {
             stop("unknown value of \"which\":", which[w])
         }

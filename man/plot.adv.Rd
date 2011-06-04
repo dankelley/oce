@@ -125,6 +125,8 @@
         \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
         \code{"uv+ellipse"} case, but with an added arrow indicating the
         mean current.
+        \item \code{which=100} or \code{"voltage"} plots the voltage as a
+        timeseries, if voltage exists in the dataset.
     }
     In addition to the above, there are some groupings defined:
     \itemize{ 
