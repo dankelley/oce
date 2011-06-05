@@ -185,7 +185,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     Velocity Data'' header.    It appears that this is 0 for data collected
     continuously, and non-zero for data collected in bursts.  
     
-    Both the reader and writer can be excussed for hoping that future versions
+    Both the reader and writer can be excused for hoping that future versions
     of \code{read.adv.nortek} can be based less on guesswork, more on
     documentation.
 
@@ -212,7 +212,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
       installed.
 
       \item \code{c(0x83,0x18)} if a compass/tilt sensor is installed,
-      but no temperature or pressor sensors.
+      but no temperature or pressure sensors.
 
       \item \code{c(0x85,0x16)} if temperature and/or pressure sensors
       are installed, but no compass/tilt sensor.
@@ -273,65 +273,13 @@ library(oce)
 opar <- par(no.readonly = TRUE)
 dir <- "/data/archive/sleiwex/2008/moorings/"
 
-# Example 1
 # Nortek binary file, daily at 1/2 hour decimation
 d <- read.oce(
   "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",
   from=as.POSIXct("2008-06-26 00:00:00", tz="UTC"),
   to=as.POSIXct("2008-06-27 00:00:00", tz="UTC"),
   by="00:30:00")
-plot(d, which=c(1:3,15))      # beams plus pressure
-
-# Example 2
-# Sontek adr file, with method to estimate turbulent dissipation
-d <- read.adv.sontek.adr(
-  "/data/archive/sleiwex/2008/moorings/m03/adv/sontek_b373h/raw/adv_sontek_b373h.adr",
-  from=as.POSIXct("2008-07-01 15:30:00",tz="UTC"),
-  to=as.POSIXct("2008-07-01 16:00:00",tz="UTC"))
-w <- ts(d$data$v[,3], deltat=1/d$metadata$sampling.rate) # z component
-par(mfrow=c(2,2))
-par(mgp=getOption("oceMgp"))
-par(mar=c(3,3,2,1))
-plot(w)
-plot(d$data$time, sqrt(d$data$v[,1]^2+d$data$v[,2]^2),
-    type='l', xlab="Time [s]", ylab="Horizontal velocity [m/s]")
-U <- mean(sqrt(d$data$v[,1]^2 + d$data$v[,2]^2))
-abline(h=U, col='red')
-mtext(sprintf("U=\%.2fm/s", U), side=4, at=U)
-s <- spectrum(w, spans=c(3,5,7), plot=FALSE)  # just guessing on spans
-plot(log10(s$freq), log10(s$spec), type='l', xlab="f [Hz]", ylab="E", asp=1)
-for (a in seq(-20, 10, 1))
-    abline(a, -5/3, col='lightgray')     # slope if turbulent
-k <- 2 * pi * s$freq / U
-plot(log10(k), log10(k^(5/3)*s$spec), type='l', 
-     xlab="k [radian/m]", ylab=expression(k^(5/3)*E), asp=1)
-alpha <- 0.4                    # a 3D Kolmogorov coefficient
-epsilon <- (median(k^(5/3)*s$spec)/alpha)^(3/2) # median might ignore low-freq
-abline(h=log10(alpha * epsilon^(2/3)), col="red")
-mtext(sprintf("\%.0e W/kg", epsilon), side=4, at=log10(alpha * epsilon^(2/3)))
-grid()
-par(opar)
-
-# Example 3
-# Sontek ADV dataset, chopped into one-hour files by a data logger.
-library(oce)
-table <- loggerToc("/data/archive/sleiwex/2008/moorings/m05/adv/sontek_202h/raw",
-                   from=as.POSIXct("2008-07-01 00:00:00", tz="UTC"),
-                   to=as.POSIXct("2008-07-01 2:00:00", tz="UTC"))
-d <- read.adv.sontek.serial(file=table$filename, start=table$startTime, deltat=1/10)
-d <- oceEdit(d, "coordinateSystem", "xyz") # original coordinate
-d <- oceEdit(d, "oceCoordinate", "xyz")    # present coordinate
-# Note that the transformation matrix varies from instrument to instrument.
-d <- oceEdit(d, "transformationMatrix", rbind(c(11033,-8503,-5238),
-                                              c(347,-32767,9338),
-                                              c(-1418, -1476, -1333)) / 4096)
-d <- oceEdit(d, "orientation", "upward")
-d <- oceEdit(d, "heading", 0)
-d <- oceEdit(d, "pitch", 0)
-d <- oceEdit(d, "roll", 0)
-d <- oceEdit(d, "serial.number", "202h")
-enu <- xyzToEnuAdv(d)
-plot(enu, which=c("u1", "u2", "u3", "temperature"))
+plot(d, which=c(1:3,15))
 }
 }
 
