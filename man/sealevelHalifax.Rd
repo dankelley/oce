@@ -30,4 +30,4 @@ plot(sealevelHalifax, which=1, xlim=as.POSIXct(c("2003-01-01","2003-02-01")))
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{datasets}

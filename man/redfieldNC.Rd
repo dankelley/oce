@@ -27,4 +27,4 @@ abline(-288.5, slope, lwd=3)
 
 \references{Kelley, 2011.  Oceanographic Analysis with R.  Springer Verlag.  To appear.}
 
-\keyword{misc}
+\keyword{datasets}

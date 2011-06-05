@@ -22,4 +22,4 @@ ctd <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
     functions that work with objects of class \code{"ctd"}, of which this is a
     sample.}
 
-\keyword{misc}
+\keyword{datasets}

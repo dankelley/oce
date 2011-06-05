@@ -33,4 +33,4 @@ topoMaritimes <- read.topo("topoMaritimes.asc")
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{datasets}

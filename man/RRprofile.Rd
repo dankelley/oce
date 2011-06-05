@@ -37,4 +37,4 @@ legend("topright", lwd=1, col=c("black", "red", "blue"),
       legend=c("oceSmooth", "approx", "smooth.spline"), cex=2/3)
 }
 
-\keyword{misc}
+\keyword{datasets}

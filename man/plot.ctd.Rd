@@ -138,4 +138,4 @@ plot(ctd, which=c(1,2,3,5),
      adorn=expression({},{},{},{text(-69.72,47.85,'IAL',pos=4)}))
 }
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

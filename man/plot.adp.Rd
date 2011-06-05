@@ -288,4 +288,4 @@ plot(adp, which=1:2,
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

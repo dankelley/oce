@@ -153,4 +153,4 @@ plot(adv)
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

@@ -81,4 +81,4 @@ title("Mid-Atlantic at 36N")
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

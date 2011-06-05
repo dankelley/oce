@@ -30,4 +30,4 @@ abline(h=1.85, col='gray')
 
 \seealso{See \code{\link{redfieldNP}} and \code{\link{redfieldNC}}.}
 
-\keyword{misc}
+\keyword{datasets}

@@ -140,4 +140,4 @@ plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

@@ -29,4 +29,4 @@ v <- sin(tt*2*pi/240)
 stickplot(t, u, v)
 }
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

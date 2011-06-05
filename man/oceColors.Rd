@@ -86,4 +86,4 @@ by A. Light and P. J. Bartlein.
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{color}
