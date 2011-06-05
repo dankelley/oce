@@ -12,4 +12,4 @@ The little island at about 44.64N is visible outside the author's window.}
 sample coastline file is \code{\link{coastlineMaritimes}}; see these for details of the data format.   Other coastline datasets provided with
 oce are \code{\link{coastlineMaritimes}} and \code{\link{coastlineWorld}}.}
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{datasets}

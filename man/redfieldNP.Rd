@@ -26,4 +26,4 @@ abline(0, 20, lwd=3)                   # line N:P = 20:1, as shown by Redfield
 
 \seealso{See \code{\link{redfieldNC}} and \code{\link{redfieldPlankton}}.}
 
-\keyword{misc}
+\keyword{datasets}

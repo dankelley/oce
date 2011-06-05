@@ -86,4 +86,4 @@ plot(ptr, which=c(1,3),
   with the \code{pt} data type, including examples.}
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

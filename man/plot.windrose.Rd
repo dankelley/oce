@@ -51,4 +51,4 @@ par(opar)
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

@@ -52,4 +52,4 @@ plot.ctd.scan(ctd, adorn="abline(v=240,col='red')")
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

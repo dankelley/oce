@@ -85,4 +85,4 @@ mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="re
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

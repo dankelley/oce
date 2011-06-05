@@ -38,4 +38,4 @@ plot(topoWorld, legend=NULL)
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{datasets}

@@ -51,4 +51,4 @@ plot(lobo,
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}
