@@ -170,9 +170,11 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 
             ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+                ##user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
             } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
-                user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+                ##user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
             } else {
                 user$blankingDistance <- 0
             }
