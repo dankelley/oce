@@ -291,6 +291,7 @@ Technical Documentation (Sept 1, 2001).
 3. Appendix 2.2.3 of the Sontek ADV operation Manual, Firmware Version 4.0 (Oct
 1997).
 
+4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center}
 }
 
 \author{Dan Kelley}
