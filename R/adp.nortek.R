@@ -136,8 +136,8 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$measurementInterval=", user$measurementInterval, "\n")
-            user$deployName <- readBin(buf[o+41:47], "character", n=1, size=6)
-            oceDebug(debug, "user$deployName=", user$deployName, "\n")
+            user$deploymentName <- readBin(buf[o+41:47], "character", n=1, size=6)
+            oceDebug(debug, "user$deploymentName=", user$deploymentName, "\n")
             user$comments <- readBin(buf[o+257+0:179], "character", n=1, size=180)
             oceDebug(debug, "user$comments=", user$comments, "\n")
 
@@ -179,7 +179,6 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
                 user$blankingDistance <- 0
             }
             oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
-            user$deploymentName <- readBin(buf[o+41:46], "character")
             user$swVersion <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oceDebug(debug, "swVersion=", user$swVersion,"\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1

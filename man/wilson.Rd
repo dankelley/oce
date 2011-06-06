@@ -6,9 +6,8 @@
 
 \title{Wilson's (1963) table of seafloor spreading}
 
-\description{Data transcribed from Wilson's (1934) Table 1, taking only the
-    first 3 columns, and only those rows for which Wilson reported an estimate
-    of spreading rate.  This dataset is used in Chapter 4 of Kelley (2011).}
+\description{Wilson's (1963) table of seafloor spreading.  This dataset is used in Chapter 3 of Kelley (2011).}
+
 
 \usage{data(wilson)}
 
@@ -25,12 +24,14 @@ print(spreadingRate)
 abline(m, col='red')
 }
 
-\source{J. Tuzo Wilson, 
-    1963. Evidence from islands on the spreading of ocean floors.
-    \emph{Nature},
-    197(4867):536-538. 
-    \url{//dx.doi.org/10.1038/197536a0.}}
+\source{Data transcribed from Wilson's (1963) Table 1, taking only the
+    first 3 columns, and only those rows for which Wilson reported an estimate
+    of spreading rate.}
 
-\references{Kelley, 2011.  Oceanographic Analysis with R.  Springer Verlag.  To appear.}
+\references{
+    Dan Kelley, in preparation. Oceanographic Analysis with R.  Springer Verlag.
+
+    J. Tuzo Wilson, 1963. Evidence from islands on the spreading of ocean floors.  \emph{Nature}, 197(4867):536-538.  \url{//dx.doi.org/10.1038/197536a0.}
+}
 
 \keyword{datasets}
