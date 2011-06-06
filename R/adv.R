@@ -613,8 +613,9 @@ plot.adv <- function(x, which=c(1:3,14,15),
             n <- length(x$data$time)
             if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                 plot(x$data$v[,1], x$data$v[,2], xlab="u [m/s]", ylab="v [m/s]", type=type,
-                     cex=cex, cex.axis=cex.axis, cex.main=cex.main,
-                     asp=1, xlim=xlim, ylim=ylim, lwd=lwd[w], col=col[w], main=main, ...)
+                     cex=cex, cex.axis=cex.axis, cex.main=cex.main, asp=1,
+                     xlim=if(gave.xlim)xlim, ylim=if(gave.ylim) ylim,
+                     lwd=lwd[w], col=col[w], main=main, ...)
             } else {
                 smoothScatter(x$data$v[,1], x$data$v[,2], xlab="u [m/s]", ylab="v [m/s]",
                               cex=cex, cex.axis=cex.axis, cex.main=cex.main,

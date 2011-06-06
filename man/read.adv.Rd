@@ -157,36 +157,36 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     sampled continuously, but it fails completely for burst-mode data.
     
     After some experimentation with a few data files, \code{read.adv.nortek}
-    was set up to infer the sampling rate (\code{metadata$samplingRate}) as
+    was set up to calculate \code{metadata$samplingRate} as
     \code{512/AvgInterval} where \code{AvgInterval} is a part of the ``User
     Configuration'' header (see page 30 of [1], where the explanation is
     ``average interval in seconds'').  This formula has no pedigree of any
     sort; it is a kludge, plain and simple.  It is similar to one in a
     Nortek-supplied program named \code{Sample.cpp} that exemplifies reading
     Aquadopp-HR data, except that there, the formula is \code{512/T5}, where
-    ``\code{T5}'' is described as ``time between burst sequences (counts)''
-    (page 30 of [1]).  The reader may ask why the Aquadopp-HR formula was not
-    used, and the answer is a poor one: because that formula yielded sampling
-    rates that were at odds with the text-based data files created by Nortek
-    software.  The reader may ask where the present formula came from, and the
-    answer is an even poorer one: because it produced answers that agreed with
-    text files, for the test data available when \code{read.adv.nortek} was
-    written.  Finally, the reader may ask whether the present formula will
-    change, and the answer is, discouragingly, yes.
+    ``\code{T5}'' is described as ``time between burst sequences (counts)'' (30
+    of [1]).  The reader may ask why the Aquadopp-HR formula was not used, and
+    the answer is a poor one: because that formula yielded sampling rates that
+    were at odds with the text-based data files created by Nortek software.
+    The reader may ask where the present formula came from, and the answer is
+    an even poorer one: because it produced answers that agreed with text
+    files, for the test data available when \code{read.adv.nortek} was written.
+    Finally, the reader may ask whether the present formula will change, and
+    the answer is, discouragingly, yes.
 
-    There is another important issue, which is determining whether an
-    instrument was set to record in continuous mode or burst mode.  One might
-    infer that \code{TimCtrlReg} in the ``User Configuration'' header (p30 of
-    [1]) determines this, in bits 1 and 2.  However, this cannot be the case,
-    based on examination of those bits in files of the two types.  For this
-    reason, \code{read.adv.nortek} is left to infer the mode by reverse
-    engineering of data files of known configuration.  The kludge in this
-    instance is to examine the ``\code{NRecords}'' item of the ``Vector
-    Velocity Data'' header.    It appears that this is 0 for data collected
-    continuously, and non-zero for data collected in bursts.  
+    Another important issue is the determination of whether an instrument had
+    recorded in continuous mode or burst mode.  One might infer that
+    \code{TimCtrlReg} in the ``User Configuration'' header (p30 of [1])
+    determines this, in bits 1 and 2.  However, this cannot be the case, based
+    on examination of those bits in files of the two types.  For this reason,
+    \code{read.adv.nortek} is left to infer the mode by reverse engineering of
+    data files of known configuration.  The kludge in this instance is to
+    examine the ``\code{NRecords}'' item of the ``Vector Velocity Data''
+    header.    It appears that this is 0 for data collected continuously, and
+    non-zero for data collected in bursts.  
     
-    Both the reader and writer can be excused for hoping that future versions
-    of \code{read.adv.nortek} can be based less on guesswork, more on
+    The reader may join the writer in hoping that future versions of
+    \code{read.adv.nortek} can be based less on guesswork, more on
     documentation.
 
 }
@@ -270,9 +270,6 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 \examples{
 \dontrun{
 library(oce)
-opar <- par(no.readonly = TRUE)
-dir <- "/data/archive/sleiwex/2008/moorings/"
-
 # Nortek binary file, daily at 1/2 hour decimation
 d <- read.oce(
   "/data/archive/sleiwex/2008/moorings/m05/adv/nortek_1943/raw/adv_nortek_1943.vec",
