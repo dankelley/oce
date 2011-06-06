@@ -34,16 +34,20 @@ summary.adv <- function(object, ...)
     if (!inherits(object, "adv"))
         stop("method is only for adv objects")
     dataNames <- names(object$data)
-    nrow <- length(dataNames) - 1          # the -1 is for 'time'
+    nrow <- length(dataNames) - length(grep("^time", dataNames))
     threes <- matrix(nrow=nrow, ncol=3)
     ii <- 1
     for (name in dataNames) {
-        if (name != "time") {
-            threes[ii,] <- threenum(as.numeric(object$data[[name]]))
+        if (0 == length(grep("^time", name))) {
+            if (0 == length(object$data[[name]])) {
+                threes[ii,] <- c(NA, NA, NA)
+            } else {
+                threes[ii,] <- threenum(as.numeric(object$data[[name]]))
+            }
             ii <- ii + 1
         }
     }
-    rownames(threes) <- dataNames[dataNames != "time"]
+    rownames(threes) <- dataNames[-grep("^time", dataNames)]
     colnames(threes) <- c("Min.", "Mean", "Max.")
     res <- list(filename=object$metadata$filename,
                 numberOfBeams=if (!is.null(object$metadata$numberOfBeams)) object$metadata$numberOfBeams else 3,
@@ -106,9 +110,9 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
                 1 / x$subsampleDeltat), ...)
     ## cat("  Beam angle:           ", x$metadata$beamAngle, "\n")
     if ("burst" == x$samplingMode) {
-        cat("  * Burst sampling by       ", paste(x$samplesPerBurst, sep=","), "(all, or first 4)\n")
+        cat("* Burst sampling by       ", paste(x$samplesPerBurst, sep=","), "(all, or first 4)\n")
     } else {
-        cat("  * Sampling in continuous mode\n")
+        cat("* Sampling in continuous mode\n")
     }
     cat("* Number of samples:     ", x$numberOfSamples, "\n")
     cat("* Coordinate system:     ", x$coordinateSystem, "[originally],", x$oceCoordinate, "[presently]\n")
