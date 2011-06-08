@@ -1,5 +1,5 @@
 library(oce)
-sl <- read.oce(system.file("data", "h275a96.dat", package="oce"))
+sl <- read.oce("h275a96.dat")
 m <- tidem(sl)
 par(mfrow=c(2,1))
 plot.sealevel(sl, which=1)
