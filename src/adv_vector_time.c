@@ -7,6 +7,14 @@
 
 SEXP adv_vector_time(SEXP vvdStart, SEXP vvdhStart, SEXP vvdhTime, SEXP sampling_rate)
 {
+  // This is called by read.adv.nortek(), in adv.nortek.R, with arguments as follows
+  //   vvdStart = indices of 'vector velocity data' (0xA5 ox10)
+  //   vvdhStart = indices of 'vector velocity data header' (0xA5 ox10)
+  //   vvdhTime = POSIX times of vvdh
+  //   sampling_rate = samples/second
+  // and the result is a vector of times for the vvd items, which has length 
+  // matching that of vvdStart.  The method is to step forward from
+  // each vvdhTime, incrementing time by 1/sampling_rate.
   PROTECT(vvdStart = AS_NUMERIC(vvdStart));
   PROTECT(vvdhStart = AS_NUMERIC(vvdhStart));
   PROTECT(vvdhTime = AS_NUMERIC(vvdhTime));

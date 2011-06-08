@@ -331,7 +331,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
                             main=main,
                             debug=debug-1,
                             ...)
-                points(x$data$time[!good], x$data$v[!good,which[w]], col=colBrush)
+                points(x$data$time[!good], x$data$v[!good,which[w]], col=colBrush, ...)
             } else {
                 oce.plot.ts(x$data$time, y, ylab=beamName(x, which[w]),
                             drawTimeRange=drawTimeRange,
