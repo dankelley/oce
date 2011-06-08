@@ -20,8 +20,8 @@
     \code{t} may be a POSIXt vector of times at which the \code{x} observations were made, or
     \code{t} may be a single number indicating the number of seconds between those observations.
     (In the latter case, a sealevel object is created, starting at \code{as.POSIXct("2000-01-01
-      00:00:00", tz="UTC")}.  The starting time is, of course, irrelevant to the fitted
-    coefficients, but it \emph{does} matter if \code{\link{predict.tidem}} is to be used.)}
+      00:00:00", tz="UTC")}.  The starting time is irrelevant to the fitted coefficients, but it
+    \emph{does} matter if \code{\link{predict.tidem}} is to be used.)}
   
   \item{constituents}{an optional list of tidal constituents to which the fit is done (see
     \dQuote{Details}.)}  
