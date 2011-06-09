@@ -28,7 +28,7 @@ SEXP adv_vector_time(SEXP vvdStart, SEXP vvdhStart, SEXP vvdhTime, SEXP sampling
   SEXP res;
   PROTECT(res = allocVector(REALSXP, nvvd));
   double *resp = REAL(res);
-  int ivvd, ivvdh = 0;
+  unsigned long int ivvd, ivvdh = 0;
   double t = vvdhTimep[0];
   
 #ifdef DEBUG
