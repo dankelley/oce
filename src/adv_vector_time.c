@@ -3,7 +3,7 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-//#define DEBUG
+#define DEBUG
 
 SEXP adv_vector_time(SEXP vvdStart, SEXP vvdhStart, SEXP vvdhTime, SEXP sampling_rate)
 {
@@ -32,7 +32,7 @@ SEXP adv_vector_time(SEXP vvdStart, SEXP vvdhStart, SEXP vvdhTime, SEXP sampling
   double t = vvdhTimep[0];
   
 #ifdef DEBUG
-  for (int iii=0; iii<nvvdh;iii++) Rprintf("iii=%d time %f\n", iii, vvdhTimep[iii]);
+  for (int iii=0; iii<nvvdh;iii++) Rprintf("nvvdhTime[%d] = %f\n", iii, vvdhTimep[iii]);
 #endif
   // Pin time to start, if vvd precede vvdh (perhaps not possible).
   for (ivvd = 0; ivvd < nvvd; ivvd++) {
@@ -43,17 +43,20 @@ SEXP adv_vector_time(SEXP vvdStart, SEXP vvdhStart, SEXP vvdhTime, SEXP sampling
     }
   }
   double dt =  1.0 / *sampling_ratep;
+#ifdef DEBUG
+  Rprintf("ivvd= %d (C notation)  dt= %.10f   sampling_rate %f\n", ivvd, dt, *sampling_ratep);
+#endif
   if (ivvd < nvvd) {
     for (; ivvd < nvvd; ivvd++) {
-#ifdef DEBUG
-      Rprintf("ivvd=%d (%f)     ivvdh=%d (%f)\n", ivvd, vvdStartp[ivvd], ivvdh, vvdhStartp[ivvdh]);
-#endif
+      //#ifdef DEBUG
+      //      Rprintf("ivvd=%d (%f)     ivvdh=%d (%f)\n", ivvd, vvdStartp[ivvd], ivvdh, vvdhStartp[ivvdh]);
+      //#endif
       // use largest vvdh that is still has vvdhStart < vvdStart
       if (ivvdh < (nvvdh - 1) && vvdStartp[ivvd] > vvdhStartp[ivvdh + 1]) {
 	  ivvdh += 1;
 	  t = vvdhTimep[ivvdh];
 #ifdef DEBUG
-	  Rprintf(" (update ivvdh to %d, yielding t=%f)\n", ivvdh, t);
+	  Rprintf("ivvd = %d ; update to ivvdh = %d, yielding t=%f)\n", ivvd, ivvdh, t);
 #endif
       }
       t += dt;

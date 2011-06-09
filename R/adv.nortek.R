@@ -2,7 +2,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             type="vector",
                             header=TRUE,
                             latitude=NA, longitude=NA,
-                            debug=getOption("oceDebug"), monitor=FALSE, processingLog)
+                            debug=getOption("oceDebug"), monitor=FALSE, 
+                            processingLog)
 {
     ## abbreviations:
     ##   SIG=System Integrator Guide
@@ -137,8 +138,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## "vvdh" stands for "Vector Velocity Data Header" [p35 of SIG]
     vvdhStart <- .Call("locate_byte_sequences", buf, c(0xa5, 0x12), 42, c(0xb5, 0x8c), 0)
 
-    timeBurst <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
-    recordsBurst <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
+    vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
+    vvdhRecords <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
 
     ##dan<<-list(buf=buf,vvdStart=vvdStart,vvdhStart=vvdhStart,vsdStart=vsdStart)
 
@@ -399,17 +400,32 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     v <- v[look,]
     a <- a[look,]
     c <- c[look,]
-    if (0 < sum(recordsBurst)) {
+    if (0 < sum(vvdhRecords)) {
         metadata$samplingMode <- "burst"
         sss <- NULL
-        for (b in 1:length(recordsBurst)) {
+        for (b in 1:length(vvdhRecords)) {
             ## FIXME: isn't there a time delay at start of burst?
-            sss <- c(sss, as.numeric(timeBurst[b]) + seq(0, by=1/metadata$samplingRate, length.out=recordsBurst[b]))
+            sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
         }
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
     } else {
         metadata$samplingMode <- "continuous"
         time <- vvdSec + (vsdTime[1] - as.numeric(vsdTime[1])) # last just makes it time
+        if (debug > 5) {
+            ## Try counting forward from vvdh times.  A reference is
+            ##   http://www.nortek-as.com/en/knowledge-center/forum/velocimeters/158319581
+            ## but I am not really clear on the +1s or +2s, and I guess we also should
+            ## add 1/(2*metadata$samplingRate)
+            print(data.frame(vvdhStart, vvdhTime))
+            timeTest <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vvdhStart, vvdhTime, metadata$samplingRate))
+            timeTest <- timeTest + 1 + 1/2/metadata$samplingRate # FIXME or +2?
+            dan0<<-time
+            dan1<<-timeTest
+            oce.plot.ts(time, as.numeric(time)-as.numeric(timeTest), ylab="Time - TimeTest", type='l')
+            mtext("time is calculated by interpolating VSD times", line=-1)
+            mtext(sprintf("timeTest is calculated by incrementing VVDH times by %.8f", 1/metadata$samplingRate),
+                  line=-2)
+        }
     }
     metadata$numberOfSamples <- dim(v)[1]
     metadata$numberOfBeams <- dim(v)[2]
@@ -420,8 +436,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  time=time,
                  pressure=pressure,
 
-                 timeBurst=timeBurst,
-                 recordsBurst=recordsBurst,
+                 timeBurst=vvdhTime,
+                 recordsBurst=vvdhRecords,
                  voltageSlow=voltage,
 
                  timeSlow=vsdTime,

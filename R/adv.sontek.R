@@ -600,7 +600,8 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz"),
                                  coordinateSystem="xyz", transformationMatrix,
                                  latitude=NA, longitude=NA,
-                                 debug=getOption("oceDebug"), processingLog)
+                                 debug=getOption("oceDebug"), monitor=FALSE,
+                                 processingLog)
 {
     ## FIXME: It would be better to deal with the binary file, but the format is unclear to me;
     ## FIXME: two files are available to me, and they differ considerably, neither matching the

@@ -35,7 +35,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   coordinateSystem="xyz",
   transformationMatrix,
   latitude=NA, longitude=NA,
-  debug=getOption("oceDebug"), processingLog)
+  debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 }
 
 \arguments{
