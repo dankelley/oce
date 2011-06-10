@@ -412,7 +412,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
         }
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
-        time <- time + 2               # add 2s for warm upFIXME: need an authoratative statement on this.
+        time <- time + 2               # add 2s for warm up FIXME: need an authoratative statement on this.
     } else {
         metadata$samplingMode <- "continuous"
         time <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, metadata$samplingRate))
