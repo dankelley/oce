@@ -416,8 +416,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ##   http://www.nortek-as.com/en/knowledge-center/forum/velocimeters/158319581
             ## but I am not really clear on the +1s or +2s, and I guess we also should
             ## add 1/(2*metadata$samplingRate)
+
             print(data.frame(vvdhStart, vvdhTime))
-            timeTest <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vvdhStart, vvdhTime, metadata$samplingRate))
+            
+            timeTest <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, metadata$samplingRate))
             timeTest <- timeTest + 1 + 1/2/metadata$samplingRate # FIXME or +2?
             dan0<<-time
             dan1<<-timeTest
