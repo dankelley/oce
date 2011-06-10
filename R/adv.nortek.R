@@ -402,7 +402,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     c <- c[look,]
     if (0 < sum(vvdhRecords)) {
         metadata$samplingMode <- "burst"
-        ## FIXME: should account for a time delay at the start of bursts.  Is it 1s or 2s; do we add 1/(2*samplingRate)? 
 
         ## Note: if we knew that all bursts were of the same length, we could use the same method
         ## as for the continuous case, specifying e.g. vvdhRecords[1] instead of 0.  But do we know that?
@@ -413,6 +412,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
         }
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
+        time <- time + 2               # add 2s for warm upFIXME: need an authoratative statement on this.
     } else {
         metadata$samplingMode <- "continuous"
         time <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, metadata$samplingRate))
