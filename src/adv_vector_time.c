@@ -3,7 +3,8 @@
 #include <Rdefines.h>
 #include <Rinternals.h>
 
-#define DEBUG
+//#define DEBUG
+
 /*
 
 system("R CMD SHLIB adv_vector_time.c"); dyn.load("adv_vector_time.so"); .Call("adv_vector_time", 1,2,3,4,5,6,7)

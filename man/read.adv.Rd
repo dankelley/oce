@@ -160,20 +160,10 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     was set up to calculate \code{metadata$samplingRate} as
     \code{512/AvgInterval} where \code{AvgInterval} is a part of the ``User
     Configuration'' header (see page 30 of [1], where the explanation is
-    ``average interval in seconds'').  This formula has no pedigree of any
-    sort; it is a kludge, plain and simple.  It is similar to one in a
-    Nortek-supplied program named \code{Sample.cpp} that exemplifies reading
-    Aquadopp-HR data, except that there, the formula is \code{512/T5}, where
-    ``\code{T5}'' is described as ``time between burst sequences (counts)'' (30
-    of [1]).  The reader may ask why the Aquadopp-HR formula was not used, and
-    the answer is a poor one: because that formula yielded sampling rates that
-    were at odds with the text-based data files created by Nortek software.
-    The reader may ask where the present formula came from, and the answer is
-    an even poorer one: because it produced answers that agreed with text
-    files, for the test data available when \code{read.adv.nortek} was written.
-    Finally, the reader may ask whether the present formula will change, and
-    the answer is, discouragingly, yes.
-
+    ``average interval in seconds'').  This formula was developed through trial
+    and error, but it was confirmed later on the Nortek discussion group, and
+    it should appear in upcoming versions of [1].
+    
     Another important issue is the determination of whether an instrument had
     recorded in continuous mode or burst mode.  One might infer that
     \code{TimCtrlReg} in the ``User Configuration'' header (p30 of [1])

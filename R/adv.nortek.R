@@ -407,27 +407,11 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             ## FIXME: isn't there a time delay at start of burst?
             sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
         }
+        ## FIXME: why not do it as for continuous, with same code?
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
     } else {
         metadata$samplingMode <- "continuous"
-        time <- vvdSec + (vsdTime[1] - as.numeric(vsdTime[1])) # last just makes it time
-        if (debug > 5) {
-            ## Try counting forward from vvdh times.  A reference is
-            ##   http://www.nortek-as.com/en/knowledge-center/forum/velocimeters/158319581
-            ## but I am not really clear on the +1s or +2s, and I guess we also should
-            ## add 1/(2*metadata$samplingRate)
-
-            print(data.frame(vvdhStart, vvdhTime))
-            
-            timeTest <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, metadata$samplingRate))
-            timeTest <- timeTest + 1 + 1/2/metadata$samplingRate # FIXME or +2?
-            dan0<<-time
-            dan1<<-timeTest
-            oce.plot.ts(time, as.numeric(time)-as.numeric(timeTest), ylab="Time - TimeTest", type='l')
-            mtext("time is calculated by interpolating VSD times", line=-1)
-            mtext(sprintf("timeTest is calculated by incrementing VVDH times by %.8f", 1/metadata$samplingRate),
-                  line=-2)
-        }
+        time <- numberAsPOSIXct(.Call("adv_vector_time", vvdStart, vsdStart, vsdTime, vvdhStart, vvdhTime, 0, metadata$samplingRate))
     }
     metadata$numberOfSamples <- dim(v)[1]
     metadata$numberOfBeams <- dim(v)[2]
