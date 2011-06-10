@@ -402,12 +402,16 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     c <- c[look,]
     if (0 < sum(vvdhRecords)) {
         metadata$samplingMode <- "burst"
+        ## FIXME: should account for a time delay at the start of bursts.  Is it 1s or 2s; do we add 1/(2*samplingRate)? 
+
+        ## Note: if we knew that all bursts were of the same length, we could use the same method
+        ## as for the continuous case, specifying e.g. vvdhRecords[1] instead of 0.  But do we know that?
+        ## Also, what I'm doing here is probably fine, since bursts last an hour and so looping
+        ## also them won't be expensive.
         sss <- NULL
         for (b in 1:length(vvdhRecords)) {
-            ## FIXME: isn't there a time delay at start of burst?
             sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
         }
-        ## FIXME: why not do it as for continuous, with same code?
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
     } else {
         metadata$samplingMode <- "continuous"
