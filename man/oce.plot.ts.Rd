@@ -96,4 +96,4 @@ weatherplot()
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

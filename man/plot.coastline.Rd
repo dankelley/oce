@@ -88,4 +88,4 @@ plot(coastlineWorld)
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

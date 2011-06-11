@@ -141,6 +141,7 @@ export(
        sectionSmooth,
        sectionSort,
        showThrees,
+       sigmaTheta,
        stickplot,
        subset.oce,
        sunAngle,

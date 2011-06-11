@@ -33,4 +33,4 @@ oce are \code{\link{coastlineHalifax}} and \code{\link{coastlineMaritimes}}.}
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{datasets}

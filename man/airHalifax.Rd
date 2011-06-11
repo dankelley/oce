@@ -9,4 +9,4 @@
   containing \code{temperature}.}
 \usage{data(airHalifax)}
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{datasets}

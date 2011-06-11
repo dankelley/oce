@@ -105,4 +105,4 @@ plot.profile(ctd, xtype="temperature")
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

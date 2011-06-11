@@ -66,4 +66,4 @@ detach(airHalifax)
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

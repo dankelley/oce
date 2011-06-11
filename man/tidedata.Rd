@@ -86,5 +86,5 @@ cat("standard constituents:",tidedata$const$name[tidedata$const$ikmpr])
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{datasets}
 \concept{tide}

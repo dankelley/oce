@@ -261,6 +261,12 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
                 rval <- c(rval, x$data$station[[station]]$data[[item]])
             }
         }
+    } else if (inherits(x, "adv")) {
+        index <- agrep(item, names(x$data)) # use agrep to get e.g. temperatureSlow if given 'temperature'
+        if (length(index))
+            rval <- x$data[[index]]
+        else
+            stop("cannot find item named '", item, "' in object's data")
     } else {
         if (!(item %in% names(x$data)))
             stop("'x' does not contain data named \"", item, "\"")
@@ -283,6 +289,8 @@ pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
 salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
+
+sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 
 latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
 

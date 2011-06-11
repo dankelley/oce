@@ -41,4 +41,4 @@ data(ptr)
 plot(ptr)
 }
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{datasets}

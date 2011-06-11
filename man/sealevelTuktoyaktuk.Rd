@@ -64,4 +64,4 @@ sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
 
 \author{Dan Kelley, after data provided in Foreman's (1977) Appendix 7.2.}
 
-\keyword{misc}
+\keyword{datasets}

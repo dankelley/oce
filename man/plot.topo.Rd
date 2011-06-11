@@ -96,4 +96,4 @@ plot(topoWorld)
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

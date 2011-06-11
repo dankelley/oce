@@ -572,10 +572,16 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 subsetStringSlow <- gsub("time", "timeSlow", subsetString)
                 keepSlow <-eval(parse(text=subsetStringSlow), x$data, parent.frame())
             }
+            if ("timeBurst" %in% names) {
+                subsetStringBurst <- gsub("time", "timeBurst", subsetString)
+                keepBurst <-eval(parse(text=subsetStringBurst), x$data, parent.frame())
+            }
             for (name in names(x$data)) {
                 if ("distance" == name)
                     next
-                if (length(grep("^time", name)) || is.vector(rval$data[[name]])) {
+                if (length(grep("Burst$", name))) {
+                    rval$data[[name]] = x$data[[name]][keepBurst]
+                } else if (length(grep("^time", name)) || is.vector(rval$data[[name]])) {
                     if (1 == length(agrep("Slow$", name))) {
                         oceDebug(debug, "subsetting data$", name, " (using an interpolated subset)\n", sep="")
                         rval$data[[name]] <- x$data[[name]][keepSlow]

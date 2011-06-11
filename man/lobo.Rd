@@ -26,4 +26,4 @@ save(lobo, file="oce/data/lobo.rda")
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{datasets}

@@ -12,4 +12,4 @@ dataset at the NOAA site.}
 \code{\link{as.coastline}}; see these for details of the data format.  Other coastline datasets provided with
 oce are \code{\link{coastlineHalifax}} and \code{\link{coastlineWorld}}.}
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{datasets}

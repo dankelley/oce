@@ -201,6 +201,8 @@ manuals.)
 
 3. Information about Sontek profilers is available at
 \url{http://www.sontek.com}.
+
+4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center}
 }
 
 \author{Dan Kelley}

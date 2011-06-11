@@ -46,4 +46,4 @@ plot(tide)
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}
