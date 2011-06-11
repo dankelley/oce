@@ -1,5 +1,4 @@
 read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                                   type="default",
                                    latitude=NA, longitude=NA,
                                    start, deltat,
                                    debug=getOption("oceDebug"), monitor=FALSE, processingLog)
@@ -8,7 +7,6 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                            "\", from=", format(from),
                            if (!missing(to)) sprintf(", to=%s, ", format(to)),
                            ", by=", by,
-                           ", type=\"", type,
                            if (!missing(start)) sprintf(", start[1]=%s, ", format(start[1])),
                            if (!missing(deltat)) sprintf(", deltat=%f, ", deltat),
                            "debug=", debug,
@@ -144,7 +142,6 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
 read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),      # FIXME (twoTimescales)
                                 header=TRUE,
                                 latitude=NA, longitude=NA,
-                                type="",
                                 debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
     bisectAdvSontekAdr <- function(tFind, add=0, debug=0) {

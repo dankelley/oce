@@ -257,17 +257,16 @@ plot.adv <- function(x, which=c(1:3,14,15),
     oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     which2 <- vector("numeric", nw)
     if (nw == 1) {
-        if (which == "velocity")
-            which <- 1:3
-        else if (which == "amplitude")
-            which <- 5:7
-        else if (which == "backscatter")
-            which <- 9:11
-        else if (which == "hydrography")
-            which <- 14:15
-        else if (which == "angles")
-            which <- 16:18
-        nw <- length(which)
+        wtmp <- char.expand(which,
+                            c("velocity", "amplitude", "backscatter", "hydrography", "angles"), nomatch=NULL)
+        if (!is.na(wtmp)) {
+            if (     wtmp == "velocity"   ) which <- 1:3
+            else if (wtmp == "amplitude"  ) which <- 5:7
+            else if (wtmp == "backscatter") which <- 9:11
+            else if (wtmp == "hydrography") which <- 14:15
+            else if (wtmp == "angles"     ) which <- 16:18
+            nw <- length(which)
+        }
     }
     for (w in 1:nw) {
         ww <- which[w]

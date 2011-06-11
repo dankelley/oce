@@ -1,16 +1,13 @@
 0.3-1
-- add riley dataset
 - generalize tidem() argument list
-- change read.adv.nortek() to handle burst-mode data
-- add datasets wilson, redfieldNP, redfieldNC, and redfieldPlankton
+- read.adv.nortek(): handle burst-mode data
+- add datasets wilson, redfieldNP, redfieldNC, redfieldPlankton, and riley
 - change data(ctd) to be derived from data(ctdRaw)
 - change to monitor=FALSE for all reading functions
-- add longitude() and latitude()
-- add salinity(), temperature, and pressure()
-- add time() and velocity()
-- add processingLog() as an l-value
-- rename history a processingLog
-- add heading(), pitch(), and roll() added, as l-values and r-values
+- add accessor functions heading(), latitude(), longitude(), pitch(),
+  pressure(), processingLog(), roll(), salinity(), temperature(), time(), and
+  velocity().
+- rename history as processingLog
 - flatten all data objects to be 1 level thick (for future matlab exports)
 - add threenum() added, and use it in all summaries (for speed)
 

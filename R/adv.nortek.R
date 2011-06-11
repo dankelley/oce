@@ -1,5 +1,4 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
-                            type="vector",
                             header=TRUE,
                             latitude=NA, longitude=NA,
                             debug=getOption("oceDebug"), monitor=FALSE, 
@@ -11,11 +10,11 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
-    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", type=\"", type, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", type=\"", type, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
+    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
-    if (is.numeric(by)   && by   < 1)
-        stop("argument \"by\" must be 1 or larger")
+    if (by != 1)
+        warning("'by' argument only applies to fast-scale items such as velocity; temperature, etc. are not affected")
     if (is.numeric(from) && from < 1)
         stop("argument \"from\" must be 1 or larger")
     if (!missing(to) && is.numeric(to)   && to   < 1)
@@ -33,7 +32,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         open(file, "rb")
         on.exit(close(file))
     }
-    type <- match.arg(type)
     if (!header)
         stop("header must be TRUE")
     oceDebug(debug, "  read.adv.nortek() about to read header\n")
@@ -140,8 +138,6 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     vvdhTime <- ISOdatetime(2000 + bcdToInteger(buf[vvdhStart+8]), buf[vvdhStart+9], buf[vvdhStart+6], buf[vvdhStart+7], buf[vvdhStart+4],buf[vvdhStart+5], tz=tz)
     vvdhRecords <- readBin(buf[sort(c(vvdhStart, vvdhStart+1))+10], "integer", size=2, n=length(vvdhStart), signed=FALSE, endian="little")
-
-    ##dan<<-list(buf=buf,vvdStart=vvdStart,vvdhStart=vvdhStart,vsdStart=vsdStart)
 
     ## Velocity scale.  Nortek's System Integrator Guide (p36) says
     ## the velocity scale is in bit 1 of "status" byte (at offset 23)
