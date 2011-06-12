@@ -181,7 +181,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
     ##if (!all(which %in% c(1:3,5:7,9:11,14:21,23)))
     ##   stop("\"which\" must be in the range c(1:3,5:7,9:11,14:21,23) but it is ", which)
     nw <- length(which)
-    if (nw == 1) {
+    if (nw == 1 && is.character(which)) {
         pm <- pmatch(which, c("velocity","amplitude","quality","hydrography", "angles"))
         if (!is.na(pm)) {
             nbeams <- 3
@@ -256,7 +256,7 @@ plot.adv <- function(x, which=c(1:3,14,15),
     ## Translate word-style (FIXME: ugly coding)
     oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     which2 <- vector("numeric", nw)
-    if (nw == 1) {
+    if (nw == 1 && is.character(which)) {
         wtmp <- char.expand(which,
                             c("velocity", "amplitude", "backscatter", "hydrography", "angles"), nomatch=NULL)
         if (!is.na(wtmp)) {
