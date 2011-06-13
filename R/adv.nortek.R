@@ -377,6 +377,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, vectorShow(vvdStart, "vvdStart"))
     rm(buf)
     gc()
+    if (by != 1)
+        warning("Caution: the 'by' argument may be removed in a future version of Oce.")
     ## subset using 'by'
     by.orig <- by
     if (is.character(by)) {
