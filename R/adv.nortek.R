@@ -408,7 +408,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
         }
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
-        delayForWarmup <- 2 + (metadata$samplingRate / 2) # FIXME: this is from a forum posting, not an official doc.
+        delayForWarmup <- 2 + 1 / (metadata$samplingRate * 2) # FIXME: this is from a forum posting, not an official doc.
         time <- time + delayForWarmup
     } else {
         metadata$samplingMode <- "continuous"
