@@ -39,6 +39,7 @@ export(
        enuToOtherAdv,
        extract,
        fillGap,
+       findInOrdered,
        formatCI,
        fullFilename,
        geodDist,

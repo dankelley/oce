@@ -1,4 +1,12 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+findInOrdered <- function(x, f)
+{
+    if (missing(x))
+        stop("'x' missing")
+    if (missing(f))
+        stop("'f' missing")
+    .Call("bisect", x, f)
+}
 filterSomething <- function(x, filter)
 {
     if (is.raw(x)) {
