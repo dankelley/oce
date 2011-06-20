@@ -639,7 +639,13 @@ magic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
         } else if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
-            return("odf")
+            ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
+            someLines <- readLines(file, encoding="UTF-8")
+            dt <- grep("DATA_TYPE=",l)
+            if (length(dt) < 1)
+                stop("cannot infer type of ODF file")
+            subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
+            return(paste("odf", subtype, sep="/"))
         }
         oceDebug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
