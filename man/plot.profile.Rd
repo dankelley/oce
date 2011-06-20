@@ -19,13 +19,13 @@
              col.grid="lightgray",
              lty.grid="dotted",
              Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
-             lwd,
+             lwd=par("lwd"),
              xaxs="r", yaxs="r",
              cex=1, pch=1,
              useSmoothScatter=FALSE,
              type='l',
              mgp=getOption("oceMgp"),
-             mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
+             mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
              debug=getOption("oceDebug"),
              \dots)
 }
