@@ -23,9 +23,11 @@
              xaxs="r", yaxs="r",
              cex=1, pch=1,
              useSmoothScatter=FALSE,
+             type='l',
              mgp=getOption("oceMgp"),
              mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
-\dots)
+             debug=getOption("oceDebug"),
+             \dots)
 }
 
 \arguments{
@@ -82,11 +84,13 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
+  \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{a flag that turns on debugging, if it exceeds 0.}
   \item{\dots}{Optional arguments passed to other functions.  A common example is
     to set \code{df}, for use in \link{swN2} calculations.} 
 }

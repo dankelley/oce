@@ -1458,10 +1458,27 @@ plot.profile <- function (x,
                           yaxs="r",
                           cex=1, pch=1,
                           useSmoothScatter=FALSE,
+                          type='l',
                           mgp=getOption("oceMgp"),
                           mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
+                          debug=getOption("oceDebug"),
                           ...)
 {
+    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1)
+    {
+        if (type == 'l') {
+            lines(x, y, col = col, lwd=lwd)
+        } else if (type == 's') {
+            lines(x, y, col = col, lwd=lwd, type='s')
+        } else if (type == 'p') {
+            points(x, y, col = col, cex=cex)
+        } else if (type == 'b') {
+            lines(x, y, col = col, lwd=lwd)
+            points(x, y, col = col, cex=cex)
+        } else {
+            lines(x, y, col = col, lwd=lwd)
+        }
+    }
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
     dots <- list(...)
@@ -1493,14 +1510,12 @@ plot.profile <- function (x,
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
         if (missing(densitylim))
             densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
-        plot(st, y,
-             xlim=densitylim, ylim=ylim,
+        plot(st, y, xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         box()
-        lines(st, y, col = col.rho, lwd=lwd)
         par(new = TRUE)
         if (missing(timelim)) timelim <- range(time, na.rm=TRUE)
         plot(time, y, xlim=timelim, ylim=ylim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs)
@@ -1573,16 +1588,7 @@ plot.profile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            if (type == 'l') {
-                lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
-            } else if (type == 'p') {
-                points(x$data$salinity, y, col = col.salinity, cex=cex)
-            } else if (type == 'b') {
-                lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
-                points(x$data$salinity, y, col = col.salinity, cex=cex)
-            } else {
-                lines(x$data$salinity, y, col = col.salinity, lwd=lwd)
-            }
+            plotJustProfile(x$data$salinity, y, col = col.salinity, type=type, lwd=lwd, cex=cex, pch=pch)
         }
     } else if (xtype == "T" || xtype == "temperature") {
         type <- if ("type" %in% names(dots)) dots$type else 'l'
@@ -1596,21 +1602,9 @@ plot.profile <- function (x,
             box()
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
-            ## manipulate args, to avoid duplicates of 'type' and perhaps other things
-            args <- list(...)
-            args$x <- x$data$temperature
-            args$y <- y
-            args$xlim <- Tlim
-            args$ylim <- ylim
-            args$type <- 'n'
-            args$xlab <- ""
-            args$ylab <- pname
-            args$axes <- FALSE
-            args$xaxs <- xaxs
-            args$yaxs <- yaxs
-            if ("debug" %in% names(args))
-                args <- args[-which("debug" == names(args))]
-            do.call("plot", args)
+            plot(x$data$temperature, y,
+                 xlim=Tlim, ylim=ylim,
+                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
@@ -1621,16 +1615,7 @@ plot.profile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            if (type == 'l') {
-                lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
-            } else if (type == 'p') {
-                points(x$data$temperature, y, col = col.temperature, cex=cex)
-            } else if (type == 'b') {
-                lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
-                points(x$data$temperature, y, col = col.temperature, cex=cex)
-            } else {
-                lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
-            }
+            plotJustProfile(x$data$temperature, y, col = col.temperature, type=type, lwd=lwd, cex=cex, pch=pch)
         }
     } else if (xtype == "density") {
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
@@ -1649,7 +1634,7 @@ plot.profile <- function (x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-        lines(x$data$sigmaTheta, y, col = col.rho, lwd=lwd)
+        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, pch=pch)
     } else if (xtype == "density+N2") {
         if (missing(densitylim))
             densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
@@ -1693,8 +1678,7 @@ plot.profile <- function (x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-        lines(N2, y, col = col.N2, lwd=lwd)
-        abline(v = 0, col = col.N2)
+       plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, pch=pch)
     } else if (xtype == "salinity+temperature") {
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
