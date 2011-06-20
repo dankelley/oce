@@ -638,6 +638,8 @@ magic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".s4a.", filename))) {
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
+        } else if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
+            return("odf")
         }
         oceDebug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
