@@ -371,8 +371,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
     vds <- var(diff(sec))
     ##BAD: vvdSec <- .Call("stutter_time", sec, 8)
-    vvdSec <- approx(seq(0, 1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
-    oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
+    #######vvdSec <- approx(seq(0, 1, length.out=length(vsdTime)), vsdTime, seq(0, 1, length.out=length(vvdStart)))$y
+    #######oceDebug(debug, vectorShow(vvdSec, "vvdSec"))
     oceDebug(debug, vectorShow(vsdStart, "vsdStart"))
     oceDebug(debug, vectorShow(vvdStart, "vvdStart"))
     rm(buf)
@@ -391,7 +391,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdStart.orig <- vvdStart
     vvdStart <- vvdStart[look]
     oceDebug(debug, "length(vvdStart)=",length(vvdStart),"(after 'look'ing) with by=", by, "\n")
-    vvdSec <- vvdSec[look]
+    ######vvdSec <- vvdSec[look]
     pressure <- pressure[look]          # only output at burst headers, not with velo (FIXME: huh??)
     v <- v[look,]
     a <- a[look,]
@@ -408,7 +408,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             sss <- c(sss, as.numeric(vvdhTime[b]) + seq(0, by=1/metadata$samplingRate, length.out=vvdhRecords[b]))
         }
         time <- sss[look] + (vsdTime[1] - as.numeric(vsdTime[1]))
-        delayForWarmup <- 2 + (metadata$SamplingRate / 2) # FIXME: this is from a forum posting, not an official doc.
+        delayForWarmup <- 2 + 1 / (metadata$samplingRate * 2) # FIXME: this is from a forum posting, not an official doc.
         time <- time + delayForWarmup
     } else {
         metadata$samplingMode <- "continuous"
