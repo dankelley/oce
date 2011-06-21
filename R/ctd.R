@@ -1331,7 +1331,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (debug) cat("Step 3: names=", paste(names, collapse="|"), "\n\n")
     names[grep("Pressure", names, ignore.case=TRUE)[1]] <- "pressure"
     names[grep("Conductivity", names, ignore.case=TRUE)[1]] <- "conductivity"
-    names[grep("Sea Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
+    names[grep("^Sea Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
+    names[grep("^Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
     names[grep("Fluorescence", names, ignore.case=TRUE)[1]] <- "fluorescence"
     names[grep("Conductivity Ratio", names, ignore.case=TRUE)[1]] <- "conductivity"
     names[grep("Practical Salinity", names, ignore.case=TRUE)[1]] <- "salinity"
