@@ -1244,7 +1244,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         if (length(i) < 1)
             ""
         else
-            gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))
+            gsub("\\s*$", "", gsub("^\\s*", "", gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))))
     }
     oceDebug(debug, "\b\bread.ctd.odf() {\n")
     if (is.character(file)) {
@@ -1268,7 +1268,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!length(parameterStart))
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
     namesWithin <- parameterStart[1]:dataStart[1]
-    names <- gsub("',", "", gsub("\\s*NAME='", "", lines[parameterStart[1]-1+grep("NAME=", lines[namesWithin])]))
+    names <- gsub("',", "", gsub("\\s*NAME\\s*=\\s*'", "", lines[parameterStart[1]-1+grep("NAME=", lines[namesWithin])]))
     scientist <- fromHeader("CHIEF_SCIENTIST")
     ship <- fromHeader("PLATFORM") # maybe should rename, e.g. for helicopter
     institute <- fromHeader("ORGANIZATION") # maybe should rename, e.g. for helicopter
@@ -1311,7 +1311,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     close(fff)
     if (dim(data)[2] != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", dim(data)[2], ")")
+    if (debug) cat("Step 1: names=", paste(names, collapse="|"), "\n\n")
     names <- gsub("_\\d*", "", names) # make e.g. PSAL_01 into PSAL
+    if (debug) cat("Step 2: names=", paste(names, collapse="|"), "\n\n")
     ## substitute names for SBE
     names[which(names=="CNTR")[1]] <- "scan"
     names[which(names=="CRAT")[1]] <- "conductivity"
@@ -1326,6 +1328,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[which(names=="SIGP")[1]] <- "sigmaTheta"
     names[which(names=="FFFF")[1]] <- "flag"
     ## substitute names for Applied Microsystems Ltd/Wetlabs
+    if (debug) cat("Step 3: names=", paste(names, collapse="|"), "\n\n")
     names[grep("Pressure", names, ignore.case=TRUE)[1]] <- "pressure"
     names[grep("Conductivity", names, ignore.case=TRUE)[1]] <- "conductivity"
     names[grep("Sea Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
@@ -1334,12 +1337,15 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("Practical Salinity", names, ignore.case=TRUE)[1]] <- "salinity"
     names[grep("Sigma-Theta", names, ignore.case=TRUE)[1]] <- "sigmaTheta"
     names[grep("Potential Temperature", names, ignore.case=TRUE)[1]] <- "theta"
+    if (debug) cat("Step 4: names=", paste(names, collapse="|"), "\n\n")
     names(data) <- names
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("ctd", "oce")
+    res <- ctdAddColumn(res, swSigmaTheta(res$data$salinity, res$data$temperature, res$data$pressure), "sigmaTheta",
+                          "Sigma Theta", "kg/m^3")
     oceDebug(debug, "} # read.ctd.odf()\n")
     res
 }
