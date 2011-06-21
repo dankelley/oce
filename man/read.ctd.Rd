@@ -163,24 +163,24 @@ plot(woce)
 }
 
 \references{The Sea-Bird SBE 19plus profiler is described at
-  \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  The
-  company recommends the use of their own software, and perhaps for this
-  reason it is difficult to find a specification for the data files.
-  Inspection of data files led to most of the code used in Oce.  If the
-  company ever publishes standards for the data formats, of course Oce
-  will be adjusted.  In the meantime, it does a reasonable job in many
-  instances.
+    \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  The
+    company recommends the use of their own software, and perhaps for this
+    reason it is difficult to find a specification for the data files.
+    Inspection of data files led to most of the code used in Oce.  If the
+    company ever publishes standards for the data formats, of course Oce will
+    be adjusted.  In the meantime, it does a reasonable job in many instances.
 
-  The WOCE-exchange format is described at
-\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
-and a sample file is at
-\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+    The WOCE-exchange format is described at
+    \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
+    and a sample file is at
+    \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
 
-    The ODF format, used by the Canadian Department of Fisheries and Oceans, is
-    described at
-    \url{http://slgo.ca/app-sgdo/en/docs_reference/documents.html}; note that
-    this is \emph{not} the same as ``open data format'' used for more general
-    purposes.
+    The ODF format is described at
+    \url{http://slgo.ca/app-sgdo/en/docs_reference/documents.html}.  Note that
+    ODF is an acronym used by the Canadian Department of Fisheries and Oceans,
+    which stands for ``ocean data format;'' this is nothing like the ``open
+    data format,'' which is used for more general purposes in a wide variety of
+    applications, such as OpenOffice and LibreOffice.
 
 }
 

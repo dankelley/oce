@@ -1,22 +1,22 @@
-\name{munk1966}
+\name{munk}
 
 \docType{data}
 
-\alias{munk1966}
+\alias{munk}
 
 \title{Munk's (1966) temperature profile}
 
 \description{Temperature profile digitized from the left-hand panel of Munk's
     Figure 1.  This dataset is used in Chapter 3 of Kelley (2011).}
 
-\usage{data(munk1966)}
+\usage{data(munk)}
 
 \examples{
-data(munk1966)
-attach(munk1966)
+data(munk)
+attach(munk)
 plot(temperature, depth,
      ylim=rev(range(depth)), xlab="Temperature [degC]", ylab="Depth [km]")
-detach(munk1966)
+detach(munk)
 }
 
 \references{
