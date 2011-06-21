@@ -1280,7 +1280,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
     waterDepth <- as.numeric(fromHeader("SOUNDING"))
     type <- fromHeader("INST_TYPE")
-    if (grep("sea", type, ignore.case=TRUE))
+    if (length(grep("sea", type, ignore.case=TRUE)))
        type <- "SBE"
     serialNumber <- fromHeader("SERIAL_NUMBER")
     model <- fromHeader("MODEL")
@@ -1310,7 +1310,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (dim(data)[2] != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", dim(data)[2], ")")
     names <- gsub("_\\d*", "", names) # make e.g. PSAL_01 into PSAL
-    ## substitute names
+    ## substitute names for SBE
     names[which(names=="CNTR")[1]] <- "scan"
     names[which(names=="CRAT")[1]] <- "conductivity"
     names[which(names=="OCUR")[1]] <- "oxygen_by_mole"
@@ -1323,6 +1323,15 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[which(names=="PRES")[1]] <- "pressure"
     names[which(names=="SIGP")[1]] <- "sigmaTheta"
     names[which(names=="FFFF")[1]] <- "flag"
+    ## substitute names for Applied Microsystems Ltd/Wetlabs
+    names[grep("Pressure", names, ignore.case=TRUE)[1]] <- "pressure"
+    names[grep("Conductivity", names, ignore.case=TRUE)[1]] <- "conductivity"
+    names[grep("Sea Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
+    names[grep("Fluorescence", names, ignore.case=TRUE)[1]] <- "fluorescence"
+    names[grep("Conductivity Ratio", names, ignore.case=TRUE)[1]] <- "conductivity"
+    names[grep("Practical Salinity", names, ignore.case=TRUE)[1]] <- "salinity"
+    names[grep("Sigma-Theta", names, ignore.case=TRUE)[1]] <- "sigmaTheta"
+    names[grep("Potential Temperature", names, ignore.case=TRUE)[1]] <- "theta"
     names(data) <- names
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")

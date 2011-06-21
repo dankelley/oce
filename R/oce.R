@@ -793,6 +793,8 @@ read.oce <- function(file, ...)
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "odf/ctd")
         return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "odf/mvctd")
+        return(read.ctd.odf(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
 
