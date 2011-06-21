@@ -3,6 +3,7 @@
 \alias{read.ctd}
 \alias{read.ctd.sbe}
 \alias{read.ctd.woce}
+\alias{read.ctd.odf}
 
 \title{Read a CTD data file}
 
@@ -14,6 +15,8 @@ read.ctd(file, type=NULL, columns=NULL, station=NULL,
 read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
   monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 }
 
@@ -171,7 +174,15 @@ plot(woce)
   The WOCE-exchange format is described at
 \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
 and a sample file is at
-\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}}
+\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+
+    The ODF format, used by the Canadian Department of Fisheries and Oceans, is
+    described at
+    \url{http://slgo.ca/app-sgdo/en/docs_reference/documents.html}; note that
+    this is \emph{not} the same as ``open data format'' used for more general
+    purposes.
+
+}
 
 
 \author{Dan Kelley}

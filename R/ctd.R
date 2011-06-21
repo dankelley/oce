@@ -698,7 +698,8 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
                                 debug=debug, processingLog=processingLog, ...),
            WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
                                  debug=debug, processingLog=processingLog, ...),
-           ODF = read.ctd.odf(file, debug=debug, processingLog=processingLog, ...)
+           ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
+                              debug=debug, processingLog=processingLog, ...)
     )
 }
 
@@ -1237,7 +1238,14 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
 read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
                           debug=getOption("oceDebug"), processingLog, ...)
 {
-    ## FIXME: should have an argument that selects CTDSAL or SALNTY
+    fromHeader <- function(key)
+    {
+        i <- grep(key, lines)
+        if (length(i) < 1)
+            ""
+        else
+            gsub("'","", gsub(",","",strsplit(lines[i[1]], "=")[[1]][2]))
+    }
     oceDebug(debug, "\b\bread.ctd.odf() {\n")
     if (is.character(file)) {
         filename <- fullFilename(file)
@@ -1261,13 +1269,66 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
     namesWithin <- parameterStart[1]:dataStart[1]
     names <- gsub("',", "", gsub("\\s*NAME='", "", lines[parameterStart[1]-1+grep("NAME=", lines[namesWithin])]))
+    scientist <- fromHeader("CHIEF_SCIENTIST")
+    ship <- fromHeader("PLATFORM") # maybe should rename, e.g. for helicopter
+    institute <- fromHeader("ORGANIZATION") # maybe should rename, e.g. for helicopter
+    latitude <- as.numeric(fromHeader("INITIAL_LATITUDE"))
+    longitude <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
+    cruise <- fromHeader("CRUISE_NAME")
+    date <- strptime(fromHeader("START_DATE"), "%b %d/%y")
+    startTime <- strptime(tolower(fromHeader("START_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
+    waterDepth <- as.numeric(fromHeader("SOUNDING"))
+    type <- fromHeader("INST_TYPE")
+    if (grep("sea", type, ignore.case=TRUE))
+       type <- "SBE"
+    serialNumber <- fromHeader("SERIAL_NUMBER")
+    model <- fromHeader("MODEL")
+    metadata <- list(header=NULL, # FIXME
+                     type=type,        # only odt
+                     model=model,      # only odt
+                     serialNumber=serialNumber,
+                     ship=ship,
+                     scientist=scientist,
+                     institute=institute,
+                     address=NULL,
+                     cruise=cruise,
+                     station=NULL,
+                     date=startTime,
+                     startTime=startTime,
+                     latitude=latitude,
+                     longitude=longitude,
+                     recovery=NULL,
+                     waterDepth=waterDepth,
+                     sampleInterval=NA,
+                     names=NULL,
+                     labels=NULL,
+                     filename=filename)
     fff <- textConnection(lines)
-    res <- read.table(fff, skip=dataStart)
+    data <- read.table(fff, skip=dataStart)
     close(fff)
-    if (dim(res)[2] != length(names))
-        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", dim(res)[2], ")")
-    names(res) <- names
-    res <- as.ctd(res$PSAL_01, res$TEMP_01, res$PRES_01) # FIXME: can we rely on these names?
+    if (dim(data)[2] != length(names))
+        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", dim(data)[2], ")")
+    names <- gsub("_\\d*", "", names) # make e.g. PSAL_01 into PSAL
+    ## substitute names
+    names[which(names=="CNTR")[1]] <- "scan"
+    names[which(names=="CRAT")[1]] <- "conductivity"
+    names[which(names=="OCUR")[1]] <- "oxygen_by_mole"
+    names[which(names=="OTMP")[1]] <- "oxygen_temperature"
+    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
+    names[which(names=="PSAL")[1]] <- "salinity"
+    names[which(names=="PSAR")[1]] <- "par"
+    names[which(names=="DOXY")[1]] <- "oxygen_by_volume"
+    names[which(names=="TEMP")[1]] <- "temperature"
+    names[which(names=="PRES")[1]] <- "pressure"
+    names[which(names=="SIGP")[1]] <- "sigmaTheta"
+    names[which(names=="FFFF")[1]] <- "flag"
+    names(data) <- names
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
+    class(res) <- c("ctd", "oce")
     oceDebug(debug, "} # read.ctd.odf()\n")
     res
 }
@@ -1301,6 +1362,7 @@ summary.ctd <- function(object, ...)
     res$src <- if (is.null(object$metadata$src)) "" else object$metadata$src
     res$type <- if (is.null(object$metadata$type)) "" else object$metadata$type
     res$serialNumber <- if (is.null(object$metadata$serialNumber)) "" else object$metadata$serialNumber
+    res$model <- if (is.null(object$metadata$model)) "" else object$metadata$model
     res$levels <- dim[1]
     threes <- matrix(nrow=dim[2], ncol=3)
     for (v in 1:dim[2])
@@ -1318,6 +1380,8 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("CTD Summary\n-----------\n\n", ...)
     if ("" != x$type)
         cat(paste("* Instrument:          ", x$type, "\n",sep=""))
+    if ("" != x$model)
+        cat(paste("* Model:               ", x$model, "\n",sep=""))
     if ("" != x$serialNumber)
         cat(paste("* Serial number:       ", x$serialNumber, "\n",sep=""))
     if ("" != x$filename)
