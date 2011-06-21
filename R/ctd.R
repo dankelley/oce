@@ -1279,6 +1279,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     startTime <- strptime(tolower(fromHeader("START_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
     endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
     waterDepth <- as.numeric(fromHeader("SOUNDING"))
+    if (waterDepth < 0)                # catch -999
+        waterDepth <- NA
     type <- fromHeader("INST_TYPE")
     if (length(grep("sea", type, ignore.case=TRUE)))
        type <- "SBE"
