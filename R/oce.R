@@ -641,7 +641,7 @@ magic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
             ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
             someLines <- readLines(file, encoding="UTF-8")
-            dt <- grep("DATA_TYPE=",l)
+            dt <- grep("DATA_TYPE=", someLines)
             if (length(dt) < 1)
                 stop("cannot infer type of ODF file")
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
@@ -791,6 +791,8 @@ read.oce <- function(file, ...)
         return(read.pt(file, processingLog=processingLog, ...))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
+    if (type == "odf/ctd")
+        return(read.ctd.odf(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
 

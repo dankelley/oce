@@ -697,7 +697,9 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
            SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
                                 debug=debug, processingLog=processingLog, ...),
            WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
-                                 debug=debug, processingLog=processingLog, ...))
+                                 debug=debug, processingLog=processingLog, ...),
+           ODF = read.ctd.odf(file, debug=debug, processingLog=processingLog, ...)
+    )
 }
 
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
@@ -1229,6 +1231,44 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res <- ctdAddColumn(res, swSigmaTheta(res$data$salinity, res$data$temperature, res$data$pressure), "sigmaTheta",
                           "Sigma Theta", "kg/m^3")
     oceDebug(debug, "} # read.ctd.sbe()\n")
+    res
+}
+
+read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
+                          debug=getOption("oceDebug"), processingLog, ...)
+{
+    ## FIXME: should have an argument that selects CTDSAL or SALNTY
+    oceDebug(debug, "\b\bread.ctd.odf() {\n")
+    if (is.character(file)) {
+        filename <- fullFilename(file)
+        file <- file(file, "r")
+        on.exit(close(file))
+    } else {
+        filename <- ""
+    }
+    if (!inherits(file, "connection"))
+        stop("argument `file' must be a character string or connection")
+    if (!isOpen(file)) {
+        open(file, "r")
+        on.exit(close(file))
+    }
+    lines <- readLines(file, encoding="UTF-8")
+    dataStart <- grep("-- DATA --", lines)
+    if (!length(dataStart))
+        stop("cannot locate a line containing '-- DATA --'")
+    parameterStart <- grep("PARAMETER_HEADER", lines)
+    if (!length(parameterStart))
+        stop("cannot locate any lines containing 'PARAMETER_HEADER'")
+    namesWithin <- parameterStart[1]:dataStart[1]
+    names <- gsub("',", "", gsub("\\s*NAME='", "", lines[parameterStart[1]-1+grep("NAME=", lines[namesWithin])]))
+    fff <- textConnection(lines)
+    res <- read.table(fff, skip=dataStart)
+    close(fff)
+    if (dim(res)[2] != length(names))
+        stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", dim(res)[2], ")")
+    names(res) <- names
+    res <- as.ctd(res$PSAL_01, res$TEMP_01, res$PRES_01) # FIXME: can we rely on these names?
+    oceDebug(debug, "} # read.ctd.odf()\n")
     res
 }
 
