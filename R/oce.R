@@ -638,6 +638,14 @@ magic <- function(file, debug=getOption("oceDebug"))
         } else if (length(grep(".s4a.", filename))) {
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
+        } else if (length(grep(".ODF$", filename, ignore.case=TRUE))) {
+            ## in BIO files, the data type seems to be on line 14.  Read more, for safety.
+            someLines <- readLines(file, encoding="UTF-8")
+            dt <- grep("DATA_TYPE=", someLines)
+            if (length(dt) < 1)
+                stop("cannot infer type of ODF file")
+            subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
+            return(paste("odf", subtype, sep="/"))
         }
         oceDebug(debug, " no, so not adv/sontek/adr.\n")
         file <- file(file, "r")
@@ -783,6 +791,10 @@ read.oce <- function(file, ...)
         return(read.pt(file, processingLog=processingLog, ...))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
+    if (type == "odf/ctd")
+        return(read.ctd.odf(file, processingLog=processingLog, ...))
+    if (type == "odf/mvctd")
+        return(read.ctd.odf(file, processingLog=processingLog, ...))
     stop("unknown file type \"", type, "\"")
 }
 
