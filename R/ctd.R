@@ -1351,6 +1351,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("Sensor Depth below Sea Surface", names, ignore.case=TRUE)[1]] <- "pressure"
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
+    if (!("salinity" %in% names)) warning("missing data$salinity")
+    if (!("pressure" %in% names)) warning("missing data$pressure")
+    if (!("temperature" %in% names)) warning("missing data$temperature")
     metadata$names <- names
     metadata$labels <- labels 
     if (missing(processingLog))
