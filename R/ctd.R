@@ -544,47 +544,58 @@ plot.ctd <- function (x, which = 1:4,
                 yloc <- yloc - d.yloc
             }
         } else if (round(which[w]) == 5 || which[w] == "map") {
-            if (missing(coastline))
-                stop("need a coastline to draw a map")
-            if (missing(lonlim)) {
-                lonlim.c <- x$metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
-                clon <- mean(lonlim.c)
-                if (missing(latlim)) {
-                    latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
-                    span <- diff(range(latlim.c)) / 1.5 * 111
-                    plot(coastline, center=c(mean(latlim.c), clon), span=span, debug=debug-1)
-                    oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
+            if (missing(coastline)) {
+                if (!is.null(x$metadata$station) && !is.na(x$metadata$station)) {
+                    plot(x$metadata$longitude, x$metadata$latitude, xlab="", ylab="")
                 } else {
-                    clat <- mean(latlim)
-                    span <- diff(range(latlim)) / 1.5 * 111
-                    plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
-                    oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
+                    warning("no latitude or longitude in object's metadata, so cannot draw map")
                 }
-                if (round(which[w],1) == 5.1) # HIDDEN FEATURE
-                    mtext(gsub(".*/", "", x$metadata$filename), side=3, line=0.1, cex=0.7*cex)
             } else {
-                clon <- mean(lonlim)
-                if (missing(latlim)) {
-                    latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
-                    clat <- mean(latlim.c)
-                    span <- diff(range(latlim.c)) / 1.5 * 111
-                    plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
-                    oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
+                if (missing(lonlim)) {
+                    lonlim.c <- x$metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x$metadata$longitude))
+                    clon <- mean(lonlim.c)
+                    if (missing(latlim)) {
+                        latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
+                        span <- diff(range(latlim.c)) / 1.5 * 111
+                        plot(coastline, center=c(mean(latlim.c), clon), span=span, debug=debug-1)
+                        oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
+                    } else {
+                        clat <- mean(latlim)
+                        span <- diff(range(latlim)) / 1.5 * 111
+                        plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                        oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
+                    }
+                    if (round(which[w],1) == 5.1) # HIDDEN FEATURE
+                        mtext(gsub(".*/", "", x$metadata$filename), side=3, line=0.1, cex=0.7*cex)
                 } else {
-                    clat <- mean(latlim)
-                    span <- diff(range(latlim)) / 1.5 * 111
-                    plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
-                    oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
+                    clon <- mean(lonlim)
+                    if (missing(latlim)) {
+                        latlim.c <- x$metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x$metadata$latitude))
+                        clat <- mean(latlim.c)
+                        span <- diff(range(latlim.c)) / 1.5 * 111
+                        plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                        oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
+                    } else {
+                        clat <- mean(latlim)
+                        span <- diff(range(latlim)) / 1.5 * 111
+                        plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                        oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
+                    }
+                }
+                points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
+                if (!is.null(x$metadata$station) && !is.na(x$metadata$station)) {
+                    mtext(paste("Station", x$metadata$station), side=3, adj=0, cex=0.8*par("cex"))
+                    if (!is.null(x$metadata$startTime))
+                        mtext(format(x$metadata$startTime), side=3, adj=1, cex=0.8*par("cex"))
                 }
             }
-            points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-            if (!is.null(x$metadata$station) && !is.na(x$metadata$station))
-                mtext(paste("Station", x$metadata$station), side=3, cex=par("cex"))
+        } else {
+            stop("unknown value of which, ", which[w])
         }
-        else stop("unknown value of which, ", which[w])
         if (w <= adorn.length && nchar(adorn[w]) > 0) {
             t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+            if (class(t) == "try-error")
+                warning("cannot evaluate adorn[", w, "]\n")
         }
     }
     oceDebug(debug, "\b\b} # plot.ctd()\n")
@@ -1283,6 +1294,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     startTime <- strptime(tolower(fromHeader("START_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
     endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
     waterDepth <- as.numeric(fromHeader("SOUNDING"))
+    station <- fromHeader("EVENT_NUMBER")
     if (!is.na(waterDepth) && waterDepth < 0)                # catch -999
         waterDepth <- NA
     type <- fromHeader("INST_TYPE")
@@ -1299,7 +1311,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
                      institute=institute,
                      address=NULL,
                      cruise=cruise,
-                     station=NA,
+                     station=station,
                      countryInstituteCode=countryInstituteCode, # ODF only
                      cruiseNumber=cruiseNumber, # ODF only
                      date=startTime,
