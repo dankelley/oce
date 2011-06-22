@@ -543,7 +543,7 @@ plot.ctd <- function (x, which = 1:4,
                                                ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
                 yloc <- yloc - d.yloc
             }
-        } else if (which[w] == 5 || which[w] == "map") {
+        } else if (round(which[w]) == 5 || which[w] == "map") {
             if (missing(coastline))
                 stop("need a coastline to draw a map")
             if (missing(lonlim)) {
@@ -560,6 +560,8 @@ plot.ctd <- function (x, which = 1:4,
                     plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
                     oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                 }
+                if (round(which[w],1) == 5.1) # HIDDEN FEATURE
+                    mtext(gsub(".*/", "", x$metadata$filename), side=3, line=0.1, cex=0.7*cex)
             } else {
                 clon <- mean(lonlim)
                 if (missing(latlim)) {
@@ -576,7 +578,7 @@ plot.ctd <- function (x, which = 1:4,
                 }
             }
             points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-            if (!is.na(x$metadata$station))
+            if (!is.null(x$metadata$station) && !is.na(x$metadata$station))
                 mtext(paste("Station", x$metadata$station), side=3, cex=par("cex"))
         }
         else stop("unknown value of which, ", which[w])
@@ -1275,6 +1277,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     latitude <- as.numeric(fromHeader("INITIAL_LATITUDE"))
     longitude <- as.numeric(fromHeader("INITIAL_LONGITUDE"))
     cruise <- fromHeader("CRUISE_NAME")
+    countryInstituteCode <- fromHeader("COUNTRY_INSTITUTE_CODE")
+    cruiseNumber <- fromHeader("CRUISE_NUMBER")
     date <- strptime(fromHeader("START_DATE"), "%b %d/%y")
     startTime <- strptime(tolower(fromHeader("START_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
     endTime <- strptime(tolower(fromHeader("END_DATE_TIME")), "%d-%b-%Y %H:%M:%S", tz="UTC")
@@ -1295,7 +1299,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
                      institute=institute,
                      address=NULL,
                      cruise=cruise,
-                     station=NULL,
+                     station=NA,
+                     countryInstituteCode=countryInstituteCode, # ODF only
+                     cruiseNumber=cruiseNumber, # ODF only
                      date=startTime,
                      startTime=startTime,
                      latitude=latitude,
@@ -1303,8 +1309,6 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
                      recovery=NULL,
                      waterDepth=waterDepth,
                      sampleInterval=NA,
-                     names=NULL,
-                     labels=NULL,
                      filename=filename)
     fff <- textConnection(lines)
     data <- read.table(fff, skip=dataStart)
@@ -1347,6 +1351,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("Sensor Depth below Sea Surface", names, ignore.case=TRUE)[1]] <- "pressure"
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
+    metadata$names <- names
+    metadata$labels <- labels 
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
