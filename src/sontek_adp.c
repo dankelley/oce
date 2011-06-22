@@ -40,7 +40,7 @@ SEXP ldc_sontek_adp(SEXP buf, SEXP Shave_ctd, SEXP Shave_gps, SEXP Shave_bottom_
   unsigned char byte1 = 0xA5;
   unsigned char byte2 = 0x10;
   unsigned char byte3 = 0x50; /* bytes in header (=80) */
-  unsigned char *pbuf, *pmatch;
+  unsigned char *pbuf;
   PROTECT(buf = AS_RAW(buf));
   PROTECT(Shave_ctd = AS_INTEGER(Shave_ctd));
   PROTECT(Shave_gps = AS_INTEGER(Shave_gps));
