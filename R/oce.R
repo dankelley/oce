@@ -645,6 +645,8 @@ magic <- function(file, debug=getOption("oceDebug"))
             if (length(dt) < 1)
                 stop("cannot infer type of ODF file")
             subtype <- gsub("[',]", "", tolower(strsplit(someLines[dt[1]], "=")[[1]][2]))
+            subtype <- gsub("^\\s*", "", subtype)
+            subtype <- gsub("\\s*$", "", subtype)
             return(paste("odf", subtype, sep="/"))
         }
         oceDebug(debug, " no, so not adv/sontek/adr.\n")
