@@ -583,11 +583,12 @@ plot.ctd <- function (x, which = 1:4,
                     }
                 }
                 points(x$metadata$longitude, x$metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
-                if (!is.null(x$metadata$station) && !is.na(x$metadata$station)) {
+                if (!is.null(x$metadata$station) && !is.na(x$metadata$station))
                     mtext(paste("Station", x$metadata$station), side=3, adj=0, cex=0.8*par("cex"))
-                    if (!is.null(x$metadata$startTime))
-                        mtext(format(x$metadata$startTime), side=3, adj=1, cex=0.8*par("cex"))
-                }
+                if (!is.null(x$metadata$startTime))
+                    mtext(format(x$metadata$startTime), side=3, adj=1, cex=0.8*par("cex"))
+                if (!is.null(x$metadata$scientist))
+                    mtext(x$metadata$scientist, side=3, line=-1, adj=0, cex=0.8*par("cex"))
             }
         } else {
             stop("unknown value of which, ", which[w])
