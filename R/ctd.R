@@ -1311,15 +1311,19 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     close(fff)
     if (dim(data)[2] != length(names))
         stop("mismatch between length of data names (", length(names), ") and number of columns in data matrix (", dim(data)[2], ")")
-    if (debug) cat("Step 1: names=", paste(names, collapse="|"), "\n\n")
+    if (debug) cat("Initially, column names are:", paste(names, collapse="|"), "\n\n")
+    ## Infer standardized names for columsn, partly based on documentation (e.g. PSAL for salinity), but
+    ## mainly from reverse engineering of some files from BIO and DFO.  The reverse engineering
+    ## really is a kludge, and if things break (e.g. if data won't plot because of missing temperatures,
+    ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
+    ## view of names.
+    ## Step 1: trim numbers at end (which occur for BIO files)
     names <- gsub("_\\d*", "", names) # make e.g. PSAL_01 into PSAL
-    if (debug) cat("Step 2: names=", paste(names, collapse="|"), "\n\n")
-    ## substitute names for SBE
+    ## Step 2: recognize some official names
     names[which(names=="CNTR")[1]] <- "scan"
     names[which(names=="CRAT")[1]] <- "conductivity"
     names[which(names=="OCUR")[1]] <- "oxygen_by_mole"
     names[which(names=="OTMP")[1]] <- "oxygen_temperature"
-    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
     names[which(names=="PSAL")[1]] <- "salinity"
     names[which(names=="PSAR")[1]] <- "par"
     names[which(names=="DOXY")[1]] <- "oxygen_by_volume"
@@ -1327,8 +1331,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[which(names=="PRES")[1]] <- "pressure"
     names[which(names=="SIGP")[1]] <- "sigmaTheta"
     names[which(names=="FFFF")[1]] <- "flag"
-    ## substitute names for Applied Microsystems Ltd/Wetlabs
-    if (debug) cat("Step 3: names=", paste(names, collapse="|"), "\n\n")
+    ## Step 3: recognize something from moving-vessel CTDs
+    names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
+    ## Step 4: special tricks needed for IML files
     names[grep("Pressure", names, ignore.case=TRUE)[1]] <- "pressure"
     names[grep("Conductivity", names, ignore.case=TRUE)[1]] <- "conductivity"
     names[grep("^Sea Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
@@ -1338,7 +1343,9 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("Practical Salinity", names, ignore.case=TRUE)[1]] <- "salinity"
     names[grep("Sigma-Theta", names, ignore.case=TRUE)[1]] <- "sigmaTheta"
     names[grep("Potential Temperature", names, ignore.case=TRUE)[1]] <- "theta"
-    if (debug) cat("Step 4: names=", paste(names, collapse="|"), "\n\n")
+    ## Step 5: another special trick for IML files (got through 2300 test files before seeing this)
+    names[grep("Sensor Depth below Sea Surface", names, ignore.case=TRUE)[1]] <- "pressure"
+    if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
