@@ -588,7 +588,7 @@ plot.ctd <- function (x, which = 1:4,
                 if (!is.null(x$metadata$startTime))
                     mtext(format(x$metadata$startTime), side=3, adj=1, cex=0.8*par("cex"))
                 if (!is.null(x$metadata$scientist))
-                    mtext(x$metadata$scientist, side=3, line=-1, adj=0, cex=0.8*par("cex"))
+                    mtext(paste(" ", x$metadata$scientist, sep=""), side=3, line=-1, adj=0, cex=0.8*par("cex"))
             }
         } else {
             stop("unknown value of which, ", which[w])
