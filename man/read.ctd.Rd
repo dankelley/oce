@@ -175,12 +175,14 @@ plot(woce)
     and a sample file is at
     \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
 
-    The ODF format is described at
-    \url{http://slgo.ca/app-sgdo/en/docs_reference/documents.html}.  Note that
-    ODF is an acronym used by the Canadian Department of Fisheries and Oceans,
-    which stands for ``ocean data format;'' this is nothing like the ``open
-    data format,'' which is used for more general purposes in a wide variety of
-    applications, such as OpenOffice and LibreOffice.
+    The ODF format, used by the Canadian Department of Fisheries and Oceans, is
+    described at
+    \url{http://slgo.ca/app-sgdo/en/docs_reference/documents.html}, and this
+    was used as a base for \code{read.ctd.odf}.  However, it was only a
+    starting point, for examination of data files revealed many variants in the
+    names of the data columns.  If anything odd happens with ODF files (e.g. if
+    they cannot be plotted), the first thing to do is to reread the files with
+    \code{debug=1}, to see if column names were converted properly.
 
 }
 
