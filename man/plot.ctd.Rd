@@ -47,8 +47,10 @@
       \item \code{which=4} or \code{which="text"} gives a textual
       summary of some aspects of the data
       \item \code{which=5} or \code{which="map"} gives a map, with a dot
-      for the station location (note that this requires that a
-      \code{coastline} be given)
+      for the station location.  If a coastline is given, that is drawn as
+      well.  Notes near the top boundary of the map give the station number,
+      the sampling date, and the name of the chief scientist, if these are
+      known.
       \item \code{which=5.1} as for \code{which=5}, except that the file name
       is drawn above the map
       \item \code{which=6} or \code{which="density+dpdt"} gives a
