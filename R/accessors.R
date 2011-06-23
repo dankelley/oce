@@ -267,6 +267,27 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
             rval <- x$data[[index]]
         else
             stop("cannot find item named '", item, "' in object's data")
+    } else if (inherits(x, "ctd")) {
+        if (item == "latitude") {
+            rval <- rep(x$metadata$latitude, length(x$data$salinity))
+        } else if (item == "longitude") {
+            rval <- rep(x$metadata$longitude, length(x$data$salinity))
+        } else if (item == "time") {
+            rval <- rep(x$metadata$startTime, length(x$data$salinity))
+        } else {
+            if (!(item %in% names(x$data)))
+                stop("'x' does not contain data named \"", item, "\"")
+            if (missing(time)) {
+                rval <- x$data[[item]]
+            } else {
+                if (inherits(time, "oce")) {
+                    time <- time$data$time # FIXME: if broadening, consider timeSlow also
+                } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
+                    stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
+                }
+                rval <- approx(time$data$time, x$data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
+            }
+        }
     } else {
         if (!(item %in% names(x$data)))
             stop("'x' does not contain data named \"", item, "\"")
@@ -295,6 +316,8 @@ sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
 
 longitude <- function(x, time) hydrographyLocal(x, time, "longitude")
+
+time <- function(x, time) hydrographyLocal(x, time, "time")
 
 velocity <- function(x)
 {
