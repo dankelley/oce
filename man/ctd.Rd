@@ -12,7 +12,9 @@
 \usage{data(ctd)}
 
 \examples{
-ctd <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
+library(oce)
+data(ctd)
+plot(ctd)
 }
 
 \source{This is a trimmed version of the \code{\link{ctdRaw}} dataset.}
