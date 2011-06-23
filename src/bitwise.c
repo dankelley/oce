@@ -111,7 +111,7 @@ c3 <- readBin(buf[p+15], "integer", signed=TRUE, size=1, n=np)
 temperature <- 0.01 * readBin(buf[sort(c(p, p+1))+16], "integer", signed=TRUE, size=2, endian="little",n=np)
 pressure <- readBin(buf[sort(c(p, p+1))+18], "integer", signed=TRUE, size=2, endian="little",n=np)
 */
-  unsigned char *pbuf, *pmatch;
+  unsigned char *pbuf;
   PROTECT(buf = AS_RAW(buf));
   PROTECT(max = AS_INTEGER(max));
   /* FIXME: check lengths of match and key */

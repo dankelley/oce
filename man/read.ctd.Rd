@@ -152,9 +152,6 @@ before you try to read the data.
 
 \examples{
 library(oce)
-x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
-plot(x) # summary with TS and profiles
-plot.TS(x) # just the TS
 \dontrun{
 woce <- read.oce(
   "http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")

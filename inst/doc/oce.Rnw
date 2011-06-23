@@ -215,8 +215,8 @@ this in action with \verb@?section@.)
 @
 \end{center}
 \caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired in
-the St Lawrence Estuary Internal Wave Experiment.  (This dataset has been
-trimmed to the downcast; see the text and Figure~\ref{fig:ctdraw}.)}
+Halifax Harbour by students in the author's Physical Oceanography class
+at Dalhousie University.}
 \label{fig:ctd}
 \end{figure}
 
@@ -568,8 +568,8 @@ plot(ptr, useSmoothScatter=TRUE)
 dev.off()
 @
 produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
-measurements made during St Lawrence Estuary Internal Wave Experiment, a
-CFCAS-funded research program in which the \texttt{oce} author was a principal
+measurements made during St Lawrence Estuary Internal Wave Experiment, an
+CFCAS/NSERC-funded research program in which the \texttt{oce} author was a principal
 investigator.  The device was mounted on a mooring that tilted significantly
 with the tide, yielding strong tidal signals in pressure as well as temperature,
 thus providing a rough indication of the temperature profile.  Note that this
