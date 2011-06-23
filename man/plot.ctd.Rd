@@ -30,7 +30,7 @@
      useSmoothScatter=FALSE,
      adorn=NULL,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
+     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
      debug=getOption("oceDebug"),
      \dots)
 }
