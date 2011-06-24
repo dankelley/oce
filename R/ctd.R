@@ -1354,6 +1354,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("TEMP_*.*", names)[1]] <- "temperature"
     names[grep("TE90_*.*", names)[1]] <- "temperature"
     names[grep("PRES_*.*", names)[1]] <- "pressure"
+    names[grep("DEPH_*.*", names)[1]] <- "pressure" # FIXME possibly this actually *is* depth, but I doubt it
     names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
     names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
     names[grep("FFFF_*.*", names)[1]] <- "flag"
