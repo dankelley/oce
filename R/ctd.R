@@ -1352,6 +1352,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     names[grep("PSAR_*.*", names)[1]] <- "par"
     names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
     names[grep("TEMP_*.*", names)[1]] <- "temperature"
+    names[grep("TE90_*.*", names)[1]] <- "temperature"
     names[grep("PRES_*.*", names)[1]] <- "pressure"
     names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
     names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
