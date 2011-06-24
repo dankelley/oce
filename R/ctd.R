@@ -1282,7 +1282,15 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     if (!length(parameterStart))
         stop("cannot locate any lines containing 'PARAMETER_HEADER'")
     namesWithin <- parameterStart[1]:dataStart[1]
-    names <- gsub("',", "", gsub("\\s*NAME\\s*=\\s*'", "", lines[parameterStart[1]-1+grep("NAME=", lines[namesWithin])]))
+    ## extract column codes in a step-by-step way, to make it easier to adjust if the format changes
+    nullValue <- as.numeric(fromHeader("NULL_VALUE")[1]) # FIXME: should do this for columns separately
+    names <- lines[grep("^\\s*CODE\\s*=", lines)]
+    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim start/end whitespace
+    names <- gsub(",", "", names) # trim commas
+    names <- gsub("'", "", names) # trim single quotes
+    names <- gsub(",\\s*$", "", gsub("^\\s*","", names)) # "  CODE=PRES_01," -> "CODE=PRES_01"
+    names <- gsub("^CODE\\s*=\\s*", "", names) # "CODE=PRES_01" -> "PRES_01"
+    names <- gsub("\\s*$", "", gsub("^\\s*", "", names)) # trim remnant start/end spaces
     scientist <- fromHeader("CHIEF_SCIENTIST")
     ship <- fromHeader("PLATFORM") # maybe should rename, e.g. for helicopter
     institute <- fromHeader("ORGANIZATION") # maybe should rename, e.g. for helicopter
@@ -1335,35 +1343,26 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     ## or whatever), this is a place to look.  That's why the debugging flag displays a before-and-after
     ## view of names.
     ## Step 1: trim numbers at end (which occur for BIO files)
-    names <- gsub("_\\d*", "", names) # make e.g. PSAL_01 into PSAL
     ## Step 2: recognize some official names
-    names[which(names=="CNTR")[1]] <- "scan"
-    names[which(names=="CRAT")[1]] <- "conductivity"
-    names[which(names=="OCUR")[1]] <- "oxygen_by_mole"
-    names[which(names=="OTMP")[1]] <- "oxygen_temperature"
-    names[which(names=="PSAL")[1]] <- "salinity"
-    names[which(names=="PSAR")[1]] <- "par"
-    names[which(names=="DOXY")[1]] <- "oxygen_by_volume"
-    names[which(names=="TEMP")[1]] <- "temperature"
-    names[which(names=="PRES")[1]] <- "pressure"
-    names[which(names=="SIGP")[1]] <- "sigmaTheta"
-    names[which(names=="FFFF")[1]] <- "flag"
+    names[grep("CNTR_*.*", names)[1]] <- "scan"
+    names[grep("CRAT_*.*", names)[1]] <- "conductivity"
+    names[grep("OCUR_*.*", names)[1]] <- "oxygen_by_mole"
+    names[grep("OTMP_*.*", names)[1]] <- "oxygen_temperature"
+    names[grep("PSAL_*.*", names)[1]] <- "salinity"
+    names[grep("PSAR_*.*", names)[1]] <- "par"
+    names[grep("DOXY_*.*", names)[1]] <- "oxygen_by_volume"
+    names[grep("TEMP_*.*", names)[1]] <- "temperature"
+    names[grep("PRES_*.*", names)[1]] <- "pressure"
+    names[grep("SIGP_*.*", names)[1]] <- "sigmaTheta"
+    names[grep("FLOR_*.*", names)[1]] <- "fluorometer"
+    names[grep("FFFF_*.*", names)[1]] <- "flag"
     ## Step 3: recognize something from moving-vessel CTDs
     names[which(names=="FWETLABS")[1]] <- "fwetlabs" # FIXME: what is this?
-    ## Step 4: special tricks needed for IML files
-    names[grep("Pressure", names, ignore.case=TRUE)[1]] <- "pressure"
-    names[grep("Conductivity", names, ignore.case=TRUE)[1]] <- "conductivity"
-    names[grep("^Sea Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
-    names[grep("^Temperature", names, ignore.case=TRUE)[1]] <- "temperature"
-    names[grep("Fluorescence", names, ignore.case=TRUE)[1]] <- "fluorescence"
-    names[grep("Conductivity Ratio", names, ignore.case=TRUE)[1]] <- "conductivity"
-    names[grep("Practical Salinity", names, ignore.case=TRUE)[1]] <- "salinity"
-    names[grep("Sigma-Theta", names, ignore.case=TRUE)[1]] <- "sigmaTheta"
-    names[grep("Potential Temperature", names, ignore.case=TRUE)[1]] <- "theta"
-    ## Step 5: another special trick for IML files (got through 2300 test files before seeing this)
-    names[grep("Sensor Depth below Sea Surface", names, ignore.case=TRUE)[1]] <- "pressure"
     if (debug) cat("Finally, column names are:", paste(names, collapse="|"), "\n\n")
     names(data) <- names
+    if (!is.na(nullValue)) {
+        data[data==nullValue] <- NA
+    }
     if (!("salinity" %in% names)) warning("missing data$salinity")
     if (!("pressure" %in% names)) warning("missing data$pressure")
     if (!("temperature" %in% names)) warning("missing data$temperature")
