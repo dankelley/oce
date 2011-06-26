@@ -193,7 +193,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
 }
 
 ctdTrim <- function(x, method=c("downcast", "index", "range"),
-                    inferWaterDepth=TRUE, removeDepthInversions=TRUE, 
+                    inferWaterDepth=TRUE, removeDepthInversions=FALSE, 
                     parameters, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bctdTrim() {\n")

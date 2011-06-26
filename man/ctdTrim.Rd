@@ -8,7 +8,7 @@
 \description{Trim start/end portions of a CTD cast.}
 
 \usage{ctdTrim(x, method=c("downcast","index","range"), 
-inferWaterDepth=TRUE, removeDepthInversions=TRUE,    
+inferWaterDepth=TRUE, removeDepthInversions=FALSE,
 parameters, debug=getOption("oceDebug"))}
 
 
