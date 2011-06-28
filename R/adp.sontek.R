@@ -2,7 +2,7 @@
 read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("adp", "pcadp"),
-                            debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history, ...)
+                            debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog, ...)
 {
     missing.to <- missing(to)
     ## In this function, comments in [] refer to logical page number of ADPManual_v710.pd; add 14 for file page number
@@ -283,14 +283,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n")
         if (type == "pcadp")
             v <- v / 10                # it seems pcadp is in 0.1mm/s
-        ma <- list(v=v, a=a, q=q)
-        rm(v, a, q)
     } else {
-        ma <- NULL
+        stop("please request to read *some* profiles")
     }
     ## interpolate headings (which may be less frequent than profiles ... FIXME: really???)
     nheading <- length(heading)
-    nv <- dim(ma$v)[1]
+    nv <- dim(v)[1]
     if (nheading != nv) {
         warning("read.adp.sontek() interpolating ", nheading, " heading/pitch/roll values to the ", nv, " velocity profiles")
         oceDebug(debug, "BEFORE: length(heading)=", nheading, ", nv=", nv, "\n")
@@ -301,12 +299,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         roll <- approx(1:nheading, roll, seq(1,nheading,length.out=nv))$y
         oceDebug(debug, "AFTER:  length(heading)=", length(heading), "\n")
     }
-    data <- list(ma=ma,
-                 ss=list(distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells)),
-                 ts=list(time=time,
-                         temperature=temperature,
-                         pressure=pressure,
-                         heading=heading, pitch=pitch, roll=roll))
+    data <- list(v=v, a=a, q=q,
+                 distance=seq(blankingDistance, by=cellSize, length.out=numberOfCells),
+                 time=time,
+                 temperature=temperature,
+                 pressure=pressure,
+                 heading=heading, pitch=pitch, roll=roll)
     oceDebug(debug, "slant.angle=",slant.angle,"; type=", type, "\n")
     beamAngle <- if (slant.angle == "?") 25 else slant.angle
     metadata <- list(manufacturer="sontek",
@@ -315,6 +313,9 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      serialNumber=if (exists('serialNumber')) serialNumber else "?",
                      latitude=latitude,
                      longitude=longitude,
+                     numberOfSamples=dim(v)[1],
+                     numberOfCells=dim(v)[2],
+                     numberOfBeams=dim(v)[3],
                      measurementStart=measurementStart,
                      measurementEnd=measurementEnd,
                      measurementDeltat=measurementDeltat,
@@ -322,12 +323,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      cpuSoftwareVerNum=cpuSoftwareVerNum,
                      dspSoftwareVerNum=dspSoftwareVerNum,
                      boardRev=boardRev,
-                     numberOfSamples=profilesToRead,
                      coordinateSystem=c("beam", "xyz", "enu", "other")[coordinateSystem+1], # FIXME: check this
                      oceCoordinate=c("beam", "xyz", "enu", "other")[coordinateSystem+1], # FIXME: check this
-                     numberOfBeams=numberOfBeams,
                      beamAngle=beamAngle,
-                     oceBeamAttenuated=FALSE,
+                     oceBeamUnattenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
     if (numberOfBeams == 3) {
         if (metadata$orientation == "upward") {
@@ -337,7 +336,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             S  <- 1 / (3 * sin(beamAngle * pi / 180)) # 0.7887339
             CS <- 1 / cos(30*pi/180) / sin(beamAngle*pi/180) / 2 # 1.366127 (30deg from 3-beam pattern)
             C  <- 1 / (3 * cos(beamAngle * pi / 180))             # 0.3677926
-            warning("*****FIXME: check up and down; also read it and check*****")
+            ## FIXME: check up and down; also read it and check
             metadata$transformationMatrix <- matrix(c(2*S,  -S,  -S,
                                                       0  , -CS,  CS,
                                                       C  ,   C,   C),
@@ -359,10 +358,10 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## and these are by the same formulae, with 25 switched to 15 (different beamAngle)
     } else
         stop("can only handle 3-beam devices")
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("sontek", "adp", "oce")
     res
 }
@@ -384,7 +383,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                                    latitude=NA, longitude=NA,
                                    type=c("adp", "pcadp"),
                                    beamAngle=25, orientation,
-                                   monitor=TRUE, history,
+                                   monitor=FALSE, processingLog,
                                    debug=getOption("oceDebug"))
 {
     ## Data format is described in
@@ -441,7 +440,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                            ", by=", by,
                            ", latitude=", latitude, ", longitude=", longitude,
                            ", monitor=", monitor,
-                           ", history=(not shown), debug=", debug, ") {\n", sep=""))
+                           ", processingLog=(not shown), debug=", debug, ") {\n", sep=""))
     nfile <- length(file)
     if (nfile > 1) {                   # handle multiple files
         oceDebug(debug, "handling multiple files\n")
@@ -625,17 +624,19 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      coordinateSystem=coordinateSystem,
                      oceCoordinate=coordinateSystem,
                      beamAngle=beamAngle,
-                     oceBeamAttenuated=FALSE,
+                     oceBeamUnattenuated=FALSE,
                      orientation=orientation)
-    data <- list(ts=list(time=time,
-                         heading=heading, pitch=pitch, roll=roll,
-                         temperature=temperature,
-                         pressure=rep(0, length(temperature))),
-                 ss=list(distance=distance),
-                 ma=list(v=v,vstd=vstd,amp=amp)) # velo, velo stddev, amplitude
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    data <- list(v=v, vstd=vstd, amp=amp,
+                 distance=distance,
+                 time=time,
+                 heading=heading, pitch=pitch, roll=roll,
+                 temperature=temperature,
+                 pressure=rep(0, length(temperature)),
+                 distance=distance)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("sontek", "adp", "oce")
     res
 }

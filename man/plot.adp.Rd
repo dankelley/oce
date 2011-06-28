@@ -6,7 +6,7 @@
 
 \description{Plot ADP data.}
 
-\usage{\method{plot}{adp}(x, which=1:dim(x$data$ma$v)[3],
+\usage{\method{plot}{adp}(x, which=1:dim(x$data$v)[3],
      col,
      zlim,
      titles,
@@ -34,7 +34,7 @@
     \dQuote{Details} for the meanings of various values of
     \code{which}.}
   \item{col}{optional indication of colour(s) to use.  If not provided,
-    the default for images is \code{oce.colors.palette(128,1)}, and for
+    the default for images is \code{oceColorsPalette(128,1)}, and for
     lines and points is black.}
   \item{zlim}{a range to be used as the \code{zlim} parameter to the
     \code{\link{imagep}} call that is used to create the image.  If
@@ -93,10 +93,9 @@
   \item{ylim}{optional 2-element list for \code{ylim}, or 2-column matrix, in which case
     the rows are used, in order, for the panels of the graph.}
   \item{control}{optional list of parameters that may be used for
-    different plot types.  Possibilities are \code{draw.bottom} (which
-    means to draw the bottom, for downward-pointing units that track the
-    bottom) and \code{bin} (for selecting a bin on which to act, as
-    explained in \dQuote{Details}).}
+    different plot types.  Possibilities are \code{drawBottom} (a boolean 
+    that indicates whether to draw the bottom) and \code{bin} (a numeric giving
+    the index of the bin on which to act, as explained in \dQuote{Details}).}
   \item{useLayout}{set to \code{FALSE} to prevent using
     \code{\link{layout}} to set up the plot.  This is needed if the call
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
@@ -108,8 +107,9 @@
     be de-spiked with \code{\link{despike}}.}
 }
 
-\details{Creates a multi-panel summary plot of data measured by an ADP
-  cast. The panels are controlled by the \code{which} argument.
+\details{Creates a summary plot of data measured by an acoustic doppler
+    profiler.  This may have one or more panels, with the content being
+    controlled by the \code{which} argument.
 
   \itemize{ 
 
@@ -201,17 +201,17 @@
       \code{"uv+ellipse"} case, but with an added arrow indicating the
       mean current.
 
-    \item \code{which=40} or \code{"bottom.range"} for average bottom range
+    \item \code{which=40} or \code{"bottom range"} for average bottom range
       from all beams of the instrument.
 
-    \item \code{which=41} to \code{44} (or \code{"bottom.range1"} to
-      \code{"bottom.range1"}) for bottom range from beams 1 to 4.
+    \item \code{which=41} to \code{44} (or \code{"bottom range1"} to
+      \code{"bottom range1"}) for bottom range from beams 1 to 4.
 
-    \item \code{which=50} or \code{"bottom.u"} for average bottom velocity
+    \item \code{which=50} or \code{"bottom velocity"} for average bottom velocity
       from all beams of the instrument.
 
-    \item \code{which=51} to \code{54} (or \code{"bottom.u1"} to
-      \code{"bottom.u4"}) for bottom velocity from beams 1 to 4.
+    \item \code{which=51} to \code{54} (or \code{"bottom velocity1"} to
+      \code{"bottom velocity4"}) for bottom velocity from beams 1 to 4.
 
     \item \code{which=55} (or \code{"heaving"} for time-integrated,
     depth-averaged, vertical velocity (i.e. heaving)
@@ -252,6 +252,8 @@
     on the dock or on the ship as it travelled to the mooring site.
 }
 
+\value{None.}
+
 \seealso{The data are normally read with \code{\link{read.oce}}, which
   is usually able to detect the type of instrument.  If that fails, the
   user should try \code{\link{read.adp.rdi}} (for RDI files) or
@@ -264,9 +266,11 @@
   coordinate system aligned with the shoreline or with an isobath.
 
   The beam stength may be corrected for R-squared spreading with
-  \code{\link{beamAttenuateAdp}}.
+  \code{\link{beamUnattenuateAdp}}.
 
-  Summaries of ADP data are provided by \code{\link{summary.adp}}.
+  Summaries of ADP data are provided by \code{\link{summary.adp}}.  Velocity
+  statistics (e.g. means and variance ellipse) are provided by
+  \code{\link{velocityStatistics}}.
 
   ADP data may be plotted with \code{\link{plot.adp}}.
 }
@@ -279,9 +283,9 @@ plot(adp, which=1:3)
 plot(adp, which=1:2,
      adorn=expression({
          abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
-         lines(x$data$ts$time, x$data$ts$pressure, lwd=3, col='blue')
+         lines(x$data$time, x$data$pressure, lwd=3, col='blue')
      }))
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

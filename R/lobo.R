@@ -22,7 +22,7 @@ plot.lobo.timeseries.TS <- function(lobo,
     if (draw.legend)
         legend("topright",c("S","T"),col=c(S.col,T.col),lwd=2)
     mtext(paste(paste(format(range(lobo$data$time, na.rm=TRUE)), collapse=" to "),
-                attr(lobo$data$ts$time[1], "tzone")),
+                attr(lobo$data$time[1], "tzone")),
           side=3, cex=3/4*par("cex.axis"), adj=0)
     invisible(lobo)
 }
@@ -120,7 +120,7 @@ plot.lobo <- function(x,
 }
 
 
-read.lobo <- function(file, cols=7, history) {
+read.lobo <- function(file, cols=7, processingLog) {
     header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
                                         # find columns. BUG: assumes names don't change
@@ -160,9 +160,9 @@ read.lobo <- function(file, cols=7, history) {
         fluorescence <- fill.out(fluorescence, len)
         data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
         metadata <- list(header=header)
-        if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-        log.item <- historyItem(history)
-        res <- list(data=data, metadata=metadata, history=log.item)
+        if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+        hitem <- processingLogItem(processingLog)
+        res <- list(data=data, metadata=metadata, processingLog=hitem)
         class(res) = c("lobo", "oce")
         res
     } else {
@@ -175,15 +175,15 @@ summary.lobo <- function(object, ...)
     if (!inherits(object, "lobo"))
         stop("method is only for lobo objects")
     dim <- dim(object$data)
-    fives <- matrix(nrow=dim[2]-1, ncol=5) # skipping time
+    threes <- matrix(nrow=dim[2]-1, ncol=3) # skipping time
     res <- list(time.range=range(object$data$time, na.rm=TRUE),
-                fives=fives,
-                history=object$history)
+                threes=threes,
+                processingLog=object$processingLog)
     for (i in 2:dim[2])
-        fives[i-1,] <- fivenum(object$data[,i], na.rm=TRUE)
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    rownames(fives) <- names(object$data[-1]) #skip time, the first column
-    res$fives <- fives
+        threes[i-1,] <- threenum(object$data[,i])
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    rownames(threes) <- names(object$data[-1]) #skip time, the first column
+    res$threes <- threes
     class(res) <- "summary.lobo"
     res
 }
@@ -195,7 +195,6 @@ print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
         "to", format(x$time.range[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
     cat("\n",...)
     cat("* Statistics::\n\n", ...)
-    cat(show.fives(x, indent='     '), ...)
-    cat("\n* history::\n\n", ...)
-    print(summary(x$history))
+    cat(showThrees(x, indent='     '), ...)
+    print(summary(x$processingLog))
 }

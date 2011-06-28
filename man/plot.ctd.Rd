@@ -26,18 +26,20 @@
      latlon.cex=1.5,
      latlon.col="red",
      cex=1,
+     pch=1,
      useSmoothScatter=FALSE,
      adorn=NULL,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1.5,mgp[1]+1),
+     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
      debug=getOption("oceDebug"),
      \dots)
 }
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}, or a
+      list containing items named \code{salinity} and \code{temperature}.}
   \item{which}{list of desired plot types.  
     \itemize{
-      \item \code{which=1} or \code{which="temperature+salinity"} gives
+      \item \code{which=1} or \code{which="salinity+temperature"} gives
       a combined profile of temperature and salinity
       \item \code{which=2} or \code{which="density+N2"} gives a combined
       profile of \eqn{\sigma_\theta}{sigma-theta} and \eqn{N^2}{N^2}
@@ -45,8 +47,12 @@
       \item \code{which=4} or \code{which="text"} gives a textual
       summary of some aspects of the data
       \item \code{which=5} or \code{which="map"} gives a map, with a dot
-      for the station location (note that this requires that a
-      \code{coastline} be given)
+      for the station location.  If a coastline is given, that is drawn as
+      well.  Notes near the top boundary of the map give the station number,
+      the sampling date, and the name of the chief scientist, if these are
+      known.
+      \item \code{which=5.1} as for \code{which=5}, except that the file name
+      is drawn above the map
       \item \code{which=6} or \code{which="density+dpdt"} gives a
       profile of density and \eqn{dP/dt}{dP/dt}, which is useful for
       evaluating whether the instrument is dropping properly through the
@@ -81,7 +87,8 @@
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
-  \item{cex}{size to be used for plot symbols}
+  \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+  \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
@@ -98,7 +105,7 @@
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
-    example is to set \code{df}, for use in \link{sw.N2} calculations.} 
+    example is to set \code{df}, for use in \link{swN2} calculations.} 
 }
 
 \details{Creates a multi-panel summary plot of data measured in a CTD
@@ -133,22 +140,6 @@ latlim <- 47 + c(48, 58) / 60
 plot(ctd, which=c(1,2,3,5),
      coastline=coastlineSLE,
      adorn=expression({},{},{},{text(-69.72,47.85,'IAL',pos=4)}))
-
-# Trimming
-data(ctd.raw)
-plot(ctd.raw, which=8)
-abline(v=100)
-abline(v=120)
-abline(v=130)
-abline(v=350)
-# The range 130 to 350 seems good, but you can narrow in
-# by repeating the command below, with differing ranges.
-plot(ctdTrim(ctd.raw, "range",
-  parameters=list(item="index", from=130, to=350)), which=8)
-# See results
-ctdTrimmed <- ctdTrim(ctd.raw, "range",
-  parameters=list(item="index", from=130, to=350))
-plot(ctdTrimmed)
 }
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

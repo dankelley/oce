@@ -6,7 +6,7 @@
 \usage{read.section(file, sectionId="", flags, 
              ship="", scientist="", institute="",
              debug=getOption("oceDebug"),
-  history)}
+  processingLog)}
 
 \arguments{
   \item{file}{a file containing a set of CTD observations.  At present, only 
@@ -28,7 +28,7 @@
     read.}
   \item{debug}{logical. If \code{TRUE}, print some information that 
     might be helpful during debugging.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
 }
@@ -53,7 +53,7 @@ containing
 and
 \code{longitude}, a vector of station latitudes, decimal and positive in eastern hemisphere.
 }
-\item{history}{a history of processing, in the standard \code{oce} format.}
+\item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \seealso{\code{\link{makeSection}} can be used to bind together \code{ctd} objects into a section.}

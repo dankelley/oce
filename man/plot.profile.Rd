@@ -7,7 +7,7 @@
 \description{Plot a CTD profile, in any of several common formats.}
 
 \usage{plot.profile(x,
-             xtype="S", 
+             xtype="salinity+temperature", 
              ytype=c("pressure", "z"),
              col.salinity="darkgreen",
              col.temperature="red",
@@ -19,21 +19,23 @@
              col.grid="lightgray",
              lty.grid="dotted",
              Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
-             lwd,
+             lwd=par("lwd"),
              xaxs="r", yaxs="r",
-             cex=1,
+             cex=1, pch=1,
              useSmoothScatter=FALSE,
+             type='l',
              mgp=getOption("oceMgp"),
-             mar=c(mgp[1]+1, mgp[1]+1, mgp[1] + 1.5, 1),
-\dots)
+             mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
+             debug=getOption("oceDebug"),
+             \dots)
 }
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{xtype}{Type of profile to plot, from the list below.
+  \item{xtype}{Item(s) plotted on the x axis, from the list below.
     \describe{
-      \item{\code{S}}{Profile of salinity.}
-      \item{\code{T}}{Profile of \emph{in-situ} temperature.}
+      \item{\code{salinity}}{Profile of salinity.}
+      \item{\code{temperature}}{Profile of \emph{in-situ} temperature.}
       \item{\code{density}}{Profile of density (expressed as
 	\eqn{\sigma_\theta}{sigma_theta}).}
       \item{\code{index}}{Index of sample (very useful for working with
@@ -41,7 +43,7 @@
       \item{\code{S+T}}{Profile of salinity and temperature within a
 	single axis frame.}
       \item{\code{N2}}{Profile of square of buoyancy frequency
-	\eqn{N^2}{N^2}, calculated with \code{\link{sw.N2}} with an
+	\eqn{N^2}{N^2}, calculated with \code{\link{swN2}} with an
 	optional argument setting of \code{df=length(x$p)/4} to do some
 	smoothing.}
       \item{\code{density+N2}}{Profile of sigma-theta and the square of buoyancy
@@ -77,17 +79,20 @@
   \item{lwd}{lwd value for data line}
   \item{xaxs}{value of \code{\link{par}} \code{xaxs} to use}
   \item{yaxs}{value of \code{\link{par}} \code{yaxs} to use}
-  \item{cex}{size of symbols}
+  \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+  \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
+  \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{a flag that turns on debugging, if it exceeds 0.}
   \item{\dots}{Optional arguments passed to other functions.  A common example is
-    to set \code{df}, for use in \link{sw.N2} calculations.} 
+    to set \code{df}, for use in \link{swN2} calculations.} 
 }
 
 \value{None.}
@@ -99,9 +104,9 @@
 \examples{
 library(oce)
 data(ctd)
-plot.profile(ctd, xtype="T")
+plot.profile(ctd, xtype="temperature")
 }
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

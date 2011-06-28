@@ -2,10 +2,10 @@
 
 \alias{xyzToEnuAdv}
 
-\title{Convert ADV from xyz coordinates to enu coordinates}
+\title{Convert ADP or ADV from xyz coordinates to enu coordinates}
 
-\description{Convert ADV velocity components from a xyz-based
-  coordinate system to an enu-based coordinate system.}
+\description{Convert ADP or ADV velocity components from a xyz-based coordinate
+    system to an enu-based coordinate system.}
 
 \usage{xyzToEnuAdv(x, declination=0,
             cabled=FALSE, horizontalCase, sensorOrientation,
@@ -45,8 +45,9 @@
   which is a slow operation.  However, this function checks whether the
   vectors for heading, pitch and roll, are all of unit length, and in that
   case, the calculation is altered, resulting in shorter executation times.
-  Note that the angles are held in \code{data$ts.slow} for Nortek instruments
-  and \code{data$ts} for Sontek instruments.
+  Note that the angles are held in (\code{data$timeSlow},
+  \code{data$headingSlow}, ...) for Nortek instruments and (\code{data$time},
+  \code{data$heading}, ...) for Sontek instruments.
 
   Since the documentation provided by instrument manufacturers
   can be vague on the coordinate transformations, the method used here 

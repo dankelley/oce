@@ -49,14 +49,13 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
     int nside = length(side);
     if (nfind != nside)
         error("need length(find) = length(side)");
-    char buf[1024]; /* for error messages */
     int i;
     SEXP res;
     PROTECT(res = NEW_INTEGER(nfind));
     /* ensure that x is in order */
     for (i = 1; i < nx; i++) {
         if (px[i-1] >= px[i]) {
-            char buf[256];
+            char buf[1024];
             sprintf(buf, "x must be ordered from small to large; fails at x[%d]\n", i);
             error(buf);
         }
@@ -77,7 +76,6 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
             pres[ifind] = nx;
             continue;
         }
-        int p;
         left = 0;
         right = nx - 1;
         int halves = (int)(10 + log(0.0+nx) / log(2.0)); /* prevent inf loop from poor coding */

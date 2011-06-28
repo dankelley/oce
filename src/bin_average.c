@@ -14,6 +14,9 @@
    */
 
 // CAUTION: calling code must allocate 'means' of length floor((xmax-xmin)/xinc)
+
+//#define DEBUG
+
 void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, double *xinc, double *means)
 {
     if (*nx < 1)
@@ -26,19 +29,30 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     int nb = (int)floor(((*xmax - *xmin) / *xinc));
     if (nb < 1)
         error("calculated number of regions (%d) is less than 1", nb);
-    //Rprintf("nb=%d\n", nb);
+#ifdef DEBUG
+    Rprintf("nb=%d\n", nb);
+#endif
     int *num = (int*)R_alloc(nb, sizeof(int));
     for (int b = 0; b < nb; b++) {
         num[b] = 0;
         means[b] = 0.0;
     }
+    int b;
     for (int i = 0; i < *nx; i++) {
-        int b = (int)floor((x[i] - *xmin) / *xinc);
-        //Rprintf("i=%d x=%f  y=%f  b=%d\n", i, x[i], y[i], b);
+        if (ISNA(y[i]))
+            continue;
+        b = (int)floor((x[i] - *xmin) / *xinc);
+#ifdef DEBUG
+        if (b > 131 & b < 133)
+            Rprintf("i=%d x=%f  y=%f  b=%d\n", i, x[i], y[i], b);
+#endif
         if (-1 < b && b < nb) {
             num[b]++;
             means[b] += y[i];
-            //Rprintf("  num %d   means %f\n", num[b], means[b]);
+#ifdef DEBUG
+            if (b > 131 & b < 133)
+                Rprintf("b=%d  y=%f num[b]=%d  means[b]=%f\n", b, y[i], num[b], means[b]);
+#endif
         }
     }
     for (int b = 0; b < nb; b++) {

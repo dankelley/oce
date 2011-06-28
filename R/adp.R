@@ -1,16 +1,63 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
+head.adp <- function(x, n = 6L, ...)
+{
+    numberOfProfiles <- dim(x$data$v)[1]
+    if (n < 0)
+        look <- seq.int(max(1, (1 + numberOfProfiles + n)), numberOfProfiles)
+    else
+        look <- seq.int(1, min(n, numberOfProfiles))
+    rval <- x
+    for (name in names(x$data)) {
+        if ("distance" == name)
+            next
+        if (is.vector(x$data[[name]])) {
+            rval$data[[name]] <- x$data[[name]][look]
+        } else if (is.matrix(x$data[[name]])) {
+            rval$data[[name]] <- x$data[[name]][look,]
+        } else if (is.array(x$data[[name]])) {
+            rval$data[[name]] <- x$data[[name]][look,,]
+        } else {
+            rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
+        }
+    }
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval
+}
+
+tail.adp <- function(x, n = 6L, ...)
+{
+    numberOfProfiles <- dim(x$data$v)[1]
+    if (n < 0)
+        look <- seq.int(1, min(numberOfProfiles, numberOfProfiles + n))
+    else
+        look <- seq.int(max(1, (1 + numberOfProfiles - n)), numberOfProfiles)
+    rval <- x
+    for (name in names(x$data)) {
+        if (is.vector(x$data[[name]])) {
+            rval$data[[name]] <- x$data[[name]][look]
+        } else if (is.matrix(x$data[[name]])) {
+            rval$data[[name]] <- x$data[[name]][look,]
+        } else if (is.array(x$data[[name]])) {
+            rval$data[[name]] <- x$data[[name]][look,,]
+        } else {
+            rval$data[[name]] <- x$data[[name]][look] # for reasons unknown, 'time' is not a vector
+        }
+    }
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval 
+}
+
 removeShipMotion <- function(x)
 {
     rval <- x
-    if (!("bottomRange" %in% names(x$data$ma)))
+    if (!("bottomRange" %in% names(x$data)))
         return(rval)
-    numberOfBeams <- dim(x$data$ma$v)[3] # could also get from metadata but this is less brittle
+    numberOfBeams <- dim(x$data$v)[3] # could also get from metadata but this is less brittle
     for (beam in 1:numberOfBeams) {
-        rval$data$ma$v[,,beam] <- rval$data$ma$v[,,beam] - rval$data$ma$bottom.velocity[,beam]
+        rval$data$v[,,beam] <- rval$data$v[,,beam] - rval$data$bottomVelocity[,beam]
     }
-    rval$history <- historyAdd(rval$history,
-                               paste(deparse(match.call()), sep="", collapse=""))
+    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -33,6 +80,7 @@ is.beam <- function(x)
         return(FALSE)
     }
 }
+
 is.xyz <- function(x)
 {
     if (inherits(x, "adp") || inherits(x, "adv"))
@@ -52,7 +100,7 @@ is.enu <- function(x)
     }
 }
 
-ad.beam.name <- function(x, which)
+beamName <- function(x, which)
 {
     if (x$metadata$oceCoordinate == "beam")
         c("beam 1", "beam 2", "beam 3", "beam 4")[which]
@@ -68,7 +116,7 @@ ad.beam.name <- function(x, which)
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      latitude=NA, longitude=NA,
                      manufacturer=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE, history,
+                     debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
                      ...)
 {
     oceDebug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
@@ -79,17 +127,17 @@ read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         read.adp.rdi(file=file, from=from, to=to, by=by, tz=tz,
                      latitude=latitude, longitude=longitude,
                      debug=debug-1, monitor=monitor, despike=despike,
-                     history=history, ...)
+                     processingLog=processingLog, ...)
     else if (type == "nortek")
         read.adp.nortek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
-                        history=history, ...)
+                        processingLog=processingLog, ...)
     else if (type == "sontek")
         read.adp.sontek(file=file, from=from, to=to, by=by, tz=tz,
                         latitude=latitude, longitude=longitude,
                         debug=debug-1, monitor=monitor, despike=despike,
-                        history=history, ...)
+                        processingLog=processingLog, ...)
 }
 
 summary.adp <- function(object, ...)
@@ -98,46 +146,46 @@ summary.adp <- function(object, ...)
         stop("method is only for adp objects")
     if (is.null(object$metadata$haveActualData) || object$metadata$haveActualData) {
         if (1 == length(agrep("nortek", object$metadata$manufacturer, ignore.case=TRUE))) {
-            res.specific <- list(internalCodeVersion=object$metadata$internalCodeVersion,
-                                 hardwareRevision=object$metadata$hardwareRevision,
-                                 rec.size=object$metadata$rec.size*65536/1024/1024,
-                                 velocity.range=object$metadata$velocity.range,
-                                 firmware.version=object$metadata$firmware.version,
-                                 config=object$metadata$config,
-                                 config.pressure.sensor=object$metadata$config.pressure.sensor,
-                                 config.magnetometer.sensor=object$metadata$config.magnetometer.sensor,
-                                 config.tilt.sensor=object$metadata$config.pressure.sensor,
-                                 config.pressure.sensor=object$metadata$config.tilt.sensor,
-                                 serialNumber.head=object$metadata$serialNumber.head,
-                                 blanking.distance=object$metadata$blanking.distance,
-                                 measurement.interval=object$metadata$measurement.interval,
-                                 deployment.name=object$metadata$deployment.name,
-                                 velocity.scale=object$metadata$velocity.scale)
+            resSpecific <- list(internalCodeVersion=object$metadata$internalCodeVersion,
+                                hardwareRevision=object$metadata$hardwareRevision,
+                                recSize=object$metadata$recSize*65536/1024/1024,
+                                velocityRange=object$metadata$velocityRange,
+                                firmwareVersion=object$metadata$firmwareVersion,
+                                config=object$metadata$config,
+                                configPressureSensor=object$metadata$configPressureSensor,
+                                configMagnetometerSensor=object$metadata$configMagnetometerSensor,
+                                configTiltSensor=object$metadata$configPressureSensor,
+                                configPressureSensor=object$metadata$configTiltSensor,
+                                serialNumberHead=object$metadata$serialNumberHead,
+                                blankingDistance=object$metadata$blankingDistance,
+                                measurementInterval=object$metadata$measurementInterval,
+                                deploymentName=object$metadata$deploymentName,
+                                velocityScale=object$metadata$velocityScale)
         } else if (1 == length(agrep("rdi", object$metadata$manufacturer, ignore.case=TRUE))) {
-            res.specific <- list(instrumentSubtype=object$metadata[["instrumentSubtype"]],
-                                 manufacturer=object$metadata$manufacturer,
-                                 numberOfDataTypes=object$metadata$numberOfDataTypes,
-                                 headingAlignment=object$metadata$headingAlignment,
-                                 headingBias=object$metadata$headingBias,
-                                 pingsPerEnsemble=object$metadata$pingsPerEnsemble,
-                                 bin1.distance=object$metadata$bin1.distance,
-                                 xmitPulseLength=object$metadata$xmitPulseLength,
-                                 oceBeamAttenuated=object$metadata$oceBeamAttenuated,
-                                 beamConfig=object$metadata$beamConfig)
+            resSpecific <- list(instrumentSubtype=object$metadata[["instrumentSubtype"]],
+                                manufacturer=object$metadata$manufacturer,
+                                numberOfDataTypes=object$metadata$numberOfDataTypes,
+                                headingAlignment=object$metadata$headingAlignment,
+                                headingBias=object$metadata$headingBias,
+                                pingsPerEnsemble=object$metadata$pingsPerEnsemble,
+                                bin1Distance=object$metadata$bin1Distance,
+                                xmitPulseLength=object$metadata$xmitPulseLength,
+                                oceBeamUnattenuated=object$metadata$oceBeamUnattenuated,
+                                beamConfig=object$metadata$beamConfig)
         } else if (1 == length(agrep("sontek", object$metadata$manufacturer, ignore.case=TRUE))) {
-            res.specific <- list(cpuSoftwareVerNum=object$metadata$cpuSoftwareVerNum,
-                                 dspSoftwareVerNum=object$metadata$dspSoftwareVerNum,
-                                 boardRev=object$metadata$boardRev,
-                                 adp.type=object$metadata$adp.type,
-                                 slant.angle=object$metadata$slant.angle,
-                                 orientation=object$metadata$orientation)
+            resSpecific <- list(cpuSoftwareVerNum=object$metadata$cpuSoftwareVerNum,
+                                dspSoftwareVerNum=object$metadata$dspSoftwareVerNum,
+                                boardRev=object$metadata$boardRev,
+                                adpType=object$metadata$adpType,
+                                slantAngle=object$metadata$slantAngle,
+                                orientation=object$metadata$orientation)
         } else {
             stop("can only summarize ADP objects of sub-type \"rdi\", \"sontek\", or \"nortek\", not class ", paste(class(object),collapse=","))
         }
 
         ## start building res from the header information
         haveData <- !is.null(object$data)
-        res <- res.specific
+        res <- resSpecific
         res$haveData <- haveData
         res$latitude <- object$metadata$latitude
         res$longitude <- object$metadata$longitude
@@ -152,43 +200,37 @@ summary.adp <- function(object, ...)
         res$bin1Distance <- object$metadata$bin1Distance
         res$cellSize <- object$metadata$cellSize
         res$xmitPulseLength <- object$metadata$xmitPulseLength
-        res$oceBeamAttenuated <- object$metadata$oceBeamAttenuated
+        res$oceBeamUnattenuated <- object$metadata$oceBeamUnattenuated
         res$beamAngle <- object$metadata$beamAngle
         res$beamConfig <- object$metadata$beamConfig
         res$transformationMatrix <- object$metadata$transformationMatrix
         res$orientation <- object$metadata$orientation
         res$coordinateSystem <- object$metadata$coordinateSystem
         res$oceCoordinate <- object$metadata$oceCoordinate
-        res$history <- object$history
+        res$processingLog <- object$processingLog
         if (haveData) {
-            tsNames <- names(object$data$ts)
-            maNames <- names(object$data$ma)
-            fives <- matrix(nrow=(-1+length(tsNames)+length(maNames)), ncol=5)
+            dataNames <- names(object$data)
+            threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
             ii <- 1
-            for (i in 1:length(tsNames)) {
-                if (names(object$data$ts)[i] != "time") {
-                    fives[ii,] <- fivenum(object$data$ts[[tsNames[i]]], na.rm=TRUE)
+            for (i in 1:length(dataNames)) {
+                if (names(object$data)[i] != "time") {
+                    threes[ii,] <- threenum(object$data[[dataNames[i]]])
                     ii <- ii + 1
                 }
             }
-            for (i in 1:length(maNames)) {
-                fives[ii,] <- fivenum(as.numeric(object$data$ma[[maNames[i]]]), na.rm=TRUE)
-                ii <- ii + 1
-            }
-            rownames(fives) <- c(tsNames[tsNames != "time"], maNames)
-            colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-            v.dim <- dim(object$data$ma$v)
-            res$subsampleStart <- object$data$ts$time[1]
-            res$subsampleEndTime <- object$data$ts$time[length(object$data$ts$time)]
-            res$subsampleDeltat <- mean(diff(as.numeric(object$data$ts$time)),na.rm=TRUE)
-            res$distance <- object$data$ss$distance
-            res$fives <- fives
-            res$time <- object$data$ts$time
+            rownames(threes) <- c(dataNames[dataNames != "time"])
+            colnames(threes) <- c("Min.", "Mean", "Max.")
+            v.dim <- dim(object$data$v)
+            res$subsampleStart <- object$data$time[1]
+            res$subsampleEndTime <- object$data$time[length(object$data$time)]
+            res$subsampleDeltat <- mean(diff(as.numeric(object$data$time)),na.rm=TRUE)
+            res$distance <- object$data$distance
+            res$threes <- threes 
+            res$time <- object$data$time
             res$numberOfProfiles <- v.dim[1]
             res$numberOfCells <- v.dim[2]
             res$numberOfBeams <- v.dim[3]
-            res$tsNames <- names(object$data$ts)
-            res$maNames <- names(object$data$ma)
+            res$dataNames <- names(object$data)
         }
     } else {
         res$instrumentType <- object$metadata$instrumentType
@@ -226,7 +268,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
     cat("* Coordinate system: ", x$coordinateSystem, "[originally],", x$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", x$frequency, "kHz\n", ...)
     if (haveData) {
-        cat("* Beams:             ", x$numberOfBeams, if (!is.null(x$oceBeamAttenuated) & x$oceBeamAttenuated) "beams (attenuated)" else "beams (not attenuated)",
+        cat("* Beams:             ", x$numberOfBeams, if (!is.null(x$oceBeamUnattenuated) & x$oceBeamUnattenuated) "beams (attenuated)" else "beams (not attenuated)",
             "oriented", x$orientation, "with angle", x$metadata$beam.angle, "deg to axis\n", ...)
         if (!is.null(x$transformationMatrix)) {
             cat("\n* Transformation matrix\n  ::\n\n")
@@ -242,7 +284,7 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
             cat("  * Instrument subtype:         ", x$instrumentSubtype, "\n", ...)
             cat("  * System configuration:       ", x$metadata$systemConfiguration, "\n", ...)
             cat("  * Software version:           ", paste(x$metadata$programVersionMajor, x$metadata$programVersionMinor, sep="."), "\n", ...)
-            cat("  * CPU board serialNumber:    ", x$metadata$cpuBoardSerialNumber, "\n", ...)
+            cat("  * CPU board serialNumber:     ", x$metadata$cpuBoardSerialNumber, "\n", ...)
             cat("  * Xmit pulse length:          ", x$metadata$xmitPulseLength,"m\n", ...)
             cat("  * Beam pattern:               ", x$metadata$beamPattern, "\n", ...)
             cat("  * Pings per ensemble:         ", x$metadata$pingsPerEnsemble, "\n", ...)
@@ -265,18 +307,18 @@ print.summary.adp <- function(x, digits=max(6, getOption("digits") - 1), ...)
         }
         cat("\n",...)
         cat("* Statistics of subsample\n  ::\n\n", ...)
-        cat(show.fives(x, indent='     '), ...)
-        ##cat("\n* history::\n\n", ...)
+        cat(showThrees(x, indent='     '), ...)
+        ##cat("\n* processingLog::\n\n", ...)
         cat("\n")
-        print(summary(x$history))
+        print(summary(x$processingLog))
     } else {
         cat("* There are no profiles in this file\n")
-        print(summary(x$history))
+        print(summary(x$processingLog))
     }
     invisible(x)
 }
 
-plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
+plot.adp <- function(x, which=1:dim(x$data$v)[3],
                      col,
                      zlim,
                      titles,
@@ -298,6 +340,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                      ...)
 {
     debug <- max(0, min(debug, 4))
+    rval <- NULL
     oceDebug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
     oceDebug(debug, "early in plot.adp:\n")
     oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
@@ -425,17 +468,17 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             else if (ww == "uv+ellipse") which2[w] <- 29
             else if (ww == "uv+ellipse+arrow") which2[w] <- 30
             ## 40 to 44 only work for bottom-tracking devices
-            else if (ww == "bottomRange" ) which2[w] <- 40 # average of all beams
-            else if (ww == "bottomRange1") which2[w] <- 41 # beam1
-            else if (ww == "bottomRange2") which2[w] <- 42 # beam2
-            else if (ww == "bottomRange3") which2[w] <- 43 # beam3
-            else if (ww == "bottomRange4") which2[w] <- 44 # beam4
+            else if (ww == "bottom range" ) which2[w] <- 40 # average of all beams
+            else if (ww == "bottom range1") which2[w] <- 41 # beam1
+            else if (ww == "bottom range2") which2[w] <- 42 # beam2
+            else if (ww == "bottom range3") which2[w] <- 43 # beam3
+            else if (ww == "bottom range4") which2[w] <- 44 # beam4 (if there is one)
             ## 50 to 54 only work for bottom-tracking devices
-            else if (ww == "bottom.u" ) which2[w] <- 50 # average of all beams
-            else if (ww == "bottom.u1") which2[w] <- 51 # beam1
-            else if (ww == "bottom.u2") which2[w] <- 52 # beam2
-            else if (ww == "bottom.u3") which2[w] <- 53 # beam3
-            else if (ww == "bottom.u4") which2[w] <- 54 # beam4
+            else if (ww == "bottom velocity" ) which2[w] <- 50 # average of all beams
+            else if (ww == "bottom velocity1") which2[w] <- 51 # beam1
+            else if (ww == "bottom velocity2") which2[w] <- 52 # beam2
+            else if (ww == "bottom velocity3") which2[w] <- 53 # beam3
+            else if (ww == "bottom velocity4") which2[w] <- 54 # beam4 (if there is one)
             else if (ww == "heaving") which2[w] <- 55
             else stop("unknown 'which':", ww)
         }
@@ -452,19 +495,19 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         adorn.length <- nw
     }
 
-    tt <- x$data$ts$time
+    tt <- x$data$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     if (gave.zlim && all(which %in% 5:8)) { # single scale for all
-        zlim <- range(abs(as.numeric(x$data$ma[,,which[1]])), na.rm=TRUE)
+        zlim <- range(abs(as.numeric(x$data[,,which[1]])), na.rm=TRUE) # FIXME name of item missing, was ma
         for (w in 2:length(which)) {
-            zlim <- range(abs(c(zlim, x$data$ma[[which[w]]])), na.rm=TRUE)
+            zlim <- range(abs(c(zlim, x$data[[which[w]]])), na.rm=TRUE) # FIXME: check name
         }
     }
     ##oceDebug(debug, "useLayout=", useLayout, "\n")
-    show.bottom <- ("bottomRange" %in% names(x$data$ma)) && !missing(control) && !is.null(control["draw.bottom"])
-    if (show.bottom)
-        bottom <- apply(x$data$ma$bottomRange, 1, mean)
-    oceDebug(debug, "show.bottom=", show.bottom, "\n")
+    showBottom <- ("bottomRange" %in% names(x$data)) && !missing(control) && !is.null(control["drawBottom"])
+    if (showBottom)
+        bottom <- apply(x$data$bottomRange, 1, mean)
+    oceDebug(debug, "showBottom=", showBottom, "\n")
     if (useLayout) {
         if (any(which %in% images) || marginsAsImage) {
             w <- 1.5
@@ -485,53 +528,53 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         }
     }
     flip.y <- ytype == "profile" && x$metadata$orientation == "downward"
-    have.time.images <- any(which %in% images)
-    oceDebug(debug, 'have.time.images=', have.time.images, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
+    haveTimeImages <- any(which %in% images)
+    oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
     for (w in 1:nw) {
         oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
         if (which[w] %in% images) {                   # image types
             skip <- FALSE
-            if (which[w] %in% 1:(0+x$metadata$numberOfBeams)) {    #velocity
-                z <- x$data$ma$v[,,which[w]]
-                y.look <- if (gave.ylim)
-                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
-                else rep(TRUE, length(x$data$ss$distance))
-                zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$ma$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
-                zlab <- if (missing(titles)) ad.beam.name(x, which[w]) else titles[w]
+            if (which[w] %in% 1:(x$metadata$numberOfBeams)) {    #velocity
+                oceDebug(debug, "a velocity component image")
+                z <- x$data$v[,,which[w]]
+                y.look <- if (gave.ylim) ylim.given[1] <= x$data$distance & x$data$distance <= ylim.given[2] else rep(TRUE, length(x$data$distance))
+                ##browser()
+                zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
+                zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
             } else if (which[w] %in% 5:(4+x$metadata$numberOfBeams)) { # amplitude
-                z <- as.numeric(x$data$ma$a[,,which[w]-4])
-                dim(z) <- dim(x$data$ma$a)[1:2]
+                z <- as.numeric(x$data$a[,,which[w]-4])
+                dim(z) <- dim(x$data$a)[1:2]
                 y.look <- if (gave.ylim)
-                    ylim.given[1] <= x$data$ss$distance & x$data$ss$distance <= ylim.given[2]
+                    ylim.given[1] <= x$data$distance & x$data$distance <= ylim.given[2]
                 else
-                    rep(TRUE, length(x$data$ss$distance))
-                zlim <- range(as.numeric(x$data$ma$a[,y.look,]), na.rm=TRUE)
+                    rep(TRUE, length(x$data$distance))
+                zlim <- range(as.numeric(x$data$a[,y.look,]), na.rm=TRUE)
                 zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
             } else if (which[w] %in% 9:(8+x$metadata$numberOfBeams)) { # correlation
-                if ("q" %in% names(x$data$ma)) {
-                    z <- as.numeric(x$data$ma$q[,,which[w]-8])
-                    dim(z) <- dim(x$data$ma$q)[1:2]
+                if ("q" %in% names(x$data)) {
+                    z <- as.numeric(x$data$q[,,which[w]-8])
+                    dim(z) <- dim(x$data$q)[1:2]
                     zlim <- c(0, 256)
                     zlab <- c(expression(q[1]),expression(q[2]),expression(q[3]))[which[w]-8]
-                } else if ("amp" %in% names(x$data$ma)) {
-                    z <- as.numeric(x$data$ma$amp[,,which[w]-8])
-                    dim(z) <- dim(x$data$ma$amp)[1:2]
-                    zlim <- c(0, max(as.numeric(x$data$ma$amp)))
+                } else if ("amp" %in% names(x$data)) {
+                    z <- as.numeric(x$data$amp[,,which[w]-8])
+                    dim(z) <- dim(x$data$amp)[1:2]
+                    zlim <- c(0, max(as.numeric(x$data$amp)))
                     zlab <- c(expression(amp[1]),expression(amp[2]),expression(amp[3]))[which[w]-8]
                 }
             } else {
                 skip <- TRUE
             }
             if (!skip) {
-                imagep(x=tt, y=x$data$ss$distance, z=z,
+                imagep(x=tt, y=x$data$distance, z=z,
                        zlim=zlim,
                        flip.y=flip.y,
-                       col=if (gave.col) col else oce.colors.palette(128, 1),
-                       ylab=resizable.label("distance"),
+                       col=if (gave.col) col else oceColorsPalette(128, 1),
+                       ylab=resizableLabel("distance"),
                        xlab="Time",
                        zlab=zlab,
                        drawTimeRange=drawTimeRange,
-                       draw.contours=FALSE,
+                       drawContours=FALSE,
                        adorn=adorn[w],
                        mgp=mgp,
                        mar=mar,
@@ -540,18 +583,18 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                        debug=debug-1,
                        ...)
             }
-            if (show.bottom)
-                lines(x$data$ts$time, bottom)
+            if (showBottom)
+                lines(x$data$time, bottom)
             drawTimeRange <- FALSE
         } else if (which[w] %in% timeseries) { # time-series types
             col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
             oceDebug(debug, "graph", w, "is a timeseries\n")
             ##par(mgp=mgp, mar=mar, cex=cex)
-            tlim <- range(x$data$ts$time)
+            tlim <- range(x$data$time)
             if (which[w] == 13) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
-                oce.plot.ts(x$data$ts$time, x$data$ts$salinity,
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
+                oce.plot.ts(x$data$time, x$data$salinity,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
@@ -560,16 +603,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
-                            ylab=resizable.label("S"),
+                            ylab=resizableLabel("S"),
                             type=type,
                             mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             drawTimeRange=drawTimeRange, adorn=adorn[w])
             }
             if (which[w] == 14) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
-                oce.plot.ts(x$data$ts$time, x$data$ts$temperature,
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
+                oce.plot.ts(x$data$time, x$data$temperature,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
@@ -581,16 +624,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylab=expression(paste("T [ ", degree, "C ]")),
                             type=type,
                             mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w],
                             debug=debug-1)
             }
             if (which[w] == 15) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
                 oceDebug(debug, "pressure plot. col=", col[w], "\n")
-                oce.plot.ts(x$data$ts$time, x$data$ts$pressure,
+                oce.plot.ts(x$data$time, x$data$pressure,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
@@ -599,16 +642,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
-                            ylab=resizable.label("p"),
+                            ylab=resizableLabel("p"),
                             type=type,
                             mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             drawTimeRange=drawTimeRange, adorn=adorn[w])
             }
             if (which[w] == 16) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
-                oce.plot.ts(x$data$ts$time, x$data$ts$heading,
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
+                oce.plot.ts(x$data$time, x$data$heading,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
@@ -617,16 +660,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
-                            ylab=resizable.label("heading"),
+                            ylab=resizableLabel("heading"),
                             type=type,
                             mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             drawTimeRange=drawTimeRange, adorn=adorn[w])
             }
             if (which[w] == 17) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
-                oce.plot.ts(x$data$ts$time, x$data$ts$pitch,
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
+                oce.plot.ts(x$data$time, x$data$pitch,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
@@ -635,16 +678,16 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
-                            ylab=resizable.label("pitch"),
+                            ylab=resizableLabel("pitch"),
                             type=type,
                             mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             drawTimeRange=drawTimeRange, adorn=adorn[w])
             }
             if (which[w] == 18) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
-                oce.plot.ts(x$data$ts$time, x$data$ts$roll,
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
+                oce.plot.ts(x$data$time, x$data$roll,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
@@ -653,17 +696,17 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             cex=cex*(1 - min(nw / 8, 1/4)),
                             cex.axis=cex*(1 - min(nw / 8, 1/4)),
                             main=main[w],
-                            ylab=resizable.label("roll"),
+                            ylab=resizableLabel("roll"),
                             type=type,
                             mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             drawTimeRange=drawTimeRange, adorn=adorn[w])
             }
             if (which[w] == 19) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 0)
-                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE),
+                    oce.plot.ts(x$data$time, apply(x$data$v[,,1], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
                                 xaxs="i",
@@ -672,20 +715,20 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 1),
+                                ylab=beamName(x, 1),
                                 type=type,
                                 mgp=mgp,
-                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 drawTimeRange=drawTimeRange,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 1 because the device no beams")
             }
             if (which[w] == 20) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 1)
-                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE),
+                    oce.plot.ts(x$data$time, apply(x$data$v[,,2], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
                                 xaxs="i",
@@ -694,20 +737,20 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 2),
+                                ylab=beamName(x, 2),
                                 type=type,
                                 mgp=mgp,
-                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 drawTimeRange=drawTimeRange,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 2 because the device has only ", x$metadata$numberOfBeams, " beams")
             }
             if (which[w] == 21) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 2)
-                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,3], 1, mean, na.rm=TRUE),
+                    oce.plot.ts(x$data$time, apply(x$data$v[,,3], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
                                 xaxs="i",
@@ -716,20 +759,20 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 3),
+                                ylab=beamName(x, 3),
                                 type=type,
                                 mgp=mgp,
-                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 drawTimeRange=drawTimeRange,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 3 because the device has only", x$metadata$numberOfBeams, "beams")
             }
             if (which[w] == 22) {
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
                 if (x$metadata$numberOfBeams > 3)
-                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$v[,,4], 1, mean, na.rm=TRUE),
+                    oce.plot.ts(x$data$time, apply(x$data$v[,,4], 1, mean, na.rm=TRUE),
                                 xlim=if(gave.xlim) xlim[w,] else tlim,
                                 ylim=if(gave.ylim) ylim[w,],
                                 xaxs="i",
@@ -738,20 +781,20 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                                 cex=cex*(1 - min(nw / 8, 1/4)),
                                 cex.axis=cex*(1 - min(nw / 8, 1/4)),
                                 main=main[w],
-                                ylab=ad.beam.name(x, 4),
+                                ylab=beamName(x, 4),
                                 type=type,
                                 mgp=mgp,
-                                mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                 drawTimeRange=drawTimeRange,
                                 adorn=adorn[w], ...)
                     else
                         warning("cannot plot beam/velo 4 because the device has only", x$metadata$numberOfBeams, "beams")
             }
             if (which[w] %in% 55) { # heaving
-                if (have.time.images)
-                    drawpalette(debug=debug-1)
-                dt <- as.numeric(x$data$ts$time[2]) - as.numeric(x$data$ts$time[1])
-                oce.plot.ts(x$data$ts$time, dt * cumsum(apply(x$data$ma$v[,,3], 1, mean)),
+                if (haveTimeImages)
+                    drawPalette(debug=debug-1)
+                dt <- as.numeric(x$data$time[2]) - as.numeric(x$data$time[1])
+                oce.plot.ts(x$data$time, dt * cumsum(apply(x$data$v[,,3], 1, mean)),
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
@@ -763,7 +806,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                             ylab="Heaving [m]",
                             type=type,
                             mgp=mgp,
-                            mar=if(have.time.images) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                            mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                             drawTimeRange=drawTimeRange,
                             adorn=adorn[w], ...)
                 drawTimeRange <- FALSE
@@ -779,19 +822,19 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
         } else if (which[w] %in% spatial) {                   # various spatial types
             if (which[w] == 23) {    # progressive vector
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                dt <- as.numeric(difftime(x$data$ts$time[2], x$data$ts$time[1],units="sec")) # FIXME: should not assume all equal
+                dt <- as.numeric(difftime(x$data$time[2], x$data$time[1],units="sec")) # FIXME: should not assume all equal
                 m.per.km <- 1000
                 if (!missing(control) && !is.null(control$bin)) {
                     if (control$bin < 1)
                         stop("cannot have control$bin less than 1, but got ", control$bin)
-                    max.bin <- dim(x$data$ma$v)[2]
+                    max.bin <- dim(x$data$v)[2]
                     if (control$bin > max.bin)
                         stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                    u <- x$data$ma$v[,control$bin,1]
-                    v <- x$data$ma$v[,control$bin,2]
+                    u <- x$data$v[,control$bin,1]
+                    v <- x$data$v[,control$bin,2]
                 } else {
-                    u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
-                    v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+                    u <- apply(x$data$v[,,1], 1, mean, na.rm=TRUE)
+                    v <- apply(x$data$v[,,2], 1, mean, na.rm=TRUE)
                 }
                 u[is.na(u)] <- 0        # zero out missing
                 v[is.na(v)] <- 0
@@ -800,22 +843,22 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 plot(x.dist, y.dist, xlab="km", ylab="km", type='l', asp=1, col=if (gave.col) col else "black", ...)
             } else if (which[w] == 24) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                value <- apply(x$data$ma$v[,,1], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 1), ylab="Distance [m]", type='l', ...)
+                value <- apply(x$data$v[,,1], 2, mean, na.rm=TRUE)
+                plot(value, x$data$distance, xlab=beamName(x, 1), ylab="Distance [m]", type='l', ...)
             } else if (which[w] == 25) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                value <- apply(x$data$ma$v[,,2], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 2), ylab="Distance [m]", type='l', ...)
+                value <- apply(x$data$v[,,2], 2, mean, na.rm=TRUE)
+                plot(value, x$data$distance, xlab=beamName(x, 2), ylab="Distance [m]", type='l', ...)
             } else if (which[w] == 26) {
                 par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                value <- apply(x$data$ma$v[,,3], 2, mean, na.rm=TRUE)
-                plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 3), ylab="Distance [m]", type='l', ...)
+                value <- apply(x$data$v[,,3], 2, mean, na.rm=TRUE)
+                plot(value, x$data$distance, xlab=beamName(x, 3), ylab="Distance [m]", type='l', ...)
                 ##grid()
             } else if (which[w] == 27) {
                 if (x$metadata$numberOfBeams > 3) {
                     par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                    value <- apply(x$data$ma$v[,,4], 2, mean, na.rm=TRUE)
-                    plot(value, x$data$ss$distance, xlab=ad.beam.name(x, 4), ylab="Distance [m]", type='l', ...)
+                    value <- apply(x$data$v[,,4], 2, mean, na.rm=TRUE)
+                    plot(value, x$data$distance, xlab=beamName(x, 4), ylab="Distance [m]", type='l', ...)
                     ##grid()
                 } else {
                     warning("cannot use which=27 because this device did not have 4 beams")
@@ -827,18 +870,18 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
             }
         } else if (which[w] %in% 28:30) { # "uv", "uv+ellipse", or "uv+ellipse+arrow"
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- dim(x$data$ma$v)[1]
+            n <- dim(x$data$v)[1]
             if (!missing(control) && !is.null(control$bin)) {
                 if (control$bin < 1)
                     stop("cannot have control$bin less than 1, but got ", control$bin)
-                max.bin <- dim(x$data$ma$v)[2]
+                max.bin <- dim(x$data$v)[2]
                 if (control$bin > max.bin)
                     stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                u <- x$data$ma$v[,control$bin,1]
-                v <- x$data$ma$v[,control$bin,2]
+                u <- x$data$v[,control$bin,1]
+                v <- x$data$v[,control$bin,2]
             } else {
-                u <- apply(x$data$ma$v[,,1], 1, mean, na.rm=TRUE)
-                v <- apply(x$data$ma$v[,,2], 1, mean, na.rm=TRUE)
+                u <- apply(x$data$v[,,1], 1, mean, na.rm=TRUE)
+                v <- apply(x$data$v[,,2], 1, mean, na.rm=TRUE)
             }
             oceDebug(debug, "uv type plot\n")
             if (n < 5000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
@@ -871,59 +914,66 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
                 xx <- major * cos(theta)
                 yy <- minor * sin(theta)
                 theta0 <- atan2(e$vectors[2,1], e$vectors[1,1])
-                rotate <- matrix(c(cos(theta0), -sin(theta0), sin(theta0), cos(theta0)), nrow=2, byrow=TRUE)
+                ##cat("major", major, "minor", minor, "theta0", theta0, "\n")
+                rotate <- rbind(c(cos(theta0), -sin(theta0)),
+                                c(sin(theta0), cos(theta0)))
                 xxyy <- rotate %*% rbind(xx, yy)
                 col <- if (gave.col) col else "darkblue"
                 lines(xxyy[1,], xxyy[2,], lwd=5, col="yellow")
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
+                rval$ellipseMajor <- major
+                rval$ellipseMinor <- minor
+                rval$ellipseAngle <- theta
                 if (which[w] >= 30) {
                     if (!missing(control) && !is.null(control$bin)) {
                         if (control$bin < 1)
                             stop("cannot have control$bin less than 1, but got ", control$bin)
-                        max.bin <- dim(x$data$ma$v)[2]
+                        max.bin <- dim(x$data$v)[2]
                         if (control$bin > max.bin)
                             stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-                        umean <- mean(x$data$ma$v[,control$bin,1], na.rm=TRUE)
-                        vmean <- mean(x$data$ma$v[,control$bin,2], na.rm=TRUE)
+                        umean <- mean(x$data$v[,control$bin,2], na.rm=TRUE)
+                        vmean <- mean(x$data$v[,control$bin,2], na.rm=TRUE)
                     } else {
-                        umean <- mean(x$data$ma$v[,,1], na.rm=TRUE)
-                        vmean <- mean(x$data$ma$v[,,2], na.rm=TRUE)
+                        umean <- mean(x$data$v[,,1], na.rm=TRUE)
+                        vmean <- mean(x$data$v[,,2], na.rm=TRUE)
                     }
+                    rval$meanU <- umean
+                    rval$meanV <- vmean
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
             }
         } else if (which[w] %in% 40:44) { # bottomRange
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- prod(dim(x$data$ma$v)[1:2])
-            if ("bottomRange" %in% names(x$data$ma)) {
+            n <- prod(dim(x$data$v)[1:2])
+            if ("bottomRange" %in% names(x$data)) {
                 if (which[w] == 40)
-                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$bottomRange, 1, mean, na.rm=TRUE), ylab="Range [m]")
+                    oce.plot.ts(x$data$time, apply(x$data$bottomRange, 1, mean, na.rm=TRUE), ylab="Range [m]")
                 else if (which[w] == 41)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottomRange[,1], ylab="Beam 1 range [m]")
+                    oce.plot.ts(x$data$time, x$data$bottomRange[,1], ylab="Beam 1 range [m]")
                 else if (which[w] == 42)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottomRange[,2], ylab="Beam 1 range [m]")
+                    oce.plot.ts(x$data$time, x$data$bottomRange[,2], ylab="Beam 1 range [m]")
                 else if (which[w] == 43)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottomRange[,3], ylab="Beam 1 range [m]")
+                    oce.plot.ts(x$data$time, x$data$bottomRange[,3], ylab="Beam 1 range [m]")
                 else if (which[w] == 44)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottomRange[,4], ylab="Beam 1 range [m]")
+                    oce.plot.ts(x$data$time, x$data$bottomRange[,4], ylab="Beam 1 range [m]")
             } else {
                 warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
             }
         } else if (which[w] %in% 50:54) { # bottom velocity
             par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-            n <- prod(dim(x$data$ma$v)[1:2])
-            if ("bottom.velocity" %in% names(x$data$ma)) {
+            n <- prod(dim(x$data$v)[1:2])
+            if ("bottom velocity" %in% names(x$data)) {
                 if (which[w] == 50)
-                    oce.plot.ts(x$data$ts$time, apply(x$data$ma$bottom.velocity, 1, mean, na.rm=TRUE), ylab="Range [m]")
+                    oce.plot.ts(x$data$time, apply(x$data$bottomVelocity, 1, mean, na.rm=TRUE), ylab="Range [m]")
                 else if (which[w] == 51)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,1], ylab="Beam 1 velocity [m/s]")
+                    oce.plot.ts(x$data$time, x$data$bottomVelocity[,1], ylab="Beam 1 velocity [m/s]")
                 else if (which[w] == 52)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,2], ylab="Beam 2 velocity [m/s]")
+                    oce.plot.ts(x$data$time, x$data$bottomVelocity[,2], ylab="Beam 2 velocity [m/s]")
                 else if (which[w] == 53)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,3], ylab="Beam 3 velocity [m/s]")
+                    oce.plot.ts(x$data$time, x$data$bottomVelocity[,3], ylab="Beam 3 velocity [m/s]")
                 else if (which[w] == 54)
-                    oce.plot.ts(x$data$ts$time, x$data$ma$bottom.velocity[,4], ylab="Beam 4 velocity [m/s]")
+                    oce.plot.ts(x$data$time, x$data$bottomVelocity[,4], ylab="Beam 4 velocity [m/s]")
             } else {
                 warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
             }
@@ -938,7 +988,7 @@ plot.adp <- function(x, which=1:dim(x$data$ma$v)[3],
     }
     par(cex=opar$cex)
     oceDebug(debug, "\b\b\b} # plot.adp()\n")
-    invisible()
+    invisible(rval)
 }
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
@@ -958,29 +1008,29 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
-beamAttenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oceDebug"))
+beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbeamAttenuateAdp(...) {\n")
+    oceDebug(debug, "\b\bbeamUnattenuateAdp(...) {\n")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
-    if (x$metadata$oceBeamAttenuated)
-        stop("the beams are already attenuated in this dataset")
+    if (x$metadata$oceBeamUnattenuated)
+        stop("the beams are already unattenuated in this dataset")
     res <- x
-    num.profiles <- dim(x$data$ma$a)[1]
-    oceDebug(debug, "num.profiles=", num.profiles, "\n")
-    correction <- matrix(rep(20 * log10(x$data$ss$distance), num.profiles),
-                         nrow=num.profiles, byrow=TRUE)
+    numberOfProfiles <- dim(x$data$a)[1]
+    oceDebug(debug, "numberOfProfiles=", numberOfProfiles, "\n")
+    correction <- matrix(rep(20 * log10(x$data$distance), numberOfProfiles),
+                         nrow=numberOfProfiles, byrow=TRUE)
     for (beam in 1:x$metadata$numberOfBeams) {
         oceDebug(debug, "beam=",beam,"\n")
-        tmp <- floor(count2db[beam] * as.numeric(x$data$ma$a[,,beam]) + correction)
+        tmp <- floor(count2db[beam] * as.numeric(x$data$a[,,beam]) + correction)
         tmp[tmp < 0] <- 0
         tmp[tmp > 255] <- 255
-        res$data$ma$a[,,beam] <- as.raw(tmp)
+        res$data$a[,,beam] <- as.raw(tmp)
     }
-    res$metadata$oceBeamAttenuated <- TRUE
-    res$history <- historyAdd(res$history,
+    res$metadata$oceBeamUnattenuated <- TRUE
+    res$processingLog <- processingLog(res$processingLog,
                                              paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # beamAttenuateAdp()\n")
+    oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
     res
 }
 
@@ -1006,11 +1056,11 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
             cat("Transformation matrix:\n")
             print(tm)
         }
-        V <- x$data$ma$v[,,1:4]
-        res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3] + tm[1,4] * V[,,4]
-        res$data$ma$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3] + tm[2,4] * V[,,4]
-        res$data$ma$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3] + tm[3,4] * V[,,4]
-        res$data$ma$v[,,4] <- tm[4,1] * V[,,1] + tm[4,2] * V[,,2] + tm[4,3] * V[,,3] + tm[4,4] * V[,,4]
+        V <- x$data$v[,,1:4]
+        res$data$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3] + tm[1,4] * V[,,4]
+        res$data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3] + tm[2,4] * V[,,4]
+        res$data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3] + tm[3,4] * V[,,4]
+        res$data$v[,,4] <- tm[4,1] * V[,,1] + tm[4,2] * V[,,2] + tm[4,3] * V[,,3] + tm[4,4] * V[,,4]
     } else if (inherits(x, "nortek")) {
         if (x$metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from nortek")
@@ -1023,10 +1073,10 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         if (debug > 0)
             print(tm)
         res <- x
-        V <- x$data$ma$v[,,1:3]
-        res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
-        res$data$ma$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
-        res$data$ma$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
+        V <- x$data$v[,,1:3]
+        res$data$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
+        res$data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
+        res$data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
     } else if (inherits(x, "sontek")) {
         if (x$metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from sontek")
@@ -1039,15 +1089,15 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         if (debug > 0)
             print(tm)
         res <- x
-        V <- x$data$ma$v[,,1:3]
-        res$data$ma$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
-        res$data$ma$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
-        res$data$ma$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
+        V <- x$data$v[,,1:3]
+        res$data$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
+        res$data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
+        res$data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res$metadata$oceCoordinate <- "xyz"
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # beamToXyzAdp()\n")
     res
 }
@@ -1060,11 +1110,10 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         stop("method is only for adp objects")
     if (x$metadata$oceCoordinate != "xyz")
         stop("input must be in xyz coordinates")
-
     res <- x
-    heading <- res$data$ts$heading
-    pitch <- res$data$ts$pitch
-    roll <- res$data$ts$roll
+    heading <- res$data$heading
+    pitch <- res$data$pitch
+    roll <- res$data$roll
     ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
     ## There are three instrumentType values, ("teledyn rdi", "nortek", and "sontek"), and
     ## three orientation values ("upward", "downward", and "sideward").
@@ -1074,16 +1123,16 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             oceDebug(debug, "Case 1: RDI ADCP with upward-pointing sensor.\n")
             oceDebug(debug, "        Using S=-X, F=Y, and M=-Z.\n")
             ## As an alternative to the next three lines, could just add 180 degrees to roll
-            starboard <- -res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            mast <- -res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            starboard <- -res$data$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            forward <- res$data$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            mast <- -res$data$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
         } else if (res$metadata$orientation == "downward") {
             oceDebug(debug, "Case 2: RDI ADCP with downward-pointing sensor.\n")
             oceDebug(debug, "        Using roll=-roll, S=X, F=Y, and M=Z.\n")
             roll <- -roll
-            starboard <- res$data$ma$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            forward <- res$data$ma$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
-            mast <- res$data$ma$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            starboard <- res$data$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            forward <- res$data$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            mast <- res$data$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
@@ -1096,9 +1145,9 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             tmp <- pitch
             pitch <- roll
             roll <- -tmp
-            starboard <- res$data$ma$v[,,1]
-            forward <- res$data$ma$v[,,2]
-            mast <- res$data$ma$v[,,3]
+            starboard <- res$data$v[,,1]
+            forward <- res$data$v[,,2]
+            mast <- res$data$v[,,3]
         } else if (res$metadata$orientation == "downward") {
             oceDebug(debug, "Case 4: Nortek ADP with downward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
@@ -1106,9 +1155,9 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             tmp <- pitch
             pitch <- roll
             roll <- -tmp
-            starboard <- res$data$ma$v[,,1]
-            forward <- -res$data$ma$v[,,2]
-            mast <- -res$data$ma$v[,,3]
+            starboard <- res$data$v[,,1]
+            forward <- -res$data$v[,,2]
+            mast <- -res$data$v[,,3]
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
@@ -1119,18 +1168,18 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             heading <- heading - 90
             pitch <- -pitch
             roll <- -roll
-            starboard <- res$data$ma$v[,,1]
-            forward <- res$data$ma$v[,,2]
-            mast <- res$data$ma$v[,,3]
+            starboard <- res$data$v[,,1]
+            forward <- res$data$v[,,2]
+            mast <- res$data$v[,,3]
         } else if (res$metadata$orientation == "downward") {
             oceDebug(debug, "Case 6: Sontek ADP with downward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
             heading <- heading - 90
             pitch <- -pitch
             roll <- -roll
-            starboard <- res$data$ma$v[,,1]
-            forward <- res$data$ma$v[,,2]
-            mast <- res$data$ma$v[,,3]
+            starboard <- res$data$v[,,1]
+            forward <- res$data$v[,,2]
+            mast <- res$data$v[,,3]
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x$metadata$orientation,"'")
         }
@@ -1141,12 +1190,12 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     oceDebug(debug, vectorShow(heading, "heading (after adjustment)"))
     oceDebug(debug, vectorShow(pitch, "pitch (after adjustment)"))
     oceDebug(debug, vectorShow(roll, "roll (after adjustment)"))
-    np <- dim(x$data$ma$v)[1]           # number of profiles
-    nc <- dim(x$data$ma$v)[2]           # numberOfCells
+    np <- dim(x$data$v)[1]           # number of profiles
+    nc <- dim(x$data$v)[2]           # numberOfCells
     ## ADP and ADV calculations are both handled by sfm_enu
     for (c in 1:nc) {
         enu <- .C("sfm_enu",
-                  as.integer(length(x$data$ts$heading)), # need not equal np
+                  as.integer(length(x$data$heading)), # need not equal np
                   as.double(heading + declination),
                   as.double(pitch),
                   as.double(roll),
@@ -1159,12 +1208,12 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
                   up = double(np),
                   NAOK=TRUE,
                   PACKAGE="oce")
-        res$data$ma$v[,c,1] <- enu$east
-        res$data$ma$v[,c,2] <- enu$north
-        res$data$ma$v[,c,3] <- enu$up
+        res$data$v[,c,1] <- enu$east
+        res$data$v[,c,2] <- enu$north
+        res$data$v[,c,3] <- enu$up
     }
     res$metadata$oceCoordinate <- "enu"
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
     res
 }
@@ -1176,8 +1225,8 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
     if (x$metadata$oceCoordinate != "enu")
         stop("input must be in enu coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
     res <- x
-    np <- dim(x$data$ma$v)[1]           # number of profiles
-    nc <- dim(x$data$ma$v)[2]           # numberOfCells
+    np <- dim(x$data$v)[1]           # number of profiles
+    nc <- dim(x$data$v)[2]           # numberOfCells
     for (c in 1:nc) {
         other <- .C("sfm_enu",
                     as.integer(length(heading)),
@@ -1185,20 +1234,20 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
                     as.double(pitch),
                     as.double(roll),
                     as.integer(np),
-                    as.double(x$data$ma$v[,c,1]),
-                    as.double(x$data$ma$v[,c,2]),
-                    as.double(x$data$ma$v[,c,3]),
+                    as.double(x$data$v[,c,1]),
+                    as.double(x$data$v[,c,2]),
+                    as.double(x$data$v[,c,3]),
                     v1new = double(np),
                     v2new = double(np),
                     v3new = double(np),
                     NAOK=TRUE,
                     PACKAGE="oce")
-        res$data$ma$v[,c,1] <- other$v1new
-        res$data$ma$v[,c,2] <- other$v2new
-        res$data$ma$v[,c,3] <- other$v3new
+        res$data$v[,c,1] <- other$v1new
+        res$data$v[,c,2] <- other$v2new
+        res$data$v[,c,3] <- other$v3new
     }
     res$metadata$oceCoordinate <- "other"
-    res$history <- historyAdd(res$history, paste(deparse(match.call()), sep="", collapse=""))
+    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

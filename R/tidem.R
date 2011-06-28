@@ -62,12 +62,12 @@ plot.tidem <- function(x,
 }
 
 
-tidem.vuf <- function(t, j, lat=NULL)
+tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
     data("tidedata")
     tidedata   <- get("tidedata",   pos=globalenv())
-    a <- tidem.astron(t)
+    a <- tidemAstron(t)
 
     if (debug > 0) print(a)
 
@@ -152,7 +152,7 @@ tidem.vuf <- function(t, j, lat=NULL)
     list(v=v, u=u, f=f)
 }
 
-                                        #function [v,u,f]=t_vuf(ctime,ju,lat);
+                                        #function [v,u,f]=tVuf(ctime,ju,lat);
                                         #% T_VUF Computes nodal modulation corrections.
                                         #% [V,U,F]=T_VUF(DATE,JU,LAT) returns the astronomical phase V, the
                                         #% nodal phase modulation U, and the nodal amplitude correction F at
@@ -266,11 +266,11 @@ tidem.vuf <- function(t, j, lat=NULL)
                                         #end;
 
 
-tidem.astron <- function(t)
+tidemAstron <- function(t)
 {
                                         # Code mimics t_astron in t_tide
     debug <- FALSE
-    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="GMT"), units="days"))
+    d <- as.numeric(difftime(t, ISOdatetime(1899,12,31,12,0,0,tz="UTC"), units="days"))
     D <- d / 10000
     a <- matrix(c(1, d, D^2, D^3), 4, 1)
 
@@ -287,7 +287,7 @@ tidem.astron <- function(t)
 
     oceDebug(debug, "astro=",astro,"\n")
 
-    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="GMT", units="days")
+    rem <- difftime(t, trunc.POSIXt(t,units="days"), tz="UTC", units="days")
 
     oceDebug(debug, "rem2=",rem,"\n")
 
@@ -300,29 +300,40 @@ tidem.astron <- function(t)
     data.frame(astro=astro, ader=ader)
 }
 
-tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet = TRUE)
+tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceDebug"))
 {
-    if (!inherits(sl, "sealevel")) {
-        if (inherits(sl, "numeric"))
-            sl <- as.sealevel(sl)
-        else stop("cannot deal with 'sl' of class ", class(sl)[1])
+    oceDebug(debug, "\btidem(x, ...) {\n", sep="")
+    if (missing(x))
+        stop("must supply 'x'")
+    if (inherits(x, "sealevel")) {
+        sl <- x
+        oceDebug(debug, "'x' recognized as a sealevel object\n")
+        t <- x$data$time
+    } else {
+        if (missing(t))
+            stop("must supply 't', since 'x' is not a sealevel object")
+        if (inherits(t, "POSIXt")) {
+            t <- as.POSIXct(t)
+            if (length(x) != length(t))
+                stop("lengths of 'x' and 't' must match, but they are ", length(x), " and ", length(t), " respectively")
+        } else {
+            if (1 != length(t))
+                stop("'t' must be of length 1, unless it is a vector of POSIXt times")
+            t <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") + t * seq(0, 1, length.out=length(x))
+        }
+        sl <- as.sealevel(x, t)
     }
-    if (missing(startTime))
-        startTime <- as.POSIXct(sl$data$t[which(!is.na(sl$data$t))][1], tz="UTC")
 
-    if (!quiet) {
-        cat("startTime=")
-        print(startTime)
-        cat("\n")
-    }
     cl <- match.call()
+    startTime <- t[1]
 
     data("tidedata")
     td <- get("tidedata", pos=globalenv())
     tc <- td$const
     ntc <- length(tc$name)
 
-    if (!quiet) print(tc)
+    if (debug > 0)
+        print(tc)
 
     name <- freq <- kmpr <- NULL
     indices <- NULL
@@ -332,12 +343,12 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
         indices <- c(indices, seq(1:ntc)[standard])
-        if (!quiet)
+        if (debug > 0)
             print(name)
     } else {
         nconst <- length(constituents)
         for (i in 1:nconst) {
-            if (!quiet)
+            if (debug > 0)
                 cat("[", constituents[i], "]\n",sep="")
             if (constituents[i] == "standard") { # must be first!
                 if (i != 1)
@@ -367,7 +378,8 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
                     }
                 }
             }
-            if (!quiet) cat("<<", tc$name[indices], ">>\n")
+            if (debug > 0)
+                cat("<<", tc$name[indices], ">>\n")
         }
     }
     indices <- indices[order(indices)]
@@ -375,7 +387,8 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
 
     iZ0 <- which(tc2$name == "Z0")      # Remove Z0
     name <- tc2$name
-    if (!quiet) print(name)
+    if (debug > 0)
+        print(name)
     if (length(iZ0)) name <- name[-iZ0]
     nc <- length(name)
     index <- vector("numeric", nc)
@@ -404,7 +417,8 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
         }
     }
     if (length(drop.term) > 0) {
-        if (!quiet) cat("Record is too short to fit for constituents:", name[drop.term],"\n")
+        if (debug > 0)
+            cat("Record is too short to fit for constituents:", name[drop.term],"\n")
         index <- index[-drop.term]
         name <- name[-drop.term]
         freq <- freq[-drop.term]
@@ -414,11 +428,11 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
     nt <- length(sl$data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-    hour <- unclass(as.POSIXct(sl$data$time, tz="GMT")) / 3600 # hour since 0000-01-01 00:00:00
+    hour <- unclass(as.POSIXct(sl$data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
     centralindex <- floor(length(sl$data$t) / 2)
     ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
     ##    hour2pi <- 2 * pi * hour.wrt.centre
-    hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="GMT"))/3600)
+    hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
     hour2pi <- 2 * pi * hour.offset
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
@@ -432,7 +446,7 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
     colnames(x) <- name2
     elevation <- sl$data$elevation
     model <- lm(elevation ~ x, na.action=na.exclude)
-    if (!quiet)
+    if (debug > 0)
         print(summary(model))
     coef  <- model$coefficients
     p.all <- summary(model)$coefficients[,4]
@@ -446,7 +460,8 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
         ic <- 2 * (i - 1) + 1
         s <- coef[is]                   # coefficient on sin(t)
         c <- coef[ic]                   # coefficient on cos(t)
-        if (!quiet) cat(name[i-1], "gives s=",s,"and c=",c,"\n")
+        if (debug > 0)
+            cat(name[i-1], "gives s=",s,"and c=",c,"\n")
         amplitude[i] <- sqrt(s^2 + c^2)
                                         # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
                                         #                == s * sin(t) + c * cos(t)
@@ -455,11 +470,12 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
                                         # FIXME: is the sign right?
         p[i]         <- 0.5 * (p.all[is] + p.all[ic])
     }
-    if (!quiet) cat("coef:", coef, "\n")
+    if (debug > 0)
+        cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
 
-    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="GMT")
-    if (!quiet) {
+    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="UTC")
+    if (debug > 0) {
         cat("centraltime=")
         print(centraltime)
         cat("\n")
@@ -467,14 +483,15 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
     }
 
     if (is.null(latitude)) latitude <- sl$metadata$latitude
-    vuf <- tidem.vuf(centraltime, c(0, index), latitude)
+    vuf <- tidemVuf(centraltime, c(0, index), latitude)
     vu <- c(0, (vuf$v + vuf$u) * 360)
     phase2 <- phase - vu                # FIXME: plus or minus??
     negate <- phase2 < 0
     phase2[negate] <- 360 + phase2[negate]
                                         #    phase <- phase2
 
-    if (!quiet) cat("vu=",vu,"\n")
+    if (debug > 0)
+        cat("vu=",vu,"\n")
 
     rval <- list(model=model,
                  call=cl,
@@ -487,6 +504,7 @@ tidem <- function(sl, constituents, latitude=NULL, startTime=NULL, rc=1, quiet =
                  phase2=phase2,         # FIXME: remove later
                  p=p)
     class(rval) <- "tidem"
+    oceDebug(debug, "\b\b} # tidem()\n")
     rval
 }
 

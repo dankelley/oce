@@ -7,9 +7,9 @@
       flip.y=FALSE,
       xlab="", ylab="", zlab="",
       breaks, col,
-      draw.contours=TRUE,
+      drawContours=TRUE,
       drawTimeRange=getOption("oceDrawTimeRange"),
-      draw.palette=TRUE,
+      drawPalette=TRUE,
       mgp=getOption("oceMgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -38,8 +38,8 @@
   \item{breaks}{the z values for breaks in the colour scheme.}
   \item{col}{either a vector of colours corresponding to the breaks, of length
      1 plus the number of breaks, or a function specifying colours,
-     e.g. \code{\link{oce.colors.jet}} for a rainbow.}
-  \item{draw.contours}{boolean, \code{TRUE} to get contours on the
+     e.g. \code{\link{oceColorsJet}} for a rainbow.}
+  \item{drawContours}{boolean, \code{TRUE} to get contours on the
     image, and palette, at the colour breaks.  Images with a great deal
     of high-wavenumber variation look poor with contours.}
   \item{drawTimeRange}{boolean, only used if the \code{x} axis is a
@@ -47,7 +47,7 @@
     data (not the axis) is indicated at the top-left margin of the
     graph.  This is useful because the labels on time axes only indicate
     hours if the range is less than a day, etc.}
-  \item{draw.palette}{boolean, with value \code{TRUE} to draw a palette
+  \item{drawPalette}{boolean, with value \code{TRUE} to draw a palette
     at the right-hand side of the main image.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is

@@ -1,9 +1,17 @@
+% vim:textwidth=100:expandtab:shiftwidth=2:softtabstop=2
 \name{ctdTrim}
+
 \alias{ctdTrim}
+
 \title{Trim start/end portions of a CTD cast}
+
 \description{Trim start/end portions of a CTD cast.}
+
 \usage{ctdTrim(x, method=c("downcast","index","range"), 
-  inferWaterDepth=TRUE, parameters, debug=getOption("oceDebug"))}
+inferWaterDepth=TRUE, removeDepthInversions=FALSE,
+parameters, debug=getOption("oceDebug"))}
+
+
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{method}{Various methods exist, some of which use parameters:
@@ -32,10 +40,9 @@
 	    warning is printed, and this step is skipped.)}
 	}
       }
-      \item{"index"}{Select values only in indicated list of indices,
-	\emph{e.g.} \code{selection <- ctdTrim(ctd, "range", parameters
-          = list(item="index", from=10, to=30))}
-	selects data points 10, 11, ... 30.}
+      \item{"index"}{Select values only in the list of indices specified in \code{parameters}, 
+        \emph{e.g.} \code{selection <- ctdTrim(ctd, "index", parameters=10:30}
+        selects data points with indices 10, 11, ... 30.}
       \item{"range"}{Select data based on the value of the column named
         \code{parameters$item}.  This may be by range or by critical value.
         By range: select values between \code{parameters$from} (the
@@ -48,13 +55,20 @@
         \code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} 	also starts at scan 5, but extends only to scan 100.}
     }
   }
-  \item{inferWaterDepth}{boolean, set to \code{TRUE} if the water
-    depth (\code{metadata$water.depth}) is to be determined from the
-    maximum of the trimmed pressure.  (This is ignored if the original
-    data file contained the water depth in the header.)}
-  \item{parameters}{A list whose elemetns depend on the method; see above.}
-  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
-    moderate amount of debugging information, or to 2 to get more.} 
+
+  \item{inferWaterDepth}{boolean, set to \code{TRUE} if the water depth
+    (\code{metadata$water.depth}) is to be determined from the maximum of the trimmed pressure.
+    (This is ignored if the original data file contained the water depth in the header.)}
+
+  \item{removeDepthInversions}{Boolean value indicating whether to remove any levels at which depth
+    is less than, or equal to, a depth above.  (This is needed if the object is to be assembled into
+    a section, unless \code{\link{ctdDecimate}} will be used, which will remove the inversions.}
+
+  \item{parameters}{A list whose elements depend on the method; see above.}
+
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
+    information, or to 2 to get more.} 
+
 }
 
 \details{For normal CTD profiling, the goal is to isolate only the
@@ -81,10 +95,10 @@
 }
 \examples{
 library(oce)
-data(ctd.raw) 
-plot(ctd.raw) # barely recognizable, due to pre- and post-cast junk
-plot(ctdTrim(ctd.raw)) # looks like a real profile ...
-plot(ctdDecimate(ctdTrim(ctd.raw),method="boxcar")) # ... smoothed
+data(ctdRaw) 
+plot(ctdRaw) # barely recognizable, due to pre- and post-cast junk
+plot(ctdTrim(ctdRaw)) # looks like a real profile ...
+plot(ctdDecimate(ctdTrim(ctdRaw),method="boxcar")) # ... smoothed
 }
 
 \references{The Seabird CTD instrument is described at

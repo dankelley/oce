@@ -12,14 +12,14 @@
      center, span,
      expand=1.5,
      water.z,
-     water.col,
-     water.lty,
-     water.lwd,
+     col.water,
+     lty.water,
+     lwd.water,
      land.z, 
-     land.col,
-     land.lty,
-     land.lwd,
-     legend.loc="topright", 
+     col.land,
+     lty.land,
+     lwd.land,
+     location="topright", 
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
      debug=getOption("oceDebug"),
@@ -50,20 +50,20 @@
     \code{ylim} is given.}
   \item{water.z}{depths at which to plot water contours.  If not
     provided, these are inferred from the data.}
-  \item{water.col}{colors corresponding to \code{water.z} values.  If
+  \item{col.water}{colors corresponding to \code{water.z} values.  If
     not provided, these will be \code{"fill"} colors from
-    \code{\link{oce.colors.gebco}}.}
-  \item{water.lty}{line type(s) for water contours}
-  \item{water.lwd}{line width(s) for water contours}
+    \code{\link{oceColorsGebco}}.}
+  \item{lty.water}{line type(s) for water contours}
+  \item{lwd.water}{line width(s) for water contours}
   \item{land.z}{depths at which to plot land contours.  If not provided,
     these are inferred from the data.  If set to \code{NULL}, no land
     contours will be plotted.}
-  \item{land.col}{colors corresponding to \code{land.z} values.  If
+  \item{col.land}{colors corresponding to \code{land.z} values.  If
     not provided, these will be \code{"fill"} colors from
-    \code{\link{oce.colors.gebco}}.}
-  \item{land.lty}{line type(s) for land contours}
-  \item{land.lwd}{line width(s) for land contours}
-  \item{legend.loc}{location for a legend (or FALSE, for no legend).}
+    \code{\link{oceColorsGebco}}.}
+  \item{lty.land}{line type(s) for land contours}
+  \item{lwd.land}{line width(s) for land contours}
+  \item{location}{location for a legend (or FALSE, for no legend).}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
@@ -90,10 +90,10 @@
 
 \examples{
 library(oce)
-data(topo.maritimes)
-plot(topo.maritimes)
+data(topoWorld)
+plot(topoWorld)
 }
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

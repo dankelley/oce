@@ -81,8 +81,8 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             oceDebug(debug, "head$tiltSensorOrientation=", head$tiltSensorOrientation, "\n")
             head$frequency <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "head$frequency=", head$frequency, "kHz\n")
-            head$head.type <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
-            oceDebug(debug, "head$head.type=", head$head.type, "\n")
+            head$headType <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "head$headType=", head$headType, "\n")
             head$headSerialNumber <- gsub(" *$", "", paste(readBin(buf[o+11:22], "character", n=12, size=1), collapse=""))
             oceDebug(debug, "head$headSerialNumber=", head$headSerialNumber, "\n")
             ## NOTE: p30 of System Integrator Guide does not detail anything from offsets 23 to 119;
@@ -108,35 +108,42 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             if (2 * user$size != headerLengthUser)
                 stop("size of user header expected to be ", headerLengthUser, "but got ", user$size)
             ##buf <- readBin(file, "raw", headerLengthUser)
-            user$T1 <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$T1=", user$T1, "; user$T2=", user$T2, "\n")
             user$transmitPulseLength <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLengthu, "in counts\n")
+            oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLength, "\n")
+
             user$blankingDistance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$blankingDistance=", user$blankingDistance, "in counts\n")
-            user$timeBetweenPings <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
+
+            user$receiveLength <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$receiveLength=", user$receiveLength, "in counts\n")
+            
+            user$timeBetweenPings <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
-            user$numberOfBeamSequencesPerBurst <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
+
+            user$timeBetweenBurstSequences <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$timeBetweenBurstSequences=", user$timeBetweenBurstSequences, "in counts\n")
+            
+            user$numberOfBeamSequencesPerBurst <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$numberOfBeamSequencesPerBurst=", user$numberOfBeamSequencesPerBurst, "in counts\n")
-            user$timeBetweenBeamSequences <- readBin(buf[o+13:14], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$timeBetweenBeamSequences=", user$timeBetweenBeamSequences, "in counts\n")
-            user$NPings <- readBin(buf[o+15:16], "integer", n=1, size=2, endian="little")
-            oceDebug(debug, "user$NPings=", user$NPings, "\n")
-            user$AvgInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
-            oceDebug(debug, "user$AvgInterval=", user$AvgInterval, "in seconds\n")
+
+            user$averagingInterval <- readBin(buf[o+17:18], "integer", n=1, size=2, endian="little")
+            oceDebug(debug, "user$averagingInterval=", user$averagingInterval, "in seconds\n")
             user$numberOfBeams <- readBin(buf[o+19:20], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$numberOfBeams=", user$numberOfBeams, "\n")
+
+            user$timCtrlReg <- readBin(buf[o+21:22], "raw", n=2)
+            oceDebug(debug, "user$timCtrlReg=", user$timCtrlReg, "\n")
+            
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$measurementInterval=", user$measurementInterval, "\n")
-            user$deploy.name <- readBin(buf[o+41:47], "character", n=1, size=6)
-            oceDebug(debug, "user$deploy.name=", user$deploy.name, "\n")
+            user$deploymentName <- readBin(buf[o+41:47], "character", n=1, size=6)
+            oceDebug(debug, "user$deploymentName=", user$deploymentName, "\n")
             user$comments <- readBin(buf[o+257+0:179], "character", n=1, size=180)
             oceDebug(debug, "user$comments=", user$comments, "\n")
 
             user$mode <- byteToBinary(buf[o+59:60], endian="little")
             oceDebug(debug, "user$mode: ", user$mode, "\n")
-            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.00001
+            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
             oceDebug(debug, "user$velocityScale: ", user$velocityScale, "\n")
             tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) user$coordinateSystem <- "enu" # page 31 of System Integrator Guide
@@ -157,20 +164,21 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             } else {
                 user$cellSize <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
             }
-            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: no docs on this)\n")
+            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: no docs on this; guessing from secondhand info/guesses)\n")
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "measurementInterval=", user$measurementInterval, "\n")
 
             ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+                ##user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
             } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
-                user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+                ##user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+                user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
             } else {
                 user$blankingDistance <- 0
             }
             oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
-            user$deploymentName <- readBin(buf[o+41:46], "character")
             user$swVersion <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oceDebug(debug, "swVersion=", user$swVersion,"\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1
@@ -186,8 +194,8 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("aquadopp high resolution"),
-                            debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
-                            history, ...)
+                            debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE,
+                            processingLog, ...)
 {
     bisectAdpNortek <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
@@ -254,6 +262,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
     header <- decodeHeaderNortek(buf, debug=debug-1)
+    averagingInterval <- header$user$averagingInterval
     numberOfBeams <- header$numberOfBeams
     numberOfCells <- header$numberOfCells
     bin1Distance <- header$bin1Distance
@@ -353,7 +362,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                         bcdToInteger(buf[profileStart+5]), # sec
                         tz=tz)
     class(time) <- c("POSIXt", "POSIXct") # FIXME do we need this?
-    attr(time, "tzone") <- getOption("oce.tz") # Q: does file hold the zone?
+    attr(time, "tzone") <- getOption("oceTz") # Q: does file hold the zone?
     heading <- 0.1 * readBin(buf[profileStart2 + 18], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     pitch <- 0.1 * readBin(buf[profileStart2 + 20], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
     roll <- 0.1 * readBin(buf[profileStart2 + 22], what="integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
@@ -379,22 +388,24 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         }
     }
     if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
-    data <- list(ma=list(v=v, a=a, q=q),
-                 ss=list(distance=seq(header$user$blankingDistance,
-                         by=header$user$cellSize,
-                         length.out=header$user$numberOfCells)),
-                 ts=list(time=time,
+    data <- list(v=v, a=a, q=q,
+                 distance=seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells),
+                 time=time,
                  pressure=pressure,
                  temperature=temperature,
                  heading=heading,
                  pitch=pitch,
-                 roll=roll))
+                 roll=roll)
     metadata <- list(manufacturer="nortek",
                      instrumentType="aquadopp-hr",
                      filename=filename,
                      manufacturer="nortek",
                      latitude=latitude,
                      longitude=longitude,
+                     numberOfSamples=dim(v)[1],
+                     numberOfCells=dim(v)[2],
+                     numberOfBeams=dim(v)[3],
+                     numberOfBeamSequencesPerBurst=header$user$numberOfBeamSequencesPerBurst,
                      measurementStart=measurementStart,
                      measurementEnd=measurementEnd,
                      measurementDeltat=measurementDeltat,
@@ -402,7 +413,6 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      subsampleEnd=time[length(time)],
                      subsampleDeltat=as.numeric(time[2]) - as.numeric(time[1]),
                      size=header$head$size,
-                     numberOfBeams=header$head$numberOfBeams, # FIXME: check that this is correct
                      serialNumber=header$hardware$serialNumber,
                      frequency=header$head$frequency,
                      internalCodeVersion=header$hardware$picVersion,
@@ -428,11 +438,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      velocityScale=header$user$velocityScale,
                      coordinateSystem=header$user$coordinateSystem,
                      oceCoordinate=header$user$coordinateSystem,
-                     oceBeamAttenuated=FALSE
+                     oceBeamUnattenuated=FALSE
                      )
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, history=historyItem(history))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
     class(res) <- c("nortek", "adp", "oce")
     res
 }                                       # read.adp.nortek()

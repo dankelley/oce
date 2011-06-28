@@ -75,7 +75,7 @@
   \item{ytype}{type of y axis for contour plots, either
     \code{"pressure"} for pressure (in dbar, with zero at the surface)
     or \code{"depth"} for depth (in m below the surface, calculated
-    from pressure with \code{\link{sw.depth}}).}
+    from pressure with \code{\link{swDepth}}).}
   \item{legend.loc}{location of legend, as supplied to \code{\link{legend}}.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
@@ -140,4 +140,4 @@ plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{hplot}

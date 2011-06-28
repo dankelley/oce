@@ -34,8 +34,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     programVersionMajor <- readBin(FLD[3], "integer", n=1, size=1, signed=FALSE)
     programVersionMinor <- readBin(FLD[4], "integer", n=1, size=1, signed=FALSE)
     programVersion <- paste(programVersionMajor, programVersionMinor, sep=".")
-    programVersion.numeric <- as.numeric(programVersion)
-    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersion.numeric,")\n")
+    programVersionNumeric <- as.numeric(programVersion)
+    oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersionNumeric,")\n")
     if (programVersion < 16.28)
         warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
@@ -179,7 +179,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     ## Assemble the time.  This follows section 5.3 (paper 132, file page 140) of "Workhorse Commands and Output Data Format_Nov07.pdf"
 
     ## FIXME: probably would save time to read all elements at once.  Instrument to check
-    RTC.year <- unabbreviate.year(readBin(VLD[5], "integer", n=1, size=1))
+    RTC.year <- unabbreviateYear(readBin(VLD[5], "integer", n=1, size=1))
     RTC.month <- readBin(VLD[6], "integer", n=1, size=1)
     RTC.day <- readBin(VLD[7], "integer", n=1, size=1)
     RTC.hour <- readBin(VLD[8], "integer", n=1, size=1)
@@ -196,17 +196,6 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     oceDebug(debug, "speedOfSound = ", speedOfSound, "\n")
     if (speedOfSound < 1400 || speedOfSound > 1600)
         warning("speedOfSound is ", speedOfSound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
-    ## Comment out some things not needed here (may be wrong, too)
-    ##depthOfTransducer <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little") * 0.1
-    ##oceDebug(debug, "depthOfTransducer:", depthOfTransducer, "\n")
-    ##heading <- readBin(VLD[19:20], "integer", n=1, size=2, endian="little", signed=FALSE) * 0.01 - headingBias
-    ##pitch <- readBin(VLD[21:22], "integer", n=1, size=2, endian="little") * 0.01
-    ##roll <- readBin(VLD[23:24], "integer", n=1, size=2, endian="little") * 0.01
-    ##oceDebug(debug, "VLD header has: heading=", heading, "(after subtracting a bias of",
-    ##headingBias, "deg), pitch=", pitch, " roll=", roll, "\n")
-
-    ## Skipping a lot ...
-    ##pressure <- readBin(VLD[49:52], "integer", n=1, size=4, endian="little", signed=FALSE) * 0.001
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
          programVersionMajor=programVersionMajor,
@@ -268,8 +257,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
-                         debug=getOption("oceDebug"), monitor=TRUE, despike=FALSE,
-                         history, ...)
+                         debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE,
+                         processingLog, ...)
 {
     bisectAdpRdi <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, "\n")
@@ -279,7 +268,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         passes <- floor(10 + log(len, 2)) # won't need this many; only do this to catch coding errors
         for (pass in 1:passes) {
             middle <- floor((upper + lower) / 2)
-            year   <- unabbreviate.year(readBin(buf[profileStart[middle] +  4], what="integer", n=1, size=1, signed=FALSE))
+            year   <- unabbreviateYear(readBin(buf[profileStart[middle] +  4], what="integer", n=1, size=1, signed=FALSE))
             month  <- readBin(buf[profileStart[middle] +  5], what="integer", n=1, size=1, signed=FALSE)
             day    <- readBin(buf[profileStart[middle] +  6], what="integer", n=1, size=1, signed=FALSE)
             hour   <- readBin(buf[profileStart[middle] +  7], what="integer", n=1, size=1, signed=FALSE)
@@ -300,7 +289,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             middle <- 1
         if (middle > len)
             middle <- len
-        t <- ISOdatetime(unabbreviate.year(readBin(buf[profileStart[middle]+4],"integer",size=1,signed=FALSE,endian="little")),
+        t <- ISOdatetime(unabbreviateYear(readBin(buf[profileStart[middle]+4],"integer",size=1,signed=FALSE,endian="little")),
                          as.integer(buf[profileStart[middle]+5]), # month
                          as.integer(buf[profileStart[middle]+6]), # day
                          as.integer(buf[profileStart[middle]+7]), # hour
@@ -349,7 +338,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         profilesInFile <- length(profileStart)
         oceDebug(debug, "profilesInFile=", profilesInFile, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
         if (profilesInFile > 0)  {
-            measurementStart <- ISOdatetime(unabbreviate.year(as.integer(buf[profileStart[1]+4])),
+            measurementStart <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[1]+4])),
                                             as.integer(buf[profileStart[1]+5]), # month
                                             as.integer(buf[profileStart[1]+6]), # day
                                             as.integer(buf[profileStart[1]+7]), # hour
@@ -357,7 +346,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                             as.integer(buf[profileStart[1]+9]), # sec
                                             tz=tz)
             oceDebug(debug, "measurementStart:", format(measurementStart), "\n")
-            measurementEnd <- ISOdatetime(unabbreviate.year(as.integer(buf[profileStart[profilesInFile]+4])),
+            measurementEnd <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[profilesInFile]+4])),
                                           as.integer(buf[profileStart[profilesInFile]+5]), # month
                                           as.integer(buf[profileStart[profilesInFile]+6]), # day
                                           as.integer(buf[profileStart[profilesInFile]+7]), # hour
@@ -366,7 +355,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                           tz=tz)
             oceDebug(debug, "measurementEnd:", format(measurementEnd), "\n")
             ## FIXME: assumes uniform time interval (ok, but document it)
-            measurementDeltat <- as.numeric(ISOdatetime(unabbreviate.year(as.integer(buf[profileStart[2]+4])),
+            measurementDeltat <- as.numeric(ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[2]+4])),
                                                          as.integer(buf[profileStart[2]+5]), # month
                                                          as.integer(buf[profileStart[2]+6]), # day
                                                          as.integer(buf[profileStart[2]+7]), # hour
@@ -491,7 +480,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     break
                 }
             }
-            time <- ISOdatetime(unabbreviate.year(as.integer(buf[profileStart+4])), # year
+            time <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart+4])), # year
                                 as.integer(buf[profileStart+5]),      # month
                                 as.integer(buf[profileStart+6]),      # day
                                 as.integer(buf[profileStart+7]),      # hour
@@ -511,7 +500,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
             speedOfSound <- 0.1 * readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
-            depthOfTransducer <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
+            depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
             heading <- 0.01 * readBin(buf[profileStart2 + 18], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE) - header$headingBias
             oceDebug(debug, vectorShow(heading, "heading"))
@@ -538,18 +527,22 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, vectorShow(temperature, "temperature"))
             oceDebug(debug, vectorShow(pressure, "pressure"))
             metadata <- header
+            metadata$manufacturer <- "rdi"
+            metadata$instrumentType <- "adcp"
+            metadata$filename <- filename
             metadata$latitude <- latitude
             metadata$longitude <- longitude
-            metadata$bin1Distance <- bin1Distance
-            metadata$xmitPulseLength <- xmitPulseLength
+            metadata$numberOfSamples <- dim(v)[1]
+            metadata$numberOfCells <- dim(v)[2]
+            metadata$numberOfBeams <- dim(v)[3]
             metadata$measurementStart <- measurementStart
             metadata$measurementEnd <- measurementEnd
             metadata$measurementDeltat <- measurementDeltat
-            metadata$filename <- filename
-            metadata$oceBeamAttenuated <- FALSE
+            metadata$bin1Distance <- bin1Distance
+            metadata$xmitPulseLength <- xmitPulseLength
+            metadata$oceBeamUnattenuated <- FALSE
             metadata$oceCoordinate <- header$coordinateSystem
-            metadata$numberOfBeams <- header$numberOfBeams
-            metadata$depthOfTransducer <- mean(depthOfTransducer, na.rm=TRUE)
+            metadata$depth <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both
             ## RDI and CODAS use as we have here.  (And I think RDI
@@ -589,28 +582,37 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                                       0        ,          0, -tm.c*tm.a, tm.c*tm.a,
                                                       tm.b     ,       tm.b,       tm.b,      tm.b,
                                                       tm.d     ,       tm.d,      -tm.d,     -tm.d),
-                                                     nrow=4, byrow=TRUE)
-            if (monitor)
+                                                    nrow=4, byrow=TRUE)
+           if (monitor)
                 cat("\nRead", profilesToRead,  "profiles, out of a total of",profilesInFile,"profiles in", filename, "\n", ...)
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oceTz")
             if (haveBottomTrack) {
                 bottomRange.na <- bottomRange == 0.0
                 bottomRange[bottomRange.na] <- NA
-                ma <- list(v=v, a=a, q=q, g=g, bottomRange=bottomRange, bottomVelocity=bottomVelocity)
+                data <- list(v=v, a=a, q=q, 
+                             bottomRange=bottomRange, bottomVelocity=bottomVelocity,
+                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                             time=time,
+                             pressure=pressure,
+                             temperature=temperature,
+                             salinity=salinity,
+                             depth=depth,
+                             heading=heading,
+                             pitch=pitch,
+                             roll=roll)
             } else {
-                ma <- list(v=v, a=a, q=q, g=g)
+                data <- list(v=v, a=a, q=q, 
+                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                             time=time,
+                             pressure=pressure,
+                             temperature=temperature,
+                             salinity=salinity,
+                             depth=depth,
+                             heading=heading,
+                             pitch=pitch,
+                             roll=roll)
             }
-            data <- list(ma=ma,
-                         ss=list(distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells)),
-                         ts=list(time=time,
-                                 pressure=pressure,
-                                 temperature=temperature,
-                                 salinity=salinity,
-                                 depthOfTransducer=depthOfTransducer,
-                                 heading=heading,
-                                 pitch=pitch,
-                                 roll=roll))
         } else {
             warning("There are no profiles in this file.")
             metadata <- header
@@ -624,10 +626,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data <- NULL
     }
     metadata$manufacturer <- "teledyne rdi"
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    res <- list(data=data, metadata=metadata, history=log.item)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("rdi", "adp", "oce")
     res
 }

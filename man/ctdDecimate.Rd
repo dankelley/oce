@@ -21,7 +21,7 @@
     the mean of local data , while the \code{"lm"} method is based on a
     local linear regression model. (The \code{e} parameter sets the
     locality, as explained in the next item.)  The
-    \code{"reiniger-ross"} method uses \code{\link{oce.approx}} to use
+    \code{"reiniger-ross"} method uses \code{\link{oceApprox}} to use
     the weighted-parabola method developed by Reiniger and Ross (1968).}
   \item{e}{is an expansion coefficient used to calculate the local
     neighbourhoods for the \code{"boxcar"} and \code{"lm"} methods.  If
@@ -48,7 +48,7 @@ procedure, but it can be avoided as follows
 
 \preformatted{
 xd <- ctdDecimate(x)
-xd$data$sigmaTheta <- sw.sigma.theta(xd$data$salinity, 
+xd$data$sigmaTheta <- swSigmaTheta(xd$data$salinity, 
   xd$data$temperature, xd$data$pressure)
 } % preformatted
 } %details

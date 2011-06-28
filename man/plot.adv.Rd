@@ -33,7 +33,7 @@
         \dQuote{Details} for the meanings of various values of
         \code{which}.}
     \item{col}{optional indication of colour(s) to use.  If not provided,
-        the default for images is \code{oce.colors.palette(128,1)}, and for
+        the default for images is \code{oceColorsPalette(128,1)}, and for
         lines and points is black.}
     \item{titles}{optional vector of character strings to be used as
         labels for the plot panels.  For images, these strings will be
@@ -94,13 +94,13 @@
         \item \code{which=4} is not permitted (since ADV are 3-beam devices)
         \item \code{which=5} to \code{7} (or \code{"a1"} to \code{"a3"})
         yield timeseries of the amplitudes of beams 1 to 3.  (Note that
-        the data are called \code{data$ma$a[,1]}, \code{data$ma$a[,2]} and
-        \code{data$ma$a[,3]}, for these three timeseries.)
+        the data are called \code{data$a[,1]}, \code{data$a[,2]} and
+        \code{data$a[,3]}, for these three timeseries.)
         \item \code{which=8} is not permitted (since ADV are 3-beam devices)
         \item \code{which=9} to \code{11} (or \code{"q1"} to \code{"q3"})
         yield timeseries of correlation for beams 1 to 3.  (Note that the
-        data are called \code{data$ma$c[,1]}, \code{data$ma$c[,2]} and
-        \code{data$ma$c[,3]}, for these three timeseries.)
+        data are called \code{data$c[,1]}, \code{data$c[,2]} and
+        \code{data$c[,3]}, for these three timeseries.)
         \item \code{which=12} is not permitted (since ADVs are 3-beam devices)
         \item \code{which=13} is not permitted (since ADVs do not measure salinity)
         \item \code{which=14} or \code{which="temperature"} yields a timeseries of temperature.
@@ -125,6 +125,8 @@
         \item \code{which=30} or \code{"uv+ellipse+arrow"} as the
         \code{"uv+ellipse"} case, but with an added arrow indicating the
         mean current.
+        \item \code{which=100} or \code{"voltage"} plots the voltage as a
+        timeseries, if voltage exists in the dataset.
     }
     In addition to the above, there are some groupings defined:
     \itemize{ 
@@ -151,4 +153,4 @@ plot(adv)
 }
 
 \author{Dan Kelley}
-\keyword{misc}
+\keyword{hplot}

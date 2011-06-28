@@ -8,7 +8,7 @@
 
 \usage{
 read.pt(file, from=1, to, by=1, tz=getOption("oceTz"), 
-        history, debug=getOption("oceDebug"))}
+        processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -28,7 +28,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
     sampling interval, to get the stride length.}
   \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
@@ -59,7 +59,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
 	data, because the data may have been decimated.}
     }
   }
-  \item{history}{a history of processing, in the standard \code{oce} format.}
+  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \section{Implementation notes}{The end time for measurement
@@ -77,12 +77,12 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
   \code{\link{plot.pt}}, and summarized with \code{\link{summary.pt}},
   both of which are generic functions.  In-air samples (collected before
   and after deployment) may be removed in a crude way with
-  \code{\link{pt.trim}}, but the best scheme is to use
+  \code{\link{ptTrim}}, but the best scheme is to use
   \code{\link{subset.oce}}, based on a temporal window.  Removal of the
   atmospheric component of pressure is best done by the user, using
   measured records of atmospheric pressure.  However, if such data are
   unavailable, and if the p-T data set contains pre- and post-deployment
-  data, \code{\link{pt.patm}} may provide a useful estimate of
+  data, \code{\link{ptPatm}} may provide a useful estimate of
   atmospheric pressure.}
 
 \examples{

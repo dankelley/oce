@@ -272,14 +272,13 @@ void
 sw_strho(double *pT, double *prho, double *pp, double *res)
 {
   int strho_bisection_search (double *x, double x1, double x2, double eps, double eta);
-  int bs_res;
   T = *pT;
   sig_0 = *prho;				/* target density */
   p_ref = *pp;				/* target pressure */
   *res = NA_REAL;
   if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
     return;
-  bs_res = strho_bisection_search(&S, 0.0001, 200.0, 0.00001, 0.00001);
+  strho_bisection_search(&S, 0.0001, 200.0, 0.00001, 0.00001);
   *res = S;
 }
 
@@ -509,7 +508,6 @@ void
 sw_tsrho(double *pS, double *prho, double *pp, double *res)
 {
   int tsrho_bisection_search (double *x, double x1, double x2, double eps, double eta);
-  int bs_res;
   S = *pS;
   sig_0 = *prho;		/* target density */
   p_ref = *pp;		/* target pressure */
@@ -521,7 +519,7 @@ sw_tsrho(double *pS, double *prho, double *pp, double *res)
    * bisection from working.  I found this out by using a TLOW
    * value of -50.  The range below should be OK for oceanographic use.
    */
-  bs_res = tsrho_bisection_search(&T, -3.0, 40.0, 0.0001, 0.0001);
+  tsrho_bisection_search(&T, -3.0, 40.0, 0.0001, 0.0001);
   *res = T;
 }
 

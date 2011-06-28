@@ -1,17 +1,31 @@
+topoInterpolate <- function(latitude, longitude, topo)
+{
+    if (missing(latitude))
+        stop("must supply latitude")
+    if (missing(longitude))
+        stop("must supply longitude")
+    if (missing(topo))
+        stop("must supply topo")
+    if (length(latitude) != length(longitude))
+        stop("lengths of latitude and longitude must match")
+    .Call("topo_interpolate", latitude, longitude, topo$data$latitude, topo$data$longitude, topo$data$z)
+}
+
+
 plot.topo <- function(x,
                       xlab="", ylab="",
                       asp,
                       center, span,
                       expand=1.5,
                       water.z,
-                      water.col,
-                      water.lty,
-                      water.lwd,
+                      col.water,
+                      lty.water,
+                      lwd.water,
                       land.z,
-                      land.col,
-                      land.lty,
-                      land.lwd,
-                      legend.loc="topright",
+                      col.land,
+                      lty.land,
+                      lwd.land,
+                      location="topright",
                       mgp=getOption("oceMgp"),
                       mar=c(mgp[1]+1,mgp[1]+1,1,1),
                       debug=getOption("oceDebug"),
@@ -177,23 +191,23 @@ if (0){
             water.z <- rev(sort(water.z))
         }
         nz <- length(water.z)
-        if (missing(water.col))
-            water.col <- oce.colors.gebco(nz, "water", "line")
-        if (missing(water.lty))
-            water.lty <- rep(par("lty"), nz)
-        else if (length(water.lty) == 1)
-            water.lty <- rep(water.lty, nz)
-        if (missing(water.lwd))
-            water.lwd <- rep(par("lwd"), nz)
-        else if (length(water.lwd) == 1)
-            water.lwd <- rep(water.lwd, nz)
+        if (missing(col.water))
+            col.water <- oceColorsGebco(nz, "water", "line")
+        if (missing(lty.water))
+            lty.water <- rep(par("lty"), nz)
+        else if (length(lty.water) == 1)
+            lty.water <- rep(lty.water, nz)
+        if (missing(lwd.water))
+            lwd.water <- rep(par("lwd"), nz)
+        else if (length(lwd.water) == 1)
+            lwd.water <- rep(lwd.water, nz)
         legend <- c(legend, water.z)
-        lwd    <- c(lwd,    water.lwd)
-        lty    <- c(lty,    water.lty)
-        col    <- c(col,    water.col)
+        lwd    <- c(lwd,    lwd.water)
+        lty    <- c(lty,    lty.water)
+        col    <- c(col,    col.water)
         #contour(x$data$longitude, x$data$latitude, x$data$z,
         contour(xx, yy, zz,
-                levels=water.z, lwd=water.lwd, lty=water.lty, col=water.col,
+                levels=water.z, lwd=lwd.water, lty=lty.water, col=col.water,
                 drawlabels=FALSE, add=TRUE, ...)
     }
     if (zr[2] > 0) {
@@ -207,69 +221,74 @@ if (0){
         }
         nz <- length(land.z)
         if (nz > 0) {
-            if (missing(land.col))
-                land.col <- oce.colors.gebco(nz, "land", "line")
-            if (missing(land.lty))
-                land.lty <- rep(par("lty"), nz)
-            else if (length(land.lty) == 1)
-                land.lty <- rep(land.lty, nz)
-            if (missing(land.lwd))
-                land.lwd <- rep(par("lwd"), nz)
-            else if (length(land.lwd) == 1)
-                land.lwd <- rep(land.lwd, nz)
+            if (missing(col.land))
+                col.land <- oceColorsGebco(nz, "land", "line")
+            if (missing(lty.land))
+                lty.land <- rep(par("lty"), nz)
+            else if (length(lty.land) == 1)
+                lty.land <- rep(lty.land, nz)
+            if (missing(lwd.land))
+                lwd.land <- rep(par("lwd"), nz)
+            else if (length(lwd.land) == 1)
+                lwd.land <- rep(lwd.land, nz)
             legend <- c(legend, land.z)
-            lwd    <- c(lwd,    land.lwd)
-            lty    <- c(lty,    land.lty)
-            col    <- c(col,    land.col)
+            lwd    <- c(lwd,    lwd.land)
+            lty    <- c(lty,    lty.land)
+            col    <- c(col,    col.land)
             contour(xx, yy, zz,
-                    levels=land.z, lwd=land.lwd, lty=land.lty, col=land.col,
+                    levels=land.z, lwd=lwd.land, lty=lty.land, col=col.land,
                     drawlabels=FALSE, add=TRUE, ...)
         }
     }
-    if (!is.null(legend.loc)) {
+    if (!is.null(location)) {
         o <- rev(order(legend))
-        legend(legend.loc, lwd=lwd[o], lty=lty[o],
+        legend(location, lwd=lwd[o], lty=lty[o],
                bg="white", legend=legend[o], col=col[o])
     }
     if (debug && !missing(center))
-        points(center[2],center[1],cex=10,col='red')
+        points(center[2], center[1], cex=10, col='red')
     oceDebug(debug, "\b\b} # plot.topo()\n")
+    invisible()
 }
 
-read.topo <- function(file, history, ...)
+read.topo <- function(file, processingLog, ...)
 {
     nh <- 6
     header <- readLines(file, n=nh)
-    ncols <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
-    nrows <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
-    lon.ll <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])
-    lat.ll <- as.numeric(strsplit(header[4],"[ ]+",perl=TRUE)[[1]][2])
-    cellsize <- as.numeric(strsplit(header[5],"[ ]+",perl=TRUE)[[1]][2])
-    zz <- as.matrix(read.table(file, header=FALSE, skip=nh),byrow=TRUE)
-    longitude <- lon.ll + cellsize * seq(0, ncols-1)
-    latitude <- lat.ll + cellsize * seq(0, nrows-1)
+    ncol <- as.numeric(strsplit(header[1],"[ ]+",perl=TRUE)[[1]][2])
+    nrow <- as.numeric(strsplit(header[2],"[ ]+",perl=TRUE)[[1]][2])
+    longitudeLowerLeft <- as.numeric(strsplit(header[3],"[ ]+",perl=TRUE)[[1]][2])
+    latitudeLowerLeft <- as.numeric(strsplit(header[4],"[ ]+",perl=TRUE)[[1]][2])
+    cellSize <- as.numeric(strsplit(header[5],"[ ]+",perl=TRUE)[[1]][2])
+    zz <- as.matrix(read.table(file, header=FALSE, skip=nh), byrow=TRUE)
+    rownames(zz) <- NULL
+    colnames(zz) <- NULL
+    longitude <- longitudeLowerLeft + cellSize * seq(0, ncol-1)
+    latitude <- latitudeLowerLeft + cellSize * seq(0, nrow-1)
     z <- t(zz[dim(zz)[1]:1,])
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    as.topo(longitude, latitude, z, filename=file, history=log.item)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    as.topo(longitude, latitude, z, filename=file, processingLog=hitem)
 }
 
-as.topo <- function(longitude, latitude, z, filename="", history)
+as.topo <- function(longitude, latitude, z, filename="", processingLog)
 {
     ncols <- length(longitude)
     nrows <- length(latitude)
-    lon.ll <- min(longitude, na.rm=TRUE)
-    lat.ll <- min(latitude, na.rm=TRUE)
+    longitudeLowerLeft <- min(longitude, na.rm=TRUE)
+    latitudeLowerLeft <- min(latitude, na.rm=TRUE)
     dim <- dim(z)
     if (dim[1] != ncols)
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
     data <- list(longitude=longitude, latitude=latitude, z=z)
-    metadata <- list(filename=file, ncols=ncols, nrows=nrows, lon.ll=lon.ll, lat.ll=lat.ll)
-    if (missing(history)) history <- paste(deparse(match.call()), sep="", collapse="")
-    log.item <- historyItem(history)
-    rval <- list(data=data, metadata=metadata, history=log.item)
+    metadata <- list(filename=file, ncols=ncols, nrows=nrows,
+                     longitudeLowerLeft=longitudeLowerLeft, latitudeLowerLeft=latitudeLowerLeft)
+    if (missing(processingLog))
+        processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    rval <- list(data=data, metadata=metadata, processingLog=processingLog)
     class(rval) <- c("topo", "oce")
     rval
 }
@@ -281,21 +300,20 @@ summary.topo <- function(object, ...)
     res <- list(lat.range=range(object$data$lat, na.rm=TRUE),
                 lon.range=range(object$data$lon, na.rm=TRUE),
                 z.range=range(object$data$z, na.rm=TRUE),
-                history=object$history)
+                processingLog=object$processingLog)
     class(res) <- "summary.topo"
     res
 }
 
 print.summary.topo <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("\nETOPO dataset\n")
-    cat("latitude range:", format(x$lat.range[1], digits),
+    cat("\ntopo dataset\n")
+    cat("* latitude range:", format(x$lat.range[1], digits),
         " to ", format(x$lat.range[2], digits), "\n")
-    cat("longitude range:", format(x$lon.range[1], digits),
+    cat("* longitude range:", format(x$lon.range[1], digits),
         " to ", format(x$lon.range[2], digits), "\n")
-    cat("elevation range:", format(x$z.range[1], digits=digits),
+    cat("* elevation range:", format(x$z.range[1], digits=digits),
         " to ", format(x$z.range[2], digits), "\n")
-    cat("ProcessingLog:\n", ...)
-    print(summary(x$history))
+    print(summary(x$processingLog))
     invisible(x)
 }

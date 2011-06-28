@@ -3,6 +3,7 @@
 \alias{read.ctd}
 \alias{read.ctd.sbe}
 \alias{read.ctd.woce}
+\alias{read.ctd.odf}
 
 \title{Read a CTD data file}
 
@@ -10,11 +11,13 @@
 
 \usage{
 read.ctd(file, type=NULL, columns=NULL, station=NULL, 
-  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.sbe(file, columns=NULL, station=NULL, missing.value,
-  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999, 
-  monitor=FALSE, debug=getOption("oceDebug"), history, \dots)
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
+read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999, 
+  monitor=FALSE, debug=getOption("oceDebug"), processingLog, \dots)
 }
 
 \arguments{
@@ -39,7 +42,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     of line of data read.  (This may be useful in debugging problems in
     reading files that are misconfigured.)}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{\dots}{additional arguments, passed to called routines.}
@@ -53,7 +56,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
   files stored in the exchange format used by the World Ocean
   Circulation Experiment.)
 
-  The funcitons attempt to infer a wide range of meta-information from
+  The functions attempt to infer a wide range of meta-information from
   file headers, but variations in these headers impose some limitations
   on the process.  For example, in the first file tested during
   development, the sampling rate was written as \code{* sample rate = 1
@@ -92,8 +95,8 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
     case to case, and so it is important to refer to them by name.
     The following vectors are normally present: \code{data$pressure},
     \code{data$salinity}, \code{data$temperature}, and
-    \code{data$sigma.theta}. (\eqn{\sigma_\theta}{sigma-theta} is calculated
-    using \code{\link{sw.sigma.theta}}.)}
+    \code{data$sigmatheta}. (\eqn{\sigma_\theta}{sigma-theta} is calculated
+    using \code{\link{swSigmaTheta}}.)}
   \item{metadata}{a list containing the following items
     \describe{
       \item{\code{header}}{the header itself, normally containing
@@ -121,7 +124,7 @@ read.ctd.woce(file, columns=NULL, station=NULL, missing.value=-999,
 	seconds.}
     }
   }
-  \item{history}{a history of processing, in the standard \code{oce} format.}
+  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \seealso{The generic function \code{\link{read.oce}} provides an alternative to this.
@@ -149,9 +152,6 @@ before you try to read the data.
 
 \examples{
 library(oce)
-x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
-plot(x) # summary with TS and profiles
-plot.TS(x) # just the TS
 \dontrun{
 woce <- read.oce(
   "http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv")
@@ -160,18 +160,28 @@ plot(woce)
 }
 
 \references{The Sea-Bird SBE 19plus profiler is described at
-  \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  The
-  company recommends the use of their own software, and perhaps for this
-  reason it is difficult to find a specification for the data files.
-  Inspection of data files led to most of the code used in Oce.  If the
-  company ever publishes standards for the data formats, of course Oce
-  will be adjusted.  In the meantime, it does a reasonable job in many
-  instances.
+    \url{http://www.seabird.com/products/spec_sheets/19plusdata.htm}.  The
+    company recommends the use of their own software, and perhaps for this
+    reason it is difficult to find a specification for the data files.
+    Inspection of data files led to most of the code used in Oce.  If the
+    company ever publishes standards for the data formats, of course Oce will
+    be adjusted.  In the meantime, it does a reasonable job in many instances.
 
-  The WOCE-exchange format is described at
-\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
-and a sample file is at
-\url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}}
+    The WOCE-exchange format is described at
+    \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm},
+    and a sample file is at
+    \url{http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/example_ct1.csv}
+
+    The ODF format, used by the Canadian Department of Fisheries and Oceans, is
+    described at
+    \url{http://slgo.ca/app-sgdo/en/docs_reference/documents.html}, and this
+    was used as a base for \code{read.ctd.odf}.  However, it was only a
+    starting point, for examination of data files revealed many variants in the
+    names of the data columns.  If anything odd happens with ODF files (e.g. if
+    they cannot be plotted), the first thing to do is to reread the files with
+    \code{debug=1}, to see if column names were converted properly.
+
+}
 
 
 \author{Dan Kelley}

@@ -303,16 +303,16 @@ if (!SETUP) {
     ## Test against matlab t_astron, with a randomly-picked calibration time
     t <- as.POSIXct("2008-01-22 18:50:24", tz="GMT")
 
-    a <- tidem.astron(t)
+    a <- tidemAstron(t)
     stopifnot(all.equal(a$astro, c(1.28861316428, 0.33390620851, 0.83751937277, 0.14234854462, 0.08559663825, 0.78633079279)))
     stopifnot(all.equal(a$ader,  c(0.96613680803, 0.03660110127, 0.00273790931, 0.00030945407, 0.00014709388, 0.00000013082)))
 
-    vuf <- tidem.vuf(t, 48)
+    vuf <- tidemVuf(t, 48)
     stopifnot(all.equal(c(vuf$v), c(0.57722632857477)))
     stopifnot(all.equal(c(vuf$u), c(0)))
     stopifnot(all.equal(c(vuf$f), c(1)))
 
-    vuf <- tidem.vuf(t, c(48, 49), 45)
+    vuf <- tidemVuf(t, c(48, 49), 45)
     stopifnot(all.equal(vuf$v, c(0.57722632857477,0.62841490855698)))
     stopifnot(all.equal(vuf$u, c(0.00295677805220,0.00180270946435)))
     stopifnot(all.equal(vuf$f, c(0.96893771510868,0.98142639461951)))

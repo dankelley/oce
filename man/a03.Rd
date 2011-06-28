@@ -42,4 +42,4 @@ save(a03, file="oce/data/a03.rda")
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{datasets}

@@ -1,3 +1,4 @@
+% vim:textwidth=100:expandtab:shiftwidth=2:softtabstop=2
 \name{tidem}
 
 \alias{tidem}
@@ -6,30 +7,40 @@
 
 \description{Fit a tidal model to a timeseries.}
 
-\usage{tidem(sl, constituents, latitude=NULL, startTime, rc=1, quiet=TRUE)}
+\usage{tidem(x, t, constituents, latitude=NULL, rc=1, debug =getOption("oceDebug"))}
 
 \arguments{
-  \item{sl}{a \code{sealevel} object, or a list of numbers indicating sealevel.}
-  \item{constituents}{an optional list of tidal constituents to which
-	the fit is done (see \dQuote{Details}.)}  
-  \item{latitude}{if provided, the latitude of the observations.  If not
-	provided, \code{tidem} will try to infer this from \code{sl}.}
-  \item{startTime}{optional the start time for the series.  If not provided,
-	this is taken as the first time of the first sample, which is
-	inferred as 0 for the case where \code{sl} is a simple list, and
-	inferred as the time of the first sample, if \code{sl} is a
-	\code{sealevel} object.  See \sQuote{Examples}.}
+
+  \item{x}{Either a \code{sealevel} object (e.g. produced by \code{\link{read.sealevel}} or
+    \code{\link{as.sealevel}}) or a list of numbers.  In the former case, time is part of the
+    object, so \code{t} may not be given here.  In the latter case, \code{tidem} needs a way to
+    determine time, so \code{t} must be given.}
+      
+  \item{t}{An indication of times, to be given only if \code{x} is numeric.  There are two styles:
+    \code{t} may be a POSIXt vector of times at which the \code{x} observations were made, or
+    \code{t} may be a single number indicating the number of seconds between those observations.
+    (In the latter case, a sealevel object is created, starting at \code{as.POSIXct("2000-01-01
+      00:00:00", tz="UTC")}.  The starting time is irrelevant to the fitted coefficients, but it
+    \emph{does} matter if \code{\link{predict.tidem}} is to be used.)}
+  
+  \item{constituents}{an optional list of tidal constituents to which the fit is done (see
+    \dQuote{Details}.)}  
+
+  \item{latitude}{if provided, the latitude of the observations.  If not provided, \code{tidem} will
+    try to infer this from \code{sl}.}
+
   \item{rc}{the value of the coefficient in the Rayleigh criterion.}
-  \item{quiet}{set to FALSE to get extra information on the processing.}
+
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
+    information, or to 2 to get more.} 
+  
 }
 
-\details{The fit is done in terms of sine and cosine components at the
-  indicated tidal frequencies, with the amplitude and phase being
-  calculated from the resultant coefficients on the sine and cosine
-  terms.
+\details{The fit is done in terms of sine and cosine components at the indicated tidal frequencies,
+  with the amplitude and phase being calculated from the resultant coefficients on the sine and
+  cosine terms.
   
-  The tidal constituents to be used in the analysis are specified as
-  follows.
+  The tidal constituents to be used in the analysis are specified as follows.
 
   \enumerate{
 
@@ -154,28 +165,19 @@ amplitude 0.50072m and phase 143.1.
 
 \examples{
 library(oce)
-# Fake a week simple hourly data series (not sealevel object)
-hour <- seq(0, 24 * 7)
-# M2 tide with phase 45 degrees
-eta <- 1 + 2 * sin(2 * pi * hour / 12.4206 + pi/4)
-tide <- tidem(eta)
-summary(tide)
-# Check: only Z0 and M2 are significant
-plot(tide)
-
-# Supply a start time, using a sealevel object
-t <- seq(0, 10*86400, 3600)		# 10 days
-eta <- sin(0.080511401 * t * 2 * pi / 3600)
-sl <- as.sealevel(eta,t+as.POSIXct("2009-02-13 00:00:00", tz="GMT"))
-m <- tidem(sl, startTime=as.POSIXct("2009-02-13 00:00:00", tz="GMT"))
-# Check: only M2 has non-negligible amplitude
-summary(m)
-
 # The demonstration time series from Foreman (1977),
 # also used in T_TIDE (Pawlowicz, 2002).
 data(sealevelTuktoyaktuk)
 tide <- tidem(sealevelTuktoyaktuk)
 summary(tide)
+
+# Fake data at M2
+t <- seq(0, 10*86400, 3600)
+eta <- sin(0.080511401 * t * 2 * pi / 3600)
+sl <- as.sealevel(eta)
+m <- tidem(sl)
+summary(m)
+
 }
 
 \references{

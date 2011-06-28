@@ -8,7 +8,7 @@
 
 \usage{ as.pt(time, temperature, pressure,
       filename="", instrumentType="rbr", serialNumber="",
-      history, debug=getOption("oceDebug"))}
+      processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{time}{a vector of times for the data.}
@@ -17,7 +17,7 @@
   \item{filename}{optional name of file containing the data}
   \item{instrumentType}{type of instrument}
   \item{serialNumber}{serial number for instrument}
-  \item{history}{if provided, the action item to be stored in the
+  \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
@@ -42,7 +42,7 @@
 	data, because the data may have been decimated.}
     }
   }
-  \item{history}{a history of processing, in the standard \code{oce} format.}
+  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \seealso{This is used by \code{\link{read.pt}}, and the help for the latter

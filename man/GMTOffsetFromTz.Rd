@@ -1,0 +1,25 @@
+\name{GMTOffsetFromTz}
+\alias{GMTOffsetFromTz}
+\title{Determine time offset from timezone}
+\description{Determine time offset from timezone}
+\usage{GMTOffsetFromTz(tz)}
+\arguments{
+\item{tz}{a timezone, e.g. \code{UTC}.}
+}
+
+\details{The data are from
+  \url{http://www.timeanddate.com/library/abbreviations/timezones/} and
+  were hand-edited to develop this code, so there may be errors.  Also,
+  note that some of these contradict; if you examine the code, you'll
+  see some commented-out portions that represent solving conflicting
+  definitions by choosing the more common timezone abbreviation over a
+  the less common one.}
+
+\value{Number of hours in offset, e.g. \code{AST} yields 4.}
+
+\examples{
+library(oce)
+cat("Atlantic Standard Time is ", GMTOffsetFromTz("AST"), "hours after UTC")
+}
+\author{Dan Kelley}
+\keyword{misc}

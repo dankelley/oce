@@ -52,4 +52,4 @@ points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
 
 \author{Dan Kelley}
 
-\keyword{misc}
+\keyword{datasets}

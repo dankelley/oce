@@ -73,7 +73,7 @@ analysis.
   \end{center}
   \caption{\label{f:ctdobject}Sketch of the contents of a \texttt{ctd}
     object. The elements \texttt{data}, \texttt{metadata}, and
-    \texttt{history} are shared by all \texttt{oce} objects, although
+    \texttt{processingLog} are shared by all \texttt{oce} objects, although
     their contents vary from object to object.}
 \end{figure}
 
@@ -94,7 +94,7 @@ As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object is a list
 containing three elements: (a) \texttt{data}, a list or a data frame containing
 the actual data (e.g., for a CTD object, this will contain pressure,
 temperature, etc.), (b) \texttt{metadata}, a list containing data such things as
-file headers, the location of a CTD cast, etc., and (c) \texttt{history},
+file headers, the location of a CTD cast, etc., and (c) \texttt{processingLog},
 a list that documents how the file was created (often by a \texttt{read} or
 \texttt{as} method) and how it was changed thereafter (e.g. by decimating a CTD
 cast).
@@ -111,20 +111,20 @@ produces different sorts of plots for different sorts of \verb@x@ objects.
 \index{seawater properties, calculations of}
 
 The \verb@oce@ package provides many functions for dealing with
-seawater properties. Perhaps the most used is \verb@sw.rho(S,T,p)@,
+seawater properties. Perhaps the most used is \verb@swRho(S,T,p)@,
 which computes seawater density $\rho=\rho(salinity, temperature,
 pressure)$, where salinity follows the practical salinity scale,
 $temperature$ is \emph{in-situ} temperature in $^\circ$C, and
 $pressure$ is seawater pressure, i.e. the excess over atmospheric
 pressure, in dbar.  (This and similar functions starts with the
-letters \verb@sw.@ to designate that they relate to seawater
+letters \verb@sw@ to designate that they relate to seawater
 properties; a future version of \verb@oce@ may provide air properties,
 with functions names starting with \verb@air.@) The result is a number
 in the order of $1000$\,kg/m$^3$.  For many purposes, Oceanographers
 prefer to use the density anomaly $\sigma=\rho-1000$\,kg/m$^3$,
-provided with \verb@sw.sigma(salinity,temperature,pressure)@, or its
+provided with \verb@swSigma(salinity,temperature,pressure)@, or its
 adiabatic cousin $\sigma_\theta$, provided with
-\verb@sw.sigma.theta(salinity,temperature,pressure)@.
+\verb@swSigmaTheta@.
 
 \looseness=1
 \index{dynamic height}
@@ -132,27 +132,27 @@ Most of the functions use the UNESCO formulations of seawater properties, but ne
 may be added as they come into use in the literature.
 A partial list of seawater functions is as follows:
 \verb@swDynamicHeight@ (dynamic height),
-\verb@sw.N2@ (buoyancy frequency),
-\verb@sw.S.C.T.p@ (salinity from conductivity, temperature and pressure),
-\verb@sw.S.T.rho@ (salinity from temperature and density),
-\verb@sw.T.S.rho@ (temperature from salinity and density),
-\verb@sw.T.freeze@ (freezing temperature),
-\verb@sw.alpha@ (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
-\verb@sw.beta@ (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
-\verb@sw.alpha.over.beta@ ($\alpha/\beta$),
-\verb@sw.conductivity@ (conductivity from $S$, $T$ and $p$),
-\verb@sw.depth@ (depth from $p$ and latitude),
-\verb@sw.lapse.rate@ (adiabatic lapse rate),
-\verb@sw.rho@ (density $\rho$ from $S$, $T$ and $p$),
-\verb@sw.sigma@ ($\rho-1000$\,kg/m$^3$),
-\verb@sw.sigma.t@ ($\sigma$ with $p$ set to zero and temperature unaltered),
-\verb@sw.sigma.theta@ ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
-\verb@sw.sound.speed@ (speed of sound),
-\verb@sw.specific.heat@ (specific heat),
-\verb@sw.spice@ (a quantity used in double-diffusive research),
-\verb@sw.theta@ (potential temperature $\theta$),
+\verb@swN2@ (buoyancy frequency),
+\verb@swSCTp@ (salinity from conductivity, temperature and pressure),
+\verb@swSTrho@ (salinity from temperature and density),
+\verb@swTSrho@ (temperature from salinity and density),
+\verb@swTFreeze@ (freezing temperature),
+\verb@swAlpha@ (thermal expansion coefficient $\alpha=-\rho_0^{-1}\partial\rho/\partial T$),
+\verb@swBeta@ (haline compression coefficient $\beta=\rho_0^{-1}\partial\rho/\partial S$),
+\verb@swAlphaOverBeta@ ($\alpha/\beta$),
+\verb@swConductivity@ (conductivity from $S$, $T$ and $p$),
+\verb@swDepth@ (depth from $p$ and latitude),
+\verb@swLapseRate@ (adiabatic lapse rate),
+\verb@swRho@ (density $\rho$ from $S$, $T$ and $p$),
+\verb@swSigma@ ($\rho-1000$\,kg/m$^3$),
+\verb@swSigmaT@ ($\sigma$ with $p$ set to zero and temperature unaltered),
+\verb@swSigmaTheta@ ($\sigma$ with $p$ set to zero and temperature altered adiabatically),
+\verb@swSoundSpeed@ (speed of sound),
+\verb@swSpecificHeat@ (specific heat),
+\verb@swSpice@ (a quantity used in double-diffusive research),
+\verb@swTheta@ (potential temperature $\theta$),
 and
-\verb@sw.viscosity@ (viscosity).
+\verb@swViscosity@ (viscosity).
 Details and examples are provided in the documentation of these functions.
 
 
@@ -204,7 +204,7 @@ data, such as trimming CTD profiles with \verb@ctdTrim()@, but of course you
 may do that sort of work by acting on the data directly, if necessary.  Just
 make sure you realize that the metadata will not be altered if you do that.
 Also, it is a good idea to add log entries to any objects that you change, by
-using the \verb@historyAdd()@ function.  (You can see an example of
+using the \verb@processingLog()@ function.  (You can see an example of
 this in action with \verb@?section@.)
 
 \begin{figure}
@@ -215,8 +215,8 @@ this in action with \verb@?section@.)
 @
 \end{center}
 \caption{Overview graph of the sample CTD dataset \texttt{ctd}, acquired in
-the St Lawrence Estuary Internal Wave Experiment.  (This dataset has been
-trimmed to the downcast; see the text and Figure~\ref{fig:ctdraw}.)}
+Halifax Harbour by students in the author's Physical Oceanography class
+at Dalhousie University.}
 \label{fig:ctd}
 \end{figure}
 
@@ -229,8 +229,8 @@ preceding section was trimmed of equilibration-phase and upcast-phase data. Data
 from these sections are spurious and must be trimmed as a first step in
 processing. For example, consider the following code.
 <<label=ctdrawplot,eval=FALSE>>=
-data(ctd.raw)
-plot.ctd.scan(ctd.raw)
+data(ctdRaw)
+plot.ctd.scan(ctdRaw)
 @
 \begin{figure}
 \begin{center}
@@ -239,7 +239,7 @@ plot.ctd.scan(ctd.raw)
 <<ctdrawplot>>
 @
 \end{center}
-\caption{Scanwise plot of the \texttt{ctd.raw} sample data set.  Note the wild
+\caption{Scanwise plot of the \texttt{ctdRaw} sample data set.  Note the wild
 spike at the start, the equilibration phase before the downcast, and the
 spurious freshening signal near the start of the upcast.  See the text for a
 discussion of how inspection of such graphs can help in trimming CTD data.}
@@ -253,16 +253,16 @@ is a convenient index for extraction of the downcast portion of the profile by
 an essentially manual method, e.g. proceeding with a sequence of commands such
 as
 <<ctdscaneg,eval=false>>=
-plot.ctd.scan(ctdTrim(ctd.raw, "range",
+plot.ctd.scan(ctdTrim(ctdRaw, "range",
                       parameters=list(item="scan", from=140, to=250)))
-plot.ctd.scan(ctdTrim(ctd.raw, "range",
+plot.ctd.scan(ctdTrim(ctdRaw, "range",
                       parameters=list(item="scan", from=150, to=250)))
 @
 This is the ``gold standard'' method, which is recommended for detailed
 work. However, for quick work, you may find that the automatic downcast
 detection scheme works adequately, e.g.
 <<ctdtrimeg,eval=false>>=
-ctdTrimmed <- ctdTrim(ctd.raw)
+ctdTrimmed <- ctdTrim(ctdRaw)
 @
 
 It should be noted that \verb@ctdTrim@ inserts entries into the object's log
@@ -391,7 +391,10 @@ individual plots of individual properties.
 The Halifax section is supplied in a pre-gridded format, but some datasets have
 different pressure levels at each station.  For such cases, the
 \verb@sectionGrid@ function may be used, e.g.
-<<label=sectionplota03,eval=FALSE>>=
+<<fig=FALSE, eval=TRUE, echo=FALSE>>=
+png("a03.png", width=600, height=700, pointsize=12)
+@
+<<>>=
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
@@ -399,6 +402,9 @@ GS <- subset(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-85,-(64+13/60)))
+@
+<<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
+dev.off()
 @
 produces Figure~\ref{fig:sectiona03}.  The ship doing the sampling was
 travelling westward from the Mediterranean towards North America, taking 124
@@ -410,9 +416,7 @@ right angles.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=1\textwidth}
-<<label=sectionfiga03,fig=TRUE,width=8, height=9.5, echo=FALSE>>=
-<<sectionplota03>>
-@
+\includegraphics[width=\hsize]{a03}
 \end{center}
 \caption{\label{fig:sectiona03}
   Portion of the CTD section designated A03, showing the Gulf Sream region.  The
@@ -436,19 +440,22 @@ The only real advantage over plotting things yourself is that latitude and
 longitude are scaled to give natural shapes near the centre of the plot.
 
 Bathymetric charts, or more generally topographic maps, can be produced easily, e.g. (Figure~\ref{fig:topo})
-<<label=topoplot,eval=FALSE>>=
+<<fig=FALSE, eval=TRUE, echo=FALSE>>=
+png("topo.png", width=800, height=400, pointsize=13)
+@
+<<>>=
 library(oce)
-data(topo.maritimes)
-plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50),
-     water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
-     water.lwd=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+data(topoMaritimes)
+plot(topoMaritimes, center=c(46,-62), span=800,
+    water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
+    lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
+@
+<<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
+dev.off()
 @
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.7\textwidth}
-<<label=topofig,fig=TRUE,width=7, height=5, echo=FALSE>>=
-<<topoplot>>
-@
+\includegraphics[width=0.9\hsize]{topo}
 \end{center}
 \caption{Topography of eastern Canada, centred on Les \^{i}les de la Madeleine.}
 \label{fig:topo}
@@ -462,11 +469,17 @@ plot(topo.maritimes, xlim=c(-66, -58), ylim=c(44, 50),
 \index{Hurricane Juan!surge seen in time-series of sea level}
 
 The commands
-<<label=sealevelplot,eval=FALSE>>=
+<<fig=FALSE, eval=TRUE, echo=FALSE>>=
+png("sealevel.png", width=800, height=600, pointsize=20)
+@
+<<>>=
 library(oce)
 #sealevel <- read.oce("../../tests/h275a96.dat")
 data(sealevelHalifax)
 plot(sealevelHalifax)
+@
+<<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
+dev.off()
 @
 load and graph a build-in dataset of sea-level timeseries. The result, shown in
 Figure~\ref{fig:sealevel}, is a four-panel plot. The top panel is a timeseries
@@ -477,17 +490,15 @@ indicated. At the bottom is a cumulative spectrum, which makes these
 narrow-banded constituents quite visible.
 
 \begin{figure}
-\begin{center}
-\setkeys{Gin}{width=0.8\textwidth}
-<<label=sealevelfig,fig=TRUE,width=7,height=5,echo=FALSE>>=
-<<sealevelplot>>
-@
-\end{center}
-\caption{Sea-level timeseries measured in 2003 in Halifax Harbour.  (The spike
-in September is the storm surge associated with Hurricane Juan, regarded by the
-Canadian Hurricane Centre to be one of the most powerful and damaging hurricanes
-to ever hit Canada.)}
-\label{fig:sealevel}
+    \begin{center}
+        \includegraphics[width=\hsize]{sealevel}
+    \end{center}
+    \caption{Sea-level timeseries measured in 2003 in Halifax Harbour.  (The
+    spike in September is the storm surge associated with Hurricane Juan,
+    regarded by the Canadian Hurricane Centre to be one of the most powerful and
+    damaging hurricanes to ever hit Canada.)}
+    \label{fig:sealevel}
+
 \end{figure}
 
 \workedexercise{5}{Illustrate Halifax sealevel variations during Hurricane Juan.}
@@ -545,24 +556,27 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 
 \section{Temperature-Depth Recorder data}
 The commands
-<<label=ptplot,eval=FALSE>>=
+<<fig=FALSE, eval=TRUE, echo=FALSE>>=
+png("pt.png", width=600, height=300, pointsize=13)
+@
+<<>>=
 library(oce)
 data(ptr)
-plot(ptr)
+plot(ptr, useSmoothScatter=TRUE)
+@
+<<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
+dev.off()
 @
 produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
-measurements made during St Lawrence Estuary Internal Wave Experiment, a
-CFCAS-funded research program in which the \texttt{oce} author was a principal
+measurements made during St Lawrence Estuary Internal Wave Experiment, an
+CFCAS/NSERC-funded research program in which the \texttt{oce} author was a principal
 investigator.  The device was mounted on a mooring that tilted significantly
 with the tide, yielding strong tidal signals in pressure as well as temperature,
 thus providing a rough indication of the temperature profile.  Note that this
 graph contains in-air as well as in-water data.
 \begin{figure}
 \begin{center}
-\setkeys{Gin}{width=0.66\textwidth}
-<<label=ptfig ,fig=TRUE, width=7, height=5, echo=FALSE>>=
-<<ptplot>>
-@
+\includegraphics[width=\hsize]{pt}
 \end{center}
 \caption{Measurements made with a pressure-temperature recorder in the
   St Lawrence Estuary.  Note that the record contains in-air
@@ -581,20 +595,24 @@ then remove the atmospheric pressure from the signal.}
 \section{Acoustic Doppler Current Profiler data}
 \index{ADP}
 The commands
-<<label=adpplot,eval=FALSE>>=
+<<fig=FALSE, eval=TRUE, echo=FALSE>>=
+png("adp.png", width=800, height=400, pointsize=20)
+@
+<<label=adpplot>>=
 library(oce)
 data(adp)
-plot(adp, which=1:2,
-  adorn=expression({lines(x$data$ts$time, x$data$ts$pressure, col='green', lwd=2)}))
+plot(adp, which=1,
+  adorn=expression({lines(x$data$time, x$data$pressure, col='green', lwd=2)}))
+@
+<<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
+dev.off()
 @
 produce Figure~\ref{fig:adp}, showing currents made
 in the St Lawrence Estuary Internal Wave Experiment.
 \begin{figure}
 \begin{center}
 \setkeys{Gin}{width=\textwidth}
-<<label=adpfig ,fig=TRUE, width=8, height=5, echo=FALSE>>=
-<<adpplot>>
-@
+\includegraphics[width=\hsize]{adp}
 \end{center}
 \caption{Measurements made with an ADP in the
   St Lawrence Estuary.  The data were recorded in beam format, so a two-step
@@ -651,15 +669,16 @@ open-source software.
 %\newpage
 
 
-\vspace{2cm plus 2cm minus 2cm}
+%\vspace{2cm plus 2cm minus 2cm}
+\clearpage
 \section*{Answers to exercises}
 \workedanswer{1}{Seawater properties}
 <<>>=
 library(oce)
-sw.rho(34, 10, 100)
-sw.theta(34, 10, 100)
-sw.rho(34, sw.theta(34, 10, 100), 0)
-sw.rho(34, sw.theta(34, 10, 100, 200), 200)
+swRho(34, 10, 100)
+swTheta(34, 10, 100)
+swRho(34, swTheta(34, 10, 100), 0)
+swRho(34, swTheta(34, 10, 100, 200), 200)
 plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 
@@ -670,7 +689,7 @@ library(oce)
 data(ctd)
 pycnocline <- ctdTrim(ctd, "range",
                       parameters=list(item="pressure", from=5, to=12))
-plot.profile(pycnocline, type="density+N2")
+plot.profile(pycnocline, which="density+N2")
 @
 and another is
 \index{subset!extracting a portion of a profile}
@@ -678,26 +697,34 @@ and another is
 library(oce)
 data(ctd)
 pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
-plot.profile(pycnocline, type="density+N2")
+plot.profile(pycnocline, which="density+N2")
 @
 
 \index{section!extracting profile data from}
 \workedanswer{3}{TS diagram for section data}
+The simplest way is to use accessor functions to extract salinity, etc.
+<<>>=
+library(oce)
+data(section)
+ctd <- as.ctd(salinity(section), temperature(section), pressure(section))
+plot.TS(ctd)
+@
+but the point of \emph{this} exercise is to do the extraction manually, so a
+more appropriate solution is as follows
 <<>>=
 library(oce)
 data(section)
 SS <- TT <- pp <- id <- NULL
 n <- length(section$data$station)
-for (i in 1:n) {
-	stn <- section$data$station[[i]] # save typing
-	SS <- c(SS, stn$data$salinity)
-	TT <- c(TT, stn$data$temperature)
-	pp <- c(pp, stn$data$pressure)
-	id <- c(id, rep(i, length(stn$data$pressure)))
+for (stn in section$data$station) {
+    SS <- c(SS, stn$data$salinity)
+    TT <- c(TT, stn$data$temperature)
+    pp <- c(pp, stn$data$pressure)
 }
 ctd <- as.ctd(SS, TT, pp)
-plot.TS(ctd, col=hsv(0.7*id/n), cex=2, pch=21)
+plot.TS(ctd)
 @
+
 
 \workedanswer{4}{Gulf Stream}
 (Try \verb@?swDynamicHeight@ for hints on smoothing.)

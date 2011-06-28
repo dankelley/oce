@@ -18,12 +18,12 @@ as.sealevel <- function(elevation,
         stop("must supply sealevel height, elevation, in metres")
     n <- length(elevation)
     if (missing(time)) {              # construct hourly from time "zero"
-        start <- as.POSIXct("0000-01-01 00:00:00", tz="GMT")
-        time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="GMT")
+        start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
+        time <- as.POSIXct(start + seq(0, n - 1, 1) * 3600, tz="UTC")
         if (is.na(GMTOffset))
             GMTOffset <- 0 # FIXME: do I want to do this?
     } else {
-        time <- as.POSIXct(time, tz="GMT") # FIXME: should this be GMT?
+        time <- as.POSIXct(time, tz="UTC")
     }
     data <- data.frame(time=time, elevation=elevation)
     if (missing(deltat))
@@ -45,8 +45,8 @@ as.sealevel <- function(elevation,
                      units=units,
                      n=length(t),
                      deltat=deltat)
-    logItem <- historyItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- list(data=data, metadata=metadata, history=logItem)
+    logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    rval <- list(data=data, metadata=metadata, processingLog=logItem)
     class(rval) <- c("sealevel", "oce")
     rval
 }
@@ -218,7 +218,7 @@ plot.sealevel <- function(x, which=1:4,
 }
 
 
-read.sealevel <- function(file, tz=getOption("oceTz"), history, debug=getOption("oceDebug"))
+read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))
 {
     ## Read sea-level data in format described at ftp://ilikai.soest.hawaii.edu/rqds/hourly.fmt
     filename <- fullFilename(file)
@@ -268,7 +268,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), history, debug=getOption(
         latitude      <- as.numeric(strsplit(header[3], ",")[[1]][2])
         longitude     <- as.numeric(strsplit(header[4], ",")[[1]][2])
         tz            <- strsplit(header[6], ",")[[1]][2] # needed for get GMT offset
-        GMTOffset     <- GMT.offset.from.tz(tz)
+        GMTOffset     <- GMTOffsetFromTz(tz)
         x <- read.csv(file, header=FALSE, stringsAsFactors=FALSE, skip=headerLength)
         if (length(grep("[0-9]{4}/", x$V1[1])) > 0) {
             oceDebug(debug, "Date format is year/month/day hour:min with hour in range 1:24\n")
@@ -359,9 +359,9 @@ read.sealevel <- function(file, tz=getOption("oceTz"), history, debug=getOption(
                      units=NA,
                      n=length(time),
                      deltat=as.numeric(difftime(time[2], time[1], units="hours")))
-    if (missing(history))
-        history <- paste(deparse(match.call()), sep="", collapse="")
-    rval <- list(data=data, metadata=metadata, history=historyItem(history))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    rval <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
     class(rval) <- c("sealevel", "oce")
     rval
 }
@@ -370,7 +370,7 @@ summary.sealevel <- function(object, ...)
 {
     if (!inherits(object, "sealevel"))
         stop("method is only for sealevel objects")
-    fives <- matrix(nrow=1, ncol=5)
+    threes <- matrix(nrow=1, ncol=3)
     res <- list(number=object$metadata$stationNumber,
                 version=if (is.null(object$metadata$version)) "?" else object$metadata$version,
                 name=object$metadata$stationName,
@@ -384,12 +384,12 @@ summary.sealevel <- function(object, ...)
                 startTime=min(object$data$time, na.rm=TRUE),
                 endTime=max(object$data$time, na.rm=TRUE),
                 gmtOffset=if (is.na(object$metadata$GMTOffset)) "?" else object$metadata$GMTOffset,
-                fives=fives,
-                history=object$history)
-    fives[1,] <- fivenum(object$data$elevation, na.rm=TRUE)
-    rownames(fives) <- "Sea level"
-    colnames(fives) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
-    res$fives <- fives
+                threes=threes,
+                processingLog=object$processingLog)
+    threes[1,] <- threenum(object$data$elevation)
+    rownames(threes) <- "Sea level"
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    res$threes <- threes
     class(res) <- "summary.sealevel"
     res
 }
@@ -410,7 +410,7 @@ print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ..
     cat(paste("*    \"     endTime:   ",x$endTime, "\n"), ...)
     cat(paste("* GMT offset:          ", if (is.null(x$GMTOffset)) "unknown" else x$GMTOffset, "\n", sep=""), ...)
     cat("* Statistics::\n", ...)
-    cat(show.fives(x, indent='     '), ...)
-    print(summary(x$history))
+    cat(showThrees(x, indent='     '), ...)
+    print(summary(x$processingLog))
     invisible(x)
 }
