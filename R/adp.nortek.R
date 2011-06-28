@@ -168,6 +168,14 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "measurementInterval=", user$measurementInterval, "\n")
 
+            if (TRUE) { # tests for issue146
+                modeBinaryTmp <- byteToBinary(buf[o+59])
+                oceDebug(debug+3, "TEST 1: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
+
+                modeBinaryTmp <- byteToBinary(buf[o+60])
+                oceDebug(debug+3, "TEST 2: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
+            }
+
             ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
                 ##user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
