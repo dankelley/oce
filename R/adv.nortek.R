@@ -1,7 +1,8 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
                             latitude=NA, longitude=NA,
-                            haveAnalog=FALSE,
+                            haveAnalog1=FALSE,
+                            haveAnalog2=FALSE,
                             debug=getOption("oceDebug"), monitor=FALSE, 
                             processingLog)
 {
@@ -342,10 +343,12 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     vvdStart2 <- sort(c(vvdStart, 1 + vvdStart))
     vvdLen <- length(vvdStart)          # FIXME: should be subsampled with 'by' ... but how???
 
-    if (haveAnalog) { # issue146
+    if (haveAnalog1) { # FIXME: shouldn't this be auto-detected from 'USER' header?
+        analog1 <- readBin(buf[vvdStart + 8], "integer", n=vvdLen, size=1)
+    }
+    if (haveAnalog2) { # FIXME: shouldn't this be auto-detected from 'USER' header?
         start <- sort(c(vvdStart+2, vvdStart+5))
-        anain2 <- readBin(buf[start], "integer", n=vvdLen, size=2, endian="little", signed=FALSE)
-        anain1 <- readBin(buf[vvdStart + 8], "integer", n=vvdLen, size=1)
+        analog2 <- readBin(buf[start], "integer", n=vvdLen, size=2, endian="little", signed=FALSE)
     }
 
     p.MSB <- as.numeric(buf[vvdStart + 4])
@@ -440,10 +443,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  pitchSlow=pitch,
                  rollSlow=roll,
                  temperatureSlow=temperature)
-    if (haveAnalog) {
-        data$anain1 <- anain1
-        data$anain2 <- anain2
-    }
+    if (haveAnalog1)
+        data$analog1 <- analog1
+    if (haveAnalog2)
+        data$analog2 <- analog2
     res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("nortek", "adv", "oce")
     oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
