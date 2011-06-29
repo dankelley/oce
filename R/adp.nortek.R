@@ -168,12 +168,26 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "measurementInterval=", user$measurementInterval, "\n")
 
-            if (TRUE) { # tests for issue146
-                modeBinaryTmp <- byteToBinary(buf[o+59])
-                oceDebug(debug+3, "TEST 1: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
-
-                modeBinaryTmp <- byteToBinary(buf[o+60])
-                oceDebug(debug+3, "TEST 2: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
+            if (debug > 0) { # tests for issue146
+                cat("TEMPORARY debugging for branch 'issue145': attempt to infer from USER header whether we have extra analog data...\n")
+                modeBinaryTmp <- byteToBinary(buf[o+59], endian="big")
+                cat("TEST 1: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
+                for (iii in (-3):3) {
+                    tmp <- buf[o+59+iii]
+                    tmpb <- byteToBinary(buf[o+59+iii], endian="big")
+                    cat("buf[o+59+", iii, "]", tmp, "x  ", tmpb, "\n")
+                }
+                cat("docs say (I *think* about byte buf[o+59], but this could be out by a byte or two)
+  bit 0: use user specified sound speed (0=no, 1=yes)
+  bit 1: diagnostics/wave mode 0=disable, 1=enable)
+  bit 2: analog output mode (0=disable, 1=enable)
+  bit 3: output format (0=Vector, 1=ADV)
+  bit 4: scaling (0=1 mm, 1=0.1 mm)
+  bit 5: serial output (0=disable, 1=enable)
+  bit 6: reserved EasyQ
+  bit 7: stage (0=disable, 1=enable)
+  bit 8: output power for analog input (0=disable, 1=enable)
+\n")                    
             }
 
             ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
