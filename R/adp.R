@@ -614,7 +614,7 @@ plot.adp <- function(x, which=1:dim(x$data$v)[3],
                     drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$time, x$data$temperature,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
-                            ylim=if(gave.ylim) ylim[w,],
+                            ylim=if(gave.ylim) ylim[w,] else range(x$data$temperature[xlim[1] <= x$data$time & x$data$time <= xlim[2]]),
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],

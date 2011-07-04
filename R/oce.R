@@ -218,7 +218,14 @@ oce.plot.ts <- function(x,
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
     par(mgp=mgp, mar=mar)
     args <- list(...)
-
+    xlimGiven <- "xlim" %in% names(args)
+    if (xlimGiven) {
+        xlim <- args$xlim
+        if (2 != length(xlim))
+            stop("'xlim' must be of length 2")
+        if (xlim[2] <= xlim[1])
+            stop("the elements of xlim must be in order")
+    }
     if (length(y) == 1)
         y <- rep(y, length(x))
     if (despike)
