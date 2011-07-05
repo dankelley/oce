@@ -209,13 +209,18 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         oceDebug(debug, paste("ctdTrim() using method \"", method,"\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
-            ##if (verbose)	cat("  parameters:",parameters,"\n");
-            if (min(parameters) < 1)
-                stop("Cannot select indices < 1");
-            if (max(parameters) > n)
-                stop(paste("Cannot select past end of array, i.e. past ", n))
-            keep <- rep(FALSE, n)
-            keep[parameters] <- TRUE
+            if (is.logical(parameters)) {
+                if (length(parameters) != n)
+                    stop("for method=\"index\", need length(parameters) to match number of pressure values")
+                keep <- parameters
+            } else {
+                if (min(parameters) < 1)
+                    stop("Cannot select indices < 1");
+                if (max(parameters) > n)
+                    stop(paste("Cannot select past end of array, i.e. past ", n))
+                keep <- rep(FALSE, n)
+                keep[parameters] <- TRUE
+            }
         } else if (method == "downcast") {
             ## 1. despike to remove (rare) instrumental problems
             x$data$pressure <- smooth(x$data$pressure,kind="3R")

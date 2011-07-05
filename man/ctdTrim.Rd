@@ -40,20 +40,23 @@ parameters, debug=getOption("oceDebug"))}
 	    warning is printed, and this step is skipped.)}
 	}
       }
-      \item{"index"}{Select values only in the list of indices specified in \code{parameters}, 
-        \emph{e.g.} \code{selection <- ctdTrim(ctd, "index", parameters=10:30}
-        selects data points with indices 10, 11, ... 30.}
-      \item{"range"}{Select data based on the value of the column named
-        \code{parameters$item}.  This may be by range or by critical value.
-        By range: select values between \code{parameters$from} (the
-        lower limit) and \code{parameters$to} (the upper limit)
-        By critical value: select if the named column exceeds the value.
-	For example, \code{ctd2 <- ctdTrim(ctd, "range",
-          parameters=list(item="scan", from=5))} 
-	starts at scan number 5 and continues to the end,
-	while
-        \code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} 	also starts at scan 5, but extends only to scan 100.}
+
+      \item{"index"}{Select values only in the list of indices specified in \code{parameters}.
+        The indices may be integers, \emph{e.g.} \code{parameters=10:30} selects data points with
+        indices 10, 11, ... 30, or logicals, \emph{e.g.} \code{parameters=c(TRUE,TRUE, ...)}.}
+
+      \item{"range"}{Select data based on the value of the column named \code{parameters$item}.
+        This may be by range or by critical value.  By range: select values between
+        \code{parameters$from} (the lower limit) and \code{parameters$to} (the upper limit) By
+        critical value: select if the named column exceeds the value.  For example, \code{ctd2 <-
+          ctdTrim(ctd, "range", parameters=list(item="scan", from=5))} starts at scan number 5 and
+        continues to the end, while
+        \code{ctdTrim(ctd,"range",parameters=list(item="scan",from=5,to=100))} 	also starts at scan
+        5, but extends only to scan 100.}
+
+
     }
+
   }
 
   \item{inferWaterDepth}{boolean, set to \code{TRUE} if the water depth
