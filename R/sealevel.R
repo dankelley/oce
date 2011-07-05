@@ -55,7 +55,7 @@ plot.sealevel <- function(x, which=1:4,
                           adorn=NULL,
                           drawTimeRange=getOption("oceDrawTimeRange"),
                           mgp=getOption("oceMgp"),
-                          mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+                          mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
                           marginsAsImage=FALSE,
                           debug=getOption("oceDebug"),
                           ...)
@@ -118,8 +118,8 @@ plot.sealevel <- function(x, which=1:4,
     num.NA <- sum(is.na(x$data$elevation))
 
     par(mgp=mgp)
-    par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
-
+    ##par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
+    par(mar=mar)
     MSL <- mean(x$data$elevation, na.rm=TRUE)
     if ("xlim" %in% names(dots)) {
         xtmp <- subset(x$data$elevation, dots$xlim[1] <= x$data$time & x$data$time <= dots$xlim[2])

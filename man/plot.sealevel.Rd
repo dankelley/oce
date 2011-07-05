@@ -9,7 +9,7 @@
 \usage{\method{plot}{sealevel}(x, which=1:4, adorn=NULL,
      drawTimeRange=getOption("oceDrawTimeRange"),
      mgp=getOption("oceMgp"), 
-     mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+     mar=c(mgp[1]+0.5,mgp[1]+1.5,mgp[2]+1,mgp[2]+3/4),
      marginsAsImage=FALSE,
      debug=getOption("oceDebug"),
      \dots)}
