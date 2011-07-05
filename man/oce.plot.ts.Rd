@@ -6,22 +6,23 @@
 \description{Plot a time-series, obeying the timezone and possibly drawing the range in the top-left margin}
 
 \usage{
-oce.plot.ts(x, y, drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL,
-  fill=FALSE,
-  xlab="", ylab="", 
-  cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
-  mgp=getOption("oceMgp"),
-  mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
-  mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
-  type="l",
-  main="",
-  despike=FALSE,
-  debug=getOption("oceDebug"),
-  \dots)}
+oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="", 
+            drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL, fill=FALSE,
+            cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
+            mgp=getOption("oceMgp"),
+            mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
+                  mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
+            main="",
+            despike=FALSE,
+            debug=getOption("oceDebug"),
+            \dots)}
 
 \arguments{
 \item{x}{the times of observations.}
 \item{y}{the observations.}
+\item{type}{plot type, \code{"l"} for lines, \code{"p"} for points.}
+\item{xlim}{optional limit for x axis.}
+\item{ylim}{optional limit for y axis.}
 \item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of times 
   in the top-left margin.}
 \item{xaxs}{character indicating whether image should extend to edge
@@ -45,7 +46,6 @@ oce.plot.ts(x, y, drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL,
   tighter than the R default, in order to use more space for the
   data and less for the axes.}
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
-\item{type}{plot type.}
 \item{main}{title of plot.}
 \item{despike}{boolean flag that can turn on despiking with \code{\link{despike}}.}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a

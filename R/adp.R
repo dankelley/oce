@@ -614,7 +614,7 @@ plot.adp <- function(x, which=1:dim(x$data$v)[3],
                     drawPalette(debug=debug-1)
                 oce.plot.ts(x$data$time, x$data$temperature,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
-                            ylim=if(gave.ylim) ylim[w,] else range(x$data$temperature[xlim[1] <= x$data$time & x$data$time <= xlim[2]]),
+                            ylim=if(gave.ylim) ylim[w,],
                             xaxs="i",
                             col=col[w],
                             lwd=lwd[w],
@@ -632,7 +632,6 @@ plot.adp <- function(x, which=1:dim(x$data$v)[3],
             if (which[w] == 15) {
                 if (haveTimeImages)
                     drawPalette(debug=debug-1)
-                oceDebug(debug, "pressure plot. col=", col[w], "\n")
                 oce.plot.ts(x$data$time, x$data$pressure,
                             xlim=if(gave.xlim) xlim[w,] else tlim,
                             ylim=if(gave.ylim) ylim[w,],

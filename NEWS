@@ -1,4 +1,5 @@
 0.4-1
+- oce.plot.ts(): inferred ylim matches data range within provided xlim
 - read.adv.nortek(): handle extra analog data
 - add CTD accessors longitude(), latitude(), and time()
 
