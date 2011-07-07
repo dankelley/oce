@@ -98,9 +98,9 @@
 
   NOTE: \code{imagep} is an analogue of \code{\link{image}}, and so it borrows
   a somewhat odd convention: the number of rows in the matrix corresponds to
-  the y axis, not the x axis.  (Actually, \code{\link{image}} permits the
-  length of \code{x} to match either \code{nrow(z)} or \code{1+nrow(z)}, but
-  here only the first is permitted.)
+  the \code{x} axis, not the \code{y} axis.  (Actually, \code{\link{image}}
+  permits the length of \code{x} to match either \code{nrow(z)} or
+  \code{1+nrow(z)}, but here only the first is permitted.)
 
 }
 

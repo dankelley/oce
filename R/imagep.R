@@ -59,9 +59,9 @@ imagep <- function(x, y, z,
             stop("must supply z")
     }
     dim <- dim(z)
-    if (nrow(z) != length(x))
+    if (nrow(z) != length(x) && (1+nrow(z)) != length(x))
         stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
-    if (ncol(z) != length(y))
+    if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
 
     omai <- par("mai")
