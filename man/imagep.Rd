@@ -111,7 +111,6 @@
 }
 \examples{
 library(oce)
-opar <- par(no.readonly = TRUE)
 par(mfrow=c(1,1))
 h <- seq(0, 50, length.out=200)
 drho <- seq(1, 3, length.out=200)
@@ -119,7 +118,7 @@ speed <- sqrt(9.8*outer(drho/1024, h, "*"))
 imagep(h, drho, speed, xlab="Equivalent depth [m]",
   ylab=expression(paste(Delta*rho, " [kg/m^3]")),
   zlab="Internal-wave speed [m/s]")
-par(opar)
+imagep(volcano)
 }
 \author{Dan Kelley}
 \keyword{misc}
