@@ -29,17 +29,40 @@ imagep <- function(x, y, z,
     oceDebug(debug, paste("  xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep=""))
     oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-    if (missing(x))
-        stop("must supply x")
-    if (missing(y))
-        stop("must supply y")
-    if (missing(z))
-        stop("must supply z")
+    if (!missing(x) && is.list(x)) {
+        names <- names(x)
+        if (!missing(y))
+            stop("may not give y, since x is a list")
+        if (!missing(z))
+            stop("may not give z, since x is a list")
+        if (!("x" %in% names))
+            stop("since x is a list, it must have an item named 'x'")
+        if (!("y" %in% names))
+            stop("since x is a list, it must have an item named 'y'")
+        if (!("z" %in% names))
+            stop("since x is a list, it must have an item named 'z'")
+        y <- x$y
+        z <- x$z
+        x <- x$x
+    } else if (!missing(x) && is.matrix(x)) {
+        z <- x
+        y <- seq(0, 1, length.out=ncol(x))
+        x <- seq(0, 1, length.out=nrow(x))
+    } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
+        x <- seq(0, 1, length.out=nrow(z))
+        y <- seq(0, 1, length.out=ncol(z))
+        z <- z
+    } else {
+        if (missing(y))
+            stop("must supply y")
+        if (missing(z))
+            stop("must supply z")
+    }
     dim <- dim(z)
-    if (dim[1] != length(x))
-        stop("image width, dim(z)[1], must equal length(x)")
-    if (dim[2] != length(y))
-        stop("image height, dim(z)[2], must equal length(y)")
+    if (nrow(z) != length(x))
+        stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
+    if (ncol(z) != length(y))
+        stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
 
     omai <- par("mai")
     omar <- par("mar")
