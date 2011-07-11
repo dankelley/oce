@@ -21,9 +21,9 @@ processingLogItem(value="")
   \item{x}{an \code{oce} object.}
 }
 
-\details{The \code{processingLog} function is designed for the user to add items to
-    the processingLog of an object.  The \code{processingLogItem} function is used
-    internally within the package.}
+\details{The \code{processingLog} function is designed for the user to 
+    alter the processingLog of an object.  The \code{processingLogItem}
+    function is used internally within the package.}
 
 \value{The updated processingLog.}
 
