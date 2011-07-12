@@ -441,7 +441,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 if (sum(keep) < 2)
                     stop("must keep at least 2 profiles")
                 rval <- x
-                warning("FIXME: completely ignoring slow timescale data")
+                ## FIXME: are we handling slow timescale data?
                 for (name in names(x$data)) {
                     if (name == "time" || is.vector(x$data[[name]])) {
                         if ("distance" == name)

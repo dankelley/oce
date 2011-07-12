@@ -49,6 +49,7 @@ export(
        header,
        heading,
        "heading<-",
+       processingLog,
        "processingLog<-",
        processingLogItem,
        imagep,
