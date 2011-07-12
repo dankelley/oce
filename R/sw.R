@@ -6,9 +6,9 @@ swN2 <- function(pressure, sigmaTheta=NULL, ...) # BUG: think more about best de
     }
     args <- list(...)
     depths <- length(pressure)
-    df <- if (is.null(args$df)) min(floor(length(pressure)/10), 15) else args$df;
+    df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
     ok <- !is.na(pressure) & !is.na(sigmaTheta)
-    if (depths > 4) {
+    if (depths > 4 && df > 1) {
 	sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
 	sigmaThetaDeriv <- rep(NA, length(pressure))
 	sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
