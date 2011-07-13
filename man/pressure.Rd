@@ -7,6 +7,7 @@
 \alias{latitude}
 \alias{longitude}
 \alias{time}
+\alias{elevation}
 
 \concept{data extraction}
 
@@ -23,6 +24,7 @@
   latitude(x, time)
   longitude(x, time)
   time(x, time)
+  elevation(x, time)
 }
 
 \arguments{

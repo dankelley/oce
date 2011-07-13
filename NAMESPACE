@@ -34,6 +34,7 @@ export(
        detrend,
        drawIsopycnals,
        drawPalette,
+       elevation,
        enuToOther,
        enuToOtherAdp,
        enuToOtherAdv,

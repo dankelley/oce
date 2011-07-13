@@ -51,7 +51,7 @@ as.sealevel <- function(elevation,
     rval
 }
 
-plot.sealevel <- function(x, which=1:4,
+plot.sealevel <- function(x, which=1:3,
                           adorn=NULL,
                           drawTimeRange=getOption("oceDrawTimeRange"),
                           mgp=getOption("oceMgp"),
@@ -168,9 +168,11 @@ plot.sealevel <- function(x, which=1:4,
                 Elevation <- ts(x$data$elevation, start=1, deltat=x$metadata$deltat)
                 #s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                 s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
-                par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
-                plot(s$freq,s$spec,xlim=c(0,0.1),
-                     xlab="",ylab=expression(paste(Gamma^2, "   [",m^2/cph,"]")),
+                par(mar=c(mgp[1]+1.25,mgp[1]+1.5,mgp[2]+0.25,mgp[2]+3/4))
+                xlim <- c(0, 0.1) # FIXME: should be able to set this
+                ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
+                plot(s$freq,s$spec,xlim=xlim, ylim=ylim,
+                     xlab="Frequency [cph]", ylab="Spectral density [m^2/cph]",
                      type='l',log="y")
                 grid()
                 drawConstituents()
