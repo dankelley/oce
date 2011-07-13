@@ -507,7 +507,7 @@ plot.ctd <- function (x, which = 1:4,
                          grid=grid,
                          useSmoothScatter=useSmoothScatter,
                          col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], ch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 12 || which[w] == "N2")
             plot.profile(x, xtype="N2",
                          ylim=plim,
