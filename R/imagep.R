@@ -126,7 +126,9 @@ imagep <- function(x, y, z,
             } else {
                 palette <- seq(zlim[1], zlim[2], length.out=300)
             }
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                  breaks=breaks,
+                  col=col,
                   zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
         } else {
             if (missing(zlim)) {
