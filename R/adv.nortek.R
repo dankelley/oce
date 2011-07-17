@@ -1,6 +1,8 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
                             latitude=NA, longitude=NA,
+                            haveAnalog1=FALSE,
+                            haveAnalog2=FALSE,
                             debug=getOption("oceDebug"), monitor=FALSE, 
                             processingLog)
 {
@@ -340,6 +342,15 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
     vvdStart2 <- sort(c(vvdStart, 1 + vvdStart))
     vvdLen <- length(vvdStart)          # FIXME: should be subsampled with 'by' ... but how???
+
+    if (haveAnalog1) { # FIXME: shouldn't this be auto-detected from 'USER' header?
+        analog1 <- readBin(buf[vvdStart + 8], "integer", n=vvdLen, size=1)
+    }
+    if (haveAnalog2) { # FIXME: shouldn't this be auto-detected from 'USER' header?
+        start <- sort(c(vvdStart+2, vvdStart+5))
+        analog2 <- readBin(buf[start], "integer", n=vvdLen, size=2, endian="little", signed=FALSE)
+    }
+
     p.MSB <- as.numeric(buf[vvdStart + 4])
     p.LSW <- readBin(buf[vvdStart2 + 6], "integer", size=2, n=vvdLen, signed=FALSE, endian="little")
     pressure <- (65536 * p.MSB + p.LSW) / 1000
@@ -348,7 +359,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     v[,1] <- metadata$velocityScale * readBin(buf[vvdStart2 + 10], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
     v[,2] <- metadata$velocityScale * readBin(buf[vvdStart2 + 12], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
     v[,3] <- metadata$velocityScale * readBin(buf[vvdStart2 + 14], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
-    if (debug > 0) {
+    if (debug > 0.9) {
         oceDebug(debug, "v[", dim(v), "] begins...\n")
         print(matrix(as.numeric(v[1:min(3,vvdLen),]), ncol=3))
     }
@@ -356,7 +367,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     a[,1] <- buf[vvdStart + 16]
     a[,2] <- buf[vvdStart + 17]
     a[,3] <- buf[vvdStart + 18]
-    if (debug > 0) {
+    if (debug > 0.9) {
         oceDebug(debug, "a[", dim(a), "] begins...\n")
         print(matrix(as.numeric(a[1:min(3,vvdLen),]), ncol=3))
     }
@@ -364,7 +375,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     c[,1] <- buf[vvdStart + 19]
     c[,2] <- buf[vvdStart + 20]
     c[,3] <- buf[vvdStart + 21]
-    if (debug > 0) {
+    if (debug > 0.9) {
         cat("c[", dim(c), "] begins...\n")
         print(matrix(as.numeric(c[1:min(3,vvdLen),]), ncol=3))
     }
@@ -432,6 +443,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  pitchSlow=pitch,
                  rollSlow=roll,
                  temperatureSlow=temperature)
+    if (haveAnalog1)
+        data$analog1 <- analog1
+    if (haveAnalog2)
+        data$analog2 <- analog2
     res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("nortek", "adv", "oce")
     oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")

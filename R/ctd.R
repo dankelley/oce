@@ -209,13 +209,18 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
         oceDebug(debug, paste("ctdTrim() using method \"", method,"\"\n", sep=""))
         keep <- rep(TRUE, n)
         if (method == "index") {
-            ##if (verbose)	cat("  parameters:",parameters,"\n");
-            if (min(parameters) < 1)
-                stop("Cannot select indices < 1");
-            if (max(parameters) > n)
-                stop(paste("Cannot select past end of array, i.e. past ", n))
-            keep <- rep(FALSE, n)
-            keep[parameters] <- TRUE
+            if (is.logical(parameters)) {
+                if (length(parameters) != n)
+                    stop("for method=\"index\", need length(parameters) to match number of pressure values")
+                keep <- parameters
+            } else {
+                if (min(parameters) < 1)
+                    stop("Cannot select indices < 1");
+                if (max(parameters) > n)
+                    stop(paste("Cannot select past end of array, i.e. past ", n))
+                keep <- rep(FALSE, n)
+                keep[parameters] <- TRUE
+            }
         } else if (method == "downcast") {
             ## 1. despike to remove (rare) instrumental problems
             x$data$pressure <- smooth(x$data$pressure,kind="3R")
@@ -372,6 +377,7 @@ plot.ctd <- function (x, which = 1:4,
                       cex=1,
                       pch=1,
                       useSmoothScatter=FALSE,
+                      type='l',
                       adorn=NULL,
                       mgp=getOption("oceMgp"),
                       mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -384,6 +390,12 @@ plot.ctd <- function (x, which = 1:4,
     opar <- par(no.readonly = TRUE)
     lw <- length(which)
     if (lw > 1) on.exit(par(opar))
+    if (length(type) < lw)
+        type <- rep(type, lw) # FIXME: recycle more sensibly
+    if (length(pch) < lw)
+        pch <- rep(pch, lw) # FIXME: recycle more sensibly
+    if (length(cex) < lw)
+        cex <- rep(cex, lw) # FIXME: recycle more sensibly
     dec_deg <- function(x, code = "lat") {
         if (code == "lat") {
             if (x < 0) {
@@ -448,61 +460,61 @@ plot.ctd <- function (x, which = 1:4,
     for (w in 1:length(which)) {
         if (which[w] == 1 || which[w] == "temperature+salinity")
             plot.profile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 2 || which[w] == "density+N2")
             plot.profile(x, xtype="density+N2",
                          ylim=plim,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 6 || which[w] == "density+dpdt")
             plot.profile(x, xtype="density+dpdt",
                          ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 7 || which[w] == "density+time")
             plot.profile(x, xtype="density+time",
                          ylim=plim, densitylim=densitylim, timelim=timelim,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 8 || which[w] == "index")
             plot.profile(x, xtype="index",
                          ylim=plim,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 9 || which[w] == "salinity")
             plot.profile(x, xtype="salinity",
                          ylim=plim,
                          Slim=Slim,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 10 || which[w] == "temperature") {
             plot.profile(x, xtype="temperature",
                          ylim=plim,
                          Tlim=Tlim,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         grid=grid, col.grid=col.grid, lty.grid=lty.grid)
+                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         } else if (which[w] == 11 || which[w] == "density")
             plot.profile(x, xtype="density",
                          ylim=plim,
                          grid=grid,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         col.grid=col.grid, lty.grid=lty.grid)
+                         col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 12 || which[w] == "N2")
             plot.profile(x, xtype="N2",
                          ylim=plim,
                          grid=grid,
-                         cex=cex, pch=pch,
                          useSmoothScatter=useSmoothScatter,
-                         col.grid=col.grid, lty.grid=lty.grid)
+                         col.grid=col.grid, lty.grid=lty.grid,
+                         cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
             plot.TS(x, Slim=Slim, Tlim=Tlim,
@@ -1623,10 +1635,10 @@ plot.profile <- function (x,
         } else if (type == 's') {
             lines(x, y, col = col, lwd=lwd, type='s')
         } else if (type == 'p') {
-            points(x, y, col = col, cex=cex)
+            points(x, y, col = col, cex=cex, pch=pch)
         } else if (type == 'b') {
             lines(x, y, col = col, lwd=lwd)
-            points(x, y, col = col, cex=cex)
+            points(x, y, col = col, cex=cex, pch=pch)
         } else {
             lines(x, y, col = col, lwd=lwd)
         }
@@ -1798,7 +1810,7 @@ plot.profile <- function (x,
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         box()
-        lines(st, y, col = col.rho, lwd=lwd)
+        if (type == 'l') lines(st, y, col = col.rho, lwd=lwd) else points(st, y, col = col.rho, pch=pch)
         par(new = TRUE)
         N2 <- swN2(x$data$pressure, st, xaxs=xaxs, yaxs=yaxs)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
@@ -1806,7 +1818,7 @@ plot.profile <- function (x,
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
-        lines(N2, y, col = col.N2, lwd=lwd)
+        if (type == 'l') lines(N2, y, col = col.N2, lwd=lwd) else points(N2, y, col = col.N2, pch=pch)
         mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 1, line = axis.name.loc, col = col.N2, cex=par("cex"))
         box()
         if (grid) {

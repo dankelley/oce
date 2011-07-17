@@ -505,7 +505,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             heading <- 0.01 * readBin(buf[profileStart2 + 18], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE) - header$headingBias
             oceDebug(debug, vectorShow(heading, "heading"))
             if (header$headingBias != 0)
-                warning("subtracted a headingBias of ", header$headingBias, " degrees")
+                cat("read.adp.rdi(): subtracted a headingBias of ", header$headingBias, " degrees\n")
             pitch <- 0.01 * readBin(buf[profileStart2 + 20], "integer", n=profilesToRead, size=2, endian="little", signed=TRUE)
             oceDebug(debug, vectorShow(profileStart2, "profileStart2"))
             oceDebug(debug, vectorShow(pitch, "pitch"))

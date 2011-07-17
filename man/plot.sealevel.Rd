@@ -6,10 +6,10 @@
 
 \description{Plot a summary diagram for sealevel data.}
 
-\usage{\method{plot}{sealevel}(x, which=1:4, adorn=NULL,
+\usage{\method{plot}{sealevel}(x, which=1:3, adorn=NULL,
      drawTimeRange=getOption("oceDrawTimeRange"),
      mgp=getOption("oceMgp"), 
-     mar=c(mgp[1],mgp[1]+1,1,1+par("cex")),
+     mar=c(mgp[1]+0.5,mgp[1]+1.5,mgp[2]+1,mgp[2]+3/4),
      marginsAsImage=FALSE,
      debug=getOption("oceDebug"),
      \dots)}
@@ -18,10 +18,11 @@
   \item{x}{an object of class \code{"sealevel"}, e.g. as read by
     \code{\link{read.sealevel}}.}
   \item{which}{numerical vector indicating desired plot types.  
-    The value \code{which}=1 gives a time-series of sealevel for the
-    entire data set, \code{which}=2 gives sealevel for just the first 28
-    days, \code{which}=3 gives a power spectrum of sea level, and
-    \code{which}=4 gives a cumulative time integral of that spectrum.}
+    The value \code{which}=1 gives a time-series of sealevel for the entire
+    data set, \code{which}=2 gives sealevel for just the first 28 days,
+    \code{which}=3 gives a power spectrum of sea level (truncated to
+    frequencies below 0.1 cph), and \code{which}=4 gives a cumulative time
+    integral of the spectrum.}
   \item{adorn}{vector of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels,

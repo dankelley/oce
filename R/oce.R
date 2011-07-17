@@ -186,22 +186,14 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 }
 
 
-oce.plot.ts <- function(x,
-                        y,
-                        drawTimeRange=TRUE,
-                        xaxs="r",       # was "i"
-                        grid=TRUE,
-                        adorn=NULL,
-                        fill=FALSE,
-                        xlab="",
-                        ylab="",
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
+                        drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL, fill=FALSE,
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
                               mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
                               mgp[2]+1,
                               mgp[2]+3/4),
-                        type="l",
                         main="",
                         despike=FALSE,
                         debug=getOption("oceDebug"),
@@ -218,7 +210,16 @@ oce.plot.ts <- function(x,
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
     par(mgp=mgp, mar=mar)
     args <- list(...)
-
+    xlimGiven <- !missing(xlim)
+    if (xlimGiven) {
+        if (2 != length(xlim))
+            stop("'xlim' must be of length 2")
+        if (xlim[2] <= xlim[1])
+            stop("the elements of xlim must be in order")
+        ok <- xlim[1] <= x & x <= xlim[2]
+        x <- x[ok]
+        y <- y[ok]
+    }
     if (length(y) == 1)
         y <- rep(y, length(x))
     if (despike)
@@ -440,7 +441,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 if (sum(keep) < 2)
                     stop("must keep at least 2 profiles")
                 rval <- x
-                warning("FIXME: completely ignoring slow timescale data")
+                ## FIXME: are we handling slow timescale data?
                 for (name in names(x$data)) {
                     if (name == "time" || is.vector(x$data[[name]])) {
                         if ("distance" == name)

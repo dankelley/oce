@@ -235,7 +235,10 @@ time.oce <- function(x, ...)
             stop("unknown 'which'; must be 1 for ADP velocity timescale, or 2 for ADP heading timescale")
         }
     } else {
-        stop("'x' must be an ADV or ADP object")
+        if ("time" %in% names(x$data))
+            res <- x$data$time
+        else
+            stop("cannot determine times for this Oce object")
     }
     res
 }
@@ -304,6 +307,9 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
     }
     rval
 }
+
+
+elevation <- function(x, time) hydrographyLocal(x, time, "elevation")
 
 pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
 

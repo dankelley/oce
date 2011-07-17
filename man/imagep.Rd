@@ -25,12 +25,23 @@
       \dots)
 }
 \arguments{
+
   \item{x,y}{locations of grid lines along which values of \code{z} are
-    measured.  The values must be finite, non-missing, and in increasing
-    order.}
-  \item{z}{matrix containing data to be indicated on the plot.
-    \code{dim(z)[1]} must equal \code{length(x)}, and the same for y.}
+      measured.   The values must be finite, non-missing, and in increasing
+      order.  By default, equally spaced values from 0 to 1 are used. If
+      \code{x} is a list, its components \code{x$x} and \code{x$y} are used for
+      \code{x} and \code{y}, respectively. If the list has component \code{z}
+      this is used for \code{z}. (NOTE: these arguments are meant to mimic
+      those of \code{\link{image}}, which explains the same description here.)}
+
+  \item{z}{a matrix containing the values to be plotted (NAs are allowed). Note
+      that x can be used instead of z for convenience. (NOTE: these arguments
+      are meant to mimic those of \code{\link{image}}, which explains the same
+      description here.)} 
+      
+
   \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
+
   \item{flip.y}{boolean, with \code{TRUE} indicating that the image
     should be flipped top to bottom (as to produce a profile image
     for a downward-looking acoustic-doppler profile).}
@@ -83,7 +94,15 @@
 
   The palette is drawn before the image, so that further drawing can be done on
   the image if desired, if the user prefers not to use the \code{adorn}
-  argument.}
+  argument.
+
+  NOTE: \code{imagep} is an analogue of \code{\link{image}}, and so it borrows
+  a somewhat odd convention: the number of rows in the matrix corresponds to
+  the \code{x} axis, not the \code{y} axis.  (Actually, \code{\link{image}}
+  permits the length of \code{x} to match either \code{nrow(z)} or
+  \code{1+nrow(z)}, but here only the first is permitted.)
+
+}
 
 \value{None.}
 
@@ -92,7 +111,6 @@
 }
 \examples{
 library(oce)
-opar <- par(no.readonly = TRUE)
 par(mfrow=c(1,1))
 h <- seq(0, 50, length.out=200)
 drho <- seq(1, 3, length.out=200)
@@ -100,7 +118,7 @@ speed <- sqrt(9.8*outer(drho/1024, h, "*"))
 imagep(h, drho, speed, xlab="Equivalent depth [m]",
   ylab=expression(paste(Delta*rho, " [kg/m^3]")),
   zlab="Internal-wave speed [m/s]")
-par(opar)
+imagep(volcano)
 }
 \author{Dan Kelley}
 \keyword{misc}

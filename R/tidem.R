@@ -9,7 +9,7 @@ plot.tidem <- function(x,
     draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
     {
         abline(v=frequency, col=col, lty="dotted")
-        if (frequency > par('usr')[2]) {
+        if (frequency <= par('usr')[2]) {
             if (is.null(adj))
                 mtext(name, side=side, at=frequency, col=col, cex=0.8)
             else

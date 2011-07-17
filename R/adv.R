@@ -299,6 +299,8 @@ plot.adv <- function(x, which=c(1:3,14,15),
             else if (ww == "uv") which2[w] <- 28
             else if (ww == "uv+ellipse") which2[w] <- 29
             else if (ww == "uv+ellipse+arrow") which2[w] <- 30
+            else if (ww == "analog1") which2[w] <- 50
+            else if (ww == "analog2") which2[w] <- 51
             else if (ww == "voltage") which2[w] <- 100
             else stop("unknown 'which':", ww)
         }
@@ -645,6 +647,18 @@ plot.adv <- function(x, which=c(1:3,14,15),
                 }
                 if (main[w] != "")
                     mtext(main[w], adj=1)
+            }
+        } else if (which[w] == 50 || which[w] == "analog1") {
+            if ("analog1" %in% names(x$data)) {
+                oce.plot.ts(x$data$time, x$data$analog1, ylab="Analog 1")
+            } else {
+                warning("there is no analog1 signal in this ADV object")
+            }
+        } else if (which[w] == 51 || which[w] == "analog2") {
+             if ("analog2" %in% names(x$data)) {
+                oce.plot.ts(x$data$time, x$data$analog2, ylab="Analog 2")
+            } else {
+                warning("there is no analog2 signal in this ADV object")
             }
         } else if (which[w] == 100 || which[w] == "voltage") {
             if ("voltageSlow" %in% names(x$data))

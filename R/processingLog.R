@@ -14,11 +14,15 @@
 
 processingLog <- function(h, value="")
 {
-    res <- if (is.null(h)) list(time=NULL, value=NULL) else h
-    res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
-    res$value <- c(res$value, value)
-    class(res) <- "processingLog"
-    res
+    if (inherits(h, "oce")) {
+        summary(h$processingLog)
+    } else {
+        res <- if (is.null(h)) list(time=NULL, value=NULL) else h
+        res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
+        res$value <- c(res$value, value)
+        class(res) <- "processingLog"
+        res
+    }
 }
 
 processingLogItem <- function(value="")
