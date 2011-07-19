@@ -1,11 +1,10 @@
 0.4-1
-- add elevation() accessor
 - plot.sealevel(): only show 3 panels, for clarity
 - plot.ctd(): add argument 'type'
-- make imagep() handle x, y, and z as image() does
+- imagep(): handle x, y, and z as image() does
 - oce.plot.ts(): inferred ylim matches data range within provided xlim
 - read.adv.nortek(): handle extra analog data
-- add CTD accessors longitude(), latitude(), and time()
+- add CTD accessors longitude(), latitude(), time(), elevation(), etc
 
 0.3-1
 - add read.oce.odf()
