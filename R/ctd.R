@@ -74,11 +74,14 @@ ctdAddColumn <- function (x, column, name, label, debug = FALSE)
         stop("must supply \"name\"")
     if (missing(label))
         label <- name
+    replace <- name %in% names(x$data)
     res <- x
     r <- range(column)
     res$data[,name] <- column
-    res$metadata$names <- c(res$metadata$names, name)
-    res$metadata$labels <- c(res$metadata$labels, label)
+    if (!replace) {
+        res$metadata$names <- c(res$metadata$names, name)
+        res$metadata$labels <- c(res$metadata$labels, label)
+    }
     res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }

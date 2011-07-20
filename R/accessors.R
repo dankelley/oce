@@ -137,6 +137,55 @@ heading <- function(x, time)
     x
 }
 
+"latitude<-" <- function(x, value)
+{
+    if ("latitude" %in% names(x$metadata)) {
+        x$metadata$latitude <- value[1]
+    } else if ("latitude" %in% names(x$data)) {
+        x$data$latitude <- value
+    } else {
+        stop("no item 'data$latitude$ or 'metadata$latitude' in object")
+    }
+    x
+}
+
+"longitude<-" <- function(x, value)
+{
+    if ("longitude" %in% names(x$metadata)) {
+        x$metadata$longitude <- value[1]
+    } else if ("longitude" %in% names(x$data)) {
+        x$data$longitude <- value
+    } else {
+        stop("no item 'data$longitude$ or 'metadata$longitude' in object")
+    }
+    x
+}
+
+"pressure<-" <- function(x, value)
+{
+    if (!("pressure" %in% names(x$data)))
+        stop("no item 'data$pressure' in object")
+    x$data$pressure<- value
+    x
+}
+
+"salinity<-" <- function(x, value)
+{
+    if (!("salinity" %in% names(x$data)))
+        stop("no item 'data$salinity' in object")
+    x$data$salinity<- value
+    x
+}
+
+"temperature<-" <- function(x, value)
+{
+    if (!("temperature" %in% names(x$data)))
+        stop("no item 'data$temperature' in object")
+    x$data$temperature <- value
+    x
+}
+
+
 pitch <- function(x, time)
 {
     if (missing(x))
