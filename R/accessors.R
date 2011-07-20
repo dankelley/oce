@@ -137,6 +137,26 @@ heading <- function(x, time)
     x
 }
 
+latitude <- function(x, times)
+{
+    if ("latitude" %in% names(x$metadata))
+        return(x$metadata$latitude)
+    else if ("latitude" %in% names(x$data))
+        return(x$data$latitude)
+    else
+        stop("no 'latitude' in names(x$data) or names(x$metadata)")
+}
+
+longitude <- function(x, times)
+{
+    if ("longitude" %in% names(x$metadata))
+        return(x$metadata$longitude)
+    else if ("longitude" %in% names(x$data))
+        return(x$data$longitude)
+    else
+        stop("no 'longitude' in names(x$data) or names(x$metadata)")
+}
+
 "latitude<-" <- function(x, value)
 {
     if ("latitude" %in% names(x$metadata)) {
@@ -368,9 +388,8 @@ temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
 
 sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 
-latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
-
-longitude <- function(x, time) hydrographyLocal(x, time, "longitude")
+#latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
+#longitude <- function(x, time) hydrographyLocal(x, time, "longitude")
 
 time <- function(x)
 {
