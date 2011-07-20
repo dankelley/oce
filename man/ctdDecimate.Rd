@@ -66,7 +66,7 @@ data(RRprofile)
 ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
 plot.profile(ctd, "T", Tlim=c(2,9))
 ctd2 <- ctdDecimate(ctd,p=seq(0,2000,1),method="reiniger-ross")
-lines(ctd2$data$temperature, ctd2$data$pressure, col="blue")
+lines(temperature(ctd2), pressure(ctd2), col="blue")
 }
 
 \references{R.F. Reiniger and C.K. Ross, 1968.  A method of

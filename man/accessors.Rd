@@ -3,8 +3,8 @@
 \alias{heading}
 \alias{heading<-}
 \alias{pitch}
-\alias{roll}
 \alias{pitch<-}
+\alias{roll}
 \alias{roll<-}
 \alias{temperature}
 \alias{temperature<-}
@@ -19,9 +19,9 @@
 \alias{time}
 \alias{elevation}
 
-\title{Return the header for an Oce data object}
+\title{Access or modify part of an Oce object}
 
-\description{Return the header for an oce data  object.}
+\description{Access or modify part of an Oce object}
 
 \usage{
 heading(x, time)
@@ -46,12 +46,11 @@ elevation(x, time)
 
 \arguments{
 
-  \item{x}{an \code{oce} object that contains information on instrument
-      heading, pitch, or roll.}
+  \item{x}{an \code{oce} object.}
 
   \item{time}{optional vector of POSIX times, or object containing times in a
-      field named \code{data$time} or \code{data$timeSlow}.  (If missing, all
-      heading values are returned.)}
+      field named \code{data$time} or \code{data$timeSlow}.  (If missing, 
+      values at all the times in \code{x} are returned.)}
 
   \item{value}{value to assign to the relevant item in the \code{x} object.}
 
@@ -65,8 +64,8 @@ elevation(x, time)
     velocimeters record them on the same timescale as velocity (stored in
     \code{x$data$time}, \code{x$data$heading}, etc.)}
 
-\value{For the retrieval forms, the return value is a vector of angles;
-    otherwise, it is the altered object (normally not stored).}
+\value{For the retrieval forms, the return value is value of the indicated
+    portion of \code{x}; for the assignment forms, there is no return value.}
 
 \examples{
 library(oce)

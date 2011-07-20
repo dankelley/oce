@@ -11,18 +11,19 @@
   \item{name}{the name of the column.}
 }
 
-\details{The header is unchanged by this operation.}
+\details{If there is already a column with the given name, its contents are
+    replaced by the new value.}
 
 \value{An object of \code{\link[base]{class}} \code{oce}, with a new column.}
 
-\seealso{\code{add.ctd.column} does a similar thing for \code{ctd}
-objects.}
+\seealso{\code{\link{ctdAddColumn}} does a similar thing for \code{ctd}
+    objects, and is in fact called, if \code{x} is of class \code{ctd}.}
 
 \examples{
 library(oce)
 data(ctd) 
-st <- swSigmaTheta(ctd$data$salinity, ctd$data$temperature, ctd$data$pressure);
-new <- addColumn(ctd, st, "sigmatheta")
+st <- swSigmaTheta(salinity(ctd), temperature(ctd), pressure(ctd))
+new <- addColumn(ctd, st, "sigmaTheta")
 }
 
 \author{Dan Kelley}
