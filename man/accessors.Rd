@@ -1,47 +1,53 @@
 \name{accessors}
 
+\alias{elevation}
 \alias{heading}
 \alias{heading<-}
-\alias{pitch}
-\alias{pitch<-}
-\alias{roll}
-\alias{roll<-}
-\alias{temperature}
-\alias{temperature<-}
-\alias{salinity}
-\alias{salinity<-}
-\alias{pressure}
-\alias{pressure<-}
 \alias{latitude}
 \alias{latitude<-}
 \alias{longitude}
 \alias{longitude<-}
+\alias{pitch}
+\alias{pitch<-}
+\alias{pressure}
+\alias{pressure<-}
+\alias{roll}
+\alias{roll<-}
+\alias{salinity}
+\alias{salinity<-}
+\alias{sigmaTheta}
+\alias{sigmaTheta<-}
+\alias{temperature}
+\alias{temperature<-}
 \alias{time}
-\alias{elevation}
+\alias{velocity}
 
 \title{Access or modify part of an Oce object}
 
 \description{Access or modify part of an Oce object}
 
 \usage{
+elevation(x, time)
 heading(x, time)
 heading(x) <- value
-pitch(x, time)
-pitch(x) <- value
-roll(x, time)
-roll(x) <- value
-salinity(x, time)
-salinity(x) <- value
-temperature(x, time)
-temperature(x) <- value
-pressure(x, time)
-pressure(x) <- value
 latitude(x, time)
 latitude(x) <- value
 longitude(x, time)
 longitude(x) <- value
-time(x, time)
-elevation(x, time)
+pitch(x, time)
+pitch(x) <- value
+pressure(x, time)
+pressure(x) <- value
+roll(x, time)
+roll(x) <- value
+salinity(x, time)
+salinity(x) <- value
+sigmaTheta(x, time)
+sigmaTheta(x) <- value
+temperature(x, time)
+temperature(x) <- value
+time(x)
+velocity(x)
 }
 
 \arguments{
@@ -64,8 +70,7 @@ elevation(x, time)
     velocimeters record them on the same timescale as velocity (stored in
     \code{x$data$time}, \code{x$data$heading}, etc.)}
 
-\value{For the retrieval forms, the return value is value of the indicated
-    portion of \code{x}; for the assignment forms, there is no return value.}
+\value{Value of indicated portion of \code{x}.}
 
 \examples{
 library(oce)

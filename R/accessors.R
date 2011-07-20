@@ -372,7 +372,12 @@ latitude <- function(x, time) hydrographyLocal(x, time, "latitude")
 
 longitude <- function(x, time) hydrographyLocal(x, time, "longitude")
 
-time <- function(x, time) hydrographyLocal(x, time, "time")
+time <- function(x)
+{
+    if (!("time" %in% names(x$data)))
+        stop("no 'time' in names(x$data)")
+    x$data$time
+}
 
 velocity <- function(x)
 {
@@ -381,4 +386,12 @@ velocity <- function(x)
     if (!("v" %in% names(x$data)))
         stop("'x' does not contain 'data$v'")
     return(x$data$v)
+}
+
+"velocity<-" <- function(x, value)
+{
+    if (!("v" %in% names(x$data)))
+        stop("no 'v' in names(x$data)")
+    x$data$v <- value
+    x
 }
