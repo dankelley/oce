@@ -1731,7 +1731,6 @@ plot.profile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "S" || xtype == "salinity") {
-        type <- if ("type" %in% names(dots)) dots$type else 'l'
         if (missing(Slim)) {
             if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(x$data$salinity, na.rm=TRUE)
         }
@@ -1758,7 +1757,6 @@ plot.profile <- function (x,
             plotJustProfile(x$data$salinity, y, col = col.salinity, type=type, lwd=lwd, cex=cex, pch=pch)
         }
     } else if (xtype == "T" || xtype == "temperature") {
-        type <- if ("type" %in% names(dots)) dots$type else 'l'
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(x$data$temperature, na.rm=TRUE)
         }
