@@ -50,11 +50,11 @@ text(wind$x, wind$y, wind$u, cex=0.7, col="blue")
 
 # One-dimensional example, smoothing a salinity profile
 data(ctd)
-p <- ctd$data$pressure
+p <- pressure(ctd)
 y <- rep(1, length(p)) # fake y data, with arbitrary value
-S <- ctd$data$salinity
+S <- salinity(ctd)
 pg <- pretty(p, n=100)
-g <- interpBarnes(p, y, S, xg=pg, xr=2)
+g <- interpBarnes(p, y, S, xg=pg, xr=1)
 plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 lines(g$zg, g$xg, col="red")
 }

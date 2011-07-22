@@ -283,7 +283,7 @@ plot(adp, which=1:3)
 plot(adp, which=1:2,
      adorn=expression({
          abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
-         lines(x$data$time, x$data$pressure, lwd=3, col='blue')
+         lines(time(x), pressure(x), lwd=3, col='blue')
      }))
 }
 

@@ -34,14 +34,14 @@ makeSection(item, \dots)
 \examples{
 library(oce)
 data(ctd)
-ctd.warmed <- ctd
-ctd.warmed$data$temperature <- ctd.warmed$data$temperature + 0.5
-ctd.warmed$metadata$latitude <- ctd.warmed$metadata$latitude + 0.1
-section <- makeSection(ctd, ctd.warmed)
+ctdWarmed <- ctd
+temperature(ctdWarmed) <- temperature(ctdWarmed) + 0.5
+ctdWarmed$metadata$latitude <- ctdWarmed$metadata$latitude + 0.1
+section <- makeSection(ctd, ctdWarmed)
 summary(section)
 
 s2 <- makeSection(ctd)
-s2 <- s2 + ctd.warmed
+s2 <- s2 + ctdWarmed
 plot(s2)
 \dontrun{
 plot(sectionSmooth(sectionGrid(makeSection(dir("*.csv")))))

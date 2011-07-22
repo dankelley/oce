@@ -1,3 +1,8 @@
+0.5-1
+- latitude() and longitude(): new argument to repeat byDepth
+- addCtdColumn(): replace if column already exists
+- add CTD accessors for latitude, longitude, pressure, salinity, temperaure
+
 0.4-1
 - plot.sealevel(): only show 3 panels, for clarity
 - plot.ctd(): add argument 'type'

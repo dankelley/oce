@@ -74,11 +74,14 @@ ctdAddColumn <- function (x, column, name, label, debug = FALSE)
         stop("must supply \"name\"")
     if (missing(label))
         label <- name
+    replace <- name %in% names(x$data)
     res <- x
     r <- range(column)
     res$data[,name] <- column
-    res$metadata$names <- c(res$metadata$names, name)
-    res$metadata$labels <- c(res$metadata$labels, label)
+    if (!replace) {
+        res$metadata$names <- c(res$metadata$names, name)
+        res$metadata$labels <- c(res$metadata$labels, label)
+    }
     res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -1728,7 +1731,6 @@ plot.profile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
     } else if (xtype == "S" || xtype == "salinity") {
-        type <- if ("type" %in% names(dots)) dots$type else 'l'
         if (missing(Slim)) {
             if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(x$data$salinity, na.rm=TRUE)
         }
@@ -1755,7 +1757,6 @@ plot.profile <- function (x,
             plotJustProfile(x$data$salinity, y, col = col.salinity, type=type, lwd=lwd, cex=cex, pch=pch)
         }
     } else if (xtype == "T" || xtype == "temperature") {
-        type <- if ("type" %in% names(dots)) dots$type else 'l'
         if (missing(Tlim)) {
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(x$data$temperature, na.rm=TRUE)
         }

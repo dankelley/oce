@@ -68,18 +68,19 @@ cl <- read.coastline("7404.dat")
 # If no plot yet:
 plot(cl)
 # To add to an existing plot:
-lines(cl$data$longitude, cl$data$latitude)
+lon <- longitude(cl)
+lat <- latitude(cl)
+lines(lon, lat)
 # Note: another trick is to do something like the following,
 # to get issues of whether longitude is defined in (-180,180)
 # or (0,360)
-lines(cl$datas$longitude, cl$data$latitude)
-lines(cl$data$longitude-360, cl$data$latitude)
+lines(lon, lat)
+lines(lon-360, lat)
 }
 }
 
-\references{The NOAA site
-\url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html} is a good
-source for coastline data files.}
+\references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a good
+    source for coastline data files.}
 
 \author{Dan Kelley}
 \keyword{misc}
