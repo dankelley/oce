@@ -30,9 +30,9 @@
 elevation(x, time)
 heading(x, time)
 heading(x) <- value
-latitude(x, time)
+latitude(x, time, byDepth=TRUE)
 latitude(x) <- value
-longitude(x, time)
+longitude(x, time, byDepth=TRUE)
 longitude(x) <- value
 pitch(x, time)
 pitch(x) <- value
@@ -57,6 +57,10 @@ velocity(x)
   \item{time}{optional vector of POSIX times, or object containing times in a
       field named \code{data$time} or \code{data$timeSlow}.  (If missing, 
       values at all the times in \code{x} are returned.)}
+
+  \item{byDepth}{flag usd only for \code{"section"} objects, which indicates
+      whether to repeat the \code{latitude} or \code{longitude} values so that
+      there is a value for each depth in each profile.}
 
   \item{value}{value to assign to the relevant item in the \code{x} object.}
 

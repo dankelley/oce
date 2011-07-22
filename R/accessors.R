@@ -137,24 +137,50 @@ heading <- function(x, time)
     x
 }
 
-latitude <- function(x, time)
+latitude <- function(x, time, byDepth=TRUE)
 {
-    if ("latitude" %in% names(x$metadata))
-        return(x$metadata$latitude)
-    else if ("latitude" %in% names(x$data))
-        return(x$data$latitude)
-    else
-        stop("no 'latitude' in names(x$data) or names(x$metadata)")
+    if (inherits(x, "section")) {
+        if (byDepth) {
+            nstation <- length(x$data$station)
+            rval <- NULL
+            for (i in 1:nstation) {
+                rval <- c(rval, rep(x$metadata$latitude[i], length.out=length(salinity(x$data$station[[i]]))))
+            }
+        } else {
+            rval <- x$metadata$latitude
+        }
+    } else {
+        if ("latitude" %in% names(x$metadata)) 
+            rval <- x$metadata$latitude
+        else if ("latitude" %in% names(x$data))
+            rval <- x$data$latitude
+        else
+            stop("no 'latitude' in names(x$data) or names(x$metadata)")
+    }
+    rval 
 }
 
-longitude <- function(x, time)
+longitude <- function(x, time, byDepth=TRUE)
 {
-    if ("longitude" %in% names(x$metadata))
-        return(x$metadata$longitude)
-    else if ("longitude" %in% names(x$data))
-        return(x$data$longitude)
-    else
-        stop("no 'longitude' in names(x$data) or names(x$metadata)")
+    if (inherits(x, "section")) {
+        if (byDepth) {
+            nstation <- length(x$data$station)
+            rval <- NULL
+            for (i in 1:nstation) {
+                rval <- c(rval, rep(x$metadata$longitude[i], length.out=length(salinity(x$data$station[[i]]))))
+            }
+        } else {
+            rval <- x$metadata$longitude
+        }
+    } else {
+        if ("longitude" %in% names(x$metadata)) 
+            rval <- x$metadata$longitude
+        else if ("longitude" %in% names(x$data))
+            rval <- x$data$longitude
+        else
+            stop("no 'longitude' in names(x$data) or names(x$metadata)")
+    }
+    rval 
 }
 
 "latitude<-" <- function(x, value)
