@@ -1,0 +1,71 @@
+\name{plot.drifter}
+
+\alias{plot.drifter}
+
+\title{Plot drifter data}
+
+\description{Plot a summary diagram for drifter data.}
+
+\usage{\method{plot}{drifter}(x, which = 1, coastline,
+                          cex=1, pch=1, type='p',
+                          adorn=NULL,
+                          mgp=getOption("oceMgp"),
+                          mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                          debug=getOption("oceDebug"), \dots)}
+
+\arguments{
+  \item{x}{A \code{drifter} object, e.g. as read by \code{\link{read.drifter}}.}
+
+  \item{which}{list of desired plot types.
+      \itemize{
+          \item \code{which=1} or \code{which="trajectory"} gives a 
+          plot of the drifter trajectory, with the coastline, if one is provided.
+      }
+  }
+
+  \item{coastline}{optional coastline file, to be drawn if \code{which=1}.}
+
+  \item{cex}{size of plotting symbols to be used if \code{type='p'}.}
+
+  \item{pch}{type of plotting symbols to be used if \code{type='p'}.}
+
+  \item{type}{plot type, either \code{"l"} or \code{"p"}.}
+
+  \item{adorn}{list of expressions to be executed for the panels in
+    turn, e.g. to adorn the plots.  If the number matches the number 
+    of panels, then the strings are applied to the appropriate panels,
+    as they are drawn from top-left to bottom-right.   If only a single
+    expression is provided, it is used for all panels. (See
+    \dQuote{Examples}.)}
+  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
+    also for \code{par(mar)}, computed from this.  The default is
+    tighter than the R default, in order to use more space for the data
+    and less for the axes.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{debug}{debugging flag}
+  \item{\dots}{optional arguments passed to plotting functions.}
+}
+
+\details{Creates a summary plot for a drifter dataset.}
+
+\value{None.}
+
+\seealso{
+  \code{\link{summary.drifter}} summarizes the information, while
+  \code{\link{read.drifter}} scans it from a file.
+}
+
+\examples{
+\dontrun{
+library(oce)
+d <- read.drifter("/data/OAR/6900388_traj.nc")
+data(coastlineWorld)
+plot(d, which="trajectory", coastline=coastlineWorld)
+}
+}
+
+\references{\url{http://www.argo.ucsd.edu/}}
+
+\author{Dan Kelley}
+
+\keyword{hplot}

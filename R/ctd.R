@@ -622,7 +622,7 @@ plot.ctd.scan <- function(x,
                           name = "scan",
                           S.col = "darkgreen",
                           T.col = "darkred",
-                          p.col = "blue",
+                          p.col = "black",
                           adorn=NULL,
                           mgp=getOption("oceMgp"),
                           ...)
@@ -656,7 +656,7 @@ plot.ctd.scan <- function(x,
     mtext(paste("Station", x$metadata$station), side=3, adj=1)
     mtext(latlonFormat(x$metadata$latitude, x$metadata$longitude, digits=5), side=3, adj=0)
     box()
-    grid(col="brown")
+    grid()
     axis(1)
     axis(2,col=p.col, col.axis=p.col, col.lab = p.col)
     if (1 <= adorn.length) {
@@ -674,7 +674,7 @@ plot.ctd.scan <- function(x,
     axis(1)
     axis(2,col=T.col, col.axis = T.col, col.lab = T.col)
     box()
-    grid(NULL, NA, col="brown")
+    grid()
 
     mtext(resizableLabel("T", "y"), side = 2, line = 2, col = T.col)
 
