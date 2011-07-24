@@ -56,7 +56,6 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     latitude <- ncdf::get.var.ncdf(file, "LATITUDE")
     latitudeNA <- ncdf::att.get.ncdf(file, "LATITUDE","_FillValue")$value
     latitude[latitude == latitudeNA] <- NA
-    browser()
     salinity <- ncdf::get.var.ncdf(file, "PSAL")
     salinityNA <- ncdf::att.get.ncdf(file, "PSAL","_FillValue")$value
     salinity[salinity == salinityNA] <- NA
