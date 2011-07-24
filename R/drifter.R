@@ -161,7 +161,11 @@ plot.drifter <- function (x, which = 1, level=1,
                  type=type, cex=cex, pch=pch,
                  xlab="Longitude", ylab="Latitude", ...)
             if (!missing(coastline)) {
-                lines(coastline$data$longitude, coastline$data$latitude)
+                polygon(coastline$data$longitude, coastline$data$latitude, col='lightgray')
+                if (type == 'l')
+                    lines(x$data$longitude, x$data$latitude)
+                else
+                    points(x$data$longitude, x$data$latitude, cex=cex, pch=pch)
             }
         } else if (which[w] == 2) {    # SST
             if (0 != sum(!is.na(x$data$temperature))) {
