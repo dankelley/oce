@@ -235,7 +235,9 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
     } else {
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
              ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
-             type=type, cex=cex, ...)
+             ylim=if (missing(ylim)) NULL else ylim,
+             type=if (missing(type)) NULL else type,
+             cex=cex, ...)
     }
     xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
                               mgp=mgp, cex=cex.axis, cex.axis=cex.axis, cex.main=cex.main,

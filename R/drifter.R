@@ -119,7 +119,7 @@ as.drifter <- function(time, longitude, latitude,
     res
 }
 
-plot.drifter <- function (x, which = 1,
+plot.drifter <- function (x, which = 1, level=1,
                           coastline,
                           cex=1,
                           pch=1,
@@ -142,32 +142,19 @@ plot.drifter <- function (x, which = 1,
         pch <- rep(pch, lw) # FIXME: recycle more sensibly
     if (length(cex) < lw)
         cex <- rep(cex, lw) # FIXME: recycle more sensibly
-    dec_deg <- function(x, code = "lat") {
-        if (code == "lat") {
-            if (x < 0) {
-                x <- -x
-                sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
-            }
-            else {
-                sprintf("%.0f %.2fN", floor(x), 60 * (x - floor(x)))
-            }
-        } else {
-            if (x < 0) {
-                x <- -x
-                sprintf("% %.2fW", floor(x), 60 * (x - floor(x)))
-            }
-            else {
-                sprintf("% %.2fE", floor(x), 60 * (x - floor(x)))
-            }
-        }
-    }
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
     par(mgp=mgp, mar=mar)
-    for (w in 1:length(which)) {
+    nw  <- length(which)
+    if (nw > 1) {
+        par(mfrow=c(nw, 1))
+    }
+    if (level == "all")
+        level <- seq(1L, dim(x$data$temperature)[1])
+    for (w in 1:nw) {
         if (which[w] == 1 || which[w] == "trajectory") {
             asp <- 1 / cos(mean(range(x$data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
             plot(x$data$longitude, x$data$latitude, asp=asp, 
@@ -176,6 +163,37 @@ plot.drifter <- function (x, which = 1,
             if (!missing(coastline)) {
                 lines(coastline$data$longitude, coastline$data$latitude)
             }
+        } else if (which[w] == 2) {    # SST
+            if (0 != sum(!is.na(x$data$temperature))) {
+                nlevels <- dim(x$data$temperature)[1]
+                t <- if (length(level) > 1)
+                    numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
+                else
+                    x$data$time
+                oce.plot.ts(t, x$data$temperature[level,], ylab=resizableLabel("T", "y"), ...)
+            } else {
+                warning("no non-missing temperature data")
+            }
+        } else if (which[w] == 3) {    # SSS
+            if (0 != sum(!is.na(x$data$salinity))) {
+                nlevels <- dim(x$data$temperature)[1]
+                t <- if (length(level) > 1)
+                    numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
+                else
+                    x$data$time
+                oce.plot.ts(t, as.vector(x$data$salinity[level,]), ylab=resizableLabel("S", "y"), ...)
+                S<<-as.vector(x$data$salinity[level,])
+            } else {
+                warning("no non-missing salinity data")
+            }
+        } else if (which[w] == 4) {    # surface TS
+            if (0 != sum(!is.na(x$data$temperature)) && 0 != sum(!is.na(x$data$salinity))) {
+                plot.TS(as.ctd(x$data$salinity[level,], x$data$temperature[level,], 0), ...)
+            } else {
+                warning("no non-missing salinity data")
+            }
+        } else {
+            stop("invalid value of which (", which, ")")
         }
     }
     oceDebug(debug, "\b\b} # plot.drifter()\n")
