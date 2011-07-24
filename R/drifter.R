@@ -182,7 +182,6 @@ plot.drifter <- function (x, which = 1, level=1,
                 else
                     x$data$time
                 oce.plot.ts(t, as.vector(x$data$salinity[level,]), ylab=resizableLabel("S", "y"), ...)
-                S<<-as.vector(x$data$salinity[level,])
             } else {
                 warning("no non-missing salinity data")
             }
