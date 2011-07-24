@@ -108,7 +108,11 @@ threenum <- function(x)
 {
     if (is.raw(x))
         x <- as.numeric(x)
-    c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+    if (sum(!is.na(x))) {
+        c(min(x, na.rm=TRUE), mean(x, na.rm=TRUE), max(x, na.rm=TRUE))
+    } else {
+        c(NA, NA, NA)
+    }
 }
 
 normalize <- function(x)

@@ -1,4 +1,5 @@
 0.5-1
+- add support for ARGO drifters
 - latitude() and longitude(): new argument to repeat byDepth
 - addCtdColumn(): replace if column already exists
 - add CTD accessors for latitude, longitude, pressure, salinity, temperaure
