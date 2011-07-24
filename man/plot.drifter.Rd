@@ -20,9 +20,11 @@
       \itemize{
           \item \code{which=1} or \code{which="trajectory"} gives a 
           plot of the drifter trajectory, with the coastline, if one is provided.
-          \item \code{which=2} gives a time series of salinity at the indicated level
-          \item \code{which=3} gives a time series of temperature at the indicated level
-          \item \code{which=4} gives a TS diagram at the indicated level
+          \item \code{which=2} gives a time series of salinity at the indicated level(s)
+          \item \code{which=3} gives a time series of temperature at the indicated level(s)
+          \item \code{which=4} gives a TS diagram at the indicated level(s)
+          \item \code{which=5} gives a temperature profile
+          \item \code{which=6} gives a salinity profile
       }
   }
 

@@ -167,7 +167,18 @@ plot.drifter <- function (x, which = 1, level=1,
                 else
                     points(x$data$longitude, x$data$latitude, cex=cex, pch=pch)
             }
-        } else if (which[w] == 2) {    # SST
+        } else if (which[w] == 2) {    # salinity timeseries
+            if (0 != sum(!is.na(x$data$salinity))) {
+                nlevels <- dim(x$data$salinity)[1]
+                t <- if (length(level) > 1)
+                    numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
+                else
+                    x$data$time
+                oce.plot.ts(t, as.vector(x$data$salinity[level,]), ylab=resizableLabel("S", "y"), ...)
+            } else {
+                warning("no non-missing salinity data")
+            }
+        } else if (which[w] == 3) {    # temperature timeseries
             if (0 != sum(!is.na(x$data$temperature))) {
                 nlevels <- dim(x$data$temperature)[1]
                 t <- if (length(level) > 1)
@@ -178,23 +189,26 @@ plot.drifter <- function (x, which = 1, level=1,
             } else {
                 warning("no non-missing temperature data")
             }
-        } else if (which[w] == 3) {    # SSS
-            if (0 != sum(!is.na(x$data$salinity))) {
-                nlevels <- dim(x$data$temperature)[1]
-                t <- if (length(level) > 1)
-                    numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
-                else
-                    x$data$time
-                oce.plot.ts(t, as.vector(x$data$salinity[level,]), ylab=resizableLabel("S", "y"), ...)
-            } else {
-                warning("no non-missing salinity data")
-            }
-        } else if (which[w] == 4) {    # surface TS
+        } else if (which[w] == 4) {    # TS
             if (0 != sum(!is.na(x$data$temperature)) && 0 != sum(!is.na(x$data$salinity))) {
                 plot.TS(as.ctd(x$data$salinity[level,], x$data$temperature[level,], 0), ...)
             } else {
                 warning("no non-missing salinity data")
             }
+        } else if (which[w] == 5) {    # S profile
+            ## FIXME: how to handle the noise; if as below, document it
+            plot(x$data$salinity, x$data$pressure,
+                 xlim=quantile(x$data$salinity, c(0.01, 0.99), na.rm=TRUE),
+                 ylim=quantile(x$data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                 xlab=resizableLabel("S", "x"),
+                 ylab=resizableLabel("p", "y"))
+        } else if (which[w] == 6) {    # T profile
+            ## FIXME: how to handle the noise; if as below, document it
+            plot(x$data$temperature, x$data$pressure,
+                 xlim=quantile(x$data$temperature, c(0.01, 0.99), na.rm=TRUE),
+                 ylim=quantile(x$data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                 xlab=resizableLabel("T", "x"),
+                 ylab=resizableLabel("p", "y"))
         } else {
             stop("invalid value of which (", which, ")")
         }
