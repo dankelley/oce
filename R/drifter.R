@@ -14,13 +14,17 @@ summary.drifter <- function(object, ...)
     colnames(threes) <- c("Min.", "Mean", "Max.")
     rownames(threes) <- names(object$data)[-1]
     res$threes <- threes
+    res$filename <- object$metadata$filename
+    res$id <- object$metadata$id
     class(res) <- "summary.drifter"
     res
 }
 
 print.summary.drifter <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
-    cat("Drifter Summary\n------------\n\n")
+    cat("Drifter Summary\n---------------\n\n")
+    cat("* source:     \"", x$filename, "\"\n", sep="")
+    cat("* id:         \"", x$id, "\"\n", sep="")
     cat("* time range:", format(x$time.range[1], format="%Y-%m-%d %H:%M:%S %Z"),
         "to", format(x$time.range[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
     cat("\n",...)
@@ -46,6 +50,9 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
             on.exit(ncdf::close.ncdf(file))
         }
     }
+    id <- ncdf::get.var.ncdf(file, "PLATFORM_NUMBER")
+    id <- gsub(" *$", "", id)
+    id <- gsub("^ *", "", id)
     t0s <- ncdf::get.var.ncdf(file, "REFERENCE_DATE_TIME")
     t0 <- strptime(t0s, "%Y%m%d%M%H%S", tz="UTC")
     julianDayTime <- ncdf::get.var.ncdf(file, "JULD")
@@ -65,7 +72,7 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
     pressure <- ncdf::get.var.ncdf(file, "PRES")
     pressureNA <- ncdf::att.get.ncdf(file, "PRES","_FillValue")$value
     pressure[pressure == pressureNA] <- NA
-    metadata <- list(filename=filename)
+    metadata <- list(filename=filename, id=id)
     data <- list(time=time, longitude=longitude, latitude=latitude,
                  salinity=salinity, temperature=temperature, pressure=pressure)
     if (missing(processingLog))
