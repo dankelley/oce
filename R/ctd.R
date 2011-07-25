@@ -528,7 +528,6 @@ plot.ctd <- function (x, which = 1:4,
             text.item <- function(item, label, cex=0.8) {
                 if (!is.null(item) && !is.na(item)) {
                     text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex);
-                    yloc <<- yloc - d.yloc;
                 }
             }
             par(mar=c(0,0,0,0))
@@ -541,16 +540,42 @@ plot.ctd <- function (x, which = 1:4,
             text(xloc, yloc, paste("CTD Station"), adj = c(0, 0), cex=cex)
             yloc <- yloc - d.yloc
             xm <- x$metadata
-            if (!is.null(xm$filename) && nchar(xm$filename) > 0)    	text.item(xm$filename,    " File:     ", cex=cex)
-            if (!is.null(xm$scientist))	text.item(xm$scientist,   " Scientist:", cex=cex)
-            if (!is.null(xm$institute))	text.item(xm$institute,   " Institute:", cex=cex)
-            if (!is.null(xm$date))    	text.item(xm$date,        " Date:     ", cex=cex)
-            if (!is.null(xm$ship))		text.item(xm$ship,        " Ship:     ", cex=cex)
-            if (!is.null(xm$cruise))    	text.item(xm$cruise,      " Cruise:   ", cex=cex)
-            if (!is.null(xm$station))    	text.item(xm$station,     " Station:  ", cex=cex)
-            if (!is.null(xm$waterDepth))  	text.item(xm$waterDepth, " Depth:    ", cex=cex)
-            if (!is.na(xm$longitude) && !is.na(xm$latitude))
+            if (!is.null(xm$filename) && nchar(xm$filename) > 0) {
+                text.item(xm$filename,    " File:     ", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.null(xm$scientist))	{
+                text.item(xm$scientist,   " Scientist:", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.null(xm$institute))	{
+                text.item(xm$institute,   " Institute:", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.null(xm$date)) {
+                text.item(xm$date,        " Date:     ", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.null(xm$ship)) {
+                text.item(xm$ship,        " Ship:     ", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.null(xm$cruise)) {
+                text.item(xm$cruise,      " Cruise:   ", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.null(xm$station)) {
+                text.item(xm$station,     " Station:  ", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.null(xm$waterDepth)) {
+                text.item(xm$waterDepth, " Depth:    ", cex=cex)
+                yloc <- yloc - d.yloc
+            }
+            if (!is.na(xm$longitude) && !is.na(xm$latitude)) {
                 text.item(latlonFormat(xm$latitude, xm$longitude),   " Location: ", cex=cex)
+                yloc <- yloc - d.yloc
+            }
             if (!is.na(ref.lat) && !is.na(ref.lon)) {
                 dist <- geodDist(xm$latitude, xm$longitude, ref.lat, ref.lon)
                 kms <- sprintf("%.2f km", dist/1000)

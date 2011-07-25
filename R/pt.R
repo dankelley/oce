@@ -118,7 +118,6 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
             text.item <- function(item, cex=4/5*par("cex")) {
                 if (!is.null(item) && !is.na(item)) {
                     text(xloc, yloc, item, adj = c(0, 0), cex=cex);
-                    yloc <<- yloc - d.yloc;
                 }
             }
             xfake <- seq(0:10)
@@ -132,14 +131,20 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
             d.yloc <- 0.7
             cex <- par("cex")
             text.item(title, cex=1.25*cex)
+            yloc <- yloc - d.yloc
             ##if (!is.null(x$metadata$filename))
             ##    text.item(x$metadata$filename, cex=cex)
-            if (!is.null(x$metadata$serialNumber))
+            if (!is.null(x$metadata$serialNumber)) {
                 text.item(paste("Serial Number: ", x$metadata$serialNumber),cex=cex)
+                yloc <- yloc - d.yloc
+            }
             if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
                 text.item(paste("Start:", x$data$time[1], attr(x$data$time, "tzone")), cex=cex)
+                yloc <- yloc - d.yloc
                 text.item(paste("End:", x$data$time[length(x$data$time)], attr(x$data$time, "tzone")), cex=cex)
+                yloc <- yloc - d.yloc
                 text.item(paste("Sampled interval:", difftime(x$data$time[2], x$data$time[1], units="secs"), "s"),cex=cex)
+                yloc <- yloc - d.yloc
             }
             par(mar=mar)
         } else if (which[w] == 4) {     # "profile"
