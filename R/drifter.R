@@ -174,7 +174,8 @@ plot.drifter <- function (x, which = 1, level=1,
                     numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
                 else
                     x$data$time
-                oce.plot.ts(t, as.vector(x$data$salinity[level,]), ylab=resizableLabel("S", "y"), ...)
+                oce.plot.ts(t, as.vector(x$data$salinity[level,]),
+                            ylab=resizableLabel("S", "y"), type=type, ...)
             } else {
                 warning("no non-missing salinity data")
             }
@@ -185,7 +186,8 @@ plot.drifter <- function (x, which = 1, level=1,
                     numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
                 else
                     x$data$time
-                oce.plot.ts(t, x$data$temperature[level,], ylab=resizableLabel("T", "y"), ...)
+                oce.plot.ts(t, x$data$temperature[level,],
+                            ylab=resizableLabel("T", "y"), type=type, ...)
             } else {
                 warning("no non-missing temperature data")
             }
