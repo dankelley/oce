@@ -1,4 +1,5 @@
 pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
+                   plot=TRUE,
                    debug=getOption("oceDebug"), ...)
 {
     hamming.local <- function (n) # avoid having to pull in the signal library
@@ -97,7 +98,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         args$detrend <- TRUE
     while (TRUE) {
         oceDebug(debug, "  subspectrum at indices ", start, "to", end, "\n")
-        xx <- ts(window * x[start:end], frequency=fs)
+        xx <- ts(window * detrend(x[start:end]), frequency=fs)
         args$x <- xx
         s <- do.call(spectrum, args=args)
         if (nrow == 0)
@@ -113,5 +114,13 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oceDebug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
     oceDebug(debug, "\b\b} # pwelch()\n")
-    list(freq=freq, spec=2*apply(psd, 2, mean), nwindow=nrow)
+    rval <- list(freq=freq, spec=2*apply(psd, 2, mean), 
+                 method="Welch", series=deparse(substitute(x)),
+                 df=s$df, bandwidth=s$bandwidth, # FIXME: wrong formulae
+                 demean=FALSE, detrend=TRUE)
+    class(rval) <- "spec"
+    if (plot) {
+        plot(rval, ...)
+        return(invisible(rval))
+    } else return(rval)
 }
