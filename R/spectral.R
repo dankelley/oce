@@ -56,7 +56,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
             stop("if both 'window' and 'nfft' are given, then length(window) must equal nfft")
         if (length(window) == 1) {
             window <- hamming.local(floor(x.len / window))
-        } else {
+        } else if (!is.vector(window)) {
             stop("for now, 'window' may only be a list of numbers, or a single number")
         }
     } else {
