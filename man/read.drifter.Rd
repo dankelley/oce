@@ -28,7 +28,7 @@ read.drifter(file, debug=getOption("oceDebug"), processingLog, \dots)
 \examples{
 \dontrun{
 library(oce)
-d <- read.drifter("/data/OAR/6900388_traj.nc")
+d <- read.drifter("/data/OAR/6900388_prof.nc")
 summary(d)
 plot(d)
 }

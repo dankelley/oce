@@ -6,7 +6,7 @@
 
 \description{Plot a summary diagram for drifter data.}
 
-\usage{\method{plot}{drifter}(x, which = 1, coastline,
+\usage{\method{plot}{drifter}(x, which = 1, level, coastline,
                           cex=1, pch=1, type='p',
                           adorn=NULL,
                           mgp=getOption("oceMgp"),
@@ -20,8 +20,17 @@
       \itemize{
           \item \code{which=1} or \code{which="trajectory"} gives a 
           plot of the drifter trajectory, with the coastline, if one is provided.
+          \item \code{which=2} gives a time series of salinity at the indicated level(s)
+          \item \code{which=3} gives a time series of temperature at the indicated level(s)
+          \item \code{which=4} gives a TS diagram at the indicated level(s)
+          \item \code{which=5} gives a temperature profile
+          \item \code{which=6} gives a salinity profile
       }
   }
+
+  \item{level}{level to plot, for e.g. \code{which=2} and higher.  May be an
+      integer, in which case it refers to an index of depth (1 being the top)
+      or it may be the string "all" which means to plot all data.}
 
   \item{coastline}{optional coastline file, to be drawn if \code{which=1}.}
 
@@ -58,7 +67,7 @@
 \examples{
 \dontrun{
 library(oce)
-d <- read.drifter("/data/OAR/6900388_traj.nc")
+d <- read.drifter("/data/OAR/6900388_prof.nc")
 data(coastlineWorld)
 plot(d, which="trajectory", coastline=coastlineWorld)
 }

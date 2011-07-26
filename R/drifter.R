@@ -119,7 +119,7 @@ as.drifter <- function(time, longitude, latitude,
     res
 }
 
-plot.drifter <- function (x, which = 1,
+plot.drifter <- function (x, which = 1, level=1,
                           coastline,
                           cex=1,
                           pch=1,
@@ -142,40 +142,77 @@ plot.drifter <- function (x, which = 1,
         pch <- rep(pch, lw) # FIXME: recycle more sensibly
     if (length(cex) < lw)
         cex <- rep(cex, lw) # FIXME: recycle more sensibly
-    dec_deg <- function(x, code = "lat") {
-        if (code == "lat") {
-            if (x < 0) {
-                x <- -x
-                sprintf("%.0f %.2fS", floor(x), 60 * (x - floor(x)))
-            }
-            else {
-                sprintf("%.0f %.2fN", floor(x), 60 * (x - floor(x)))
-            }
-        } else {
-            if (x < 0) {
-                x <- -x
-                sprintf("% %.2fW", floor(x), 60 * (x - floor(x)))
-            }
-            else {
-                sprintf("% %.2fE", floor(x), 60 * (x - floor(x)))
-            }
-        }
-    }
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
         adorn <- rep(adorn, lw)
         adorn.length <- lw
     }
     par(mgp=mgp, mar=mar)
-    for (w in 1:length(which)) {
+    nw  <- length(which)
+    if (nw > 1) {
+        par(mfrow=c(nw, 1))
+    }
+    if (level == "all")
+        level <- seq(1L, dim(x$data$temperature)[1])
+    for (w in 1:nw) {
         if (which[w] == 1 || which[w] == "trajectory") {
             asp <- 1 / cos(mean(range(x$data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
             plot(x$data$longitude, x$data$latitude, asp=asp, 
                  type=type, cex=cex, pch=pch,
                  xlab="Longitude", ylab="Latitude", ...)
             if (!missing(coastline)) {
-                lines(coastline$data$longitude, coastline$data$latitude)
+                polygon(coastline$data$longitude, coastline$data$latitude, col='lightgray')
+                if (type == 'l')
+                    lines(x$data$longitude, x$data$latitude)
+                else
+                    points(x$data$longitude, x$data$latitude, cex=cex, pch=pch)
             }
+        } else if (which[w] == 2) {    # salinity timeseries
+            if (0 != sum(!is.na(x$data$salinity))) {
+                nlevels <- dim(x$data$salinity)[1]
+                t <- if (length(level) > 1)
+                    numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
+                else
+                    x$data$time
+                oce.plot.ts(t, as.vector(x$data$salinity[level,]),
+                            ylab=resizableLabel("S", "y"), type=type, ...)
+            } else {
+                warning("no non-missing salinity data")
+            }
+        } else if (which[w] == 3) {    # temperature timeseries
+            if (0 != sum(!is.na(x$data$temperature))) {
+                nlevels <- dim(x$data$temperature)[1]
+                t <- if (length(level) > 1)
+                    numberAsPOSIXct(t(matrix(rep(x$data$time, nlevels), byrow=FALSE, ncol=nlevels)))
+                else
+                    x$data$time
+                oce.plot.ts(t, x$data$temperature[level,],
+                            ylab=resizableLabel("T", "y"), type=type, ...)
+            } else {
+                warning("no non-missing temperature data")
+            }
+        } else if (which[w] == 4) {    # TS
+            if (0 != sum(!is.na(x$data$temperature)) && 0 != sum(!is.na(x$data$salinity))) {
+                plot.TS(as.ctd(x$data$salinity[level,], x$data$temperature[level,], 0), ...)
+            } else {
+                warning("no non-missing salinity data")
+            }
+        } else if (which[w] == 5) {    # S profile
+            ## FIXME: how to handle the noise; if as below, document it
+            plot(x$data$salinity, x$data$pressure,
+                 xlim=quantile(x$data$salinity, c(0.01, 0.99), na.rm=TRUE),
+                 ylim=quantile(x$data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                 xlab=resizableLabel("S", "x"),
+                 ylab=resizableLabel("p", "y"))
+        } else if (which[w] == 6) {    # T profile
+            ## FIXME: how to handle the noise; if as below, document it
+            plot(x$data$temperature, x$data$pressure,
+                 xlim=quantile(x$data$temperature, c(0.01, 0.99), na.rm=TRUE),
+                 ylim=quantile(x$data$pressure, c(0.99, 0.01), na.rm=TRUE),
+                 xlab=resizableLabel("T", "x"),
+                 ylab=resizableLabel("p", "y"))
+        } else {
+            stop("invalid value of which (", which, ")")
         }
     }
     oceDebug(debug, "\b\b} # plot.drifter()\n")
