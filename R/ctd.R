@@ -520,7 +520,7 @@ plot.ctd <- function (x, which = 1:4,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
-            plot.TS(x, Slim=Slim, Tlim=Tlim,
+            plotTS(x, Slim=Slim, Tlim=Tlim,
                     grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                     useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, ...)
         }
@@ -1524,26 +1524,27 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 
-plot.TS <- function (x,
-                     rhoLevels = 6,
-                     grid = TRUE,
-                     col.grid = "lightgray",
-                     lty.grid = "dotted",
-                     rho1000=FALSE,
-                     col = par("col"),
-                     col.rho = "darkgray",
-                     cex.rho = 0.9 * par("cex"),
-                     cex=par("cex"), pch=1,
-                     rotateRhoLabels=FALSE,
-                     connectPoints=FALSE,
-                     useSmoothScatter=FALSE,
-                     xlab, ylab,
-                     Slim, Tlim,
-                     mgp=getOption("oceMgp"),
-                     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
-                     lwd.rho=par("lwd"), lty.rho=par("lty"),
-                     ...)
+plotTS <- function (x,
+                    rhoLevels = 6,
+                    grid = TRUE,
+                    col.grid = "lightgray",
+                    lty.grid = "dotted",
+                    rho1000=FALSE,
+                    col = par("col"),
+                    col.rho = "darkgray",
+                    cex.rho = 0.9 * par("cex"),
+                    cex=par("cex"), pch=1,
+                    rotateRhoLabels=FALSE,
+                    connectPoints=FALSE,
+                    useSmoothScatter=FALSE,
+                    xlab, ylab,
+                    Slim, Tlim,
+                    mgp=getOption("oceMgp"),
+                    mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
+                    lwd.rho=par("lwd"), lty.rho=par("lty"),
+                    ...)
 {
+    # FIXME: should heck for lobo
     if (!inherits(x, "ctd")) {
         names<- names(x)
         if ("temperature" %in% names && "salinity" %in% names)

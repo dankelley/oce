@@ -126,7 +126,7 @@
 }
 
 \seealso{The profiles are plotted with \code{\link{plotProfile}}, and
-  the TS diagram is plotted with \code{\link{plot.TS}}.  CTD data can be
+  the TS diagram is plotted with \code{\link{plotTS}}.  CTD data can be
   created with \code{\link{as.ctd}} or read with \code{\link{read.ctd}}.
   Summaries of CTD data are provided by \code{\link{summary.ctd}}.}
 

@@ -379,7 +379,7 @@ plot.cm <- function(x,
             oce.plot.ts(x$data$time, x$data$heading,
                         type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 11) {
-            plot.TS(as.ctd(x$data$salinity, x$data$temperature, x$data$depth), main=main, ...)
+            plotTS(as.ctd(x$data$salinity, x$data$temperature, x$data$depth), main=main, ...)
         } else {
             stop("unknown value of which (", which[w], ")")
         }

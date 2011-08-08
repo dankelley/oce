@@ -18,7 +18,7 @@
 \details{Finds the salinity that yields the given density, with the
   given temperature and pressure.  The method is a bisection search with
   a salinity tolerance of 0.001.  The isopycnal lines on
-  temperature-salinity diagrams (\code{\link{plot.TS}}) are computed
+  temperature-salinity diagrams (\code{\link{plotTS}}) are computed
   with this function.}
 
 \value{\emph{In-situ} salinity [PSU].}

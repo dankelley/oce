@@ -19,12 +19,12 @@ drawIsopycnals(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
 }
 
 \details{Adds isopycnal lines to an existing temperature-salinity plot.
-  This is called by \code{\link{plot.TS}}, and may be called by the user
+  This is called by \code{\link{plotTS}}, and may be called by the user
   also, e.g. if an image plot is used to show TS data density.}
 
 \value{None.}
 
-\seealso{\code{\link{plot.TS}}, which calls this.}
+\seealso{\code{\link{plotTS}}, which calls this.}
 
 \author{Dan Kelley}
 \keyword{misc}

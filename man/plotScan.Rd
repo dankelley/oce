@@ -15,9 +15,9 @@
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{name}{name of variable for x axis}
-  \item{S.col}{colour for salinity}
-  \item{T.col}{colour for temperature}
-  \item{p.col}{colour for pressure}
+  \item{Scol}{colour for salinity}
+  \item{Tcol}{colour for temperature}
+  \item{pcol}{colour for pressure}
   \item{adorn}{list of character strings containing commands to be
     executed for the panels.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, as

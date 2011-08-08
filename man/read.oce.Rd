@@ -41,7 +41,7 @@ of the following is called:
 library(oce)
 x <- read.oce(system.file("extdata", "ctd.cnv", package="oce"))
 plot(x) # summary with TS and profiles
-plot.TS(x) # just the TS
+plotTS(x) # just the TS
 }
 
 \author{Dan Kelley}

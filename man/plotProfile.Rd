@@ -98,7 +98,7 @@
 \value{None.}
 
 \seealso{\code{\link{read.ctd}} scans ctd information from a file, and
-  \code{\link{plot.TS}} plots a temperature-salinity diagram. 
+  \code{\link{plotTS}} plots a temperature-salinity diagram. 
 }
 
 \examples{
