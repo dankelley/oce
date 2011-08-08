@@ -102,7 +102,7 @@ export(
        plot.ctd.scan,
        plot.pt,
        plot.topo,
-       plot.profile,
+       plotProfile,
        plot.sealevel,
        plot.section,
        plot.tidem,

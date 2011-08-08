@@ -1,12 +1,12 @@
-\name{plot.profile}
+\name{plotProfile}
 
-\alias{plot.profile}
+\alias{plotProfile}
 
 \title{Plot a CTD profile of various quantities}
 
 \description{Plot a CTD profile, in any of several common formats.}
 
-\usage{plot.profile(x,
+\usage{plotProfile(x,
              xtype="salinity+temperature", 
              ytype=c("pressure", "z"),
              col.salinity="darkgreen",
@@ -104,7 +104,7 @@
 \examples{
 library(oce)
 data(ctd)
-plot.profile(ctd, xtype="temperature")
+plotProfile(ctd, xtype="temperature")
 }
 
 \author{Dan Kelley}

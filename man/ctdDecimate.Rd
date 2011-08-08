@@ -64,7 +64,7 @@ xd$data$sigmaTheta <- swSigmaTheta(xd$data$salinity,
 library(oce)
 data(RRprofile)
 ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
-plot.profile(ctd, "T", Tlim=c(2,9))
+plotProfile(ctd, "T", Tlim=c(2,9))
 ctd2 <- ctdDecimate(ctd,p=seq(0,2000,1),method="reiniger-ross")
 lines(temperature(ctd2), pressure(ctd2), col="blue")
 }
