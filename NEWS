@@ -1,3 +1,6 @@
+0.6-1
+- rename e.g. plot.TS() to plotTS(), to avoid warnings from R-devel
+
 0.5-1
 - add support for ARGO drifters
 - latitude() and longitude(): new argument to repeat byDepth
