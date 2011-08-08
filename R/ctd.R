@@ -643,14 +643,14 @@ plot.ctd <- function (x, which = 1:4,
     invisible()
 }
 
-plot.ctd.scan <- function(x,
-                          name = "scan",
-                          S.col = "darkgreen",
-                          T.col = "darkred",
-                          p.col = "black",
-                          adorn=NULL,
-                          mgp=getOption("oceMgp"),
-                          ...)
+plotScan <- function(x,
+                     name = "scan",
+                     Scol = "darkgreen",
+                     Tcol = "darkred",
+                     pcol = "black",
+                     adorn=NULL,
+                     mgp=getOption("oceMgp"),
+                     ...)
 {
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
@@ -677,13 +677,13 @@ plot.ctd.scan <- function(x,
         stop(paste("length mismatch.  '", name, "' has length ", xxlen, " but pressure has length ", length(x$data$pressure),sep=""))
     plot(x$data[[name]], x$data$pressure,
          xlab=name, ylab=resizableLabel("p", "y"),
-         type="l", col=p.col, axes=FALSE)
+         type="l", col=pcol, axes=FALSE)
     mtext(paste("Station", x$metadata$station), side=3, adj=1)
     mtext(latlonFormat(x$metadata$latitude, x$metadata$longitude, digits=5), side=3, adj=0)
     box()
     grid()
     axis(1)
-    axis(2,col=p.col, col.axis=p.col, col.lab = p.col)
+    axis(2,col=pcol, col.axis=pcol, col.lab = pcol)
     if (1 <= adorn.length) {
         t <- try(eval(adorn[1]), silent=TRUE)
         if (class(t) == "try-error")
@@ -695,21 +695,21 @@ plot.ctd.scan <- function(x,
     Tlen <- length(x$data$temperature)
     if (Slen != Tlen)
         stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    plot(x$data[[name]], x$data$temperature, xlab="scan", ylab="", type="l", col = T.col, axes=FALSE)
+    plot(x$data[[name]], x$data$temperature, xlab="scan", ylab="", type="l", col = Tcol, axes=FALSE)
     axis(1)
-    axis(2,col=T.col, col.axis = T.col, col.lab = T.col)
+    axis(2,col=Tcol, col.axis = Tcol, col.lab = Tcol)
     box()
     grid()
 
-    mtext(resizableLabel("T", "y"), side = 2, line = 2, col = T.col)
+    mtext(resizableLabel("T", "y"), side = 2, line = 2, col = Tcol)
 
     usr <- par("usr")
     Sr <- range(x$data$salinity, na.rm=TRUE)
     usr[3:4] <- Sr + c(-1, 1) * 0.04 * diff(Sr)
     par(usr=usr)
-    lines(x$data[[name]], x$data$salinity, col=S.col)
-    mtext(resizableLabel("S", "y"), side = 4, line = 2, col = S.col)
-    axis(4,col=S.col, col.axis = S.col, col.lab = S.col)
+    lines(x$data[[name]], x$data$salinity, col=Scol)
+    mtext(resizableLabel("S", "y"), side = 4, line = 2, col = Scol)
+    axis(4,col=Scol, col.axis = Scol, col.lab = Scol)
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
         if (class(t) == "try-error")

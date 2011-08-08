@@ -133,7 +133,7 @@ Data from a CTD cast may be assembled into a \code{ctd} object using \code{\link
 A \code{ctd} object may be summarized with \code{\link{summary.ctd}}.
 Overview plots may be made with \code{\link{plot.ctd}}, while
 \code{\link{plot.TS}} produces TS plots and
-\code{\link{plot.ctd.scan}} produces scan plots that may help with data editing.
+\code{\link{plotScan}} produces scan plots that may help with data editing.
 Extraneous data such as those collected during upcasts and equilibration intervals
 may be trimmed with \code{\link{ctdTrim}},
 and the data may be cast onto specified pressure levels with \code{\link{ctdDecimate}}.

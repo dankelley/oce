@@ -83,7 +83,7 @@ parameters, debug=getOption("oceDebug"))}
 
   However, for detailed work it makes sense to do things semi-manually.
   The eye is simply better at handling exceptional cases.  The process
-  is simple: use \code{plot.ctd.scan()} to get an idea of the scan
+  is simple: use \code{plotScan()} to get an idea of the scan
   indices of the downacast, and then use \code{ctdTrim} with
   \code{method="index"}.  A few trials will normally identify the
   downcast very well.
@@ -93,7 +93,7 @@ parameters, debug=getOption("oceDebug"))}
 
 \seealso{
   The \code{ctd} object may be read with \code{\link{read.ctd}}.  
-  \code{\link{plot.ctd.scan}} is very useful in providing guidance
+  \code{\link{plotScan}} is very useful in providing guidance
   for trimming with \code{ctdTrim}.
 }
 \examples{
