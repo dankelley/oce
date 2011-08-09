@@ -541,7 +541,7 @@ gravity <- function(latitude=45, degrees=TRUE)
     9.780318*(1.0+5.3024e-3*sin(latitude)^2-5.9e-6*sin(2*latitude)^2)
 }
 
-makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=FALSE)
+makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
     if (missing(m))
@@ -570,7 +570,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
     ## Note retention of original 'm' in name
-    return(kernel(coef=coef, m=length(coef)-1, name=paste("Blackman-Harris(", m, ")", sep="")))
+    return(kernel(coef=coef, m=length(coef)-1, name=paste(type, "(", m, ")", sep="")))
 }
 
 oceFilter <- function(x, a=1, b, zero.phase=FALSE)

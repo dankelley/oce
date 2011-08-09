@@ -1,5 +1,6 @@
 0.6-1
 - rename e.g. plot.TS() to plotTS(), to avoid warnings from R-devel
+- switch makeFilter's argument asKernel to TRUE
 
 0.5-1
 - add support for ARGO drifters

@@ -3,7 +3,7 @@
 \title{Make a digital filter}
 \description{make a digital filter}
 \usage{makeFilter(type=c("blackman-harris","rectangular", "hamming", "hann"),
-            m, asKernel=FALSE)}
+            m, asKernel=TRUE)}
 \arguments{
   \item{type}{a string indicating the type of filter to
     use.    (See Harris (1978) for a comparison of these and similar
@@ -62,9 +62,9 @@ library(oce)
 opar <- par(no.readonly = TRUE)
 x <- c(rep(0,30),rep(1,30),rep(0,30))
 plot.ts(x)
-x1 <- stats::filter(x, makeFilter("blackman-harris", 5))
+x1 <- stats::filter(x, makeFilter("blackman-harris", 5, asKernel=FALSE))
 lines(x1, col='red')
-x2 <- stats::filter(x, makeFilter("blackman-harris", 11))
+x2 <- stats::filter(x, makeFilter("blackman-harris", 11, asKernel=FALSE))
 lines(x2, col='blue')
 legend("topright", lwd=1, col=c("red", "blue"), legend=c("m=5", "m=11"))
 
@@ -119,7 +119,7 @@ par(mfcol=c(2,2))
 par(mgp=getOption("oceMgp"))
 par(mgp=getOption("oceMgp"))
 par(mar=c(3,3,2,1))
-bh <- makeFilter(type="blackman-harris", m=m, asKernel=TRUE)
+bh <- makeFilter(type="blackman-harris", m=m)
 plot(fr(bh))
 abline(v=log10(1/61),col='red') # design half-power frequency
 abline(h=-3, col='red')         # half-power line
