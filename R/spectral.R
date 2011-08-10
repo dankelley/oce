@@ -4,8 +4,9 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
 {
     hamming.local <- function (n) # avoid having to pull in the signal library
     {
-        if (!(n == round(n) && n > 0))
-            stop("n must be a positive integer > 0")
+        n <- round(n)
+        if (n < 0)
+            stop("n must round to a positive integer")
         if (n == 1)
             c = 1
         else {
@@ -114,7 +115,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oceDebug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
     oceDebug(debug, "\b\b} # pwelch()\n")
-    rval <- list(freq=freq, spec=2*apply(psd, 2, mean), 
+    rval <- list(freq=freq, spec=apply(psd, 2, mean), 
                  method="Welch", series=deparse(substitute(x)),
                  df=s$df, bandwidth=s$bandwidth, # FIXME: wrong formulae
                  demean=FALSE, detrend=TRUE)
