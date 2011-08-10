@@ -1,5 +1,5 @@
 0.6-1
-- rename e.g. plot.TS() to plotTS(), to avoid warnings from R-devel
+- rename to plotTS() and plotScan() to avoid S3 check warnings
 - switch makeFilter's argument asKernel to TRUE
 
 0.5-1
