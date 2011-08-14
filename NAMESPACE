@@ -32,6 +32,7 @@ export(
        decimate,
        despike,
        detrend,
+       distance,
        drawIsopycnals,
        drawPalette,
        elevation,

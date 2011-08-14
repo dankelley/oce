@@ -403,6 +403,14 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
     rval
 }
 
+distance <- function(x, time)
+{
+    if (inherits(x, "adp")) {
+        x$data$distance
+    } else {
+        stop("x must be an object of class \"adp\"")
+    }
+}
 
 elevation <- function(x, time) hydrographyLocal(x, time, "elevation")
 
