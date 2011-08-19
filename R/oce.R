@@ -999,11 +999,18 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oceDebug(debug, vectorShow(z, "Time range is under a month; z="))
         if (missing(format))
             format <- "%b %d"
-    } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
+    } else if (d < 60 * 60 * 24 * 31 * 2) {        # under 2 months
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
-        oceDebug(debug, vectorShow(z, "Time range is 4 months; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under 2 months; z="))
+        if (missing(format))
+            format <- "%b %d"
+    } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
+        t.start <- trunc(rr[1], "days")
+        t.end <- trunc(rr[2] + 86400, "days")
+        z <- seq(t.start, t.end, by="week")
+        oceDebug(debug, vectorShow(z, "Time range is under 4 months; z="))
         if (missing(format))
             format <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
