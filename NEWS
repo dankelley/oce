@@ -1,4 +1,5 @@
 0.6-1
+- oce.plot.ts() gets new arg 'axes'
 - add accessor distance()
 - rename to plotTS() and plotScan() to avoid S3 check warnings
 - switch makeFilter's argument asKernel to TRUE

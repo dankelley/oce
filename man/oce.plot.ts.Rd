@@ -14,6 +14,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
                   mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
             main="",
             despike=FALSE,
+            axes=TRUE,
             debug=getOption("oceDebug"),
             \dots)}
 
@@ -50,6 +51,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
 \item{despike}{boolean flag that can turn on despiking with \code{\link{despike}}.}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a
   moderate amount of debugging information, or to 2 to get more.}
+\item{axes}{boolean, set to \code{TRUE} to get axes plotted}
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
 }
 
