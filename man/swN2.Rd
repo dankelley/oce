@@ -8,13 +8,17 @@
 \eqn{N^2}{N^2}, the square of the buoyancy frequency for a seawater profile.
 }
 
-\usage{swN2(pressure, sigmaTheta=NULL, \dots)}
+\usage{swN2(pressure, sigmaTheta=NULL, derivs, \dots)}
 
 \arguments{
   \item{pressure}{either pressure [dbar] (in which case \code{sigmaTheta} must
   be provided) \strong{or} an object of class \code{ctd} object (in which case
     \code{sigmaTheta} is inferred from the object.}
   \item{sigmaTheta}{Surface-referenced potential density minus 1000 [kg/m\eqn{^3}{^3}]}
+  \item{derivs}{optional function to replace the default calculation of the
+      \eqn{d\sigma_\theta/dp}{d(sigmaTheta)/d(pressure)}.  Its first argument
+      must be the actual pressure (i.e. it cannot be a CTD object) and the
+      second must be sigmaTheta.}
   \item{\dots}{optional extra arguments to be passed to
     \code{smooth.spline}.  See Details.}
 }
