@@ -887,7 +887,6 @@ xyzToEnuAdv <- function(x, declination=0,
 
 enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0)
 {
-    oceDebug(debug, "\b\benuToOtherAdv() {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oceCoordinate != "enu")
@@ -912,6 +911,5 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0)
     x$data$v[,3] <- other$v3new
     x$metadata$oceCoordinate <- "other"
     x$processingLog <- processingLog(x$processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # enuToOtherAdv()\n")
     x
 }
