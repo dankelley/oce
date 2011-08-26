@@ -65,9 +65,9 @@ enuToOther <- function(x, ...)
 toEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))
-        toEnuAdpAdp(x, ...)
+        toEnuAdp(x, ...)
     else if (inherits(x, "adv"))
-        toEnuAdvAdv(x, ...)
+        toEnuAdv(x, ...)
     else
         stop("class of object must inherit from either 'adv' or 'adp'")
 }

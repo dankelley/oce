@@ -885,12 +885,14 @@ xyzToEnuAdv <- function(x, declination=0,
     x
 }
 
-enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0)
+enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))
 {
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
     if (x$metadata$oceCoordinate != "enu")
         stop("input must be in \"enu\" coordinates, but it is in ", x$metadata$oceCoordinate, " coordinates")
+    oceDebug(debug, "\b\benuToOtherAdv(x, heading=", heading, ", pitch=", 
+             pitch, ", roll=", roll, ", debug=", debug, ")")
     np <- dim(x$data$v)[1]
     other <- .C("sfm_enu",
               as.integer(length(heading)), # need not equal np
@@ -911,5 +913,6 @@ enuToOtherAdv <- function(x, heading=0, pitch=0, roll=0)
     x$data$v[,3] <- other$v3new
     x$metadata$oceCoordinate <- "other"
     x$processingLog <- processingLog(x$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b\b} # enuToOtherAdv()\n")
     x
 }

@@ -8,7 +8,7 @@
   coordinate system to another system, perhaps to align axes with the
   coastline.}
 
-\usage{enuToOtherAdv(x, heading=0, pitch=0, roll=0)}
+\usage{enuToOtherAdv(x, heading=0, pitch=0, roll=0, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{an object of class \code{"adv"}.}
@@ -16,6 +16,8 @@
       be added to the heading.  See \dQuote{Details}.}
   \item{pitch}{as \code{heading} but for pitch.}
   \item{roll}{as \code{heading} but for roll.}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    debugging information.} 
 }
 
 \details{The supplied angles specify rotations to be made around the

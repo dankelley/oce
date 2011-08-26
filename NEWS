@@ -1,4 +1,5 @@
 0.6-1
+- add 'adv' dataset
 - generalize swN2() by adding new arg 'derivs'
 - oce.plot.ts() gets new arg 'axes'
 - add accessor distance()
