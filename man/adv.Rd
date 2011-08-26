@@ -8,7 +8,9 @@
 
 \description{This is a sampling of measurements made with a Nortek Vector
     acoustic Doppler velocimeter deployed as part of the St Lawrence Internal
-    Wave Experiment (SLEIWEX).}
+    Wave Experiment (SLEIWEX).  Various identifying features have been
+    redacted, and velocities have modified by adding random numbers chosen from
+    a normal distribution with standard deviation of 2 percent of signal.}
 
 \examples{
 library(oce)
@@ -17,9 +19,9 @@ data(adv)
 # Velocity time-series
 plot(adv)
 
-# Does the spectrum of upward velocity look turbulent?
+# Spectrum of upward component of velocity, with ``turbulent'' reference line
 s <- spectrum(adv$data$v[,3],plot=FALSE)
-plot(log10(s$freq), log10(s$spec),type='l')
+plot(log10(s$freq), log10(s$spec), type='l')
 for (a in seq(-20, 20, by=1))
     abline(a=a, b=-5/3, col='gray', lty='dotted')
 }
