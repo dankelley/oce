@@ -6,7 +6,7 @@
 \usage{data(wind)}
 
 \format{Columns \code{wind$x} and \code{wind$y} are location, while
-  \code{wind$u} is the wind speed, in m/s.}
+  \code{wind$z} is the wind speed, in m/s.}
 
 \source{The data are taken from Figure 5 of Koch et al. (1983).}
 

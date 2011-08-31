@@ -541,7 +541,7 @@ gravity <- function(latitude=45, degrees=TRUE)
     9.780318*(1.0+5.3024e-3*sin(latitude)^2-5.9e-6*sin(2*latitude)^2)
 }
 
-makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=FALSE)
+makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann"), m, asKernel=TRUE)
 {
     type <- match.arg(type)
     if (missing(m))
@@ -570,7 +570,7 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
     ## Note retention of original 'm' in name
-    return(kernel(coef=coef, m=length(coef)-1, name=paste("Blackman-Harris(", m, ")", sep="")))
+    return(kernel(coef=coef, m=length(coef)-1, name=paste(type, "(", m, ")", sep="")))
 }
 
 oceFilter <- function(x, a=1, b, zero.phase=FALSE)
@@ -721,32 +721,26 @@ interpBarnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
         stop("lengths of x and y disagree; they are ", n, " and ", length(y))
     if (length(z) != n)
         stop("lengths of x and z disagree; they are ", n, " and ", length(z))
-    if (is.null(w)) {
+    if (is.null(w))
         w <- rep(1.0, length(x))
-        cat("interp.barnes assuming equal weights on all data\n")
-    }
-    if (is.null(xg)) {
+    if (is.null(xg))
         xg <- pretty(x, n=50)
-        cat("interp.barnes using calculated value xg =", xg[1], ",", xg[2], ",...,", xg[length(xg)], "\n")
-    }
     if (is.null(yg)) {
         if (0 == diff(range(y))) {
             yg <- y[1]
-            cat("interp.barnes using calculated value yg =", yg[1], "\n")
         } else {
             yg <- pretty(y, n=50)
-            cat("interp.barnes using calculated value yg =", yg[1], ",", yg[2], ",...,", yg[length(yg)],"\n")
         }
     }
     if (is.null(xr)) {
         xr <- diff(range(x)) / sqrt(n)
-        if (xr == 0) xr <- 1
-        cat("interp.barnes using calculated value xr =", xr, "\n")
+        if (xr == 0)
+            xr <- 1
     }
     if (is.null(yr)) {
         yr <- diff(range(y)) / sqrt(n)
-        if (yr == 0) yr <- 1
-        cat("interp.barnes using calculated value yr =", yr, "\n")
+        if (yr == 0)
+            yr <- 1
     }
     zg <- .Call("interp_barnes",
                 as.double(x),

@@ -196,7 +196,7 @@ Of course, you may apply any \verb@R@ techniques to the data in \verb@oce@
 objects, e.g. \verb@hist(ctd$data$temperature)@ would produce a histogram of
 temperature for the \verb@ctd@ object.  It is always worth checking, though, to
 see if \verb@oce@ has already defined a function that you may be applying,
-e.g. \verb@plot.TS@ will produce a lovely temperature-salinity diagram, with
+e.g. \verb@plotTS@ will produce a lovely temperature-salinity diagram, with
 isopycnals and proper units on the axes.
 
 The package provides facilities for some common operations with oceanographic
@@ -230,7 +230,7 @@ from these sections are spurious and must be trimmed as a first step in
 processing. For example, consider the following code.
 <<label=ctdrawplot,eval=FALSE>>=
 data(ctdRaw)
-plot.ctd.scan(ctdRaw)
+plotScan(ctdRaw)
 @
 \begin{figure}
 \begin{center}
@@ -253,10 +253,10 @@ is a convenient index for extraction of the downcast portion of the profile by
 an essentially manual method, e.g. proceeding with a sequence of commands such
 as
 <<ctdscaneg,eval=false>>=
-plot.ctd.scan(ctdTrim(ctdRaw, "range",
-                      parameters=list(item="scan", from=140, to=250)))
-plot.ctd.scan(ctdTrim(ctdRaw, "range",
-                      parameters=list(item="scan", from=150, to=250)))
+plotScan(ctdTrim(ctdRaw, "range",
+                 parameters=list(item="scan", from=140, to=250)))
+plotScan(ctdTrim(ctdRaw, "range",
+                 parameters=list(item="scan", from=150, to=250)))
 @
 This is the ``gold standard'' method, which is recommended for detailed
 work. However, for quick work, you may find that the automatic downcast
@@ -340,7 +340,7 @@ for (i in 1:length(files)) {
     cat(files[i], "\n")
     x <- read.ctd(files[i])
     if (i == 1) {
-        plot.TS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
+        plotTS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
     } else {
         lines(x$data$salinity, x$data$temperature, col="red")
     }
@@ -679,7 +679,7 @@ swRho(34, 10, 100)
 swTheta(34, 10, 100)
 swRho(34, swTheta(34, 10, 100), 0)
 swRho(34, swTheta(34, 10, 100, 200), 200)
-plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
+plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 
 \workedanswer{2}{Profile plots}
@@ -689,7 +689,7 @@ library(oce)
 data(ctd)
 pycnocline <- ctdTrim(ctd, "range",
                       parameters=list(item="pressure", from=5, to=12))
-plot.profile(pycnocline, which="density+N2")
+plotProfile(pycnocline, which="density+N2")
 @
 and another is
 \index{subset!extracting a portion of a profile}
@@ -697,7 +697,7 @@ and another is
 library(oce)
 data(ctd)
 pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
-plot.profile(pycnocline, which="density+N2")
+plotProfile(pycnocline, which="density+N2")
 @
 
 \index{section!extracting profile data from}
@@ -707,7 +707,7 @@ The simplest way is to use accessor functions to extract salinity, etc.
 library(oce)
 data(section)
 ctd <- as.ctd(salinity(section), temperature(section), pressure(section))
-plot.TS(ctd)
+plotTS(ctd)
 @
 but the point of \emph{this} exercise is to do the extraction manually, so a
 more appropriate solution is as follows
@@ -722,7 +722,7 @@ for (stn in section$data$station) {
     pp <- c(pp, stn$data$pressure)
 }
 ctd <- as.ctd(SS, TT, pp)
-plot.TS(ctd)
+plotTS(ctd)
 @
 
 

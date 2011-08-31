@@ -25,7 +25,7 @@ print(summary(lm(temperature~salinity, data=TS)))
 data(a03)
 TSlon <- extract(a03, c("temperature","salinity","longitude"))
 med <- factor(-20 > TSlon$longitude, labels=c("med","other"))
-plot.TS(TSlon, col=c("black","gray")[med])
+plotTS(TSlon, col=c("black","gray")[med])
 }
 
 \author{Dan Kelley}

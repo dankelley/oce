@@ -69,7 +69,7 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
 
 plot.lobo.TS <- function(lobo, ...)
 {
-    plot.TS(as.ctd(lobo$data$salinity, lobo$data$temperature, lobo$data$p), col="red", ...)
+    plotTS(as.ctd(lobo$data$salinity, lobo$data$temperature, lobo$data$p), col="red", ...)
 }
 
 plot.lobo <- function(x,

@@ -4,7 +4,7 @@
 \description{Plot a wind-rose diagram}
 
 \usage{
-plot.windrose(x, type=c("count","mean","median","fivenum"),
+\method{plot}{windrose}(x, type=c("count","mean","median","fivenum"),
               mgp=getOption("oceMgp"), 
               mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]), col, \dots)}
 

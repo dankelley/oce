@@ -1,6 +1,7 @@
 \name{accessors}
 
 \alias{elevation}
+\alias{distance}
 \alias{heading}
 \alias{heading<-}
 \alias{latitude}
@@ -28,6 +29,7 @@
 
 \usage{
 elevation(x, time)
+distance(x, time)
 heading(x, time)
 heading(x) <- value
 latitude(x, time, byDepth=TRUE)

@@ -193,7 +193,7 @@ plot.drifter <- function (x, which = 1, level=1,
             }
         } else if (which[w] == 4) {    # TS
             if (0 != sum(!is.na(x$data$temperature)) && 0 != sum(!is.na(x$data$salinity))) {
-                plot.TS(as.ctd(x$data$salinity[level,], x$data$temperature[level,], 0), ...)
+                plotTS(as.ctd(x$data$salinity[level,], x$data$temperature[level,], 0), ...)
             } else {
                 warning("no non-missing salinity data")
             }

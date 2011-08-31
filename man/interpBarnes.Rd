@@ -44,9 +44,9 @@ library(oce)
 
 # Contouring example, with wind-speed data from Koch et al. (1983)
 data(wind)
-u <- interpBarnes(wind$x, wind$y, wind$u)
+u <- interpBarnes(wind$x, wind$y, wind$z)
 contour(u$xg, u$yg, u$zg, col="red", labcex=1)
-text(wind$x, wind$y, wind$u, cex=0.7, col="blue")
+text(wind$x, wind$y, wind$z, cex=0.7, col="blue")
 
 # One-dimensional example, smoothing a salinity profile
 data(ctd)

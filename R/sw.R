@@ -1,20 +1,24 @@
-swN2 <- function(pressure, sigmaTheta=NULL, ...) # BUG: think more about best density measure
+swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...) # BUG: think more about best density measure
 {
     if (inherits(pressure, "ctd")) {
         sigmaTheta <- swSigmaTheta(pressure$data$salinity, pressure$data$temperature, pressure$data$pressure)
         pressure <- pressure$data$pressure # over-writes pressure
     }
-    args <- list(...)
-    depths <- length(pressure)
-    df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
     ok <- !is.na(pressure) & !is.na(sigmaTheta)
-    if (depths > 4 && df > 1) {
-	sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
-	sigmaThetaDeriv <- rep(NA, length(pressure))
-	sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
+    if (missing(derivs)) {
+        args <- list(...)
+        depths <- length(pressure)
+        df <- if (is.null(args$df)) min(floor(length(pressure)/5), 10) else args$df;
+        if (depths > 4 && df > 1) {
+            sigmaThetaSmooth <- smooth.spline(pressure[ok], sigmaTheta[ok], df=df)
+            sigmaThetaDeriv <- rep(NA, length(pressure))
+            sigmaThetaDeriv[ok] <- predict(sigmaThetaSmooth, pressure[ok], deriv = 1)$y
+        } else {
+            sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
+            sigmaThetaDeriv <- c(0, diff(sigmaThetaSmooth) / diff(pressure))
+        }
     } else {
-	sigmaThetaSmooth <- as.numeric(smooth(sigmaTheta[ok]))
-	sigmaThetaDeriv <- c(0, diff(sigmaThetaSmooth) / diff(pressure))
+        sigmaThetaDeriv <- derivs(pressure, sigmaTheta)
     }
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
 }

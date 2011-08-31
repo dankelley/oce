@@ -1,3 +1,11 @@
+0.6-1
+- add 'adv' dataset
+- generalize swN2() by adding new arg 'derivs'
+- oce.plot.ts() gets new arg 'axes'
+- add accessor distance()
+- rename to plotTS() and plotScan() to avoid S3 check warnings
+- switch makeFilter's argument asKernel to TRUE
+
 0.5-1
 - add support for ARGO drifters
 - latitude() and longitude(): new argument to repeat byDepth

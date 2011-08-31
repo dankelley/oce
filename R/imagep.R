@@ -100,7 +100,7 @@ imagep <- function(x, y, z,
             else
                 breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
             breaks.orig <- breaks
-            breaks[1] <- zrange[1]
+            breaks[1] <- min(zrange[1], breaks[1])
             breaks[length(breaks)] <- zrange[2]
         }
     } else {

@@ -462,57 +462,57 @@ plot.ctd <- function (x, which = 1:4,
     }
     for (w in 1:length(which)) {
         if (which[w] == 1 || which[w] == "temperature+salinity")
-            plot.profile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
+            plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 2 || which[w] == "density+N2")
-            plot.profile(x, xtype="density+N2",
+            plotProfile(x, xtype="density+N2",
                          ylim=plim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 6 || which[w] == "density+dpdt")
-            plot.profile(x, xtype="density+dpdt",
+            plotProfile(x, xtype="density+dpdt",
                          ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 7 || which[w] == "density+time")
-            plot.profile(x, xtype="density+time",
+            plotProfile(x, xtype="density+time",
                          ylim=plim, densitylim=densitylim, timelim=timelim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 8 || which[w] == "index")
-            plot.profile(x, xtype="index",
+            plotProfile(x, xtype="index",
                          ylim=plim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 9 || which[w] == "salinity")
-            plot.profile(x, xtype="salinity",
+            plotProfile(x, xtype="salinity",
                          ylim=plim,
                          Slim=Slim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 10 || which[w] == "temperature") {
-            plot.profile(x, xtype="temperature",
+            plotProfile(x, xtype="temperature",
                          ylim=plim,
                          Tlim=Tlim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         } else if (which[w] == 11 || which[w] == "density")
-            plot.profile(x, xtype="density",
+            plotProfile(x, xtype="density",
                          ylim=plim,
                          grid=grid,
                          useSmoothScatter=useSmoothScatter,
                          col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 12 || which[w] == "N2")
-            plot.profile(x, xtype="N2",
+            plotProfile(x, xtype="N2",
                          ylim=plim,
                          grid=grid,
                          useSmoothScatter=useSmoothScatter,
@@ -520,7 +520,7 @@ plot.ctd <- function (x, which = 1:4,
                          cex=cex[w], pch=pch[w], type=type[w])
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
-            plot.TS(x, Slim=Slim, Tlim=Tlim,
+            plotTS(x, Slim=Slim, Tlim=Tlim,
                     grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                     useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, ...)
         }
@@ -643,14 +643,14 @@ plot.ctd <- function (x, which = 1:4,
     invisible()
 }
 
-plot.ctd.scan <- function(x,
-                          name = "scan",
-                          S.col = "darkgreen",
-                          T.col = "darkred",
-                          p.col = "black",
-                          adorn=NULL,
-                          mgp=getOption("oceMgp"),
-                          ...)
+plotScan <- function(x,
+                     name = "scan",
+                     Scol = "darkgreen",
+                     Tcol = "darkred",
+                     pcol = "black",
+                     adorn=NULL,
+                     mgp=getOption("oceMgp"),
+                     ...)
 {
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
@@ -677,13 +677,13 @@ plot.ctd.scan <- function(x,
         stop(paste("length mismatch.  '", name, "' has length ", xxlen, " but pressure has length ", length(x$data$pressure),sep=""))
     plot(x$data[[name]], x$data$pressure,
          xlab=name, ylab=resizableLabel("p", "y"),
-         type="l", col=p.col, axes=FALSE)
+         type="l", col=pcol, axes=FALSE)
     mtext(paste("Station", x$metadata$station), side=3, adj=1)
     mtext(latlonFormat(x$metadata$latitude, x$metadata$longitude, digits=5), side=3, adj=0)
     box()
     grid()
     axis(1)
-    axis(2,col=p.col, col.axis=p.col, col.lab = p.col)
+    axis(2,col=pcol, col.axis=pcol, col.lab = pcol)
     if (1 <= adorn.length) {
         t <- try(eval(adorn[1]), silent=TRUE)
         if (class(t) == "try-error")
@@ -695,21 +695,21 @@ plot.ctd.scan <- function(x,
     Tlen <- length(x$data$temperature)
     if (Slen != Tlen)
         stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
-    plot(x$data[[name]], x$data$temperature, xlab="scan", ylab="", type="l", col = T.col, axes=FALSE)
+    plot(x$data[[name]], x$data$temperature, xlab="scan", ylab="", type="l", col = Tcol, axes=FALSE)
     axis(1)
-    axis(2,col=T.col, col.axis = T.col, col.lab = T.col)
+    axis(2,col=Tcol, col.axis = Tcol, col.lab = Tcol)
     box()
     grid()
 
-    mtext(resizableLabel("T", "y"), side = 2, line = 2, col = T.col)
+    mtext(resizableLabel("T", "y"), side = 2, line = 2, col = Tcol)
 
     usr <- par("usr")
     Sr <- range(x$data$salinity, na.rm=TRUE)
     usr[3:4] <- Sr + c(-1, 1) * 0.04 * diff(Sr)
     par(usr=usr)
-    lines(x$data[[name]], x$data$salinity, col=S.col)
-    mtext(resizableLabel("S", "y"), side = 4, line = 2, col = S.col)
-    axis(4,col=S.col, col.axis = S.col, col.lab = S.col)
+    lines(x$data[[name]], x$data$salinity, col=Scol)
+    mtext(resizableLabel("S", "y"), side = 4, line = 2, col = Scol)
+    axis(4,col=Scol, col.axis = Scol, col.lab = Scol)
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
         if (class(t) == "try-error")
@@ -1524,26 +1524,27 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
 }
 
 
-plot.TS <- function (x,
-                     rhoLevels = 6,
-                     grid = TRUE,
-                     col.grid = "lightgray",
-                     lty.grid = "dotted",
-                     rho1000=FALSE,
-                     col = par("col"),
-                     col.rho = "darkgray",
-                     cex.rho = 0.9 * par("cex"),
-                     cex=par("cex"), pch=1,
-                     rotateRhoLabels=FALSE,
-                     connectPoints=FALSE,
-                     useSmoothScatter=FALSE,
-                     xlab, ylab,
-                     Slim, Tlim,
-                     mgp=getOption("oceMgp"),
-                     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
-                     lwd.rho=par("lwd"), lty.rho=par("lty"),
-                     ...)
+plotTS <- function (x,
+                    rhoLevels = 6,
+                    grid = TRUE,
+                    col.grid = "lightgray",
+                    lty.grid = "dotted",
+                    rho1000=FALSE,
+                    col = par("col"),
+                    col.rho = "darkgray",
+                    cex.rho = 0.9 * par("cex"),
+                    cex=par("cex"), pch=1,
+                    rotateRhoLabels=FALSE,
+                    connectPoints=FALSE,
+                    useSmoothScatter=FALSE,
+                    xlab, ylab,
+                    Slim, Tlim,
+                    mgp=getOption("oceMgp"),
+                    mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
+                    lwd.rho=par("lwd"), lty.rho=par("lty"),
+                    ...)
 {
+    # FIXME: should heck for lobo
     if (!inherits(x, "ctd")) {
         names<- names(x)
         if ("temperature" %in% names && "salinity" %in% names)
@@ -1632,29 +1633,29 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex
     }
 }
 
-plot.profile <- function (x,
-                          xtype="salinity+temperature",
-                          ytype=c("pressure", "z"),
-                          col.salinity = "darkgreen",
-                          col.temperature = "red",
-                          col.rho = "blue",
-                          col.N2 = "brown",
-                          col.dpdt = "darkgreen",
-                          col.time = "darkgreen",
-                          grid = TRUE,
-                          col.grid = "lightgray",
-                          lty.grid = "dotted",
-                          Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
-                          lwd=par("lwd"),
-                          xaxs="r",
-                          yaxs="r",
-                          cex=1, pch=1,
-                          useSmoothScatter=FALSE,
-                          type='l',
-                          mgp=getOption("oceMgp"),
-                          mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
-                          debug=getOption("oceDebug"),
-                          ...)
+plotProfile <- function (x,
+                         xtype="salinity+temperature",
+                         ytype=c("pressure", "z"),
+                         col.salinity = "darkgreen",
+                         col.temperature = "red",
+                         col.rho = "blue",
+                         col.N2 = "brown",
+                         col.dpdt = "darkgreen",
+                         col.time = "darkgreen",
+                         grid = TRUE,
+                         col.grid = "lightgray",
+                         lty.grid = "dotted",
+                         Slim, Tlim, densitylim, N2lim, dpdtlim, timelim, ylim,
+                         lwd=par("lwd"),
+                         xaxs="r",
+                         yaxs="r",
+                         cex=1, pch=1,
+                         useSmoothScatter=FALSE,
+                         type='l',
+                         mgp=getOption("oceMgp"),
+                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
+                         debug=getOption("oceDebug"),
+                         ...)
 {
     plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1)
     {

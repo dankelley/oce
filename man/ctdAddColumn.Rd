@@ -48,9 +48,9 @@ ctdAddColumn(x, column, name, label, debug=FALSE)
 library(oce)
 data(ctd) 
 SS <- ctd$data$salinity^2
-ctd.new <- ctdAddColumn(ctd, SS, "ss", 
-                          expression(paste(S^2, " [", PSU^2, " ]")))
-plot.profile(ctd.new, "ss")
+ctdNew <- ctdAddColumn(ctd, SS, "ss", 
+                        expression(paste(S^2, " [", PSU^2, " ]")))
+plotProfile(ctdNew, "ss")
 }
 
 \author{Dan Kelley}

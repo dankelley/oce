@@ -1,12 +1,12 @@
-\name{plot.TS}
+\name{plotTS}
 
-\alias{plot.TS}
+\alias{plotTS}
 
 \title{Plot temperature-salinity diagram for seawater (CTD) data}
 
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 
-\usage{plot.TS(x,
+\usage{plotTS(x,
      rhoLevels = 6,
      grid = TRUE,
      col.grid = "lightgray",
@@ -75,7 +75,7 @@ library(oce)
 # See demo(TS) for a section-spanning TS diagram
 data(a03)
 profile <- a03$data$station[[60]] # 124 stations in total
-plot.TS(profile)
+plotTS(profile)
 title("Mid-Atlantic at 36N")
 }
 

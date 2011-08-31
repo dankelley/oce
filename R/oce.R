@@ -196,6 +196,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
                               mgp[2]+3/4),
                         main="",
                         despike=FALSE,
+                        axes=TRUE,
                         debug=getOption("oceDebug"),
                         ...)
 {
@@ -236,23 +237,25 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
              ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
              ylim=if (missing(ylim)) NULL else ylim,
-             type=if (missing(type)) NULL else type,
-             cex=cex, ...)
+             type=if (missing(type)) NULL else type, cex=cex, ...)
     }
-    xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                              mgp=mgp, cex=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
-                              debug=debug-1, ...)
-    if (grid) {
-        lwd <- par("lwd")
-        abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
-        yaxp <- par("yaxp")
-        abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
-               col="lightgray", lty="dotted", lwd=lwd)
+    if (axes) {
+        xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
+                                  mgp=mgp,
+                                  cex=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
+                                  debug=debug-1)#, ...)
+        if (grid) {
+            lwd <- par("lwd")
+            abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+            yaxp <- par("yaxp")
+            abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
+                   col="lightgray", lty="dotted", lwd=lwd)
+        }
+        box()
+        ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
+        axis(2, cex.axis=cex.axis)
+        axis(4, labels=FALSE)
     }
-    box()
-    ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-    axis(2, cex.axis=cex.axis)
-    axis(4, labels=FALSE)
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error")
@@ -999,11 +1002,18 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         oceDebug(debug, vectorShow(z, "Time range is under a month; z="))
         if (missing(format))
             format <- "%b %d"
-    } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
+    } else if (d < 60 * 60 * 24 * 31 * 2) {        # under 2 months
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
         z <- seq(t.start, t.end, by="day")
-        oceDebug(debug, vectorShow(z, "Time range is 4 months; z="))
+        oceDebug(debug, vectorShow(z, "Time range is under 2 months; z="))
+        if (missing(format))
+            format <- "%b %d"
+    } else if (d < 60 * 60 * 24 * 31 * 4) {        # under 4 months
+        t.start <- trunc(rr[1], "days")
+        t.end <- trunc(rr[2] + 86400, "days")
+        z <- seq(t.start, t.end, by="week")
+        oceDebug(debug, vectorShow(z, "Time range is under 4 months; z="))
         if (missing(format))
             format <- "%b %d"
     } else if (d < 1.1 * 60 * 60 * 24 * 365) { # under about a year
