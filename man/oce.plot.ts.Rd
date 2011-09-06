@@ -61,7 +61,7 @@ data.  This routine gets around that problem.  It can also plot the
 time range in the top-left margin, if desired; this string includes
 the timezone, to remove any possible confusion.
 
-For flexibility, this does not set to line-type plots; use \code{type='l'} to get these.
+The time axis is drawn with \code{\link{oce.axis.POSIXct}}.
 }
 
 \examples{
