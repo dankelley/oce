@@ -415,7 +415,6 @@ plot.adp <- function(x, which=1:dim(x$data$v)[3],
         if (is.vector(zlim)) {
             if (length(zlim) == 2) {
                 zlim.given <- matrix(rep(zlim, length(which)),ncol=2,byrow=TRUE)
-                print(zlim.given[1,])
             } else {
                 stop("zlim must be a vector of length 2, or a matrix with 2 columns")
             }
