@@ -479,7 +479,7 @@ c
       y     = 0.0
       z     = 0.0
       if (date.lt.1900.0.or.date.gt.2020.0) go to 11
-      if (date.gt.2015.0) write (6,960) date
+c      if (date.gt.2015.0) write (6,960) date
   960 format (/' This version of the IGRF is intended for use up',
      1        ' to 2015.0.'/' values for',f9.3,' will be computed',
      2        ' but may be of reduced accuracy'/)
@@ -623,7 +623,7 @@ c
 c     error return if date out of bounds
 c
    11 f     = 1.0d8
-      write (6,961) date
+c      write (6,961) date
   961 format (/' This subroutine will not work with a date of',
      1        f9.3,'.  Date must be in the range 1900.0.ge.date',
      2        '.le.2020.0. On return f = 1.0d8., x = y = z = 0.')
