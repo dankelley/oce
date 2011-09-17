@@ -1,3 +1,7 @@
+0.6-x
+- fix bugs reported in issues 150, 151, 153, 155, 156
+- imagep(): change default drawContours to FALSE
+
 0.6-1
 - add 'adv' dataset
 - generalize swN2() by adding new arg 'derivs'

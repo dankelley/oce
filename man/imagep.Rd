@@ -7,7 +7,7 @@
       flip.y=FALSE,
       xlab="", ylab="", zlab="",
       breaks, col,
-      drawContours=TRUE,
+      drawContours=FALSE,
       drawTimeRange=getOption("oceDrawTimeRange"),
       drawPalette=TRUE,
       mgp=getOption("oceMgp"),
