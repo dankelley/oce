@@ -1,4 +1,5 @@
 0.6-x
+- plotTS(): add arguments inSitu and referencePressure
 - fix bugs reported in issues 150, 151, 153, 155, 156
 - imagep(): change default drawContours to FALSE
 
