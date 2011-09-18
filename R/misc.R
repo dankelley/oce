@@ -355,13 +355,16 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
+resizableLabel <- function(item=c("S", "T", "theta", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
         full <- expression(paste("Temperature [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
+    } else if (item == "theta") {
+        full <- expression(paste("Potential Temperature [", degree, "C]"))
+        abbreviated <- expression(paste(theta, " [", degree, "C]"))
     } else if (item == "S") {
         full <- "Salinity [PSU]"
         abbreviated <- "S [PSU]"

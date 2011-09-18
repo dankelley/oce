@@ -1525,6 +1525,8 @@ print.summary.ctd <- function(x, digits=max(6, getOption("digits") - 1), ...)
 
 
 plotTS <- function (x,
+                    inSitu=FALSE,
+                    referencePressure=0,
                     rhoLevels = 6,
                     grid = TRUE,
                     col.grid = "lightgray",
@@ -1544,7 +1546,7 @@ plotTS <- function (x,
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
                     ...)
 {
-    # FIXME: should heck for lobo
+    # FIXME: should check for lobo ... or maybe make as.ctd() handle that...
     if (!inherits(x, "ctd")) {
         names<- names(x)
         if ("temperature" %in% names && "salinity" %in% names)
@@ -1552,32 +1554,35 @@ plotTS <- function (x,
         else
             stop("method is only for ctd objects")
     }
+    y <- if (inSitu) x$data$temperature else swTheta(x, referencePressure=referencePressure)
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
-    if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
+    if (missing(Tlim)) Tlim <- range(y, na.rm=TRUE)
     omar <- par("mar")
     omgp <- par("mgp")
     opar <- par(no.readonly = TRUE)
     on.exit(par(mar=omar, mgp=omgp))
     par(mgp=mgp, mar=mar)
     axis.name.loc <- mgp[1]
+    if (missing(xlab))
+        xlab <- resizableLabel("S","x")
+    if (missing(ylab))
+        ylab <- if (inSitu) resizableLabel("T","y") else resizableLabel("theta", "y")
     if (useSmoothScatter) {
-        smoothScatter(x$data$salinity, x$data$temperature,
-                      xlab = if (missing(xlab)) resizableLabel("S","x") else xlab,
-                      ylab = if (missing(ylab)) resizableLabel("T","y") else ylab,
+        smoothScatter(x$data$salinity, y,
+                      xlab = xlab, ylab=ylab,
                       xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
                                         #cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
                       xlim=Slim, ylim=Tlim,
                       ...)
     } else {
-        plot(x$data$salinity, x$data$temperature,
-             xlab = if (missing(xlab)) resizableLabel("S","x") else xlab,
-             ylab = if (missing(ylab)) resizableLabel("T","y") else ylab,
+        plot(x$data$salinity, y,
+             xlab = xlab, ylab=ylab,
              xaxs = if (min(x$data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
              cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
              xlim=Slim, ylim=Tlim,
              ...)
         if (connectPoints)
-            lines(x$data$salinity, x$data$temperature, col=col, ...)
+            lines(x$data$salinity, y, col=col, ...)
     }
 
     ## grid, isopycnals, then freezing-point line
