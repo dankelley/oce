@@ -4,8 +4,7 @@
 
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
-  int i;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double theta = *ptheta++;
     double p = *pp++;
