@@ -1,26 +1,20 @@
+/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 
-void
-sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
+void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
   int i;
   for (i = 0; i < *n; i++) {
     double S = *pS++;
     double theta = *ptheta++;
     double p = *pp++;
-    /*
-      printf("%f %f %f\n",S,T,p);
-      printf("missing? %d %d %d\n",ISNA(S),ISNA(T),ISNA(p));
-    */
     if (ISNA(S) || ISNA(theta) || ISNA(p)) {
       *value++ = NA_REAL;
     } else {
       S -= 35.0;
       *value++ = (0.665157e-1 + theta * (0.170907e-1 + theta * (-0.203814e-3 + theta * (0.298357e-5 + theta * (-0.255019e-7)))))
-	+ S * (
-	       (0.378110e-2 + theta * (-0.846960e-4))
-	       + p * (-0.164759e-6 + p * (-0.251520e-11)))
+	+ S * ((0.378110e-2 + theta * (-0.846960e-4)) + p * (-0.164759e-6 + p * (-0.251520e-11)))
 	+ S * S * (-0.678662e-5)
 	+ p * (0.380374e-4 + theta * (-0.933746e-6 + theta * (0.791325e-8)))
 	+ 0.512857e-12* p * p * theta *theta
@@ -29,11 +23,9 @@ sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value
   }
 }
 
-void
-sw_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
+void sw_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
-  int i;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double theta = *ptheta++;
     double p = *pp++;
@@ -41,8 +33,7 @@ sw_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
       *value++ = NA_REAL;
     } else {
       S -= 35.0;
-      *value++ =
-	0.785567e-3 + theta * (-0.301985e-5 + theta * (0.555579e-7 + theta *(-0.415613e-9)))
+      *value++ = 0.785567e-3 + theta * (-0.301985e-5 + theta * (0.555579e-7 + theta *(-0.415613e-9)))
 	+ S * (-0.356603e-6 + 0.788212e-8 * theta + p * (0.408195e-10 + p * (-0.602281e-15)))
 	+ S * S * (0.515032e-8)
 	+ p * (-0.121555e-7 + theta * (0.192867e-9 + theta * (-0.213127e-11)))
@@ -52,8 +43,7 @@ sw_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
   }
 }
 
-void
-sw_lapserate(int *n, double *pS, double *pT, double *pp, double *value)
+void sw_lapserate(int *n, double *pS, double *pT, double *pp, double *value)
 {
   /* Fofonoff & Millard (1983 UNESCO) section 7, equation 31*/
   static double a[4] = {
@@ -71,8 +61,7 @@ sw_lapserate(int *n, double *pS, double *pT, double *pp, double *value)
   static double e[3] = {
     -4.6206e-13, 1.8676e-14, -2.1687e-16
   };
-  int i;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double T = *pT++;
     double p = *pp++;
@@ -82,15 +71,14 @@ sw_lapserate(int *n, double *pS, double *pT, double *pp, double *value)
       double lf = a[0] + T * (a[1] + T * (a[2] + T * a[3]))
 	+ (b[0] + b[1] * T) * (S - 35.0)
 	+ (c[0] + T * (c[1] + T * (c[2] + T * c[3]))
-	   + (d[0] + T * d[1]) * (S - 35.0)) * p
+	    + (d[0] + T * d[1]) * (S - 35.0)) * p
 	+ (e[0] + T * (e[1] + T * e[2])) * p * p;
       *value++ = lf;
     }
   }
 }
 
-void
-sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
+void sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
 {
   int i;
   for (i = 0; i < *n; i++) {
@@ -103,57 +91,55 @@ sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
     } else {
       rho_w = 999.842594 +
 	T * (6.793952e-2 +
-	     T * (-9.095290e-3 +
-		  T * (1.001685e-4 +
-		       T * (-1.120083e-6 + T * 6.536332e-9))));
+	    T * (-9.095290e-3 +
+	      T * (1.001685e-4 +
+		T * (-1.120083e-6 + T * 6.536332e-9))));
       Kw = 19652.21
 	+ T * (148.4206 +
-	       T * (-2.327105 +
-		    T * (1.360477e-2 - T * 5.155288e-5)));
+	    T * (-2.327105 +
+	      T * (1.360477e-2 - T * 5.155288e-5)));
       Aw = 3.239908 +
 	T * (1.43713e-3 +
-	     T * (1.16092e-4 -
-		  T * 5.77905e-7));
+	    T * (1.16092e-4 -
+	      T * 5.77905e-7));
       Bw = 8.50935e-5 +
 	T * (-6.12293e-6 +
-	     T * 5.2787e-8);
+	    T * 5.2787e-8);
       p1 = 0.1 * p;
       S12 = sqrt(S);
       ro = rho_w +
 	S * (8.24493e-1 +
-	     T * (-4.0899e-3 +
-		  T * (7.6438e-5 +
-		       T * (-8.2467e-7 + T * 5.3875e-9))) +
-	     S12 * (-5.72466e-3 +
-		    T * (1.0227e-4 -
-			 T * 1.6546e-6) +
-		    S12 * 4.8314e-4));
+	    T * (-4.0899e-3 +
+	      T * (7.6438e-5 +
+		T * (-8.2467e-7 + T * 5.3875e-9))) +
+	    S12 * (-5.72466e-3 +
+	      T * (1.0227e-4 -
+		T * 1.6546e-6) +
+	      S12 * 4.8314e-4));
       xkst = Kw +
 	S * (54.6746 +
-	     T * (-0.603459 +
-		  T * (1.09987e-2 -
-		       T * 6.1670e-5)) +
-	     S12 * (7.944e-2 +
-		    T * (1.6483e-2 +
-			 T * (-5.3009e-4)))) +
+	    T * (-0.603459 +
+	      T * (1.09987e-2 -
+		T * 6.1670e-5)) +
+	    S12 * (7.944e-2 +
+	      T * (1.6483e-2 +
+		T * (-5.3009e-4)))) +
 	p1 * (Aw +
-	      S * (2.2838e-3 +
-		   T * (-1.0981e-5 +
-			T * (-1.6078e-6)) +
-		   S12 * (1.91075e-4)) +
-	      p1 * (Bw +
-		    S * (-9.9348e-7 +
-			 T * (2.0816e-8 +
-			      T * (9.1697e-10)))));
+	    S * (2.2838e-3 +
+	      T * (-1.0981e-5 +
+		T * (-1.6078e-6)) +
+	      S12 * (1.91075e-4)) +
+	    p1 * (Bw +
+	      S * (-9.9348e-7 +
+		T * (2.0816e-8 +
+		  T * (9.1697e-10)))));
       *value++ = (ro / (1.0 - p1 / xkst));
     }
   }
 }
 
-void
-sw_salinity(int *n, double *pC, double *pT, double *pp, double *value)
+void sw_salinity(int *n, double *pC, double *pT, double *pp, double *value)
 {
-  int i;
   static double c[5] = {
     0.6766097, 2.00564e-2, 1.104259e-4, -6.9698e-7, 1.0031e-9
   };
@@ -172,7 +158,7 @@ sw_salinity(int *n, double *pC, double *pT, double *pp, double *value)
   static double k = 0.0162;
   double rt, Rp, Rt, Rtx, del_T, del_S, S;
   double C, T, p;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     C = *pC++;
     T = *pT++;
     p = *pp++;
@@ -189,7 +175,7 @@ sw_salinity(int *n, double *pC, double *pT, double *pp, double *value)
        * stopifnot(all.equal.numeric(S.C.T.p(1.2, 20,2000), 37.245628, 1e-6))
        * stopifnot(all.equal.numeric(S.C.T.p(0.65, 5,1500), 27.995347, 1e-6))
        */
-      
+
       /* rt = rt(T) = C(35,T,0)/C(35,15,0), eqn (3) p.7 FM83 */
       rt = c[0] + T*(c[1] + T*(c[2] + T*(c[3] + T*c[4])));
       /* Rp, eqn (4) p.8 FM83 */
@@ -208,8 +194,7 @@ sw_salinity(int *n, double *pC, double *pT, double *pp, double *value)
   }
 }
 
-void
-sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
+void sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
 {
   static double b[6][5] = {
     { 0.,          7.7442e-1, -5.85e-3,   -9.84e-4,   -2.06e-4},
@@ -218,12 +203,10 @@ sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
     {-5.4023e-5,   7.326e-6,   7.0036e-6, -3.0412e-6, -1.0853e-6},
     { 3.949e-7,   -3.029e-8,  -3.8209e-7,  1.0012e-7,  4.7133e-8},
     {-6.36e-10,   -1.309e-9,   6.048e-9,  -1.1409e-9, -6.676e-10}};
-  int i;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double T = *pT++;
     double p = *pp++;
-    int ii, jj;
     double Sdev, S2, T2, spice;
     if (ISNA(S) || ISNA(T) || ISNA(p)) {
       *value++ = NA_REAL;
@@ -232,9 +215,9 @@ sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
       S2 = 0.0;
       T2 = 1.0;
       spice = 0.0;
-      for (ii = 0; ii < 6; ii++) {
+      for (int ii = 0; ii < 6; ii++) {
 	S2 = 1.0;
-	for (jj = 0; jj < 5; jj++) {
+	for (int jj = 0; jj < 5; jj++) {
 	  spice += b[ii][jj] * T2 * S2;
 	  S2 *= Sdev;
 	}
@@ -268,8 +251,7 @@ sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
    Pierre Flament.
 */
 static double sig_0, p_ref, S, T;
-void
-sw_strho(double *pT, double *prho, double *pp, double *res)
+void sw_strho(double *pT, double *prho, double *pp, double *res)
 {
   int strho_bisection_search (double *x, double x1, double x2, double eps, double eta);
   T = *pT;
@@ -282,8 +264,7 @@ sw_strho(double *pT, double *prho, double *pp, double *res)
   *res = S;
 }
 
-double
-strho_f(double x)
+double strho_f(double x)
 {
   extern double p_ref, sig_0;
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
@@ -303,8 +284,7 @@ strho_f(double x)
    RETURN VALUE
    0 if root found to within tolerance; 1 otherwise
 */
-int
-strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol)
+int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol)
 {
   /* printf("in bisection_search(x=%f,  x1=%f,  x2=%f)\n",*x,x1,x2); */
   extern double strho_f(double x);
@@ -335,11 +315,9 @@ strho_bisection_search(double *x, double x1, double x2, double xresolution, doub
   return (0); 		/* converged by default */
 }
 
-void
-sw_svel(int *n, double *pS, double *pT, double *pp, double *value)
+void sw_svel(int *n, double *pS, double *pT, double *pp, double *value)
 {
-  int i;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double T = *pT++;
     double p = *pp++;
@@ -420,12 +398,9 @@ sw_svel(int *n, double *pS, double *pT, double *pp, double *value)
   }
 }
 
-void 
-theta_Bryden_1973(int *n, double *pS, double *pT, double *pp, double *value)
+void theta_Bryden_1973(int *n, double *pS, double *pT, double *pp, double *value)
 {
-  /* Source: Bryden 1973 */
-  int i;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double T = *pT++;
     double p = *pp++;
@@ -436,14 +411,14 @@ theta_Bryden_1973(int *n, double *pS, double *pT, double *pp, double *value)
       p /= 10.0; /* formula is in bars, but argument is in decibars! */
       *value++ = T
 	- p * (((3.6504e-4 + T * (8.3198e-5 + T * (-5.4065e-7 + T * 4.0274e-9)))
-		+ S * (1.7439e-5 - T * 2.9778e-7))
-	       + p * ((8.9309e-7 + T * (-3.1628e-8 + T * 2.1987e-10) - S * 4.1057e-9)
-		      + p * (-1.6056e-10 + T * 5.0484e-12)));
+	      + S * (1.7439e-5 - T * 2.9778e-7))
+	    + p * ((8.9309e-7 + T * (-3.1628e-8 + T * 2.1987e-10) - S * 4.1057e-9)
+	      + p * (-1.6056e-10 + T * 5.0484e-12)));
     }
   }
 }
-double
-atg_UNESCO_1983(double S, double T, double p)
+
+double atg_UNESCO_1983(double S, double T, double p)
 {
   /* Adiabatic temperature gradient, UNESCO 1983
    *
@@ -468,15 +443,13 @@ atg_UNESCO_1983(double S, double T, double p)
 	 + (-4.6206e-13 + (1.8676e-14 - 2.1687e-16*T)*T)*p*p);
 }
 
-void
-theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref, double *value)
+void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref, double *value)
 {
   /* Source: UNESCO 1983
    * check value from Fofonoff et al. (1983)
    * theta = 36.89073C at S=40, T=40, p=10000, pref=0
    */
-  int i;
-  for (i = 0; i < *n; i++) {
+  for (int i = 0; i < *n; i++) {
     double S = *pS++;
     double T = *pT++;
     double p = *pp++;
@@ -504,8 +477,7 @@ theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref, dou
 }
 
 /*static double sig_0, p_ref, S, T;*/
-void
-sw_tsrho(double *pS, double *prho, double *pp, double *res)
+void sw_tsrho(double *pS, double *prho, double *pp, double *res)
 {
   int tsrho_bisection_search (double *x, double x1, double x2, double eps, double eta);
   S = *pS;
@@ -523,8 +495,7 @@ sw_tsrho(double *pS, double *prho, double *pp, double *res)
   *res = T;
 }
 
-double
-tsrho_f(double x)
+double tsrho_f(double x)
 {
   extern double p_ref, sig_0;
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
@@ -544,8 +515,7 @@ tsrho_f(double x)
    RETURN VALUE
    0 if root found to within tolerance; 1 otherwise
 */
-int
-tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol)
+int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol)
 {
   /* printf("in bisection_search(x=%f,  x1=%f,  x2=%f)\n",*x,x1,x2); */
   double tsrho_f(double x);
