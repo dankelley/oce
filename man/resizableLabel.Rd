@@ -8,7 +8,9 @@
   instead of Temperature.}
 
 \usage{
-resizableLabel(item=c("S", "T", "theta", "p", "z", "distance",
+resizableLabel(item=c("S", "T", "theta", 
+  "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
+  "p", "z", "distance",
   "heading", "pitch", "roll"),
   axis=c("x", "y"))}
 

@@ -5,6 +5,7 @@
 
 \usage{read.section(file, sectionId="", flags, 
              ship="", scientist="", institute="",
+             missingValue=-999,
              debug=getOption("oceDebug"),
   processingLog)}
 
@@ -26,6 +27,7 @@
     function tries \code{SALNTY} (yes, that is the spelling!) instead.
     But if neither has an acceptable flag, the datum will not be
     read.}
+  \item{missingValue}{numerical value used to indicate missing data}
   \item{debug}{logical. If \code{TRUE}, print some information that 
     might be helpful during debugging.}
   \item{processingLog}{if provided, the action item to be stored in the

@@ -420,6 +420,17 @@ salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
 
+nitrate <- function(x, time) hydrographyLocal(x, time, "nitrate")
+"nitrate<-" <- function(x, value) { x$data$nitrate <- value }
+nitrite <- function(x, time) hydrographyLocal(x, time, "nitrite")
+"nitrite<-" <- function(x, value) { x$data$nitrite <- value }
+oxygen <- function(x, time) hydrographyLocal(x, time, "oxygen")
+"oxygen<-" <- function(x, value) { x$data$oxygen <- value }
+phosphate <- function(x, time) hydrographyLocal(x, time, "phosphate")
+"phosphate<-" <- function(x, value) { x$data$phosphate <- value }
+silicate <- function(x, time) hydrographyLocal(x, time, "silicate")
+"silicate<-" <- function(x, value) { x$data$silicate <- value }
+
 sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 
 "sigmaTheta<-" <- function(x, value)

@@ -134,10 +134,9 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     ly <- length(y)
     if (lx != ly)
         stop("length of x (", lx, ") and y (", ly, ") must agree")
-    if (any(is.na(x)))
-        stop("must not have any NA values in x")
-    if (any(is.na(y)))
-        stop("must not have any NA values in y")
+    ok <- !is.na(x) & !is.na(y)
+    x <- x[ok]
+    y <- y[ok]
     o <- order(x)
     if (missing(xout))
         xout <- seq(min(x), max(x), length.out=lx)
