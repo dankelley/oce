@@ -1,4 +1,5 @@
 0.6-x
+- handle O2 and nutrients in CTD data and sections
 - swSCTp(): use surface pressure as a default
 - plotTS(): add arguments inSitu and referencePressure
 - fix bugs reported in issues 150, 151, 153, 155, 156

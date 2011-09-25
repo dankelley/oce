@@ -4,7 +4,9 @@
 \description{Coerces a dataset into a ctd dataset.}
 
 \usage{
-as.ctd(salinity, temperature, pressure, quality, 
+as.ctd(salinity, temperature, pressure,
+   oxygen, nitrate, nitrite, phosphate, silicate,
+   quality, 
    ship="", scientist="", institute="", address="", cruise="", station="", 
    date="", startTime="", recovery="",
    latitude=NA, longitude=NA, 
@@ -20,6 +22,11 @@ as.ctd(salinity, temperature, pressure, quality,
      if it is not one already.}
   \item{pressure}{pressure through the water column. (If just a single value 
      is given, then it is repeated to match the length of the temperature and salinity.}
+  \item{oxygen}{optional oxygen concentration}
+  \item{nitrate}{optional nitrate concentration [micromole/kg]}
+  \item{nitrite}{optional nitrite concentration [micromole/kg]}
+  \item{phosphate}{optional phosphate concentration [micromole/kg]}
+  \item{silicate}{optional silicate concentration [micromole/kg]}
   \item{quality}{quality flag, e.g. from the salinity quality flag in WOCE
      data.  (In WOCE, \code{quality=2} indicates good data, 
      \code{quality=3} means questionable data, and \code{quality=4}

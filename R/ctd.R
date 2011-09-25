@@ -1,5 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-as.ctd <- function(salinity, temperature, pressure, quality,
+as.ctd <- function(salinity, temperature, pressure,
+                   oxygen, nitrate, nitrite, phosphate, silicate,
+                   quality,
                    ship="",scientist="",institute="",address="", cruise="",station="",
                    date="", startTime="", recovery="",
                    latitude=NA, longitude=NA,
@@ -14,6 +16,7 @@ as.ctd <- function(salinity, temperature, pressure, quality,
             salinity <- df$salinity
             temperature <- df$temperature
             pressure <- df$pressure
+            ## FIXME: extract nitrate etc
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
     } else {
         if (missing(temperature))
@@ -35,6 +38,11 @@ as.ctd <- function(salinity, temperature, pressure, quality,
     data <- data.frame(salinity=salinity,
                        temperature=temperature,
                        pressure=pressure,
+                       oxygen=if (!missing(oxygen))oxygen else NA,
+                       nitrate=if (!missing(nitrate))nitrate else NA,
+                       nitrite=if (!missing(nitrite))nitrite else NA,
+                       phosphate=if (!missing(phosphate))phosphate else NA,
+                       silicate=if (!missing(silicate))silicate else NA,
                        quality=quality,
                        sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
     metadata <- list(
@@ -157,7 +165,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
             } else {
                 focus <- (x$data$pressure >= (pt[i] - e*(pt[ i ] - pt[i-1]))) & (x$data$pressure <= (pt[i] + e*(pt[i+1] - pt[ i ])))
             }
-            ##cat("i=",i,"pt[i]=",pt[i],"\n")
+            ##cat("i=",i,"pt[i]=",pt[i],"; datum.name=", datum.name, "\n")
             if (sum(focus, na.rm=TRUE) > 0) {
                 if ("boxcar" == method) {
                     for (datum.name in data.names) {
@@ -1786,6 +1794,33 @@ plotProfile <- function (x,
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
             plotJustProfile(x$data$salinity, y, col = col.salinity, type=type, lwd=lwd, cex=cex, pch=pch)
+        }
+    } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate")) {
+        if (!(xtype %in% names(x$data)))
+            stop("no ", xtype, " in this station")
+        if (!any(!is.na(x$data[[xtype]])))
+            stop("all ", xtype, " values in this station are NA")
+        if (useSmoothScatter) {
+            smoothScatter(x$data[[xtype]], y, ylim=ylim, xlab="", ylab=resizableLabel("pressure", "y"), axes=FALSE, ...)
+            axis(2)
+            axis(3)
+            box()
+            mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+        } else {
+            plot(x$data[[xtype]], y,
+                 ylim=ylim,
+                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            axis(2)
+            axis(3)
+            box()
+            if (grid) {
+                at <- par("yaxp")
+                abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+                at <- par("xaxp")
+                abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            }
+            plotJustProfile(x$data[[xtype]], y, type=type, lwd=lwd, cex=cex, pch=pch)
         }
     } else if (xtype == "T" || xtype == "temperature") {
         if (missing(Tlim)) {
