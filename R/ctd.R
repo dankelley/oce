@@ -1556,11 +1556,23 @@ plotTS <- function (x,
 {
     # FIXME: should check for lobo ... or maybe make as.ctd() handle that...
     if (!inherits(x, "ctd")) {
-        names<- names(x)
-        if ("temperature" %in% names && "salinity" %in% names)
-            x <- as.ctd(x$salinity, x$temperature, 0)
-        else
-            stop("method is only for ctd objects")
+        if (inherits(x, "section")) { 
+            salinity <- salinity(x)
+            temperature <- temperature(x)
+            x <- as.ctd(salinity, temperature, 0) # FIXME: what if we want theta?
+        } else {
+            names <- names(x)
+            if ("temperature" %in% names && "salinity" %in% names) {
+                x <- as.ctd(x$salinity, x$temperature, 0) # FIXME: what if we want theta?
+            } else {
+                names <- names(x$data)
+                if ("temperature" %in% names && "salinity" %in% names) {
+                    x <- as.ctd(x$data$salinity, x$data$temperature, 0) # FIXME: what if we want theta?
+                } else {
+                    stop("cannot find salinity and temperature in 'x'")
+                }
+            }
+        }
     }
     y <- if (inSitu) x$data$temperature else swTheta(x, referencePressure=referencePressure)
     if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)

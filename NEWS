@@ -2,6 +2,7 @@
 - handle O2 and nutrients in CTD data and sections
 - swSCTp(): use surface pressure as a default
 - plotTS(): add arguments inSitu and referencePressure
+- plotTS(): handle section objects
 - fix bugs reported in issues 150, 151, 153, 155, 156
 - imagep(): change default drawContours to FALSE
 

@@ -32,7 +32,8 @@
 }
 
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{x}{An object containing salinity and temperature data, typically a
+      \code{cdt} object or \code{section} object.}
   \item{inSitu}{A boolean indicating whether to use in-situ temperature or (the
       default) potential temperature, calculated with reference pressure given
       by \code{referencePressure}.}
