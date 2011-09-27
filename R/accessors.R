@@ -418,6 +418,13 @@ pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
 
 salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
+spice <- function(x, time) {
+    S <- salinity(x, time)
+    T <- temperature(x, time)
+    p <- pressure(x, time)
+    swSpice(S, T, p)
+}
+
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
 
 nitrate <- function(x, time) hydrographyLocal(x, time, "nitrate")
