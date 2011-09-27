@@ -140,14 +140,14 @@ plot.section <- function(x,
 {
     debug <- if (debug > 2) 2 else floor(0.5 + debug)
     oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), ...) {\n")
-    plot.subsection <- function(variable="temperature", title="Temperature",
+    plotSubsection <- function(variable="temperature", title="Temperature",
 				indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
 				xlim=NULL,
 				ylim=NULL,
 				debug=0,
 				...)
     {
-	oceDebug(debug, "\bplot.subsection(variable=", variable, ",...) {\n")
+	oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
 	if (variable == "map") {
 	    lat <- array(NA, numStations)
 	    lon <- array(NA, numStations)
@@ -198,7 +198,7 @@ plot.section <- function(x,
 		text(xlab, ylab, x$metadata$stationId[numStations])
 	    }
 	} else {                        # not a map
-	    if (!(variable %in% names(x$data$station[[1]]$data)))
+	    if (!(variable %in% names(x$data$station[[1]]$data)) && variable != "salinity gradient")
 		stop("this section does not contain a variable named '", variable, "'")
 	    ## FIXME: contours don't get to plot edges
 	    xxrange <- range(xx, na.rm=TRUE)
@@ -245,9 +245,13 @@ plot.section <- function(x,
 	    usr <- par("usr")
 	    graph.bottom <- usr[3]
 	    waterDepth <- NULL
-
 	    for (i in 1:numStations) {
-		zz[i,] <- rev(x$data$station[[stationIndices[i]]]$data[[variable]])
+                if (variable == "salinity gradient") {
+                    zz[i,] <- c(0, rev(diff(x$data$station[[stationIndices[i]]]$data[["salinity"]]) 
+                                       / diff(x$data$station[[stationIndices[i]]]$data[["pressure"]])))
+                } else {
+                    zz[i,] <- rev(x$data$station[[stationIndices[i]]]$data[[variable]])
+                }
 		if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
 		temp <- x$data$station[[stationIndices[i]]]$data$temperature
 		len <- length(temp)
@@ -333,8 +337,8 @@ plot.section <- function(x,
 	    axis(1)
 	    legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
 	}
-	oceDebug(debug, "\b} # plot.subsection()\n")
-    }                                   # plot.subsection
+	oceDebug(debug, "\b} # plotSubsection()\n")
+    }                                   # plotSubsection
 
     if (!inherits(x, "section"))
         stop("method is only for section objects")
@@ -405,6 +409,7 @@ plot.section <- function(x,
 	} else {
 	    if (     ww == "temperature") which2[w] <- 1
 	    else if (ww == "salinity") which2[w] <- 2
+	    else if (ww == "salinity gradient") which2[w] <- 2.5
 	    else if (ww == "sigmaTheta") which2[w] <- 3
 	    else if (ww == "nitrate") which2[w] <- 4
 	    else if (ww == "nitrite") which2[w] <- 5
@@ -432,41 +437,46 @@ plot.section <- function(x,
     for (w in 1:length(which)) {
 	if (!missing(contourLevels)) {
 	    if (which[w] == 1)
-		plot.subsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 2)
-		plot.subsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] > 2 && which[w] < 3) {
+		plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+            }
 	    if (which[w] == 3)
-		plot.subsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 4)
-		plot.subsection("nitrate",     "nitrate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("nitrate",     "nitrate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 5)
-		plot.subsection("nitrite",     "nitrite", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("nitrite",     "nitrite", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 6)
-		plot.subsection("oxygen",      "oxygen", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("oxygen",      "oxygen", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 7)
-		plot.subsection("phosphate",   "phosphate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("phosphate",   "phosphate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 8)
-		plot.subsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	} else {
 	    if (which[w] == 1)
-		plot.subsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 2)
-		plot.subsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] > 2 && which[w] < 3)
+		plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 3)
-		plot.subsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 4)
-		plot.subsection("nitrate",     "nitrate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("nitrate",     "nitrate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 5)
-		plot.subsection("nitrite",     "nitrite", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("nitrite",     "nitrite", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 6)
-		plot.subsection("oxygen",      "oxygen", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("oxygen",      "oxygen", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 7)
-		plot.subsection("phosphate",   "phosphate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("phosphate",   "phosphate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 8)
-		plot.subsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	}
 	if (which[w] == 99)
-	    plot.subsection("map", indicate.stations=FALSE, debug=debug-1, ...)
+	    plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
 	if (w <= adorn.length) {
 	    t <- try(eval(adorn[w]), silent=TRUE)
 	    if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
