@@ -247,8 +247,9 @@ plot.section <- function(x,
 	    waterDepth <- NULL
 	    for (i in 1:numStations) {
                 if (variable == "salinity gradient") {
-                    zz[i,] <- c(0, rev(diff(x$data$station[[stationIndices[i]]]$data[["salinity"]]) 
-                                       / diff(x$data$station[[stationIndices[i]]]$data[["pressure"]])))
+                    dSdp <- rev(diff(x$data$station[[stationIndices[i]]]$data[["salinity"]]) 
+                                / diff(x$data$station[[stationIndices[i]]]$data[["pressure"]]))
+                    zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
                 } else {
                     zz[i,] <- rev(x$data$station[[stationIndices[i]]]$data[[variable]])
                 }
