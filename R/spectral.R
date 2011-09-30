@@ -2,6 +2,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                    plot=TRUE,
                    debug=getOption("oceDebug"), ...)
 {
+    ##http://octave.svn.sourceforge.net/viewvc/octave/trunk/octave-forge/main/signal/inst/pwelch.m
     hamming.local <- function (n) # avoid having to pull in the signal library
     {
         n <- round(n)
@@ -69,7 +70,9 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                 nfft <- x.len
             window <- hamming.local(nfft)
         } else {
-            window <- hamming.local(floor(x.len / 8))
+            nfft <- 256
+            ##window <- hamming.local(floor(x.len / 8))
+            window <- hamming.local(min(nfft, x.len))
         }
     }
     normalization <- mean(window^2)
@@ -100,7 +103,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     while (TRUE) {
         oceDebug(debug, "  subspectrum at indices ", start, "to", end, "\n")
         xx <- ts(window * detrend(x[start:end]), frequency=fs)
-        args$x <- xx
+        args$x <- as.vector(xx)
         s <- do.call(spectrum, args=args)
         if (nrow == 0)
             freq <- s$freq
