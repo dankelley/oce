@@ -3,6 +3,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                    debug=getOption("oceDebug"), ...)
 {
     ##http://octave.svn.sourceforge.net/viewvc/octave/trunk/octave-forge/main/signal/inst/pwelch.m
+
     hamming.local <- function (n) # avoid having to pull in the signal library
     {
         n <- round(n)
@@ -33,9 +34,11 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     gave.window <- !missing(window)
     gave.nfft <- !missing(nfft)
     gave.fs <- !missing(fs)
-    oceDebug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, ...) {\n",
+    gave.noverlap <- !missing(noverlap)
+    oceDebug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, noverlap=%s, ...) {\n",
                              if (gave.window) window else "(not given)",
                              if (gave.nfft) nfft else "(not given)",
+                             if (gave.noverlap) noverlap else "(not given)",
                              if (gave.fs) fs else "(not given)"))
     if (is.ts(x)) {
         if (missing(fs))
@@ -70,9 +73,12 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                 nfft <- x.len
             window <- hamming.local(nfft)
         } else {
-            nfft <- 256
-            ##window <- hamming.local(floor(x.len / 8))
-            window <- hamming.local(min(nfft, x.len))
+            if (gave.noverlap) {
+                windowLength <- min(x.len, floor(x.len / 8))
+            } else {
+                windowLength <- min(x.len, floor(x.len / 8 / 0.5))
+            }
+            window <- hamming.local(windowLength)
         }
     }
     normalization <- mean(window^2)
@@ -105,6 +111,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         xx <- ts(window * detrend(x[start:end]), frequency=fs)
         args$x <- as.vector(xx)
         s <- do.call(spectrum, args=args)
+        dan<<-s
         if (nrow == 0)
             freq <- s$freq
         psd <- c(psd, s$spec)
@@ -120,7 +127,8 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     oceDebug(debug, "\b\b} # pwelch()\n")
     rval <- list(freq=freq, spec=apply(psd, 2, mean), 
                  method="Welch", series=deparse(substitute(x)),
-                 df=s$df, bandwidth=s$bandwidth, # FIXME: wrong formulae
+                 df=s$df * (x.len / length(window)),
+                 bandwidth=s$bandwidth, # FIXME: wrong formulae
                  demean=FALSE, detrend=TRUE)
     class(rval) <- "spec"
     if (plot) {
