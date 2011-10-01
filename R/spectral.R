@@ -111,7 +111,6 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         xx <- ts(window * detrend(x[start:end]), frequency=fs)
         args$x <- as.vector(xx)
         s <- do.call(spectrum, args=args)
-        dan<<-s
         if (nrow == 0)
             freq <- s$freq
         psd <- c(psd, s$spec)
