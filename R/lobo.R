@@ -204,6 +204,7 @@ summary.lobo <- function(object, ...)
     colnames(threes) <- c("Min.", "Mean", "Max.")
     rownames(threes) <- names(object$data[-1]) #skip time, the first column
     res$threes <- threes
+    res$filename <- object$metadata$filename
     class(res) <- "summary.lobo"
     res
 }
@@ -211,6 +212,7 @@ summary.lobo <- function(object, ...)
 print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("Lobo Summary\n------------\n\n")
+    cat("* source: \"", x$filename, "\"\n", sep="")
     cat("* time range:", format(x$time.range[1], format="%Y-%m-%d %H:%M:%S %Z"),
         "to", format(x$time.range[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
     cat("\n",...)
