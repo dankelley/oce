@@ -69,7 +69,7 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
 
 plot.lobo.TS <- function(lobo, ...)
 {
-    plotTS(as.ctd(lobo$data$salinity, lobo$data$temperature, lobo$data$p), col="red", ...)
+    plotTS(as.ctd(lobo$data$salinity, lobo$data$temperature, 0), ...)
 }
 
 plot.lobo <- function(x,
@@ -97,11 +97,13 @@ plot.lobo <- function(x,
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
     }
 
-    par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-    plot.lobo.timeseries.uv(x, ...)
-    if (adorn.length > 0) {
-        t <- try(eval(adorn[2]), silent=TRUE)
-        if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+    if (any(!is.na(x$data$u) & !is.na(x$data$v))) {
+        par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+        plot.lobo.timeseries.uv(x, ...)
+        if (adorn.length > 0) {
+            t <- try(eval(adorn[2]), silent=TRUE)
+            if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+        }
     }
 
     par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
@@ -120,54 +122,72 @@ plot.lobo <- function(x,
 }
 
 
-read.lobo <- function(file, cols=7, processingLog) {
-    header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
-    d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
-                                        # find columns. BUG: assumes names don't change
-    col.date         <- grep("date", header)
-    col.u            <- grep("current across", header)
-    col.v            <- grep("current along", header)
-    col.nitrate      <- grep("nitrate", header)
-    col.fluorescence <- grep("fluorescence", header)
-    col.salinity     <- grep("salinity", header)
-    col.temperature  <- grep("temperature", header)
-    if (cols == 7) {
-        n <- length(d) / cols
-        time         <-            d[seq(from=col.date,         by=cols, length.out = n)]
-        u            <- as.numeric(d[seq(from=col.u,            by=cols, length.out = n)])
-        v            <- as.numeric(d[seq(from=col.v,            by=cols, length.out = n)])
-        nitrate      <- as.numeric(d[seq(from=col.nitrate,      by=cols, length.out = n)])
-        fluorescence <- as.numeric(d[seq(from=col.fluorescence, by=cols, length.out = n)])
-        salinity     <- as.numeric(d[seq(from=col.salinity,     by=cols, length.out = n)])
-        temperature  <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
-        p            <- rep(0, length(salinity))
-        time <- as.POSIXlt(time)
-        ## Make all the same length
-        len <- max(length(u), length(v), length(salinity), length(temperature), length(p), length(nitrate), length(fluorescence))
-        fill.out <- function(x, length)
-        {
-            l <- length(x)
-            if (l < length)
-                c(x, rep(NA, length-l))
-            else x
-        }
-        u <- fill.out(u, len)
-        v <- fill.out(v, len)
-        salinity <- fill.out(salinity, len)
-        temperature <- fill.out(temperature, len)
-        p <- fill.out(p, len)
-        nitrate <- fill.out(nitrate, len)
-        fluorescence <- fill.out(fluorescence, len)
-        data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
-        metadata <- list(header=header)
+read.lobo <- function(file, cols=7, processingLog)
+{
+    ## header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
+    ## d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
+    d <- read.table(file, sep='\t', header=TRUE)
+    names <- names(d)
+    tCol            <- grep("date", names)
+    uCol            <- grep("current across", names)
+    vCol            <- grep("current along", names)
+    nitrateCol      <- grep("nitrate", names)
+    fluorescenceCol <- grep("fluorescence", names)
+    SCol            <- grep("salinity", names)
+    TCol            <- grep("temperature", names)
+    pressureCol     <- grep("pressure", names)
+    if (length(tCol))
+        time <- as.POSIXlt(d[,tCol])
+    else
+        stop("no time column in data file.  The column names are: ", paste(names, collapse=" "))
+    n <- dim(d)[1]
+    u <- if (length(uCol)) as.numeric(d[, uCol]) else rep(NA, n)
+    v <- if (length(vCol)) as.numeric(d[, vCol]) else rep(NA, n)
+    salinity <- if (length(SCol)) as.numeric(d[, SCol]) else rep(NA, n)
+    temperature <- if (length(TCol)) as.numeric(d[, TCol]) else rep(NA, n)
+    nitrate <- if (length(nitrateCol)) as.numeric(d[, nitrateCol]) else rep(NA, n)
+    fluorescence <- if (length(fluorescenceCol)) as.numeric(d[, fluorescenceCol]) else rep(NA, n)
+    pressure <- if (length(pressureCol)) as.numeric(d[, pressureCol]) else rep(NA, n)
+    data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,pressure=pressure,nitrate=nitrate,fluorescence=fluorescence)
+
+#    if (cols == 7) {
+#        n <- length(d) / cols
+#        time         <-            d[seq(from=col.date,         by=cols, length.out = n)]
+#        u            <- as.numeric(d[seq(from=col.u,            by=cols, length.out = n)])
+#        v            <- as.numeric(d[seq(from=col.v,            by=cols, length.out = n)])
+#        nitrate      <- as.numeric(d[seq(from=col.nitrate,      by=cols, length.out = n)])
+#        fluorescence <- as.numeric(d[seq(from=col.fluorescence, by=cols, length.out = n)])
+#        salinity     <- as.numeric(d[seq(from=col.salinity,     by=cols, length.out = n)])
+#        temperature  <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
+#        p            <- rep(0, length(salinity))
+#        browser()
+#        time <- as.POSIXlt(time)
+#        ## Make all the same length
+#        len <- max(length(u), length(v), length(salinity), length(temperature), length(p), length(nitrate), length(fluorescence))
+#        fill.out <- function(x, length)
+#        {
+#            l <- length(x)
+#            if (l < length)
+#                c(x, rep(NA, length-l))
+#            else x
+#        }
+#        u <- fill.out(u, len)
+#        v <- fill.out(v, len)
+#        salinity <- fill.out(salinity, len)
+#        temperature <- fill.out(temperature, len)
+#        p <- fill.out(p, len)
+#        nitrate <- fill.out(nitrate, len)
+#        fluorescence <- fill.out(fluorescence, len)
+#        data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
+        metadata <- list(filename=file)
         if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
         hitem <- processingLogItem(processingLog)
         res <- list(data=data, metadata=metadata, processingLog=hitem)
         class(res) = c("lobo", "oce")
         res
-    } else {
-        stop("debug: only working on one format right now")
-    }
+#    } else {
+#        stop("debug: only working on one format right now")
+#    }
 }
 
 summary.lobo <- function(object, ...)
