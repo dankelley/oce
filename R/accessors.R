@@ -232,6 +232,7 @@ longitude <- function(x, time, byDepth=TRUE)
 }
 
 
+
 pitch <- function(x, time)
 {
     if (missing(x))
@@ -444,6 +445,8 @@ sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 {
     x$data$sigmaTheta <- value
 }
+
+tritium <- function(x, time) hydrographyLocal(x, time, "tritium")
 
 time <- function(x)
 {

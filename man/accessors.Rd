@@ -30,6 +30,7 @@
 \alias{silicate}
 \alias{silicate<-}
 \alias{spice}
+\alias{tritium}
 \alias{time}
 \alias{velocity}
 
@@ -69,6 +70,7 @@ phosphate(x) <- value
 silicate(x, time)
 silicate(x) <- value
 spice(x, time)
+tritium(x, time)
 time(x)
 velocity(x)
 }
