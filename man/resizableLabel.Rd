@@ -8,8 +8,8 @@
     Temperature, and including units as appropriate.}
 
 \usage{
-resizableLabel(item=c("S", "T", "theta", 
-  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "sigmaTheta", "tritium",
+resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
+  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
   "p", "z", "distance",
   "heading", "pitch", "roll"),
   axis=c("x", "y"))}

@@ -355,9 +355,8 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item=c("S", "T", "theta",
+resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
-                                  "sigmaTheta",
                                   "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
 {
     item <- match.arg(item)
