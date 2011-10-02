@@ -424,7 +424,8 @@ plot.ctd <- function (x, which = 1:4,
         pch <- rep(pch, lw) # FIXME: recycle more sensibly
     if (length(cex) < lw)
         cex <- rep(cex, lw) # FIXME: recycle more sensibly
-    dec_deg <- function(x, code = "lat") {
+    dec_deg <- function(x, code = "lat")
+    {
         if (code == "lat") {
             if (x < 0) {
                 x <- -x
@@ -522,7 +523,7 @@ plot.ctd <- function (x, which = 1:4,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
-        else if (which[w] == 10 || which[w] == "temperature") {
+       else if (which[w] == 10 || which[w] == "temperature") {
             plotProfile(x, xtype="temperature",
                          ylim=plim,
                          Tlim=Tlim,
@@ -543,6 +544,12 @@ plot.ctd <- function (x, which = 1:4,
                          useSmoothScatter=useSmoothScatter,
                          col.grid=col.grid, lty.grid=lty.grid,
                          cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
+        else if (which[w] == 13 || which[w] == "spice")
+            plotProfile(x, xtype="spice",
+                        ylim=plim,
+                        useSmoothScatter=useSmoothScatter,
+                        grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                        cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
             plotTS(x, Slim=Slim, Tlim=Tlim,
@@ -1724,10 +1731,16 @@ plotProfile <- function (x,
         stop("method is only for ctd objects")
     dots <- list(...)
     ytype <- match.arg(ytype)
-    pname <- if (ytype == "pressure") resizableLabel("p", "y") else if (ytype == "z") resizableLabel("z", "y")
+    yname <- switch(ytype,
+                   pressure=resizableLabel("p", "y"),
+                   z=resizableLabel("z", "y"),
+                   sigmaTheta=resizableLabel("sigmaTheta", "y"))
     par(mgp=mgp, mar=mar)
     if (missing(ylim))
-        ylim <- if (ytype == "pressure") rev(range(x$data$pressure, na.rm=TRUE)) else range(-swDepth(x), na.rm=TRUE)
+        ylim <- switch(ytype,
+                       pressure = rev(range(x$data$pressure, na.rm=TRUE)),
+                       z = range(swZ(x), na.rm=TRUE),
+                       sigmaTheta = rev(range(x$data$sigmaTheta, na.rm=TRUE)))
     axis.name.loc <- par("mgp")[1]
     know.time.unit <- FALSE
     if ("time" %in% names(x$data)) {
@@ -1745,24 +1758,25 @@ plotProfile <- function (x,
     else if (ytype == "z")
         y <- swZ(x$data$pressure)
     else if (ytype == "sigmaTheta")
-        y <- swZ(x$data$sigmaTheta) # FIXME: are we sure this exists?
+        y <- x$data$sigmaTheta # FIXME: are we sure this exists?
+
     if (xtype == "index") {
         index <- 1:length(x$data$pressure)
-        plot(index, x$data$pressure, ylim=ylim, xlab = "index", ylab = pname, type='l', xaxs=xaxs, yaxs=yaxs)
+        plot(index, x$data$pressure, ylim=ylim, xlab = "index", ylab = yname, type='l', xaxs=xaxs, yaxs=yaxs)
     } else if (xtype == "density+time") {
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure) # why recalculate?
         if (missing(densitylim))
             densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
 	look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         plot(st[look], y[look], xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         box()
         par(new = TRUE)
         if (missing(timelim)) timelim <- range(time, na.rm=TRUE)
-        plot(time, y, xlim=timelim, ylim=ylim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs)
+        plot(time, y, xlim=timelim, ylim=ylim, type='n', xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.time, xaxs=xaxs, yaxs=yaxs)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.time)
         lines(time, y, lwd=lwd, col=col.time)
         if (know.time.unit)
@@ -1781,7 +1795,7 @@ plotProfile <- function (x,
 	look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
@@ -1793,7 +1807,7 @@ plotProfile <- function (x,
         df <- min(max(x$data$pressure, na.rm=TRUE) / 5, length(x$data$pressure) / 10) # FIXME: adjust params
         dpdt.sm <- smooth.spline(x$data$pressure, dpdt, df=df)
         if (missing(dpdtlim)) dpdtlim <- range(dpdt.sm$y)
-        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type='n', xlab="", ylab=pname, axes=FALSE, lwd=lwd, col=col.dpdt,
+        plot(dpdt.sm$y, dpdt.sm$x, xlim=dpdtlim, ylim=ylim, type='n', xlab="", ylab=yname, axes=FALSE, lwd=lwd, col=col.dpdt,
              xaxs=xaxs, yaxs=yaxs, ...)
         axis(1, col=col.dpdt, col.axis=col.dpdt, col.lab=col.dpdt)
         lines(dpdt.sm$y, dpdt.sm$x, lwd=lwd, col=col.dpdt)
@@ -1813,7 +1827,7 @@ plotProfile <- function (x,
             if ("xlim" %in% names(dots)) Slim <- dots$xlim else Slim <- range(x$data$salinity, na.rm=TRUE)
         }
         if (useSmoothScatter) {
-            smoothScatter(x$data$salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab=pname, axes=FALSE, ...)
+            smoothScatter(x$data$salinity, y, xlim=Slim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
             axis(2)
             axis(3)
             box()
@@ -1822,7 +1836,7 @@ plotProfile <- function (x,
 	    look <- if (keepNA) 1:length(y) else !is.na(x$data$salinity) & !is.na(y)
             plot(x$data$salinity[look], y[look],
                  xlim=Slim, ylim=ylim,
-                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                 type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
@@ -1850,7 +1864,7 @@ plotProfile <- function (x,
 	    look <- if (keepNA) 1:length(y) else !is.na(x$data[[xtype]]) & !is.na(y)
             plot(x$data[[xtype]][look], y[look],
                  ylim=ylim,
-                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                 type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
@@ -1868,7 +1882,7 @@ plotProfile <- function (x,
             if ("xlim" %in% names(dots)) Tlim <- dots$xlim else Tlim <- range(x$data$temperature, na.rm=TRUE)
         }
         if (useSmoothScatter) {
-            smoothScatter(x$data$temperature, y, xlim=Tlim, ylim=ylim, xlab="", ylab=pname, axes=FALSE, ...)
+            smoothScatter(x$data$temperature, y, xlim=Tlim, ylim=ylim, xlab="", ylab=yname, axes=FALSE, ...)
             axis(2)
             axis(3)
             box()
@@ -1877,7 +1891,7 @@ plotProfile <- function (x,
 	    look <- if (keepNA) 1:length(y) else !is.na(x$data$temperature) & !is.na(y)
             plot(x$data$temperature[look], y[look],
                  xlim=Tlim, ylim=ylim,
-                 type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+                 type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
@@ -1897,7 +1911,7 @@ plotProfile <- function (x,
             densitylim <- range(st, na.rm=TRUE)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -1916,7 +1930,7 @@ plotProfile <- function (x,
             densitylim <- range(st, na.rm=TRUE)
         plot(st[look], y[look],
              xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
@@ -1944,7 +1958,7 @@ plotProfile <- function (x,
 	look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
         plot(N2[look], y[look],
              xlim=N2lim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE)
+             type = "n", xlab = "", ylab = yname, axes = FALSE)
         mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col.N2, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
         axis(2)
         axis(3, col = col.N2, col.axis = col.N2, col.lab = col.N2)
@@ -1956,13 +1970,30 @@ plotProfile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
        plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
+    } else if (xtype == "spice") {
+        spice <-swSpice(x)
+	look <- if (keepNA) 1:length(y) else !is.na(spice) & !is.na(y)
+        plot(spice[look], y[look],
+             ylim=ylim,
+             type = "n", xlab = "", ylab = yname, axes = FALSE)
+        mtext(resizableLabel("spice", "x"), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+        axis(2)
+        axis(3)
+        box()
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
+       plotJustProfile(x=spice, y=y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
     } else if (xtype == "salinity+temperature") {
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
 	look <- if (keepNA) 1:length(y) else !is.na(x$data$temperature) & !is.na(y)
         plot(x$data$temperature[look], y[look],
              xlim=Tlim, ylim=ylim,
-             type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
+             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
         mtext(resizableLabel("T", "x"),
               side = 3, line = axis.name.loc, col = col.temperature, cex=par("cex"))

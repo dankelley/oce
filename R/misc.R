@@ -357,6 +357,7 @@ matchBytes <- function(input, b1, ...)
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
+                                  "spice",
                                   "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
 {
     item <- match.arg(item)
@@ -388,9 +389,9 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item ==  "silicate") {
         full <- "Silicate Concentration [umol/kg]"
         abbreviated <- "Si [umol/kg]"
-
-
-
+    } else if (item == "spice") {
+        full <- expression(paste("Spice [", kg/m^3, "]"))
+        abbreviated <- full
     } else if (item == "S") {
         full <- "Salinity [PSU]"
         abbreviated <- "S [PSU]"

@@ -58,6 +58,7 @@
 	off by a scale factor; this should not be a problem if there is
 	a \code{x$data$time} column, or a \code{x$metadata$sample.rate}
 	value in the header.}
+      \item{\code{spice}}{Profile of spice}
     }
   }
   \item{ytype}{variable to use on y axis.}

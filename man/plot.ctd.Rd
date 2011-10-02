@@ -67,6 +67,7 @@
       \item \code{which=10} or \code{which="temperature"} gives a temperature profile
       \item \code{which=11} or \code{which="density"} gives a density profile
       \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
+      \item \code{which=13} or \code{which="spice"} gives a spiciness profile
     }
   }
   \item{ref.lat}{Latitude of reference point for distance calculation}
