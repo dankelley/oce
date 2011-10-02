@@ -198,6 +198,7 @@ export(
        toEnuAdp,
        toEnuAdv,
        topoInterpolate,
+       tritium,
        unabbreviateYear,
        undriftTime,
        unwrapAngle,
