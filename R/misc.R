@@ -356,7 +356,8 @@ matchBytes <- function(input, b1, ...)
 }
 
 resizableLabel <- function(item=c("S", "T", "theta",
-                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
+                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
+                                  "sigmaTheta",
                                   "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
 {
     item <- match.arg(item)
@@ -364,9 +365,15 @@ resizableLabel <- function(item=c("S", "T", "theta",
     if (item == "T") {
         full <- expression(paste("Temperature [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
+    } else if (item == "sigmaTheta") {
+        full <- expression(paste("Potential density [", kg/m^3, "]"))
+        abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
     } else if (item == "theta") {
         full <- expression(paste("Potential Temperature [", degree, "C]"))
         abbreviated <- expression(paste(theta, " [", degree, "C]"))
+    } else if (item == "tritium") {
+        full <- "Tritium Concentration [Tu]"
+        abbreviated <- "Tritium [Tu]"
     } else if (item ==  "nitrate") {
         full <- "Nitrate Concentration [umol/kg]"
         abbreviated <- "NO3 [umol/kg]"

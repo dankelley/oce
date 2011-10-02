@@ -1,4 +1,7 @@
 0.6-x
+- add data(geosecs235)
+- plotProfile() and plot.ctd(): add argument 'keepNA'
+- as.ctd(): add arguments 'other' and 'missingValue'
 - read.lobo(): tolerate more formats, including missing velocities
 - add data(schmitt)
 - add accessor spice()

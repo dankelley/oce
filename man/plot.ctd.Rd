@@ -28,6 +28,7 @@
      cex=1,
      pch=1,
      useSmoothScatter=FALSE,
+     keepNA=FALSE,
      type='l',
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -93,6 +94,8 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
+  \item{keepNA}{flag indicating whether to keep \code{NA} values in linegraphs,
+      which will yield breaks in the lines.}
   \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of

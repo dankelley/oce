@@ -1,6 +1,8 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
+                   other,
+                   missingValue,
                    quality,
                    ship="",scientist="",institute="",address="", cruise="",station="",
                    date="", startTime="", recovery="",
@@ -45,6 +47,20 @@ as.ctd <- function(salinity, temperature, pressure,
                        silicate=if (!missing(silicate))silicate else NA,
                        quality=quality,
                        sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
+    if (!missing(other)) {
+        names <- names(other)
+        n <- length(names)
+        for (i in 1:n) {
+            if (names[i] != "") {
+                data <- data.frame(data, other)
+            } else {
+                warning("'other' item number ", i, " has no name")
+            }
+        }
+    }
+    if (!missing(missingValue)) {
+        data[data==missingValue] <- NA
+    }
     metadata <- list(
                      header=NULL,
                      filename=NULL,
@@ -63,7 +79,7 @@ as.ctd <- function(salinity, temperature, pressure,
                      recovery=recovery,
                      waterDepth=waterDepth,
                      sampleInterval=sampleInterval,
-                     names=c("salinity", "temperature", "pressure", "sigmaTheta"),
+                     names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
                      src=src)
     hitem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
@@ -388,6 +404,7 @@ plot.ctd <- function (x, which = 1:4,
                       cex=1,
                       pch=1,
                       useSmoothScatter=FALSE,
+		      keepNA=FALSE,
                       type='l',
                       adorn=NULL,
                       mgp=getOption("oceMgp"),
@@ -473,59 +490,59 @@ plot.ctd <- function (x, which = 1:4,
             plotProfile(x, xtype="salinity+temperature", Slim=Slim, Tlim=Tlim, ylim=plim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 2 || which[w] == "density+N2")
             plotProfile(x, xtype="density+N2",
                          ylim=plim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 6 || which[w] == "density+dpdt")
             plotProfile(x, xtype="density+dpdt",
                          ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 7 || which[w] == "density+time")
             plotProfile(x, xtype="density+time",
                          ylim=plim, densitylim=densitylim, timelim=timelim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 8 || which[w] == "index")
             plotProfile(x, xtype="index",
                          ylim=plim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 9 || which[w] == "salinity")
             plotProfile(x, xtype="salinity",
                          ylim=plim,
                          Slim=Slim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 10 || which[w] == "temperature") {
             plotProfile(x, xtype="temperature",
                          ylim=plim,
                          Tlim=Tlim,
                          useSmoothScatter=useSmoothScatter,
                          grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         } else if (which[w] == 11 || which[w] == "density")
             plotProfile(x, xtype="density",
                          ylim=plim,
                          grid=grid,
                          useSmoothScatter=useSmoothScatter,
                          col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 12 || which[w] == "N2")
             plotProfile(x, xtype="N2",
                          ylim=plim,
                          grid=grid,
                          useSmoothScatter=useSmoothScatter,
                          col.grid=col.grid, lty.grid=lty.grid,
-                         cex=cex[w], pch=pch[w], type=type[w])
+                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
             plotTS(x, Slim=Slim, Tlim=Tlim,
@@ -535,7 +552,7 @@ plot.ctd <- function (x, which = 1:4,
         else if (which[w] == 4 || which[w] == "text") {
             text.item <- function(item, label, cex=0.8) {
                 if (!is.null(item) && !is.na(item)) {
-                    text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex);
+                    text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex)
                 }
             }
             par(mar=c(0,0,0,0))
@@ -1660,7 +1677,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex
 
 plotProfile <- function (x,
                          xtype="salinity+temperature",
-                         ytype=c("pressure", "z"),
+                         ytype=c("pressure", "z", "sigmaTheta"),
                          col.salinity = "darkgreen",
                          col.temperature = "red",
                          col.rho = "blue",
@@ -1676,15 +1693,21 @@ plotProfile <- function (x,
                          yaxs="r",
                          cex=1, pch=1,
                          useSmoothScatter=FALSE,
+			 keepNA=FALSE,
                          type='l',
                          mgp=getOption("oceMgp"),
                          mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
                          debug=getOption("oceDebug"),
                          ...)
 {
-    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1)
+    plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, keepNA=FALSE)
     {
-        if (type == 'l') {
+	if (!keepNA) {
+	    keep <- !is.na(x) & !is.na(y)
+	    x <- x[keep]
+	    y <- y[keep]
+	}
+	if (type == 'l') {
             lines(x, y, col = col, lwd=lwd)
         } else if (type == 's') {
             lines(x, y, col = col, lwd=lwd, type='s')
@@ -1721,14 +1744,17 @@ plotProfile <- function (x,
         y <- x$data$pressure
     else if (ytype == "z")
         y <- swZ(x$data$pressure)
+    else if (ytype == "sigmaTheta")
+        y <- swZ(x$data$sigmaTheta) # FIXME: are we sure this exists?
     if (xtype == "index") {
         index <- 1:length(x$data$pressure)
         plot(index, x$data$pressure, ylim=ylim, xlab = "index", ylab = pname, type='l', xaxs=xaxs, yaxs=yaxs)
     } else if (xtype == "density+time") {
-        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
+        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure) # why recalculate?
         if (missing(densitylim))
             densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
-        plot(st, y, xlim=densitylim, ylim=ylim,
+	look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        plot(st[look], y[look], xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
@@ -1752,7 +1778,8 @@ plotProfile <- function (x,
         if (missing(densitylim))
             densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
-        plot(st, y,
+	look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        plot(st[look], y[look],
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -1792,7 +1819,8 @@ plotProfile <- function (x,
             box()
             mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
-            plot(x$data$salinity, y,
+	    look <- if (keepNA) 1:length(y) else !is.na(x$data$salinity) & !is.na(y)
+            plot(x$data$salinity[look], y[look],
                  xlim=Slim, ylim=ylim,
                  type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel("S", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -1805,9 +1833,9 @@ plotProfile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            plotJustProfile(x$data$salinity, y, col = col.salinity, type=type, lwd=lwd, cex=cex, pch=pch)
+            plotJustProfile(x$data$salinity, y, col = col.salinity, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
-    } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate")) {
+    } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium")) {
         if (!(xtype %in% names(x$data)))
             stop("no ", xtype, " in this station")
         if (!any(!is.na(x$data[[xtype]])))
@@ -1819,7 +1847,8 @@ plotProfile <- function (x,
             box()
             mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
-            plot(x$data[[xtype]], y,
+	    look <- if (keepNA) 1:length(y) else !is.na(x$data[[xtype]]) & !is.na(y)
+            plot(x$data[[xtype]][look], y[look],
                  ylim=ylim,
                  type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -1832,7 +1861,7 @@ plotProfile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            plotJustProfile(x$data[[xtype]], y, type=type, lwd=lwd, cex=cex, pch=pch)
+            plotJustProfile(x$data[[xtype]], y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
     } else if (xtype == "T" || xtype == "temperature") {
         if (missing(Tlim)) {
@@ -1845,7 +1874,8 @@ plotProfile <- function (x,
             box()
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
-            plot(x$data$temperature, y,
+	    look <- if (keepNA) 1:length(y) else !is.na(x$data$temperature) & !is.na(y)
+            plot(x$data$temperature[look], y[look],
                  xlim=Tlim, ylim=ylim,
                  type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
@@ -1858,13 +1888,14 @@ plotProfile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            plotJustProfile(x$data$temperature, y, col = col.temperature, type=type, lwd=lwd, cex=cex, pch=pch)
+            plotJustProfile(x$data$temperature, y, col = col.temperature, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
     } else if (xtype == "density") {
-        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
+        st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure) # FIXME: why not use existing column?
+	look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
         if (missing(densitylim))
             densitylim <- range(st, na.rm=TRUE)
-        plot(st, y,
+        plot(st[look], y[look],
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
@@ -1877,12 +1908,13 @@ plotProfile <- function (x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, pch=pch)
+        plotJustProfile(st, y, col = col.rho, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
     } else if (xtype == "density+N2") {
-        if (missing(densitylim))
-            densitylim <- range(x$data$sigmaTheta, na.rm=TRUE)
         st <- swSigmaTheta(x$data$salinity, x$data$temperature, x$data$pressure)
-        plot(st, y,
+	look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
+        if (missing(densitylim))
+            densitylim <- range(st, na.rm=TRUE)
+        plot(st[look], y[look],
              xlim=densitylim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
@@ -1893,7 +1925,8 @@ plotProfile <- function (x,
         par(new = TRUE)
         N2 <- swN2(x$data$pressure, st, xaxs=xaxs, yaxs=yaxs)
         if (missing(N2lim)) N2lim <- range(N2, na.rm=TRUE)
-        plot(N2, y,
+	look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        plot(N2[look], y[look],
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, lwd=lwd, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.N2, col.axis = col.N2, col.lab = col.N2)
@@ -1908,7 +1941,8 @@ plotProfile <- function (x,
         N2 <- swN2(x$data$pressure, x$data$sigmaTheta)
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
-        plot(N2, y,
+	look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        plot(N2[look], y[look],
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE)
         mtext(expression(paste(N^2, " [ ", s^-2, " ]")), side = 3, line = axis.name.loc, col = col.N2, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
@@ -1921,11 +1955,12 @@ plotProfile <- function (x,
             at <- par("xaxp")
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
-       plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, pch=pch)
+       plotJustProfile(x=N2, y=y, col=col.N2, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
     } else if (xtype == "salinity+temperature") {
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
-        plot(x$data$temperature, y,
+	look <- if (keepNA) 1:length(y) else !is.na(x$data$temperature) & !is.na(y)
+        plot(x$data$temperature[look], y[look],
              xlim=Tlim, ylim=ylim,
              type = "n", xlab = "", ylab = pname, axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3, col = col.temperature, col.axis = col.temperature, col.lab = col.temperature)
@@ -1935,7 +1970,8 @@ plotProfile <- function (x,
         box()
         lines(x$data$temperature, y, col = col.temperature, lwd=lwd)
         par(new = TRUE)
-        plot(x$data$salinity, y,
+	look <- if (keepNA) 1:length(y) else !is.na(x$data$salinity) & !is.na(y)
+        plot(x$data$salinity[look], y[look],
              xlim=Slim, ylim=ylim,
              type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(1, col = col.salinity, col.axis = col.salinity, col.lab = col.salinity)
@@ -1951,11 +1987,16 @@ plotProfile <- function (x,
         w <- which(names(x$data) == xtype)
         if (length(w) < 1)
             stop("unknown which value (\"", xtype, "\")")
-        plot(x$data[[xtype]], y, ylim=ylim,
+	look <- if (keepNA) 1:length(y) else !is.na(x$data[[xtype]]) & !is.na(y)
+        plot(x$data[[xtype]][look], y[look],
+	     ylim=ylim,
              type = "n", xlab="", ylab="",axes = FALSE, xaxs=xaxs, yaxs=yaxs)
         axis(3)
         mtext(resizableLabel("p"), side = 2, line = axis.name.loc, cex=par("cex"))
-        mtext(x$metadata$label[w], side=3, line=axis.name.loc, cex=par("cex"))
+        label <- xtype
+        if (label == "sigmaTheta")
+            label <- resizableLabel("sigmaTheta", "x")
+        mtext(label, side=3, line=axis.name.loc, cex=par("cex"))
         axis(2)
         box()
         lines(x$data[,w], y, lwd=lwd)

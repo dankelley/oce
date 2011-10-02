@@ -4,12 +4,12 @@
 
 \title{Provide axis names in adjustable sizes}
 
-\description{Provide axis names in adjustable sizes, e.g. using T
-  instead of Temperature.}
+\description{Provide axis names in adjustable sizes, e.g. using T instead of
+    Temperature, and including units as appropriate.}
 
 \usage{
 resizableLabel(item=c("S", "T", "theta", 
-  "nitrate", "nitrite", "oxygen", "phosphate", "silicate",
+  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "sigmaTheta", "tritium",
   "p", "z", "distance",
   "heading", "pitch", "roll"),
   axis=c("x", "y"))}
