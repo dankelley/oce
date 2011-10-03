@@ -36,6 +36,7 @@ print.summary.drifter <- function(x, digits=max(6, getOption("digits") - 1), ...
 read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
 {
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    library(ncdf)
     ofile <- file
     filename <- ""
     if (is.character(file)) {
