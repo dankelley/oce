@@ -68,6 +68,7 @@
       \item \code{which=11} or \code{which="density"} gives a density profile
       \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
       \item \code{which=13} or \code{which="spice"} gives a spiciness profile
+      \item \code{which=14} or \code{which="tritium"} gives a tritium profile
     }
   }
   \item{ref.lat}{Latitude of reference point for distance calculation}

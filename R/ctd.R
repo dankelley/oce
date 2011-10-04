@@ -550,6 +550,12 @@ plot.ctd <- function (x, which = 1:4,
                         useSmoothScatter=useSmoothScatter,
                         grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                         cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
+        else if (which[w] == 13 || which[w] == "tritium")
+            plotProfile(x, xtype="tritium",
+                        ylim=plim,
+                        useSmoothScatter=useSmoothScatter,
+                        grid=grid, col.grid=col.grid, lty.grid=lty.grid,
+                        cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA)
         else if (which[w] == 3 || which[w] == "TS") {
             ##par(mar=c(3.5,3,2,2))
             plotTS(x, Slim=Slim, Tlim=Tlim,
@@ -1729,6 +1735,7 @@ plotProfile <- function (x,
     }
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
+    ylimGiven <- !missing(ylim)
     dots <- list(...)
     ytype <- match.arg(ytype)
     yname <- switch(ytype,
@@ -1862,9 +1869,15 @@ plotProfile <- function (x,
             mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
         } else {
 	    look <- if (keepNA) 1:length(y) else !is.na(x$data[[xtype]]) & !is.na(y)
-            plot(x$data[[xtype]][look], y[look],
-                 ylim=ylim,
-                 type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            if (ylimGiven) {
+                plot(x$data[[xtype]][look], y[look],
+                     ylim=ylim,
+                     type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            } else {
+                plot(x$data[[xtype]][look], y[look],
+                     ylim=rev(range(y[look])),
+                     type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            }
             mtext(resizableLabel(xtype, "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
@@ -1875,7 +1888,7 @@ plotProfile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            plotJustProfile(x$data[[xtype]], y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
+            plotJustProfile(x$data[[xtype]][look], y[look], type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
     } else if (xtype == "T" || xtype == "temperature") {
         if (missing(Tlim)) {
@@ -1987,6 +2000,25 @@ plotProfile <- function (x,
             abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
         }
        plotJustProfile(x=spice, y=y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
+#    } else if (xtype == 14 || xtype == "tritium") {
+#        if (!("tritium" %in% names(x$data)))
+#            stop("no tritium data in this CTD record")
+#        tritium <- x$data$tritiumswSpice(x)
+#        look <- if (keepNA) 1:length(y) else !is.na(tritium) & !is.na(y)
+#        plot(tritium[look], y[look],
+#             ylim=ylim,
+#             type = "n", xlab = "", ylab = yname, axes = FALSE)
+#        mtext(resizableLabel("tritium", "x"), side = 3, line = axis.name.loc, cex=par("cex"), xaxs=xaxs, yaxs=yaxs)
+#        axis(2)
+#        axis(3)
+#        box()
+#        if (grid) {
+#            at <- par("yaxp")
+#            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+#            at <- par("xaxp")
+#            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+#        }
+#       plotJustProfile(x=tritium[look], y=y[look], type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
     } else if (xtype == "salinity+temperature") {
         if (missing(Slim)) Slim <- range(x$data$salinity, na.rm=TRUE)
         if (missing(Tlim)) Tlim <- range(x$data$temperature, na.rm=TRUE)
