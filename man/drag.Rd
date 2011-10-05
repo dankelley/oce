@@ -7,7 +7,11 @@
 \title{Wind drag coefficient}
 
 \description{Wind drag coefficients for wind-profile and eddy-covariance
-    methods, summarized in Figure 3 of Garratt (1977).}
+    methods, summarized in Figure 3 of Garratt (1977).  The data are stored in
+    a data frame with variables named \code{U} for wind speed in m/s, \code{Cd}
+    for (neutral) drag coefficient i\eqn{C_D}{CD}, \code{method} for a factor
+    with two levels: \code{profile} and \code{eddy}, for the two methods, and
+    \code{n}, the number of data in the velocity bin.}
 
 \usage{data(drag)}
 
