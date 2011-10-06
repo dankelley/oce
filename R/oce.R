@@ -825,25 +825,13 @@ oceColorsTwo <- function (n, low=2/3, high=0, smax=1, alpha = 1)
 
 oceColorsJet <- function(n)
 {
-    if ((n <- as.integer(n[1])) > 0) {
-        ## matlab::jet, cleaned of matlab:: calls
-        n4 <- ceiling(n / 4)
-        u <- c(seq(1, n4) / n4,
-               if (n4 > 1) rep(1, n4-1) else NULL,
-               seq(n4, 1, by = -1) / n4)
-        g <- ceiling(n4 / 2) - (n%%4 == 1) + (1:length(u))
-        r <- g + n4
-        b <- g - n4
-        g <- g[g <= n]
-        r <- r[r <= n]
-        b <- b[b >= 1]
-        J <- matrix(0, nrow=n, ncol=3)
-        J[r, 1] <- u[seq(along = r)]
-        J[g, 2] <- u[seq(along = g)]
-        J[b, 3] <- u[seq(length(u)-length(b)+1, length(u))]
-        rgb(J)
+    if (missing(n) || n <= 0)
+        colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                           "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))
+    else {
+        colorRampPalette(c("#00007F", "blue", "#007FFF", "cyan",
+                           "#7FFF7F", "yellow", "#FF7F00", "red", "#7F0000"))(n)
     }
-    else character(0)
 }
 
 oceColorsPalette <- function(n, which=1)
