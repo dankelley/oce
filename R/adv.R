@@ -75,7 +75,7 @@ summary.adv <- function(object, ...)
         res$internalCodeVersion <- object$metadata$internalCodeVersion
         res$revisionNumber <- object$metadata$hardwareRevision
         res$samplesPerBurst <- head(object$data$recordsBurst, 4) # just a sample
-        res$deployName <- object$metadata$deployName
+        res$deploymentName <- object$metadata$deploymentName
         res$comments <- object$metadata$comments
         res$headFrequency <- object$metadata$frequency
     } else if (inherits(object, "sontek")) {
@@ -124,7 +124,7 @@ print.summary.adv <- function(x, digits=max(5, getOption("digits") - 1), ...)
         cat("  * Software version:       ", x$softwareVersion, "\n")
         cat("  * Head frequency:         ", x$headFrequency, "kHz\n")
         ## FIXME: put other info here, e.g. softwareVersion, sampling volume, etc.; the manufacturer file is a good guide
-        cat("  * Deploy name:            ", x$deployName, "\n")
+        cat("  * Deployment name:            ", x$deploymentName, "\n")
         cat("  * Comments:               ", x$comments, "\n")
     } else if (x$instrumentType == "sontek adr") {
         cat("\n* Sontek adr specific\n\n")

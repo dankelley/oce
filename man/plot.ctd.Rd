@@ -28,6 +28,7 @@
      cex=1,
      pch=1,
      useSmoothScatter=FALSE,
+     keepNA=FALSE,
      type='l',
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -66,6 +67,8 @@
       \item \code{which=10} or \code{which="temperature"} gives a temperature profile
       \item \code{which=11} or \code{which="density"} gives a density profile
       \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
+      \item \code{which=13} or \code{which="spice"} gives a spiciness profile
+      \item \code{which=14} or \code{which="tritium"} gives a tritium profile
     }
   }
   \item{ref.lat}{Latitude of reference point for distance calculation}
@@ -93,6 +96,8 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
+  \item{keepNA}{flag indicating whether to keep \code{NA} values in linegraphs,
+      which will yield breaks in the lines.}
   \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of

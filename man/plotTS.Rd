@@ -7,6 +7,8 @@
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 
 \usage{plotTS(x,
+     inSitu=FALSE,
+     referencePressure=0,
      rhoLevels = 6,
      grid = TRUE,
      col.grid = "lightgray",
@@ -30,7 +32,13 @@
 }
 
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{x}{An object containing salinity and temperature data, typically a
+      \code{cdt} object or \code{section} object.}
+  \item{inSitu}{A boolean indicating whether to use in-situ temperature or (the
+      default) potential temperature, calculated with reference pressure given
+      by \code{referencePressure}.}
+  \item{referencePressure}{reference pressure, to be used in calculating
+      potential temperature, if \code{inSitu} is \code{FALSE}.}
   \item{rhoLevels}{Either a list of density levels for which to draw isopycnal
       lines, or a suggestion for the number of levels.  In the latter case,
       \code{pretty()} is used to select levels.}

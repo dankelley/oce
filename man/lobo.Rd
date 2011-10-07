@@ -21,7 +21,6 @@ uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
 "y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
 "data_format=text",sep="")
 lobo <- read.lobo(uri)
-save(lobo, file="oce/data/lobo.rda")
 }
 }
 

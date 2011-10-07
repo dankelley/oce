@@ -119,8 +119,8 @@ makeSection <- function(item, ...)
 }
 
 plot.section <- function(x,
-			 which=1:4,
-			 at=NULL,
+                         which=c("salinity", "temperature", "sigmaTheta", "map"),
+                         at=NULL,
 			 labels=TRUE,
 			 grid = FALSE,
 			 contourLevels=NULL,
@@ -140,14 +140,14 @@ plot.section <- function(x,
 {
     debug <- if (debug > 2) 2 else floor(0.5 + debug)
     oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), ...) {\n")
-    plot.subsection <- function(variable="temperature", title="Temperature",
+    plotSubsection <- function(variable="temperature", title="Temperature",
 				indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
 				xlim=NULL,
 				ylim=NULL,
 				debug=0,
 				...)
     {
-	oceDebug(debug, "\bplot.subsection(variable=", variable, ",...) {\n")
+	oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
 	if (variable == "map") {
 	    lat <- array(NA, numStations)
 	    lon <- array(NA, numStations)
@@ -198,7 +198,7 @@ plot.section <- function(x,
 		text(xlab, ylab, x$metadata$stationId[numStations])
 	    }
 	} else {                        # not a map
-	    if (!(variable %in% names(x$data$station[[1]]$data)))
+	    if (!(variable %in% names(x$data$station[[1]]$data)) && variable != "salinity gradient")
 		stop("this section does not contain a variable named '", variable, "'")
 	    ## FIXME: contours don't get to plot edges
 	    xxrange <- range(xx, na.rm=TRUE)
@@ -245,9 +245,14 @@ plot.section <- function(x,
 	    usr <- par("usr")
 	    graph.bottom <- usr[3]
 	    waterDepth <- NULL
-
 	    for (i in 1:numStations) {
-		zz[i,] <- rev(x$data$station[[stationIndices[i]]]$data[[variable]])
+                if (variable == "salinity gradient") {
+                    dSdp <- rev(diff(x$data$station[[stationIndices[i]]]$data[["salinity"]]) 
+                                / diff(x$data$station[[stationIndices[i]]]$data[["pressure"]]))
+                    zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
+                } else {
+                    zz[i,] <- rev(x$data$station[[stationIndices[i]]]$data[[variable]])
+                }
 		if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
 		temp <- x$data$station[[stationIndices[i]]]$data$temperature
 		len <- length(temp)
@@ -333,8 +338,8 @@ plot.section <- function(x,
 	    axis(1)
 	    legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
 	}
-	oceDebug(debug, "\b} # plot.subsection()\n")
-    }                                   # plot.subsection
+	oceDebug(debug, "\b} # plotSubsection()\n")
+    }                                   # plotSubsection
 
     if (!inherits(x, "section"))
         stop("method is only for section objects")
@@ -405,14 +410,18 @@ plot.section <- function(x,
 	} else {
 	    if (     ww == "temperature") which2[w] <- 1
 	    else if (ww == "salinity") which2[w] <- 2
+	    else if (ww == "salinity gradient") which2[w] <- 2.5
 	    else if (ww == "sigmaTheta") which2[w] <- 3
-	    else if (ww == "map") which2[w] <- 4
+	    else if (ww == "nitrate") which2[w] <- 4
+	    else if (ww == "nitrite") which2[w] <- 5
+	    else if (ww == "oxygen") which2[w] <- 6
+	    else if (ww == "phosphate") which2[w] <- 7
+	    else if (ww == "silicate") which2[w] <- 8
+	    else if (ww == "map") which2[w] <- 99
 	    else stop("unknown 'which':", ww)
 	}
     }
     which <- which2
-    if (any(!which %in% 1:4))
-        stop("which must be between 1 and 4")
     oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
     par(mgp=mgp, mar=mar)
     if (lw > 1) {
@@ -429,21 +438,46 @@ plot.section <- function(x,
     for (w in 1:length(which)) {
 	if (!missing(contourLevels)) {
 	    if (which[w] == 1)
-		plot.subsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 2)
-		plot.subsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] > 2 && which[w] < 3) {
+		plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+            }
 	    if (which[w] == 3)
-		plot.subsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 4)
+		plotSubsection("nitrate",     "nitrate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 5)
+		plotSubsection("nitrite",     "nitrite", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 6)
+		plotSubsection("oxygen",      "oxygen", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 7)
+		plotSubsection("phosphate",   "phosphate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 8)
+		plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	} else {
 	    if (which[w] == 1)
-		plot.subsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 2)
-		plot.subsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] > 2 && which[w] < 3)
+		plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 3)
-		plot.subsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
+		plotSubsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 4)
+		plotSubsection("nitrate",     "nitrate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 5)
+		plotSubsection("nitrite",     "nitrite", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 6)
+		plotSubsection("oxygen",      "oxygen", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 7)
+		plotSubsection("phosphate",   "phosphate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+	    if (which[w] == 8)
+		plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	}
-	if (which[w] == 4)
-	    plot.subsection("map", indicate.stations=FALSE, debug=debug-1, ...)
+	if (which[w] == 99)
+	    plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
 	if (w <= adorn.length) {
 	    t <- try(eval(adorn[w]), silent=TRUE)
 	    if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
@@ -455,6 +489,7 @@ plot.section <- function(x,
 
 read.section <- function(file, sectionId="", flags,
 			 ship="", scientist="", institute="",
+                         missingValue=-999,
 			 debug=getOption("oceDebug"), processingLog)
 {
     if (is.character(file)) {
@@ -548,6 +583,46 @@ read.section <- function(file, sectionId="", flags,
 	stn.time <- as.character(data[,which(var.names=="TIME") - col.start + 1])
     else
 	stop("no column named \"TIME\"")
+    ## EXPOCODE,SECT_ID,STNNBR,CASTNO,SAMPNO,BTLNBR,BTLNBR_FLAG_W,DATE,TIME,LATITUDE,LONGITUDE,DEPTH,CTDPRS,CTDTMP,CTDSAL,CTDSAL_FLAG_W,SALNTY,SALNTY_FLAG_W,OXYGEN,OXYGEN_FLAG_W,SILCAT,SILCAT_FLAG_W,NITRIT,NITRIT_FLAG_W,NO2+NO3,NO2+NO3_FLAG_W,PHSPHT,PHSPHT_FLAG_W
+
+    if (length(which(var.names=="OXYGEN"))) {
+        oxygen <- as.numeric(data[,which(var.names=="OXYGEN") - col.start + 1])
+        oxygen[oxygen == missingValue] <- NA
+    } else oxygen <- NULL
+    if (length(which(var.names=="SILCAT"))) {
+        silicate <- as.numeric(data[,which(var.names=="SILCAT") - col.start + 1])
+        silicate[silicate == missingValue] <- NA
+    } else silicate <- NULL
+    if (length(which(var.names=="NITRIT"))) {
+        nitrite <- as.numeric(data[,which(var.names=="NITRIT") - col.start + 1])
+        nitrite[nitrite == missingValue] <- NA
+    } else nitrite <- NULL
+    if (length(which(var.names=="NITRAT"))) {
+        nitrate <- as.numeric(data[,which(var.names=="NITRAT") - col.start + 1])
+        nitrate[nitrate == missingValue] <- NA
+    } else nitrate <- NULL
+    if (length(which(var.names=="NO2+NO3"))) {
+        no2plusno3 <- as.numeric(data[,which(var.names=="NO2+NO3") - col.start + 1])
+        no2plusno3[no2plusno3 == missingValue] <- NA
+        if (is.null(nitrate)) {
+            nitrate <- no2plusno3 - nitrite
+            rm(no2plusno3)
+        } else {
+            if (is.null(nitrite)) {
+                nitrite <- no2plusno3 - nitrate
+                rm(no2plusno3)
+            } else {
+                warning("cannot determine nitrate and nitrite")
+                nitrite <- nitrate <- NULL
+            }
+        }
+        ## http://woce.nodc.noaa.gov/woce_v3/wocedata_1/whp/exchange/exchange_format_desc.htm
+    }
+    if (length(which(var.names=="PHSPHT"))) {
+        phosphate <- as.numeric(data[,which(var.names=="PHSPHT") - col.start + 1])
+        phosphate[phosphate == missingValue] <- NA
+    } else phosphate <- NULL
+
     waterDepth  <- as.numeric(data[,which(var.names=="DEPTH") - col.start + 1])
     ## FIXME: we have both 'latitude' and 'lat'; this is too confusing
     latitude  <- as.numeric(data[,which(var.names=="LATITUDE") - col.start + 1])
@@ -564,7 +639,7 @@ read.section <- function(file, sectionId="", flags,
     tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC")
     trefn <- as.numeric(tref)
     for (i in 1:numStations) {
-	oceDebug(debug, "procession station ", i, "\n")
+	oceDebug(debug, "processing station ", i, "\n")
 	select <- which(stationId == stationList[i])
 	# "199309232222"
 	# "1993-09-23 22:22:00"
@@ -582,6 +657,13 @@ read.section <- function(file, sectionId="", flags,
 	thisStation <- as.ctd(salinity=goodSalinity[ok],
 			       temperature=temperature[select[ok]],
 			       pressure=pressure[select[ok]],
+
+                               oxygen=if(!is.null(oxygen))oxygen[select[ok]],
+                               nitrate=if(!is.null(nitrate))nitrate[select[ok]],
+                               nitrite=if(!is.null(nitrite))nitrite[select[ok]],
+                               phosphate=if(!is.null(phosphate))phosphate[select[ok]],
+                               silicate=if(!is.null(silicate))silicate[select[ok]],
+
 			       quality=ctdsal.flag[select[ok]],
 			       ship=ship,
 			       date=time[i] + tref,
@@ -593,7 +675,7 @@ read.section <- function(file, sectionId="", flags,
 			       station=stn[i],
 			       waterDepth=waterDepth[select[1]],
 			       src=filename)
-	oceDebug(debug, "station at ", lat[i], "N and ", lon[i], "W\n")
+	oceDebug(debug, "  ", length(select[ok]), "levels @ ", lat[i], "N ", lon[i], "W\n")
 	station[[i]] <- thisStation
     }
     data <- list(station=station)

@@ -418,8 +418,10 @@ plot.adp <- function(x, which=1:dim(x$data$v)[3],
             } else {
                 stop("zlim must be a vector of length 2, or a matrix with 2 columns")
             }
+        } else {
+            ## FIXME: should this be made into a matrix?
+            zlim.given <- zlim
         }
-        zlim.given <- zlim
     }
     ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
     if (missing(lwd))
@@ -538,7 +540,6 @@ plot.adp <- function(x, which=1:dim(x$data$v)[3],
                 oceDebug(debug, "a velocity component image")
                 z <- x$data$v[,,which[w]]
                 y.look <- if (gave.ylim) ylim.given[1] <= x$data$distance & x$data$distance <= ylim.given[2] else rep(TRUE, length(x$data$distance))
-                ##browser()
                 zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x$data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                 zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
             } else if (which[w] %in% 5:(4+x$metadata$numberOfBeams)) { # amplitude

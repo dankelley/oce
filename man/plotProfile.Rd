@@ -8,7 +8,7 @@
 
 \usage{plotProfile(x,
              xtype="salinity+temperature", 
-             ytype=c("pressure", "z"),
+             ytype=c("pressure", "z", "sigmaTheta"),
              col.salinity="darkgreen",
              col.temperature="red",
              col.rho="blue",
@@ -23,6 +23,7 @@
              xaxs="r", yaxs="r",
              cex=1, pch=1,
              useSmoothScatter=FALSE,
+	     keepNA=FALSE,
              type='l',
              mgp=getOption("oceMgp"),
              mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
@@ -57,6 +58,7 @@
 	off by a scale factor; this should not be a problem if there is
 	a \code{x$data$time} column, or a \code{x$metadata$sample.rate}
 	value in the header.}
+      \item{\code{spice}}{Profile of spice}
     }
   }
   \item{ytype}{variable to use on y axis.}
@@ -84,7 +86,8 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
-  \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
+\item{keepNA}{FALSE},
+\item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

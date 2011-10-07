@@ -1,10 +1,12 @@
 Package: oce
-Version: 0.6-1
-Date: 2011-08-26
+Version: 0.7-1
+Date: 2011-10-06
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.10), utils, methods, ncdf
+Depends: R (>= 2.10), utils, methods
+Suggests: ncdf
+BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data,
  including ADP measurements, CTD measurements, sectional
  data, sea-level time series, coastline files, etc.  

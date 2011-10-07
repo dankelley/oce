@@ -1,5 +1,4 @@
 \name{accessors}
-
 \alias{elevation}
 \alias{distance}
 \alias{heading}
@@ -20,6 +19,18 @@
 \alias{sigmaTheta<-}
 \alias{temperature}
 \alias{temperature<-}
+\alias{oxygen}
+\alias{oxygen<-}
+\alias{nitrate}
+\alias{nitrate<-}
+\alias{nitrite}
+\alias{nitrite<-}
+\alias{phosphate}
+\alias{phosphate<-}
+\alias{silicate}
+\alias{silicate<-}
+\alias{spice}
+\alias{tritium}
 \alias{time}
 \alias{velocity}
 
@@ -48,6 +59,18 @@ sigmaTheta(x, time)
 sigmaTheta(x) <- value
 temperature(x, time)
 temperature(x) <- value
+oxygen(x, time)
+oxygen(x) <- value
+nitrate(x, time)
+nitrate(x) <- value
+nitrite(x, time)
+nitrite(x) <- value
+phosphate(x, time)
+phosphate(x) <- value
+silicate(x, time)
+silicate(x) <- value
+spice(x, time)
+tritium(x, time)
 time(x)
 velocity(x)
 }

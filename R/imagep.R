@@ -9,7 +9,7 @@ imagep <- function(x, y, z,
                    flip.y=FALSE,
                    xlab="", ylab="", zlab="",
                    breaks, col,
-                   drawContours=TRUE,
+                   drawContours=FALSE,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
                    mgp=getOption("oceMgp"),
@@ -100,8 +100,11 @@ imagep <- function(x, y, z,
             else
                 breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
             breaks.orig <- breaks
+            ##cat('range(z):', zrange, '\n')
+            ##cat('ORIG  range(breaks):', range(breaks), '\n')
             breaks[1] <- min(zrange[1], breaks[1])
-            breaks[length(breaks)] <- zrange[2]
+            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
+            ##cat('later range(breaks):', range(breaks), '\n')
         }
     } else {
         breaks.orig <- breaks

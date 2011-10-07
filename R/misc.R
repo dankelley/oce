@@ -355,13 +355,43 @@ matchBytes <- function(input, b1, ...)
         stop("must provide 2 or 3 bytes")
 }
 
-resizableLabel <- function(item=c("S", "T", "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
+resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
+                                  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
+                                  "spice",
+                                  "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
         full <- expression(paste("Temperature [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
+    } else if (item == "sigmaTheta") {
+        full <- expression(paste("Potential density [", kg/m^3, "]"))
+        abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
+    } else if (item == "theta") {
+        full <- expression(paste("Potential Temperature [", degree, "C]"))
+        abbreviated <- expression(paste(theta, " [", degree, "C]"))
+    } else if (item == "tritium") {
+        full <- "Tritium Concentration [Tu]"
+        abbreviated <- "Tritium [Tu]"
+    } else if (item ==  "nitrate") {
+        full <- "Nitrate Concentration [umol/kg]"
+        abbreviated <- "NO3 [umol/kg]"
+    } else if (item ==  "nitrite") {
+        full <- "Nitrite Concentration [umol/kg]"
+        abbreviated <- "NO2 [umol/kg]"
+    } else if (item ==  "oxygen") {
+        full <- "Oxygen Concentration [ml/l]"
+        abbreviated <- "O2 [ml/l]"
+    } else if (item ==  "phosphate") {
+        full <- "Phosphate Concentration [umol/kg]"
+        abbreviated <- "PO4 [umol/kg]"
+    } else if (item ==  "silicate") {
+        full <- "Silicate Concentration [umol/kg]"
+        abbreviated <- "Si [umol/kg]"
+    } else if (item == "spice") {
+        full <- expression(paste("Spice [", kg/m^3, "]"))
+        abbreviated <- full
     } else if (item == "S") {
         full <- "Salinity [PSU]"
         abbreviated <- "S [PSU]"

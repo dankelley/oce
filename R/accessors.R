@@ -232,6 +232,7 @@ longitude <- function(x, time, byDepth=TRUE)
 }
 
 
+
 pitch <- function(x, time)
 {
     if (missing(x))
@@ -418,7 +419,25 @@ pressure <- function(x, time) hydrographyLocal(x, time, "pressure")
 
 salinity <- function(x, time) hydrographyLocal(x, time, "salinity")
 
+spice <- function(x, time) {
+    S <- salinity(x, time)
+    T <- temperature(x, time)
+    p <- pressure(x, time)
+    swSpice(S, T, p)
+}
+
 temperature <- function(x, time) hydrographyLocal(x, time, "temperature")
+
+nitrate <- function(x, time) hydrographyLocal(x, time, "nitrate")
+"nitrate<-" <- function(x, value) { x$data$nitrate <- value }
+nitrite <- function(x, time) hydrographyLocal(x, time, "nitrite")
+"nitrite<-" <- function(x, value) { x$data$nitrite <- value }
+oxygen <- function(x, time) hydrographyLocal(x, time, "oxygen")
+"oxygen<-" <- function(x, value) { x$data$oxygen <- value }
+phosphate <- function(x, time) hydrographyLocal(x, time, "phosphate")
+"phosphate<-" <- function(x, value) { x$data$phosphate <- value }
+silicate <- function(x, time) hydrographyLocal(x, time, "silicate")
+"silicate<-" <- function(x, value) { x$data$silicate <- value }
 
 sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 
@@ -426,6 +445,8 @@ sigmaTheta <- function(x, time) hydrographyLocal(x, time, "sigmaTheta")
 {
     x$data$sigmaTheta <- value
 }
+
+tritium <- function(x, time) hydrographyLocal(x, time, "tritium")
 
 time <- function(x)
 {
