@@ -91,25 +91,25 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
         oceDebug(debug, "which[", w, "]=", which[w], "\n")
         if (which[w] == 1) {
             oce.plot.ts(x$data$time, x$data$temperature,
-                 ylab=resizableLabel("T", "y"),
-                 type='l',
-                 xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
-                 ylim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
-                 drawTimeRange=drawTimeRange,
-                 main=main[w])
+                        ylab=resizableLabel("T", "y"),
+                        type='l',
+                        xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
+                        ylim=if (missing(Tlim)) range(x$data$temperature, na.rm=TRUE) else Tlim,
+                        drawTimeRange=drawTimeRange,
+                        main=main[w])
             ##box()
             ##oce.axis.POSIXct(1, x=x$data$time, drawTimeRange=drawTimeRange, abbreviateTimeRange=abbreviateTimeRange)
             drawTimeRange <- FALSE    # only the first time panel gets the time indication
             axis(2)
         } else if (which[w] == 3) {     # pressure timeseries
             oce.plot.ts(x$data$time, x$data$pressure,
-                 ylab=resizableLabel("p", "y"),
-                 type='l',
-                 xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
-                 ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
-                 main=main[w],
-                 drawTimeRange=drawTimeRange,
-                 mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5))
+                        ylab=resizableLabel("p", "y"),
+                        type='l',
+                        xlim=if (missing(tlim)) range(x$data$time, na.rm=TRUE) else tlim,
+                        ylim=if (missing(plim)) range(x$data$pressure, na.rm=TRUE) else plim,
+                        main=main[w],
+                        drawTimeRange=drawTimeRange,
+                        mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5))
             ##box()
             ##oce.axis.POSIXct(1, x=x$data$time, drawTimeRange=drawTimeRange)
             drawTimeRange <- FALSE
@@ -175,7 +175,7 @@ plot.pt <- function(x, which=1:4, title="", adorn=NULL,
     invisible()
 }
 
-read.pt <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+read.pt <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
                     processingLog, debug=getOption("oceDebug"))
 {
     debug <- max(0, min(debug, 2))
@@ -217,107 +217,111 @@ read.pt <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
     header <- c()
     measurementStart <-measurementEnd <- measurementDeltat <- NULL
-    while (TRUE) {
+    if (!missing(type) && type == 'rsk') {
+        stop("cannot handle type 'rsk' yet")
+    } else {
+        while (TRUE) {
+            line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
+            if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) break
+            header <- c(header, line)
+            if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
+                l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
+                measurementStart <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            }
+            ## "Logging end" would seem to be the sensible thing to examine,
+            ## but "Logger time" seems correct in SLEIWEX 2008 data.  I think
+            ## the issue is that the devices were turned off manually, and
+            ## that time (the relevant one) is in "Logger time".
+            ##OLD if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
+            ##OLD    l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
+            ##OLD    measurementEnd <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            ##OLD }
+            if (0 < (r<-regexpr("Logger[ \t]*time", line))) {
+                l <- sub("[ ]*Logger[ \t]*time[ ]*", "", line)
+                measurementEnd <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
+            }
+            if (0 < (r<-regexpr("Sample[ \t]*period", line))) {
+                l <- sub("[ ]*Sample[ \t]*period[ ]*", "", line)
+                sp <- as.numeric(strsplit(l, ":")[[1]])
+                measurementDeltat <- (sp[3] + 60*(sp[2] + 60*sp[1]))
+            }
+        }
+        oceDebug(debug, "measurementStart =", format(measurementStart), "\n")
+        oceDebug(debug, "measurementEnd =", format(measurementEnd), "\n")
+        oceDebug(debug, "measurementDeltat  =", measurementDeltat, "\n")
+        serialNumber <- strsplit(header[1],"[\t ]+")[[1]][4]
+        oceDebug(debug, "serialNumber=", serialNumber,"\n")
+        ## Now that we know the logging times, we can work with 'from 'and 'to'
+        if (inherits(from, "POSIXt") || inherits(from, "character")) {
+            if (!inherits(to, "POSIXt") && !inherits(to, "character"))
+                stop("if 'from' is POSIXt or character, then 'to' must be, also")
+            if (to <= from)
+                stop("cannot have 'to' <= 'from'")
+            from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurementStart, units="secs")) / measurementDeltat
+            oceDebug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
+            to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurementStart, units="secs")) / measurementDeltat
+            oceDebug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
+        } else {
+            if (from < 1)
+                stop("cannot have 'from' < 1")
+            if (!missing(to) && to < from)
+                stop("cannot have 'to' < 'from'")
+        }
+        oceDebug(debug, "by=", by, "in argument list\n")
+        by <- ctimeToSeconds(by)
+        oceDebug(debug, "inferred by=", by, "s\n")
+        col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
+        ## Read a line to determine if there is a pair of columns for time
         line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-        if (0 < (r<-regexpr("Temp[ \t]*Pres", line))) break
-        header <- c(header, line)
-        if (0 < (r<-regexpr("Logging[ \t]*start", line))) {
-            l <- sub("[ ]*Logging[ \t]*start[ ]*", "", line)
-            measurementStart <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
-        }
-        ## "Logging end" would seem to be the sensible thing to examine,
-        ## but "Logger time" seems correct in SLEIWEX 2008 data.  I think
-        ## the issue is that the devices were turned off manually, and
-        ## that time (the relevant one) is in "Logger time".
-        ##OLD if (0 < (r<-regexpr("Logging[ \t]*end", line))) {
-        ##OLD    l <- sub("[ ]*Logging[ \t]*end[ ]*", "", line)
-        ##OLD    measurementEnd <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
-        ##OLD }
-        if (0 < (r<-regexpr("Logger[ \t]*time", line))) {
-            l <- sub("[ ]*Logger[ \t]*time[ ]*", "", line)
-            measurementEnd <- as.POSIXct(strptime(l,"%y/%m/%d %H:%M:%S", tz=tz))
-        }
-        if (0 < (r<-regexpr("Sample[ \t]*period", line))) {
-            l <- sub("[ ]*Sample[ \t]*period[ ]*", "", line)
-            sp <- as.numeric(strsplit(l, ":")[[1]])
-            measurementDeltat <- (sp[3] + 60*(sp[2] + 60*sp[1]))
-        }
-    }
-    oceDebug(debug, "measurementStart =", format(measurementStart), "\n")
-    oceDebug(debug, "measurementEnd =", format(measurementEnd), "\n")
-    oceDebug(debug, "measurementDeltat  =", measurementDeltat, "\n")
-    serialNumber <- strsplit(header[1],"[\t ]+")[[1]][4]
-    oceDebug(debug, "serialNumber=", serialNumber,"\n")
-    ## Now that we know the logging times, we can work with 'from 'and 'to'
-    if (inherits(from, "POSIXt") || inherits(from, "character")) {
-        if (!inherits(to, "POSIXt") && !inherits(to, "character"))
-            stop("if 'from' is POSIXt or character, then 'to' must be, also")
-        if (to <= from)
-            stop("cannot have 'to' <= 'from'")
-        from <- as.numeric(difftime(as.POSIXct(from, tz=tz), measurementStart, units="secs")) / measurementDeltat
-        oceDebug(debug, "inferred from =", format(from, width=7), " based on 'from' arg", from.keep, "\n")
-        to <- as.numeric(difftime(as.POSIXct(to, tz=tz), measurementStart, units="secs")) / measurementDeltat
-        oceDebug(debug, "inferred   to =",   format(to, width=7), " based on   'to' arg", to.keep, "\n")
-    } else {
-        if (from < 1)
-            stop("cannot have 'from' < 1")
-        if (!missing(to) && to < from)
-            stop("cannot have 'to' < 'from'")
-    }
-    oceDebug(debug, "by=", by, "in argument list\n")
-    by <- ctimeToSeconds(by)
-    oceDebug(debug, "inferred by=", by, "s\n")
-    col.names <- strsplit(gsub("[ ]+"," ", gsub("[ ]*$","",gsub("^[ ]+","",line))), " ")[[1]]
-    ## Read a line to determine if there is a pair of columns for time
-    line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    pushBack(line, file)
-    line <- gsub("[ ]+$", "", gsub("^[ ]+","", line))
-    nvar <- length(strsplit(line, "[ ]+")[[1]])
-    oceDebug(debug, " data line '", line, "' reveals ", nvar, " data per line\n", sep="")
-    d <- scan(file, character(), quiet=TRUE) # read whole file (it's too tricky to bisect times with text data)
-    n <- length(d) / nvar
-    oceDebug(debug, "file has", length(d), "items; assuming", nvar, "items per line, based on first line\n")
-    dim(d) <- c(nvar, n)
-    if (nvar == 2) {
-        time <- measurementStart + seq(from=0, to=n-1) * measurementDeltat
-        Tcol <- 1
-        pcol <- 2
-    } else if (nvar == 4) {
-        ## This time conversion is the slowest part of this function.  With R 2.13.0a working on
-        ## a 620524-long vector: strptime() took 24s on a particular machine, and
-        ## as.POSIXct() took 104s.  So, use strptime(), if the first time seems
-        ## to be in a stanadard format.
-        if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1,1])))
-            time <- strptime(paste(d[1,], d[2,]), format="%Y/%m/%d %H:%M:%S", tz=tz)
-        else
-            time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
-        Tcol <- 3
-        pcol <- 4
-    } else if (nvar == 5) {
-        ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
-        if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1,1])))
-            time <- strptime(paste(d[1,], d[2,]), format="%Y/%m/%d %H:%M:%S", tz=tz)
-        else
-            time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
-        Tcol <- 3
-        pcol <- 4
-    } else
-        stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    ## subset
+        pushBack(line, file)
+        line <- gsub("[ ]+$", "", gsub("^[ ]+","", line))
+        nvar <- length(strsplit(line, "[ ]+")[[1]])
+        oceDebug(debug, " data line '", line, "' reveals ", nvar, " data per line\n", sep="")
+        d <- scan(file, character(), quiet=TRUE) # read whole file (it's too tricky to bisect times with text data)
+        n <- length(d) / nvar
+        oceDebug(debug, "file has", length(d), "items; assuming", nvar, "items per line, based on first line\n")
+        dim(d) <- c(nvar, n)
+        if (nvar == 2) {
+            time <- measurementStart + seq(from=0, to=n-1) * measurementDeltat
+            Tcol <- 1
+            pcol <- 2
+        } else if (nvar == 4) {
+            ## This time conversion is the slowest part of this function.  With R 2.13.0a working on
+            ## a 620524-long vector: strptime() took 24s on a particular machine, and
+            ## as.POSIXct() took 104s.  So, use strptime(), if the first time seems
+            ## to be in a stanadard format.
+            if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1,1])))
+                time <- strptime(paste(d[1,], d[2,]), format="%Y/%m/%d %H:%M:%S", tz=tz)
+            else
+                time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+            Tcol <- 3
+            pcol <- 4
+        } else if (nvar == 5) {
+            ## 2008/06/25 10:00:00   18.5260   10.2225    0.0917
+            if (1 == length(grep("[0-9]{4}/[0-3][0-9]/[0-3][0-9]", d[1,1])))
+                time <- strptime(paste(d[1,], d[2,]), format="%Y/%m/%d %H:%M:%S", tz=tz)
+            else
+                time <- as.POSIXct(paste(d[1,], d[2,]), tz=tz)
+            Tcol <- 3
+            pcol <- 4
+        } else
+            stop("wrong number of variables; need 2, 4, or 5, but got ", nvar)    ## subset
 
-    ## subset times
-    if (inherits(from, "POSIXt") || inherits(from, "character")) {
-        keep <- from <= time & time <= to # FIXME: from may be int or time
-    } else {
-        if (missing(to))
-            look <- from:n
-        else
-            look <- from:to
+        ## subset times
+        if (inherits(from, "POSIXt") || inherits(from, "character")) {
+            keep <- from <= time & time <= to # FIXME: from may be int or time
+        } else {
+            if (missing(to))
+                look <- from:n
+            else
+                look <- from:to
+        }
+        oceDebug(debug, "will be skipping time with seq(..., by=", by, ")\n")
+        look <- seq.int(1, dim(d)[2], by=by)
+        time <- time[look]
+        temperature <- as.numeric(d[Tcol, look])
+        pressure <- as.numeric(d[pcol, look])
     }
-    oceDebug(debug, "will be skipping time with seq(..., by=", by, ")\n")
-    look <- seq.int(1, dim(d)[2], by=by)
-    time <- time[look]
-    temperature <- as.numeric(d[Tcol, look])
-    pressure <- as.numeric(d[pcol, look])
     rval <- as.pt(time, temperature, pressure, instrumentType="rbr",
                   serialNumber=serialNumber,
                   filename=filename,
