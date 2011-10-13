@@ -2,6 +2,7 @@ as.pt <- function(time, temperature, pressure,
                   filename="",
                   instrumentType="rbr",
                   serialNumber="", model="",
+                  pressureAtmospheric=NA,
                   processingLog, debug=getOption("oceDebug"))
 {
     debug <- min(debug, 1)
@@ -19,7 +20,8 @@ as.pt <- function(time, temperature, pressure,
     metadata <- list(filename=filename,
                      instrumentType=instrumentType,
                      serialNumber=serialNumber,
-                     model=model)
+                     model=model,
+                     pressureAtmospheric=if(missing(pressureAtmospheric)) NA else pressureAtmospheric)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     processingLogItem <- processingLogItem(processingLog)
@@ -254,6 +256,9 @@ read.pt <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
                         paste(ruskinVersion, collapse="."),
                         ") is outside the range for which tests have been done")
         }
+        ## atmospheric pressure
+        cmd <- paste("sqlite3", filename,  "'select * from deriveDepth'")
+        pressureAtmospheric <- read.table(pipe(cmd), sep="|")[1,3]
         ## get the actual data
         cmd <- paste("sqlite3", filename,  "'select * from data order by tstamp'")
         d <- read.table(pipe(cmd), sep="|")
@@ -388,7 +393,7 @@ read.pt <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         model <- ""
     }
     rval <- as.pt(time, temperature, pressure, instrumentType="rbr",
-                  serialNumber=serialNumber, model=model,
+                  serialNumber=serialNumber, model=model, pressureAtmospheric=pressureAtmospheric,
                   filename=filename,
                   processingLog=paste(deparse(match.call()), sep="", collapse=""),
                   debug=debug-1)
@@ -409,6 +414,7 @@ summary.pt <- function(object, ...)
     res <- list(filename=object$metadata$filename,
                 serialNumber=object$metadata$serialNumber,
                 model=object$metadata$model,
+                pressureAtmospheric=if ("pressureAtmospheric" %in% names(object$metadata)) object$metadata$pressureAtmospheric else NA,
                 threes=threes,
                 tstart=object$data$time[1],
                 tend=object$data$time[length(object$data$time)],
@@ -422,6 +428,7 @@ print.summary.pt <- function(x, digits=max(6, getOption("digits") - 1), ...)
 {
     cat("PT Summary\n----------\n", ...)
     cat(paste("* Instrument:         RBR, serial number ``", x$serialNumber, "``, model ``", x$model, "``\n", sep=""))
+    cat(paste("* Atmospheric pressure: ", if (("pressureAtmospheric" %in% names(x)) & is.finite(x$pressureAtmospheric)) x$pressureAtmospheric else "(unknown)", "\n", sep=""))
     cat(paste("* Source:             ``", x$filename, "``\n", sep=""), ...)
     cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
                 format(x$tstart), attr(x$tstart, "tzone"),
