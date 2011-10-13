@@ -7,7 +7,7 @@
 \description{Create an pt temperature-depth recorder file, producing an object of type \code{pt}.}
 
 \usage{ as.pt(time, temperature, pressure,
-      filename="", instrumentType="rbr", serialNumber="",
+      filename="", instrumentType="rbr", serialNumber="", model="",
       processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -17,6 +17,7 @@
   \item{filename}{optional name of file containing the data}
   \item{instrumentType}{type of instrument}
   \item{serialNumber}{serial number for instrument}
+  \item{model}{instrument model type, e.g. \code{"RBRduo"}}
   \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}

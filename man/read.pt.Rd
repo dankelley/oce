@@ -7,7 +7,7 @@
 \description{Read an pt temperature-depth recorder file, producing an object of type \code{pt}.}
 
 \usage{
-read.pt(file, from=1, to, by=1, tz=getOption("oceTz"), 
+read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -26,6 +26,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
+  \item{type}{optional file type, presently only permitted to be \code{rsk}.}
   \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
   \item{processingLog}{if provided, the action item to be stored in the

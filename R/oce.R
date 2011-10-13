@@ -640,6 +640,9 @@ magic <- function(file, debug=getOption("oceDebug"))
         if (length(grep(".adr$", filename))) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
+        } else if (length(grep(".rsk$", filename))) {
+            oceDebug(debug, "file names ends with \".rsk\", so this is an RBR/rsk file.\n")
+            return("RBR/rsk")
         } else if (length(grep(".s4a.", filename))) {
             oceDebug(debug, "file names contains \".s4a.\", so this is an interocean S4 file.\n")
             return("interocean/s4")
@@ -796,6 +799,8 @@ read.oce <- function(file, ...)
         return(read.topo(file, processingLog=processingLog, ...))
     if (type == "pt")
         return(read.pt(file, processingLog=processingLog, ...))
+    if (type == "RBR/rsk")
+        return(read.pt(file, processingLog=processingLog, type='rsk'))
     if (type == "section")
         return(read.section(file, processingLog=processingLog, ...))
     if (type == "odf/ctd")
