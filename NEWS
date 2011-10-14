@@ -1,5 +1,6 @@
 0.8-1
 - add support for RBR 'rsk' files
+- plot.section() now uses 'col' if supplied
 0.7-1
 - improve oceColorsJet()
 - improve plotProfile() vertical range with missing data

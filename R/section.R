@@ -181,10 +181,11 @@ plot.section <- function(x,
 	    }
 	    lines(lon, lat, col="lightgray")
 	    ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
-	    points(lon, lat, pch=3, lwd=1/2)
-	    points(lon - 360, lat, pch=3, lwd=1/2)
-	    points(lon[1], lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
-	    points(lon[1] - 360, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
+            col <- if("col" %in% names(list(...))) list(...)$col else "black"
+	    points(lon, lat, col=col, pch=3, lwd=1/2)
+	    points(lon - 360, lat, col=col, pch=3, lwd=1/2)
+	    points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
+	    points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
 	    if (indicate.stations) {
 		dx <- 5 * mean(diff(sort(x$metadata$longitude)),na.rm=TRUE)
 		dy <- 5 * mean(diff(sort(x$metadata$latitude)),na.rm=TRUE)
