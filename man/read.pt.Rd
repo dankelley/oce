@@ -35,13 +35,13 @@ read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{Read an TDR (temperature-depth recorder) file.  At the moment,
-  three styles are understood: (1) a two-column style, containing
-  temperature and pressure (in which case time is inferred from
-  information in the header); (2) a four-column style, in which the date
-  the time of day are given in the first two columns, followed by the
-  temperature, and pressure; and (3) a five-column style, in which depth
-  in the water column is given after the pressure.}
+\details{Read an TDR (temperature-depth recorder) file.  At the moment, four
+    styles are understood: (1) text file with columns for temperature and
+    pressure (with sampling times indicated in the header); (2) text file with
+    four columns, in which the date the time of day are given in the first two
+    columns, followed by the temperature, and pressure; (3) text file with five
+    columns, in which depth in the water column is given after the pressure;
+    (4) a new (and possibly still changeable) SQLite-based database format.}
 
 \value{An object of \code{\link[base]{class}} \code{"pt"}, which is a
   list with elements detailed below.
@@ -64,13 +64,12 @@ read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
 }
 
 \section{Implementation notes}{The end time for measurement
-  (\code{metadata$measurement.start}) is inferred from the \code{Logger
-  time} field in the header, not from \code{Logging end}.  The datasets
-  available to the author suggest this is the proper scheme when the
-  recorders are turned off manually before the end time that was
-  programmed in.  In other cases, the assumption may or may not be
-  correct.  Still, the end time for subsampling
-  (\code{metdata$subsample.end}) should be correct.}
+    (\code{metadata$measurement.start}) is inferred from the \code{Logger time}
+    field in the header, not from \code{Logging end}.  The datasets available
+    to the author suggest this is the proper scheme when the recorders are
+    turned off manually before the end time that was programmed in.  In other
+    cases, the assumption may or may not be correct.  Still, the end time for
+    subsampling (\code{metdata$subsample.end}) should be correct.}
 
 
 \seealso{The generic function \code{\link{read.oce}} provides an
