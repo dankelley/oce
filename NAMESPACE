@@ -1,9 +1,11 @@
 useDynLib(oce)
 import(methods)
+##importFrom("methods", show)
+importFrom("graphics", plot)
 importFrom(utils, head, tail)
-exportMethods(print, plot, head, tail)
-export(
-       "+.section",
+exportMethods(plot)
+#exportMethods(print, plot, head, tail)
+export("+.section",
        beamName,
        addColumn,
        airRho,
@@ -210,8 +212,8 @@ export(
        write.ctd,
        xyzToEnu,
        xyzToEnuAdp,
-       xyzToEnuAdv
-       )
+       xyzToEnuAdv)
+
 
 S3method(head, adp)
 S3method(tail, adp)
@@ -257,3 +259,4 @@ S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
+exportClasses(noce, nctd)
