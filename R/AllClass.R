@@ -37,6 +37,7 @@ setMethod(f="initialize",
               return(.Object)
           })
 #
+<<<<<<< HEAD
 setMethod(f="plot",
           signature=signature("nctd"),
           definition=function(x, which=1:4) {
@@ -44,6 +45,14 @@ setMethod(f="plot",
               plot(x@data$temperature, x@data$pressure)
           })
 
+=======
+###setMethod(f="plot",
+###          signature=signature("nctd"),
+###          definition=function(x, which=1:4) {
+###              plot(x@data$temperature, x@data$pressure)
+###          })
+###
+>>>>>>> 0b1ca4628bfeadd8b6c4c23ca57143a2ec6421c0
 #setMethod(f="[",
 #          signature="nctd",
 #          definition=function(x, i, j, drop) {

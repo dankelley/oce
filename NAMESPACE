@@ -1,9 +1,14 @@
 useDynLib(oce)
 import(methods)
 ##importFrom("methods", show)
+<<<<<<< HEAD
 importFrom("graphics", plot)
 importFrom(utils, head, tail)
 exportMethods(plot)
+=======
+##importFrom("graphics", plot)
+importFrom(utils, head, tail)
+>>>>>>> 0b1ca4628bfeadd8b6c4c23ca57143a2ec6421c0
 #exportMethods(print, plot, head, tail)
 export("+.section",
        beamName,
