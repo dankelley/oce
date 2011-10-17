@@ -14,9 +14,6 @@
   \item{object}{an object of class \code{"sealevel"}, usually, a result of a
     call to \code{\link{read.sealevel}}, \code{\link{read.oce}}, or
     \code{\link{as.sealevel}}.}
-  \item{x}{an object of class \code{"summary.sealevel"}, usually, a
-    result of a call to \code{summary.sealevel}.}
-  \item{digits}{Number of digits to use in stats.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 

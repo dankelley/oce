@@ -372,18 +372,18 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
     if (inherits(x, "section")) {
         if (item == "latitude") {
             rval <- NULL
-            for (i in 1:length(x$data$station))
-                rval <- c(rval, rep(x$metadata$latitude[i], length(x$data$station[[i]]$data$salinity)))
+            for (i in 1:length(x@data$station))
+                rval <- c(rval, rep(x@metadata$latitude[i], length(x@data$station[[i]]@data$salinity)))
         } else if (item == "longitude") {
             rval <- NULL
-            for (i in 1:length(x$data$station))
-                rval <- c(rval, rep(x$metadata$longitude[i], length(x$data$station[[i]]$data$salinity)))
+            for (i in 1:length(x@data$station))
+                rval <- c(rval, rep(x@metadata$longitude[i], length(x@data$station[[i]]@data$salinity)))
         } else {
-            if (!(item %in% names(x$data$station[[1]]$data)))
+            if (!(item %in% names(x@data$station[[1]]@data)))
                 stop("the station data do not contain an item named \"", item, "\"")
             rval <- NULL
-            for (station in seq_along(x$data$station)) {
-                rval <- c(rval, x$data$station[[station]]$data[[item]])
+            for (station in seq_along(x@data$station)) {
+                rval <- c(rval, x@data$station[[station]]@data[[item]])
             }
         }
     } else if (inherits(x, "adv")) {
@@ -412,12 +412,12 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
             if (missing(time)) {
                 rval <- x@data[[item]]
             } else {
-                if (inherits(time, "oce")) {
-                    time <- time$data$time # FIXME: if broadening, consider timeSlow also ... FIXME: what if S4
+                if (inherits(time, "oce") || inherits(time, "noce")) { #FIXME: remove noce
+                    time <- time@data$time # FIXME: if broadening, consider timeSlow also ... FIXME: what if S4
                 } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
                     stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
                 }
-                rval <- approx(time$data$time, x$data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
+                rval <- approx(time@data$time, x@data[[item]], time)$y # FIXME: if broadening, consider timeSlow also
             }
         }
     } else {

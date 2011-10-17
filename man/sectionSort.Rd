@@ -41,7 +41,7 @@ has less lateral variation than the input section.}
 library(oce)
 data(coastlineWorld)
 data(a03)
-s <- sectionGrid(subset(a03, indices=90:3), p=seq(00, 2500, 100))
+s <- sectionGrid(subset.oce(a03, indices=90:3), p=seq(00, 2500, 100))
 ss <- sectionSort(s, by="stationId")
 plot(ss,coastline=coastlineWorld,map.xlim=c(-75,0))
 }

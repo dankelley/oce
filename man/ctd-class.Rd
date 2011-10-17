@@ -6,7 +6,8 @@
 
 \title{Class to store hydrographic data, e.g. from a CTD}
 
-\description{Class to store hydrographic data, e.g. from a CTD}
+\description{Class to store hydrographic data, with standard slots
+    \code{metadata}, \code{data} and \code{processingLog}.}
 
 \examples{
 a <- new('ctd', pressure=c(1.5, 13.7, 25.7, 37.7),
