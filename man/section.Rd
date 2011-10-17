@@ -29,7 +29,7 @@ stn12 <- oceEdit(stn12, "latitude", 44 + 39.894 / 60,
                  reason="typo in lat minutes", person="Dan Kelley")
 stn13 <- ctdTrim(read.ctd("BED0313.CNV", station="13"))
 stn15 <- ctdTrim(read.ctd("BED0315.CNV", station="15"))
-stn15 <- oceEdit(stn15, "latitude", stn15$metadata$latitude + 1,
+stn15 <- oceEdit(stn15, "latitude", stn15@metadata$latitude + 1,
                  reason="typo in lat degrees", person="Dan Kelley")
 section <- makeSection(stn08,stn09,stn10,stn01,stn11,stn12,stn13,stn15)
 section <- oceEdit(section, "sectionId",  "Halifax-Harbour-2003-oct",

@@ -62,7 +62,7 @@ and
 \examples{
 library(oce)
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))

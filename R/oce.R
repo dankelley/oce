@@ -328,7 +328,6 @@ oceEdit <- function(x, item, value, action, reason="", person="",
             stop("must supply a 'value' for this 'item'")
         ##if (!(item %in% names(x$metadata)))
         ## stop("no item named '", item, "' in object's  metadata")
-        print(class(x))
         if (inherits(x, "adv")) {
             oceDebug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
@@ -355,8 +354,6 @@ oceEdit <- function(x, item, value, action, reason="", person="",
                     stop("do not know how to handle this item")
             }
         } else if (inherits(x, "ctd")) {
-            if (!isS4(x))
-                x <- makeS4(x)
             if (item %in% names(x@metadata)) {
                 x@metadata[[item]] <- value
             } else if (item %in% names(x@data)) {
@@ -364,7 +361,15 @@ oceEdit <- function(x, item, value, action, reason="", person="",
             } else {
                 stop("cannot find that item")
             }
-        } else if ("instrumentType" %in% names(x$metadata) && x$metadata$instrumentType == "aquadopp-hr") {
+        } else if (inherits(x, "section")) {
+             if (item %in% names(x@metadata)) {
+                x@metadata[[item]] <- value
+            } else if (item %in% names(x@data)) {
+                x@data[[item]] <- value
+            } else {
+                stop("cannot find that item")
+            }
+        } else if ("instrumentType" %in% names(x$metadata) && x$metadata$instrumentType == "aquadopp-hr") { ## FIXME: what if S4?
             oceDebug(debug, "About to try editing AQUADOPP ...\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item)) # FIXME: possibly aquadopp should have tsSlow
             x$data[[item]] <- value
@@ -381,8 +386,8 @@ oceEdit <- function(x, item, value, action, reason="", person="",
             }
             oceDebug(debug, "...AQUADOPP edited\n")
         } else {
-            if (item %in% names(x$metadata))
-                x$metadata[item] <- value
+            if (item %in% names(x@metadata))
+                x@metadata[item] <- value
             else
                 stop("do not know how to handle this item")
         } 
@@ -503,15 +508,17 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             lat <- vector("numeric", n)
             for (i in 1:n) {
                 ii <- indices[i]
-                stn[i] <- x$metadata$stationId[ii]
-                lat[i] <- x$metadata$latitude[ii]
-                lon[i] <- x$metadata$longitude[ii]
-                station[[i]] <- x$data$station[[ii]]
+                stn[i] <- x@metadata$stationId[ii]
+                lat[i] <- x@metadata$latitude[ii]
+                lon[i] <- x@metadata$longitude[ii]
+                station[[i]] <- x@data$station[[ii]]
             }
             data <- list(station=station)
-            metadata <- list(header=x$metadata$header,sectionId=x$metadata$sectionId,stationId=stn,latitude=lat,longitude=lon)
-            rval <- list(data=data, metadata=metadata, processingLog=x$processingLog)
-            class(rval) <- c("section", "oce")
+            metadata <- list(header=x@metadata$header,sectionId=x@metadata$sectionId,stationId=stn,latitude=lat,longitude=lon)
+            rval <- new("section")
+            rval@metadata <- metadata
+            rval@data <- data
+            rval@processingLog <- unclass(x@processingLog)
         } else {                        # subset within the stations
             subsetString <- deparse(substitute(subset))
             oceDebug(debug, "subsetString='", subsetString, "'\n")
@@ -519,10 +526,10 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             if (length(grep("distance", subsetString))) {
                 l <- list(distance=geodDist(rval))
                 keep <- eval(substitute(subset), l, parent.frame())
-                rval$metadata$latitude <- rval$metadata$latitude[keep]
-                rval$metadata$longitude <- rval$metadata$longitude[keep]
-                rval$metadata$stationId <- rval$metadata$stationId[keep]
-                rval$data$station <- rval$data$station[keep]
+                rval@metadata$latitude <- rval@metadata$latitude[keep]
+                rval@metadata$longitude <- rval@metadata$longitude[keep]
+                rval@metadata$stationId <- rval@metadata$stationId[keep]
+                rval@data$station <- rval@data$station[keep]
             } else if (length(grep("latitude", subsetString)) || length(grep("longitude", subsetString))) {
                 n <- length(x$data$station)
                 keep <- vector(length=n)
@@ -536,26 +543,26 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 j <- 1
                 for (i in 1:n) {
                     if (keep[i]) {
-                        stn[j] <- x$metadata$stationId[i]
-                        lat[j] <- x$metadata$latitude[i]
-                        lon[j] <- x$metadata$longitude[i]
-                        station[[j]] <- x$data$station[[i]]
+                        stn[j] <- x@metadata$stationId[i]
+                        lat[j] <- x@metadata$latitude[i]
+                        lon[j] <- x@metadata$longitude[i]
+                        station[[j]] <- x@data$station[[i]]
                         j <- j + 1
                     }
                 }
                 data <- list(station=station)
-                metadata <- list(header=x$metadata$header,
-                                 sectionId=x$metadata$sectionId,
+                metadata <- list(header=x@metadata$header,
+                                 sectionId=x@metadata$sectionId,
                                  stationId=stn,
                                  latitude=lat,
                                  longitude=lon)
                 rval <- list(data=data, metadata=metadata, processingLog=x$processingLog)
                 class(rval) <- c("section", "oce")
             } else {
-                n <- length(x$data$station)
-                r <- eval(substitute(subset), x$data$station[[1]]$data, parent.frame())
+                n <- length(x@data$station)
+                r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())
                 for (i in 1:n) {
-                    rval$data$station[[i]]$data <- x$data$station[[i]]$data[r,]
+                    rval@data$station[[i]]@data <- x@data$station[[i]]@data[r,]
                 }
             }
         }

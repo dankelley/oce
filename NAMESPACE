@@ -115,7 +115,7 @@ export("+.section",
        plot.topo,
        plotProfile,
        plot.sealevel,
-       plot.section,
+       #plot.section,
        plot.tidem,
        plot.windrose,
        pressure,
@@ -241,7 +241,7 @@ S3method(print, summary.coastline)
 S3method(print, summary.drifter)
 S3method(print, summary.lobo)
 ##S3method(print, summary.sealevel)
-S3method(print, summary.section)
+##S3method(print, summary.section)
 S3method(print, summary.pt)
 S3method(print, summary.tidem)
 S3method(print, summary.topo)
@@ -261,4 +261,4 @@ S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
-exportClasses(noce, ctd, sealevel)
+exportClasses(noce, ctd, sealevel, section)
