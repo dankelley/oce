@@ -1450,7 +1450,6 @@ drawPalette <- function(zlim,
     invisible()
 }
 
-
 makeS4 <- function(x)
 {
     ## FIXME: need to keep class inheritance
@@ -1461,3 +1460,13 @@ makeS4 <- function(x)
     rval@processingLog <- unclass(x$processingLog)
     rval
 }
+
+showMetadataItem <- function(object, name, label, postlabel="", isdate=FALSE)
+{
+    if (name %in% names(object@metadata))
+        cat(paste("* ", label,
+                  if (isdate) format(object@metadata[[name]]) else object@metadata[[name]],
+                  postlabel,
+                  "\n", sep=""))
+}
+

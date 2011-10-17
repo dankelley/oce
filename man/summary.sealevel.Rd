@@ -2,17 +2,12 @@
 
 \alias{summary.sealevel}
 
-\alias{print.summary.sealevel}
-
 \title{Summarize a sealevel object}
 
 \description{Summarizes some of the data in a sealevel object.}
 
 \usage{
 \method{summary}{sealevel}(object, \dots)
-
-\method{print}{summary.sealevel}(x, digits=max(6, getOption("digits")-1), \dots)
-
 }
 
 \arguments{

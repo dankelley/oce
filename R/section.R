@@ -831,6 +831,11 @@ summary.section <- function(object, ...)
     res <- list(sectionId=object$metadata$sectionId,
 		numStations=numStations,
 		stn.sum=stn.sum, processingLog="?")
+    for (i in 1:numStations) {
+        stn <- object$data$station[[i]]
+        if (!isS4(stn))
+            object$data$station[[i]] <- makeS4(stn)
+    }
     lon1 <- object$data$station[[1]]@metadata$longitude
     lat1 <- object$data$station[[1]]@metadata$latitude
     for (i in 1:numStations) {

@@ -165,8 +165,9 @@ export("+.section",
        "silicate<-",
        stickplot,
        subset.oce,
-       summary.processingLog,
        summary.ctd,
+       summary.processingLog,
+       summary.sealevel,
        sunAngle,
        swAlpha,
        swAlphaOverBeta,
@@ -239,7 +240,7 @@ S3method(print, summary.coastline)
 ##S3method(print, summary.ctd)
 S3method(print, summary.drifter)
 S3method(print, summary.lobo)
-S3method(print, summary.sealevel)
+##S3method(print, summary.sealevel)
 S3method(print, summary.section)
 S3method(print, summary.pt)
 S3method(print, summary.tidem)
@@ -253,11 +254,11 @@ S3method(summary, coastline)
 S3method(summary, drifter)
 S3method(summary, lobo)
 S3method(summary, oce)
-S3method(summary, sealevel)
+##S3method(summary, sealevel)
 S3method(summary, section)
 S3method(summary, pt)
 S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
-exportClasses(noce, ctd)
+exportClasses(noce, ctd, sealevel)

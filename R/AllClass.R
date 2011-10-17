@@ -8,18 +8,9 @@ setClass("noce",
                         processingLog=list(time = Sys.time(), value = "create base 'oce' object")))
 
 setClass("ctd", contains="noce")
+setClass("sealevel", contains="noce")
 
-setMethod(f="initialize",
-          signature="ctd",
-          definition=function(.Object,pressure,salinity,temperature,filename) {
-              if (!missing(pressure)) .Object@data$pressure <- pressure
-              if (!missing(temperature)) .Object@data$temperature <-temperature 
-              if (!missing(salinity)) .Object@data$salinity <- salinity
-              .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create ctd object")
-              return(.Object)
-          })
+
 #
 
 ##

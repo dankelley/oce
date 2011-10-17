@@ -696,7 +696,7 @@ and another is
 <<>>=
 library(oce)
 data(ctd)
-pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
+pycnocline <- subset.oce(ctd, 5<=pressure & pressure<=12)
 plotProfile(pycnocline, which="density+N2")
 @
 

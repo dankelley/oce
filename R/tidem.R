@@ -306,9 +306,11 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     if (missing(x))
         stop("must supply 'x'")
     if (inherits(x, "sealevel")) {
+        if (!isS4(x))
+            x <- makeS4(x)
         sl <- x
         oceDebug(debug, "'x' recognized as a sealevel object\n")
-        t <- x$data$time
+        t <- x@data$time
     } else {
         if (missing(t))
             stop("must supply 't', since 'x' is not a sealevel object")
@@ -405,7 +407,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     }
     nc <- length(freq)
     ## Check Rayleigh criterion
-    interval <- as.numeric(difftime(max(sl$data$time,na.rm=TRUE), min(sl$data$time,na.rm=TRUE), units="hours"))
+    interval <- as.numeric(difftime(max(sl@data$time,na.rm=TRUE), min(sl@data$time,na.rm=TRUE), units="hours"))
     drop.term <- NULL
     for (i in 1:nc) {
         cc <- which(tc2$name == kmpr[i])
@@ -425,11 +427,11 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         kmpr <- kmpr[-drop.term]
     }
     nc <- length(freq)
-    nt <- length(sl$data$elevation)
+    nt <- length(sl@data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-    hour <- unclass(as.POSIXct(sl$data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
-    centralindex <- floor(length(sl$data$t) / 2)
+    hour <- unclass(as.POSIXct(sl@data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
+    centralindex <- floor(length(sl@data$time) / 2)
     ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
     ##    hour2pi <- 2 * pi * hour.wrt.centre
     hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
@@ -444,7 +446,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
-    elevation <- sl$data$elevation
+    elevation <- sl@data$elevation
     model <- lm(elevation ~ x, na.action=na.exclude)
     if (debug > 0)
         print(summary(model))
@@ -474,7 +476,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
 
-    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="UTC")
+    centraltime <- as.POSIXct(sl@data$t[1] + 3600*centralindex, tz="UTC")
     if (debug > 0) {
         cat("centraltime=")
         print(centraltime)
@@ -482,17 +484,15 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         cat("L199 index:",index,"(length=",length(index),")\n")
     }
 
-    if (is.null(latitude)) latitude <- sl$metadata$latitude
+    if (is.null(latitude)) latitude <- sl@metadata$latitude
     vuf <- tidemVuf(centraltime, c(0, index), latitude)
     vu <- c(0, (vuf$v + vuf$u) * 360)
     phase2 <- phase - vu                # FIXME: plus or minus??
     negate <- phase2 < 0
     phase2[negate] <- 360 + phase2[negate]
                                         #    phase <- phase2
-
     if (debug > 0)
         cat("vu=",vu,"\n")
-
     rval <- list(model=model,
                  call=cl,
                  startTime=as.POSIXct(startTime),

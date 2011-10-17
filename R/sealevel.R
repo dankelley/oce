@@ -1,3 +1,15 @@
+setMethod(f="initialize",
+          signature="sealevel",
+          definition=function(.Object, elevation, time) {
+              if (missing(elevation)) stop("must give elevation")
+              .Object@data$elevation <- elevation
+              if (!missing(time)) .Object@data$time <- time 
+              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
+              .Object@processingLog$value=c(.Object@processingLog$value, "create sealevel object")
+              return(.Object)
+          })
+
+
 as.sealevel <- function(elevation,
                         time,
                         header=NULL,
@@ -25,7 +37,6 @@ as.sealevel <- function(elevation,
     } else {
         time <- as.POSIXct(time, tz="UTC")
     }
-    data <- data.frame(time=time, elevation=elevation)
     if (missing(deltat))
         deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
     if (is.na(deltat) | deltat <= 0)
@@ -46,8 +57,9 @@ as.sealevel <- function(elevation,
                      n=length(t),
                      deltat=deltat)
     logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- list(data=data, metadata=metadata, processingLog=logItem)
-    class(rval) <- c("sealevel", "oce")
+    rval <- new("sealevel", elevation, time)
+    rval@metadata <- metadata
+    ## FIXME: should update processingLog
     rval
 }
 
@@ -373,46 +385,43 @@ summary.sealevel <- function(object, ...)
     if (!inherits(object, "sealevel"))
         stop("method is only for sealevel objects")
     threes <- matrix(nrow=1, ncol=3)
-    res <- list(number=object$metadata$stationNumber,
-                version=if (is.null(object$metadata$version)) "?" else object$metadata$version,
-                name=object$metadata$stationName,
-                region=if (is.null(object$metadata$region)) "?" else object$metadata$region,
-                latitude=object$metadata$latitude,
-                longitude=object$metadata$longitude,
-                number=object$metadata$n,
-                nonmissing=sum(!is.na(object$data$elevation)),
-                deltat=object$metadata$deltat,
-                year=object$metadata$year,
-                startTime=min(object$data$time, na.rm=TRUE),
-                endTime=max(object$data$time, na.rm=TRUE),
-                gmtOffset=if (is.na(object$metadata$GMTOffset)) "?" else object$metadata$GMTOffset,
-                threes=threes,
-                processingLog=object$processingLog)
-    threes[1,] <- threenum(object$data$elevation)
-    rownames(threes) <- "Sea level"
+    if (!isS4(object))
+        object <- makeS4(object)
+    info <- list(number=object@metadata$stationNumber,
+                 version=if (is.null(object@metadata$version)) "?" else object@metadata$version,
+                 name=object@metadata$stationName,
+                 region=if (is.null(object@metadata$region)) "?" else object@metadata$region,
+                 latitude=object@metadata$latitude,
+                 longitude=object@metadata$longitude,
+                 number=object@metadata$n,
+                 nonmissing=sum(!is.na(object@data$elevation)),
+                 deltat=object@metadata$deltat)#,
+#                 year=object@metadata$year,
+#                 startTime=min(object@data$time, na.rm=TRUE),
+#                 endTime=max(object@data$time, na.rm=TRUE),
+#                 gmtOffset=if (is.na(object@metadata$GMTOffset)) "?" else object@metadata$GMTOffset,
+#                 threes=threes,
+#                 processingLog=object@processingLog)
+    cat("--C\n")
+    cat("Sealevel Summary\n---------------\n\n")
+    showMetadataItem(object, "number",  "number:              ")
+    showMetadataItem(object, "version", "version:             ")
+    showMetadataItem(object, "name",    "name:                ")
+    showMetadataItem(object, "region",  "region:              ")
+    showMetadataItem(object, "deltat",  "sampling delta-t:    ")
+    cat("* Location:           ",       latlonFormat(object@metadata$latitude,
+                                                     object@metadata$longitude,
+                                                     digits=5), "\n")
+    showMetadataItem(object, "year",    "year:                ")
+    ndata <- length(object@data$elevation)
+    cat("* number of observations:  ", ndata, "\n")
+    cat("*    \"      non-missing:   ", sum(!is.na(object@data$elevation)), "\n")
+    cat("* Statistics of subsample::\n")
+    threes <- matrix(nrow=1, ncol=3)
+    threes[1,] <- threenum(object@data$elevation)
+    rownames(threes) <- paste("   ", "elevation")
     colnames(threes) <- c("Min.", "Mean", "Max.")
-    res$threes <- threes
-    class(res) <- "summary.sealevel"
-    res
+    print(threes, indent='   ')
+    processingLogShow(object)
 }
 
-print.summary.sealevel <- function(x, digits=max(6, getOption("digits") - 1), ...)
-{
-    cat("Sealevel Summary\n----------------\n\n", ...)
-    cat("* number:              ", x$number, "\n", ...)
-    cat("* version:             ", x$version, "\n", ...)
-    cat("* name:                ", x$name, "\n", ...)
-    cat("* region:              ", x$region, "\n", ...)
-    cat("* location:            ", latlonFormat(x$latitude, x$longitude, digits=digits), "\n", ...)
-    cat("* year:                ", x$year, "\n", ...)
-    cat(paste("* number observations: ", x$number, "\n"), ...)
-    cat(paste("*    \"   non-missing:  ",x$nonmissing, "\n"), ...)
-    cat(paste("* sampling delta-t:    ", x$deltat, "hour\n"), ...)
-    cat(paste("* series startTime:   ", x$startTime, "\n"), ...)
-    cat(paste("*    \"     endTime:   ",x$endTime, "\n"), ...)
-    cat(paste("* GMT offset:          ", if (is.null(x$GMTOffset)) "unknown" else x$GMTOffset, "\n", sep=""), ...)
-    cat("* Statistics::\n", ...)
-    cat(showThrees(x, indent='     '), ...)
-    print(summary(x$processingLog))
-    invisible(x)
-}

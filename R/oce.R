@@ -566,6 +566,9 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         for (name in names(rval$data)) {
             rval$data[[name]] <- x$data[[name]][r]
         }
+    } else if (inherits(x, "sealevel")) {
+        warning("not handling subset.oce(sealevel) yet.")
+        rval <- x
     } else if (inherits(x, "adv")) {
         if (!is.null(indices))
             stop("cannot specify 'indices' for adv objects (not coded yet)")

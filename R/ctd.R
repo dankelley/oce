@@ -1,4 +1,18 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+
+setMethod(f="initialize",
+          signature="ctd",
+          definition=function(.Object,pressure,salinity,temperature,filename) {
+              if (!missing(pressure)) .Object@data$pressure <- pressure
+              if (!missing(temperature)) .Object@data$temperature <-temperature 
+              if (!missing(salinity)) .Object@data$salinity <- salinity
+              .Object@metadata$filename <- if (missing(filename)) "" else filename
+              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
+              .Object@processingLog$value=c(.Object@processingLog$value, "create ctd object")
+              return(.Object)
+          })
+
+
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
                    other,
@@ -411,7 +425,10 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
     } else if (inherits(file, "connection")) {
         con <- file
     }
-    write.table(object$data, col.names=TRUE, row.names=FALSE, sep=",", file=con)
+    if (isS4(object))
+        write.table(object@data, col.names=TRUE, row.names=FALSE, sep=",", file=con)
+    else
+        write.table(object$data, col.names=TRUE, row.names=FALSE, sep=",", file=con)
     close(con)
 }
 
@@ -1778,38 +1795,36 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
 ##setMethod(f="summary", "ctd", function(object) {
 summary.ctd <- function(object, ...)
 {
-    metadataNames <- names(object@metadata)
-    showMetadataItem <- function(name, label, postlabel="", isdate=FALSE) {
-        if (name %in% metadataNames)
-            cat(paste("* ", label,
-                      if (isdate) format(object@metadata[[name]]) else object@metadata[[name]],
-                      postlabel,
-                      "\n", sep=""))
-    }
+#    metadataNames <- names(object@metadata)
+#    showMetadataItem <- function(name, label, postlabel="", isdate=FALSE) {
+#        if (name %in% metadataNames)
+#            cat(paste("* ", label,
+#                      if (isdate) format(object@metadata[[name]]) else object@metadata[[name]],
+#                      postlabel,
+#                      "\n", sep=""))
+#    }
     cat("CTD Summary\n-----------\n\n")
-    showMetadataItem("type", "Instrument")
-    showMetadataItem("model", "Instrument model:  ")
-    showMetadataItem("serialNumber", "Instrument serial number:  ")
-    showMetadataItem("filename", "File source:        ")
-    showMetadataItem("hexfilename", "Original file source (hex):  ")
-    showMetadataItem("institute", "Institute:      ")
-    showMetadataItem("scientist", "Chief scientist:      ")
-    showMetadataItem("date", "Date:      ", isdate=TRUE)
-    showMetadataItem("startTime", "Start time:          ", isdate=TRUE)
-    showMetadataItem("systemUploadTime", "System upload time:  ", isdate=TRUE)
-    showMetadataItem("cruise",  "Cruise:              ")
-    showMetadataItem("ship",    "Vessel:              ")
-    showMetadataItem("station", "Station:             ")
+    showMetadataItem(object, "type", "Instrument")
+    showMetadataItem(object, "model", "Instrument model:  ")
+    showMetadataItem(object, "serialNumber", "Instrument serial number:  ")
+    showMetadataItem(object, "filename", "File source:        ")
+    showMetadataItem(object, "hexfilename", "Original file source (hex):  ")
+    showMetadataItem(object, "institute", "Institute:      ")
+    showMetadataItem(object, "scientist", "Chief scientist:      ")
+    showMetadataItem(object, "date", "Date:      ", isdate=TRUE)
+    showMetadataItem(object, "startTime", "Start time:          ", isdate=TRUE)
+    showMetadataItem(object, "systemUploadTime", "System upload time:  ", isdate=TRUE)
+    showMetadataItem(object, "cruise",  "Cruise:              ")
+    showMetadataItem(object, "ship",    "Vessel:              ")
+    showMetadataItem(object, "station", "Station:             ")
     cat("* Location:           ",       latlonFormat(object@metadata$latitude,
                                                      object@metadata$longitude,
                                                      digits=5), "\n")
-    showMetadataItem("waterDepth", "Water depth:")
-    showMetadataItem("levels", "Number of levels:")
+    showMetadataItem(object, "waterDepth", "Water depth:")
+    showMetadataItem(object, "levels", "Number of levels:")
     cat("* Statistics of subsample::\n")
-    ndata <- length(object@data)
-    threes <- matrix(nrow=ndata, ncol=3)
-    for (i in seq_along(object@data))
-        threes[i,] <- threenum(object@data[[i]])
+    threes <- matrix(nrow=length(object@data), ncol=3)
+    threes[1,] <- threenum(object@data$elevation)
     rownames(threes) <- paste("   ", names(object@data))
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes, indent='  ')
