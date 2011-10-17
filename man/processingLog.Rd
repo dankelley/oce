@@ -3,6 +3,7 @@
 \alias{processingLog}
 \alias{processingLog<-}
 \alias{processingLogItem}
+\alias{processingLogShow}
 
 \title{Add an item to object processingLog}
 
@@ -12,6 +13,7 @@
 processingLog(x) <- value
 processingLog(h, value="")
 processingLogItem(value="")
+processingLogShow(x)
 }
 
 \arguments{
@@ -33,7 +35,7 @@ processingLogItem(value="")
 
 \examples{
 data(ctd)
-ctd$metadata$latitude <- ctd$metadata$latitude + 1
+ctd@metadata$latitude <- ctd@metadata$latitude + 1
 processingLog(ctd) <- "correct the latitude"
 }
 

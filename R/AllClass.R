@@ -7,43 +7,20 @@ setClass("noce",
                         data=list(),
                         processingLog=list(time = Sys.time(), value = "create base 'oce' object")))
 
-#setGeneric("processingLog",
-#           function(object) {
-#               standardGeneric("processingLog")
-#           })
+setClass("ctd", contains="noce")
 
-#setMethod("processingLog",
-#          "noce",
-#          function(object) {
-#              cat("* Processing Log::\n")
-#              pl <- object@processingLog
-#              n <- length(pl$value)
-#              for (i in seq_along(pl$value)) {
-#                  cat("  * ", format(pl$time[i]), " UTC: ``", pl$value[i], "``\n", sep="")
-#              }
-#          })
-#
-setClass("nctd", contains="noce")
-#
 setMethod(f="initialize",
-          signature="nctd",
+          signature="ctd",
           definition=function(.Object,pressure,salinity,temperature,filename) {
-              .Object@data$pressure <- pressure
-              .Object@data$temperature <-temperature 
-              .Object@data$salinity <- salinity
+              if (!missing(pressure)) .Object@data$pressure <- pressure
+              if (!missing(temperature)) .Object@data$temperature <-temperature 
+              if (!missing(salinity)) .Object@data$salinity <- salinity
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
               .Object@processingLog$value=c(.Object@processingLog$value, "create ctd object")
               return(.Object)
           })
 #
-
-setMethod(f="plot",
-          signature=signature("nctd"),
-          definition=function(x, which=1:4) {
-              warning("** dummy plot() for initial tests **")
-              plot(x@data$temperature, x@data$pressure)
-          })
 
 ##
 #setMethod(f="[",

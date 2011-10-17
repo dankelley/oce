@@ -21,21 +21,27 @@ makeSection <- function(item, ...)
 {
     if (inherits(item, "ctd")) {
 	extra.args <- list(...)
+        if (!isS4(item))
+            item <- makeS4(item)
 	numStations <- 1 + length(extra.args)
 	station <- vector("list", numStations)
 	stn <- vector("character", numStations)
 	lon <- vector("numeric", numStations)
 	lat <- vector("numeric", numStations)
-	stn[1] <- item$metadata$station
-	lat[1] <- item$metadata$latitude
-	lon[1] <- item$metadata$longitude
+	stn[1] <- item@metadata$station
+	lat[1] <- item@metadata$latitude
+	lon[1] <- item@metadata$longitude
 	station[[1]] <- item
 	if (numStations > 1) {
 	    for (i in 2:numStations) {
-		stn[i] <- extra.args[[i-1]]$metadata$station
-		lat[i] <- extra.args[[i-1]]$metadata$latitude
-		lon[i] <- extra.args[[i-1]]$metadata$longitude
-		station[[i]] <- extra.args[[i-1]]
+                ##cat("adding station i=", i, "\n")
+                thisStn <- extra.args[[i-1]]
+                if (!isS4(thisStn))
+                    thisStn <- makeS4(thisStn)
+		stn[i] <- thisStn@metadata$station
+		lat[i] <- thisStn@metadata$latitude
+		lon[i] <- thisStn@metadata$longitude
+		station[[i]] <- thisStn
 	    }
 	}
     } else if (inherits(item, "list")) {
@@ -104,6 +110,8 @@ makeSection <- function(item, ...)
         stop("'section' is not a section")
     if (!inherits(station, "ctd"))
         stop("'station' is not a station")
+    if (!isS4(station))
+        station <- makeS4(station)
     res <- section
     n.orig <- length(section$data$station)
     s <- vector("list", n.orig + 1)
@@ -111,9 +119,9 @@ makeSection <- function(item, ...)
 	s[[i]] <- section$data$station[[i]]
     s[[n.orig + 1]] <- station
     res$data$station <- s
-    res$metadata$latitude <- c(res$metadata$latitude, station$metadata$latitude)
-    res$metadata$longitude <- c(res$metadata$longitude, station$metadata$longitude)
-    res$metadata$stationId <- c(res$metadata$stationId, station$metadata$station)
+    res$metadata$latitude <- c(res$metadata$latitude, station@metadata$latitude)
+    res$metadata$longitude <- c(res$metadata$longitude, station@metadata$longitude)
+    res$metadata$stationId <- c(res$metadata$stationId, station@metadata$station)
     res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -152,8 +160,14 @@ plot.section <- function(x,
 	    lat <- array(NA, numStations)
 	    lon <- array(NA, numStations)
 	    for (i in 1:numStations) {
-		lat[i] <- x$data$station[[stationIndices[i]]]$metadata$latitude
-		lon[i] <- x$data$station[[stationIndices[i]]]$metadata$longitude
+                thisStn <- x$data$statoin[[stationIndices[i]]]
+                if (isS4(thisStn)) {
+                    lat[i] <- x$data$station[[stationIndices[i]]]$metadata$latitude
+                    lon[i] <- x$data$station[[stationIndices[i]]]$metadata$longitude
+                } else {
+                    lat[i] <- x$data$station[[stationIndices[i]]]@metadata$latitude
+                    lon[i] <- x$data$station[[stationIndices[i]]]@metadata$longitude
+                }
 	    }
 	    lon[lon<0] <- lon[lon<0] + 360
 	    asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
@@ -199,7 +213,7 @@ plot.section <- function(x,
 		text(xlab, ylab, x$metadata$stationId[numStations])
 	    }
 	} else {                        # not a map
-	    if (!(variable %in% names(x$data$station[[1]]$data)) && variable != "salinity gradient")
+	    if (!(variable %in% names(x$data$station[[1]]@data)) && variable != "salinity gradient")
 		stop("this section does not contain a variable named '", variable, "'")
 	    ## FIXME: contours don't get to plot edges
 	    xxrange <- range(xx, na.rm=TRUE)
@@ -246,19 +260,19 @@ plot.section <- function(x,
 	    usr <- par("usr")
 	    graph.bottom <- usr[3]
 	    waterDepth <- NULL
-	    for (i in 1:numStations) {
+            for (i in 1:numStations) {
                 if (variable == "salinity gradient") {
-                    dSdp <- rev(diff(x$data$station[[stationIndices[i]]]$data[["salinity"]]) 
-                                / diff(x$data$station[[stationIndices[i]]]$data[["pressure"]]))
+                    dSdp <- rev(diff(x$data$station[[stationIndices[i]]]@data[["salinity"]]) 
+                                / diff(x$data$station[[stationIndices[i]]]@data[["pressure"]]))
                     zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
                 } else {
-                    zz[i,] <- rev(x$data$station[[stationIndices[i]]]$data[[variable]])
+                    zz[i,] <- rev(x$data$station[[stationIndices[i]]]@data[[variable]])
                 }
 		if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
-		temp <- x$data$station[[stationIndices[i]]]$data$temperature
+		temp <- x$data$station[[stationIndices[i]]]@data$temperature
 		len <- length(temp)
-		if (is.finite(x$data$station[[stationIndices[i]]]$metadata$waterDepth)) {
-		    wd <- x$data$station[[stationIndices[i]]]$metadata$waterDepth
+		if (is.finite(x$data$station[[stationIndices[i]]]@metadata$waterDepth)) {
+		    wd <- x$data$station[[stationIndices[i]]]@metadata$waterDepth
 		    oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
 		} else {
 		    wd <- NA
@@ -268,13 +282,13 @@ plot.section <- function(x,
 			wdi <- len - which(!is.na(rev(temp)))[1] + 1
 			##cat("BOTTOM T:");print(temp[wdi])
 			##cat("BOTTOM p:");print(x$data$station[[stationIndices[i]]]$data$pressure[wdi])
-			wd <- max(x$data$station[[stationIndices[i]]]$data$pressure, na.rm=TRUE)
+			wd <- max(x$data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
 			oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
 		    } else {
 			oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
 		    }
 		}
-		in.land <- which(is.na(x$data$station[[stationIndices[i]]]$data$temperature[-3])) # skip first 3 points
+		in.land <- which(is.na(x$data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
 		##cat("check==\n")
 		##print(x$data$station[[stationIndices[i]]]$data$temperature)
 		##stop()
@@ -282,7 +296,7 @@ plot.section <- function(x,
 		if (!is.na(wd)) {
 		    waterDepth <- c(waterDepth, wd)
 		} else {
-		    waterDepth <- c(waterDepth, max(x$data$station[[stationIndices[i]]]$data$pressure, na.rm=TRUE))
+		    waterDepth <- c(waterDepth, max(x$data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
 		}
 	    }
 	    oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
@@ -341,15 +355,12 @@ plot.section <- function(x,
 	}
 	oceDebug(debug, "\b} # plotSubsection()\n")
     }                                   # plotSubsection
-
     if (!inherits(x, "section"))
         stop("method is only for section objects")
     opar <- par(no.readonly = TRUE)
     if (length(which) > 1) on.exit(par(opar))
-
     which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
     which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
-
     if (missing(stationIndices)) {
 	numStations <- length(x$data$station)
 	stationIndices <- 1:numStations
@@ -358,36 +369,41 @@ plot.section <- function(x,
     }
     if (numStations < 2)
         stop("cannot plot a section containing fewer than 2 stations")
-    num.depths <- length(x$data$station[[stationIndices[1]]]$data$pressure)
+
+    ## convert all to S4, if not already
+    for (istation in seq_along(x$data$station)) {
+        ##cat("converting station", istation, "\n")
+        if (!isS4(x$data$station[[istation]]))
+            x$data$station[[istation]] <- makeS4(x$data$station[[istation]])
+    }
+    firstStation <- x$data$station[[stationIndices[1]]]
+    num.depths <- length(firstStation@data$pressure)
 
     ## Check that pressures coincide
-    p1 <- x$data$station[[stationIndices[1]]]$data$pressure
+    p1 <- firstStation@data$pressure
     for (ix in 2:numStations) {
-	if (any(p1 != x$data$station[[stationIndices[ix]]]$data$pressure)) {
-	    stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
-	}
+        thisStation <- x$data$station[[stationIndices[ix]]]
+        if (any(p1 != x$data$station[[stationIndices[ix]]]@data$pressure))
+            stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
     }
-
     zz <- matrix(nrow=numStations, ncol=num.depths)
     xx <- array(NA, numStations)
     yy <- array(NA, num.depths)
     if (is.null(at)) {
-	lat0 <- x$data$station[[stationIndices[1]]]$metadata$latitude
-	lon0 <- x$data$station[[stationIndices[1]]]$metadata$longitude
+	lat0 <- firstStation@metadata$latitude
+	lon0 <- firstStation@metadata$longitude
 	for (ix in 1:numStations) {
 	    j <- stationIndices[ix]
 	    if (which.xtype == 1) {
-                xx[ix] <- geodDist(lat0, lon0,
-                                   x$data$station[[j]]$metadata$latitude,
-                                   x$data$station[[j]]$metadata$longitude)
+                xx[ix] <- geodDist(lat0, lon0, x$data$station[[j]]@metadata$latitude, x$data$station[[j]]@metadata$longitude)
             } else if (which.xtype == 2) {
                 if (ix == 1) {
                     xx[ix] <- 0
                 } else {
-                    xx[ix] <- xx[ix-1] + geodDist(x$data$station[[stationIndices[ix-1]]]$metadata$latitude,
-                                                  x$data$station[[stationIndices[ix-1]]]$metadata$longitude,
-                                                  x$data$station[[j]]$metadata$latitude,
-                                                  x$data$station[[j]]$metadata$longitude)
+                    xx[ix] <- xx[ix-1] + geodDist(x$data$station[[stationIndices[ix-1]]]@metadata$latitude,
+                                                  x$data$station[[stationIndices[ix-1]]]@metadata$longitude,
+                                                  x$data$station[[j]]@metadata$latitude,
+                                                  x$data$station[[j]]@metadata$longitude)
                 }
             } else {
                 stop("unknown xtype")
@@ -397,8 +413,8 @@ plot.section <- function(x,
         xx <- at
     }
 
-    if (which.ytype == 1) yy <- rev(-x$data$station[[stationIndices[1]]]$data$pressure)
-    else if (which.ytype == 2) yy <- rev(-swDepth(x$data$station[[stationIndices[1]]]$data$pressure))
+    if (which.ytype == 1) yy <- rev(-x$data$station[[stationIndices[1]]]@data$pressure)
+    else if (which.ytype == 2) yy <- rev(-swDepth(x$data$station[[stationIndices[1]]]@data$pressure))
     else stop("unknown ytype")
 
     oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
@@ -437,7 +453,8 @@ plot.section <- function(x,
 	adorn.length <- lw
     }
     for (w in 1:length(which)) {
-	if (!missing(contourLevels)) {
+        oceDebug(debug, "w=", w, "\n")
+        if (!missing(contourLevels)) {
 	    if (which[w] == 1)
 		plotSubsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
 	    if (which[w] == 2)
@@ -749,8 +766,14 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
     oceDebug(debug, "\bsection.smooth(section,debug=", debug, ", ...) {\n", sep="")
     if (!inherits(section, "section"))
         stop("method is only for section objects")
+    ## convert all to S4, if not already
+    for (istation in seq_along(section$data$station)) {
+        ##cat("converting station", istation, "\n")
+        if (!isS4(section$data$station[[istation]]))
+            section$data$station[[istation]] <- makeS4(section$data$station[[istation]])
+    }
     nstn <- length(section$data$station)
-    nprs <- length(section$data$station[[1]]$data$pressure)
+    nprs <- length(section$data$station[[1]]@data$pressure)
     if (missing(df))
 	df <- nstn / 5
     oceDebug(debug, "nstn=", nstn, "nprs=", nprs, "df=", df, "\n")
@@ -770,9 +793,10 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
     salinityMat <- array(dim=c(nprs, nstn))
     sigmaThetaMat <- array(dim=c(nprs, nstn))
     for (s in 1:nstn) {
-	temperatureMat[,s] <- res$data$station[[s]]$data$temperature
-	salinityMat[,s] <- res$data$station[[s]]$data$salinity
-	sigmaThetaMat[,s] <- res$data$station[[s]]$data$sigmaTheta
+        thisStation <- res$data$station[[s]]
+	temperatureMat[,s] <- thisStation@data$temperature
+	salinityMat[,s] <- thisStation@data$salinity
+	sigmaThetaMat[,s] <- thisStation@data$sigmaTheta
     }
     for (p in 1:nprs) {
 	ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
@@ -788,9 +812,9 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
 	}
     }
     for (s in 1:nstn) {
-	res$data$station[[s]]$data$temperature <- temperatureMat[,s]
-	res$data$station[[s]]$data$salinity <- salinityMat[,s]
-	res$data$station[[s]]$data$sigmaTheta <- sigmaThetaMat[,s]
+	res$data$station[[s]]@data$temperature <- temperatureMat[,s]
+	res$data$station[[s]]@data$salinity <- salinityMat[,s]
+	res$data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
     }
     class(res) <- c("section", "oce")
     res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -807,21 +831,21 @@ summary.section <- function(object, ...)
     res <- list(sectionId=object$metadata$sectionId,
 		numStations=numStations,
 		stn.sum=stn.sum, processingLog="?")
-    lon1 <- object$data$station[[1]]$metadata$longitude
-    lat1 <- object$data$station[[1]]$metadata$latitude
+    lon1 <- object$data$station[[1]]@metadata$longitude
+    lat1 <- object$data$station[[1]]@metadata$latitude
     for (i in 1:numStations) {
-	stn <- object$data$station[[i]]
-	stn.sum[i, 1] <- stn$metadata$longitude
-	stn.sum[i, 2] <- stn$metadata$latitude
-	stn.sum[i, 3] <- length(stn$data$pressure)
-	if (is.finite(stn$metadata$waterDepth)) {
-	    stn.sum[i, 4] <- stn$metadata$waterDepth
+        stn <- object$data$station[[i]]
+	stn.sum[i, 1] <- stn@metadata$longitude
+	stn.sum[i, 2] <- stn@metadata$latitude
+	stn.sum[i, 3] <- length(stn@data$pressure)
+	if (is.finite(stn@metadata$waterDepth)) {
+	    stn.sum[i, 4] <- stn@metadata$waterDepth
 	} else {
-	    temp <- stn$data$temperature
+	    temp <- stn@data$temperature
 	    wdi <- length(temp) - which(!is.na(rev(temp)))[1] + 1
-	    stn.sum[i, 4] <- stn$data$pressure[wdi]
+	    stn.sum[i, 4] <- stn@data$pressure[wdi]
 	}
-	stn.sum[i, 5] <- geodDist(lat1, lon1, stn$metadata$latitude, stn$metadata$longitude)
+	stn.sum[i, 5] <- geodDist(lat1, lon1, stn@metadata$latitude, stn@metadata$longitude)
     }
     colnames(stn.sum) <- c("Long.", "Lat.", "Levels", "Depth", "Distance")
     rownames(stn.sum) <- object$metadata$stationId

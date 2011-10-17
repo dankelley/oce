@@ -55,6 +55,7 @@ export("+.section",
        processingLog,
        "processingLog<-",
        processingLogItem,
+       processingLogShow,
        imagep,
        interpBarnes,
        integerToAscii,
@@ -165,6 +166,7 @@ export("+.section",
        stickplot,
        subset.oce,
        summary.processingLog,
+       summary.ctd,
        sunAngle,
        swAlpha,
        swAlphaOverBeta,
@@ -234,7 +236,7 @@ S3method(print, summary.adp)
 S3method(print, summary.adv)
 S3method(print, summary.cm)
 S3method(print, summary.coastline)
-S3method(print, summary.ctd)
+##S3method(print, summary.ctd)
 S3method(print, summary.drifter)
 S3method(print, summary.lobo)
 S3method(print, summary.sealevel)
@@ -247,7 +249,7 @@ S3method(summary, adp)
 S3method(summary, adv)
 S3method(summary, cm)
 S3method(summary, coastline)
-S3method(summary, ctd)
+##S3method(summary, ctd)
 S3method(summary, drifter)
 S3method(summary, lobo)
 S3method(summary, oce)
@@ -258,4 +260,4 @@ S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
-exportClasses(noce, nctd)
+exportClasses(noce, ctd)

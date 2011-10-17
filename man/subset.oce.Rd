@@ -37,7 +37,7 @@ library(oce)
 # CTD data
 data(ctd)
 plot(ctd)
-plot(subset(ctd, pressure>10))
+plot(subset.oce(ctd, pressure>10))
 
 # ADP example, subsetted by time and distance
 data(adp)

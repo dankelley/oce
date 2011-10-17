@@ -680,8 +680,13 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
         lat1 <- vector("numeric", n)
         lon1 <- vector("numeric", n)
         for (i in 1:n) {
-            lat1[i] <- copy$data$station[[i]]$metadata$latitude
-            lon1[i] <- copy$data$station[[i]]$metadata$longitude
+            if (isS4(copy$data$station[[i]])) {
+                lat1[i] <- copy$data$station[[i]]@metadata$latitude
+                lon1[i] <- copy$data$station[[i]]@metadata$longitude
+              } else {
+                lat1[i] <- copy$data$station[[i]]$metadata$latitude
+                lon1[i] <- copy$data$station[[i]]$metadata$longitude
+              }
         }
         res <- vector("numeric", n)
         for (i in 1:n) {
@@ -881,24 +886,26 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
 
 addColumn <- function (x, data, name)
 {
-    if (!inherits(x, "oce"))
+    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: can remove noce later
         stop("method is only for oce objects")
     if (missing(data))
         stop("must supply data")
     if (missing(name))
         stop("must supply name")
-    n <- dim(x$data)[1]
-    nd <- length(data)
-    if (nd != n)
-        stop("data length is ", nd, " but it must be ", n, " to match existing data")
+    if (!isS4(x)) 
+        x <- makeS4(x)
+    n <- length(data)
+    nd <- length(x@data)
+    if (n != length(data))
+        stop("data length is ", n, " but it must be ", nd, " to match existing data")
     if (inherits(x, "ctd")) {
         rval <- ctdAddColumn(x, data, name)
     } else {
         rval <- x
-        rval$data <- data.frame(x$data, data)
-        names(rval$data) <- c(names(x$data), name)
+        rval@data[[name]] <- data
     }
-    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    warning("should put a note in processingLog")
+    ##rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -1001,7 +1008,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 
 oceSmooth <- function(x, ...)
 {
-    if (!inherits(x, "oce"))
+    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: remove noce later
         stop("method is only for oce objects")
     res <- x
     if (inherits(x, "adp")) {
@@ -1030,12 +1037,15 @@ oceSmooth <- function(x, ...)
         }
         warning("oceSmooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
     } else if (inherits(x, "ctd")) {
-        for (name in names(x$data))
-            x$data[[name]] <- smooth(x$data[[name]], ...)
+        if (!isS4(x))
+            res <- makeS4(x)
+        for (name in names(x@data))
+            res@data[[name]] <- smooth(x@data[[name]], ...)
     } else {
         stop("smoothing does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    warning("should updating processingLog")
+    ##res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -1440,3 +1450,14 @@ drawPalette <- function(zlim,
     invisible()
 }
 
+
+makeS4 <- function(x)
+{
+    ## FIXME: need to keep class inheritance
+    rval <- new('noce')
+    ##class(rval) <- c(class(rval)[1], class(x)[1])
+    rval@metadata <- x$metadata
+    rval@data <- x$data
+    rval@processingLog <- unclass(x$processingLog)
+    rval
+}

@@ -79,12 +79,8 @@
 
 \examples{
 library(oce)
-# Plot TS diagram for a mid-Atlantic station at 36N
-# See demo(TS) for a section-spanning TS diagram
-data(a03)
-profile <- a03$data$station[[60]] # 124 stations in total
-plotTS(profile)
-title("Mid-Atlantic at 36N")
+data(ctd)
+plotTS(ctd)
 }
 
 \author{Dan Kelley}

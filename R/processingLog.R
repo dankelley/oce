@@ -1,11 +1,19 @@
 "processingLog<-" <- function(x, value)
 {
-    if (inherits(x, "oce")) {
-        h <- list(time=x$processingLog[[1]], value=x$processingLog[[2]]) # using indices to allow renaming
-        h$time <- c(h$time, as.POSIXct(Sys.time(), tz="UTC"))
-        h$value <- c(h$value, value)
-        class(h) <- "processingLog"
-        x$processingLog <- h
+    if (inherits(x, "oce") || inherits(x, "noce")) { # FIXME remove noce
+        if (isS4(x)) {
+            h <- list(time=x@processingLog[[1]], value=x@processingLog[[2]]) # using indices to allow renaming
+            h$time <- c(h$time, as.POSIXct(Sys.time(), tz="UTC"))
+            h$value <- c(h$value, value)
+            ##class(h) <- "processingLog"
+            x@processingLog <- h
+        } else {
+            h <- list(time=x$processingLog[[1]], value=x$processingLog[[2]]) # using indices to allow renaming
+            h$time <- c(h$time, as.POSIXct(Sys.time(), tz="UTC"))
+            h$value <- c(h$value, value)
+            class(h) <- "processingLog"
+            x$processingLog <- h
+        }
     } else {
         stop("'x' is not an oce object")
     }
@@ -60,3 +68,14 @@ print.summary.processingLog <- function(x, digits = max(6, getOption("digits") -
         cat("  (none)\n", ...)
     }
 }
+
+processingLogShow <- function(x)
+{
+    cat("* Processing Log::\n")
+    for (i in seq_along(x@processingLog$value)) {
+        cat("  * ", format(x@processingLog$time[i]), " UTC: ``",
+            x@processingLog$value[i], "``\n", sep="")
+    }
+}
+
+

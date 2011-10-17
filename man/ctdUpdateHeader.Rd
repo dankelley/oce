@@ -20,7 +20,7 @@
 \examples{
 library(oce)
 data(ctd) 
-ctd$data$p <- ctd$data$p + 3 # adjust pressures
+ctd@data$pressure <- ctd@data$pressure + 3
 ctdNew <- ctdUpdateHeader(ctd)
 }
 

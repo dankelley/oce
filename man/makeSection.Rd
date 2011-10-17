@@ -36,7 +36,7 @@ library(oce)
 data(ctd)
 ctdWarmed <- ctd
 temperature(ctdWarmed) <- temperature(ctdWarmed) + 0.5
-ctdWarmed$metadata$latitude <- ctdWarmed$metadata$latitude + 0.1
+latitude(ctdWarmed) <- latitude(ctdWarmed) + 0.1
 section <- makeSection(ctd, ctdWarmed)
 summary(section)
 

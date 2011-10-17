@@ -1,12 +1,14 @@
 \name{plot.ctd}
 
 \alias{plot.ctd}
+\alias{plot,ctd,missing-method}
+\alias{plot,ctd-method}
 
 \title{Plot seawater CTD data}
 
 \description{Plot a summary diagram for CTD data.}
 
-\usage{\method{plot}{ctd}(x,
+\usage{\S4method{plot}{ctd}(x,
      which=1:4, 
      ref.lat=NaN,
      ref.lon=NaN, 

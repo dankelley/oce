@@ -321,13 +321,14 @@ oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\boceEdit() {\n")
-    if (!inherits(x, "oce"))
+    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: remove noce
         stop("method is only for oce objects")
     if (!missing(item)) {
         if (missing(value))
             stop("must supply a 'value' for this 'item'")
         ##if (!(item %in% names(x$metadata)))
         ## stop("no item named '", item, "' in object's  metadata")
+        print(class(x))
         if (inherits(x, "adv")) {
             oceDebug(debug, "object is an ADV\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item))
@@ -353,6 +354,16 @@ oceEdit <- function(x, item, value, action, reason="", person="",
                 } else
                     stop("do not know how to handle this item")
             }
+        } else if (inherits(x, "ctd")) {
+            if (!isS4(x))
+                x <- makeS4(x)
+            if (item %in% names(x@metadata)) {
+                x@metadata[[item]] <- value
+            } else if (item %in% names(x@data)) {
+                x@data[[item]] <- value
+            } else {
+                stop("cannot find that item")
+            }
         } else if ("instrumentType" %in% names(x$metadata) && x$metadata$instrumentType == "aquadopp-hr") {
             oceDebug(debug, "About to try editing AQUADOPP ...\n")
             hpr <- 0 < length(grep("heading|pitch|roll", item)) # FIXME: possibly aquadopp should have tsSlow
@@ -374,14 +385,15 @@ oceEdit <- function(x, item, value, action, reason="", person="",
                 x$metadata[item] <- value
             else
                 stop("do not know how to handle this item")
-        }
+        } 
     } else if (!missing(action)) {
         warning("the 'action' method may not work -- this needs testing!")
         eval(parse(text=action))        # FIXME: should check if it worked
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    x$processingLog <- processingLog(x$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    warning("should update processingLog")
+    ##x$processingLog <- processingLog(x$processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # oceEdit() \n")
     x
 }
@@ -400,7 +412,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
 {
     debug <- max(0, min(debug, 1))
     oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
-    if (!inherits(x, "oce"))
+    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: drop noce later
         stop("method is only for oce objects")
     if (inherits(x, "cm")) {
         if (!is.null(indices)) {
@@ -605,18 +617,41 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         } else {
             stop("only 'time' is permitted for subsetting")
         }
+    } else if (inherits(x, "ctd")) {
+        if (!isS4(x))
+            x <- makeS4(x)
+        rval <- new("ctd")
+        rval@metadata <- x@metadata
+        for (i in seq_along(x@data)) {
+            ##cat("i=", i, "name=", names(x@data)[i], "\n")
+            r <- eval(substitute(subset), x@data, parent.frame())
+            r <- r & !is.na(r)
+            rval@data[[i]] <- x@data[[i]][r]
+        }
+        names(rval@data) <- names(x@data)
     } else {
-        r <- eval(substitute(subset), x$data, parent.frame())
+        if (isS4(x)) {
+            r <- eval(substitute(subset), x@data, parent.frame())
+        } else {
+            r <- eval(substitute(subset), x$data, parent.frame())
+        }
         r <- r & !is.na(r)
         rval <- x
-        rval$data <- x$data[r,]
+        if (isS4(x)) {
+            for (i in seq_along(x@data))
+                rval@data[[i]] <- x@data[[i]][r]
+        } else {
+            rval$data <- x@data[r,]
+        }
+        names(rval@data) <- names(x@data)
     }
     if (inherits(x, "adp") || inherits(x, "adv")) {
         rval$metadata$numberOfSamples <- dim(rval$data$v)[1]
         rval$metadata$numberOfCells <- dim(rval$data$v)[2]
     }
     oceDebug(debug, "\b\b} # subset.oce\n")
-    rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    ##rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    ##FIXME: processingLog
     rval
 }
 

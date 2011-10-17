@@ -1,7 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 extract <- function(x, names)
 {
-    if (!inherits(x, "oce"))
+    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: later remove noce
         stop("method is only for oce objects")
     if (missing(x))
         stop("must supply 'x'")
@@ -9,24 +9,46 @@ extract <- function(x, names)
         stop("must supply 'names'")
     rval <- list()
     if (inherits(x, "section")) {
+        if (!isS4(x))
+            x <- makeS4(x)
         for (name in names) {
+            print(names(x@metadata))
+            if (isS4(x@data$station[[1]])) {
+                stationDataNames <- names(x@data$station[[1]]@data)
+            } else {
+                stationDataNames <- names(x@data$station[[1]]$data)
+            }
+            print(stationDataNames)
             if (name %in% names(x)) {
                 rval[[name]] <- x[[name]]
-            } else if (name %in% names(x$metadata)) {
+            } else if (name %in% names(x@metadata)) {
                 if (name %in% c("longitude", "latitude", "stationId", "date")) {
                     item <- NULL
-                    for (i in 1:length(x$data$station))
-                        item <- c(item, rep(x$metadata[[name]][[i]], length(x$data$station[[i]]$data$salinity)))
+                    for (i in seq_along(x@data$station)) {
+                        stn <- x@data$station[[i]]
+                        if (isS4(stn))
+                            item <- c(item, rep(x@metadata[[name]][[i]], length(x@data$station[[i]]@data$salinity)))
+                        else
+                            item <- c(item, rep(x@metadata[[name]][[i]], length(x@data$station[[i]]$data$salinity)))
+                    }
                     rval[[name]] = item
                 } else {
-                    rval[[name]] = x$metadta[[name]]
+                    rval[[name]] = x@metadata[[name]]
                 }
-            } else if (name %in% names(x$data$station[[1]]$data)) {
+            } else if (name %in% stationDataNames) {
+                cat("in station data, for name=", name, "\n")
                 item <- NULL
-                for (i in 1:length(x$data$station))
-                    item <- c(item, x$data$station[[i]]$data[[name]])
+                for (i in 1:length(x@data$station)) {
+                    cat("in station", i, "\n")
+                    stn <- x@data$station[[i]]
+                    if (isS4(stn))
+                        item <- c(item, x@data$station[[i]]@data[[name]])
+                    else
+                        item <- c(item, x@data$station[[i]]$data[[name]])
+                }
                 rval[[name]] <- item
             } else {
+                cat("--B\n")
                 stop("'", name, "' not in object's metadata or data$station[[1]]$data")
             }
         }
@@ -58,10 +80,10 @@ extract <- function(x, names)
         for (name in names) {
             if (name %in% names(x)) {
                 rval[[name]] <- x[[name]]
-            } else if (name %in% names(x$metadata)) {
-                rval[[name]] = x$metadata[[name]]
-            } else if (name %in% names(x$data)) {
-                rval[[name]] = x$data[[name]]
+            } else if (name %in% names(x@metadata)) {
+                rval[[name]] = x@metadata[[name]]
+            } else if (name %in% names(x@data)) {
+                rval[[name]] = x@data[[name]]
             } else {
                 stop("'", name, "' not in object")
             }
@@ -72,15 +94,17 @@ extract <- function(x, names)
 
 header <- function(x)
 {
-    if (!inherits(x, "oce"))
+    if (!inherits(x, "oce") && !inherits(x, "noce"))
         stop("method is only for oce objects")
-    return(x$metadata$header)
+    if (isS4(x))
+        return(x@metadata$header)
+    else
+        return(x$metadata$header)
 }
 
 heading <- function(x, time)
 {
-    if (missing(x))
-        stop("must supply 'x'")
+    if (missing(x)) stop("must supply 'x'")
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time$data)) {
             time <- time$data$timeSlow
@@ -92,10 +116,8 @@ heading <- function(x, time)
     }
     if (inherits(x, "adp")) {
         if (missing(time)) {
-            cat("x is adp, time not given\n")
             return(x$data$heading)
         } else {
-            cat("x is adp, time given\n")
             return(approx(x$data$time, x$data$heading, time)$y)
         }
     } else if (inherits(x, "adv")) {
@@ -139,21 +161,22 @@ heading <- function(x, time)
 
 latitude <- function(x, time, byDepth=TRUE)
 {
+    if (!isS4(x)) x <- makeS4(x)
     if (inherits(x, "section")) {
         if (byDepth) {
-            nstation <- length(x$data$station)
+            nstation <- length(x@data$station)
             rval <- NULL
             for (i in 1:nstation) {
-                rval <- c(rval, rep(x$metadata$latitude[i], length.out=length(salinity(x$data$station[[i]]))))
+                rval <- c(rval, rep(x@metadata$latitude[i], length.out=length(salinity(x@data$station[[i]]))))
             }
         } else {
-            rval <- x$metadata$latitude
+            rval <- x@metadata$latitude
         }
     } else {
-        if ("latitude" %in% names(x$metadata)) 
-            rval <- x$metadata$latitude
-        else if ("latitude" %in% names(x$data))
-            rval <- x$data$latitude
+        if ("latitude" %in% names(x@metadata)) 
+            rval <- x@metadata$latitude
+        else if ("latitude" %in% names(x@data))
+            rval <- x@data$latitude
         else
             stop("no 'latitude' in names(x$data) or names(x$metadata)")
     }
@@ -162,21 +185,22 @@ latitude <- function(x, time, byDepth=TRUE)
 
 longitude <- function(x, time, byDepth=TRUE)
 {
+    if (!isS4(x)) x <- makeS4(x)
     if (inherits(x, "section")) {
         if (byDepth) {
-            nstation <- length(x$data$station)
+            nstation <- length(x@data$station)
             rval <- NULL
             for (i in 1:nstation) {
-                rval <- c(rval, rep(x$metadata$longitude[i], length.out=length(salinity(x$data$station[[i]]))))
+                rval <- c(rval, rep(x@metadata$longitude[i], length.out=length(salinity(x@data$station[[i]]))))
             }
         } else {
-            rval <- x$metadata$longitude
+            rval <- x@metadata$longitude
         }
     } else {
-        if ("longitude" %in% names(x$metadata)) 
-            rval <- x$metadata$longitude
-        else if ("longitude" %in% names(x$data))
-            rval <- x$data$longitude
+        if ("longitude" %in% names(x@metadata)) 
+            rval <- x@metadata$longitude
+        else if ("longitude" %in% names(x@data))
+            rval <- x@data$longitude
         else
             stop("no 'longitude' in names(x$data) or names(x$metadata)")
     }
@@ -185,10 +209,11 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "latitude<-" <- function(x, value)
 {
-    if ("latitude" %in% names(x$metadata)) {
-        x$metadata$latitude <- value[1]
-    } else if ("latitude" %in% names(x$data)) {
-        x$data$latitude <- value
+    if (!isS4(x)) x <- makeS4(x)
+    if ("latitude" %in% names(x@metadata)) {
+        x@metadata$latitude <- value[1]
+    } else if ("latitude" %in% names(x@data)) {
+        x@data$latitude <- value
     } else {
         stop("no item 'data$latitude$ or 'metadata$latitude' in object")
     }
@@ -197,10 +222,11 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "longitude<-" <- function(x, value)
 {
-    if ("longitude" %in% names(x$metadata)) {
-        x$metadata$longitude <- value[1]
-    } else if ("longitude" %in% names(x$data)) {
-        x$data$longitude <- value
+    if (!isS4(x)) x <- makeS4(x)
+    if ("longitude" %in% names(x@metadata)) {
+        x@metadata$longitude <- value[1]
+    } else if ("longitude" %in% names(x@data)) {
+        x@data$longitude <- value
     } else {
         stop("no item 'data$longitude$ or 'metadata$longitude' in object")
     }
@@ -209,34 +235,35 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "pressure<-" <- function(x, value)
 {
-    if (!("pressure" %in% names(x$data)))
+    if (!isS4(x)) x <- makeS4(x)
+    if (!("pressure" %in% names(x@data)))
         stop("no item 'data$pressure' in object")
-    x$data$pressure<- value
+    x@data$pressure <- value
     x
 }
 
 "salinity<-" <- function(x, value)
 {
-    if (!("salinity" %in% names(x$data)))
+    if (!isS4(x)) x <- makeS4(x)
+    if (!("salinity" %in% names(x@data)))
         stop("no item 'data$salinity' in object")
-    x$data$salinity<- value
+    x@data$salinity <- value
     x
 }
 
 "temperature<-" <- function(x, value)
 {
-    if (!("temperature" %in% names(x$data)))
+    if (!isS4(x)) x <- makeS4(x)
+    if (!("temperature" %in% names(x@data)))
         stop("no item 'data$temperature' in object")
-    x$data$temperature <- value
+    x@data$temperature <- value
     x
 }
 
-
-
 pitch <- function(x, time)
 {
-    if (missing(x))
-        stop("must supply 'x'")
+    if (missing(x)) stop("must supply 'x'")
+    if (!isS4(x)) x <- makeS4(x)
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time$data)) {
             time <- time$data$timeSlow
@@ -248,18 +275,18 @@ pitch <- function(x, time)
     }
     if (inherits(x, "adp")) {
         if (missing(time)) {
-            return(x$data$pitch)
+            return(x@data$pitch)
         } else {
-            return(approx(x$data$time, x$data$pitch, time)$y)
+            return(approx(x@data$time, x@data$pitch, time)$y)
         }
     } else if (inherits(x, "adv")) {
         if (missing(time)) {
-            return(x$data$pitch)
+            return(x@data$pitch)
         } else {
-            if ("timeSlow" %in% names(x$data)) {
-                return(approx(x$data$timeSlow, x$data$pitchSlow, time)$y)
+            if ("timeSlow" %in% names(x@data)) {
+                return(approx(x@data$timeSlow, x@data$pitchSlow, time)$y)
             } else {
-                return(approx(x$data$time, x$data$pitch, time)$y)
+                return(approx(x@data$time, x@data$pitch, time)$y)
             }
         }
     } else {
@@ -269,8 +296,8 @@ pitch <- function(x, time)
 
 roll <- function(x, time)
 {
-    if (missing(x))
-        stop("must supply 'x'")
+    if (missing(x)) stop("must supply 'x'")
+    if (!isS4(x)) x <- makeS4(x)
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time$data)) {
             time <- time$data$timeSlow
@@ -282,18 +309,18 @@ roll <- function(x, time)
     }
     if (inherits(x, "adp")) {
         if (missing(time)) {
-            return(x$data$roll)
+            return(x@data$roll)
         } else {
-            return(approx(x$data$time, x$data$roll, time)$y)
+            return(approx(x@data$time, x@data$roll, time)$y)
         }
     } else if (inherits(x, "adv")) {
         if (missing(time)) {
-            return(x$data$roll)
+            return(x@data$roll)
         } else {
-            if ("timeSlow" %in% names(x$data)) {
-                return(approx(x$data$timeSlow, x$data$rollSlow, time)$y)
+            if ("timeSlow" %in% names(x@data)) {
+                return(approx(x@data$timeSlow, x@data$rollSlow, time)$y)
             } else {
-                return(approx(x$data$time, x$data$roll, time)$y)
+                return(approx(x@data$time, x@data$roll, time)$y)
             }
         }
     } else {
@@ -303,10 +330,11 @@ roll <- function(x, time)
 
 "roll<-" <- function(x, value)
 {
-    if ("rollSlow" %in% names(x$data)) {
-        x$data$rollSlow <- value
-    } else if ("roll" %in% names(x$data)) {
-        x$data$roll <- value
+    if (!isS4(x)) x <- makeS4(x)
+    if ("rollSlow" %in% names(x@data)) {
+        x@data$rollSlow <- value
+    } else if ("roll" %in% names(x@data)) {
+        x@data$roll <- value
     } else {
         stop("object has no item named 'data$roll' or 'data$rollSlow'")
     }
@@ -341,8 +369,6 @@ time.oce <- function(x, ...)
 
 hydrographyLocal <- function(x, time, item) # FIXME consider broadening as replacement for extract()
 {
-    if (!inherits(x, "oce"))
-        stop("'x' must be an oce object")
     if (inherits(x, "section")) {
         if (item == "latitude") {
             rval <- NULL
@@ -367,20 +393,27 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
         else
             stop("cannot find item named '", item, "' in object's data")
     } else if (inherits(x, "ctd")) {
+        if (!isS4(x)) {
+            xx <- new('ctd')
+            xx@metadata <- x$metadata
+            xx@data <- x$data
+            xx@processingLog <- unclass(x$processingLog)
+            x <- xx
+        }
         if (item == "latitude") {
-            rval <- rep(x$metadata$latitude, length(x$data$salinity))
+            rval <- rep(x@metadata$latitude, length(x@data$salinity))
         } else if (item == "longitude") {
-            rval <- rep(x$metadata$longitude, length(x$data$salinity))
+            rval <- rep(x@metadata$longitude, length(x@data$salinity))
         } else if (item == "time") {
-            rval <- rep(x$metadata$startTime, length(x$data$salinity))
+            rval <- rep(x@metadata$startTime, length(x@data$salinity))
         } else {
-            if (!(item %in% names(x$data)))
+            if (!(item %in% names(x@data)))
                 stop("'x' does not contain data named \"", item, "\"")
             if (missing(time)) {
-                rval <- x$data[[item]]
+                rval <- x@data[[item]]
             } else {
                 if (inherits(time, "oce")) {
-                    time <- time$data$time # FIXME: if broadening, consider timeSlow also
+                    time <- time$data$time # FIXME: if broadening, consider timeSlow also ... FIXME: what if S4
                 } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
                     stop("'time' is neither a POSIXt time, nor an oce object containing data$time")
                 }
