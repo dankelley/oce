@@ -1,5 +1,5 @@
 0.8-1
-- s4 classes: noce ctd section sealevel
+- s4 classes: noce ctd section sealevel coastline drifter
 - add support for RBR 'rsk' files
 - plot.section() now uses 'col' if supplied
 0.7-1

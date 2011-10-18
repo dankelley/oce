@@ -3,7 +3,6 @@
 \docType{class}
 
 \alias{coastline-class}
-\alias{[[}
 \alias{[[,coastline-method}
 
 \title{Class to store coastline data}
@@ -12,12 +11,8 @@
     (containing \code{fillable} and \code{filename}),  \code{data} (containing
     \code{latitude} and \code{longitude}) and \code{processingLog}.}
 
-\section{Methods}{
-    \describe{
-        \item{[[}{\code{signature(x="Coastline")}:
-            provide access to \code{latitude} and \code{longitude}.}
-    }
-}
+\section{Methods}{Data may be accessed as e.g. \code{coastline[["latitude"]]}
+    or \code{coastline[["longitude"]]}.}
 
 \author{Dan Kelley}
 \keyword{classes}

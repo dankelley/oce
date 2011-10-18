@@ -1,7 +1,6 @@
 \name{summary.drifter}
 
 \alias{summary.drifter}
-\alias{print.summary.drifter}
 
 \title{Summarize a drifter object}
 
@@ -9,16 +8,11 @@
 
 \usage{
 \method{summary}{drifter}(object, \dots)
-
-\method{print}{summary.drifter}(x, digits=max(6, getOption("digits")-1), \dots)
 }
 
 \arguments{
   \item{object}{an object of class \code{"drifter"}, usually, a result of a
     call to \code{\link{read.drifter}}.}
-  \item{x}{an object of class \code{"summary.drifter"}, usually, a result of a
-    call to \code{summary.drifter}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 

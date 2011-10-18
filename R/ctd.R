@@ -12,6 +12,18 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="ctd",
+          definition=function(x, i, j, drop) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("salinity", "temperature", "pressure"))
+              if (i == "salinity") return(x@data$salinity)
+              else if (i == "temperature") return(x@data$temperature)
+              else if (i == "pressure") return(x@data$pressure)
+              else stop("cannot access \"", i, "\"") # cannot get here
+          })
+#
 
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
