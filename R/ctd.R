@@ -671,10 +671,10 @@ setMethod(f="plot",
                 }
             } else {
                 if (missing(lonlim)) {
-                    lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x@metadata$longitude))
+                    lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
                     clon <- mean(lonlim.c)
                     if (missing(latlim)) {
-                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x@metadata$latitude))
+                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                         span <- diff(range(latlim.c)) / 1.5 * 111
                         plot(coastline, center=c(mean(latlim.c), clon), span=span, debug=debug-1)
                         oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
@@ -689,7 +689,7 @@ setMethod(f="plot",
                 } else {
                     clon <- mean(lonlim)
                     if (missing(latlim)) {
-                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x@metadata$latitude))
+                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                         clat <- mean(latlim.c)
                         span <- diff(range(latlim.c)) / 1.5 * 111
                         plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
@@ -960,10 +960,10 @@ plot.ctd <- function (x, which = 1:4,
                 }
             } else {
                 if (missing(lonlim)) {
-                    lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline$data$longitude, na.rm=TRUE) - x@metadata$longitude))
+                    lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
                     clon <- mean(lonlim.c)
                     if (missing(latlim)) {
-                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x@metadata$latitude))
+                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                         span <- diff(range(latlim.c)) / 1.5 * 111
                         plot(coastline, center=c(mean(latlim.c), clon), span=span, debug=debug-1)
                         oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
@@ -978,7 +978,7 @@ plot.ctd <- function (x, which = 1:4,
                 } else {
                     clon <- mean(lonlim)
                     if (missing(latlim)) {
-                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline$data$latitude,na.rm=TRUE) - x@metadata$latitude))
+                        latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                         clat <- mean(latlim.c)
                         span <- diff(range(latlim.c)) / 1.5 * 111
                         plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
@@ -1326,7 +1326,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     hitem <- processingLogItem(processingLog)
     res <- list(data=data, metadata=metadata, processingLog=hitem)
     class(res) <- c("ctd", "oce")
-    oceDebug(debug, "\b\b} # read.ctd.woce()\n")
+    oceDebug(debug, "\b\b} # read.ctd.woce()\n") # FIXME: use S4 for ctd / woce
     res
 }
 
@@ -1785,7 +1785,7 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("ctd", "oce") # FIXME
+    class(res) <- c("ctd", "oce") # FIXME use S4 for ctd / ODF
     res <- ctdAddColumn(res, swSigmaTheta(res$data$salinity, res$data$temperature, res$data$pressure), "sigmaTheta",
                           "Sigma Theta", "kg/m^3")
     oceDebug(debug, "} # read.ctd.odf()\n")

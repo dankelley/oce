@@ -193,12 +193,12 @@ plot.section <- function(x,
                 plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
             }
             if (!is.null(coastline)) {
-                if (!is.null(coastline$metadata$fillable) && coastline$metadata$fillable) {
-                    polygon(coastline$data$longitude, coastline$data$latitude, col="lightgray", lwd=3/4)
-                    polygon(coastline$data$longitude+360, coastline$data$latitude, col="lightgray", lwd=3/4)
+                if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
+                    polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
+                    polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
                 } else {
-                    lines(coastline$data$longitude, coastline$data$latitude, col="darkgray")
-                    lines(coastline$data$longitude + 360, coastline$data$latitude, col="darkgray")
+                    lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
+                    lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                 }
             }
             lines(lon, lat, col="lightgray")

@@ -162,7 +162,7 @@ plot.drifter <- function (x, which = 1, level=1,
                  type=type, cex=cex, pch=pch,
                  xlab="Longitude", ylab="Latitude", ...)
             if (!missing(coastline)) {
-                polygon(coastline$data$longitude, coastline$data$latitude, col='lightgray')
+                polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
                 if (type == 'l')
                     lines(x$data$longitude, x$data$latitude)
                 else

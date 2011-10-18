@@ -1,13 +1,36 @@
+setMethod(f="initialize",
+          signature="coastline",
+          definition=function(.Object, latitude, longitude, filename="", fillable=FALSE) {
+              if (!missing(latitude)) .Object@data$latitude <- latitude
+              if (!missing(longitude)) .Object@data$longitude <- longitude
+              .Object@metadata$filename <- filename
+              .Object@metadata$fillable <- fillable
+              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
+              .Object@processingLog$value=c(.Object@processingLog$value, "create 'coastline' object")
+              return(.Object)
+          })
+
+setMethod(f="[[",
+          signature="coastline",
+          definition=function(x, i, j, drop) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("latitude", "longitude"))
+              if (i == "latitude") x@data$latitude
+              else if (i == "longitude") x@data$longitude
+              else NULL
+          })
+#
+#
 as.coastline <- function(latitude, longitude)
 {
     n <- length(latitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
-    data <- data.frame(longitude=longitude, latitude=latitude)
+    rval <- new("coastline", latitude=latitude, longitude=longitude)
     hitem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    res <- list(data=data, metadata=NULL, processingLog=hitem)
-    class(res) <- c("coastline", "oce")
-    res
+    rval@processingLog <- unclass(processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    rval
 }
 
 plot.coastline <- function (x,
@@ -62,11 +85,11 @@ plot.coastline <- function (x,
             if ("ylim" %in% names(dots))
                 asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
             else
-                asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+                asp <- 1 / cos(mean(range(x@data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
         }
         ## Expand
-        xr0 <- range(x$data$longitude, na.rm=TRUE)
-        yr0 <- range(x$data$latitude, na.rm=TRUE)
+        xr0 <- range(x@data$longitude, na.rm=TRUE)
+        yr0 <- range(x@data$latitude, na.rm=TRUE)
         oceDebug(debug, "xr0=", xr0, "\n")
         oceDebug(debug, "yr0=", yr0, "\n")
         if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
@@ -105,7 +128,7 @@ plot.coastline <- function (x,
         yr[2] <- 90
     oceDebug(debug, "xr:", xr, "\n")
     oceDebug(debug, "yr:", yr, "\n")
-    if (!missing(bg) && x$metadata$fillable) {
+    if (!missing(bg) && x@metadata$fillable) {
         plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
         usr <- par("usr")
         polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
@@ -152,19 +175,19 @@ plot.coastline <- function (x,
         yscale <- 180 / (yaxp[2] - yaxp[1])
         ##oceDebug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
         ##        par(pin=c(opin[1], yscale*opin[2]))
-        if (!is.null(fill) && !is.null(x$metadata$fillable) && x$metadata$fillable)
-            polygon(x$data$longitude, x$data$latitude, col=fill, ...)
+        if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable)
+            polygon(x@data$longitude, x@data$latitude, col=fill, ...)
         else
-            lines(x$data$longitude, x$data$latitude, ...)
+            lines(x@data$longitude, x@data$latitude, ...)
         ##par("pin"=opin)
     } else {
-        if (!is.null(fill) && !is.null(x$metadata$fillable) && x$metadata$fillable)
-            polygon(x$data$longitude, x$data$latitude, col=fill, ...)
+        if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable)
+            polygon(x@data$longitude, x@data$latitude, col=fill, ...)
         else
-            lines(x$data$longitude, x$data$latitude, ...)
+            lines(x@data$longitude, x@data$latitude, ...)
     }
-    oceDebug(debug, "lat lim:", range(x$data$latitude,na.rm=TRUE), "\n")
-    oceDebug(debug, "lon lim:", range(x$data$longitude,na.rm=TRUE), "\n")
+    oceDebug(debug, "lat lim:", range(x@data$latitude,na.rm=TRUE), "\n")
+    oceDebug(debug, "lon lim:", range(x@data$longitude,na.rm=TRUE), "\n")
     oceDebug(debug, "\b\b} # plot.coastline()\n")
     invisible()
 }
@@ -179,9 +202,9 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
     type <- match.arg(type)
     if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    if (type == "shapefile")
-        return(read.coastline.shapefile(file, monitor=monitor, debug=debug))
-    if (type == "R" || type == "S") {
+    if (type == "shapefile") {
+        res <- read.coastline.shapefile(file, monitor=monitor, debug=debug)
+    } else if (type == "R" || type == "S") {
         ##
         ## e.g. data from http://rimmer.ngdc.noaa.gov/coast/
         ## e.g. "~/data/Coastline/wcl_1_5000000.dat")
@@ -196,8 +219,8 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
             open(file, "r")
             on.exit(close(file))
         }
-        data <- read.table(file, header=FALSE, col.names=c("longitude","latitude"))
-        res <- list(data=data, metadata=list(fillable=FALSE), processingLog=hitem)
+        data <- read.table(file, col.names=c("latitude", "longitude"))
+        res <- new("coastline", latitude=data$latitude, longitude=data$longitude, fillable=FALSE)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
@@ -225,13 +248,11 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
                 }
             }
         }
-        lonlat <- matrix(lonlat, ncol=2,byrow=TRUE)
-        data <- data.frame(longitude=lonlat[,1], latitude=lonlat[,2])
-        res <- list(data=data, metadata=list(fillable=FALSE), processingLog=hitem)
+        res <- new("coastline", latitude=lonlat[,2], longitude=lonlat[,1], fillable=FALSE)
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
-    class(res) <- c("coastline", "oce")
+    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
     oceDebug(debug, "\b\b} # read.coastline()\n")
     res
 }
@@ -360,13 +381,11 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         }
         o <- o + 53 + 4 * number.parts + 2 * number.points * 8 - 1
     }
-    data <- list(longitude=longitude, latitude=latitude)
-    oceDebug(debug, "\b\b} # read.shapefile()\n")
+    res <- new("coastline", latitude=latitude, longitude=longitude, fillable=TRUE)
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("coastline", "oce")
+    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
     oceDebug(debug, "\b\b} # read.shape()\n")
     res
 }
@@ -377,27 +396,17 @@ summary.coastline <- function(object, ...)
     if (!inherits(object, "coastline"))
         stop("method is only for coastline objects")
     threes <- matrix(nrow=2, ncol=3)
-    res <- list(length=length(object$data$longitude),
-                missing=sum(is.na(object$data$longitude)),
-                threes=threes,
-                processingLog=object$processingLog)
-    threes[1,] <- threenum(object$data$latitude)
-    threes[2,] <- threenum(object$data$longitude)
+    threes[1,] <- threenum(object@data$latitude)
+    threes[2,] <- threenum(object@data$longitude)
     colnames(threes) <- c("Min.", "Mean", "Max.")
     rownames(threes) <- c("Latitude", "Longitude")
-    res$threes <- threes 
-    class(res) <- "summary.coastline"
-    res
-}
-
-print.summary.coastline <- function(x, digits=max(6, getOption("digits") - 1),...)
-{
     cat("Coastline Summary\n-----------------\n\n")
-    cat("* Number of points:", x$length, ", of which", x$missing, "are NA (e.g. separating islands).\n")
+    cat("* Number of points:", length(object@data$latitude), ", of which", 
+        sum(is.na(object@data$latitude)), "are NA (e.g. separating islands).\n")
     cat("\n",...)
     cat("* Statistics of subsample::\n\n", ...)
-    cat(showThrees(x, indent='     '), ...)
+    print(threes)
     cat("\n")
-    print(summary(x$processingLog))
-    invisible(x)
+    processingLogShow(object)
 }
+

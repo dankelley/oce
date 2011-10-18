@@ -10,6 +10,7 @@ setClass("noce",
 setClass("ctd", contains="noce")
 setClass("sealevel", contains="noce")
 setClass("section", contains="noce")
+setClass("coastline", contains="noce")
 
 #
 

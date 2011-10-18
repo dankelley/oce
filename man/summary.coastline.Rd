@@ -2,24 +2,17 @@
 
 \alias{summary.coastline}
 
-\alias{print.summary.coastline}
-
 \title{Summarize a coastline data object}
 
 \description{Summarizes coastline length, bounding box, etc.}
 
 \usage{
 \method{summary}{coastline}(object, \dots)
-
-\method{print}{summary.coastline}(x, digits=max(6, getOption("digits")-1), \dots)
 }
 
 \arguments{
   \item{object}{an object of class \code{"coastline"}, usually, a result of a
     call to \code{\link{read.coastline}} or \code{\link{read.oce}}.}
-  \item{x}{an object of class \code{"summary.coastline"}, usually, a
-    result of a call to \code{summary.coastline}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 
