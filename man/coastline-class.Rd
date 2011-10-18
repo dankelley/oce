@@ -4,7 +4,7 @@
 
 \alias{coastline-class}
 \alias{[[}
-\alias{[[,coastline-method,index,ANY,ANY-method}
+\alias{[[,coastline-method}
 
 \title{Class to store coastline data}
 

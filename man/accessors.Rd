@@ -1,4 +1,5 @@
 \name{accessors}
+\alias{[[,coastline,string,missing,ANY-method}
 \alias{elevation}
 \alias{distance}
 \alias{heading}
