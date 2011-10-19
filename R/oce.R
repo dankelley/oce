@@ -556,8 +556,10 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                                  stationId=stn,
                                  latitude=lat,
                                  longitude=lon)
-                rval <- list(data=data, metadata=metadata, processingLog=x@processingLog)
-                class(rval) <- c("section", "oce")
+                rval <- new('section')
+                rval@data <- data
+                rval@metadata <- metadata
+                rval@processingLog <- x@processingLog
             } else {
                 n <- length(x@data$station)
                 r <- eval(substitute(subset), x@data$station[[1]]@data, parent.frame())

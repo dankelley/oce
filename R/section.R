@@ -6,6 +6,33 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="section",
+          definition=function(x, i, j, drop) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("salinity", "temperature", "pressure","latitude","longitude","filename"))
+              if (i == "salinity") {
+                  rval <- NULL
+                  for (s in seq_along(x@data$station))
+                      rval <- c(rval, x@data$station[[s]][[i]])
+                  return(rval)
+               } else if (i == "temperature") {
+                  rval <- NULL
+                  for (s in seq_along(x@data$station))
+                      rval <- c(rval, x@data$station[[s]][[i]])
+                  return(rval)
+              } else if (i == "pressure") {
+                  rval <- NULL
+                  for (s in seq_along(x@data$station))
+                      rval <- c(rval, x@data$station[[s]][[i]])
+                  return(rval)
+              } else if (i == "latitude") return(x@metadata$latitude)
+              else if (i == "longitude") return(x@metadata$longitude)
+              else if (i == "filename") return(x@metadata$filename)
+              else stop("cannot access \"", i, "\"") # cannot get here
+          })
+
 sectionSort <- function(section, by=c("stationId", "distance"))
 {
     by <- match.arg(by)

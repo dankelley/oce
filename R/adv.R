@@ -16,12 +16,27 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("time", "u1", "u2", "u3"))
+              print(i)
+              i <- match.arg(i, c("time", "u1", "u2", "u3", "heading", "pitch", "roll"))
               if (i == "time") return(x@data$time)
               else if (i == "u1") return(x@data$v[,1])
               else if (i == "u2") return(x@data$v[,2])
               else if (i == "u3") return(x@data$v[,3])
-              else stop("cannot access \"", i, "\"") # cannot get here
+              else if (i == "heading") {
+                  if ("heading" %in% names(x@data)) return(x@data$heading)
+                  else if ("headingSlow" %in% names(x@data)) return(x@data$headingSlow)
+                  else return(NULL)
+              } else if (i == "pitch") {
+                   if ("pitch" %in% names(x@data)) return(x@data$pitch)
+                  else if ("pitchSlow" %in% names(x@data)) return(x@data$pitchSlow)
+                  else return(NULL)
+              } else if (i == "roll") {
+                  if ("roll" %in% names(x@data)) return(x@data$roll)
+                  else if ("rollSlow" %in% names(x@data)) return(x@data$rollSlow)
+                  else return(NULL)
+              } else if (i == "temperature") {
+                  return(x@data$temperature)
+              } else stop("cannot access \"", i, "\"") # cannot get here
           })
 
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
