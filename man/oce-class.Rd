@@ -1,10 +1,10 @@
-\name{noce-class}
+\name{oce-class}
 
 \docType{class}
 
-\alias{noce-class}
+\alias{oce-class}
 
-\alias{noce}
+\alias{oce}
 
 \title{base class of oce package}
 
@@ -26,7 +26,7 @@
     }
 }
 \examples{
-a <- new('noce')
+a <- new('oce')
 str(a)
 }
 \author{Dan Kelley}
