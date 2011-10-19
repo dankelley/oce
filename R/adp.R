@@ -16,6 +16,25 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="adp",
+          definition=function(x, i, j, drop) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("u1", "u2", "u3","u4","latitude","longitude"))
+              if (i == "u1") return(x@data$v[,,1])
+              else if (i == "u2") return(x@data$v[,,2])
+              else if (i == "u3") return(x@data$v[,,3])
+              else if (i == "u4") return(x@data$v[,,4])
+              else if (i == "time") return(x@data$time)
+              else if (i == "pressure") return(x@data$pressure)
+              else if (i == "temperature") return(x@data$temperature)
+              else if (i == "distance") return(x@data$distance)
+              else if (i == "latitude") return(x@metadata$latitude)
+              else if (i == "longitude") return(x@metadata$longitude)
+              else stop("cannot access \"", i, "\"") # cannot get here
+          })
+
 ##setMethod(f="[[",
 ##          signature="adp",
 ##          definition=function(x, i, j, drop) {
@@ -1010,7 +1029,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("method is only for objects of class \"adp\"")
     if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates")
-    if (inherits(x, "rdi")) {
+    if (grep(".*rdi.*", x@metadata$manufacturer)) {
         if (x@metadata$numberOfBeams != 4)
             stop("can only handle 4-beam ADP units from RDI")
         res <- x
@@ -1029,7 +1048,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3] + tm[2,4] * V[,,4]
         res@data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3] + tm[3,4] * V[,,4]
         res@data$v[,,4] <- tm[4,1] * V[,,1] + tm[4,2] * V[,,2] + tm[4,3] * V[,,3] + tm[4,4] * V[,,4]
-    } else if (inherits(x, "nortek")) {
+    } else if (grep(".*nortek.*", x@metadata$manufacturer)) {
         if (x@metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from nortek")
         if (is.null(x@metadata$transformationMatrix))
@@ -1045,7 +1064,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@data$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
         res@data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
         res@data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
-    } else if (inherits(x, "sontek")) {
+    } else if (grep(".*sontek.*", x@metadata$manufacturer)) {
         if (x@metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from sontek")
         if (is.null(x@metadata$transformationMatrix))

@@ -629,7 +629,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("rdi", "adp", "oce")
+    res <- new('adp')
+    res@metadata <- metadata
+    res@data <- data
+    res@processingLog <- unclass(hitem)
     res
 }

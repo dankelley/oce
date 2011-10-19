@@ -17,10 +17,13 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("salinity", "temperature", "pressure"))
+              i <- match.arg(i, c("salinity", "temperature", "pressure","latitude","longitude","filename"))
               if (i == "salinity") return(x@data$salinity)
               else if (i == "temperature") return(x@data$temperature)
               else if (i == "pressure") return(x@data$pressure)
+              else if (i == "latitude") return(x@metadata$latitude)
+              else if (i == "longitude") return(x@metadata$longitude)
+              else if (i == "filename") return(x@metadata$filename)
               else stop("cannot access \"", i, "\"") # cannot get here
           })
 #

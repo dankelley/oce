@@ -243,6 +243,11 @@ swDepth <- function(pressure, latitude=45, degrees=TRUE)
 
 swZ <- function(pressure, latitude=45, degrees=TRUE)
 {
+    if (inherits(pressure, "ctd")) {
+        keep <- pressure
+        pressure <- keep[["pressure"]]
+        latitude <- keep[["latitude"]]
+    }
     -swDepth(pressure=pressure, latitude=latitude, degrees=degrees)
 }
 
