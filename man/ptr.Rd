@@ -9,7 +9,7 @@
 \preformatted{
 ptr <- read.oce("/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/manufacturer/pt_rbr_011855.dat", by=600)
 patm <- ptPatm(ptr)[4]
-ptr$data$pressure <- ptr$data$pressure - patm
+ptr@data$pressure <- ptr@data$pressure - patm
 processingLog(ptr) <- "subtract atmospheric pressure"
 ptr <- window(ptr, start=as.POSIXct("2008-06-26",tz="UTC"), end=as.POSIXct("2008-06-27",tz="UTC"))
 save(ptr, file="ptr.rda")

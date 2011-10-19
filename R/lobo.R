@@ -1,40 +1,71 @@
+setMethod(f="initialize",
+          signature="lobo",
+          definition=function(.Object,time,u,v,salinity,temperature,pressure,nitrate,fluorescence,filename) {
+              if (!missing(time)) .Object@data$time <- time
+              if (!missing(u)) .Object@data$u <- u
+              if (!missing(v)) .Object@data$v <- v
+              if (!missing(salinity)) .Object@data$salinity <- salinity
+              if (!missing(temperature)) .Object@data$temperature <- temperature
+              if (!missing(nitrate)) .Object@data$nitrate <- nitrate
+              if (!missing(fluorescence)) .Object@data$fluorescence <- fluorescence
+              if (!missing(fluorescence)) .Object@data$fluorescence <- fluorescence
+              .Object@metadata$filename <- if (missing(filename)) "" else filename
+              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
+              .Object@processingLog$value=c(.Object@processingLog$value, "create 'ctd' object")
+              return(.Object)
+          })
+
+setMethod(f="[[",
+          signature="lobo",
+          definition=function(x, i, j, drop) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("time", "u", "v")) ## FIXME: more
+              if (i == "time") return(x@data$time)
+              else if (i == "u") return(x@data$u)
+              else if (i == "v") return(x@data$v)
+              else stop("cannot access \"", i, "\"") # cannot get here
+          })
+
+
+
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
 {
-    plot(lobo$data$time, lobo$data$salinity, type='l', ylab="", axes=FALSE, ...)
+    plot(lobo@data$time, lobo@data$salinity, type='l', ylab="", axes=FALSE, ...)
     mgp <- par("mgp")
     ##cat("mgp=",paste(par("mgp"), collapse=" "), "\n")
     ##cat("mar=",paste(par("mar"), collapse=" "), "\n")
     axis(2, col.lab=S.col)
-    axis.POSIXct(1, lobo$data$time)
+    axis.POSIXct(1, lobo@data$time)
     mtext("S [PSU]", side=2, line=mgp[1], col=S.col, cex=par("cex"))
     box()
-    lines(lobo$data$time, lobo$data$salinity, col=S.col, ...)
+    lines(lobo@data$time, lobo@data$salinity, col=S.col, ...)
     ## Set up scale for temperature
     usr <- par("usr")
-    range <- range(lobo$data$temperature, na.rm=TRUE)
+    range <- range(lobo@data$temperature, na.rm=TRUE)
     usr[3:4] <- range + c(-1, 1) * 0.04 * diff(range)
     par(usr=usr)
     ##
-    lines(lobo$data$time, lobo$data$temperature, col=T.col, ...)
+    lines(lobo@data$time, lobo@data$temperature, col=T.col, ...)
     axis(4, col=T.col)
     mtext(expression(paste("T [", degree, "C]")), side=4, line=mgp[1], col=T.col, cex=par("cex"))
     if (draw.legend)
         legend("topright",c("S","T"),col=c(S.col,T.col),lwd=2)
-    mtext(paste(paste(format(range(lobo$data$time, na.rm=TRUE)), collapse=" to "),
-                attr(lobo$data$time[1], "tzone")),
+    mtext(paste(paste(format(range(lobo@data$time, na.rm=TRUE)), collapse=" to "),
+                attr(lobo@data$time[1], "tzone")),
           side=3, cex=3/4*par("cex.axis"), adj=0)
     invisible(lobo)
 }
 
 plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", draw.legend=FALSE, ...)
 {
-    peak <- max(range(c(lobo$data$u,lobo$data$v),na.rm=TRUE))
+    peak <- max(range(c(lobo@data$u,lobo@data$v),na.rm=TRUE))
     ylim <- c(-peak,peak)
-    plot(lobo$data$time, lobo$data$u, ylim=ylim, type='l', axes=FALSE, col=col.u, ylab="", ...)
+    plot(lobo@data$time, lobo@data$u, ylim=ylim, type='l', axes=FALSE, col=col.u, ylab="", ...)
     box()
-    lines(lobo$data$time, lobo$data$v, col=col.v, ...)
-    axis.POSIXct(1, lobo$data$time)
+    lines(lobo@data$time, lobo@data$v, col=col.v, ...)
+    axis.POSIXct(1, lobo@data$time)
     axis(2, col=col.u)
     axis(4, col=col.v)
     mgp <- par("mgp")
@@ -47,20 +78,20 @@ plot.lobo.timeseries.uv <- function(lobo, col.u = "blue", col.v = "darkgreen", d
 
 plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.nitrate = "darkgreen", draw.legend=FALSE, ...)
 {
-    plot(lobo$data$time, lobo$data$fluorescence, type='l', ylab="", axes=FALSE, ...)
+    plot(lobo@data$time, lobo@data$fluorescence, type='l', ylab="", axes=FALSE, ...)
     axis(2, col.lab=col.fluorescence)
-    axis.POSIXct(1, lobo$data$time)
+    axis.POSIXct(1, lobo@data$time)
     mgp <- par("mgp")
     mtext("Fluorescence", side=2, line=mgp[1], col=col.fluorescence, cex=par("cex"))
     box()
-    lines(lobo$data$time, lobo$data$fluorescence, col=col.fluorescence, ...)
+    lines(lobo@data$time, lobo@data$fluorescence, col=col.fluorescence, ...)
     ## Set up scale for temperature
     usr <- par("usr")
-    range <- range(lobo$data$nitrate, na.rm=TRUE)
+    range <- range(lobo@data$nitrate, na.rm=TRUE)
     usr[3:4] <- range + c(-1, 1) * 0.04 * diff(range)
     par(usr=usr)
     ##
-    lines(lobo$data$time, lobo$data$nitrate, col=col.nitrate)
+    lines(lobo@data$time, lobo@data$nitrate, col=col.nitrate)
     axis(4, col=col.nitrate)
     mtext("Nitrate", side=4, line=mgp[1], col=col.nitrate, cex=par("cex"))
     if (draw.legend)
@@ -69,7 +100,7 @@ plot.lobo.timeseries.biology <- function(lobo, col.fluorescence = "blue", col.ni
 
 plot.lobo.TS <- function(lobo, ...)
 {
-    plotTS(as.ctd(lobo$data$salinity, lobo$data$temperature, 0), ...)
+    plotTS(as.ctd(lobo@data$salinity, lobo@data$temperature, 0), ...)
 }
 
 plot.lobo <- function(x,
@@ -97,7 +128,7 @@ plot.lobo <- function(x,
         if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
     }
 
-    if (any(!is.na(x$data$u) & !is.na(x$data$v))) {
+    if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
         par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
         plot.lobo.timeseries.uv(x, ...)
         if (adorn.length > 0) {
@@ -194,29 +225,19 @@ summary.lobo <- function(object, ...)
 {
     if (!inherits(object, "lobo"))
         stop("method is only for lobo objects")
-    dim <- dim(object$data)
-    threes <- matrix(nrow=dim[2]-1, ncol=3) # skipping time
-    res <- list(time.range=range(object$data$time, na.rm=TRUE),
-                threes=threes,
-                processingLog=object$processingLog)
-    for (i in 2:dim[2])
-        threes[i-1,] <- threenum(object$data[,i])
-    colnames(threes) <- c("Min.", "Mean", "Max.")
-    rownames(threes) <- names(object$data[-1]) #skip time, the first column
-    res$threes <- threes
-    res$filename <- object$metadata$filename
-    class(res) <- "summary.lobo"
-    res
-}
-
-print.summary.lobo <- function(x, digits=max(6, getOption("digits") - 1), ...)
-{
     cat("Lobo Summary\n------------\n\n")
-    cat("* source: \"", x$filename, "\"\n", sep="")
-    cat("* time range:", format(x$time.range[1], format="%Y-%m-%d %H:%M:%S %Z"),
-        "to", format(x$time.range[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
-    cat("\n",...)
+    cat("* source: \"", object@metadata$filename, "\"\n", sep="")
+    timeRange <- range(object@data$time, na.rm=TRUE)
+    cat("* time range:", format(timeRange[1], format="%Y-%m-%d %H:%M:%S %Z"),
+        "to", format(timeRange[2], format="%Y-%m-%d %H:%M:%S %Z"), "\n")
+    ndata <- length(object@data)
+    threes <- matrix(nrow=ndata-1, ncol=3) # skipping time
+    for (i in 2:ndata) 
+        threes[i-1,] <- threenum(object@data[[i]])
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    rownames(threes) <- names(object@data)[-1] #skip time, the first column
     cat("* Statistics::\n\n", ...)
-    cat(showThrees(x, indent='     '), ...)
-    print(summary(x$processingLog))
+    print(threes)
+    cat("\n")
+    processingLogShow(object)
 }

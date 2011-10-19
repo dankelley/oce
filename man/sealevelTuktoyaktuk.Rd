@@ -20,13 +20,13 @@
 
 \examples{
 data(sealevelTuktoyaktuk)
-oce.plot.ts(sealevelTuktoyaktuk$data$time, sealevelTuktoyaktuk$data$elevation, type='l',
+oce.plot.ts(sealevelTuktoyaktuk@data$time, sealevelTuktoyaktuk@data$elevation, type='l',
      ylab="Height [m]",ylim=c(-2,6))
 legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
        col=c("black","red"),lwd=1)
 tide <- tidem(sealevelTuktoyaktuk)
-detided <- sealevelTuktoyaktuk$data$elevation - predict(tide)
-lines(sealevelTuktoyaktuk$data$time, detided, col="red")
+detided <- sealevelTuktoyaktuk@data$elevation - predict(tide)
+lines(sealevelTuktoyaktuk@data$time, detided, col="red")
 }
 
 \usage{data(sealevelTuktoyaktuk)}

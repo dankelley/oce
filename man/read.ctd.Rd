@@ -70,15 +70,14 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
   users with the tools to correct (or insert) information that would
   ideally be gleaned from the headers.  This can be done by direct
   manipulation of the entries in the object's \code{metadata},
-  e.g. writing \code{object$metadata$latitude <- 33 + 1/3}.
+  e.g. writing \code{object@metadata$latitude <- 33 + 1/3}.
 
   It should be noted that different file types provide different
   meta-information.  For example, the WOCE exchange format binds
   together the institute name and the initials of the chief scientist
   into a single string that \code{read.ctd} cannot parse, so both
-  \code{object$institute} and \code{object$scientist} are left blank for
-  WOCE files.
-}
+  \code{object@metadata$institute} and \code{object@metadata$scientist} are
+  left blank for WOCE files.}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, which is a
   list with elements detailed below. 

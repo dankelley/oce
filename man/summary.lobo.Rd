@@ -2,24 +2,17 @@
 
 \alias{summary.lobo}
 
-\alias{print.summary.lobo}
-
 \title{Summarize a lobo data object}
 
 \description{Summarizes some of the data in a lobo object.}
 
 \usage{
 \method{summary}{lobo}(object, \dots)
-
-\method{print}{summary.lobo}(x, digits=max(6, getOption("digits")-1), \dots)
 }
 
 \arguments{
   \item{object}{an object of class \code{"lobo"}, usually, a result of a
     call to \code{\link{read.lobo}} or \code{\link{read.oce}}.}
-  \item{x}{an object of class \code{"summary.lobo"}, usually, a result of a
-    call to \code{summary.lobo}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 

@@ -81,7 +81,7 @@ velocity(x)
   \item{x}{an \code{oce} object.}
 
   \item{time}{optional vector of POSIX times, or object containing times in a
-      field named \code{data$time} or \code{data$timeSlow}.  (If missing, 
+      field named \code{x@data$time} or \code{x@data$timeSlow}.  (If missing,
       values at all the times in \code{x} are returned.)}
 
   \item{byDepth}{flag usd only for \code{"section"} objects, which indicates
@@ -96,9 +96,9 @@ velocity(x)
     data within \code{oce} objects.  This prevents the user from having to know
     the details of storage, e.g.  that Nortek Vector velocimeters record angles
     on slow timescales compared with velocities (stored in
-    \code{x$data$timeSlow}, \code{x$data$headingSlow}, etc), whereas Sontek ADV
+    \code{x@data$timeSlow}, \code{x@data$headingSlow}, etc), whereas Sontek ADV
     velocimeters record them on the same timescale as velocity (stored in
-    \code{x$data$time}, \code{x$data$heading}, etc.)}
+    \code{x@data$time}, \code{x@data$heading}, etc.)}
 
 \value{Value of indicated portion of \code{x}.}
 

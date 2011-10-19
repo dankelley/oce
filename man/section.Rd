@@ -5,7 +5,7 @@
 \usage{data(section)}
 
 \format{The individual stations are available as \code{ctd} objects, in
-  \code{section$data$station[[i]]}, with \code{i} in the range from 1 to
+  \code{section@data$station[[i]]}, with \code{i} in the range from 1 to
   7.}
 
 \source{This section is based on measurements made during October of

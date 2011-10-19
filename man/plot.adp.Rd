@@ -6,7 +6,7 @@
 
 \description{Plot ADP data.}
 
-\usage{\method{plot}{adp}(x, which=1:dim(x$data$v)[3],
+\usage{\method{plot}{adp}(x, which=1:dim(x@data$v)[3],
      col,
      zlim,
      titles,
@@ -116,7 +116,7 @@
     \item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
       distance-time image plot of a velocity component.  If \code{x} is
       in \code{beam} coordinates (signalled by
-      \code{x$metadata$oce.coordinate=="beam"}), this will be the beam
+      \code{x@metadata$oce.coordinate=="beam"}), this will be the beam
       velocity, labelled \code{b[1]} etc.  If \code{x} is in xyz
       coordinates (sometimes called frame coordinates, or ship
       coordinates), it will be the velocity component to the right of

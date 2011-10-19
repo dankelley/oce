@@ -22,13 +22,13 @@
   \item{extend}{not permitted yet}
   \item{which}{string containing the name of the quantity on which
     sampling is done.  Possibilities are \code{"time"}, which applies
-    the windowing on \code{x$data$time}, and \code{"distance"}, which
-    applies the windowing on \code{x$data$distance} (for those
-    objects, such as \code{adp}, that have a \code{data$distance}
+    the windowing on \code{x@data$time}, and \code{"distance"}, which
+    applies the windowing on \code{x@data$distance} (for those
+    objects, such as \code{adp}, that have a \code{x@data$distance}
     component).}
   \item{indexReturn}{boolean flag indicating whether to return a list
-    of the "kept" indices for \code{data$time} (and, if it exists,
-    \code{data$timeSlow}).  Either of these lists will be
+    of the "kept" indices for \code{x@data$time} (and, if it exists,
+    \code{x@data$timeSlow}).  Either of these lists will be
     \code{NULL}, if the object lacks the relevant items.}
   \item{debug}{a flag that turns on debugging.}
   \item{\dots}{ignored}
@@ -45,10 +45,10 @@
 \value{Normally, this is new \code{oce} object.  However, if
     \code{indexReturn=TRUE}, the return value is two-element list containing
     items named \code{index} and \code{indexSlow}, which are the indices for
-    \code{data$tme} (and \code{data$timeSlow}, if it exists).}
+    \code{oce@data$tme} (and \code{oce@data$timeSlow}, if it exists).}
 
 \seealso{\code{\link{subset.oce}} provides more flexible selection of
-subsets.}
+    subsets.}
 
 \examples{
 library(oce)

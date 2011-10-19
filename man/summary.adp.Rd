@@ -1,7 +1,6 @@
 \name{summary.adp}
 
 \alias{summary.adp}
-\alias{print.summary.adp}
 
 \title{Summarize an ADP object}
 
@@ -9,17 +8,12 @@
 
 \usage{
 \method{summary}{adp}(object, \dots)
-
-\method{print}{summary.adp}(x, digits=max(6, getOption("digits")-1), \dots)
 }
 
 \arguments{
   \item{object}{an object of class \code{"adp"}, usually, a result of a
     call to \code{\link{read.oce}}, \code{\link{read.adp.rdi}},
     or \code{\link{read.adp.nortek}}.}
-  \item{x}{an object of class \code{"summary.adp"}, usually, a result of a
-    call to \code{summary.adp}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 

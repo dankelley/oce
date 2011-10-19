@@ -1,7 +1,6 @@
 \name{summary.pt}
 
 \alias{summary.pt}
-\alias{print.summary.pt}
 
 \title{Summarize a pt object}
 
@@ -9,16 +8,11 @@
 
 \usage{
 \method{summary}{pt}(object, \dots)
-
-\method{print}{summary.pt}(x, digits=max(6, getOption("digits")-1), \dots)
 }
 
 \arguments{
   \item{object}{an object of class \code{"pt"}, usually, a result of a
     call to \code{read.pt}.}
-  \item{x}{an object of class \code{"summary.pt"}, usually, a result
-    of a call to \code{summary.pt}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 

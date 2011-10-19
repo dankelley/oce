@@ -20,12 +20,12 @@
   at the start of the sampling, and that the clock drifts linearly
   (i.e. is uniformly fast or slow) over the sampling interval.  Linear
   interpolation is used to infer the values of all variables in the
-  \code{x$data}.  The data length is altered in this process, e.g. a
+  \code{x@data}.  The data length is altered in this process, e.g. a
   slow instrument clock (positive \code{slowEnd}) takes too few samples
   in a given time interval, so \code{undriftTime} will increase the
   number of data.}
 
-\value{An object of the same class as \code{x}, with \code{x$data}
+\value{An object of the same class as \code{x}, with \code{x@data}
   adjusted appropriately.}
 
 \examples{

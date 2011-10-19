@@ -7,16 +7,17 @@ setClass("noce",
                         data=list(),
                         processingLog=list(time = Sys.time(), value = "create base 'oce' object")))
 
-setClass("drifter", contains="noce")
-setClass("ctd", contains="noce")
+setClass("adv", contains="noce")
+setClass("adp", contains="noce")
 setClass("coastline", contains="noce")
+setClass("ctd", contains="noce")
+setClass("drifter", contains="noce")
+setClass("lobo", contains="noce")
+setClass("pt", contains="noce")
 setClass("sealevel", contains="noce")
 setClass("section", contains="noce")
-## adv
-## adp
-## lobo
-## pt
 ## tidem
+## topo
 ## windrose
 
 ###setMethod(f="show",

@@ -906,7 +906,7 @@ addColumn <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
-    if (!inherits(x, "oce"))
+    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: noce
         stop("method is only for oce objects")
     oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x

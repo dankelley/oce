@@ -43,7 +43,7 @@ plot(subset.oce(ctd, pressure>10))
 data(adp)
 adpNear <- subset(adp, distance < 10)
 # Note that the data may be accessed directly, as below
-adpNearEarly <- subset(adpNear, time < mean(adpNear$data$time))
+adpNearEarly <- subset(adpNear, time < mean(adpNear@data$time))
 plot(adpNearEarly)
 }
 
