@@ -1299,30 +1299,30 @@ ctimeToSeconds <- function(ctime)
     s
 }
 
-showThrees <- function(x, indent="    ")
-{
-    if (!("threes" %in% names(x)))
-        stop("'x' has no item named 'threes'")
-    rownames <- rownames(x$threes)
-    colnames <- colnames(x$threes)
-    data.width <- max(nchar(colnames)) + 10
-    name.width <- max(nchar(rownames(x$threes))) + 4 # space for left-hand column
-    ncol <- length(colnames)
-    nrow <- length(rownames)
-    res <- indent
-    res <- paste(res, format(" ", width=1+name.width), collapse="")
-    res <- paste(res, paste(format(colnames, width=data.width, justify="right"), collapse=" "))
-    res <- paste(res, "\n", sep="")
-    digits <- max(5, getOption("digits") - 1)
-    for (irow in 1L:nrow) {
-        res <- paste(res, indent, format(rownames[irow], width=name.width), "  ", sep="") # FIXME: should not need the "  "
-        for (icol in 1L:ncol) {
-            res <- paste(res, format(x$threes[irow,icol], digits=digits, width=data.width, justify="right"), sep=" ")
-        }
-        res <- paste(res, "\n", sep="")
-    }
-    res
-}
+##showThrees <- function(x, indent="    ")
+##{
+##    if (!("threes" %in% names(x)))
+##        stop("'x' has no item named 'threes'")
+##    rownames <- rownames(x$threes)
+##    colnames <- colnames(x$threes)
+##    data.width <- max(nchar(colnames)) + 10
+##    name.width <- max(nchar(rownames(x$threes))) + 4 # space for left-hand column
+##    ncol <- length(colnames)
+##    nrow <- length(rownames)
+##    res <- indent
+##    res <- paste(res, format(" ", width=1+name.width), collapse="")
+##    res <- paste(res, paste(format(colnames, width=data.width, justify="right"), collapse=" "))
+##    res <- paste(res, "\n", sep="")
+##    digits <- max(5, getOption("digits") - 1)
+##    for (irow in 1L:nrow) {
+##        res <- paste(res, indent, format(rownames[irow], width=name.width), "  ", sep="") # FIXME: should not need the "  "
+##        for (icol in 1L:ncol) {
+##            res <- paste(res, format(x$threes[irow,icol], digits=digits, width=data.width, justify="right"), sep=" ")
+##        }
+##        res <- paste(res, "\n", sep="")
+##    }
+##    res
+##}
 
 oceDebug <- function(debug=0, ...)
 {
@@ -1456,7 +1456,7 @@ makeS4 <- function(x)
     rval
 }
 
-showMetadataItem <- function(object, name, label, postlabel="", isdate=FALSE)
+showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE)
 {
     if (name %in% names(object@metadata))
         cat(paste("* ", label,

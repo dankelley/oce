@@ -60,7 +60,7 @@ read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
 \examples{
 \dontrun{
 library(oce)
-cm <- read.oce("cm_interocean_0811786.s4a.tab")
+cm <- read.oce("/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab")
 summary(cm)
 plot(cm)
 }

@@ -77,16 +77,16 @@ plot.sealevel <- function(x, which=1:3,
     titlePlot <- function(x)
     {
         title <- ""
-        if (!is.null(x$metadata$stationNumber) || !is.null(x$metadata$stationName) || !is.null(x$metadata$region))
+        if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region))
             title <- paste(title, "Station ",
-                           if (!is.na(x$metadata$stationNumber)) x$metadata$stationNumber else "",
+                           if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
                            " ",
-                           if (!is.null(x$metadata$stationName)) x$metadata$stationName else "",
+                           if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
                            " ",
-                           if (!is.null(x$metadata$region)) x$metadata$region else "",
+                           if (!is.null(x@metadata$region)) x@metadata$region else "",
                            sep="")
-        if (!is.na(x$metadata$latitude) && !is.na(x$metadata$longitude))
-            title <- paste(title, latlonFormat(x$metadata$latitude, x$metadata$longitude), sep="")
+        if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude))
+            title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep="")
         if (nchar(title) > 0)
             mtext(side=3, title, adj=1, cex=2/3)
     }
@@ -127,27 +127,27 @@ plot.sealevel <- function(x, which=1:3,
         adorn <- rep(adorn, 4)
         adornLength <- 4
     }
-    num.NA <- sum(is.na(x$data$elevation))
+    num.NA <- sum(is.na(x@data$elevation))
 
     par(mgp=mgp)
     ##par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
     par(mar=mar)
-    MSL <- mean(x$data$elevation, na.rm=TRUE)
+    MSL <- mean(x@data$elevation, na.rm=TRUE)
     if ("xlim" %in% names(dots)) {
-        xtmp <- subset(x$data$elevation, dots$xlim[1] <= x$data$time & x$data$time <= dots$xlim[2])
+        xtmp <- subset(x@data$elevation, dots$xlim[1] <= x@data$time & x@data$time <= dots$xlim[2])
         tmp <- max(abs(range(xtmp-MSL,na.rm=TRUE)))
     } else {
-        tmp <- max(abs(range(x$data$elevation-MSL,na.rm=TRUE)))
+        tmp <- max(abs(range(x@data$elevation-MSL,na.rm=TRUE)))
     }
     ylim <- c(-tmp,tmp)
     oceDebug(debug, "ylim=", ylim, "\n")
-    n <- length(x$data$elevation) # do not trust value in metadata
+    n <- length(x@data$elevation) # do not trust value in metadata
     for (w in 1:length(which)) {
         if (which[w] == 1) {
-            plot(x$data$time, x$data$elevation-MSL,
+            plot(x@data$time, x@data$elevation-MSL,
                  xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
                  lwd=0.5, axes=FALSE, ...)
-            tics <- oce.axis.POSIXct(1, x$data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
+            tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
             box()
             titlePlot(x)
             yax <- axis(2)
@@ -156,18 +156,22 @@ plot.sealevel <- function(x, which=1:3,
             abline(h=0,col="darkgreen")
             mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
         } else if (which[w] == 2) {     # sample days
-            from <- trunc(x$data$time[1], "day")
+            from <- trunc(x@data$time[1], "day")
             to <- from + 28 * 86400 # 28 days
-            xx <- subset(x, from <= time & time <= to)
+            look <- from <= x@data$time & x@data$time <= to
+            xx <- x
+            for(i in seq_along(x@data)) {
+                xx@data[[i]] <- x@data[[i]][look]
+            }
             atWeek <- seq(from=from, to=to, by="week")
             atDay  <- seq(from=from, to=to, by="day")
-            tmp <- (pretty(max(xx$data$elevation-MSL,na.rm=TRUE) -
-                           min(xx$data$elevation-MSL,na.rm=TRUE))/2)[2]
+            tmp <- (pretty(max(xx@data$elevation-MSL,na.rm=TRUE) -
+                           min(xx@data$elevation-MSL,na.rm=TRUE))/2)[2]
             ylim <- c(-tmp,tmp)
-            plot(xx$data$time, xx$data$elevation - MSL,
+            plot(xx@data$time, xx@data$elevation - MSL,
                  xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
                  axes=FALSE)
-            oce.axis.POSIXct(1, xx$data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
+            oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
             yax <- axis(2)
             abline(h=yax, col="lightgray", lty="dotted")
             box()
@@ -177,7 +181,7 @@ plot.sealevel <- function(x, which=1:3,
             mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
         } else if (which[w] == 3) {
             if (num.NA == 0) {
-                Elevation <- ts(x$data$elevation, start=1, deltat=x$metadata$deltat)
+                Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
                 #s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                 s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
                 par(mar=c(mgp[1]+1.25,mgp[1]+1.5,mgp[2]+0.25,mgp[2]+3/4))
@@ -193,10 +197,10 @@ plot.sealevel <- function(x, which=1:3,
             }
         } else if (which[w] == 4) {
             if (num.NA == 0) {
-                n <- length(x$data$elevation)
+                n <- length(x@data$elevation)
                 nCumSpec <- length(s$spec)
                 cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
-                e <- x$data$elevation - mean(x$data$elevation)
+                e <- x@data$elevation - mean(x@data$elevation)
                 par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
                 plot(s$freq, cumSpec,
                      xlab="Frequency [ cph ]",
@@ -385,8 +389,6 @@ summary.sealevel <- function(object, ...)
     if (!inherits(object, "sealevel"))
         stop("method is only for sealevel objects")
     threes <- matrix(nrow=1, ncol=3)
-    if (!isS4(object))
-        object <- makeS4(object)
     info <- list(number=object@metadata$stationNumber,
                  version=if (is.null(object@metadata$version)) "?" else object@metadata$version,
                  name=object@metadata$stationName,

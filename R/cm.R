@@ -1,4 +1,12 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+setMethod(f="initialize",
+          signature="cm",
+          definition=function(.Object) {
+              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
+              .Object@processingLog$value=c(.Object@processingLog$value, "create cm object")
+              return(.Object)
+          })
+
 
 ## cm.R current-meter support (interocean S4)
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -149,6 +157,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     } else {
         if (!is.numeric(from))
             stop("'from' must be either POSIXt or numeric")
+        if (missing(to))
+            to <- n
         if (!is.numeric(to))
             stop("'to' must be either POSIXt or numeric")
         keep <- seq(from, to)
@@ -158,10 +168,12 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     data <- list(sample=sample[keep], time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
     metadata$measurementEnd <- time[length(time)]
     if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
-    rval <- list(metadata=metadata, data=data, processingLog=hitem)
-    class(rval) <- c("cm", "s4", "oce")
+        processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    rval <- new('cm')
+    rval@metadata <- metadata
+    rval@data <- data
+    rval@processingLog<- unclass(processingLog)
+    ##class(rval) <- c("cm", "s4", "oce")
     oceDebug(debug, "\b\b} # read.cm()\n")
     rval
 }
@@ -171,68 +183,55 @@ summary.cm <- function(object, ...)
 {
     if (!inherits(object, "cm"))
         stop("method is only for cm objects")
-    if (inherits(object, "s4")) {
-        resSpecific <- list(foo="bar")
-    } else {
-        stop("can only summarize cm objects of sub-type \"s4\", not class ", paste(class(object),collapse=","))
-    }
-    res <- resSpecific
-    res$latitude <- object$metadata$latitude
-    res$longitude <- object$metadata$longitude
-    res$filename <- object$metadata$filename
-    res$instrumentType <- object$metadata$instrumentType
-    res$serialNumber <- object$metadata$serialNumber
-    res$measurementStart <- object$metadata$measurementStart
-    res$measurementEnd <- object$metadata$measurementEnd
-    res$measurementDeltat <- object$metadata$measurementDeltat
-    res$processingLog <- object$processingLog
-    dataNames <- names(object$data)
-    three <- matrix(nrow=(-1+length(dataNames)), ncol=3)
+    res <- list()
+    res$latitude <- object@metadata$latitude
+    res$longitude <- object@metadata$longitude
+    res$filename <- object@metadata$filename
+    res$instrumentType <- object@metadata$instrumentType
+    res$serialNumber <- object@metadata$serialNumber
+    res$measurementStart <- object@metadata$measurementStart
+    res$measurementEnd <- object@metadata$measurementEnd
+    res$measurementDeltat <- object@metadata$measurementDeltat
+    res$processingLog <- object@processingLog
+    dataNames <- names(object@data)
+    threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
     ii <- 1
     for (i in 1:length(dataNames)) {
-        if (names(object$data)[i] != "time") {
-            threes[ii,] <- threenum(object$data[[dataNames[i]]])
+        if (names(object@data)[i] != "time") {
+            threes[ii,] <- threenum(object@data[[dataNames[i]]])
             ii <- ii + 1
         }
     }
-    rownames(threes) <- dataNames[dataNames != "time"]
+    rownames(threes) <- dataNames[dataNames != "time"] ## FIXME: should ignore 'sample' too, if it's there
     colnames(threes) <- c("Min.", "Mean", "Max.")
-    vDim <- dim(object$data$v)
-    res$subsampleStart <- object$data$time[1]
-    res$subsampleEndTime <- object$data$time[length(object$data$time)]
-    res$subsampleDeltat <- mean(diff(as.numeric(object$data$time)),na.rm=TRUE)
-    res$distance <- object$data$distance
-    res$threes <- threes 
-    res$time <- object$data$time
-    res$dataNames <- names(object$data)
-    class(res) <- "summary.cm"
-    res
-}                                       # summary.cm()
-
-print.summary.cm <- function(x, digits=max(6, getOption("digits") - 1), ...)
-{
+    vDim <- dim(object@data$v)
+    res$subsampleStart <- object@data$time[1]
+    res$subsampleEndTime <- object@data$time[length(object@data$time)]
+    res$subsampleDeltat <- mean(diff(as.numeric(object@data$time)),na.rm=TRUE)
+    res$distance <- object@data$distance
+    res$time <- object@data$time
+    res$dataNames <- names(object@data)
     cat("cm Summary\n----------\n\n", ...)
-    cat(paste("* Instrument:         ", x$instrumentType, ", serial number ``", paste(x$serialNumber, collapse=""), "``\n", sep=""), ...)
-    cat(paste("* Source filename:    ``", x$filename, "``\n", sep=""), ...)
-    if ("latitude" %in% names(x)) {
-        cat(paste("* Location:           ", if (is.na(x$latitude)) "unknown latitude" else sprintf("%.5f N", x$latitude), ", ",
-                  if (is.na(x$longitude)) "unknown longitude" else sprintf("%.5f E", x$longitude), "\n"))
+    cat(paste("* Instrument:         ", object@metadata$instrumentType, ", serial number ``", paste(object@metadata$serialNumber, collapse=""), "``\n", sep=""), ...)
+    cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
+    if ("latitude" %in% names(object@metadata)) {
+        cat(paste("* Location:           ", if (is.na(object@metadata$latitude)) "unknown latitude" else sprintf("%.5f N", object@metadata$latitude), ", ",
+                  if (is.na(object@metadata$longitude)) "unknown longitude" else sprintf("%.5f E", object@metadata$longitude), "\n"))
     }
     cat(sprintf("* Measurements:       %s %s to %s %s sampled at %.4g Hz\n",
-                format(x$measurementStart), attr(x$measurementStart, "tzone"),
-                format(x$measurementEnd), attr(x$measurementEnd, "tzone"),
-                1 / x$measurementDeltat), ...)
+                format(object@metadata$measurementStart), attr(object@metadata$measurementStart, "tzone"),
+                format(object@metadata$measurementEnd), attr(object@metadata$measurementEnd, "tzone"),
+                1 / object@metadata$measurementDeltat), ...)
     cat(sprintf("* Subsample:          %s %s to %s %s sampled at %.4g Hz\n",
-                format(x$subsampleStart), attr(x$subsampleStart, "tzone"),
-                format(x$subsampleEnd),  attr(x$subsampleEnd, "tzone"),
-                1 / x$subsampleDeltat), ...)
+                format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
+                format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
+                1 / object@metadata$subsampleDeltat), ...)
     cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                x$numberOfCells, x$distance[1],  x$distance[length(x$distance)], diff(x$distance[1:2])),  ...)
+                object@metadata$numberOfCells, object@metadata$distance[1],  object@metadata$distance[length(object@metadata$distance)], diff(object@metadata$distance[1:2])),  ...)
     cat("* Statistics of subsample\n  ::\n\n", ...)
-    cat(showThrees(x, indent='     '), ...)
+    print(threes)
     cat("\n")
-    print(summary(x$processingLog))
-    invisible(x)
+    processingLogShow(object)
 }
 
 plot.cm <- function(x,

@@ -1,4 +1,4 @@
-setClass("noce",
+setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
@@ -7,18 +7,19 @@ setClass("noce",
                         data=list(),
                         processingLog=list(time = Sys.time(), value = "create base 'oce' object")))
 
-setClass("adv", contains="noce")
-setClass("adp", contains="noce")
-setClass("coastline", contains="noce")
-setClass("ctd", contains="noce")
-setClass("drifter", contains="noce")
-setClass("lobo", contains="noce")
-setClass("pt", contains="noce")
-setClass("sealevel", contains="noce")
-setClass("section", contains="noce")
-## tidem
-## topo
-## windrose
+setClass("adv", contains="oce")
+setClass("adp", contains="oce")
+setClass("cm", contains="oce")
+setClass("coastline", contains="oce")
+setClass("ctd", contains="oce")
+setClass("drifter", contains="oce")
+setClass("lobo", contains="oce")
+setClass("pt", contains="oce")
+setClass("sealevel", contains="oce")
+setClass("section", contains="oce")
+setClass("tidem", contains="oce")
+setClass("topo", contains="oce")
+setClass("windrose", contains="oce")
 
 ###setMethod(f="show",
 ###          signature="nctd",

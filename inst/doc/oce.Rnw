@@ -767,7 +767,7 @@ and all of them contain a \verb@data@ element of a similar form to this.
 <<>>=
 library(oce)
 data(sealevelHalifax)
-spectrum(sealevelHalifax$data$elevation, spans=c(3,7))
+spectrum(sealevelHalifax@data$elevation, spans=c(3,7))
 abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @
