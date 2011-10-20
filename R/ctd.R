@@ -26,7 +26,38 @@ setMethod(f="[[",
               else if (i == "filename") return(x@metadata$filename)
               else stop("cannot access \"", i, "\"") # cannot get here
           })
-#
+
+setMethod(f="[[<-",
+          signature="ctd",
+          definition=function(x, i, j, value) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("salinity", "temperature", "pressure","latitude","longitude","filename"))
+              if (i == "salinity") x@data$salinity <- value
+              else if (i == "temperature") x@data$temperature <- value
+              else if (i == "pressure") x@data$pressure <- value
+              else if (i == "latitude") x@metadata$latitude <- value
+              else if (i == "longitude") x@metadata$longitude <- value
+              else if (i == "filename") x@metadata$filename <- value
+              else stop("cannot access \"", i, "\"") # cannot get here
+              validObject(x)
+              invisible(x)
+          })
+
+setValidity("ctd",
+            function(object) {
+                if (inherits(object, "ctd")) {
+                    ndata <- length(object@data)
+                    lengths <- vector("numeric", ndata)
+                    for (i in 1:ndata)
+                        lengths[i] <- length(object@data[[i]])
+                    if (var(lengths) != 0) {
+                        cat("lengths of data elements are unequal\n")
+                        return(FALSE)
+                    } else
+                        return(TRUE)
+                }
+            })
 
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
@@ -1838,8 +1869,10 @@ summary.ctd <- function(object, ...)
     showMetadataItem(object, "waterDepth", "Water depth:")
     showMetadataItem(object, "levels", "Number of levels:")
     cat("* Statistics of subsample::\n")
-    threes <- matrix(nrow=length(object@data), ncol=3)
-    threes[1,] <- threenum(object@data$elevation)
+    ndata <- length(object@data)
+    threes <- matrix(nrow=ndata, ncol=3)
+    for (i in 1:ndata)
+        threes[i,] <- threenum(object@data[[i]])
     rownames(threes) <- paste("   ", names(object@data))
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes, indent='  ')
