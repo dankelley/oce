@@ -17,17 +17,18 @@
     \subsection{Extracting values}{Individual stations may be accessed as e.g.
         \code{section[["station", 1]]} for the first station (which returns a
         \code{\link{ctd-class}} object; see the example).  Aggregated values of
-        measured quantities may be accessed as e.g.
-        \code{section[["salinity"]]}, which returns a vector containing every
-        salinity value in every station.  
+        the quantities measured at each level of the CTD profiles contained
+        within the section may be accessed as e.g.
+        \code{section[["salinity"]]}.  This works for any quantity whose name
+        is present in the constituent profiles.    Since it is often useful to
+        pair such quantities with locations, \code{section[["latitude"]]} and
+        \code{section[["longitude"]]} return vectors with values repeated for
+        each level in each CTD (see the \code{pairs()} call in the example
+        section).  If just one latitude or longitude is desired per station,
+        e.g. \code{section[["latitude", "bystation"]]} may be used.}
         
-        FIXME: invent a scheme for getting either station-by-station latitudes,
-        or aggregated values that correspond to the salinities; both things are
-        useful.  (Possibly have the metadata be called \code{latitudes}, and
-        get it that way?)}
-
-    \subsection{Assigning values}{FIXME: fill this in when the interface is
-        settled.}
+    \subsection{Assigning values}{FIXME: fill this in when the interface has
+        decided upon}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(ctd)}) displays information about the object.}
@@ -37,6 +38,7 @@
 library(oce)
 data(a03)
 plot(a03[['station', 1]])
+pairs(cbind(T=a03[["temperature"]],S=a03[["salinity"]],z=-a03[["pressure"]]))
 }
 
 \author{Dan Kelley}

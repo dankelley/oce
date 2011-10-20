@@ -10,7 +10,23 @@ setMethod(f="[[",
           signature="section",
           definition=function(x, i, j, drop) {
               if (i %in% names(x@metadata)) {
-                  return(x@metadata[[i]])
+                  if (i %in% c("latitude", "longitude")) {
+                      if (!missing(j) && "byStation" == j) {
+                          return(x@metadata[[i]])
+                      } else {
+                          rval <- NULL
+                          for (stn in seq_along(x@data$station))
+                              rval <- c(rval, rep(x@data$station[[stn]]@metadata[[i]], length(x@data$station[[stn]]@data$salinity)))
+                          return(rval)
+                      }
+                  } else {
+                      return(x@metadata[[i]])
+                  }
+              } else if (i %in% names(x@data$station[[1]]@data)) {
+                  rval <- NULL
+                  for (stn in seq_along(x@data$station))
+                      rval <- c(rval, x@data$station[[stn]]@data[[i]])
+                  return(rval)
               } else if ("station" == i) {
                   if (missing(j))
                       stop("must give station number")
@@ -36,10 +52,6 @@ setMethod(f="show",
                   cat("\n")
               }
           })
-
-
-
-
 
 sectionSort <- function(section, by=c("stationId", "distance"))
 {
