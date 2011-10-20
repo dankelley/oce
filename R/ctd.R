@@ -14,32 +14,18 @@ setMethod(f="initialize",
 
 setMethod(f="[[",
           signature="ctd",
-          definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("salinity", "temperature", "pressure","latitude","longitude","filename"))
-              if (i == "salinity") return(x@data$salinity)
-              else if (i == "temperature") return(x@data$temperature)
-              else if (i == "pressure") return(x@data$pressure)
-              else if (i == "latitude") return(x@metadata$latitude)
-              else if (i == "longitude") return(x@metadata$longitude)
-              else if (i == "filename") return(x@metadata$filename)
-              else stop("cannot access \"", i, "\"") # cannot get here
+          definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) return(x@metadata[[i]])
+              else if (i %in% names(x@data)) return(x@data[[i]])
+              else stop("there is no item named \"", i, "\" in this ctd object")
           })
 
 setMethod(f="[[<-",
           signature="ctd",
-          definition=function(x, i, j, value) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("salinity", "temperature", "pressure","latitude","longitude","filename"))
-              if (i == "salinity") x@data$salinity <- value
-              else if (i == "temperature") x@data$temperature <- value
-              else if (i == "pressure") x@data$pressure <- value
-              else if (i == "latitude") x@metadata$latitude <- value
-              else if (i == "longitude") x@metadata$longitude <- value
-              else if (i == "filename") x@metadata$filename <- value
-              else stop("cannot access \"", i, "\"") # cannot get here
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
+              else if (i %in% names(x@data)) x@data[[i]] <- value
+              else stop("there is no item named \"", i, "\" in this ctd object")
               validObject(x)
               invisible(x)
           })
@@ -58,6 +44,21 @@ setValidity("ctd",
                         return(TRUE)
                 }
             })
+
+setMethod(f="show",
+          signature="ctd",
+          definition=function(object) {
+              filename <- object[["filename"]]
+              if (filename == "")
+                  cat("CTD has column data\n", sep="")
+              else
+                  cat("CTD from file '", object[["filename"]], "' has column data\n", sep="")
+              names <- names(object@data)
+              ncol <- length(names)
+              for (i in 1:ncol) {
+                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
+              }
+          })
 
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
