@@ -9,29 +9,37 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature="section",
           definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("salinity", "temperature", "pressure","latitude","longitude","filename"))
-              if (i == "salinity") {
-                  rval <- NULL
-                  for (s in seq_along(x@data$station))
-                      rval <- c(rval, x@data$station[[s]][[i]])
-                  return(rval)
-               } else if (i == "temperature") {
-                  rval <- NULL
-                  for (s in seq_along(x@data$station))
-                      rval <- c(rval, x@data$station[[s]][[i]])
-                  return(rval)
-              } else if (i == "pressure") {
-                  rval <- NULL
-                  for (s in seq_along(x@data$station))
-                      rval <- c(rval, x@data$station[[s]][[i]])
-                  return(rval)
-              } else if (i == "latitude") return(x@metadata$latitude)
-              else if (i == "longitude") return(x@metadata$longitude)
-              else if (i == "filename") return(x@metadata$filename)
-              else stop("cannot access \"", i, "\"") # cannot get here
+              if (i %in% names(x@metadata)) {
+                  return(x@metadata[[i]])
+              } else if ("station" == i) {
+                  if (missing(j))
+                      stop("must give station number")
+                  return(x@data$station[[j]])
+              }
           })
+
+setMethod(f="show",
+          signature="section",
+          definition=function(object) {
+              id <- object@metadata$sectionId
+              if (id == "")
+                  cat("Section has stations:\n", sep="")
+              else
+                  cat("Section named '", id, "' has stations:\n", sep="")
+              for (i in seq_along(object@data$station)) {
+                  thisStn <- object@data$station[[i]]
+                  cat("    ")
+                  if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
+                      cat(thisStn@metadata$station, " ")
+                  cat(sprintf("%.5f N %.5f E", object@data$station[[i]]@metadata$latitude,
+                              object@data$station[[i]]@metadata$longitude))
+                  cat("\n")
+              }
+          })
+
+
+
+
 
 sectionSort <- function(section, by=c("stationId", "distance"))
 {

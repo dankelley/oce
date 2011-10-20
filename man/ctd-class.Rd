@@ -13,7 +13,6 @@
     \code{metadata}, \code{data} and \code{processingLog}.}
 
 \section{Methods}{
-
     \subsection{Extracting values}{Data may be accessed as e.g.
         code{ctd[["salinity"]]}, where the string could also be e.g.
         \code{"temperature"} or \code{"pressure"} for column data, or
@@ -28,7 +27,6 @@
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(ctd)}) displays information about the object.}
-
 }
 
 \author{Dan Kelley}

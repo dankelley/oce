@@ -49,7 +49,7 @@ setMethod(f="show",
           signature="ctd",
           definition=function(object) {
               filename <- object[["filename"]]
-              if (filename == "")
+              if (is.null(filename) || filename == "")
                   cat("CTD has column data\n", sep="")
               else
                   cat("CTD from file '", object[["filename"]], "' has column data\n", sep="")
