@@ -1420,12 +1420,11 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     oceDebug(debug, "\b\bread.ctd.sbe() {\n")
     ## Read Seabird data file.  Note on headers: '*' is machine-generated,
     ## '**' is a user header, and '#' is a post-processing header.
+    filename <- ""
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "r")
         on.exit(close(file))
-    } else {
-        filename <- ""
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
