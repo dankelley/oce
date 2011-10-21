@@ -20,10 +20,9 @@
 \details{Pertinent summary information is presented, including station
   locations, distance along track, etc.}
 
-\seealso{A \code{section} object may be created by using
-  \code{\link{makeSection}} to assemble individual \code{ctd} objects,
-  or it may be created by reading a section data file with
-  \code{\link{read.section}}.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 library(oce)

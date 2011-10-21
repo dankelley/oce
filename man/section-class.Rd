@@ -34,6 +34,18 @@
         \code{show(ctd)}) displays information about the object.}
 }
 
+\seealso{Sections can be read with \code{\link{read.section}} or created with
+    \code{\link{read.section}} or created from CTD objects by using
+    \code{\link{makeSection}} or by combining an existing section with a CTD
+    object with the \code{+} operator.  Sections may be sorted with
+    \code{\link{sectionSort}}, smoothed with \code{\link{sectionSmooth}}, and
+    gridded with \code{\link{sectionGrid}}.  Plots may be made with
+    \code{\link{plot.section}}.  Statistical summaries are provided by
+    \code{\link{summary.section}}, while overviews are provided by
+    \code{show.section}.  Two section datasets are provided in the
+    package: \code{\link{a03}}, containing data along WOCE line A03, and
+    \code{\link{section}}, containing data in Halifax Harbour.}
+
 \examples{
 library(oce)
 data(a03)

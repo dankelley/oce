@@ -31,10 +31,9 @@ constituent stations in sensible ways.
 \value{An object of \code{\link[base]{class}} \code{"section"} that
 has less lateral variation than the input section.}
 
-\seealso{Sections are normally created with \code{\link{read.section}}
-  or \code{\link{makeSection}}.  \code{\link{subset}} may be
-  used to create a new section consisting of just a subset of an
-  existing station, e.g. to focus on a particular region.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 # Eastern North Atlantic, showing Mediterranean water. 

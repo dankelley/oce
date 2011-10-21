@@ -120,9 +120,9 @@
 
 \value{None.}
 
-\seealso{Sections may be created with \code{\link{makeSection}} or
-  \code{\link{read.section}}, and may be summarized with
-  \code{\link{summary.section}}.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 library(oce)

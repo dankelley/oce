@@ -58,9 +58,9 @@ and
 \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{\code{\link{makeSection}} can be used to bind together \code{ctd}
-    objects into a section.  See \code{\link{section-class}} for details of
-    accessing data within section objects.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 library(oce)
