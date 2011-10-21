@@ -37,20 +37,24 @@
 \seealso{Sections can be read with \code{\link{read.section}} or created with
     \code{\link{read.section}} or created from CTD objects by using
     \code{\link{makeSection}} or by combining an existing section with a CTD
-    object with the \code{+} operator.  Sections may be sorted with
-    \code{\link{sectionSort}}, smoothed with \code{\link{sectionSmooth}}, and
-    gridded with \code{\link{sectionGrid}}.  Plots may be made with
-    \code{\link{plot.section}}.  Statistical summaries are provided by
-    \code{\link{summary.section}}, while overviews are provided by
-    \code{show.section}.  Two section datasets are provided in the
-    package: \code{\link{a03}}, containing data along WOCE line A03, and
-    \code{\link{section}}, containing data in Halifax Harbour.}
+    object with the \code{+} operator.  
+    
+    Sections may be sorted with \code{\link{sectionSort}}, smoothed with
+    \code{\link{sectionSmooth}}, and gridded with \code{\link{sectionGrid}}.
+    Gridded sections may be plotted with \code{\link{plot.section}}.  
+    
+    Statistical summaries are provided by \code{\link{summary.section}}, while
+    overviews are provided by \code{show.section}.  
+    
+    Two section datasets are provided in the package: \code{\link{a03}},
+    containing data along WOCE line A03, and \code{\link{section}}, containing
+    data in Halifax Harbour.}
 
 \examples{
 library(oce)
 data(a03)
 plot(a03[['station', 1]])
-pairs(cbind(T=a03[["temperature"]],S=a03[["salinity"]],z=-a03[["pressure"]]))
+pairs(cbind(z=-a03[["pressure"]],T=a03[["temperature"]],S=a03[["salinity"]]))
 }
 
 \author{Dan Kelley}

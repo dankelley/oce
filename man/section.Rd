@@ -4,10 +4,6 @@
 \description{A CTD section running the length of Halifax Harbour}
 \usage{data(section)}
 
-\format{The individual stations are available as \code{ctd} objects, in
-  \code{section@data$station[[i]]}, with \code{i} in the range from 1 to
-  7.}
-
 \source{This section is based on measurements made during October of
   2003 in Halifax Harbour by students in the \emph{Introduction to
   Physical Oceanography} class at Dalhousie University.  The course was
@@ -49,11 +45,8 @@ plot(section, coastline=coastlineHalifax, grid=TRUE)
 }
 
 \seealso{The documentation for \code{\link{section-class}} explains the
-    structure of section objects, and also outlines the other functions dealing
-    with them.}
-
-\references{A summary of the stations can be obtained from \code{\link{summary.section}},
-and a plot can be created with \code{\link{plot.section}}.}
+    structure of section objects, and also outlines the functions dealing with
+    them.}
 
 \author{Dan Kelley}
 
