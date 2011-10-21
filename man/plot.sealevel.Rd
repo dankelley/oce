@@ -57,10 +57,9 @@
 
 \value{None.}
 
-\seealso{
-  \code{\link{summary.sealevel}} summarizes the information, while
-  \code{\link{read.sealevel}} scans it from a file.
-}
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of sealevel objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 library(oce)

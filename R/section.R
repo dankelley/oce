@@ -181,7 +181,8 @@ makeSection <- function(item, ...)
     res@metadata$latitude <- c(res@metadata$latitude, station@metadata$latitude)
     res@metadata$longitude <- c(res@metadata$longitude, station@metadata$longitude)
     res@metadata$stationId <- c(res@metadata$stationId, station@metadata$station)
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- unclass(processingLog(res@processingLog,
+                                               paste(deparse(match.call()), sep="", collapse="")))
     res
 }
 

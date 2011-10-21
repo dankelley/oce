@@ -9,6 +9,54 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="sealevel",
+          definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) return(x@metadata[[i]])
+              else if (i %in% names(x@data)) return(x@data[[i]])
+              else stop("there is no item named \"", i, "\" in this ctd object")
+          })
+
+setMethod(f="[[<-",
+          signature="sealevel",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
+              else if (i %in% names(x@data)) x@data[[i]] <- value
+              else stop("there is no item named \"", i, "\" in this ctd object")
+              validObject(x)
+              invisible(x)
+          })
+
+setValidity("sealevel",
+            function(object) {
+                ndata <- length(object@data)
+                lengths <- vector("numeric", ndata)
+                for (i in 1:ndata)
+                    lengths[i] <- length(object@data[[i]])
+                if (var(lengths) != 0) {
+                    cat("lengths of data elements are unequal\n")
+                    return(FALSE)
+                } else
+                    return(TRUE)
+            })
+
+setMethod(f="show",
+          signature="sealevel",
+          definition=function(object) {
+              filename <- object[["filename"]]
+              if (is.null(filename) || filename == "")
+                  cat("Sealevel has column data\n", sep="")
+              else
+                  cat("Sealevel from file '", object[["filename"]], "' has column data\n", sep="")
+              names <- names(object@data)
+              ncol <- length(names)
+              for (i in 1:ncol) {
+                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
+              }
+          })
+
+
+
 
 as.sealevel <- function(elevation,
                         time,
@@ -362,7 +410,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     num.missing <- sum(is.na(elevation))
     if (num.missing > 0) warning("there are ", num.missing, " missing points in this timeseries, at indices ", paste(which(is.na(elevation)), ""))
     data <- data.frame(time=time, elevation=elevation)
-    metadata <- list(header=header,
+    metadata <- list(filename=filename,
+                     header=header,
                      year=year,
                      stationNumber=stationNumber,
                      stationVersion=stationVersion,
@@ -379,8 +428,10 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                      deltat=as.numeric(difftime(time[2], time[1], units="hours")))
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    rval <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
-    class(rval) <- c("sealevel", "oce")
+    rval <- new('sealevel', time=time, elevation=elevation)
+    rval@metadata <- metadata
+    rval@processingLog <- unclass(processingLog(rval@processingLog,
+                                                paste(deparse(match.call()),sep="",collapse="")))
     rval
 }
 

@@ -22,8 +22,9 @@
 \value{An object of class \code{"summary.sealevel"}, which contains
   pertinent information about the sealevel record and its processing.}
 
-\seealso{The data may be read with \code{\link{read.sealevel}}, compiled
-  with \code{\link{as.sealevel}}, or plotted with.}
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of sealevel objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 library(oce)

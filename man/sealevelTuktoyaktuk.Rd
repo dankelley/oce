@@ -62,6 +62,10 @@ sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
   Computers and Geosciences, 28, 929-937.
 }
 
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of sealevel objects, and also outlines the other functions
+    dealing with them.}
+
 \author{Dan Kelley, after data provided in Foreman's (1977) Appendix 7.2.}
 
 \keyword{datasets}

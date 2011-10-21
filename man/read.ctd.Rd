@@ -126,8 +126,9 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{The documentation for \code{\link{ctd-class}} explains the structure
-    of CTD objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of sealevel objects, and also outlines the other functions
+    dealing with them.}
 
 \section{note}{In many cases, CTD instruments are set up to report dates in
     English.  This can cause a problem for users running in different locales,
