@@ -23,8 +23,8 @@ summary.ctd(object, \dots)
 \value{An object of class \code{"summary.ctd"}, which contains
   pertinent information about the CTD record and its processing.}
 
-\seealso{A \code{ctd} object may  be read with \code{\link{read.ctd}} or
-  \code{\link{read.oce}}, or created with \code{\link{as.ctd}}.}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

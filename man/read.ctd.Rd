@@ -126,28 +126,14 @@ read.ctd.odf(file, columns=NULL, station=NULL, missing.value=-999,
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{The generic function \code{\link{read.oce}} provides an alternative to this.
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
-Data from a CTD cast may be assembled into a \code{ctd} object using \code{\link{as.ctd}}.  
-A \code{ctd} object may be summarized with \code{\link{summary.ctd}}.
-Overview plots may be made with \code{\link{plot.ctd}}, while
-\code{\link{plotTS}} produces TS plots and
-\code{\link{plotScan}} produces scan plots that may help with data editing.
-Extraneous data such as those collected during upcasts and equilibration intervals
-may be trimmed with \code{\link{ctdTrim}},
-and the data may be cast onto specified pressure levels with \code{\link{ctdDecimate}}.
-Low-level manipulation may be done with \code{\link{ctdAddColumn}}
-and \code{\link{ctdUpdateHeader}}, as well as by direct manipulation of the items
-within \code{ctd} objects.
-
-In many cases, CTD instruments are set up to report dates in English.
-This can cause a problem for users running in different locales, since
-e.g month names differ.  Therefore, if you know your datafile is
-written in American-English notation, you might want to do
-\code{Sys.setlocale("LC_TIME", "en_US")}
-before you try to read the data.
-
-}
+\section{note}{In many cases, CTD instruments are set up to report dates in
+    English.  This can cause a problem for users running in different locales,
+    since e.g month names differ.  Therefore, if you know your datafile is
+    written in American-English notation, you might want to do
+    \code{Sys.setlocale("LC_TIME", "en_US")} before you try to read the data.}
 
 \examples{
 library(oce)

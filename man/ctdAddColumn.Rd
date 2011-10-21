@@ -36,13 +36,10 @@ ctdAddColumn(x, column, name, label, debug=FALSE)
   wider range of CTD devices.
 }
 
-\value{
-  An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.
-}
+\value{An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.}
 
-\seealso{
-  See \code{\link{read.ctd}} for the data format.
-}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

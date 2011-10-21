@@ -29,6 +29,28 @@
         \code{show(ctd)}) displays information about the object.}
 }
 
+\seealso{A file containing CTD profile data may be read with
+  \code{\link{read.ctd}}, and a CTD object can also be created with
+  \code{\link{as.ctd}}.
+  
+  Statistical summaries are provided by \code{\link{summary.ctd}},
+  while \code{\link{show}} displays an overview.
+  
+  CTD objects may be plotted with \code{\link{plot.ctd}}, which does much of
+  its work by calling \code{\link{plotProfile}} or \code{\link{plotTS}}, both
+  of which can also be called by the user, to get fine control over the plots.
+
+  The editing of CTD objects (e.g. to isolate downcasts) can be done with
+  \code{\link{ctdTrim}}, a task made easier when \code{\link{plotScan}} is
+  used to examine the results.  CTD data may be smoothed and/or cast onto
+  specified pressure levels with \code{\link{ctdDecimate}}.  
+  
+  In addition to the direct accessors discussed above, low-level manipulation
+  may be done with \code{\link{ctdAddColumn}} and
+  \code{\link{ctdUpdateHeader}}.  The contents of CTD objects may be altered
+  with the \code{[[]]} scheme discussed in the previous section, and skilled
+  uses may also manipulate the contents directly.}
+
 \author{Dan Kelley}
 \keyword{classes}
 \keyword{oce}

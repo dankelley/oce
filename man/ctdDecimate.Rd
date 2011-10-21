@@ -55,10 +55,8 @@ xd@data$sigmaTheta <- swSigmaTheta(xd@data$salinity,
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with pressures that are as set by the \code{"p"} parameter. In other respects, the return value is identical with the input \code{ctd} object (apart from its having an additional log entry indicating that the data have been altered.)}
 
-\seealso{A \code{ctd} object may be read with \code{\link{read.ctd}},
-  and \code{\link{ctdTrim}} is useful in trimming spurious data
-  (e.g. those obtained during the upcast).
-}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

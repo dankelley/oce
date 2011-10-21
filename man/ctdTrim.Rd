@@ -91,11 +91,9 @@ parameters, debug=getOption("oceDebug"))}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with data having been trimmed in some way.}
 
-\seealso{
-  The \code{ctd} object may be read with \code{\link{read.ctd}}.  
-  \code{\link{plotScan}} is very useful in providing guidance
-  for trimming with \code{ctdTrim}.
-}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
+
 \examples{
 library(oce)
 data(ctdRaw) 

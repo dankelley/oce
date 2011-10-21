@@ -17,6 +17,9 @@
     or with \code{\link{read.csv}}.  Note that the output file will retain none
     of the meta-data stored in \code{object}.}
 
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
+
 \examples{
 library(oce)
 data(ctd)
