@@ -163,9 +163,8 @@
     }
 }
 
-\seealso{
-    See \code{\link{read.adv}} for notes on functions relating to \code{"adv"} objects.
-}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

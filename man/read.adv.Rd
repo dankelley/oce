@@ -251,10 +251,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   \code{by} \emph{should} mean, for those variables.  Indeed, this is an argument for deleting
   \code{by} from the argument list, and this may be done in a future version of \code{read.adv}.}
 
-
-\seealso{Objects of class \code{adv} may be plotted with \code{\link{plot.adv}} or summarized with
-  \code{\link{summary.adv}}.  Coordinate transformations are done with \code{\link{beamToXyzAdv}},
-  \code{\link{xyzToEnuAdv}}, and \code{\link{enuToOtherAdv}}, in that order.}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

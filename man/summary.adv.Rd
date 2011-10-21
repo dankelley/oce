@@ -21,7 +21,8 @@
 \value{An object of class \code{"summary.adv"}, which contains
   pertinent information about the ADV record and its processing.}
 
-\seealso{A \code{adv} object may be read with \code{\link{read.adv}}.}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

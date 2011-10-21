@@ -30,9 +30,8 @@ for (a in seq(-20, 20, by=1))
 
 \source{This file came from the SLEIWEX-2008 experiment.}
 
-\seealso{See \code{\link{read.adv}} for notes on the contents of \code{adv}
-    objects, and for functions to work with them.  Also, see
-    \code{\link{plot.adv}} to learn about plotting ADP objects.}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
 
