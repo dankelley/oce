@@ -55,11 +55,9 @@ which is a \code{\link[base]{list}} containing
   \item{processingLog}{A processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  Coastlines may be created from
-  latitude/longitude pairs with \code{\link{as.coastline}}, summarized
-  with \code{\link{summary.coastline}} and plotted with
-  \code{\link{plot.coastline}}.  }
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 \dontrun{

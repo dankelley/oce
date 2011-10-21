@@ -16,12 +16,12 @@
   \item{\dots}{further arguments passed to or from other methods.}
 }
 
-\seealso{The \code{coastline} object may be read with
-  \code{\link{read.coastline}} and plotted with
-  \code{\link{plot.coastline}}.}
-
 \value{An object of class \code{"summary.coastline"}, which contains
   pertinent information about the Lobo record and its processing.}
+
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 \dontrun{

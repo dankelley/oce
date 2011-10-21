@@ -16,11 +16,10 @@ the data have been manipulated.
 
 \value{An object of \code{\link[base]{class}} \code{"coastline"} (for details, see \code{\link{read.coastline}}).}
 
-\seealso{
-You may also use \code{\link{read.coastline}} to read a coastline file.
-Plotting is typically done with \code{\link{plot.coastline}}, although
-it is sufficient to just use \code{plot} for coastline objects.
-}
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
+
 \examples{
 \dontrun{
 d<-read.table("bbasin.dat",header=FALSE) # dataset not provided with oce

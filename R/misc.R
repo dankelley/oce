@@ -307,15 +307,15 @@ vectorShow <- function(v, msg, digits=5)
         paste(msg, "(empty vector)\n")
     } else {
         if (is.numeric(v)) {
-            if (n > 6) {
-                vv <- format(v[c(1, 2, 3, n-2, n-1, n)], digits=digits)
-                paste(msg, ": ", vv[1], ", ", vv[2], ", ", vv[3], ", ..., ", vv[4], ", ", vv[5], ", ", vv[6], " (length ", n, ")\n", sep="")
+            if (n > 4) {
+                vv <- format(v[c(1, 2, n-1, n)], digits=digits)
+                paste(msg, ": ", vv[1], ", ", vv[2], ", ..., ", vv[3], ", ", vv[4], " (length ", n, ")\n", sep="")
             } else {
                 paste(msg, ": ", paste(format(v, digits=digits), collapse=", "), "\n", sep="")
             }
         } else {
-            if (n > 6) {
-                paste(msg, ": ", v[1], ", ", v[2], ", ", v[3], ", ..., ", v[n-2], ", ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
+            if (n > 4) {
+                paste(msg, ": ", v[1], ", ", v[2], ", ..., ", v[n-1], ", ", v[n], " (length ", n, ")\n", sep="")
             } else {
                 paste(msg, ": ", paste(v, collapse=", "), "\n", sep="")
             }

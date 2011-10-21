@@ -4,6 +4,8 @@
 
 \alias{cm-class}
 \alias{[[,cm-method}
+\alias{[[<-,cm-method}
+\alias{show,cm-method}
 
 \title{Class to store current meter data}
 

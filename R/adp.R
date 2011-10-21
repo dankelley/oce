@@ -6,10 +6,6 @@ setMethod(f="initialize",
               if (!missing(u)) .Object@data$u <- u
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
-              ## FIXME: more here
-              ## names(adp$data)
-              ## [1] "v" "a" "q" "bottomRange" "bottomVelocity" "distance" "time"          
-              ## [8] "pressure" "temperature" "salinity" "depth" "heading" "pitch" "roll"          
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
               .Object@processingLog$value=c(.Object@processingLog$value, "create 'ctd' object")
@@ -19,10 +15,8 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature="adp",
           definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("u1", "u2", "u3","u4","latitude","longitude"))
-              if (i == "u1") return(x@data$v[,,1])
+              if (i == "filename") return(x@metadata$filename)
+              else if (i == "u1") return(x@data$v[,,1])
               else if (i == "u2") return(x@data$v[,,2])
               else if (i == "u3") return(x@data$v[,,3])
               else if (i == "u4") return(x@data$v[,,4])
@@ -35,19 +29,27 @@ setMethod(f="[[",
               else stop("cannot access \"", i, "\"") # cannot get here
           })
 
-##setMethod(f="[[",
-##          signature="adp",
-##          definition=function(x, i, j, drop) {
-##              ## 'j' can be for times, as in OCE
-##              ##if (!missing(j)) cat("j=", j, "*****\n")
-##              i <- match.arg(i, c("time", "u1", "u2", "u3"))
-##              if (i == "time") return(x@data$time)
-##              else if (i == "u1") return(x@data$v[,1])
-##              else if (i == "u2") return(x@data$v[,2])
-##              else if (i == "u3") return(x@data$v[,3])
-##              else stop("cannot access \"", i, "\"") # cannot get here
-##          })
-
+setMethod(f="show",
+          signature="adp",
+          definition=function(object) {
+              filename <- object[["filename"]]
+              if (is.null(filename) || filename == "")
+                  cat("ADP has column data\n", sep="")
+              else
+                  cat("ADP from file '", object[["filename"]], "' has column data\n", sep="")
+              names <- names(object@data)
+              ncol <- length(names)
+              for (i in 1:ncol) {
+                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
+                  dim <- dim(object@data[[i]])
+                  if (!is.null(dim)) {
+                      if (length(dim) == 2)
+                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], ")\n", sep="")
+                      else if (length(dim) == 3)
+                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], " by ", dim[3], ")\n", sep="")
+                  }
+              }
+          })
 
 
 head.adp <- function(x, n = 6L, ...)

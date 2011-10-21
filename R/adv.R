@@ -14,11 +14,8 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature="adv",
           definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              print(i)
-              i <- match.arg(i, c("time", "u1", "u2", "u3", "heading", "pitch", "roll"))
-              if (i == "time") return(x@data$time)
+              if (i == "filename") return(x@metadata$filename)
+              else if (i == "time") return(x@data$time)
               else if (i == "u1") return(x@data$v[,1])
               else if (i == "u2") return(x@data$v[,2])
               else if (i == "u3") return(x@data$v[,3])
@@ -37,6 +34,28 @@ setMethod(f="[[",
               } else if (i == "temperature") {
                   return(x@data$temperature)
               } else stop("cannot access \"", i, "\"") # cannot get here
+          })
+
+setMethod(f="show",
+          signature="adv",
+          definition=function(object) {
+              filename <- object[["filename"]]
+              if (is.null(filename) || filename == "")
+                  cat("ADV has column data\n", sep="")
+              else
+                  cat("ADV from file '", object[["filename"]], "' has column data\n", sep="")
+              names <- names(object@data)
+              ncol <- length(names)
+              for (i in 1:ncol) {
+                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
+                  dim <- dim(object@data[[i]])
+                  if (!is.null(dim)) {
+                      if (length(dim) == 2)
+                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], ")\n", sep="")
+                      else if (length(dim) == 3)
+                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], " by ", dim[3], ")\n", sep="")
+                  }
+              }
           })
 
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),

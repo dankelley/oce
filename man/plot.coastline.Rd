@@ -76,9 +76,9 @@
 
 \value{None.}
 
-\seealso{\code{\link{read.coastline}} can read coastlines from data
-  files, provided that they are in a certain class of formats.  A
-  coastline may be summarized by \code{\link{summary.coastline}}.}
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 library(oce)
