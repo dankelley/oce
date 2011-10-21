@@ -54,8 +54,8 @@ read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
   contains measurements made with a current-meter device.  For
   information on data stored in the object, see \dQuote{Details}.}
 
-\seealso{Objects of class \code{cm} may be plotted with
-  \code{\link{plot.cm}} or summarized with \code{\link{summary.cm}}.}
+\seealso{The documentation for \code{\link{cm-class}} explains the structure of
+    CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

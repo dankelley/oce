@@ -21,8 +21,8 @@
   containing pertinent information about the \code{cm} object and its
   processing.}
 
-\seealso{A \code{cm} object may  be read with \code{\link{read.cm}} or
-  \code{\link{read.oce}}, and plotted with \code{\link{plot.cm}}.}
+\seealso{The documentation for \code{\link{cm-class}} explains the structure of
+    CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{
