@@ -150,27 +150,8 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     with files created with a Dalhousie aquadopHR.)}
 }
 
-\seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this. An \code{adp} object may be summarized with
-  \code{\link{summary.adp}}, and plotted with \code{\link{plot.adp}}.
-
-  Several functions are provided to manipulate \code{adp} objects.  For
-  example, in many research applications, the records are stored in beam
-  coordinates, instead of the further-processed forms such as instrument
-  or enu coordinates.  Accordingly, \code{\link{beamToXyzAdp}} is
-  provided, convert the velocity portions of \code{adp} objects from
-  beam coordinates to xyz-based (also called ship-based or
-  instrument-based) coordinates.  Similarly,
-  \code{\link{xyzToEnuAdp}} converts from xyz to enu
-  coordinates, taking into account the varying orientation of an
-  instrument attached to a ship or a mobile mooring.  For applications
-  in which enu-based coordinates are not desired (e.g. if a coordinate
-  is to be aligned with the local coastline or a mean current),
-  \code{\link{enuToOtherAdp}} is provided, to convert from enu
-  coordinates to another coordinate system. 
-
- Another convenience function is \code{\link{beamUnattenuateAdp}},
-which performs a correction for \eqn{r^2}{r^2} beam spreading.}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

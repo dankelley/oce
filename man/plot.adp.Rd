@@ -254,26 +254,8 @@
 
 \value{None.}
 
-\seealso{The data are normally read with \code{\link{read.oce}}, which
-  is usually able to detect the type of instrument.  If that fails, the
-  user should try \code{\link{read.adp.rdi}} (for RDI files) or
-  \code{\link{read.adp.nortek}} (for NorTek files).  These files may be
-  in beam coordinates, in xyz coordinates, or in enu coordinates.  It is
-  common in a scientific setting to use beam coordinates, and so this
-  package offers functions \code{\link{beamToXyzAdp}} and
-  \code{\link{xyzToEnuAdp}} to take the intermediate steps, and
-  \code{\link{enuToOtherAdp}} to go further, e.g. to rotate into a
-  coordinate system aligned with the shoreline or with an isobath.
-
-  The beam stength may be corrected for R-squared spreading with
-  \code{\link{beamUnattenuateAdp}}.
-
-  Summaries of ADP data are provided by \code{\link{summary.adp}}.  Velocity
-  statistics (e.g. means and variance ellipse) are provided by
-  \code{\link{velocityStatistics}}.
-
-  ADP data may be plotted with \code{\link{plot.adp}}.
-}
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

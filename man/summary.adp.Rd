@@ -22,8 +22,8 @@
 \value{An object of class \code{"summary.adp"}, which contains
   pertinent information about the ADP record and its processing.}
 
-\seealso{A \code{adp} object may  be read with \code{\link{read.adp}} or
-  \code{\link{read.oce}}.}
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

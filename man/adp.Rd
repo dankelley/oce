@@ -46,9 +46,8 @@ points(adp@metadata$longitude, adp@metadata$latitude, cex=3, col="red")
 
 \source{This file came from the SLEIWEX-2008 experiment.}
 
-\seealso{See \code{\link{read.adp}} for notes on the contents of
-  \code{adp} objects, and for functions to work with them.  Also, see
-  \code{\link{plot.adp}} to learn about plotting ADP objects.}
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
 
