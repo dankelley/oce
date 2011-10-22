@@ -6,49 +6,7 @@ setMethod(f="initialize",
               .Object@processingLog$value=c(.Object@processingLog$value, "create cm object")
               return(.Object)
           })
-
-setMethod(f="[[",
-          signature="cm",
-          definition=function(x, i, j, drop) {
-              if (i %in% names(x@metadata)) return(x@metadata[[i]])
-              else if (i %in% names(x@data)) return(x@data[[i]])
-              else stop("cannot access \"", i, "\"")
-          })
-
-setMethod(f="[[<-",
-          signature="cm",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
-              else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this cm object")
-              ##validObject(x)
-              invisible(x)
-          })
-
-setMethod(f="show",
-          signature="cm",
-          definition=function(object) {
-              filename <- object[["filename"]]
-              if (is.null(filename) || filename == "")
-                  cat("CM has column data\n", sep="")
-              else
-                  cat("CM from file '", object[["filename"]], "' has column data\n", sep="")
-              names <- names(object@data)
-              ncol <- length(names)
-              for (i in 1:ncol) {
-                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
-                  dim <- dim(object@data[[i]])
-                  if (!is.null(dim)) {
-                      if (length(dim) == 2)
-                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], ")\n", sep="")
-                      else if (length(dim) == 3)
-                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], " by ", dim[3], ")\n", sep="")
-                  }
-              }
-          })
-
-
-
+## the default 'oce' object is sufficient for other methods
 
 ## cm.R current-meter support (interocean S4)
 read.cm <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -215,7 +173,6 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     rval@metadata <- metadata
     rval@data <- data
     rval@processingLog<- unclass(processingLog)
-    ##class(rval) <- c("cm", "s4", "oce")
     oceDebug(debug, "\b\b} # read.cm()\n")
     rval
 }

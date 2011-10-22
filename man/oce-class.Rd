@@ -3,15 +3,18 @@
 \docType{class}
 
 \alias{oce-class}
+\alias{[[,oce-method}
+\alias{[[<-,oce-method}
+\alias{show,oce-method}
 
 \alias{oce}
 
 \title{base class of oce package}
 
-\description{This is the base class of all objects in the \code{oce} package.}
+\description{This is class from which all objects in the \code{oce} package
+    inherit.  Users should not deal with this class directly.}
 
 \section{Slots}{
-    These slots are common to \emph{all} classes in the \code{oce} package:
     \describe{
         \item{\code{metadata}}{List containing metadata, such as file names,
             instrument configurations, etc.}
@@ -22,13 +25,38 @@
             changes that have been made to the object, either automatically
             recorded by functions in the package, or added by the user with
             \code{\link{oceEdit}}.}
-
     }
 }
-\examples{
-a <- new('oce')
-str(a)
+
+\section{Methods}{
+
+    All classes in the Oce package inherit from this base class, so they all
+    possess the following methods.  Note that some classes extend the methods,
+    and these extensions are discusssed in the detailed documentation files.
+    For example, see \code{\link{section-class}} to see how latitudes of
+    sections may be extracted either with one value per station, or with a
+    value for each of the pressures within each of the stations.
+
+    \describe{
+
+        \item{[[}{Provides read-only access to an item in the object's
+            \code{metadata} or \code{data}.  The item is sought first in the
+            meta-data, then in the data.  For example, \code{ctd[["filename"]]}
+            yields the name of the file from which a CTD object named
+            \code{ctd} had been read.}
+
+        \item{[[<-}{Alters the named item in the object's \code{metadata} or
+            \code{data}, the former being examined before the latter.   For
+            example, to add 0.005 to the salinity of a CTD object named
+            \code{ctd}, one might write \code{ctd[["salinity"]] <- 0.005 +
+                ctd[["salinity"]]}.}
+
+        \item{show}{Displays brief information about the object named as an
+            argument.  For example, \code{show(ctd)} would provide such an
+            overview for a CTD object as discussed above.}
+    }
 }
+
 \author{Dan Kelley}
 \keyword{classes}
 \keyword{oce}
