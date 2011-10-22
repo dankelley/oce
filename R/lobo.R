@@ -15,19 +15,6 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-setMethod(f="[[",
-          signature="lobo",
-          definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("time", "u", "v")) ## FIXME: more
-              if (i == "time") return(x@data$time)
-              else if (i == "u") return(x@data$u)
-              else if (i == "v") return(x@data$v)
-              else stop("cannot access \"", i, "\"") # cannot get here
-          })
-
-
 
 plot.lobo.timeseries.TS <- function(lobo,
                                     S.col = "blue", T.col = "darkgreen", draw.legend=FALSE, ...)
@@ -157,7 +144,20 @@ read.lobo <- function(file, cols=7, processingLog)
 {
     ## header <- scan(file, what=character(), sep="\t", nlines=1, quiet=TRUE)
     ## d <- scan(file, what=character(), sep="\t", skip=1,  quiet=TRUE)
-    d <- read.table(file, sep='\t', header=TRUE)
+    filename <- ""
+    if (is.character(file)) {
+        filename <- fullFilename(file)
+        file <- file(file, "r")
+        on.exit(close(file))
+    } else {
+        if (!inherits(file, "connection"))
+            stop("argument `file' must be a character string or connection")
+        if (!isOpen(file)) {
+            open(file, "r")
+            on.exit(close(file))
+        }
+    }
+     d <- read.table(file, sep='\t', header=TRUE)
     names <- names(d)
     tCol            <- grep("date", names)
     uCol            <- grep("current across", names)
@@ -180,45 +180,26 @@ read.lobo <- function(file, cols=7, processingLog)
     fluorescence <- if (length(fluorescenceCol)) as.numeric(d[, fluorescenceCol]) else rep(NA, n)
     pressure <- if (length(pressureCol)) as.numeric(d[, pressureCol]) else rep(NA, n)
     data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,pressure=pressure,nitrate=nitrate,fluorescence=fluorescence)
+    metadata <- list(filename=file)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure,
+               nitrate=nitrate, fluorescence=fluorescence, filename=filename)
+    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res
+}
 
-#    if (cols == 7) {
-#        n <- length(d) / cols
-#        time         <-            d[seq(from=col.date,         by=cols, length.out = n)]
-#        u            <- as.numeric(d[seq(from=col.u,            by=cols, length.out = n)])
-#        v            <- as.numeric(d[seq(from=col.v,            by=cols, length.out = n)])
-#        nitrate      <- as.numeric(d[seq(from=col.nitrate,      by=cols, length.out = n)])
-#        fluorescence <- as.numeric(d[seq(from=col.fluorescence, by=cols, length.out = n)])
-#        salinity     <- as.numeric(d[seq(from=col.salinity,     by=cols, length.out = n)])
-#        temperature  <- as.numeric(d[seq(from=col.temperature,  by=cols, length.out = n)])
-#        p            <- rep(0, length(salinity))
-#        browser()
-#        time <- as.POSIXlt(time)
-#        ## Make all the same length
-#        len <- max(length(u), length(v), length(salinity), length(temperature), length(p), length(nitrate), length(fluorescence))
-#        fill.out <- function(x, length)
-#        {
-#            l <- length(x)
-#            if (l < length)
-#                c(x, rep(NA, length-l))
-#            else x
-#        }
-#        u <- fill.out(u, len)
-#        v <- fill.out(v, len)
-#        salinity <- fill.out(salinity, len)
-#        temperature <- fill.out(temperature, len)
-#        p <- fill.out(p, len)
-#        nitrate <- fill.out(nitrate, len)
-#        fluorescence <- fill.out(fluorescence, len)
-#        data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,p=p,nitrate=nitrate,fluorescence=fluorescence)
-        metadata <- list(filename=file)
-        if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-        hitem <- processingLogItem(processingLog)
-        res <- list(data=data, metadata=metadata, processingLog=hitem)
-        class(res) = c("lobo", "oce")
-        res
-#    } else {
-#        stop("debug: only working on one format right now")
-#    }
+as.lobo <- function(time, u, v, salinity, temperature, pressure, nitrate, fluorescence, filename="")
+{
+    if (missing(u) || missing(v) || missing(salinity) || missing(temperature) || missing(pressure))
+        stop("must give u, v, salinity, temperature, and pressure")
+    res <- new("lobo", u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure, filename=filename)
+    if (!missing(nitrate))
+        res@data$nitrate <- nitrate
+    if (!missing(fluorescence))
+        res@data$fluorescence <- fluorescence
+    res
 }
 
 summary.lobo <- function(object, ...)

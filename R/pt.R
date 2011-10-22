@@ -29,172 +29,174 @@ as.pt <- function(time, temperature, pressure,
         stop("lengths of 'time' and 'temperature' must match")
     if (length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    processingLogItem <- processingLogItem(processingLog)
     res <- new("pt", time, pressure, temperature, filename)
     res@metadata$instrumentType <- instrumentType
     res@metadata$model <- model
     res@metadata$serialNumber <- serialNumber
     res@metadata$pressureAtmospheric <- pressureAtmospheric
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    processingLogItem <- processingLogItem(processingLog)
     res@processingLog <- unclass(processingLog(res@processingLog, processingLog))
     oceDebug(debug, "\b} # as.pt()\n", sep="")
     res
 }
 
-plot.pt <- function(x, which=1:4, title="", adorn=NULL,
-                    tlim, plim, Tlim,
-                    xlab, ylab,
-                    drawTimeRange=getOption("oceDrawTimeRange"),
-                    abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
-                    useSmoothScatter=FALSE,
-                    mgp=getOption("oceMgp"),
-                    mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
-                    main="",
-                    debug=getOption("oceDebug"),
-                    ...)
-{
-    if (!inherits(x, "pt"))
-        stop("method is only for pt objects")
-    if (0 == sum(!is.na(x@data$temperature)))
-        stop("no good temperatures to plot")
-    if (0 == sum(!is.na(x@data$pressure)))
-        stop("no good pressures to plot")
-    nw <- length(which)
-    opar <- par(no.readonly = TRUE)
-    if (nw > 1)
-        on.exit(par(opar))
-    adorn.length <- length(adorn)
-    if (adorn.length == 1) {
-        adorn <- rep(adorn, nw)
-        adorn.length <- nw
-    }
-    if (nw == 2) {
-        layout(cbind(c(1,2)))
-    } else if (nw==3 || nw==4) {
-        layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
-    }
-    par(mgp=mgp, mar=mar)
+setMethod(f="plot",
+          signature=signature("pt"),
+          definition=function(x, which=1:4, title="", adorn=NULL,
+                              tlim, plim, Tlim,
+                              xlab, ylab,
+                              drawTimeRange=getOption("oceDrawTimeRange"),
+                              abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
+                              useSmoothScatter=FALSE,
+                              mgp=getOption("oceMgp"),
+                              mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                              main="",
+                              debug=getOption("oceDebug"),
+                              ...)
+          {
+              if (!inherits(x, "pt"))
+                  stop("method is only for pt objects")
+              if (0 == sum(!is.na(x@data$temperature)))
+                  stop("no good temperatures to plot")
+              if (0 == sum(!is.na(x@data$pressure)))
+                  stop("no good pressures to plot")
+              nw <- length(which)
+              opar <- par(no.readonly = TRUE)
+              if (nw > 1)
+                  on.exit(par(opar))
+              adorn.length <- length(adorn)
+              if (adorn.length == 1) {
+                  adorn <- rep(adorn, nw)
+                  adorn.length <- nw
+              }
+              if (nw == 2) {
+                  layout(cbind(c(1,2)))
+              } else if (nw==3 || nw==4) {
+                  layout(rbind(c(1,2), c(3,4)), widths=c(2,1))
+              }
+              par(mgp=mgp, mar=mar)
 
-    ## decode string values of 'which'
-    which2 <- vector("numeric", nw)
-    for (w in 1:nw) {
-        ww <- which[w]
-        if (is.numeric(ww)) {
-            which2[w] <- ww
-        } else {
-            if (     ww == "temperature")
-                which2[w] <- 1
-            else if (ww == "text")
-                which2[w] <- 2
-            else if (ww == "pressure")
-                which2[w] <- 3
-            else if (ww == "profile")
-                which2[w] <- 4
-            else
-                stop("unknown 'which':", ww)
-        }
-    }
-    which <- which2
-    if (missing(main))
-        main <- rep('', length.out=nw)
-    else
-        main <- rep(main, length.out=nw)
-    oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-    for (w in 1:nw) {
-        oceDebug(debug, "which[", w, "]=", which[w], "\n")
-        if (which[w] == 1) {           # temperature timeseries
-            oce.plot.ts(x@data$time, x@data$temperature,
-                        ylab=resizableLabel("T", "y"),
-                        type='l',
-                        xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                        ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                        drawTimeRange=drawTimeRange,
-                        main=main[w])
-            ##box()
-            ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange, abbreviateTimeRange=abbreviateTimeRange)
-            drawTimeRange <- FALSE    # only the first time panel gets the time indication
-            axis(2)
-        } else if (which[w] == 3) {    # pressure timeseries
-            oce.plot.ts(x@data$time, x@data$pressure,
-                        ylab=resizableLabel("p", "y"),
-                        type='l',
-                        xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
-                        ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
-                        main=main[w],
-                        drawTimeRange=drawTimeRange,
-                        mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5))
-            ##box()
-            ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange)
-            drawTimeRange <- FALSE
-            ##axis(2)
-        } else if (which[w] == 2) {
-            text.item <- function(item, cex=4/5*par("cex")) {
-                if (!is.null(item) && !is.na(item)) {
-                    text(xloc, yloc, item, adj = c(0, 0), cex=cex);
-                }
-            }
-            xfake <- seq(0:10)
-            yfake <- seq(0:10)
-            mar <- par("mar")
-            par(mar=c(0,0,0,0))
+              ## decode string values of 'which'
+              which2 <- vector("numeric", nw)
+              for (w in 1:nw) {
+                  ww <- which[w]
+                  if (is.numeric(ww)) {
+                      which2[w] <- ww
+                  } else {
+                      if (     ww == "temperature")
+                          which2[w] <- 1
+                      else if (ww == "text")
+                          which2[w] <- 2
+                      else if (ww == "pressure")
+                          which2[w] <- 3
+                      else if (ww == "profile")
+                          which2[w] <- 4
+                      else
+                          stop("unknown 'which':", ww)
+                  }
+              }
+              which <- which2
+              if (missing(main))
+                  main <- rep('', length.out=nw)
+              else
+                  main <- rep(main, length.out=nw)
+              oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+              for (w in 1:nw) {
+                  oceDebug(debug, "which[", w, "]=", which[w], "\n")
+                  if (which[w] == 1) {           # temperature timeseries
+                      oce.plot.ts(x@data$time, x@data$temperature,
+                                  ylab=resizableLabel("T", "y"),
+                                  type='l',
+                                  xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                                  ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
+                                  drawTimeRange=drawTimeRange,
+                                  main=main[w])
+                      ##box()
+                      ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange, abbreviateTimeRange=abbreviateTimeRange)
+                      drawTimeRange <- FALSE    # only the first time panel gets the time indication
+                      axis(2)
+                  } else if (which[w] == 3) {    # pressure timeseries
+                      oce.plot.ts(x@data$time, x@data$pressure,
+                                  ylab=resizableLabel("p", "y"),
+                                  type='l',
+                                  xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
+                                  ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
+                                  main=main[w],
+                                  drawTimeRange=drawTimeRange,
+                                  mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5))
+                      ##box()
+                      ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange)
+                      drawTimeRange <- FALSE
+                      ##axis(2)
+                  } else if (which[w] == 2) {
+                      text.item <- function(item, cex=4/5*par("cex")) {
+                          if (!is.null(item) && !is.na(item)) {
+                              text(xloc, yloc, item, adj = c(0, 0), cex=cex);
+                          }
+                      }
+                      xfake <- seq(0:10)
+                      yfake <- seq(0:10)
+                      mar <- par("mar")
+                      par(mar=c(0,0,0,0))
 
-            plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
-            xloc <- 1
-            yloc <- 10
-            d.yloc <- 0.7
-            cex <- par("cex")
-            text.item(title, cex=1.25*cex)
-            yloc <- yloc - d.yloc
-            ##if (!is.null(object@metadata$filename))
-            ##    text.item(object@metadata$filename, cex=cex)
-            if (!is.null(x@metadata$serialNumber)) {
-                text.item(paste("Serial Number: ", x@metadata$serialNumber),cex=cex)
-                yloc <- yloc - d.yloc
-            }
-            if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
-                text.item(paste("Start:", x@data$time[1], attr(x@data$time, "tzone")), cex=cex)
-                yloc <- yloc - d.yloc
-                text.item(paste("End:", x@data$time[length(x@data$time)], attr(x@data$time, "tzone")), cex=cex)
-                yloc <- yloc - d.yloc
-                text.item(paste("Sampled interval:", difftime(x@data$time[2], x@data$time[1], units="secs"), "s"),cex=cex)
-                yloc <- yloc - d.yloc
-            }
-            par(mar=mar)
-        } else if (which[w] == 4) {     # "profile"
-            args <- list(x=x@data$temperature, y=x@data$pressure,
-                         xlab="",
-                         ylab=resizableLabel("p"),
-                         xlim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
-                         ylim=if (missing(plim)) rev(range(x@data$pressure, na.rm=TRUE)) else plim,
-                         ...)
-            a <- names(list(...))
-            if (!("type" %in% a))
-                args <- c(args, type="p")
-            if (!("cex"  %in% a))
-                args <- c(args, cex=1/2)
-            if (!("axes" %in% a))
-                args <- c(args, axes=FALSE)
-            np <- length(x@data$pressure)
-            if (useSmoothScatter) {
-                args <- args[names(args) != "type"]
-                do.call(smoothScatter, args)
-            } else {
-                do.call(plot, args)
-            }
-            box()
-            axis(2)
-            axis(3)
-            mtext(resizableLabel("T", "x"), side = 3, line = 2)
-        }
-        if (w <= adorn.length) {
-            t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error")
-                warning("cannot evaluate adorn[", w, "]\n")
-        }
-    }
-    invisible()
-}
+                      plot(xfake, yfake, type = "n", xlab = "", ylab = "", axes = FALSE)
+                      xloc <- 1
+                      yloc <- 10
+                      d.yloc <- 0.7
+                      cex <- par("cex")
+                      text.item(title, cex=1.25*cex)
+                      yloc <- yloc - d.yloc
+                      ##if (!is.null(object@metadata$filename))
+                      ##    text.item(object@metadata$filename, cex=cex)
+                      if (!is.null(x@metadata$serialNumber)) {
+                          text.item(paste("Serial Number: ", x@metadata$serialNumber),cex=cex)
+                          yloc <- yloc - d.yloc
+                      }
+                      if (!(1 %in% which || 2 %in% which)) { # don't bother with these if already on a time-series panel
+                          text.item(paste("Start:", x@data$time[1], attr(x@data$time, "tzone")), cex=cex)
+                          yloc <- yloc - d.yloc
+                          text.item(paste("End:", x@data$time[length(x@data$time)], attr(x@data$time, "tzone")), cex=cex)
+                          yloc <- yloc - d.yloc
+                          text.item(paste("Sampled interval:", difftime(x@data$time[2], x@data$time[1], units="secs"), "s"),cex=cex)
+                          yloc <- yloc - d.yloc
+                      }
+                      par(mar=mar)
+                  } else if (which[w] == 4) {     # "profile"
+                      args <- list(x=x@data$temperature, y=x@data$pressure,
+                                   xlab="",
+                                   ylab=resizableLabel("p"),
+                                   xlim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
+                                   ylim=if (missing(plim)) rev(range(x@data$pressure, na.rm=TRUE)) else plim,
+                                   ...)
+                      a <- names(list(...))
+                      if (!("type" %in% a))
+                          args <- c(args, type="p")
+                      if (!("cex"  %in% a))
+                          args <- c(args, cex=1/2)
+                      if (!("axes" %in% a))
+                          args <- c(args, axes=FALSE)
+                      np <- length(x@data$pressure)
+                      if (useSmoothScatter) {
+                          args <- args[names(args) != "type"]
+                          do.call(smoothScatter, args)
+                      } else {
+                          do.call(plot, args)
+                      }
+                      box()
+                      axis(2)
+                      axis(3)
+                      mtext(resizableLabel("T", "x"), side = 3, line = 2)
+                  }
+                  if (w <= adorn.length) {
+                      t <- try(eval(adorn[w]), silent=TRUE)
+                      if (class(t) == "try-error")
+                          warning("cannot evaluate adorn[", w, "]\n")
+                  }
+              }
+              invisible()
+          })
 
 read.pt <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
                     processingLog, debug=getOption("oceDebug"))

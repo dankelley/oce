@@ -187,373 +187,375 @@ makeSection <- function(item, ...)
 }
 
 ##setMethod(f="plot", signature=signature("section"), definition=function(x,
-plot.section <- function(x,
-                         which=c("salinity", "temperature", "sigmaTheta", "map"),
-                         at=NULL,
-                         labels=TRUE,
-                         grid = FALSE,
-                         contourLevels=NULL,
-                         contourLabels=NULL,
-                         stationIndices,
-                         coastline=NULL,
-                         xlim=NULL, ylim=NULL,
-                         map.xlim=NULL, map.ylim=NULL,
-                         xtype="distance",
-                         ytype="depth",
-                         legend.loc="bottomright",
-                         adorn=NULL,
-                         mgp=getOption("oceMgp"),
-                         mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
-                         debug=getOption("oceDebug"),
-                         ...)
-{
-    debug <- if (debug > 2) 2 else floor(0.5 + debug)
-    oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), ...) {\n")
-    plotSubsection <- function(variable="temperature", title="Temperature",
-                               indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
-                               xlim=NULL,
-                               ylim=NULL,
-                               debug=0,
-                               ...)
-    {
-        oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
-        if (variable == "map") {
-            lat <- array(NA, numStations)
-            lon <- array(NA, numStations)
-            for (i in 1:numStations) {
-                thisStn <- x@data$statoin[[stationIndices[i]]]
-                lat[i] <- x@data$station[[stationIndices[i]]]@metadata$latitude
-                lon[i] <- x@data$station[[stationIndices[i]]]@metadata$longitude
-            }
-            lon[lon<0] <- lon[lon<0] + 360
-            asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
-            latm <- mean(lat, na.rm=TRUE)
-            lonm <- mean(lon, na.rm=TRUE)
-            lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
-            latr <- latm + 1.2 * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
-            if (!is.null(map.xlim)) {
-                map.xlim <- sort(map.xlim)
-                plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
-            } else if (!is.null(map.ylim)) {
-                map.ylim <- sort(map.ylim)
-                plot(lonr, latr, ylim=map.ylim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
-            } else {
-                plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
-            }
-            if (!is.null(coastline)) {
-                if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
-                    polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
-                    polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
-                } else {
-                    lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
-                    lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
-                }
-            }
-            lines(lon, lat, col="lightgray")
-            ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
-            col <- if("col" %in% names(list(...))) list(...)$col else "black"
-            points(lon, lat, col=col, pch=3, lwd=1/2)
-            points(lon - 360, lat, col=col, pch=3, lwd=1/2)
-            points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
-            points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
-            if (indicate.stations) {
-                dx <- 5 * mean(diff(sort(x$metadata$longitude)),na.rm=TRUE)
-                dy <- 5 * mean(diff(sort(x$metadata$latitude)),na.rm=TRUE)
-                xlab <- x$metadata$longitude[1] - dx * sign(x$metadata$longitude[2] - x$metadata$longitude[1])
-                ylab <- x$metadata$latitude[1]  - dy * sign(x$metadata$latitude[2]  - x$metadata$latitude[1])
-                text(xlab, ylab, x$metadata$stationId[1])
-                xlab <- x$metadata$longitude[numStations] -
-                dx * sign(x$metadata$longitude[numStations-1] - x$metadata$longitude[numStations])
-                ylab <- x$metadata$latitude[numStations]  -
-                dy * sign(x$metadata$latitude[numStations-1]  - x$metadata$latitude[numStations])
-                text(xlab, ylab, x$metadata$stationId[numStations])
-            }
-        } else {                        # not a map
-            if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient")
-                stop("this section does not contain a variable named '", variable, "'")
-        ## FIXME: contours don't get to plot edges
-        xxrange <- range(xx, na.rm=TRUE)
-        yyrange <- range(yy, na.rm=TRUE)
-        ##yyrange[1] <- -1
+setMethod(f="plot",
+          signature=signature("section"),
+          definition=function(x,
+                              which=c("salinity", "temperature", "sigmaTheta", "map"),
+                              at=NULL,
+                              labels=TRUE,
+                              grid = FALSE,
+                              contourLevels=NULL,
+                              contourLabels=NULL,
+                              stationIndices,
+                              coastline=NULL,
+                              xlim=NULL, ylim=NULL,
+                              map.xlim=NULL, map.ylim=NULL,
+                              xtype="distance",
+                              ytype="depth",
+                              legend.loc="bottomright",
+                              adorn=NULL,
+                              mgp=getOption("oceMgp"),
+                              mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
+                              debug=getOption("oceDebug"),
+                              ...)
+          {
+              debug <- if (debug > 2) 2 else floor(0.5 + debug)
+              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), ...) {\n")
+              plotSubsection <- function(variable="temperature", title="Temperature",
+                                         indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
+                                         xlim=NULL,
+                                         ylim=NULL,
+                                         debug=0,
+                                         ...)
+              {
+                  oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
+                  if (variable == "map") {
+                      lat <- array(NA, numStations)
+                      lon <- array(NA, numStations)
+                      for (i in 1:numStations) {
+                          thisStn <- x@data$statoin[[stationIndices[i]]]
+                          lat[i] <- x@data$station[[stationIndices[i]]]@metadata$latitude
+                          lon[i] <- x@data$station[[stationIndices[i]]]@metadata$longitude
+                      }
+                      lon[lon<0] <- lon[lon<0] + 360
+                      asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
+                      latm <- mean(lat, na.rm=TRUE)
+                      lonm <- mean(lon, na.rm=TRUE)
+                      lonr <- lonm + 1.2 * (range(lon, na.rm=TRUE) - mean(lon, na.rm=TRUE)) # expand range
+                      latr <- latm + 1.2 * (range(lat, na.rm=TRUE) - mean(lat, na.rm=TRUE))
+                      if (!is.null(map.xlim)) {
+                          map.xlim <- sort(map.xlim)
+                          plot(lonr, latr, xlim=map.xlim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                      } else if (!is.null(map.ylim)) {
+                          map.ylim <- sort(map.ylim)
+                          plot(lonr, latr, ylim=map.ylim, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                      } else {
+                          plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                      }
+                      if (!is.null(coastline)) {
+                          if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
+                              polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
+                              polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                          } else {
+                              lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
+                              lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                          }
+                      }
+                      lines(lon, lat, col="lightgray")
+                      ## FIXME: possibly should figure out the offset, instead of just replotting shifted lon
+                      col <- if("col" %in% names(list(...))) list(...)$col else "black"
+                      points(lon, lat, col=col, pch=3, lwd=1/2)
+                      points(lon - 360, lat, col=col, pch=3, lwd=1/2)
+                      points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
+                      points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
+                      if (indicate.stations) {
+                          dx <- 5 * mean(diff(sort(x$metadata$longitude)),na.rm=TRUE)
+                          dy <- 5 * mean(diff(sort(x$metadata$latitude)),na.rm=TRUE)
+                          xlab <- x$metadata$longitude[1] - dx * sign(x$metadata$longitude[2] - x$metadata$longitude[1])
+                          ylab <- x$metadata$latitude[1]  - dy * sign(x$metadata$latitude[2]  - x$metadata$latitude[1])
+                          text(xlab, ylab, x$metadata$stationId[1])
+                          xlab <- x$metadata$longitude[numStations] -
+                          dx * sign(x$metadata$longitude[numStations-1] - x$metadata$longitude[numStations])
+                          ylab <- x$metadata$latitude[numStations]  -
+                          dy * sign(x$metadata$latitude[numStations-1]  - x$metadata$latitude[numStations])
+                          text(xlab, ylab, x$metadata$stationId[numStations])
+                      }
+                  } else {                        # not a map
+                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient")
+                          stop("this section does not contain a variable named '", variable, "'")
+                  ## FIXME: contours don't get to plot edges
+                  xxrange <- range(xx, na.rm=TRUE)
+                  yyrange <- range(yy, na.rm=TRUE)
+                  ##yyrange[1] <- -1
 
-        ## Put x in order, if it's not already
-        ox <- order(xx)
-        if (any(xx[ox] != xx)) {
-            xx <- xx[ox]
-            zz <- zz[ox,]
-            warning("plot.section() reordered the stations to make x monotonic")
-        }
-        ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
-        par(xaxs="i", yaxs="i")
-        ylab <- if ("ylab" %in% names(list(...)))
-            list(...)$ylab
-        else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
-        if (is.null(at)) {
-            plot(xxrange, yyrange,
-                 xaxs="i", yaxs="i",
-                 xlim=xlim,
-                 ylim=ylim,
-                 col="white",
-                 xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
-                 ylab=ylab,
-                 axes=FALSE)
-            axis(4, labels=FALSE)
-            ytics <- axis(2, labels=FALSE)
-            axis(2, at=ytics, labels=-ytics)
-        } else {
-            plot(xxrange, yyrange,
-                 xaxs="i", yaxs="i",
-                 ##                     ylim=rev(yyrange),
-                 xlim=xlim, ylim=ylim,
-                 col="white",
-                 xlab="", ylab=ylab, axes=FALSE)
-            axis(1, at=at, labels=labels)
-            axis(2)
-            axis(4, labels=FALSE)
-            box()
-        }
-        ## Bottom trace
-        usr <- par("usr")
-        graph.bottom <- usr[3]
-        waterDepth <- NULL
-        for (i in 1:numStations) {
-            if (variable == "salinity gradient") {
-                dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
-                            / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
-                zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
-            } else {
-                zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
-            }
-            if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
-            temp <- x@data$station[[stationIndices[i]]]@data$temperature
-            len <- length(temp)
-            if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
-                wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
-                oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
-            } else {
-                wd <- NA
-                if (is.na(temp[len])) {
-                    ##cat("bottom temperature is missing\n")
-                    ##print(data.frame(p=x$data$station[[stationIndices[[i]]]]$data$pressure, temp=temp))
-                    wdi <- len - which(!is.na(rev(temp)))[1] + 1
-                    ##cat("BOTTOM T:");print(temp[wdi])
-                    ##cat("BOTTOM p:");print(x$data$station[[stationIndices[i]]]$data$pressure[wdi])
-                    wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
-                    oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
-                } else {
-                    oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
-                }
-            }
-            in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
-            ##cat("check==\n")
-            ##print(x$data$station[[stationIndices[i]]]$data$temperature)
-            ##stop()
-            ##cat("in.land=");print(in.land)
-            if (!is.na(wd)) {
-                waterDepth <- c(waterDepth, wd)
-            } else {
-                waterDepth <- c(waterDepth, max(x$data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
-            }
-        }
+                  ## Put x in order, if it's not already
+                  ox <- order(xx)
+                  if (any(xx[ox] != xx)) {
+                      xx <- xx[ox]
+                      zz <- zz[ox,]
+                      warning("plot.section() reordered the stations to make x monotonic")
+                  }
+                  ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
+                  par(xaxs="i", yaxs="i")
+                  ylab <- if ("ylab" %in% names(list(...)))
+                      list(...)$ylab
+                  else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
+                  if (is.null(at)) {
+                      plot(xxrange, yyrange,
+                           xaxs="i", yaxs="i",
+                           xlim=xlim,
+                           ylim=ylim,
+                           col="white",
+                           xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
+                           ylab=ylab,
+                           axes=FALSE)
+                      axis(4, labels=FALSE)
+                      ytics <- axis(2, labels=FALSE)
+                      axis(2, at=ytics, labels=-ytics)
+                  } else {
+                      plot(xxrange, yyrange,
+                           xaxs="i", yaxs="i",
+                           ##                     ylim=rev(yyrange),
+                           xlim=xlim, ylim=ylim,
+                           col="white",
+                           xlab="", ylab=ylab, axes=FALSE)
+                      axis(1, at=at, labels=labels)
+                      axis(2)
+                      axis(4, labels=FALSE)
+                      box()
+                  }
+                  ## Bottom trace
+                  usr <- par("usr")
+                  graph.bottom <- usr[3]
+                  waterDepth <- NULL
+                  for (i in 1:numStations) {
+                      if (variable == "salinity gradient") {
+                          dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
+                                      / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
+                          zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
+                      } else {
+                          zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                      }
+                      if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
+                      temp <- x@data$station[[stationIndices[i]]]@data$temperature
+                      len <- length(temp)
+                      if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
+                          wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
+                          oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
+                      } else {
+                          wd <- NA
+                          if (is.na(temp[len])) {
+                              ##cat("bottom temperature is missing\n")
+                              ##print(data.frame(p=x$data$station[[stationIndices[[i]]]]$data$pressure, temp=temp))
+                              wdi <- len - which(!is.na(rev(temp)))[1] + 1
+                              ##cat("BOTTOM T:");print(temp[wdi])
+                              ##cat("BOTTOM p:");print(x$data$station[[stationIndices[i]]]$data$pressure[wdi])
+                              wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
+                              oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
+                          } else {
+                              oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
+                          }
+                      }
+                      in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
+                      ##cat("check==\n")
+                      ##print(x$data$station[[stationIndices[i]]]$data$temperature)
+                      ##stop()
+                      ##cat("in.land=");print(in.land)
+                      if (!is.na(wd)) {
+                          waterDepth <- c(waterDepth, wd)
+                      } else {
+                          waterDepth <- c(waterDepth, max(x$data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
+                      }
+                  }
 
-        oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
-        ##waterDepth <- -waterDepth
-        if (!grid)
-            Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
-        bottom.x <- c(xx[1], xx, xx[length(xx)])
-        bottom.y <- c(graph.bottom, -waterDepth, graph.bottom)
-        ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
-        ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
+                  oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
+                  ##waterDepth <- -waterDepth
+                  if (!grid)
+                      Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
+                  bottom.x <- c(xx[1], xx, xx[length(xx)])
+                  bottom.y <- c(graph.bottom, -waterDepth, graph.bottom)
+                  ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
+                  ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
 
-        dots <- list(...) # adjust plot parameter labcex, unless user did
+                  dots <- list(...) # adjust plot parameter labcex, unless user did
 
-        ##par(xaxs="i", yaxs="i")
+                  ##par(xaxs="i", yaxs="i")
 
-        ## cannot contour with duplicates in x or y; the former is the only problem
-        xx.unique <- 0 != diff(xx)
-        if (!is.null(contourLevels) && !is.null(contourLabels)) {
-            oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
-            if (!("labcex" %in% dots$labcex)) {
-                contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                        axes=FALSE, labcex=0.8,
-                        levels=contourLevels,
-                        labels=contourLabels,
-                        add=TRUE,
-                        xaxs="i", yaxs="i",
-                        ...)
-            } else {
-                contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                        axes=FALSE,
-                        add=TRUE,
-                        xaxs="i", yaxs="i",
-                        ...)
-            }
-        } else {
-            oceDebug(debug, "automatically-calculated contourLevels\n")
-            if (is.null(dots$labcex)) {
-                contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                        axes=FALSE, labcex=0.8,
-                        add=TRUE,
-                        xaxs="i", yaxs="i",
-                        ...)
-            } else {
-                contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                        axes=FALSE,
-                        add=TRUE,
-                        xaxs="i", yaxs="i",
-                        ...)
-            }
-        }
-        if (length(bottom.x) == length(bottom.y))
-            polygon(bottom.x, bottom.y, col="lightgray")
-        box()
-        axis(1)
-        legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
-        }
-        oceDebug(debug, "\b} # plotSubsection()\n")
-    }                                   # plotSubsection
-    if (!inherits(x, "section"))
-        stop("method is only for section objects")
-    opar <- par(no.readonly = TRUE)
-    if (length(which) > 1) on.exit(par(opar))
-    which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
-    which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
-    if (missing(stationIndices)) {
-        numStations <- length(x@data$station)
-        stationIndices <- 1:numStations
-    } else {
-        numStations <- length(stationIndices)
-    }
-    if (numStations < 2)
-        stop("cannot plot a section containing fewer than 2 stations")
+                  ## cannot contour with duplicates in x or y; the former is the only problem
+                  xx.unique <- 0 != diff(xx)
+                  if (!is.null(contourLevels) && !is.null(contourLabels)) {
+                      oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
+                      if (!("labcex" %in% dots$labcex)) {
+                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  axes=FALSE, labcex=0.8,
+                                  levels=contourLevels,
+                                  labels=contourLabels,
+                                  add=TRUE,
+                                  xaxs="i", yaxs="i",
+                                  ...)
+                      } else {
+                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  axes=FALSE,
+                                  add=TRUE,
+                                  xaxs="i", yaxs="i",
+                                  ...)
+                      }
+                  } else {
+                      oceDebug(debug, "automatically-calculated contourLevels\n")
+                      if (is.null(dots$labcex)) {
+                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  axes=FALSE, labcex=0.8,
+                                  add=TRUE,
+                                  xaxs="i", yaxs="i",
+                                  ...)
+                      } else {
+                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  axes=FALSE,
+                                  add=TRUE,
+                                  xaxs="i", yaxs="i",
+                                  ...)
+                      }
+                  }
+                  if (length(bottom.x) == length(bottom.y))
+                      polygon(bottom.x, bottom.y, col="lightgray")
+                  box()
+                  axis(1)
+                  legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                  }
+                  oceDebug(debug, "\b} # plotSubsection()\n")
+              }                                   # plotSubsection
+              if (!inherits(x, "section"))
+                  stop("method is only for section objects")
+              opar <- par(no.readonly = TRUE)
+              if (length(which) > 1) on.exit(par(opar))
+              which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
+              which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
+              if (missing(stationIndices)) {
+                  numStations <- length(x@data$station)
+                  stationIndices <- 1:numStations
+              } else {
+                  numStations <- length(stationIndices)
+              }
+              if (numStations < 2)
+                  stop("cannot plot a section containing fewer than 2 stations")
 
-    firstStation <- x@data$station[[stationIndices[1]]]
-    num.depths <- length(firstStation@data$pressure)
+              firstStation <- x@data$station[[stationIndices[1]]]
+              num.depths <- length(firstStation@data$pressure)
 
-    ## Check that pressures coincide
-    p1 <- firstStation@data$pressure
-    for (ix in 2:numStations) {
-        thisStation <- x@data$station[[stationIndices[ix]]]
-        if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
-            stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
-    }
-    zz <- matrix(nrow=numStations, ncol=num.depths)
-    xx <- array(NA, numStations)
-    yy <- array(NA, num.depths)
-    if (is.null(at)) {
-        lat0 <- firstStation@metadata$latitude
-        lon0 <- firstStation@metadata$longitude
-        for (ix in 1:numStations) {
-            j <- stationIndices[ix]
-            if (which.xtype == 1) {
-                xx[ix] <- geodDist(lat0, lon0, x@data$station[[j]]@metadata$latitude, x@data$station[[j]]@metadata$longitude)
-            } else if (which.xtype == 2) {
-                if (ix == 1) {
-                    xx[ix] <- 0
-                } else {
-                    xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
-                                                  x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
-                                                  x@data$station[[j]]@metadata$latitude,
-                                                  x@data$station[[j]]@metadata$longitude)
-                }
-            } else {
-                stop("unknown xtype")
-            }
-        }
-    } else {
-        xx <- at
-    }
+              ## Check that pressures coincide
+              p1 <- firstStation@data$pressure
+              for (ix in 2:numStations) {
+                  thisStation <- x@data$station[[stationIndices[ix]]]
+                  if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
+                      stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
+              }
+              zz <- matrix(nrow=numStations, ncol=num.depths)
+              xx <- array(NA, numStations)
+              yy <- array(NA, num.depths)
+              if (is.null(at)) {
+                  lat0 <- firstStation@metadata$latitude
+                  lon0 <- firstStation@metadata$longitude
+                  for (ix in 1:numStations) {
+                      j <- stationIndices[ix]
+                      if (which.xtype == 1) {
+                          xx[ix] <- geodDist(lat0, lon0, x@data$station[[j]]@metadata$latitude, x@data$station[[j]]@metadata$longitude)
+                      } else if (which.xtype == 2) {
+                          if (ix == 1) {
+                              xx[ix] <- 0
+                          } else {
+                              xx[ix] <- xx[ix-1] + geodDist(x@data$station[[stationIndices[ix-1]]]@metadata$latitude,
+                                                            x@data$station[[stationIndices[ix-1]]]@metadata$longitude,
+                                                            x@data$station[[j]]@metadata$latitude,
+                                                            x@data$station[[j]]@metadata$longitude)
+                          }
+                      } else {
+                          stop("unknown xtype")
+                      }
+                  }
+              } else {
+                  xx <- at
+              }
 
-    if (which.ytype == 1) yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
-    else if (which.ytype == 2) yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
-    else stop("unknown ytype")
+              if (which.ytype == 1) yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
+              else if (which.ytype == 2) yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
+              else stop("unknown ytype")
 
-    oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-    lw <- length(which)
-    which2 <- vector("numeric", lw)
-    for (w in 1:lw) {
-        ww <- which[w]
-        if (is.numeric(ww)) {
-            which2[w] <- ww
-        } else {
-            if (     ww == "temperature") which2[w] <- 1
-            else if (ww == "salinity") which2[w] <- 2
-            else if (ww == "salinity gradient") which2[w] <- 2.5
-            else if (ww == "sigmaTheta") which2[w] <- 3
-            else if (ww == "nitrate") which2[w] <- 4
-            else if (ww == "nitrite") which2[w] <- 5
-            else if (ww == "oxygen") which2[w] <- 6
-            else if (ww == "phosphate") which2[w] <- 7
-            else if (ww == "silicate") which2[w] <- 8
-            else if (ww == "map") which2[w] <- 99
-            else stop("unknown 'which':", ww)
-        }
-    }
-    which <- which2
-    oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
-    par(mgp=mgp, mar=mar)
-    if (lw > 1) {
-        if (lw > 2)
-            layout(matrix(1:4, nrow=2, byrow=TRUE))
-        else
-            layout(matrix(1:2, nrow=2, byrow=TRUE))
-    }
-    adorn.length <- length(adorn)
-    if (adorn.length == 1) {
-        adorn <- rep(adorn, lw)
-        adorn.length <- lw
-    }
-    for (w in 1:length(which)) {
-        oceDebug(debug, "w=", w, "\n")
-        if (!missing(contourLevels)) {
-            if (which[w] == 1)
-                plotSubsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 2)
-                plotSubsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] > 2 && which[w] < 3)
-                plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 3)
-                plotSubsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 4)
-                plotSubsection("nitrate",     "nitrate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 5)
-                plotSubsection("nitrite",     "nitrite", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 6)
-                plotSubsection("oxygen",      "oxygen", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 7)
-                plotSubsection("phosphate",   "phosphate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 8)
-                plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
-        } else {
-            if (which[w] == 1)
-                plotSubsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 2)
-                plotSubsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] > 2 && which[w] < 3)
-                plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 3)
-                plotSubsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 4)
-                plotSubsection("nitrate",     "nitrate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 5)
-                plotSubsection("nitrite",     "nitrite", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 6)
-                plotSubsection("oxygen",      "oxygen", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 7)
-                plotSubsection("phosphate",   "phosphate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-            if (which[w] == 8)
-                plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
-        }
-        if (which[w] == 99)
-            plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
-        if (w <= adorn.length) {
-            t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
-        }
-    }
-    oceDebug(debug, "\b} # plot.section()\n")
-    invisible()
-}
+              oceDebug(debug, "before nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+              lw <- length(which)
+              which2 <- vector("numeric", lw)
+              for (w in 1:lw) {
+                  ww <- which[w]
+                  if (is.numeric(ww)) {
+                      which2[w] <- ww
+                  } else {
+                      if (     ww == "temperature") which2[w] <- 1
+                      else if (ww == "salinity") which2[w] <- 2
+                      else if (ww == "salinity gradient") which2[w] <- 2.5
+                      else if (ww == "sigmaTheta") which2[w] <- 3
+                      else if (ww == "nitrate") which2[w] <- 4
+                      else if (ww == "nitrite") which2[w] <- 5
+                      else if (ww == "oxygen") which2[w] <- 6
+                      else if (ww == "phosphate") which2[w] <- 7
+                      else if (ww == "silicate") which2[w] <- 8
+                      else if (ww == "map") which2[w] <- 99
+                      else stop("unknown 'which':", ww)
+                  }
+              }
+              which <- which2
+              oceDebug(debug, "after nickname-substitution, which=c(", paste(which, collapse=","), ")\n")
+              par(mgp=mgp, mar=mar)
+              if (lw > 1) {
+                  if (lw > 2)
+                      layout(matrix(1:4, nrow=2, byrow=TRUE))
+                  else
+                      layout(matrix(1:2, nrow=2, byrow=TRUE))
+              }
+              adorn.length <- length(adorn)
+              if (adorn.length == 1) {
+                  adorn <- rep(adorn, lw)
+                  adorn.length <- lw
+              }
+              for (w in 1:length(which)) {
+                  oceDebug(debug, "w=", w, "\n")
+                  if (!missing(contourLevels)) {
+                      if (which[w] == 1)
+                          plotSubsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 2)
+                          plotSubsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] > 2 && which[w] < 3)
+                          plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 3)
+                          plotSubsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 4)
+                          plotSubsection("nitrate",     "nitrate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 5)
+                          plotSubsection("nitrite",     "nitrite", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 6)
+                          plotSubsection("oxygen",      "oxygen", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 7)
+                          plotSubsection("phosphate",   "phosphate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 8)
+                          plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                  } else {
+                      if (which[w] == 1)
+                          plotSubsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 2)
+                          plotSubsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] > 2 && which[w] < 3)
+                          plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 3)
+                          plotSubsection("sigmaTheta", expression(sigma[theta]), xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 4)
+                          plotSubsection("nitrate",     "nitrate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 5)
+                          plotSubsection("nitrite",     "nitrite", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 6)
+                          plotSubsection("oxygen",      "oxygen", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 7)
+                          plotSubsection("phosphate",   "phosphate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      if (which[w] == 8)
+                          plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                  }
+                  if (which[w] == 99)
+                      plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
+                  if (w <= adorn.length) {
+                      t <- try(eval(adorn[w]), silent=TRUE)
+                      if (class(t) == "try-error") warning("cannot evaluate adorn[", w, "]\n")
+                  }
+              }
+              oceDebug(debug, "\b} # plot.section()\n")
+              invisible()
+          })
 
 read.section <- function(file, sectionId="", flags,
 			 ship="", scientist="", institute="",

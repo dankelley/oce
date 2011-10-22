@@ -21,7 +21,9 @@
 \value{An object of class \code{"summary.drifter"}, which contains
   pertinent information about the CTD record and its processing.}
 
-\seealso{A \code{drifter} object may  be read with \code{\link{read.drifter}}.}
+\seealso{The documentation for \code{\link{drifter-class}} explains the
+    structure of drifter objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 \dontrun{

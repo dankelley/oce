@@ -15,20 +15,6 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-setMethod(f="[[",
-          signature="drifter",
-          definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("time", "longitude", "latitude", "salinity", "temperature", "pressure"))
-              if (i == "time") return(x@data$time)
-              else if (i == "longitude") return(x@data$longitude)
-              else if (i == "latitude") return(x@data$latitude)
-              else if (i == "salinity") return(x@data$salinity)
-              else if (i == "temperature") return(x@data$temperature)
-              else if (i == "pressure") return(x@data$pressure)
-              else stop("cannot access \"", i, "\"") # cannot get here
-          })
 
 summary.drifter <- function(object, ...)
 {

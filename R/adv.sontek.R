@@ -119,23 +119,20 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      coordinateSystem="xyz", # guess
                      oceCoordinate="xyz",    # guess
                      orientation="upward") # guess
-
     nt <- length(time)
-    data <- list(v=v,
-                 a=a,
-                 c=c,
-                 time=time,
-                 heading=rep(0, nt), # user will need to fill this in
-                 pitch=rep(0, nt), #  user will need to fill this in
-                 roll=rep(0, nt),  # user will need to fill this in
-                 temperature=temperature,
-                 pressure=pressure)
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("sontek", "adv", "oce")
+    res <- new("adv", time=time, v=v, a=a, q=q)
+    res@data$heading <- rep(0, nt)
+    res@data$pitch <- rep(0, nt)
+    res@data$roll <- rep(0, nt)
+    res@data$temperature <- temperature
+    res@data$pressure <- pressure
+    res@metdata <- metadata
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
     res
 }
 
@@ -586,11 +583,13 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                  roll=roll,
                  temperature=temperature,
                  pressure=pressure)
+    res <- new("adv")
+    res@data <- data
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    processingLog <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=processingLog)
-    class(res) <- c("sontek", "adv", "oce")
+    hitem <- processingLogItem(processingLog)
+    res@processingLog <- hitem
     res
 }
 
@@ -736,9 +735,12 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
                      oceCoordinate=coordinateSystem,
                      coordinateSystem=coordinateSystem)
     warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
-    class(res) <- c("sontek", "adv", "oce")
-    res
+    res <- new("adv")
+    res@data <- data
+    res@metadata <- metadata
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res@processingLog <- hitem
 }
 

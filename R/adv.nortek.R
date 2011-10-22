@@ -446,8 +446,10 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data$analog1 <- analog1
     if (haveAnalog2)
         data$analog2 <- analog2
-    res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("nortek", "adv", "oce")
+    res <- new("adv")
+    res@data <- data
+    res@metadata <- metadata
+    res@processingLog <- unclass(hitem)
     oceDebug(debug, "\b\b} # read.adv.nortek(file=\"", filename, "\", ...)\n", sep="")
     res
 }

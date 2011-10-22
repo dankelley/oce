@@ -358,11 +358,13 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ## and these are by the same formulae, with 25 switched to 15 (different beamAngle)
     } else
         stop("can only handle 3-beam devices")
+    res <- new("adp")
+    res@data <- data
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("sontek", "adp", "oce")
+    res@processingLog <- hitem
     res
 }
 
@@ -633,11 +635,13 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                  temperature=temperature,
                  pressure=rep(0, length(temperature)),
                  distance=distance)
+    res <- new("adp")
+    res@data <- data
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("sontek", "adp", "oce")
+    res@processingLog <- hitem
     res
 }
 

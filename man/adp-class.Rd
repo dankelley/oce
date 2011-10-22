@@ -4,6 +4,8 @@
 
 \alias{adp-class}
 \alias{[[,adp-method}
+\alias{[[<-,adp-method}
+\alias{show,adp-method}
 
 \title{Class to store acoustic Doppler profiler data}
 
@@ -47,7 +49,8 @@
     with \code{\link{xyzToEnuAdp}}.  \code{\link{toEnuAdp}} may be used to
     transfer either beam or xyz to enu.  Enu may be converted to other
     coordinates (e.g. aligned with a coastline) with
-    \code{\link{enuToOtherAdp}}.}
+    \code{\link{enuToOtherAdp}}.
+}
 
 \author{Dan Kelley}
 \keyword{classes}

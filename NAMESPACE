@@ -12,6 +12,8 @@ export("+.section",
        applyMagneticDeclination,
        as.coastline,
        as.ctd,
+       as.drifter,
+       as.lobo,
        as.pt,
        as.sealevel,
        as.topo,
@@ -104,14 +106,14 @@ export("+.section",
        "phosphate<-",
        pitch,
        "pitch<-",
-       plot.adp,
-       plot.adv,
+       ##plot.adp,
+       ##plot.adv,
        plotTS,
        plot.cm,
        plot.coastline,
-       plot.ctd,
+       ##plot.ctd,
        plotScan,
-       plot.pt,
+       ##plot.pt,
        plot.topo,
        plotProfile,
        plot.sealevel,
@@ -217,35 +219,23 @@ export("+.section",
        xyzToEnuAdp,
        xyzToEnuAdv)
 
-
 S3method(head, adp)
 S3method(tail, adp)
-S3method(plot, adp)
-S3method(plot, adv)
+
+##S3method(plot, adp)
+##S3method(plot, adv)
 S3method(plot, cm)
 S3method(plot, coastline)
-S3method(plot, ctd)
+##S3method(plot, ctd)
 S3method(plot, drifter)
 S3method(plot, lobo)
 S3method(plot, sealevel)
-S3method(plot, section)
-S3method(plot, pt)
+##S3method(plot, section)
+##S3method(plot, pt)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
-##S3method(print, summary.processingLog)
-##S3method(print, summary.adp)
-##S3method(print, summary.adv)
-##S3method(print, summary.cm)
-##S3method(print, summary.coastline)
-##S3method(print, summary.ctd)
-##S3method(print, summary.drifter)
-##S3method(print, summary.lobo)
-##S3method(print, summary.sealevel)
-##S3method(print, summary.section)
-##S3method(print, summary.pt)
-##S3method(print, summary.tidem)
-##S3method(print, summary.topo)
+
 S3method(predict, tidem)
 S3method(summary, adp)
 S3method(summary, adv)

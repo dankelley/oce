@@ -1,12 +1,14 @@
 \name{plot.adp}
 
 \alias{plot.adp}
+\alias{plot,adp,missing-method}
+\alias{plot,adp-method}
 
 \title{Plot ADP data}
 
-\description{Plot ADP data.}
+\description{Plot ADP data}
 
-\usage{\method{plot}{adp}(x, which=1:dim(x@data$v)[3],
+\usage{\S4method{plot}{adp}(x, which=1:dim(x@data$v)[3],
      col,
      zlim,
      titles,
@@ -76,7 +78,7 @@
   \item{useSmoothScatter}{boolean that indicates whether to use
       \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.
       If not provided a default is used, with \code{\link{smoothScatter}} being
-      used if there are more than 2000 points to plot.},
+      used if there are more than 2000 points to plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
@@ -252,16 +254,11 @@
     on the dock or on the ship as it travelled to the mooring site.
 }
 
-\value{None.}
-
-\seealso{The documentation for \code{\link{adp-class}} explains the structure
-    of ADP objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
 data(adp)
 plot(adp, which=1:3)
-# Illustrate adornment
 plot(adp, which=1:2,
      adorn=expression({
          abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
@@ -269,5 +266,9 @@ plot(adp, which=1:2,
      }))
 }
 
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
+
 \author{Dan Kelley}
+
 \keyword{hplot}

@@ -6,7 +6,7 @@
 
 \title{Plot seawater CTD data}
 
-\description{Plot a summary diagram for CTD data.}
+\description{Plot CTD data}
 
 \usage{\S4method{plot}{ctd}(x,
      which=1:4, 

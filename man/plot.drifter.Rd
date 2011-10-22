@@ -59,10 +59,9 @@
 
 \value{None.}
 
-\seealso{
-  \code{\link{summary.drifter}} summarizes the information, while
-  \code{\link{read.drifter}} scans it from a file.
-}
+\seealso{The documentation for \code{\link{drifter-class}} explains the
+    structure of drifter objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 \dontrun{

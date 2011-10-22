@@ -7,7 +7,7 @@
 \alias{[[<-,ctd-method}
 \alias{show,ctd-method}
 
-\title{Class to store hydrographic data, e.g. from a CTD}
+\title{Class to store hydrographic data}
 
 \description{Class to store hydrographic data, with standard slots
     \code{metadata}, \code{data} and \code{processingLog}.}
@@ -49,7 +49,8 @@
   may be done with \code{\link{ctdAddColumn}} and
   \code{\link{ctdUpdateHeader}}.  The contents of CTD objects may be altered
   with the \code{[[]]} scheme discussed in the previous section, and skilled
-  uses may also manipulate the contents directly.}
+  uses may also manipulate the contents directly.
+}
 
 \author{Dan Kelley}
 \keyword{classes}

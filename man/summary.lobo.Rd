@@ -22,9 +22,8 @@
 \value{An object of class \code{"summary.lobo"}, which contains
   pertinent information about the Lobo record and its processing.}
 
-\seealso{The \code{lobo} object may be read with \code{\link{read.lobo}}
-  (which should be consulted for details on the object structure) and
-  plotted with \code{\link{plot.lobo}}.}
+\seealso{The documentation for \code{\link{lobo-class}} explains the structure
+    of LOBO objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

@@ -4,6 +4,8 @@
 
 \alias{adv-class}
 \alias{[[,adv-method}
+\alias{[[<-,adv-method}
+\alias{show,adv-method}
 
 \title{Class to store acoustic Doppler velocimeter data}
 
@@ -45,7 +47,7 @@
     \code{\link{enuToOtherAdv}}.
 }
 
- \author{Dan Kelley}
+\author{Dan Kelley}
 \keyword{classes}
 \keyword{oce}
 

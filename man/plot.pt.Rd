@@ -1,12 +1,14 @@
 \name{plot.pt}
 
 \alias{plot.pt}
+\alias{plot,pt,missing-method}
+\alias{plot,pt-method}
 
 \title{Plot pt (pressure-temperature) recorder data}
 
 \description{Plot pt temperature-depth recorder data}
 
-\usage{\method{plot}{pt}(x,
+\usage{\S4method{plot}{pt}(x,
      which=1:4, title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
@@ -86,4 +88,5 @@ plot(ptr, which=c(1,3),
     PT objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
+
 \keyword{hplot}
