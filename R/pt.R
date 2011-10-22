@@ -13,13 +13,46 @@ setMethod(f="initialize",
 setMethod(f="[[",
           signature="pt",
           definition=function(x, i, j, drop) {
-              ## 'j' can be for times, as in OCE
-              ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("time", "pressure", "temperature"))
-              if (i == "time") return(x@data$time)
-              else if (i == "pressure") return(x@data$pressure)
-              else if (i == "temperature") return(x@data$temperature)
-              else stop("cannot access \"", i, "\"") # cannot get here
+              if (i %in% names(x@metadata)) return(x@metadata[[i]])
+              else if (i %in% names(x@data)) return(x@data[[i]])
+              else stop("there is no item named \"", i, "\" in this pt object")
+          })
+
+setMethod(f="[[<-",
+          signature="pt",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
+              else if (i %in% names(x@data)) x@data[[i]] <- value
+              else stop("there is no item named \"", i, "\" in this pt object")
+              validObject(x)
+              invisible(x)
+          })
+
+setValidity("pt",
+            function(object) {
+                ndata <- length(object@data)
+                lengths <- vector("numeric", ndata)
+                for (i in 1:ndata)
+                    lengths[i] <- length(object@data[[i]])
+                if (var(lengths) != 0) {
+                    cat("lengths of data elements are unequal\n")
+                    return(FALSE)
+                } else
+                    return(TRUE)
+            })
+
+setMethod(f="show",
+          signature="pt",
+          definition=function(object) {
+              if ("filename" %in% names(object@metadata) && object[["filename"]] != "")
+                  cat("PT from file '", object[["filename"]], "' has column data\n", sep="")
+              else
+                  cat("PT has column data\n", sep="")
+              names <- names(object@data)
+              ncol <- length(names)
+              for (i in 1:ncol) {
+                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
+              }
           })
 
 as.pt <- function(time, temperature, pressure,
@@ -40,19 +73,17 @@ as.pt <- function(time, temperature, pressure,
         stop("lengths of 'time' and 'temperature' must match")
     if (length(time) != length(pressure))
         stop("lengths of 'time' and 'pressure' must match")
-    data <- list(time=time, temperature=temperature, pressure=pressure)
-    metadata <- list(filename=filename,
-                     instrumentType=instrumentType,
-                     serialNumber=serialNumber,
-                     model=model,
-                     pressureAtmospheric=if(missing(pressureAtmospheric)) NA else pressureAtmospheric)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     processingLogItem <- processingLogItem(processingLog)
-    rval <- list(data=data, metadata=metadata, processingLog=processingLogItem)
-    class(rval) <- c("pt", "oce")
+    res <- new("pt", time, pressure, temperature, filename)
+    res@metadata$instrumentType <- instrumentType
+    res@metadata$model <- model
+    res@metadata$serialNumber <- serialNumber
+    res@metadata$pressureAtmospheric <- pressureAtmospheric
+    res@processingLog <- unclass(processingLog(res@processingLog, processingLog))
     oceDebug(debug, "\b} # as.pt()\n", sep="")
-    rval
+    res
 }
 
 plot.pt <- function(x, which=1:4, title="", adorn=NULL,
@@ -251,6 +282,7 @@ read.pt <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     ##header <- scan(file, what='char', sep="\n", n=19, quiet=TRUE)
     header <- c()
     measurementStart <-measurementEnd <- measurementDeltat <- NULL
+    pressureAtmospheric <- NA
     if (!missing(type) && type == 'rsk') {
         ## code based on test files and personal communication with RBR:
         ##   2011-10-11 RBR-DEK send test file and schema documentation [preliminary]
@@ -417,7 +449,8 @@ read.pt <- function(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         model <- ""
     }
     rval <- as.pt(time, temperature, pressure, instrumentType="rbr",
-                  serialNumber=serialNumber, model=model, pressureAtmospheric=pressureAtmospheric,
+                  serialNumber=serialNumber, model=model,
+                  pressureAtmospheric=pressureAtmospheric,
                   filename=filename,
                   processingLog=paste(deparse(match.call()), sep="", collapse=""),
                   debug=debug-1)

@@ -47,8 +47,8 @@
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{This is used by \code{\link{read.pt}}, and the help for the latter
-   function lists other relevant functions.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
 

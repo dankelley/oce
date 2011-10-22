@@ -28,12 +28,8 @@ function relating to the "t" distribution.
 
 \references{\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}}
 
-\seealso{See \code{\link{read.pt}} for reading such files, 
-\code{\link{plot.pt}} for plotting them, 
-\code{\link{summary.pt}} for summarizing them,
-\code{\link{ptPatm}} for determining the atmospheric pressure,
-and
-\code{\link{ptTrim}} for a crude method of removing in-air samples.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

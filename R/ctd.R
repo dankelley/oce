@@ -48,11 +48,10 @@ setValidity("ctd",
 setMethod(f="show",
           signature="ctd",
           definition=function(object) {
-              filename <- object[["filename"]]
-              if (is.null(filename) || filename == "")
-                  cat("CTD has column data\n", sep="")
-              else
+              if ("filename" %in% names(object@metadata) && object[["filename"]] != "")
                   cat("CTD from file '", object[["filename"]], "' has column data\n", sep="")
+              else
+                  cat("CTD has column data\n", sep="")
               names <- names(object@data)
               ncol <- length(names)
               for (i in 1:ncol) {

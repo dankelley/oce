@@ -22,8 +22,8 @@
 \value{An object of class \code{"summary.pt"}, which contains
   pertinent information about the TDR record and its processing.}
 
-\seealso{See \code{\link{read.pt}} for more information on dealing
-  with the \code{pt} data type, including examples.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
