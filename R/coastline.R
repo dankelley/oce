@@ -9,57 +9,7 @@ setMethod(f="initialize",
               .Object@processingLog$value=c(.Object@processingLog$value, "create 'coastline' object")
               return(.Object)
           })
-
-setMethod(f="[[",
-          signature="coastline",
-          definition=function(x, i, j, drop) {
-              if (i == "latitude") x@data$latitude
-              else if (i == "longitude") x@data$longitude
-              else if (i == "filename") x@metadata$filename
-              else NULL
-          })
-
-setMethod(f="[[<-",
-          signature="coastline",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
-              else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this coastline object")
-              validObject(x)
-              invisible(x)
-          })
-
-setValidity("coastline",
-            function(object) {
-                if (inherits(object, "coastline")) {
-                    ndata <- length(object@data)
-                    lengths <- vector("numeric", ndata)
-                    for (i in 1:ndata)
-                        lengths[i] <- length(object@data[[i]])
-                    if (var(lengths) != 0) {
-                        cat("lengths of data elements are unequal\n")
-                        return(FALSE)
-                    } else
-                        return(TRUE)
-                }
-            })
-
-
-
-setMethod(f="show",
-          signature="coastline",
-          definition=function(object) {
-              filename <- object[["filename"]]
-              if (is.null(filename) || filename == "")
-                  cat("Coastline has column data\n", sep="")
-              else
-                  cat("Coastline from file '", object[["filename"]], "' has column data\n", sep="")
-              names <- names(object@data)
-              ncol <- length(names)
-              for (i in 1:ncol) {
-                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
-              }
-          })
+## the default 'oce' object is sufficient for other methods
 
 as.coastline <- function(latitude, longitude)
 {
