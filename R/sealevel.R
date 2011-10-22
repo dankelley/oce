@@ -89,7 +89,8 @@ as.sealevel <- function(elevation,
         deltat <- as.numeric(difftime(time[2], time[1], units="hours"))
     if (is.na(deltat) | deltat <= 0)
         deltat <- 1
-    metadata <- list(header=header,
+    metadata <- list(filename="",
+                     header=header,
                      year=year,
                      stationNumber=stationNumber,
                      stationVersion=stationVersion,
@@ -105,9 +106,10 @@ as.sealevel <- function(elevation,
                      n=length(t),
                      deltat=deltat)
     logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- new("sealevel", elevation, time)
+    rval <- new('sealevel', time=time, elevation=elevation)
     rval@metadata <- metadata
-    ## FIXME: should update processingLog
+    rval@processingLog <- unclass(processingLog(rval@processingLog,
+                                                paste(deparse(match.call()),sep="",collapse="")))
     rval
 }
 
@@ -455,8 +457,7 @@ summary.sealevel <- function(object, ...)
 #                 gmtOffset=if (is.na(object@metadata$GMTOffset)) "?" else object@metadata$GMTOffset,
 #                 threes=threes,
 #                 processingLog=object@processingLog)
-    cat("--C\n")
-    cat("Sealevel Summary\n---------------\n\n")
+    cat("Sealevel Summary\n----------------\n\n")
     showMetadataItem(object, "number",  "number:              ")
     showMetadataItem(object, "version", "version:             ")
     showMetadataItem(object, "name",    "name:                ")
