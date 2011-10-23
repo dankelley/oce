@@ -220,8 +220,8 @@ swConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 swDepth <- function(pressure, latitude=45, degrees=TRUE)
 {
     if (inherits(pressure, "ctd")) {
-        latitude <- abs(pressure$metadata$latitude)
-        pressure <- pressure$data$pressure # over-writes pressure
+        latitude <- abs(pressure@metadata$latitude)
+        pressure <- pressure@data$pressure # over-writes pressure
     }
     if (degrees) latitude <- latitude * 0.0174532925199433
     x <- sin(latitude)^2

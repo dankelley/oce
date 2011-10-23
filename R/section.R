@@ -246,16 +246,16 @@ setMethod(f="plot",
                       points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                       points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
                       if (indicate.stations) {
-                          dx <- 5 * mean(diff(sort(x$metadata$longitude)),na.rm=TRUE)
-                          dy <- 5 * mean(diff(sort(x$metadata$latitude)),na.rm=TRUE)
-                          xlab <- x$metadata$longitude[1] - dx * sign(x$metadata$longitude[2] - x$metadata$longitude[1])
-                          ylab <- x$metadata$latitude[1]  - dy * sign(x$metadata$latitude[2]  - x$metadata$latitude[1])
-                          text(xlab, ylab, x$metadata$stationId[1])
-                          xlab <- x$metadata$longitude[numStations] -
-                          dx * sign(x$metadata$longitude[numStations-1] - x$metadata$longitude[numStations])
-                          ylab <- x$metadata$latitude[numStations]  -
-                          dy * sign(x$metadata$latitude[numStations-1]  - x$metadata$latitude[numStations])
-                          text(xlab, ylab, x$metadata$stationId[numStations])
+                          dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
+                          dy <- 5 * mean(diff(sort(x@metadata$latitude)),na.rm=TRUE)
+                          xlab <- x@metadata$longitude[1] - dx * sign(x@metadata$longitude[2] - x@metadata$longitude[1])
+                          ylab <- x@metadata$latitude[1]  - dy * sign(x@metadata$latitude[2]  - x@metadata$latitude[1])
+                          text(xlab, ylab, x@metadata$stationId[1])
+                          xlab <- x@metadata$longitude[numStations] -
+                          dx * sign(x@metadata$longitude[numStations-1] - x@metadata$longitude[numStations])
+                          ylab <- x@metadata$latitude[numStations]  -
+                          dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
+                          text(xlab, ylab, x@metadata$stationId[numStations])
                       }
                   } else {                        # not a map
                       if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient")
@@ -322,11 +322,7 @@ setMethod(f="plot",
                       } else {
                           wd <- NA
                           if (is.na(temp[len])) {
-                              ##cat("bottom temperature is missing\n")
-                              ##print(data.frame(p=x$data$station[[stationIndices[[i]]]]$data$pressure, temp=temp))
                               wdi <- len - which(!is.na(rev(temp)))[1] + 1
-                              ##cat("BOTTOM T:");print(temp[wdi])
-                              ##cat("BOTTOM p:");print(x$data$station[[stationIndices[i]]]$data$pressure[wdi])
                               wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
                               oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
                           } else {
@@ -334,14 +330,10 @@ setMethod(f="plot",
                           }
                       }
                       in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
-                      ##cat("check==\n")
-                      ##print(x$data$station[[stationIndices[i]]]$data$temperature)
-                      ##stop()
-                      ##cat("in.land=");print(in.land)
                       if (!is.na(wd)) {
                           waterDepth <- c(waterDepth, wd)
                       } else {
-                          waterDepth <- c(waterDepth, max(x$data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
+                          waterDepth <- c(waterDepth, max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
                       }
                   }
 
@@ -777,7 +769,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	    } else { # FIXME should insist numeric
 		p.max <- 0
 		for (i in 1:n) {
-		    p <- section@data$station[[i]]$data$pressure
+		    p <- section@data$station[[i]]@data$pressure
 		    p.max <- max(c(p.max, p))
 		}
 		pt <- seq(0, p.max, p)
@@ -789,10 +781,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
     ## BUG should handle all variables (but how to interpolate on a flag?)
     res <- section
     for (i in 1:n) {
-	##cat("BEFORE:");print(res$data$station[[i]]$data$temperature[1:6])
 	res@data$station[[i]] <- ctdDecimate(section@data$station[[i]], p=pt, method=method, debug=debug-1, ...)
-	##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
-	##cat("\n")
     }
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # sectionGrid\n")

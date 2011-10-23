@@ -110,7 +110,6 @@ summary.adv <- function(object, ...)
                 format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
                 format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
                 1 / object@metadata$subsampleDeltat), ...)
-    ## cat("  Beam angle:           ", object@metadata$metadata$beamAngle, "\n")
     if ("burst" == object@metadata$samplingMode) {
         cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
     } else {

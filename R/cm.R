@@ -251,7 +251,7 @@ plot.cm <- function(x,
     oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!inherits(x, "cm"))
         stop("method is only for cm objects")
-    if (!(is.null(x$metadata$have.actual.data) || x$metadata$have.actual.data)) {
+    if (!(is.null(x@metadata$have.actual.data) || x@metadata$have.actual.data)) {
         warning("there are no profiles in this dataset")
         return
     }
@@ -309,27 +309,27 @@ plot.cm <- function(x,
         adorn.length <- lw
     }
 
-    tt <- x$data$time
+    tt <- x@data$time
     class(tt) <- "POSIXct"              # otherwise image() gives warnings
     if (lw > 1) {
         par(mfrow=c(lw, 1))
         oceDebug(debug, "calling par(mfrow=c(", lw, ", 1)\n")
     }
-    len <- length(x$data$u)
+    len <- length(x@data$u)
     for (w in 1:lw) {
         oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
         if (which[w] == 1) {
-            oce.plot.ts(x$data$time, x$data$u,
+            oce.plot.ts(x@data$time, x@data$u,
                         type=type, xlab="", ylab="u [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 2) {
-            oce.plot.ts(x$data$time, x$data$v,
+            oce.plot.ts(x@data$time, x@data$v,
                         type=type, xlab="", ylab="v [m/s]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 3) {     # or "progressive vector"
             oceDebug(debug, "progressive vector plot\n")
-            dt <- as.numeric(difftime(x$data$time[2], x$data$time[1],units="sec")) # FIXME: assuming equal dt
+            dt <- as.numeric(difftime(x@data$time[2], x@data$time[1],units="sec")) # FIXME: assuming equal dt
             m.per.km <- 1000
-            u <- x$data$u
-            v <- x$data$v
+            u <- x@data$u
+            v <- x@data$v
             u[is.na(u)] <- 0        # zero out missing
             v[is.na(v)] <- 0
             x.dist <- cumsum(u) * dt / m.per.km
@@ -338,13 +338,13 @@ plot.cm <- function(x,
         } else if (which[w] %in% 4:6) {     # "uv" (if 4), "uv+ellipse" (if 5), or "uv+ellipse+arrow" (if 6)
             oceDebug(debug, "\"uv\", \"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
             if (len <= small)
-                plot(x$data$u, x$data$v, type=type, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                plot(x@data$u, x@data$v, type=type, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             else
-                smoothScatter(x$data$u, x$data$v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
+                smoothScatter(x@data$u, x@data$v, xlab="u [m/s]", ylab="v [m/s]", asp=1, ...)
             if (which[w] >= 5) {
                 oceDebug(debug, "\"uv+ellipse\", or \"uv+ellipse+arrow\" plot\n")
-                ok <- !is.na(x$data$u) & !is.na(x$data$v)
-                e <- eigen(cov(data.frame(u=x$data$u[ok], v=x$data$v[ok])))
+                ok <- !is.na(x@data$u) & !is.na(x@data$v)
+                e <- eigen(cov(data.frame(u=x@data$u[ok], v=x@data$v[ok])))
                 major <- sqrt(e$values[1])
                 minor <- sqrt(e$values[2])
                 theta <- seq(0, 2*pi, length.out=360/5)
@@ -358,26 +358,26 @@ plot.cm <- function(x,
                 lines(xxyy[1,], xxyy[2,], lwd=2, col=col)
                 if (which[w] >= 6) {
                     oceDebug(debug, "\"uv+ellipse+arrow\" plot\n")
-                    umean <- mean(x$data$u, na.rm=TRUE)
-                    vmean <- mean(x$data$v, na.rm=TRUE)
+                    umean <- mean(x@data$u, na.rm=TRUE)
+                    vmean <- mean(x@data$v, na.rm=TRUE)
                     arrows(0, 0, umean, vmean, lwd=5, length=1/10, col="yellow")
                     arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                 }
             }
         } else if (which[w] == 7) {
-            oce.plot.ts(x$data$time, x$data$depth,
+            oce.plot.ts(x@data$time, x@data$depth,
                         type=type, xlab="", ylab="Depth [m]", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 8) {
-            oce.plot.ts(x$data$time, x$data$salinity,
+            oce.plot.ts(x@data$time, x@data$salinity,
                         type=type, xlab="", ylab=resizableLabel("S", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 9) {
-            oce.plot.ts(x$data$time, x$data$temperature,
+            oce.plot.ts(x@data$time, x@data$temperature,
                         type=type, xlab="", ylab=resizableLabel("T", "y"), main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 10) {
-            oce.plot.ts(x$data$time, x$data$heading,
+            oce.plot.ts(x@data$time, x@data$heading,
                         type=type, xlab="", ylab="Heading", main=main, mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5), ...)
         } else if (which[w] == 11) {
-            plotTS(as.ctd(x$data$salinity, x$data$temperature, x$data$depth), main=main, ...)
+            plotTS(as.ctd(x@data$salinity, x@data$temperature, x@data$depth), main=main, ...)
         } else {
             stop("unknown value of which (", which[w], ")")
         }
