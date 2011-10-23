@@ -121,15 +121,13 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      orientation="upward") # guess
     nt <- length(time)
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
-    hitem <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=hitem)
     res <- new("adv", time=time, v=v, a=a, q=q)
     res@data$heading <- rep(0, nt)
     res@data$pitch <- rep(0, nt)
     res@data$roll <- rep(0, nt)
     res@data$temperature <- temperature
     res@data$pressure <- pressure
-    res@metdata <- metadata
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
