@@ -70,20 +70,28 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     serialNumber <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
     velocityScale <- 0.1e-3
+    time <- start[1] + (serialNumber - serialNumber[1]) * deltat
+    res <- new("adv", time=time, filename=filename)
+    rm(time)
     v <- array(numeric(), dim=c(len, 3))
     v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
     v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
     v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    rm(v)
     a <- array(raw(), dim=c(len, 3))
     a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
     a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
     a[,3] <- as.raw(readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$a <- a
+    rm(a)
     c <- array(raw(), dim=c(len, 3))
     c[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
     c[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
     c[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
-    pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
+    res@data$c <- c
+    rm(c)
+    res@data$temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
+    res@data$pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
 
     ## FIXME: Sontek ADV transformation matrix equal for all units?  (Nortek Vector is not.)
     ## below for sontek serial number B373H
@@ -99,7 +107,6 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     ##                              c(  291,  9716, -10002),
     ##                              c( 1409,  1409,   1409)) / 4096
     transformationMatrix <- NULL
-    time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv",
@@ -121,16 +128,14 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      orientation="upward") # guess
     nt <- length(time)
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
-    res <- new("adv", time=time, v=v, a=a, q=q)
     res@data$heading <- rep(0, nt)
     res@data$pitch <- rep(0, nt)
     res@data$roll <- rep(0, nt)
-    res@data$temperature <- temperature
-    res@data$pressure <- pressure
     res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, processingLog)
+    gc()
     res
 }
 
