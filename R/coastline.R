@@ -345,11 +345,11 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         oceDebug(debug, "intersects.box=", intersects.box, "\n")
         number.parts <- readBin(buf[o + 45:48], "integer", n=1, size=4, endian="little")
         oceDebug(debug, "number.parts=", number.parts, "\n")
-        number.points <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little", signed=FALSE)
+        number.points <- readBin(buf[o + 49:52], "integer", n=1, size=4, endian="little")
         oceDebug(debug, "number.points=", number.points, "\n")
         if (intersects.box) {
             part.offset <- readBin(buf[o + 53+0:(-1+4*number.parts)],
-                                   "integer", n=number.parts, size=4, endian="little", signed=FALSE)
+                                   "integer", n=number.parts, size=4, endian="little")
             xy <- matrix(readBin(buf[o + 53 + 4 * number.parts + 0:(-1 + 2 * number.points * 8)],
                                  "double", n=number.points*2, size=8), ncol=2, byrow=TRUE)
             look <- c(1 + part.offset, number.points)

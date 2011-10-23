@@ -245,11 +245,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
             stop("cannot handle data files for ADV files that lack pressure data")
 
         ## we report pressure in dbar, so use the fact that 1 nanobar/count = 1e-8 dbar/count
-        metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little", signed=FALSE)
+        metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little")
         oceDebug(debug, "pressureScale=", metadata$pressureScale,"dbar/count (header gives in nanobar/count)\n")
 
         ## we report pressure in dbar, so use the fact that 1 microbar = 1e-5 dbar
-        metadata$pressureOffset <- 1e-5 * readBin(hardwareConfiguration[13:16], "integer", size=4, n=1, endian="little", signed=TRUE)
+        metadata$pressureOffset <- 1e-5 * readBin(hardwareConfiguration[13:16], "integer", size=4, n=1, endian="little")
         oceDebug(debug, "pressureOffset=", metadata$pressureOffset,"dbar (header gives in microbar)\n")
 
         metadata$compassOffset <- readBin(hardwareConfiguration[23:24], "integer", size=2, n=1, endian="little", signed=TRUE)

@@ -550,7 +550,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     pppp <- sort(c(p, p+1, p+2, p+3)) # for 4-byte addressing ('long' in the Sontek docs)
 
     ## read profile-specific things profile by profile
-    profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4, signed=FALSE)
+    profile.number <- readBin(buf[pppp+14], "integer", n=np, size=4)
     ## FIXME: should check that profile number is monotonic ... it may
     ## help us with daily blank-outs, also!
     year <- readBin(buf[pp+18],"integer",n=np,size=2,signed=FALSE)
