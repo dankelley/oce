@@ -1016,7 +1016,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("method is only for objects of class \"adp\"")
     if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates")
-    if (grep(".*rdi.*", x@metadata$manufacturer)) {
+    if (length(grep(".*rdi.*", x@metadata$manufacturer))) {
         if (x@metadata$numberOfBeams != 4)
             stop("can only handle 4-beam ADP units from RDI")
         res <- x
@@ -1035,7 +1035,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3] + tm[2,4] * V[,,4]
         res@data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3] + tm[3,4] * V[,,4]
         res@data$v[,,4] <- tm[4,1] * V[,,1] + tm[4,2] * V[,,2] + tm[4,3] * V[,,3] + tm[4,4] * V[,,4]
-    } else if (grep(".*nortek.*", x@metadata$manufacturer)) {
+    } else if (length(grep(".*nortek.*", x@metadata$manufacturer))) {
         if (x@metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from nortek")
         if (is.null(x@metadata$transformationMatrix))
@@ -1051,7 +1051,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@data$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
         res@data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
         res@data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
-    } else if (grep(".*sontek.*", x@metadata$manufacturer)) {
+    } else if (length(grep(".*sontek.*", x@metadata$manufacturer))) {
         if (x@metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from sontek")
         if (is.null(x@metadata$transformationMatrix))
