@@ -313,7 +313,9 @@ as.topo <- function(longitude, latitude, z, filename="", processingLog)
     if (missing(processingLog))
         processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
     rval <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename)
-    rval@processingLog <- unclass(processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    rval@processingLog <- processingLog(rval@processingLog, processingLog)
     rval
 }
 

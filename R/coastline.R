@@ -17,8 +17,7 @@ as.coastline <- function(latitude, longitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
     rval <- new("coastline", latitude=latitude, longitude=longitude)
-    hitem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval@processingLog <- unclass(processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -189,8 +188,6 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
     oceDebug(debug, "\b\bread.coastline() {\n")
     file <- fullFilename(file)
     type <- match.arg(type)
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
     if (type == "shapefile") {
         res <- read.coastline.shapefile(file, monitor=monitor, debug=debug)
     } else if (type == "R" || type == "S") {
@@ -241,7 +238,8 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLogItem(processingLog))
     oceDebug(debug, "\b\b} # read.coastline()\n")
     res
 }
@@ -374,7 +372,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # read.shape()\n")
     res
 }

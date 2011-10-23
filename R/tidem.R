@@ -521,7 +521,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                  p=p)
     rval <- new('tidem')
     rval@data <- data
-    rval@processingLog <- unclass(processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 

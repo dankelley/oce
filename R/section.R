@@ -68,8 +68,7 @@ sectionSort <- function(section, by=c("stationId", "distance"))
     } else {
 	stop("argument 'by' is incorrect")
     }
-    ##rval$processingLog <- processingLog(rval$processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    ##FIXME processingLog
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -77,8 +76,6 @@ makeSection <- function(item, ...)
 {
     if (inherits(item, "ctd")) {
 	extra.args <- list(...)
-        if (!isS4(item))
-            item <- makeS4(item)
 	numStations <- 1 + length(extra.args)
 	station <- vector("list", numStations)
 	stn <- vector("character", numStations)
@@ -92,8 +89,6 @@ makeSection <- function(item, ...)
 	    for (i in 2:numStations) {
                 ##cat("adding station i=", i, "\n")
                 thisStn <- extra.args[[i-1]]
-                if (!isS4(thisStn))
-                    thisStn <- makeS4(thisStn)
 		stn[i] <- thisStn@metadata$station
 		lat[i] <- thisStn@metadata$latitude
 		lon[i] <- thisStn@metadata$longitude
@@ -109,8 +104,6 @@ makeSection <- function(item, ...)
 	if (numStations > 1) {
 	    for (i in 1:numStations) {
                 thisItem <- item[[i]]
-                if (!isS4(thisItem))
-                    thisItem <- makeS4(thisItem)
 		stn[i] <- thisItem@metadata$station
 		lat[i] <- thisItem@metadata$latitude
 		lon[i] <- thisItem@metadata$longitude
@@ -132,8 +125,6 @@ makeSection <- function(item, ...)
 	    ##oceDebug(1, "ctd objects\n")
 	    for (i in 1:numStations) {
                 thisItem <- get(item[[i]])
-                if (!isS4(thisItem))
-                    thisItem <- makeS4(thisItem)
 		stn[i] <- thisItem@metadata$station
 		lat[i] <- thisItem@metadata$latitude
 		lon[i] <- thisItem@metadata$longitude
@@ -157,8 +148,7 @@ makeSection <- function(item, ...)
     res <- new("section")
     res@metadata <- list(sectionId="", stationId=stn, latitude=lat, longitude=lon)
     res@data <- list(station=station)
-    ## FIXME processingLog
-    ##hitem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -169,8 +159,6 @@ makeSection <- function(item, ...)
         stop("'section' is not a section")
     if (!inherits(station, "ctd"))
         stop("'station' is not a station")
-    if (!isS4(station))
-        station <- makeS4(station)
     res <- section
     n.orig <- length(section@data$station)
     s <- vector("list", n.orig + 1)
@@ -181,8 +169,7 @@ makeSection <- function(item, ...)
     res@metadata$latitude <- c(res@metadata$latitude, station@metadata$latitude)
     res@metadata$longitude <- c(res@metadata$longitude, station@metadata$longitude)
     res@metadata$stationId <- c(res@metadata$stationId, station@metadata$station)
-    res@processingLog <- unclass(processingLog(res@processingLog,
-                                               paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -807,7 +794,7 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
 	##cat("AFTER: ");print(res$data$station[[i]]$data$temperature[1:6])
 	##cat("\n")
     }
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # sectionGrid\n")
     res
 }
@@ -819,12 +806,6 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
     oceDebug(debug, "\bsection.smooth(section,debug=", debug, ", ...) {\n", sep="")
     if (!inherits(section, "section"))
         stop("method is only for section objects")
-    ## convert all to S4, if not already
-    for (istation in seq_along(section@data$station)) {
-        ##cat("converting station", istation, "\n")
-        if (!isS4(section@data$station[[istation]]))
-            section@data$station[[istation]] <- makeS4(section@data$station[[istation]])
-    }
     nstn <- length(section@data$station)
     nprs <- length(section@data$station[[1]]@data$pressure)
     if (missing(df))
@@ -869,7 +850,7 @@ sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
 	res@data$station[[s]]@data$salinity <- salinityMat[,s]
 	res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
     }
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # section.smooth()\n")
     res
 }

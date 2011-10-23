@@ -108,8 +108,7 @@ as.sealevel <- function(elevation,
     logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
     rval <- new('sealevel', time=time, elevation=elevation)
     rval@metadata <- metadata
-    rval@processingLog <- unclass(processingLog(rval@processingLog,
-                                                paste(deparse(match.call()),sep="",collapse="")))
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
     rval
 }
 
@@ -432,8 +431,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     rval <- new('sealevel', time=time, elevation=elevation)
     rval@metadata <- metadata
-    rval@processingLog <- unclass(processingLog(rval@processingLog,
-                                                paste(deparse(match.call()),sep="",collapse="")))
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
     rval
 }
 

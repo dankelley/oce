@@ -881,14 +881,12 @@ oceColorsGebco <- function(n=9, region=c("water", "land", "both"), type=c("fill"
 
 addColumn <- function (x, data, name)
 {
-    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: can remove noce later
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (missing(data))
         stop("must supply data")
     if (missing(name))
         stop("must supply name")
-    if (!isS4(x)) 
-        x <- makeS4(x)
     n <- length(data)
     nd <- length(x@data)
     if (n != length(data))
@@ -906,7 +904,7 @@ addColumn <- function (x, data, name)
 
 decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 {
-    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: noce
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
@@ -1003,7 +1001,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
 
 oceSmooth <- function(x, ...)
 {
-    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: remove noce later
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     res <- x
     if (inherits(x, "adp")) {
@@ -1032,8 +1030,7 @@ oceSmooth <- function(x, ...)
         }
         warning("oceSmooth() has recently been recoded for 'adv' objects -- do not trust it yet!")
     } else if (inherits(x, "ctd")) {
-        if (!isS4(x))
-            res <- makeS4(x)
+        res <- x
         for (name in names(x@data))
             res@data[[name]] <- smooth(x@data[[name]], ...)
     } else {
@@ -1443,17 +1440,6 @@ drawPalette <- function(zlim,
     oceDebug(debug, "drawPalette at end mar=",par('mar'),"\n")
     oceDebug(debug, "\b\b} # drawPalette()\n")
     invisible()
-}
-
-makeS4 <- function(x)
-{
-    ## FIXME: need to keep class inheritance
-    rval <- new('noce')
-    ##class(rval) <- c(class(rval)[1], class(x)[1])
-    rval@metadata <- x$metadata
-    rval@data <- x$data
-    rval@processingLog <- unclass(x$processingLog)
-    rval
 }
 
 showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE)

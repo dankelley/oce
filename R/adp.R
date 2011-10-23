@@ -12,34 +12,6 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-setMethod(f="[[",
-          signature="adp",
-          definition=function(x, i, j, drop) {
-              if (i == "filename") return(x@metadata$filename)
-              else if (i == "time") return(x@data$time)
-              else if (i == "u1") return(x@data$v[,,1])
-              else if (i == "u2") return(x@data$v[,,2])
-              else if (i == "u3") return(x@data$v[,,3])
-              else if (i == "u4") return(x@data$v[,,4]) # FIXME: may fail
-              else if (i == "heading") {
-                  if ("heading" %in% names(x@data)) return(x@data$heading)
-                  else if ("headingSlow" %in% names(x@data)) return(x@data$headingSlow)
-                  else return(NULL)
-              } else if (i == "pitch") {
-                  if ("pitch" %in% names(x@data)) return(x@data$pitch)
-                  else if ("pitchSlow" %in% names(x@data)) return(x@data$pitchSlow)
-                  else return(NULL)
-              } else if (i == "roll") {
-                  if ("roll" %in% names(x@data)) return(x@data$roll)
-                  else if ("rollSlow" %in% names(x@data)) return(x@data$rollSlow)
-                  else return(NULL)
-              } else if (i == "temperature") {
-                  return(x@data$temperature)
-              } else {
-                  stop("cannot access \"", i, "\"") # cannot get here
-              }
-          })
-
 setMethod(f="show",
           signature="adp",
           definition=function(object) {
@@ -84,7 +56,7 @@ head.adp <- function(x, n = 6L, ...)
             rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- unclass(processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -107,7 +79,7 @@ tail.adp <- function(x, n = 6L, ...)
             rval@data[[name]] <- x@data[[name]][look] # for reasons unknown, 'time' is not a vector
         }
     }
-    rval@processingLog <- unclass(processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval 
 }
 
@@ -120,7 +92,7 @@ removeShipMotion <- function(x)
     for (beam in 1:numberOfBeams) {
         rval@data$v[,,beam] <- rval@data$v[,,beam] - rval@data$bottomVelocity[,beam]
     }
-    rval@processingLog <- unclass(processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
@@ -1031,7 +1003,7 @@ beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getO
         res@data$a[,,beam] <- as.raw(tmp)
     }
     res@metadata$oceBeamUnattenuated <- TRUE
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
     res
 }
@@ -1099,7 +1071,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
     res@metadata$oceCoordinate <- "xyz"
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # beamToXyzAdp()\n")
     res
 }
@@ -1215,7 +1187,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res@data$v[,c,3] <- enu$up
     }
     res@metadata$oceCoordinate <- "enu"
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
     res
 }
@@ -1249,7 +1221,7 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         res@data$v[,c,3] <- other$v3new
     }
     res@metadata$oceCoordinate <- "other"
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

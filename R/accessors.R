@@ -1,7 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 extract <- function(x, names)
 {
-    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: later remove noce
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (missing(x))
         stop("must supply 'x'")
@@ -9,8 +9,6 @@ extract <- function(x, names)
         stop("must supply 'names'")
     rval <- list()
     if (inherits(x, "section")) {
-        if (!isS4(x))
-            x <- makeS4(x)
         for (name in names) {
             print(names(x@metadata))
             stationDataNames <- names(x@data$station[[1]]@data)
@@ -84,7 +82,7 @@ extract <- function(x, names)
 
 header <- function(x)
 {
-    if (!inherits(x, "oce") && !inherits(x, "noce"))
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     return(x@metadata$header)
 }
@@ -148,7 +146,6 @@ heading <- function(x, time)
 
 latitude <- function(x, time, byDepth=TRUE)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if (inherits(x, "section")) {
         if (byDepth) {
             nstation <- length(x@data$station)
@@ -172,7 +169,6 @@ latitude <- function(x, time, byDepth=TRUE)
 
 longitude <- function(x, time, byDepth=TRUE)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if (inherits(x, "section")) {
         if (byDepth) {
             nstation <- length(x@data$station)
@@ -196,7 +192,6 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "latitude<-" <- function(x, value)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if ("latitude" %in% names(x@metadata)) {
         x@metadata$latitude <- value[1]
     } else if ("latitude" %in% names(x@data)) {
@@ -209,7 +204,6 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "longitude<-" <- function(x, value)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if ("longitude" %in% names(x@metadata)) {
         x@metadata$longitude <- value[1]
     } else if ("longitude" %in% names(x@data)) {
@@ -222,7 +216,6 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "pressure<-" <- function(x, value)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if (!("pressure" %in% names(x@data)))
         stop("no item 'data$pressure' in object")
     x@data$pressure <- value
@@ -231,7 +224,6 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "salinity<-" <- function(x, value)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if (!("salinity" %in% names(x@data)))
         stop("no item 'data$salinity' in object")
     x@data$salinity <- value
@@ -240,7 +232,6 @@ longitude <- function(x, time, byDepth=TRUE)
 
 "temperature<-" <- function(x, value)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if (!("temperature" %in% names(x@data)))
         stop("no item 'data$temperature' in object")
     x@data$temperature <- value
@@ -250,7 +241,6 @@ longitude <- function(x, time, byDepth=TRUE)
 pitch <- function(x, time)
 {
     if (missing(x)) stop("must supply 'x'")
-    if (!isS4(x)) x <- makeS4(x)
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time@data)) {
             time <- time@data$timeSlow
@@ -284,7 +274,6 @@ pitch <- function(x, time)
 roll <- function(x, time)
 {
     if (missing(x)) stop("must supply 'x'")
-    if (!isS4(x)) x <- makeS4(x)
     if (!missing(time) && inherits(time, "oce")) {
         if ("timeSlow" %in% names(time@data)) {
             time <- time@data$timeSlow
@@ -317,7 +306,6 @@ roll <- function(x, time)
 
 "roll<-" <- function(x, value)
 {
-    if (!isS4(x)) x <- makeS4(x)
     if ("rollSlow" %in% names(x@data)) {
         x@data$rollSlow <- value
     } else if ("roll" %in% names(x@data)) {
@@ -392,7 +380,7 @@ hydrographyLocal <- function(x, time, item) # FIXME consider broadening as repla
             if (missing(time)) {
                 rval <- x@data[[item]]
             } else {
-                if (inherits(time, "oce") || inherits(time, "noce")) { #FIXME: remove noce
+                if (inherits(time, "oce")) {
                     time <- time@data$time # FIXME: if broadening, consider timeSlow also ... FIXME: what if S4
                 } else if (!inherits(as.POSIXct("2008-01-01"), "POSIXt")) {
                     stop("'time' is neither a POSIXt time, nor an oce object containing data$time")

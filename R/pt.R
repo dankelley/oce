@@ -36,8 +36,7 @@ as.pt <- function(time, temperature, pressure,
     res@metadata$pressureAtmospheric <- pressureAtmospheric
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    processingLogItem <- processingLogItem(processingLog)
-    res@processingLog <- unclass(processingLog(res@processingLog, processingLog))
+    res@processingLog <- processingLog(res@processingLog, processingLog)
     oceDebug(debug, "\b} # as.pt()\n", sep="")
     res
 }

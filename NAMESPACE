@@ -56,7 +56,6 @@ export("+.section",
        "heading<-",
        processingLog,
        "processingLog<-",
-       processingLogItem,
        processingLogShow,
        imagep,
        interpBarnes,
@@ -161,7 +160,6 @@ export("+.section",
        sectionGrid,
        sectionSmooth,
        sectionSort,
-       ##showThrees,
        showMetadataItem,
        sigmaTheta,
        silicate,
@@ -169,7 +167,6 @@ export("+.section",
        stickplot,
        subset.oce,
        summary.ctd,
-       summary.processingLog,
        summary.sealevel,
        sunAngle,
        swAlpha,
@@ -222,16 +219,11 @@ export("+.section",
 S3method(head, adp)
 S3method(tail, adp)
 
-##S3method(plot, adp)
-##S3method(plot, adv)
 S3method(plot, cm)
 S3method(plot, coastline)
-##S3method(plot, ctd)
 S3method(plot, drifter)
 S3method(plot, lobo)
 S3method(plot, sealevel)
-##S3method(plot, section)
-##S3method(plot, pt)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)

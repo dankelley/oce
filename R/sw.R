@@ -1,8 +1,6 @@
 swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...) # BUG: think more about best density measure
 {
     if (inherits(pressure, "ctd")) {
-        if (!isS4(pressure))
-            pressure <- makeS4(pressure)
         sigmaTheta <- swSigmaTheta(pressure@data$salinity, pressure@data$temperature, pressure@data$pressure)
         pressure <- pressure@data$pressure # over-writes pressure
     }
@@ -108,8 +106,6 @@ swTFreeze <- function(salinity, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
     }
@@ -121,8 +117,6 @@ swAlpha <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -140,8 +134,6 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta =
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -181,8 +173,6 @@ swBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -220,8 +210,6 @@ swBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta = FALSE)
 swConductivity <- function (salinity, temperature=NULL, pressure=NULL)
 {
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -290,8 +278,6 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -324,8 +310,6 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity)) 
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -363,8 +347,6 @@ swSigma <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -377,8 +359,6 @@ swSigmaT <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -392,8 +372,6 @@ swSigmaTheta <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -407,8 +385,6 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -448,8 +424,6 @@ swSpecificHeat <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <-  salinity@data$temperature
         pressure <-  salinity@data$pressure
         salinity <-  salinity@data$salinity # note: this destroys the ctd object
@@ -484,8 +458,6 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
         salinity <- salinity@data$salinity # note: this destroys the ctd object
@@ -523,10 +495,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     if (missing(salinity))
         stop("must provide salinity")
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            tmp <- makeS4(salinity)
-        else
-            tmp <- salinity
+        tmp <- salinity
         salinity <- tmp@data$salinity
         temperature <- tmp@data$temperature
         pressure <- tmp@data$pressure
@@ -573,8 +542,6 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
 swViscosity <- function(salinity, temperature=NULL)
 {
     if (inherits(salinity, "ctd")) {
-        if (!isS4(salinity))
-            salinity <- makeS4(salinity)
         temperature <-  salinity@data$temperature
         salinity <- salinity@data$salinity # note: this destroys the ctd object
     }

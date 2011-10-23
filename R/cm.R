@@ -167,12 +167,12 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     keep <- keep[keep <= n]
     data <- list(sample=sample[keep], time=time[keep], u=u[keep], v=v[keep], heading=heading[keep], salinity=salinity[keep], temperature=temperature[keep], depth=depth[keep])
     metadata$measurementEnd <- time[length(time)]
-    if (missing(processingLog))
-        processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
     rval <- new('cm')
     rval@metadata <- metadata
     rval@data <- data
-    rval@processingLog<- unclass(processingLog)
+    if (missing(processingLog))
+        processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
+    rval@processingLog<- processingLog
     oceDebug(debug, "\b\b} # read.cm()\n")
     rval
 }

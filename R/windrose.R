@@ -43,7 +43,7 @@ as.windrose <- function(x, y, dtheta = 15)
     res@data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi,
                      count=count, mean=mean, fives=fives)
     res@metadata <- list(dtheta=dtheta)
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

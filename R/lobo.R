@@ -186,7 +186,7 @@ read.lobo <- function(file, cols=7, processingLog)
     hitem <- processingLogItem(processingLog)
     res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure,
                nitrate=nitrate, fluorescence=fluorescence, filename=filename)
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

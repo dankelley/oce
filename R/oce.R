@@ -321,7 +321,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
                      debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\boceEdit() {\n")
-    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: remove noce
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (!missing(item)) {
         if (missing(value))
@@ -397,8 +397,7 @@ oceEdit <- function(x, item, value, action, reason="", person="",
     } else {
         stop("must supply either an 'item' plus a 'value', or an 'action'")
     }
-    warning("should update processingLog")
-    ##x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # oceEdit() \n")
     x
 }
@@ -417,7 +416,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
 {
     debug <- max(0, min(debug, 1))
     oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
-    if (!inherits(x, "oce") && !inherits(x, "noce")) # FIXME: drop noce later
+    if (!inherits(x, "oce"))
         stop("method is only for oce objects")
     if (inherits(x, "cm")) {
         if (!is.null(indices)) {
@@ -630,8 +629,6 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             stop("only 'time' is permitted for subsetting")
         }
     } else if (inherits(x, "ctd")) {
-        if (!isS4(x))
-            x <- makeS4(x)
         rval <- new("ctd")
         rval@metadata <- x@metadata
         for (i in seq_along(x@data)) {
@@ -661,9 +658,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
         rval@metadata$numberOfCells <- dim(rval@data$v)[2]
     }
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # subset.oce\n")
-    ##rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    ##FIXME: processingLog
     rval
 }
 

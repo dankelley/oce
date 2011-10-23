@@ -12,52 +12,52 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-setMethod(f="[[",
-          signature="ctd",
-          definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) return(x@metadata[[i]])
-              else if (i %in% names(x@data)) return(x@data[[i]])
-              else stop("there is no item named \"", i, "\" in this ctd object")
-          })
-
-setMethod(f="[[<-",
-          signature="ctd",
-          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
-              else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this ctd object")
-              validObject(x)
-              invisible(x)
-          })
-
-setValidity("ctd",
-            function(object) {
-                if (inherits(object, "ctd")) {
-                    ndata <- length(object@data)
-                    lengths <- vector("numeric", ndata)
-                    for (i in 1:ndata)
-                        lengths[i] <- length(object@data[[i]])
-                    if (var(lengths) != 0) {
-                        cat("lengths of data elements are unequal\n")
-                        return(FALSE)
-                    } else
-                        return(TRUE)
-                }
-            })
-
-setMethod(f="show",
-          signature="ctd",
-          definition=function(object) {
-              if ("filename" %in% names(object@metadata) && object[["filename"]] != "")
-                  cat("CTD from file '", object[["filename"]], "' has column data\n", sep="")
-              else
-                  cat("CTD has column data\n", sep="")
-              names <- names(object@data)
-              ncol <- length(names)
-              for (i in 1:ncol) {
-                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
-              }
-          })
+##setMethod(f="[[",
+##          signature="ctd",
+##          definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
+##              if (i %in% names(x@metadata)) return(x@metadata[[i]])
+##              else if (i %in% names(x@data)) return(x@data[[i]])
+##              else stop("there is no item named \"", i, "\" in this ctd object")
+##          })
+##
+##setMethod(f="[[<-",
+##          signature="ctd",
+##          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+##              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
+##              else if (i %in% names(x@data)) x@data[[i]] <- value
+##              else stop("there is no item named \"", i, "\" in this ctd object")
+##              validObject(x)
+##              invisible(x)
+##          })
+##
+##setValidity("ctd",
+##            function(object) {
+##                if (inherits(object, "ctd")) {
+##                    ndata <- length(object@data)
+##                    lengths <- vector("numeric", ndata)
+##                    for (i in 1:ndata)
+##                        lengths[i] <- length(object@data[[i]])
+##                    if (var(lengths) != 0) {
+##                        cat("lengths of data elements are unequal\n")
+##                        return(FALSE)
+##                    } else
+##                        return(TRUE)
+##                }
+##            })
+##
+##setMethod(f="show",
+##          signature="ctd",
+##          definition=function(object) {
+##              if ("filename" %in% names(object@metadata) && object[["filename"]] != "")
+##                  cat("CTD from file '", object[["filename"]], "' has column data\n", sep="")
+##              else
+##                  cat("CTD has column data\n", sep="")
+##              names <- names(object@data)
+##              ncol <- length(names)
+##              for (i in 1:ncol) {
+##                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
+##              }
+##          })
 
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
@@ -143,11 +143,10 @@ as.ctd <- function(salinity, temperature, pressure,
                      names=c("salinity", "temperature", "pressure", "sigmaTheta"), # FIXME: incorrect names and labels
                      labels=c("Salinity", "Temperature", "Pressure", expression(sigma[theta])),
                      src=src)
-    hitem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
     res <- new('ctd')
     res@metadata <- metadata
     res@data <- data
-    res@processingLog <- unclass(hitem)
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -170,9 +169,8 @@ ctdAddColumn <- function (x, column, name, label, debug = FALSE)
         res@metadata$names <- c(res@metadata$names, name)
         res@metadata$labels <- c(res@metadata$labels, label)
     }
-    ## FIXME: add to processingLog
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b} # ctdAddColumn()\n", sep="")
-    ##res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -182,13 +180,6 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
     oceDebug(debug, "\bctdDecimate(x, p, method=\"", method, "\", ...) {\n", sep="")
     if (!inherits(x, "ctd"))
         stop("method is only for ctd objects")
-    if (!isS4(x)) {
-        xx <- new('ctd')
-        xx@metadata <- x$metadata
-        xx@data <- x$data
-        xx@processingLog <- unclass(x$processingLog)
-        x <- xx
-    }
     res <- x
     n <- length(x@data$pressure)
     if (n < 2) {
@@ -287,8 +278,7 @@ ctdDecimate <- function(x, p, method=c("approx", "boxcar","lm","reiniger-ross"),
         data.new[["pressure"]] <- pt
     }
     res@data <- data.new
-    #res$processingLog <- processingLog(res$processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    ## FIXME update processingLog
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # ctdDecimate()\n")
     res
 }
@@ -427,9 +417,6 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
 
 ctdUpdateHeader <- function (x, debug = FALSE)
 {
-    if (!isS4(x)) {
-        x <- makeS4(x)
-    }
     if (length(x@metadata$header) < 1)
         stop("there is no header in this CTD object")
     if (length(x@data) < 1)
@@ -1376,7 +1363,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     processingLogItem <- processingLogItem(processingLog)
-    res@processingLog <- unclass(processingLog(res@processingLog, processingLog))
+    res@processingLog <- processingLog(res@processingLog, processingLog)
     oceDebug(debug, "\b\b} # read.ctd.woce()\n") # FIXME: use S4 for ctd / woce
     res
 }

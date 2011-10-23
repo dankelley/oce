@@ -78,7 +78,7 @@ read.drifter <- function(file, debug=getOption("oceDebug"), processingLog, ...)
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
@@ -108,7 +108,7 @@ as.drifter <- function(time, longitude, latitude,
                longitude=longitude, latitude=latitude, salinity=salinity, 
                temperature=temperature, pressure=pressure, filename=filename)
     res@metadata$id <- if (!missing(id)) id else NA
-    res@processingLog <- unclass(processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse="")))
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
