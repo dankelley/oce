@@ -12,6 +12,7 @@
 \usepackage{hyperref}
 \usepackage{makeidx}
 \usepackage{titlesec}
+\usepackage{color}
 \makeindex
 
 \parskip=1.5ex plus 1.5ex minus 1.25ex
@@ -193,9 +194,9 @@ names(ctd)
 etc.
 
 Of course, you may apply any \verb@R@ techniques to the data in \verb@oce@
-objects, e.g. \verb@hist(ctd$data$temperature)@ would produce a histogram of
-temperature for the \verb@ctd@ object.  It is always worth checking, though, to
-see if \verb@oce@ has already defined a function that you may be applying,
+objects, e.g. \verb@hist(ctd@@\verb@data$temperature)@ would produce a histogram
+of temperature for the \verb@ctd@ object.  It is always worth checking, though,
+to see if \verb@oce@ has already defined a function that you may be applying,
 e.g. \verb@plotTS@ will produce a lovely temperature-salinity diagram, with
 isopycnals and proper units on the axes.
 
@@ -303,8 +304,8 @@ Of course, R provides access to object constituents, so that you are
 free to do such things as
 <<ctdfix1,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x$metadata$institute <- "SIO" # bad way
-x$metadata$scientist <- "DAM" # bad way
+x@metadata$institute <- "SIO" # bad way
+x@metadata$scientist <- "DAM" # bad way
 @
 but it is \emph{bad practice} to alter metadata in such a way, because
 doing so alters the object without altering its documentation.  The
@@ -762,8 +763,10 @@ mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="re
 @
 
 \workedanswer{6}{Sealevel spectrum}
-Notice the use of \verb@(object)$data$(item)@ here.  All \verb@oce@ objects are lists,
-and all of them contain a \verb@data@ element of a similar form to this.
+
+Notice the use of \verb@(object)@@\verb@data$(item)@ here.  All \verb@oce@
+objects contain a slot named \verb@data@, and the ampersand is used to access
+it.
 <<>>=
 library(oce)
 data(sealevelHalifax)
