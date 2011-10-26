@@ -19,8 +19,8 @@
 \value{A list of four estimates: \code{sap}, the median, the mean, and
   the weighted mean.}
 
-\seealso{See \code{\link{read.pt}} for more information on dealing
-  with the \code{pt} data type, including examples.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

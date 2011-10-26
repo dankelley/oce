@@ -29,10 +29,9 @@ The \code{"approx"}, \code{"boxcar"} and \code{"lm"} methods are described in th
 \value{An object of \code{\link[base]{class}} \code{"section"} that
   contains stations whose pressure values match identically.}
 
-\seealso{Sections are normally created with \code{\link{read.section}} or
-    \code{\link{makeSection}}, and smoothed with \code{\link{sectionSmooth}}.
-    The generics \code{subset}, \code{plot} and \code{summary} methods work,
-    also.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 # Gulf Stream
@@ -40,7 +39,7 @@ library(oce)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))

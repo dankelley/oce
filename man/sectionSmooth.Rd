@@ -41,17 +41,16 @@ smoothing across 5 adjacent stations.
 \value{An object of \code{\link[base]{class}} \code{"section"} that
 has less lateral variation than the input section.}
 
-\seealso{Sections are normally created with \code{\link{read.section}} or
-    \code{\link{makeSection}}, and gridded with \code{\link{sectionGrid}}.
-    The generics \code{subset}, \code{plot} and \code{summary} methods work,
-    also.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 # Eastern North Atlantic, showing Mediterranean water. 
 library(oce)
 data(coastlineWorld)
 data(a03)
-s <- sectionGrid(subset(a03, indices=90:3), p=seq(00, 2500, 100))
+s <- sectionGrid(subset.oce(a03, indices=90:3), p=seq(00, 2500, 100))
 ss <- sectionSmooth(s, df=8)
 plot(ss,coastline=coastlineWorld,map.xlim=c(-75,0))
 }

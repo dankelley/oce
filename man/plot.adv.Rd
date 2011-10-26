@@ -1,12 +1,15 @@
 \name{plot.adv}
 
 \alias{plot.adv}
+\alias{plot,adv,missing-method}
+\alias{plot,adv-method}
 
 \title{Plot ADV data}
 
-\description{Plot ADV data.}
+\description{Plot ADV data}
 
-\usage{\method{plot}{adv}(x, which=c(1:3,14,15),
+\usage{\S4method{plot}{adv}(x,
+    which=c(1:3,14,15),
     col,
     titles,
     type="l",
@@ -163,9 +166,8 @@
     }
 }
 
-\seealso{
-    See \code{\link{read.adv}} for notes on functions relating to \code{"adv"} objects.
-}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

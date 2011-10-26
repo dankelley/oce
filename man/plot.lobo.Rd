@@ -32,10 +32,8 @@
 
 \value{None.}
 
-\seealso{
-  \code{\link{summary.lobo}} summarizes the information, while
-  \code{\link{read.lobo}} scans it from a file.
-}
+\seealso{The documentation for \code{\link{lobo-class}} explains the structure
+    of LOBO objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

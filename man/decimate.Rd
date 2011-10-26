@@ -11,7 +11,7 @@
   \item{to}{Indices at which to subsample.  If given, this over-rides
     \code{by}.}
   \item{filter}{optional list of numbers representing a digital filter
-    to be applied to each variable in \code{x$data} before decimation is
+    to be applied to each variable in \code{x@data} before decimation is
     done. If not supplied, then the decimation is done strictly by
     sub-sampling.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a

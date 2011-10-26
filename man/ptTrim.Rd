@@ -43,11 +43,8 @@
   having been trimmed in some way, and with the pressure being reduced
   by mean sea-level pressure.} 
 
-\seealso{
-  The \code{pt} object may be read with \code{\link{read.pt}}.
-  \code{\link{plot.pt}} is very useful in providing guidance
-  for trimming with \code{ptTrim}.
-}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

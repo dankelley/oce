@@ -1,12 +1,14 @@
 \name{plot.section}
 
 \alias{plot.section}
+\alias{plot,section,missing-method}
+\alias{plot,section-method}
 
 \title{Plot a CTD section}
 
 \description{Plot a CTD section.}
 
-\usage{\method{plot}{section}(x,
+\usage{\S4method{plot}{section}(x,
      which=c("salinity", "temperature", "sigmaTheta", "map"),
      at=NULL,
      labels=TRUE,
@@ -118,9 +120,9 @@
 
 \value{None.}
 
-\seealso{Sections may be created with \code{\link{makeSection}} or
-  \code{\link{read.section}}, and may be summarized with
-  \code{\link{summary.section}}.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 library(oce)
@@ -131,7 +133,7 @@ plot(section, coastline=coastlineHalifax)
 
 # Gulf Stream
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))

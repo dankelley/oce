@@ -71,19 +71,8 @@ read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     cases, the assumption may or may not be correct.  Still, the end time for
     subsampling (\code{metdata$subsample.end}) should be correct.}
 
-
-\seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  Objects of type \code{pt} can be plotted with
-  \code{\link{plot.pt}}, and summarized with \code{\link{summary.pt}},
-  both of which are generic functions.  In-air samples (collected before
-  and after deployment) may be removed in a crude way with
-  \code{\link{ptTrim}}, but the best scheme is to use
-  \code{\link{subset.oce}}, based on a temporal window.  Removal of the
-  atmospheric component of pressure is best done by the user, using
-  measured records of atmospheric pressure.  However, if such data are
-  unavailable, and if the p-T data set contains pre- and post-deployment
-  data, \code{\link{ptPatm}} may provide a useful estimate of
-  atmospheric pressure.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

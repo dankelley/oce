@@ -19,7 +19,7 @@
   the form \code{"beam 1"}, etc., for beam coordinates, \code{"east"},
   etc. for enu coordinates, \code{"u"}, etc. for \code{"xyz"}, or
   \code{"u'"}, etc., for \code{"other"} coordinates.  The coordinate is
-  determined by \code{x$metadata$oce.coordinate}.}
+  determined by \code{x@metadata$oce.coordinate}.}
 
 
 \seealso{This is used by \code{\link{read.oce}}.}

@@ -1,4 +1,5 @@
 0.8-1
+- switch to S4 classes, and add new accessors and 'show' functions.
 - add support for RBR 'rsk' files
 - plot.section() now uses 'col' if supplied
 0.7-1

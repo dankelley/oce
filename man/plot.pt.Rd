@@ -1,12 +1,14 @@
 \name{plot.pt}
 
 \alias{plot.pt}
+\alias{plot,pt,missing-method}
+\alias{plot,pt-method}
 
 \title{Plot pt (pressure-temperature) recorder data}
 
 \description{Plot pt temperature-depth recorder data}
 
-\usage{\method{plot}{pt}(x,
+\usage{\S4method{plot}{pt}(x,
      which=1:4, title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
@@ -82,8 +84,9 @@ plot(ptr, which=c(1,3),
  adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'))}))
 }
 
-\seealso{See \code{\link{read.pt}} for more information on dealing
-  with the \code{pt} data type, including examples.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
+
 \keyword{hplot}

@@ -1,9 +1,10 @@
 useDynLib(oce)
 import(methods)
+##importFrom("methods", show)
+importFrom("graphics", plot)
 importFrom(utils, head, tail)
-exportMethods(print, plot, head, tail)
-export(
-       "+.section",
+exportMethods(plot)
+export("+.section",
        beamName,
        addColumn,
        airRho,
@@ -11,6 +12,8 @@ export(
        applyMagneticDeclination,
        as.coastline,
        as.ctd,
+       as.drifter,
+       as.lobo,
        as.pt,
        as.sealevel,
        as.topo,
@@ -53,7 +56,7 @@ export(
        "heading<-",
        processingLog,
        "processingLog<-",
-       processingLogItem,
+       processingLogShow,
        imagep,
        interpBarnes,
        integerToAscii,
@@ -102,18 +105,18 @@ export(
        "phosphate<-",
        pitch,
        "pitch<-",
-       plot.adp,
-       plot.adv,
+       ##plot.adp,
+       ##plot.adv,
        plotTS,
        plot.cm,
        plot.coastline,
-       plot.ctd,
+       ##plot.ctd,
        plotScan,
-       plot.pt,
+       ##plot.pt,
        plot.topo,
        plotProfile,
        plot.sealevel,
-       plot.section,
+       #plot.section,
        plot.tidem,
        plot.windrose,
        pressure,
@@ -157,13 +160,14 @@ export(
        sectionGrid,
        sectionSmooth,
        sectionSort,
-       showThrees,
+       showMetadataItem,
        sigmaTheta,
        silicate,
        "silicate<-",
        stickplot,
        subset.oce,
-       summary.processingLog,
+       summary.ctd,
+       summary.sealevel,
        sunAngle,
        swAlpha,
        swAlphaOverBeta,
@@ -210,50 +214,34 @@ export(
        write.ctd,
        xyzToEnu,
        xyzToEnuAdp,
-       xyzToEnuAdv
-       )
+       xyzToEnuAdv)
 
 S3method(head, adp)
 S3method(tail, adp)
-S3method(plot, adp)
-S3method(plot, adv)
+
 S3method(plot, cm)
 S3method(plot, coastline)
-S3method(plot, ctd)
 S3method(plot, drifter)
 S3method(plot, lobo)
 S3method(plot, sealevel)
-S3method(plot, section)
-S3method(plot, pt)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
-S3method(print, summary.processingLog)
-S3method(print, summary.adp)
-S3method(print, summary.adv)
-S3method(print, summary.cm)
-S3method(print, summary.coastline)
-S3method(print, summary.ctd)
-S3method(print, summary.drifter)
-S3method(print, summary.lobo)
-S3method(print, summary.sealevel)
-S3method(print, summary.section)
-S3method(print, summary.pt)
-S3method(print, summary.tidem)
-S3method(print, summary.topo)
+
 S3method(predict, tidem)
 S3method(summary, adp)
 S3method(summary, adv)
 S3method(summary, cm)
 S3method(summary, coastline)
-S3method(summary, ctd)
+##S3method(summary, ctd)
 S3method(summary, drifter)
 S3method(summary, lobo)
 S3method(summary, oce)
-S3method(summary, sealevel)
+##S3method(summary, sealevel)
 S3method(summary, section)
 S3method(summary, pt)
 S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
+exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, pt, sealevel, section, tidem, topo, windrose)
