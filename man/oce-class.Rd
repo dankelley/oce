@@ -57,6 +57,23 @@
     }
 }
 
+\seealso{
+Information on the classes that derive from this base class are found at the following links:
+\code{\link{adp-class}},
+\code{\link{adv-class}},
+\code{\link{cm-class}},
+\code{\link{coastline-class}},
+\code{\link{ctd-class}},
+\code{\link{drifter-class}},
+\code{\link{lobo-class}},
+\code{\link{pt-class}},
+\code{\link{sealevel-class}},
+\code{\link{section-class}},
+\code{\link{tidem-class}},
+\code{\link{topo-class}}, and
+\code{\link{windrose-class}}.
+}
+
 \author{Dan Kelley}
 \keyword{classes}
 \keyword{oce}

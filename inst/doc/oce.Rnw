@@ -775,13 +775,19 @@ mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="re
 
 \workedanswer{6}{Sealevel spectrum}
 
-Notice the use of \verb@(object)@@\verb@data$(item)@ here.  All \verb@oce@
-objects contain a slot named \verb@data@, and the ampersand is used to access
-it.
+The first step is to load the data.
 <<>>=
 library(oce)
 data(sealevelHalifax)
-spectrum(sealevelHalifax@data$elevation, spans=c(3,7))
+@
+Next, we extract the elevation data
+<<>>=
+elevation <- sealevelHalifax[["elevation"]]
+@
+and then we return to standard R processing, to compute the spectrum, and 
+indicate the M2 tide.
+<<>>=
+spectrum(elevation, spans=c(3,7))
 abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @
