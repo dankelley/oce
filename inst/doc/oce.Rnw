@@ -72,10 +72,12 @@ analysis.
   \begin{center}
     \includegraphics[width=0.5\hsize]{ctd-object}
   \end{center}
+
   \caption{\label{f:ctdobject}Sketch of the contents of a \texttt{ctd}
-    object. The elements \texttt{data}, \texttt{metadata}, and
-    \texttt{processingLog} are shared by all \texttt{oce} objects, although
-    their contents vary from object to object.}
+  object. All \texttt{oce} objects contain slots named \texttt{data},
+  \texttt{metadata}, and \texttt{processingLog}, with the contents depending on
+  the type of data.}
+
 \end{figure}
 
 The need to scan diverse data files was one motivation for the creation of
@@ -91,19 +93,28 @@ fairly comfortable tool today, and it should remain so as it grows.
 
 \section{Object design}
 
-As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object is a list
-containing three elements: (a) \texttt{data}, a list or a data frame containing
-the actual data (e.g., for a CTD object, this will contain pressure,
-temperature, etc.), (b) \texttt{metadata}, a list containing data such things as
-file headers, the location of a CTD cast, etc., and (c) \texttt{processingLog},
-a list that documents how the file was created (often by a \texttt{read} or
-\texttt{as} method) and how it was changed thereafter (e.g. by decimating a CTD
-cast).
+As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object contains
+three slots: (a) \texttt{data}, a list or a data frame containing the actual
+data (e.g., for a CTD object, this will contain pressure, temperature, etc.),
+(b) \texttt{metadata}, a list containing data such things as file headers, the
+location of a CTD cast, etc., and (c) \texttt{processingLog}, a list that
+documents how the file was created (often by a \texttt{read} or \texttt{as}
+method) and how it was changed thereafter (e.g. by decimating a CTD cast).
 
 The uniformity of the various \texttt{oce} objects makes it easy to build skill
-in examining and modifying objects.  A simple S3-based object inheritance scheme
-permits somewhat generic processing of \texttt{oce} objects, e.g. \verb@plot(x)@
-produces different sorts of plots for different sorts of \verb@x@ objects.
+in examining and modifying objects.  The package provides for simple and general
+processing of \texttt{oce} objects.  For example, if \verb@x@ is an \verb@oce@
+object, then the function call \verb@plot(x)@ will produce one type of plot if
+\verb@x@ contains hydrographic data from a CTD, and quite another type of plot
+if it contains velocity data from an ADCP.  This applies for a variety of
+actions that can be undertaken on the \verb@oce@ objects, and it makes for easy
+programming, e.g. for over a dozen types of oceanographic data files, the
+following general code produces a summary plot:
+<<eval=false>>=
+library(oce)
+plot(read.oce(filename))
+@
+where \verb@filename@ is the name of a file containing the data.
 
 
 \section{Calculations of seawater properties}
