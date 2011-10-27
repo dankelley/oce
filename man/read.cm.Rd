@@ -54,13 +54,13 @@ read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
   contains measurements made with a current-meter device.  For
   information on data stored in the object, see \dQuote{Details}.}
 
-\seealso{Objects of class \code{cm} may be plotted with
-  \code{\link{plot.cm}} or summarized with \code{\link{summary.cm}}.}
+\seealso{The documentation for \code{\link{cm-class}} explains the structure of
+    CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{
 library(oce)
-cm <- read.oce("cm_interocean_0811786.s4a.tab")
+cm <- read.oce("/data/archive/sleiwex/2008/moorings/m11/cm/interocean_0811786/manufacturer/cm_interocean_0811786.s4a.tab")
 summary(cm)
 plot(cm)
 }

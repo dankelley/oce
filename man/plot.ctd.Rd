@@ -1,12 +1,14 @@
 \name{plot.ctd}
 
 \alias{plot.ctd}
+\alias{plot,ctd,missing-method}
+\alias{plot,ctd-method}
 
 \title{Plot seawater CTD data}
 
-\description{Plot a summary diagram for CTD data.}
+\description{Plot CTD data}
 
-\usage{\method{plot}{ctd}(x,
+\usage{\S4method{plot}{ctd}(x,
      which=1:4, 
      ref.lat=NaN,
      ref.lon=NaN, 
@@ -130,10 +132,8 @@
   further additions may be made to the plot.
 }
 
-\seealso{The profiles are plotted with \code{\link{plotProfile}}, and
-  the TS diagram is plotted with \code{\link{plotTS}}.  CTD data can be
-  created with \code{\link{as.ctd}} or read with \code{\link{read.ctd}}.
-  Summaries of CTD data are provided by \code{\link{summary.ctd}}.}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

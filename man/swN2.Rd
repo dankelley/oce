@@ -42,9 +42,9 @@
 library(oce)
 data(ctd)
 # Illustrate effect of changing df
-plot(swN2(ctd), ctd$data$pressure,
-     ylim=rev(range(ctd$data$pressure)), xlab="N2",ylab="p", type='l')
-lines(swN2(ctd, df=10), ctd$data$pressure, col="blue")
+p <- pressure(ctd)
+plot(swN2(ctd), p, ylim=rev(range(p)), xlab="N2",ylab="p", type='l')
+lines(swN2(ctd, df=3), p, col="blue")
 grid()
 }
 

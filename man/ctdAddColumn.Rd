@@ -17,8 +17,8 @@ ctdAddColumn(x, column, name, label, debug=FALSE)
   \item{name}{Character string indicating the name this column is to
     have in the \code{data} dataframe.  For example, using
     \code{name="hello"} in the creation of \code{d} would mean
-    that the data could be accessed as \code{d$data$hello} or
-    \code{d$data[["hello"]]}.}
+    that the data could be accessed as \code{d@data$hello} or
+    \code{d@data[["hello"]]}.}
   \item{label}{Optional character string or expression indicating the
     name of the column, as it will appear in plot labels.  (If not
     given, \code{name} will be used.)}
@@ -36,18 +36,15 @@ ctdAddColumn(x, column, name, label, debug=FALSE)
   wider range of CTD devices.
 }
 
-\value{
-  An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.
-}
+\value{An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.}
 
-\seealso{
-  See \code{\link{read.ctd}} for the data format.
-}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
 data(ctd) 
-SS <- ctd$data$salinity^2
+SS <- ctd@data$salinity^2
 ctdNew <- ctdAddColumn(ctd, SS, "ss", 
                         expression(paste(S^2, " [", PSU^2, " ]")))
 plotProfile(ctdNew, "ss")

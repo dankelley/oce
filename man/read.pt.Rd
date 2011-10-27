@@ -7,7 +7,7 @@
 \description{Read an pt temperature-depth recorder file, producing an object of type \code{pt}.}
 
 \usage{
-read.pt(file, from=1, to, by=1, tz=getOption("oceTz"), 
+read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
         processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -26,6 +26,7 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
     this is a string representing a time interval, in colon-separated
     format (HH:MM:SS or MM:SS), then this interval is divided by the
     sampling interval, to get the stride length.}
+  \item{type}{optional file type, presently only permitted to be \code{rsk}.}
   \item{tz}{time zone.  The default value, \code{oceTz}, is set to \code{UTC} 
     at setup.}
   \item{processingLog}{if provided, the action item to be stored in the
@@ -34,13 +35,13 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{Read an TDR (temperature-depth recorder) file.  At the moment,
-  three styles are understood: (1) a two-column style, containing
-  temperature and pressure (in which case time is inferred from
-  information in the header); (2) a four-column style, in which the date
-  the time of day are given in the first two columns, followed by the
-  temperature, and pressure; and (3) a five-column style, in which depth
-  in the water column is given after the pressure.}
+\details{Read an TDR (temperature-depth recorder) file.  At the moment, four
+    styles are understood: (1) text file with columns for temperature and
+    pressure (with sampling times indicated in the header); (2) text file with
+    four columns, in which the date the time of day are given in the first two
+    columns, followed by the temperature, and pressure; (3) text file with five
+    columns, in which depth in the water column is given after the pressure;
+    (4) a new (and possibly still changeable) SQLite-based database format.}
 
 \value{An object of \code{\link[base]{class}} \code{"pt"}, which is a
   list with elements detailed below.
@@ -63,27 +64,15 @@ read.pt(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 \section{Implementation notes}{The end time for measurement
-  (\code{metadata$measurement.start}) is inferred from the \code{Logger
-  time} field in the header, not from \code{Logging end}.  The datasets
-  available to the author suggest this is the proper scheme when the
-  recorders are turned off manually before the end time that was
-  programmed in.  In other cases, the assumption may or may not be
-  correct.  Still, the end time for subsampling
-  (\code{metdata$subsample.end}) should be correct.}
+    (\code{metadata$measurement.start}) is inferred from the \code{Logger time}
+    field in the header, not from \code{Logging end}.  The datasets available
+    to the author suggest this is the proper scheme when the recorders are
+    turned off manually before the end time that was programmed in.  In other
+    cases, the assumption may or may not be correct.  Still, the end time for
+    subsampling (\code{metdata$subsample.end}) should be correct.}
 
-
-\seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  Objects of type \code{pt} can be plotted with
-  \code{\link{plot.pt}}, and summarized with \code{\link{summary.pt}},
-  both of which are generic functions.  In-air samples (collected before
-  and after deployment) may be removed in a crude way with
-  \code{\link{ptTrim}}, but the best scheme is to use
-  \code{\link{subset.oce}}, based on a temporal window.  Removal of the
-  atmospheric component of pressure is best done by the user, using
-  measured records of atmospheric pressure.  However, if such data are
-  unavailable, and if the p-T data set contains pre- and post-deployment
-  data, \code{\link{ptPatm}} may provide a useful estimate of
-  atmospheric pressure.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

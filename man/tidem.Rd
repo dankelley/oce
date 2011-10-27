@@ -2,7 +2,6 @@
 \name{tidem}
 
 \alias{tidem}
-\alias{print.tidem}
 \title{Fit a tidal model to a timeseries}
 
 \description{Fit a tidal model to a timeseries.}

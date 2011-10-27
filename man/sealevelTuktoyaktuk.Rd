@@ -20,13 +20,13 @@
 
 \examples{
 data(sealevelTuktoyaktuk)
-oce.plot.ts(sealevelTuktoyaktuk$data$time, sealevelTuktoyaktuk$data$elevation, type='l',
+oce.plot.ts(sealevelTuktoyaktuk@data$time, sealevelTuktoyaktuk@data$elevation, type='l',
      ylab="Height [m]",ylim=c(-2,6))
 legend("topleft", legend=c("Tuktoyaktuk (1975)","Detided"),
        col=c("black","red"),lwd=1)
 tide <- tidem(sealevelTuktoyaktuk)
-detided <- sealevelTuktoyaktuk$data$elevation - predict(tide)
-lines(sealevelTuktoyaktuk$data$time, detided, col="red")
+detided <- sealevelTuktoyaktuk@data$elevation - predict(tide)
+lines(sealevelTuktoyaktuk@data$time, detided, col="red")
 }
 
 \usage{data(sealevelTuktoyaktuk)}
@@ -61,6 +61,10 @@ sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
   Classical tidal harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.
   Computers and Geosciences, 28, 929-937.
 }
+
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of sealevel objects, and also outlines the other functions
+    dealing with them.}
 
 \author{Dan Kelley, after data provided in Foreman's (1977) Appendix 7.2.}
 

@@ -64,10 +64,8 @@ that users should be able to alter it easily if, for example, the names of the c
 change to "current to the east", etc.
 }
 
-\seealso{A \code{"lobo"} object may be summarized with
-\code{\link{summary.lobo}} and plotted with
-\code{\link{plot.lobo}}.
-}
+\seealso{The documentation for \code{\link{lobo-class}} explains the structure
+    of LOBO objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

@@ -28,6 +28,10 @@ plot(sealevelHalifax)
 plot(sealevelHalifax, which=1, xlim=as.POSIXct(c("2003-01-01","2003-02-01")))
 }
 
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of sealevel objects, and also outlines the other functions
+    dealing with them.}
+
 \author{Dan Kelley}
 
 \keyword{datasets}

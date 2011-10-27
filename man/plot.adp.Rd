@@ -1,12 +1,14 @@
 \name{plot.adp}
 
 \alias{plot.adp}
+\alias{plot,adp,missing-method}
+\alias{plot,adp-method}
 
 \title{Plot ADP data}
 
-\description{Plot ADP data.}
+\description{Plot ADP data}
 
-\usage{\method{plot}{adp}(x, which=1:dim(x$data$v)[3],
+\usage{\S4method{plot}{adp}(x, which=1:dim(x@data$v)[3],
      col,
      zlim,
      titles,
@@ -76,7 +78,7 @@
   \item{useSmoothScatter}{boolean that indicates whether to use
       \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.
       If not provided a default is used, with \code{\link{smoothScatter}} being
-      used if there are more than 2000 points to plot.},
+      used if there are more than 2000 points to plot.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
@@ -116,7 +118,7 @@
     \item \code{which=1:4} (or \code{which="u1"} to \code{"u4"}) yield a
       distance-time image plot of a velocity component.  If \code{x} is
       in \code{beam} coordinates (signalled by
-      \code{x$metadata$oce.coordinate=="beam"}), this will be the beam
+      \code{x@metadata$oce.coordinate=="beam"}), this will be the beam
       velocity, labelled \code{b[1]} etc.  If \code{x} is in xyz
       coordinates (sometimes called frame coordinates, or ship
       coordinates), it will be the velocity component to the right of
@@ -252,34 +254,11 @@
     on the dock or on the ship as it travelled to the mooring site.
 }
 
-\value{None.}
-
-\seealso{The data are normally read with \code{\link{read.oce}}, which
-  is usually able to detect the type of instrument.  If that fails, the
-  user should try \code{\link{read.adp.rdi}} (for RDI files) or
-  \code{\link{read.adp.nortek}} (for NorTek files).  These files may be
-  in beam coordinates, in xyz coordinates, or in enu coordinates.  It is
-  common in a scientific setting to use beam coordinates, and so this
-  package offers functions \code{\link{beamToXyzAdp}} and
-  \code{\link{xyzToEnuAdp}} to take the intermediate steps, and
-  \code{\link{enuToOtherAdp}} to go further, e.g. to rotate into a
-  coordinate system aligned with the shoreline or with an isobath.
-
-  The beam stength may be corrected for R-squared spreading with
-  \code{\link{beamUnattenuateAdp}}.
-
-  Summaries of ADP data are provided by \code{\link{summary.adp}}.  Velocity
-  statistics (e.g. means and variance ellipse) are provided by
-  \code{\link{velocityStatistics}}.
-
-  ADP data may be plotted with \code{\link{plot.adp}}.
-}
 
 \examples{
 library(oce)
 data(adp)
 plot(adp, which=1:3)
-# Illustrate adornment
 plot(adp, which=1:2,
      adorn=expression({
          abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
@@ -287,5 +266,9 @@ plot(adp, which=1:2,
      }))
 }
 
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
+
 \author{Dan Kelley}
+
 \keyword{hplot}

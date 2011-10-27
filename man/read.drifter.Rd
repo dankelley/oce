@@ -33,8 +33,10 @@ summary(d)
 plot(d)
 }
 }
-\seealso{Summaries may be done with \code{\link{summary.drifter}}, and plots
-    may be done with \code{\link{plot.drifter}}.}
+
+\seealso{The documentation for \code{\link{drifter-class}} explains the
+    structure of drifter objects, and also outlines the other functions dealing
+    with them.}
 
 \references{\url{http://www.argo.ucsd.edu/}}
 

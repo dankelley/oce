@@ -9,7 +9,7 @@
 \preformatted{
 ptr <- read.oce("/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/manufacturer/pt_rbr_011855.dat", by=600)
 patm <- ptPatm(ptr)[4]
-ptr$data$pressure <- ptr$data$pressure - patm
+ptr@data$pressure <- ptr@data$pressure - patm
 processingLog(ptr) <- "subtract atmospheric pressure"
 ptr <- window(ptr, start=as.POSIXct("2008-06-26",tz="UTC"), end=as.POSIXct("2008-06-27",tz="UTC"))
 save(ptr, file="ptr.rda")
@@ -28,12 +28,8 @@ function relating to the "t" distribution.
 
 \references{\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}}
 
-\seealso{See \code{\link{read.pt}} for reading such files, 
-\code{\link{plot.pt}} for plotting them, 
-\code{\link{summary.pt}} for summarizing them,
-\code{\link{ptPatm}} for determining the atmospheric pressure,
-and
-\code{\link{ptTrim}} for a crude method of removing in-air samples.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)

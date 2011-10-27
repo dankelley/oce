@@ -65,18 +65,9 @@ as.ctd(salinity, temperature, pressure,
 \value{An object of \code{\link[base]{class}} \code{"ctd"} (for details,
   see \code{\link{read.ctd}}).}
 
-\seealso{A file containing CTD profile data may be read with
-  \code{\link{read.ctd}}.  A \code{ctd} object may be summarized with
-  \code{\link{summary.ctd}}.  Overview plots may be made with
-  \code{\link{plot.ctd}}, while \code{\link{plotTS}} produces TS plots
-  and \code{\link{plotScan}} produces scan plots that may help with
-  data editing.  Extraneous data such as those collected during upcasts
-  and equilibration intervals may be trimmed with
-  \code{\link{ctdTrim}}, and the data may be cast onto specified
-  pressure levels with \code{\link{ctdDecimate}}.  Low-level
-  manipulation may be done with \code{\link{ctdAddColumn}} and
-  \code{\link{ctdUpdateHeader}}, as well as by direct manipulation of
-  the items within \code{ctd} objects.}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
+
 
 \examples{
 library(oce)

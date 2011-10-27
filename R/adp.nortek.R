@@ -462,9 +462,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      oceCoordinate=header$user$coordinateSystem,
                      oceBeamUnattenuated=FALSE
                      )
+    res <- new("adp")
+    res@data <- data
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
-    class(res) <- c("nortek", "adp", "oce")
+    res@processingLog <- processingLogItem(processingLog)
     res
 }                                       # read.adp.nortek()

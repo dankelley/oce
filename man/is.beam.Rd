@@ -17,7 +17,7 @@ coordinate(x)
 }
 
 \details{These functions work by checking the value of
-  \code{x$metadata$oce.coordinate}, the main purpose being to prevent
+  \code{x@metadata$oce.coordinate}, the main purpose being to prevent
   users from having to know the difference between that item and others
   of similar names.}
 

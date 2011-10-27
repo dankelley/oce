@@ -47,12 +47,9 @@
 \value{An object of \code{\link[base]{class}} \code{"sealevel"} (for
   details, see \code{\link{read.sealevel}}).}
 
-\seealso{Sealevel data may be read with \code{\link{read.sealevel}} and
-  summarized with \code{\link{summary.sealevel}}.  Use Summary plots are
-  created with \code{\link{plot.sealevel}}.  Tidal models may be fitted
-  to sealevel data with \code{\link{tidem}}.  Sample sea-level data sets
-  are provided with \code{data(\link{sealevelHalifax})} and
-  \code{data(\link{sealevelTuktoyaktuk})}.  }
+\seealso{The documentation for \code{\link{sealevel-class}} explains the
+    structure of sealevel objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 library(oce)
