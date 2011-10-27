@@ -31,7 +31,7 @@
         decided upon}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
-        \code{show(ctd)}) displays information about the object.}
+        \code{show(section)}) displays information about the object.}
 }
 
 \seealso{Sections can be read with \code{\link{read.section}} or created with

@@ -14,14 +14,14 @@
  
 \section{Methods}{
     \subsection{Extracting values}{Data may be accessed as e.g.
-        code{ctd[["time"]]}, where the string could also be e.g.
+        code{cm[["time"]]}, where the string could also be e.g.
         \code{"u"} or \code{"v"} for column data, or
         \code{"latitude"} or \code{"longitude"} for scalars.  (The names of the
         columns are displayed with \code{show().} The name of the source file
         is found with \code{"filename"}.}
 
     \subsection{Assigning values}{Everything that may be accessed may also be
-        assigned, e.g.  \code{ctd[["u"]] <- rep(35,100)}.}
+        assigned, e.g.  \code{cm[["u"]] <- rep(35,100)}.}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(cm)}) displays information about the object.}
