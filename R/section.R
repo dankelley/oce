@@ -258,138 +258,139 @@ setMethod(f="plot",
                           text(xlab, ylab, x@metadata$stationId[numStations])
                       }
                   } else {                        # not a map
-                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient")
+                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient") {
                           stop("this section does not contain a variable named '", variable, "'")
-                  ## FIXME: contours don't get to plot edges
-                  xxrange <- range(xx, na.rm=TRUE)
-                  yyrange <- range(yy, na.rm=TRUE)
-                  ##yyrange[1] <- -1
-
-                  ## Put x in order, if it's not already
-                  ox <- order(xx)
-                  if (any(xx[ox] != xx)) {
-                      xx <- xx[ox]
-                      zz <- zz[ox,]
-                      warning("plot.section() reordered the stations to make x monotonic")
-                  }
-                  ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
-                  par(xaxs="i", yaxs="i")
-                  ylab <- if ("ylab" %in% names(list(...)))
-                      list(...)$ylab
-                  else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
-                  if (is.null(at)) {
-                      plot(xxrange, yyrange,
-                           xaxs="i", yaxs="i",
-                           xlim=xlim,
-                           ylim=ylim,
-                           col="white",
-                           xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
-                           ylab=ylab,
-                           axes=FALSE)
-                      axis(4, labels=FALSE)
-                      ytics <- axis(2, labels=FALSE)
-                      axis(2, at=ytics, labels=-ytics)
-                  } else {
-                      plot(xxrange, yyrange,
-                           xaxs="i", yaxs="i",
-                           ##                     ylim=rev(yyrange),
-                           xlim=xlim, ylim=ylim,
-                           col="white",
-                           xlab="", ylab=ylab, axes=FALSE)
-                      axis(1, at=at, labels=labels)
-                      axis(2)
-                      axis(4, labels=FALSE)
-                      box()
-                  }
-                  ## Bottom trace
-                  usr <- par("usr")
-                  graph.bottom <- usr[3]
-                  waterDepth <- NULL
-                  for (i in 1:numStations) {
-                      if (variable == "salinity gradient") {
-                          dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
-                                      / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
-                          zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
-                      } else {
-                          zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
                       }
-                      if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
-                      temp <- x@data$station[[stationIndices[i]]]@data$temperature
-                      len <- length(temp)
-                      if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
-                          wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
-                          oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
+                      ## FIXME: contours don't get to plot edges
+                      xxrange <- range(xx, na.rm=TRUE)
+                      yyrange <- range(yy, na.rm=TRUE)
+                      ##yyrange[1] <- -1
+
+                      ## Put x in order, if it's not already
+                      ox <- order(xx)
+                      if (any(xx[ox] != xx)) {
+                          xx <- xx[ox]
+                          zz <- zz[ox,]
+                          warning("plot.section() reordered the stations to make x monotonic")
+                      }
+                      ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
+                      par(xaxs="i", yaxs="i")
+                      ylab <- if ("ylab" %in% names(list(...)))
+                          list(...)$ylab
+                      else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
+                      if (is.null(at)) {
+                          plot(xxrange, yyrange,
+                               xaxs="i", yaxs="i",
+                               xlim=xlim,
+                               ylim=ylim,
+                               col="white",
+                               xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
+                               ylab=ylab,
+                               axes=FALSE)
+                          axis(4, labels=FALSE)
+                          ytics <- axis(2, labels=FALSE)
+                          axis(2, at=ytics, labels=-ytics)
                       } else {
-                          wd <- NA
-                          if (is.na(temp[len])) {
-                              wdi <- len - which(!is.na(rev(temp)))[1] + 1
-                              wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
-                              oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
+                          plot(xxrange, yyrange,
+                               xaxs="i", yaxs="i",
+                               ##                     ylim=rev(yyrange),
+                               xlim=xlim, ylim=ylim,
+                               col="white",
+                               xlab="", ylab=ylab, axes=FALSE)
+                          axis(1, at=at, labels=labels)
+                          axis(2)
+                          axis(4, labels=FALSE)
+                          box()
+                      }
+                      ## Bottom trace
+                      usr <- par("usr")
+                      graph.bottom <- usr[3]
+                      waterDepth <- NULL
+                      for (i in 1:numStations) {
+                          if (variable == "salinity gradient") {
+                              dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
+                                          / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
+                              zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
                           } else {
-                              oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
+                              zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                          }
+                          if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
+                          temp <- x@data$station[[stationIndices[i]]]@data$temperature
+                          len <- length(temp)
+                          if (is.finite(x@data$station[[stationIndices[i]]]@metadata$waterDepth)) {
+                              wd <- x@data$station[[stationIndices[i]]]@metadata$waterDepth
+                              oceDebug(debug, "known waterDepth", wd, "for station i=", i, "\n")
+                          } else {
+                              wd <- NA
+                              if (is.na(temp[len])) {
+                                  wdi <- len - which(!is.na(rev(temp)))[1] + 1
+                                  wd <- max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE)
+                                  oceDebug(debug, "inferred waterDepth", wd, "for station i=", i, "\n")
+                              } else {
+                                  oceDebug(debug, "cannot infer waterDepth for station i=", i, "\n")
+                              }
+                          }
+                          in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
+                          if (!is.na(wd)) {
+                              waterDepth <- c(waterDepth, wd)
+                          } else {
+                              waterDepth <- c(waterDepth, max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
                           }
                       }
-                      in.land <- which(is.na(x@data$station[[stationIndices[i]]]@data$temperature[-3])) # skip first 3 points
-                      if (!is.na(wd)) {
-                          waterDepth <- c(waterDepth, wd)
+
+                      oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
+                      ##waterDepth <- -waterDepth
+                      if (!grid)
+                          Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
+                      bottom.x <- c(xx[1], xx, xx[length(xx)])
+                      bottom.y <- c(graph.bottom, -waterDepth, graph.bottom)
+                      ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
+                      ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
+
+                      dots <- list(...) # adjust plot parameter labcex, unless user did
+
+                      ##par(xaxs="i", yaxs="i")
+
+                      ## cannot contour with duplicates in x or y; the former is the only problem
+                      xx.unique <- 0 != diff(xx)
+                      if (!is.null(contourLevels) && !is.null(contourLabels)) {
+                          oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
+                          if (!("labcex" %in% dots$labcex)) {
+                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                      axes=FALSE, labcex=0.8,
+                                      levels=contourLevels,
+                                      labels=contourLabels,
+                                      add=TRUE,
+                                      xaxs="i", yaxs="i",
+                                      ...)
+                          } else {
+                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                      axes=FALSE,
+                                      add=TRUE,
+                                      xaxs="i", yaxs="i",
+                                      ...)
+                          }
                       } else {
-                          waterDepth <- c(waterDepth, max(x@data$station[[stationIndices[i]]]@data$pressure, na.rm=TRUE))
+                          oceDebug(debug, "automatically-calculated contourLevels\n")
+                          if (is.null(dots$labcex)) {
+                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                      axes=FALSE, labcex=0.8,
+                                      add=TRUE,
+                                      xaxs="i", yaxs="i",
+                                      ...)
+                          } else {
+                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                      axes=FALSE,
+                                      add=TRUE,
+                                      xaxs="i", yaxs="i",
+                                      ...)
+                          }
                       }
-                  }
-
-                  oceDebug(debug, "waterDepth=c(", paste(waterDepth, collapse=","), ")\n")
-                  ##waterDepth <- -waterDepth
-                  if (!grid)
-                      Axis(side=3, at=xx, labels=FALSE, tcl=-1/3, lwd=0.5) # station locations
-                  bottom.x <- c(xx[1], xx, xx[length(xx)])
-                  bottom.y <- c(graph.bottom, -waterDepth, graph.bottom)
-                  ##cat("bottom.x: (length", length(bottom.x),")");print(bottom.x)
-                  ##cat("bottom.y: (length", length(bottom.y),")");print(bottom.y)
-
-                  dots <- list(...) # adjust plot parameter labcex, unless user did
-
-                  ##par(xaxs="i", yaxs="i")
-
-                  ## cannot contour with duplicates in x or y; the former is the only problem
-                  xx.unique <- 0 != diff(xx)
-                  if (!is.null(contourLevels) && !is.null(contourLabels)) {
-                      oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
-                      if (!("labcex" %in% dots$labcex)) {
-                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                  axes=FALSE, labcex=0.8,
-                                  levels=contourLevels,
-                                  labels=contourLabels,
-                                  add=TRUE,
-                                  xaxs="i", yaxs="i",
-                                  ...)
-                      } else {
-                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                  axes=FALSE,
-                                  add=TRUE,
-                                  xaxs="i", yaxs="i",
-                                  ...)
-                      }
-                  } else {
-                      oceDebug(debug, "automatically-calculated contourLevels\n")
-                      if (is.null(dots$labcex)) {
-                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                  axes=FALSE, labcex=0.8,
-                                  add=TRUE,
-                                  xaxs="i", yaxs="i",
-                                  ...)
-                      } else {
-                          contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                  axes=FALSE,
-                                  add=TRUE,
-                                  xaxs="i", yaxs="i",
-                                  ...)
-                      }
-                  }
-                  if (length(bottom.x) == length(bottom.y))
-                      polygon(bottom.x, bottom.y, col="lightgray")
-                  box()
-                  axis(1)
-                  legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                      if (length(bottom.x) == length(bottom.y))
+                          polygon(bottom.x, bottom.y, col="lightgray")
+                      box()
+                      axis(1)
+                      legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
                   oceDebug(debug, "\b} # plotSubsection()\n")
               }                                   # plotSubsection

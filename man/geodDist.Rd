@@ -3,13 +3,17 @@
 \title{Geodesic distance on earth}
 \description{ Compute geodesic distance on surface of earth.}
 
-\usage{geodDist(lat1, lon1, lat2, lon2)}
+\usage{geodDist(lat1, lon1, lat2, lon2, alongPath=FALSE)}
 
 \arguments{
   \item{lat1}{latitude or a vector of latitudes, \strong{or} a section}
   \item{lon1}{longitude or vector of longitudes}
   \item{lat2}{latitude or vector of latitudes}
   \item{lon2}{longitude or vector of longitudes}
+  \item{alongPath}{boolean indicating whether to compute distance along the
+      path, as opposed to distance from the reference point.  If
+      \code{alongPath=TRUE}, any values provided for \code{lat2} and
+      \code{lon2} will be ignored.}
 }
 
 \details{This calculates distance between points on the earth, measured
@@ -38,8 +42,11 @@
 \seealso{\code{\link{geodXy}}}
 
 \examples{
- # There are roughly 111km per degree of latitude
- km <- geodDist(45, 100, 46, 100)/1000 
+library(oce)
+km <- geodDist(45, 100, 46, 100)/1000 
+data(section)
+geodDist(section)
+geodDist(section, alongPath=TRUE)
 }
 
 \references{T. Vincenty, "Direct and Inverse Solutions of Ellipsoid on

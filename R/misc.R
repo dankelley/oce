@@ -670,11 +670,16 @@ geodXy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     data.frame(x, y)
 }
 
-geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
+geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
     if (inherits(lat1, "section")) {
+        ##cat("\nSECTION\n")
+        ##print(lat1[["latitude", "byStation"]])
+        ##print(lat1[["longitude", "byStation"]])
+        if (alongPath)
+            return(.Call("geoddist_alongpath", lat1[["latitude", "byStation"]], lat1[["longitude", "byStation"]], a, f) / 1000)
         copy <- lat1
         n <- length(copy@data$station)
         lat1 <- vector("numeric", n)
@@ -704,6 +709,11 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
             res[i] <- dist
         }
     } else {
+        ##cat("\nCOMPONENTS\n")
+        ##print(lat1)
+        ##print(lon1)
+        if (alongPath)
+            return(.Call("geoddist_alongpath", lat1, lon1, a, f) / 1000)
         n1 <- length(lat1)
         if (length(lon1) != n1)
             stop("lat1 and lon1 must be vectors of the same length")
