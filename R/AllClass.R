@@ -41,15 +41,18 @@ setMethod(f="[[<-",
 
 setValidity("oce",
             function(object) {
-                ndata <- length(object@data)
-                lengths <- vector("numeric", ndata)
-                for (i in 1:ndata)
-                    lengths[i] <- length(object@data[[i]])
-                if (var(lengths) != 0) {
-                    cat("lengths of data elements are unequal\n")
+                slotNames <- slotNames(object)
+                if (length(slotNames) != 3) {
+                    cat("should be 3 slots, but there are", length(slotNames), "\n")
                     return(FALSE)
-                } else
-                    return(TRUE)
+                }
+                for (name in c("metadata", "data", "processingLog")) {
+                    if (!(name %in% slotNames)) {
+                        cat("object should have a slot named \"", name, "\"\n", sep="")
+                        return(FALSE)
+                    }
+                }
+                return(TRUE)
             })
 
 setMethod(f="show",

@@ -1,4 +1,5 @@
 0.8-2
+- fix bug in S4 adp validity checker
 - geodDist(): add argument 'alongPath'
 - remove compilation warning about doc for summary.ctd()
 0.8-1

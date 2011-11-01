@@ -35,6 +35,54 @@ setMethod(f="show",
           })
 
 
+setMethod(f="[[<-",
+          signature="adp",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
+              else if (i %in% names(x@data)) x@data[[i]] <- value
+              else stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              ## Not checking validity because user may want to shorten items one by one, and check validity later.
+              ## validObject(x)
+              invisible(x)
+          })
+
+
+setValidity("adp",
+            function(object) {
+                if (!("v" %in% names(object@data))) {
+                    cat("object@data$v is missing")
+                    return(FALSE)
+                }
+                if (!("a" %in% names(object@data))) {
+                    cat("object@data$a is missing")
+                    return(FALSE)
+                }
+                if (!("q" %in% names(object@data))) {
+                    cat("object@data$q is missing")
+                    return(FALSE)
+                }
+                mdim <- dim(object@data$v)
+                if ("a" %in% names(object@data) && !all.equal(mdim, dim(object@data$a))) {
+                    cat("dimension of 'a' is (", dim(object@data$a), "), which does not match that of 'v' (", mdim, ")\n")
+                    return(FALSE)
+                }
+                if ("q" %in% names(object@data) && !all.equal(mdim, dim(object@data$q))) {
+                    cat("dimension of 'a' is (", dim(object@data$a), "), which does not match that of 'v' (", mdim, ")\n")
+                    return(FALSE)
+                }
+                if ("time" %in% names(object@data)) {
+                    n <- length(object@data$time)
+                    for (item in c("pressure", "temperature", "salinity", "depth", "heading", "pitch", "roll")) {
+                        if (item %in% names(object@data) && length(object@data[[item]]) != n) {
+                            cat("length of time vector is ", n, " but the length of ", item, " is ", 
+                                length(object@data[[item]]), "\n")
+                            return(FALSE)
+                        }
+                    }
+                    return(TRUE)
+                }
+            })
+
 head.adp <- function(x, n = 6L, ...)
 {
     numberOfProfiles <- dim(x@data$v)[1]

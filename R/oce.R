@@ -80,14 +80,14 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                         oceDebug(debug, "subsetting 'slow' variable data$", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keepSlow]
                     } else {
-                        oceDebug(debug, "subsetting data$", name, "\n", sep="")
+                        oceDebug(debug, "subsetting data@", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keep]
                     }
                 } else if (is.matrix(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
+                    oceDebug(debug, "subsetting data@", name, ", which is a matrix\n", sep="")
                     res@data[[name]] <- x@data[[name]][keep,]
                 } else if (is.array(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
+                    oceDebug(debug, "subsetting data@", name, ", which is an array\n", sep="")
                     res@data[[name]] <- x@data[[name]][keep,,]
                 }
             }
