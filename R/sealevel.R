@@ -5,7 +5,7 @@ setMethod(f="initialize",
               .Object@data$elevation <- elevation
               if (!missing(time)) .Object@data$time <- time 
               .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create sealevel object")
+              .Object@processingLog$value=c(.Object@processingLog$value, "create 'sealevel' object")
               return(.Object)
           })
 
@@ -14,7 +14,7 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) { # FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) return(x@metadata[[i]])
               else if (i %in% names(x@data)) return(x@data[[i]])
-              else stop("there is no item named \"", i, "\" in this ctd object")
+              else stop("there is no item named \"", i, "\" in this sealevel object")
           })
 
 setMethod(f="[[<-",
@@ -22,7 +22,7 @@ setMethod(f="[[<-",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
               if (i %in% names(x@metadata)) x@metadata[[i]] <- value
               else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this ctd object")
+              else stop("there is no item named \"", i, "\" in this sealevel object")
               validObject(x)
               invisible(x)
           })

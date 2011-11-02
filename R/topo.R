@@ -6,7 +6,7 @@ setMethod(f="initialize",
               if (!missing(z)) .Object@data$z <- z
               .Object@metadata$filename <- filename
               .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'ctd' object")
+              .Object@processingLog$value=c(.Object@processingLog$value, "create 'topo' object")
               return(.Object)
           })
 
