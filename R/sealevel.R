@@ -40,22 +40,6 @@ setValidity("sealevel",
                     return(TRUE)
             })
 
-setMethod(f="show",
-          signature="sealevel",
-          definition=function(object) {
-              filename <- object[["filename"]]
-              if (is.null(filename) || filename == "")
-                  cat("Sealevel has column data\n", sep="")
-              else
-                  cat("Sealevel from file '", object[["filename"]], "' has column data\n", sep="")
-              names <- names(object@data)
-              ncol <- length(names)
-              for (i in 1:ncol) {
-                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
-              }
-          })
-
-
 
 
 as.sealevel <- function(elevation,

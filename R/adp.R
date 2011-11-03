@@ -12,29 +12,6 @@ setMethod(f="initialize",
               return(.Object)
           })
 
-setMethod(f="show",
-          signature="adp",
-          definition=function(object) {
-              filename <- object[["filename"]]
-              if (is.null(filename) || filename == "")
-                  cat("ADP has column data\n", sep="")
-              else
-                  cat("ADP from file '", object[["filename"]], "' has column data\n", sep="")
-              names <- names(object@data)
-              ncol <- length(names)
-              for (i in 1:ncol) {
-                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
-                  dim <- dim(object@data[[i]])
-                  if (!is.null(dim)) {
-                      if (length(dim) == 2)
-                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], ")\n", sep="")
-                      else if (length(dim) == 3)
-                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], " by ", dim[3], ")\n", sep="")
-                  }
-              }
-          })
-
-
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
