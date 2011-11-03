@@ -1330,7 +1330,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res <- new("ctd")
     res@metadata <- metadata
     res@data <- data
-    warning("should add to processinglog")
     ###class(res) <- c("ctd", "oce")
     ## Add standard things, if missing
     if (!found.salinity) {
@@ -1353,6 +1352,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         "sigmaTheta", "Sigma Theta kg/m^3", debug=debug-1)
     oceDebug(debug, "} # read.ctd.sbe()\n")
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
