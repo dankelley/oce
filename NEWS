@@ -1,5 +1,5 @@
 0.8-2
-- fix bug in read.coastline(); lon and lat were switched
+- fix bug in read.coastline(), reversing lon and lat [issue162]
 - fix bug in S4 adp validity checker
 - geodDist(): add argument 'alongPath'
 - remove compilation warning about doc for summary.ctd()
