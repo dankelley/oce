@@ -1,3 +1,5 @@
+0.8-3
+- imagpe(): add drawPalette="space" option
 0.8-2
 - fix bug in read.coastline(), reversing lon and lat [issue162]
 - fix bug in S4 adp validity checker
