@@ -58,8 +58,15 @@
     data (not the axis) is indicated at the top-left margin of the
     graph.  This is useful because the labels on time axes only indicate
     hours if the range is less than a day, etc.}
-  \item{drawPalette}{boolean, with value \code{TRUE} to draw a palette
-    at the right-hand side of the main image.}
+  \item{drawPalette}{indication of the type of palette to draw, if any.  If
+      \code{drawPalette=TRUE}, a palette is drawn at the right-hand side of the
+      main image.  If \code{drawPalette=FALSE}, no palette is drawn, and the
+      right-hand side of the plot has a thin margin.  If
+      \code{drawPalette="space"}, then no palette is drawn, but space is put in
+      the right-hand margin to occupy the region in which the palette would
+      have been drawn.  This last form is useful for producing stacked plots
+      with uniform left and right margins, but with palettes on only some of
+      the images.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
