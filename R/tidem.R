@@ -595,3 +595,69 @@ predict.tidem <- function(object, newdata, ...)
     }
     as.numeric(rval)
 }
+
+webtide <- function(action=c("map", "predict"), latitude, longitude, time, basedir="~/WebTide", region="nwatl", plot=TRUE)
+{
+    action <- match.arg(action)
+    subdir <- paste(basedir, "/data/", region, sep="")
+    filename <- paste(subdir, "/", region, "_ll.nod", sep="")
+    triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
+    asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
+    par(mar=c(3,3,2,1), mgp=c(2,0.7,0))
+    if (action == "map") {
+        plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="")
+        if (interactive() && missing(latitude) && missing(longitude)) {
+            point <- locator(1)
+            node <- which.min(geodDist(triangles$latitude, triangles$longitude, point$y, point$x))
+            longitude <- triangles$longitude[node]
+            latitude <- triangles$latitude[node]
+        } else  {
+            node <- 1
+            longitude <- triangles$longitude[node]
+            latitude <- triangles$latitude[node]
+        }
+        points(longitude, latitude, pch=20, cex=2, col='red')
+        return(list(latitude=latitude, longitude=longitude))
+    } else {
+        if (missing(time))
+            stop("must supply list of times in 'time'")
+        node <- which.min(geodDist(triangles$latitude, triangles$longitude, latitude, longitude))
+        constituentse <- dir(path=subdir, pattern="*.s2c")
+        abbrev <- substr(constituentse, 1, 2)
+        constituentsuv <- dir(path=subdir, pattern="*.v2c")
+        nconstituents <- length(constituentse)
+        period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
+        data(tidedata)
+        tidedata  <- get("tidedata",   pos=globalenv())
+        for (i in 1:nconstituents) {
+            period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
+            cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
+            ampe[i] <- cone[[2]]
+            phasee[i] <- cone[[3]]
+            conuv <- read.table(paste(subdir,constituentsuv[i],sep="/"), skip=3)[node,]
+            ampu[i] <- conuv[[2]]
+            phaseu[i] <- conuv[[3]]
+            ampv[i] <- conuv[[4]]
+            phasev[i] <- conuv[[5]]
+        }
+        df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
+        elevation <- u <- v <- rep(0, length(time))
+        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+        h <- (as.numeric(time) - as.numeric(tRef)) / 3600
+        for (i in 1:nconstituents) {
+            vuf <- oce:::tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            phaseOffset <- (vuf$u + vuf$v) * 360
+            elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
+            u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
+            v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
+        }
+        if (plot) {
+            par(mfrow=c(3,1))
+            oce.plot.ts(time, elevation, type='l', main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""))
+            oce.plot.ts(time, u, type='l', xlab="")
+            oce.plot.ts(time, v, type='l', xlab="")
+        }
+    }
+    list(time=time, elevation=elevation, u=u, v=v)
+}
+
