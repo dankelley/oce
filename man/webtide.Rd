@@ -27,6 +27,7 @@
   \item{region}{database region, given as a directory name in the WebTide directory.  For example,
     \code{h3o} is for Halifax Harbour, \code{nwatl} is for the northwest Atlantic, and \code{sshelf}
     is for the Scotian Shelf and Gulf of Maine.}
+
   \item{plot}{boolean indicating whether to plot.}
   
 }
@@ -44,6 +45,13 @@ tStart <- ISOdate(2011, 11, 7, 0, 0, 0, tz="UTC")
 tEnd <- ISOdate(2011, 11, 10, 0, 0, 0, tz="UTC")
 time<-seq(tStart, tEnd, by=15, units="minutes")
 prediction <- webtide("predict", point$latitude, point$longitude, time, region="h3o")
+
+# SLEIWEX region
+tStart <- ISOdate(2008, 7, 1, 0, 0, 0, tz="UTC")
+tEnd <- ISOdate(2008, 7, 5, 0, 0, 0, tz="UTC")
+time<-seq(tStart, tEnd, by=15, units="minutes")
+prediction <- webtide("predict", 48.14, -69.61, time, region="nwatl")
+
 }
 
 \references{The WebTide databases are available at
