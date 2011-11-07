@@ -8,7 +8,7 @@
 \description{Get a tidal prediction from a WebTide database}
 
 \usage{webtide(action=c("map", "predict"), latitude, longitude, time,
-       basedir="~/WebTide", region="nwatl", plot=TRUE)}
+        basedir="/usr/local/WebTide", region="nwatl", plot=TRUE)}
 
 \arguments{
 
@@ -40,18 +40,10 @@
 
 \examples{
 library(oce)
-point <- webtide("map", region="h3o")
-tStart <- ISOdate(2011, 11, 7, 0, 0, 0, tz="UTC")
-tEnd <- ISOdate(2011, 11, 10, 0, 0, 0, tz="UTC")
-time<-seq(tStart, tEnd, by=15, units="minutes")
-prediction <- webtide("predict", point$latitude, point$longitude, time, region="h3o")
-
-# SLEIWEX region
 tStart <- ISOdate(2008, 7, 1, 0, 0, 0, tz="UTC")
 tEnd <- ISOdate(2008, 7, 5, 0, 0, 0, tz="UTC")
 time<-seq(tStart, tEnd, by=15, units="minutes")
-prediction <- webtide("predict", 48.14, -69.61, time, region="nwatl")
-
+prediction <- webtide("predict", 48.14, -69.61, time)
 }
 
 \references{The WebTide databases are available at

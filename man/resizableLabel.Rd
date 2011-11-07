@@ -11,7 +11,9 @@
 resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice",
   "p", "z", "distance",
-  "heading", "pitch", "roll"),
+  "heading", "pitch", "roll",
+  "u", "v", "w",
+  "elevation"),
   axis=c("x", "y"))}
 
 \arguments{

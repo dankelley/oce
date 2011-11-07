@@ -358,7 +358,9 @@ matchBytes <- function(input, b1, ...)
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
                                   "spice",
-                                  "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
+                                  "p", "z", "distance", "heading", "pitch", "roll",
+                                  "u", "v", "w",
+                                  "elevation"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -413,7 +415,19 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "roll") {
         full <- "Roll [deg]"
         abbreviated <- "Roll"
-    }
+    } else if (item == "u") {
+        full <- "u [m/s]"
+        abbreviated <- "u [m/s]"
+    } else if (item == "v") {
+        full <- "v [m/s]"
+        abbreviated <- "v [m/s]"
+     } else if (item == "w") {
+        full <- "w [m/s]"
+        abbreviated <- "w [m/s]"
+     } else if (item == "elevation") {
+        full <- "Elevation [m]"
+        abbreviated <- "Elevation [m/s]"
+     }
     fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
     if (fraction < 0.8) full else abbreviated
 }

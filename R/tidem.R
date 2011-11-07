@@ -596,27 +596,28 @@ predict.tidem <- function(object, newdata, ...)
     as.numeric(rval)
 }
 
-webtide <- function(action=c("map", "predict"), latitude, longitude, time, basedir="~/WebTide", region="nwatl", plot=TRUE)
+webtide <- function(action=c("map", "predict"), latitude, longitude, time,
+                    basedir="/usr/local/WebTide", region="nwatl", plot=TRUE)
 {
     action <- match.arg(action)
     subdir <- paste(basedir, "/data/", region, sep="")
     filename <- paste(subdir, "/", region, "_ll.nod", sep="")
     triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
-    asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
-    par(mar=c(3,3,2,1), mgp=c(2,0.7,0))
     if (action == "map") {
-        plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="")
         if (interactive() && missing(latitude) && missing(longitude)) {
+            asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
+            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="")
+            par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
             point <- locator(1)
             node <- which.min(geodDist(triangles$latitude, triangles$longitude, point$y, point$x))
             longitude <- triangles$longitude[node]
             latitude <- triangles$latitude[node]
+            points(longitude, latitude, pch=20, cex=2, col='red')
         } else  {
             node <- 1
             longitude <- triangles$longitude[node]
             latitude <- triangles$latitude[node]
         }
-        points(longitude, latitude, pch=20, cex=2, col='red')
         return(list(latitude=latitude, longitude=longitude))
     } else {
         if (missing(time))
@@ -653,9 +654,10 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time, based
         }
         if (plot) {
             par(mfrow=c(3,1))
-            oce.plot.ts(time, elevation, type='l', main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""))
-            oce.plot.ts(time, u, type='l', xlab="")
-            oce.plot.ts(time, v, type='l', xlab="")
+            oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
+                        main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""))
+            oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"), drawTimeRange=FALSE)
+            oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"), drawTimeRange=FALSE)
         }
     }
     invisible(list(time=time, elevation=elevation, u=u, v=v))
