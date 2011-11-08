@@ -660,6 +660,6 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
             oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"), drawTimeRange=FALSE)
         }
     }
-    invisible(list(time=time, elevation=elevation, u=u, v=v))
+    invisible(list(time=time, elevation=elevation, u=u, v=v, node=node, basedir=basedir, region=region))
 }
 

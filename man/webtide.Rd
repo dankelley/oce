@@ -43,6 +43,13 @@
   but in the second case, a plot is only made if \code{plot=TRUE}.  Naturally, none of this works
   unless WebTide has been installed on the computer.}
 
+\value{If \code{action="map"}, the return value is a list containing the \code{latitude} and
+  \code{longitude} of the nearest node, and the node number (\code{"node"}) of that node.  If
+  \code{action="predict"}, the return value is a list containing a vector of times (\code{time}),
+  as well as vectors of the predicted \code{elevation} in metres and the predicted horizontal
+  components of velocity, \code{u} and \code{v}, along with the \code{node} number, and the 
+  \code{basedir} and \code{region} as supplied to this function.}
+  
 \examples{
 \dontrun{
 library(oce)
