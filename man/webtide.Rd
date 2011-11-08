@@ -1,4 +1,4 @@
-% vim:textwidth=100:expandtab:shiftwidth=2:softtabstop=2
+% vim:spell:textwidth=100:expandtab:shiftwidth=2:softtabstop=2
 \name{webtide}
 
 \alias{webtide}
@@ -13,8 +13,8 @@
 \arguments{
 
   \item{action}{An indication of the action, either \code{map} to draw a map and measure the
-    coordinates of a point the user clicks on that map, or \code{predict} to predict time-series
-    for a specific location.}
+    coordinates of a point the user clicks on that map, or \code{predict} to predict time-series for
+    a specific location.}
     
   \item{latitude}{latitude at which prediction is required.}
 
@@ -32,22 +32,32 @@
   
 }
 
-\details{The \code{action="map"} method plots a map, upon which the user should click the mouse; it
-  returns a list of the latitude and the longitide.  The \code{action="predict"} method uses a
-  latitude and longitude, possibly discovered from clicking the mouse, and calculates elevation and
-  velocity time-series at the specified times.  In the first case, a plot is drawn irrespective of
-  the value of \code{plot}, but in the second case, a plot is only made if \code{plot=TRUE}.}
+\details{The \code{action="map"} method plots a map with a dot for the lower-left corner of each
+  triangle used in the finite-element tidal simulation upon which WebTide predictions are based.
+  \code{\link{locator}} is called within this method, so that the user can indicate a spot of
+  interest on the map, and the latitude and longitude of this point are provided in the return value.
+  This is a crude emulation of the WebTide interface, without the ability to zoom or slide reference
+  points around with the mouse.  The \code{action="predict"} method uses a latitude and longitude,
+  possibly discovered from clicking the mouse, and calculates elevation and velocity time-series at
+  the specified times.  In the first case, a plot is drawn irrespective of the value of \code{plot},
+  but in the second case, a plot is only made if \code{plot=TRUE}.  Naturally, none of this works
+  unless WebTide has been installed on the computer.}
 
 \examples{
+\dontrun{
 library(oce)
 tStart <- ISOdate(2008, 7, 1, 0, 0, 0, tz="UTC")
 tEnd <- ISOdate(2008, 7, 5, 0, 0, 0, tz="UTC")
 time<-seq(tStart, tEnd, by=15, units="minutes")
 prediction <- webtide("predict", 48.14, -69.61, time)
 }
+}
 
-\references{The WebTide databases are available at
-  \url{http://www.bio.gc.ca/research-recherche/WebTide-MareeWeb/webtide-eng.htm} on the web.}
+\references{The WebTide software may be downloaded for free at
+  \url{http://www.bio.gc.ca/research-recherche/WebTide-MareeWeb/webtide-eng.htm}, along with a suite
+  of databases for various geographical regions.  Note that WebTide is not an open-source
+  application, as it consists mainly of precompiled code written in Java, which precludes
+  examination of the source.}
 
 \author{Dan Kelley}
 
