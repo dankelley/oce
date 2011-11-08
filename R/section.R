@@ -31,6 +31,10 @@ setMethod(f="[[",
                   if (missing(j))
                       stop("must give station number")
                   return(x@data$station[[j]])
+              } else if ("dynamic height" == i) {
+                  return(swDynamicHeight(x)) # FIXME: should emulate elsewhere
+              } else {
+                  stop("cannot access item named \"", i, "\" in this section object")
               }
           })
 
