@@ -284,7 +284,7 @@ setMethod(f="plot",
                                xlim=xlim,
                                ylim=ylim,
                                col="white",
-                               xlab=if (which.xtype==1) "Distance [ km ]" else "Along-track Distance [km]",
+                               xlab=switch(which.xtype, "Distance [ km ]", "Along-track Distance [km]", "Latitude", "Longitude"),
                                ylab=ylab,
                                axes=FALSE)
                           axis(4, labels=FALSE)
@@ -398,7 +398,9 @@ setMethod(f="plot",
                   stop("method is only for section objects")
               opar <- par(no.readonly = TRUE)
               if (length(which) > 1) on.exit(par(opar))
-              which.xtype <- pmatch(xtype, c("distance", "track"), nomatch=0)
+              which.xtype <- pmatch(xtype, c("distance", "track", "latitude", "longitude"), nomatch=0)
+              if (0 == which.xtype)
+                  stop('xtype must be one of: "distance", "track", "latitude", or "longitude"')
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
@@ -438,8 +440,12 @@ setMethod(f="plot",
                                                             x@data$station[[j]]@metadata$latitude,
                                                             x@data$station[[j]]@metadata$longitude)
                           }
+                      } else if (which.xtype == 3) {
+                          xx[ix] <- x@data$station[[j]]@metadata$latitude
+                      } else if (which.xtype == 4) {
+                          xx[ix] <- x@data$station[[j]]@metadata$longitude
                       } else {
-                          stop("unknown xtype")
+                          stop('unkown xtype; it must be one of: "distance", "track", "latitude", or "longitude"')
                       }
                   }
               } else {
