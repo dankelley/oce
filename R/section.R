@@ -266,18 +266,9 @@ setMethod(f="plot",
                       yyrange <- range(yy, na.rm=TRUE)
                       ##yyrange[1] <- -1
 
-                      ## Put x in order, if it's not already
-                      ox <- order(xx)
-                      if (any(xx[ox] != xx)) {
-                          xx <- xx[ox]
-                          zz <- zz[ox,]
-                          warning("plot.section() reordered the stations to make x monotonic")
-                      }
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
-                      ylab <- if ("ylab" %in% names(list(...)))
-                          list(...)$ylab
-                      else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
+                      ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
                       if (is.null(at)) {
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
@@ -290,6 +281,8 @@ setMethod(f="plot",
                           axis(4, labels=FALSE)
                           ytics <- axis(2, labels=FALSE)
                           axis(2, at=ytics, labels=-ytics)
+                          axis(1)
+                          box()
                       } else {
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
@@ -297,7 +290,7 @@ setMethod(f="plot",
                                xlim=xlim, ylim=ylim,
                                col="white",
                                xlab="", ylab=ylab, axes=FALSE)
-                          axis(1, at=at, labels=labels)
+                          axis(1, at=xx, labels=labels)
                           axis(2)
                           axis(4, labels=FALSE)
                           box()
@@ -351,7 +344,18 @@ setMethod(f="plot",
 
                       ##par(xaxs="i", yaxs="i")
 
+
+                      ## Put x in order, if it's not already
+                      ox <- order(xx)
+                      xxOrig <- xx
+                      if (any(xx[ox] != xx)) {
+                          xx <- xx[ox]
+                          zz <- zz[ox,] ## FIXME keep this???
+                          warning("plot.section() reordered the stations to make x monotonic")
+                      }
+
                       ## cannot contour with duplicates in x or y; the former is the only problem
+
                       xx.unique <- 0 != diff(xx)
                       if (!is.null(contourLevels) && !is.null(contourLabels)) {
                           oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
@@ -389,7 +393,9 @@ setMethod(f="plot",
                       if (length(bottom.x) == length(bottom.y))
                           polygon(bottom.x, bottom.y, col="lightgray")
                       box()
+                      ##axis(1, pretty(xxOrig))
                       axis(1)
+                      ##lines(xx, -waterDepth[ox], col='red')
                       legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
                   oceDebug(debug, "\b} # plotSubsection()\n")
@@ -451,6 +457,7 @@ setMethod(f="plot",
               } else {
                   xx <- at
               }
+              dan.xx<<-xx
 
               if (which.ytype == 1) yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
               else if (which.ytype == 2) yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
