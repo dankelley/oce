@@ -501,6 +501,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
     } else if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
             n <- length(indices)
+            if (is.logical(indices))
+                indices <- (1:n)[indices]
             station <- vector("list", n)
             stn <- vector("character", n)
             lon <- vector("numeric", n)
