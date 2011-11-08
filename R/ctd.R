@@ -991,7 +991,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
     }
     ## catch e.g. -999 sometimes used for water depth's missing value
-    if (waterDepth < 0)
+    if (is.finite(waterDepth) && waterDepth < 0)
         waterDepth <- NA
     metadata <- list(header=header,
                      filename=filename, # provided to this routine
