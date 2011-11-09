@@ -290,7 +290,7 @@ setMethod(f="plot",
                                xlim=xlim, ylim=ylim,
                                col="white",
                                xlab="", ylab=ylab, axes=FALSE)
-                          axis(1, at=xx, labels=labels)
+                          axis(1, at=at, labels=labels)
                           axis(2)
                           axis(4, labels=FALSE)
                           box()
