@@ -577,7 +577,6 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             rval@data[[name]] <- x@data[[name]][r]
         }
     } else if (inherits(x, "sealevel")) {
-        warning("not handling subset.oce(sealevel) yet.")
         r <- eval(substitute(subset), x@data, parent.frame())
         r <- r & !is.na(r)
         rval <- x
