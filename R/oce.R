@@ -578,7 +578,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         }
     } else if (inherits(x, "sealevel")) {
         warning("not handling subset.oce(sealevel) yet.")
+        r <- eval(substitute(subset), x@data, parent.frame())
+        r <- r & !is.na(r)
         rval <- x
+        for (name in names(rval@data)) {
+            rval@data[[name]] <- x@data[[name]][r]
+        }
     } else if (inherits(x, "adv")) {
         if (!is.null(indices))
             stop("cannot specify 'indices' for adv objects (not coded yet)")
