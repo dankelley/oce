@@ -27,7 +27,7 @@ plot(argo, which="trajectory", coastline=coastlineWorld)
 
 \usage{data(argo)}
 
-\source{\url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388}}
+\source{\url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}}
 
 \seealso{See \code{\link{read.drifter}} for notes on the contents of
   \code{drifter} objects, and for functions to work with them.}
