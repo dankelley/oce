@@ -21,6 +21,9 @@
     columns are displayed with \code{show().} The name of the source file is
     found with \code{"filename"}.
 
+    Derived data are also available: \code{"N2"} calls \code{\link{swN2}} to
+    compute the square of buoyancy frequency.
+
     \emph{Assigning values.} Everything that may be accessed may also be
     assigned, e.g.  \code{ctd[["salinity"]] <- rep(35,10)}.
 

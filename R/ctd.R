@@ -12,6 +12,19 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="ctd",
+          definition=function(x, i, j, drop) {
+              if (i == "N2") {
+                  swN2(x[["pressure"]], x[["sigmaTheta"]])
+              } else {
+                  ## I use 'as' because I could not figure out callNextMethod() etc
+                  as(x, "oce")[[i, j, drop]]
+              }
+          })
+
+
+
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
                    other,
