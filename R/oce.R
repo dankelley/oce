@@ -233,8 +233,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        print(type)
-        print(missing(type))
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
              ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
              ylim=if (missing(ylim)) NULL else ylim,
