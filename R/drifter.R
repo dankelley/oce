@@ -157,7 +157,7 @@ setMethod(f="plot",
                       asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
                       plot(x@data$longitude, x@data$latitude, asp=asp, 
                            type=type, cex=cex, pch=pch,
-                           col=if (!missing(col))col,
+                           col=if (missing(col)) "black" else col,
                            xlab="Longitude", ylab="Latitude", ...)
                       if (!missing(coastline)) {
                           polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
