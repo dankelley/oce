@@ -9,9 +9,9 @@
 \description{This is an ARGO drifter data object, for drifter 6900388,
     downloaded in July 2011.  These data were collected and made freely
     available by the International Argo Program and the national programs that
-    contribute to it.  (\url{http://www.argo.ucsd.edu},
-    \url{http://argo.jcommops.org}).  The Argo Program is part of the Global
-    Ocean Observing System.}
+    contribute to it.  Salinity, temperature and pressure are each matrices
+    with first index corresponding to depth, e.g.
+    \code{argo[["temperature"]][1,]} is the surface temperature.}
 
 \examples{
 \dontrun{
@@ -29,8 +29,8 @@ plot(argo, which="trajectory", coastline=coastlineWorld)
 
 \source{\url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}}
 
-\seealso{See \code{\link{read.drifter}} for notes on the contents of
-  \code{drifter} objects, and for functions to work with them.}
+\seealso{See \code{\link{drifter-class}} for notes on the contents of
+    \code{drifter} objects, and for functions to work with them.}
 
 \author{Dan Kelley}
 
