@@ -452,12 +452,12 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         t <- unclass(as.POSIXct(sl@data$time, tz="UTC")) - unclass(tRef)
         hour2pi <- 2 * 4 * atan2(1,1) * t * 3600
     } else {
-        centralindex <- floor(length(sl@data$time) / 2)
         ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
         ##    hour2pi <- 2 * pi * hour.wrt.centre
         hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
         hour2pi <- 2 * pi * hour.offset
     }
+    centralindex <- floor(length(sl@data$time) / 2)
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
     for (i in 1:nc) {
