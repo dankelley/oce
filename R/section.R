@@ -355,7 +355,7 @@ setMethod(f="plot",
                       if (any(xx[ox] != xx)) {
                           xx <- xx[ox]
                           zz <- zz[ox,] ## FIXME keep this???
-                          warning("plot.section() reordered the stations to make x monotonic")
+                          ##warning("plot.section() reordered the stations to make x monotonic")
                       }
 
                       ## cannot contour with duplicates in x or y; the former is the only problem
