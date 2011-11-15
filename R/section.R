@@ -51,8 +51,9 @@ setMethod(f="show",
                   cat("    ")
                   if (!is.null(thisStn@metadata$station) && "" != thisStn@metadata$station)
                       cat(thisStn@metadata$station, " ")
-                  cat(sprintf("%.5f N %.5f E", object@data$station[[i]]@metadata$latitude,
-                              object@data$station[[i]]@metadata$longitude))
+                  cat(sprintf("%.5f N   %.5f E   %.0f m", object@data$station[[i]]@metadata$latitude,
+                              object@data$station[[i]]@metadata$longitude,
+                              object@data$station[[i]]@metadata$waterDepth))
                   cat("\n")
               }
           })
@@ -756,7 +757,7 @@ read.section <- function(file, sectionId="", flags,
     res <- new("section")
     res@metadata <- metadata
     res@data <- data
-    warning("should update processingLog")
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 
