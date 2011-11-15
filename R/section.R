@@ -247,8 +247,10 @@ setMethod(f="plot",
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
                       points(lon, lat, col=col, pch=3, lwd=1/2)
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
-                      points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
-                      points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
+                      if (xtype == "distance") {
+                          points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
+                          points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
+                      }
                       if (indicate.stations) {
                           dx <- 5 * mean(diff(sort(x@metadata$longitude)),na.rm=TRUE)
                           dy <- 5 * mean(diff(sort(x@metadata$latitude)),na.rm=TRUE)
@@ -411,6 +413,7 @@ setMethod(f="plot",
               which.xtype <- pmatch(xtype, c("distance", "track", "latitude", "longitude"), nomatch=0)
               if (0 == which.xtype)
                   stop('xtype must be one of: "distance", "track", "latitude", or "longitude"')
+              xtype <- c("distance", "track", "latitude", "longitude")[which.xtype]
               which.ytype <- pmatch(ytype, c("pressure", "depth"), nomatch=0)
               if (missing(stationIndices)) {
                   numStations <- length(x@data$station)
