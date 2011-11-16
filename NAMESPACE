@@ -144,6 +144,7 @@ export("+.section",
        read.ctd.odf,
        read.drifter,
        read.lobo,
+       read.met,
        read.topo,
        read.oce,
        read.pt,
@@ -167,6 +168,7 @@ export("+.section",
        stickplot,
        subset.oce,
        summary.ctd,
+       summary.met,
        summary.sealevel,
        sunAngle,
        swAlpha,
@@ -226,6 +228,7 @@ S3method(plot, coastline)
 ##S3method(plot, ctd)
 ##S3method(plot, drifter)
 S3method(plot, lobo)
+##S3method(plot, met)
 S3method(plot, sealevel)
 S3method(plot, tidem)
 S3method(plot, topo)
@@ -246,4 +249,5 @@ S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
-exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, pt, sealevel, section, tidem, topo, windrose)
+exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, met, pt, sealevel, section, tidem, topo, windrose)
+

@@ -447,11 +447,17 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
     hour <- unclass(as.POSIXct(sl@data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
+    if (TRUE) { # isolate test code
+        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+        t <- unclass(as.POSIXct(sl@data$time, tz="UTC")) - unclass(tRef)
+        hour2pi <- 2 * 4 * atan2(1,1) * t * 3600
+    } else {
+        ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
+        ##    hour2pi <- 2 * pi * hour.wrt.centre
+        hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
+        hour2pi <- 2 * pi * hour.offset
+    }
     centralindex <- floor(length(sl@data$time) / 2)
-    ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
-    ##    hour2pi <- 2 * pi * hour.wrt.centre
-    hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
-    hour2pi <- 2 * pi * hour.offset
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
     for (i in 1:nc) {
@@ -484,9 +490,12 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                                         # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
                                         #                == s * sin(t) + c * cos(t)
                                         # thus tan(phase) is -c/s
-        phase[i]     <- -atan2(-c, s)   # atan2(y,x)
+        phase[i] <- -atan2(-c, s)   # atan2(y,x)
                                         # FIXME: is the sign right?
-        p[i]         <- 0.5 * (p.all[is] + p.all[ic])
+        if (TRUE) { # isolate test code
+            ## adjust the phases as in webtide()
+        }
+        p[i] <- 0.5 * (p.all[is] + p.all[ic])
     }
     if (debug > 0)
         cat("coef:", coef, "\n")
