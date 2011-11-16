@@ -6,8 +6,6 @@
 
 \description{Read a meteorological data file}
 
-\description{Read a CTD data file, producing an object of type \code{met}.}
-
 \usage{read.met(file, type=NULL, skip, tz=getOption("oceTz"),
          debug=getOption("oceDebug"), processingLog, \dots)}
 
@@ -30,8 +28,10 @@
   \item{\dots}{additional arguments, passed to called routines.}
 }
 
-\details{Reads a CSV (comma-separated value) file in the format used by the
-    Meterological Service of Canada.}
+\details{Reads a comma-separated value file in the format used by the
+    Meterological Service of Canada (MSC).  The agency does not publish a
+    format for these files, so this function was based on a study of a few
+    sample files, and it may fail for other files, if MSC changes the format.}
     
 \value{An object of \code{\link[base]{class}} \code{"met"}, of which the
     \code{data} slot contains vectors \code{time}, \code{temperature},
