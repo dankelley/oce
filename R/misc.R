@@ -359,7 +359,8 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
                                   "spice",
                                   "p", "z", "distance", "heading", "pitch", "roll",
-                                  "u", "v", "w",
+                                  "u", "v", "w", "speed", "direction",
+                                  "eastward", "northward",
                                   "elevation"), axis=c("x", "y"))
 {
     item <- match.arg(item)
@@ -421,15 +422,32 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "v") {
         full <- "v [m/s]"
         abbreviated <- "v [m/s]"
-     } else if (item == "w") {
+    } else if (item == "w") {
         full <- "w [m/s]"
         abbreviated <- "w [m/s]"
-     } else if (item == "elevation") {
+    } else if (item == "eastward") {
+        full <- "Eastward wind [m/s]"
+        abbreviated <- "u [m/s]"
+    } else if (item == "northward") {
+        full <- "Northward wind [m/s]"
+        abbreviated <- "v [m/s]"
+    } else if (item == "elevation") {
         full <- "Elevation [m]"
         abbreviated <- "Elevation [m/s]"
-     }
-    fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
-    if (fraction < 0.8) full else abbreviated
+    } else if (item ==  "speed") {
+        full <- "Speed [m/s]"
+        abbreviated <- "Speed [m/s]"
+    }
+    spaceNeeded <- strwidth(full, "inches")
+    whichAxis <- if (axis == "x") 1 else 2
+    spaceAvailable <- abs(par("pin")[whichAxis])
+    fraction <- spaceNeeded / spaceAvailable
+    ##cat("pin=", par('pin'), "\n")
+    ##cat("spaceNeeded: in inches:", spaceNeeded, "\n")
+    ##cat("whichAxis=", whichAxis, "\n")
+    ##cat("spaceAvailable=", spaceAvailable, "\n")
+    ##cat("fraction=", fraction, "\n")
+    if (fraction < 1.5) full else abbreviated
 }
 
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
