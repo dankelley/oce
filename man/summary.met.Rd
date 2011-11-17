@@ -27,10 +27,8 @@
 
 \examples{
 library(oce)
-\dontrun{
-met <- read.met('ile-rouge-eng-hourly-06012008-06302008.csv')
+data(met)
 summary(met)
-}
 }
 
 \author{Dan Kelley}

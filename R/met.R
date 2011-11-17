@@ -46,29 +46,29 @@ read.met <- function(file, type=NULL, skip,
         open(file, "r")
         on.exit(close(file))
     }
-    header <- readLines(file, encoding="latin1")
+    text <- readLines(file, encoding="latin1")
     ##print(header[1:19])
-    headerItem <- function(header, name, numeric=TRUE) {
-        if (length(i <- grep(name, header))) {
+    textItem <- function(text, name, numeric=TRUE) {
+        if (length(i <- grep(name, text))) {
             if (numeric)
-                as.numeric(sub("[^d](.*)[^d]$", "\\1", strsplit(header[i], ",")[[1]][2]))
+                as.numeric(sub("[^d](.*)[^d]$", "\\1", strsplit(text[i], ",")[[1]][2]))
             else
-                sub("[^d](.*)[^d]$", "\\1", strsplit(header[i], ",")[[1]][2])
+                sub("[^d](.*)[^d]$", "\\1", strsplit(text[i], ",")[[1]][2])
         } else {
             NA
         }
     }
-    elevation <- headerItem(header, "Elevation")
-    latitude <- headerItem(header, "Latitude")
-    longitude <- headerItem(header, "Longitude")
-    station <- headerItem(header, "Station Name", FALSE)
-    province <- headerItem(header, "Province", FALSE) # is this too specific to Canada??
-    climateIdentifier <- headerItem(header, "Climate Identifier", FALSE)
-    WMOIdentifier <- headerItem(header, "WMO Identifier", FALSE)
-    TCIdentifier <- headerItem(header, "TC Identifier", FALSE)
-    Identifier <- headerItem(header, "Climate Identifier", FALSE)
+    elevation <- textItem(text, "Elevation")
+    latitude <- textItem(text, "Latitude")
+    longitude <- textItem(text, "Longitude")
+    station <- textItem(text, "Station Name", FALSE)
+    province <- textItem(text, "Province", FALSE) # is this too specific to Canada??
+    climateIdentifier <- textItem(text, "Climate Identifier", FALSE)
+    WMOIdentifier <- textItem(text, "WMO Identifier", FALSE)
+    TCIdentifier <- textItem(text, "TC Identifier", FALSE)
+    Identifier <- textItem(text, "Climate Identifier", FALSE)
     if (missing(skip)) {
-        skip <- grep("^\"Date/Time\"", header)[1] - 1
+        skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
     res <- new('met', time=1)
     res@metadata <- list(latitude=latitude,
@@ -78,9 +78,25 @@ read.met <- function(file, type=NULL, skip,
                          WMOIdentifier=WMOIdentifier,
                          TCIdentifier=TCIdentifier,
                          filename=filename)
-    rawData <- read.csv(filename, skip=skip, encoding="latin1", header=TRUE)
+    rawData <- read.csv(text=text, skip=skip, encoding="latin1", header=TRUE)
     time <- strptime(paste(rawData$Year, rawData$Month, rawData$Day, rawData$Time), "%Y %m %d %H:%M", tz=tz)
-    temperature <- as.numeric(rawData[["Temp...C."]])
+    ntime <- length(time)
+    names <- names(rawData)
+    ## Must use grep to identify columns, because the names are not fixed.  In some
+    ## test files, temperature was in a column named "..Temp...C.", but in others
+    ## it was in a column named "..Temp[*]C.", where "[*]" contains accented
+    ## symbols.  The other columns may need similar treatment at some point,
+    ## if files are encountered with e.g. a special symbol used for the degree
+    ## sign in a wind direction, but for now they are accessed directly,
+    ## partly to indicate the possibilities of coding, for those who find
+    ## it necessary to adjust this code to work with other files.
+    ##
+    ## It would be good if someone from Environment Canada would take pity on a
+    ## poor user, and convince the powers-that-be to settle on a single format
+    ## and even (gasp) to document it.
+    Tcol <- grep("^Temp.*C\\.", names) # sometimes they use a degree symbol in this name
+    if (length(Tcol)) temperature <- as.numeric(rawData[,Tcol[1]])
+    else temperature <- rep(NA, ntime)
     pressure <- as.numeric(rawData[["Stn.Press..kPa."]])
     speed <- as.numeric(rawData[["Wind.Spd..km.h."]]) * 1000 / 3600
     direction <- 10 * as.numeric(rawData[["Wind.Dir..10.s.deg."]])
