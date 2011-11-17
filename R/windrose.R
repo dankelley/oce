@@ -58,8 +58,8 @@ as.windrose <- function(x, y, dtheta = 15)
 
 plot.windrose <- function(x,
                           type=c("count","mean", "median", "fivenum"),
-                          mgp=getOption("oceMgp"),
                           convention=c("meteorological", "oceanographic"),
+                          mgp=getOption("oceMgp"),
                           mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
                           col,
                           ...)
