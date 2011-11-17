@@ -114,7 +114,7 @@ imagep <- function(x, y, z,
     if (is.function(col))
         col <- col(n=length(breaks)-1)
 
-    if (drawPalette) {
+    if (TRUE == drawPalette || "space" == drawPalette) {
         the.mai <- c(omai[1],
                      widths$main + widths$mar.lhs + widths$palette.separation,
                      omai[3],
@@ -123,36 +123,40 @@ imagep <- function(x, y, z,
         the.mai <- clipmin(the.mai, 0.1)         # just in case
         oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
         par(mai=the.mai, cex=cex)
-        if (!gave.breaks) {
-            if (missing(zlim)) {
-                palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
+        if (TRUE == drawPalette) {
+            if (!gave.breaks) {
+                if (missing(zlim)) {
+                    palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
+                } else {
+                    palette <- seq(zlim[1], zlim[2], length.out=300)
+                }
+                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                      breaks=breaks,
+                      col=col,
+                      zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
             } else {
-                palette <- seq(zlim[1], zlim[2], length.out=300)
-            }
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
-                  breaks=breaks,
-                  col=col,
-                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
-        } else {
-            if (missing(zlim)) {
-                palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
-            } else {
-                palette <- seq(zlim[1], zlim[2], length.out=300)
-            }
+                if (missing(zlim)) {
+                    palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
+                } else {
+                    palette <- seq(zlim[1], zlim[2], length.out=300)
+                }
 
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
-                  breaks=breaks.orig,
-                  col=col,
-                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                      breaks=breaks.orig,
+                      col=col,
+                      zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+            }
+            if (drawContours)
+                abline(h=breaks)
+            box()
+            axis(side=4, at=pretty(palette), cex.axis=cex) # FIXME: decide on font size
+        } else {
+            plot(x=c(0,1), y=c(0,1), type='n', axes=FALSE, xlab="", ylab="")
         }
-        if (drawContours)
-            abline(h=breaks)
-        box()
-        axis(side=4, at=pretty(palette), cex.axis=cex) # FIXME: decide on font size
     }
 
     ## main image
-    if (drawPalette) {
+    if (TRUE == drawPalette || "space" == drawPalette) {
         the.mai <- c(omai[1],
                      widths$mar.lhs,
                      omai[3],

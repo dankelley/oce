@@ -13,14 +13,14 @@
     standard slots \code{metadata}, \code{data} and \code{processingLog}.}
 
 \section{Methods}{
-    Data may be accessed as e.g.  \code{ctd[["time"]]}, where the string could
+    Data may be accessed as e.g.  \code{sealevel[["time"]]}, where the string could
     also be e.g.  \code{"elevation"} for the corresponding sea-level elevation,
     or e.g.  \code{"latitude"} or \code{"longitude"} for scalars.  (The names
     of the columns are displayed with \code{show()}.) The name of the source
     file is found with \code{"filename"}.
 
     Everything that may be accessed may also be assigned, e.g.
-    \code{ctd[["elevation"]] <- value}.
+    \code{sealevel[["elevation"]] <- value}.
     
     The \code{show} method displays information about the object, while
     \code{\link{summary.sealevel}} provides a statistical summary.  }

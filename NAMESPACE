@@ -144,6 +144,7 @@ export("+.section",
        read.ctd.odf,
        read.drifter,
        read.lobo,
+       read.met,
        read.topo,
        read.oce,
        read.pt,
@@ -167,6 +168,7 @@ export("+.section",
        stickplot,
        subset.oce,
        summary.ctd,
+       summary.met,
        summary.sealevel,
        sunAngle,
        swAlpha,
@@ -210,6 +212,7 @@ export("+.section",
        vectorShow,
        velocity,
        velocityStatistics,
+       webtide,
        window.oce,
        write.ctd,
        xyzToEnu,
@@ -219,15 +222,17 @@ export("+.section",
 S3method(head, adp)
 S3method(tail, adp)
 
+## Note: comment out items as they are made into S4, and remove the block when done
 S3method(plot, cm)
 S3method(plot, coastline)
-S3method(plot, drifter)
+##S3method(plot, ctd)
+##S3method(plot, drifter)
 S3method(plot, lobo)
+##S3method(plot, met)
 S3method(plot, sealevel)
 S3method(plot, tidem)
 S3method(plot, topo)
 S3method(plot, windrose)
-
 S3method(predict, tidem)
 S3method(summary, adp)
 S3method(summary, adv)
@@ -244,4 +249,5 @@ S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
-exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, pt, sealevel, section, tidem, topo, windrose)
+exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, met, pt, sealevel, section, tidem, topo, windrose)
+

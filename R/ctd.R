@@ -12,6 +12,19 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="ctd",
+          definition=function(x, i, j, drop) {
+              if (i == "N2") {
+                  swN2(x)
+              } else {
+                  ## I use 'as' because I could not figure out callNextMethod() etc
+                  as(x, "oce")[[i, j, drop]]
+              }
+          })
+
+
+
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
                    other,
@@ -51,14 +64,15 @@ as.ctd <- function(salinity, temperature, pressure,
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     rval <- new('ctd')
+    nSalinity <- length(salinity)
     data <- data.frame(salinity=salinity,
                        temperature=temperature,
                        pressure=pressure,
-                       oxygen=if (!missing(oxygen))oxygen else NA,
-                       nitrate=if (!missing(nitrate))nitrate else NA,
-                       nitrite=if (!missing(nitrite))nitrite else NA,
-                       phosphate=if (!missing(phosphate))phosphate else NA,
-                       silicate=if (!missing(silicate))silicate else NA,
+                       oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, nSalinity),
+                       nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, nSalinity),
+                       nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, nSalinity),
+                       phosphate=if (!missing(phosphate) && !is.null(phosphate)) phosphate else rep(NA, nSalinity),
+                       silicate= if (!missing(silicate)  && !is.null(silicate))  silicate  else rep(NA, nSalinity),
                        quality=quality,
                        sigmaTheta=swSigmaTheta(salinity, temperature, pressure))
     if (!missing(other)) {
@@ -991,7 +1005,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         data <- data.frame(pressure=pressure, salinity=salinity, temperature=temperature, sigmaTheta=sigmaTheta, oxygen=oxygen)
     }
     ## catch e.g. -999 sometimes used for water depth's missing value
-    if (waterDepth < 0)
+    if (is.finite(waterDepth) && waterDepth < 0)
         waterDepth <- NA
     metadata <- list(header=header,
                      filename=filename, # provided to this routine
@@ -1330,7 +1344,6 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res <- new("ctd")
     res@metadata <- metadata
     res@data <- data
-    warning("should add to processinglog")
     ###class(res) <- c("ctd", "oce")
     ## Add standard things, if missing
     if (!found.salinity) {
@@ -1353,6 +1366,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
     res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         "sigmaTheta", "Sigma Theta kg/m^3", debug=debug-1)
     oceDebug(debug, "} # read.ctd.sbe()\n")
+    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
 

@@ -205,7 +205,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
             open(file, "r")
             on.exit(close(file))
         }
-        data <- read.table(file, col.names=c("latitude", "longitude"))
+        data <- read.table(file, col.names=c("longitude", "latitude"))
         res <- new("coastline", latitude=data$latitude, longitude=data$longitude, fillable=FALSE)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line

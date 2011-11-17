@@ -14,6 +14,7 @@ setClass("coastline", contains="oce")
 setClass("ctd", contains="oce")
 setClass("drifter", contains="oce")
 setClass("lobo", contains="oce")
+setClass("met", contains="oce")
 setClass("pt", contains="oce")
 setClass("sealevel", contains="oce")
 setClass("section", contains="oce")
@@ -41,33 +42,49 @@ setMethod(f="[[<-",
 
 setValidity("oce",
             function(object) {
-                ndata <- length(object@data)
-                lengths <- vector("numeric", ndata)
-                for (i in 1:ndata)
-                    lengths[i] <- length(object@data[[i]])
-                if (var(lengths) != 0) {
-                    cat("lengths of data elements are unequal\n")
+                slotNames <- slotNames(object)
+                if (length(slotNames) != 3) {
+                    cat("should be 3 slots, but there are", length(slotNames), "\n")
                     return(FALSE)
-                } else
-                    return(TRUE)
+                }
+                for (name in c("metadata", "data", "processingLog")) {
+                    if (!(name %in% slotNames)) {
+                        cat("object should have a slot named \"", name, "\"\n", sep="")
+                        return(FALSE)
+                    }
+                }
+                return(TRUE)
             })
 
 setMethod(f="show",
           signature="oce",
           definition=function(object) {
-              class <- class(object)[1]
+              filename <- object[["filename"]]
+              if (is.null(filename) || filename == "")
+                  cat(class(object)[1], " object has data as follows.\n", sep="")
+              else
+                  cat(class(object)[1], " object, from file '", object[["filename"]], "', has data as follows.\n", sep="")
               names <- names(object@data)
               ncol <- length(names)
-              if (ncol > 0) {
-                  if ("filename" %in% names(object@metadata) && object[["filename"]] != "")
-                      cat(class, " object from file \"", object[["filename"]], "\" has column data\n", sep="")
-                  else
-                      cat(class, " object has column data\n", sep="")
-                  for (i in 1:ncol) {
-                      cat(vectorShow(object@data[[i]], paste("  ", names[i])))
+              for (i in 1:ncol) {
+                  d <- object@data[[i]]
+                  if (inherits(d, "POSIXt")) {
+                      cat(vectorShow(d, paste("  ", names[i])))
+                  } else if (is.vector(d)) {
+                      cat(vectorShow(d, paste("  ", names[i])))
+                  } else if (is.array(d)) {
+                      dim <- dim(object@data[[i]])
+                      if (length(dim) == 1) {
+                          cat(vectorShow(d, paste("  ", names[i])))
+                      } else if (length(dim) == 2) {
+                          cat("   ", names[i], ", a ", dim[1], "x", dim[2], " array with value ", d[1,1], " at [1,1] position\n", sep="")
+                      } else if (length(dim) == 3) {
+                          cat("   ", names[i], ", a ", dim[1], "x", dim[2], "x", dim[3], " array with value ", d[1,1,1],
+                              " at [1,1,1] position\n", sep="")
+                      } else {
+                          cat("   ", names[i], ", an array of more than 3 dimensions\n")
+                      }
                   }
-              } else {
-                  cat(class, " object has nothing in its \"data\" slot\n")
               }
           })
 

@@ -1,7 +1,20 @@
+0.8-3
+- add 'met' class
+- subset.oce() handles section objects
+- draw.section(): permit xtype="latitude" or "longitude"
+- imagpe() has drawPalette="space" option
+
+0.8-2
+- fix bug in read.coastline(), reversing lon and lat [issue162]
+- fix bug in S4 adp validity checker
+- geodDist(): add argument 'alongPath'
+- remove compilation warning about doc for summary.ctd()
+
 0.8-1
 - switch to S4 classes, and add new accessors and 'show' functions.
 - add support for RBR 'rsk' files
 - plot.section() now uses 'col' if supplied
+
 0.7-1
 - improve oceColorsJet()
 - improve plotProfile() vertical range with missing data

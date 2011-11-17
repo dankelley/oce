@@ -7,7 +7,7 @@
 \description{Summarizes some of the data in a \code{ctd} object.}
 
 \usage{
-summary.ctd(object, \dots)
+\method{summary}{ctd}(object, \dots)
 }
 
 \arguments{

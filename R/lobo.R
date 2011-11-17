@@ -11,7 +11,7 @@ setMethod(f="initialize",
               if (!missing(fluorescence)) .Object@data$fluorescence <- fluorescence
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'ctd' object")
+              .Object@processingLog$value=c(.Object@processingLog$value, "create 'lobo' object")
               return(.Object)
           })
 

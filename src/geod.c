@@ -1,5 +1,52 @@
 #include <R.h>
 #include <math.h>
+#include <Rdefines.h>
+#include <Rinternals.h>
+
+void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a, double *f, double *faz, double *baz, double *s);
+
+/*
+library(oce) 
+data(coastlineHalifax)
+lat<-coastlineHalifax[["latitude"]]
+lon<-coastlineHalifax[["longitude"]]
+a <- 6378137.00          # WGS84 major axis
+f <- 1/298.257223563     # WGS84 flattening parameter
+n <- length(lat)
+system("R CMD SHLIB geod.c"); dyn.load("geod.so")
+dd <- .Call("geoddist_alongpath", lat, lon, a, f)
+plot(dd, lat, type='l')
+
+*/
+
+SEXP geoddist_alongpath(SEXP lat, SEXP lon, SEXP a, SEXP f)
+{
+    if (!isReal(lat))
+        error("latitude must be a numeric (floating-point) vector");
+    if (!isReal(lon))
+        error("longitude must be a numeric (floating-point) vector");
+    SEXP res;
+    //int n = INTEGER(GET_LENGTH(lat));
+    //int nlon = INTEGER(GET_LENGTH(lon));
+    int n = GET_LENGTH(lat);
+    int nlon = GET_LENGTH(lon);
+    if (n != nlon)
+        error("lengths of latitude and longitude vectors must match, but they are ", n, " and ", nlon, ", respectively");
+    double *latp = REAL(lat);
+    double *lonp = REAL(lon);
+    double *ap = REAL(a);
+    double *fp = REAL(f);
+    PROTECT(res = allocVector(REALSXP, n));
+    double *resp = REAL(res);
+    resp[0] = 0.0;
+    for (int i = 1; i < n; i++) {
+        double faz, baz, s;
+        geoddist(latp+(i-1), lonp+(i-1), latp+i, lonp+i, ap, fp, &faz, &baz, &s);
+        resp[i] = resp[i-1] + s;
+    }
+    UNPROTECT(1);
+    return(res);
+}
 
 void geoddist(double *lat1, double *lon1, double *lat2, double *lon2, double *a, double *f,
 	      double *faz, double *baz, double *s)

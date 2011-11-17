@@ -68,7 +68,8 @@
     helpful in ensuring that a recognizable coastline can be seen}
   \item{xtype}{type of x axis, for contour plots, either
     \code{"distance"} for distance (in km) to the first point in the
-    section, or \code{"track"} for distance along the cruise track.
+    section, \code{"track"} for distance along the cruise track,
+    or \code{"longitude"} or \code{"latitude"}.
     Note that if the x values are not in order, they will be put in
     order (which may make no sense) and a warning will be printed.}
   \item{ytype}{type of y axis for contour plots, either

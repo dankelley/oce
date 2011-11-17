@@ -1,13 +1,15 @@
 \name{plot.drifter}
 
 \alias{plot.drifter}
+\alias{plot,drifter,missing-method}
+\alias{plot,drifter-method}
 
 \title{Plot drifter data}
 
 \description{Plot a summary diagram for drifter data.}
 
-\usage{\method{plot}{drifter}(x, which = 1, level, coastline,
-                          cex=1, pch=1, type='p',
+\usage{\S4method{plot}{drifter}(x, which = 1, level, coastline,
+                          cex=1, pch=1, type='p', col,
                           adorn=NULL,
                           mgp=getOption("oceMgp"),
                           mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -39,6 +41,8 @@
   \item{pch}{type of plotting symbols to be used if \code{type='p'}.}
 
   \item{type}{plot type, either \code{"l"} or \code{"p"}.}
+
+  \item{col}{optional list of colours for plotting.}
 
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number 

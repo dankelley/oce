@@ -80,14 +80,14 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                         oceDebug(debug, "subsetting 'slow' variable data$", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keepSlow]
                     } else {
-                        oceDebug(debug, "subsetting data$", name, "\n", sep="")
+                        oceDebug(debug, "subsetting data@", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keep]
                     }
                 } else if (is.matrix(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data$", name, ", which is a matrix\n", sep="")
+                    oceDebug(debug, "subsetting data@", name, ", which is a matrix\n", sep="")
                     res@data[[name]] <- x@data[[name]][keep,]
                 } else if (is.array(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data$", name, ", which is an array\n", sep="")
+                    oceDebug(debug, "subsetting data@", name, ", which is an array\n", sep="")
                     res@data[[name]] <- x@data[[name]][keep,,]
                 }
             }
@@ -236,7 +236,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
              ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
              ylim=if (missing(ylim)) NULL else ylim,
-             type=if (missing(type)) NULL else type, cex=cex, ...)
+             type=type, cex=cex, ...)
     }
     if (axes) {
         xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
@@ -501,6 +501,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
     } else if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
             n <- length(indices)
+            if (is.logical(indices))
+                indices <- (1:n)[indices]
             station <- vector("list", n)
             stn <- vector("character", n)
             lon <- vector("numeric", n)
@@ -575,8 +577,12 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             rval@data[[name]] <- x@data[[name]][r]
         }
     } else if (inherits(x, "sealevel")) {
-        warning("not handling subset.oce(sealevel) yet.")
+        r <- eval(substitute(subset), x@data, parent.frame())
+        r <- r & !is.na(r)
         rval <- x
+        for (name in names(rval@data)) {
+            rval@data[[name]] <- x@data[[name]][r]
+        }
     } else if (inherits(x, "adv")) {
         if (!is.null(indices))
             stop("cannot specify 'indices' for adv objects (not coded yet)")

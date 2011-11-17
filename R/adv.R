@@ -7,7 +7,7 @@ setMethod(f="initialize",
               if (!missing(q)) .Object@data$q <- q
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'ctd' object")
+              .Object@processingLog$value=c(.Object@processingLog$value, "create 'adv' object")
               return(.Object)
           })
 
@@ -34,28 +34,6 @@ setMethod(f="[[",
               } else if (i == "temperature") {
                   return(x@data$temperature)
               } else stop("cannot access \"", i, "\"") # cannot get here
-          })
-
-setMethod(f="show",
-          signature="adv",
-          definition=function(object) {
-              filename <- object[["filename"]]
-              if (is.null(filename) || filename == "")
-                  cat("ADV has column data\n", sep="")
-              else
-                  cat("ADV from file '", object[["filename"]], "' has column data\n", sep="")
-              names <- names(object@data)
-              ncol <- length(names)
-              for (i in 1:ncol) {
-                  cat(vectorShow(object@data[[i]], paste("  ", names[i])))
-                  dim <- dim(object@data[[i]])
-                  if (!is.null(dim)) {
-                      if (length(dim) == 2)
-                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], ")\n", sep="")
-                      else if (length(dim) == 3)
-                          cat("      (actually, the above is a matrix of dimension ", dim[1], " by ", dim[2], " by ", dim[3], ")\n", sep="")
-                  }
-              }
           })
 
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),

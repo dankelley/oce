@@ -358,7 +358,10 @@ matchBytes <- function(input, b1, ...)
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
                                   "spice",
-                                  "p", "z", "distance", "heading", "pitch", "roll"), axis=c("x", "y"))
+                                  "p", "z", "distance", "heading", "pitch", "roll",
+                                  "u", "v", "w", "speed", "direction",
+                                  "eastward", "northward",
+                                  "elevation"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -413,9 +416,38 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "roll") {
         full <- "Roll [deg]"
         abbreviated <- "Roll"
+    } else if (item == "u") {
+        full <- "u [m/s]"
+        abbreviated <- "u [m/s]"
+    } else if (item == "v") {
+        full <- "v [m/s]"
+        abbreviated <- "v [m/s]"
+    } else if (item == "w") {
+        full <- "w [m/s]"
+        abbreviated <- "w [m/s]"
+    } else if (item == "eastward") {
+        full <- "Eastward wind [m/s]"
+        abbreviated <- "u [m/s]"
+    } else if (item == "northward") {
+        full <- "Northward wind [m/s]"
+        abbreviated <- "v [m/s]"
+    } else if (item == "elevation") {
+        full <- "Elevation [m]"
+        abbreviated <- "Elevation [m/s]"
+    } else if (item ==  "speed") {
+        full <- "Speed [m/s]"
+        abbreviated <- "Speed [m/s]"
     }
-    fraction <- strwidth(full, "inches") / par("pin")[if(axis == "x") 1 else 2]
-    if (fraction < 0.8) full else abbreviated
+    spaceNeeded <- strwidth(full, "inches")
+    whichAxis <- if (axis == "x") 1 else 2
+    spaceAvailable <- abs(par("pin")[whichAxis])
+    fraction <- spaceNeeded / spaceAvailable
+    ##cat("pin=", par('pin'), "\n")
+    ##cat("spaceNeeded: in inches:", spaceNeeded, "\n")
+    ##cat("whichAxis=", whichAxis, "\n")
+    ##cat("spaceAvailable=", spaceAvailable, "\n")
+    ##cat("fraction=", fraction, "\n")
+    if (fraction < 1.5) full else abbreviated
 }
 
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
@@ -670,11 +702,16 @@ geodXy <- function(lat, lon, lat.ref, lon.ref, rotate=0)
     data.frame(x, y)
 }
 
-geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
+geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
 {
     a <- 6378137.00          # WGS84 major axis
     f <- 1/298.257223563     # WGS84 flattening parameter
     if (inherits(lat1, "section")) {
+        ##cat("\nSECTION\n")
+        ##print(lat1[["latitude", "byStation"]])
+        ##print(lat1[["longitude", "byStation"]])
+        if (alongPath)
+            return(.Call("geoddist_alongpath", lat1[["latitude", "byStation"]], lat1[["longitude", "byStation"]], a, f) / 1000)
         copy <- lat1
         n <- length(copy@data$station)
         lat1 <- vector("numeric", n)
@@ -704,6 +741,11 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL)
             res[i] <- dist
         }
     } else {
+        ##cat("\nCOMPONENTS\n")
+        ##print(lat1)
+        ##print(lon1)
+        if (alongPath)
+            return(.Call("geoddist_alongpath", lat1, lon1, a, f) / 1000)
         n1 <- length(lat1)
         if (length(lon1) != n1)
             stop("lat1 and lon1 must be vectors of the same length")

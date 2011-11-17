@@ -25,13 +25,14 @@
         \code{section[["longitude"]]} return vectors with values repeated for
         each level in each CTD (see the \code{pairs()} call in the example
         section).  If just one latitude or longitude is desired per station,
-        e.g. \code{section[["latitude", "bystation"]]} may be used.}
-        
+        e.g. \code{section[["latitude", "bystation"]]} may be used.  Station-by-station
+        values of dynamic height are provided by e.g. \code{section[["dynamic height"]]}.}
+
     \subsection{Assigning values}{FIXME: fill this in when the interface has
         decided upon}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
-        \code{show(ctd)}) displays information about the object.}
+        \code{show(section)}) displays information about the object.}
 }
 
 \seealso{Sections can be read with \code{\link{read.section}} or created with
