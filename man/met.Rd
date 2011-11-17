@@ -16,6 +16,7 @@
 library(oce)
 met<-read.met("http://climate.weatheroffice.gc.ca/climateData/bulkdata_e.html?timeframe=1&Prov=XX&StationID=6358&Year=2011&Month=7&Day=15&format=csv")
 }
+}
 
 \source{Environment Canada website (downloaded 2011-11-17)}
 

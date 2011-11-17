@@ -55,11 +55,9 @@
     them.}
 
 \examples{
-\dontrun{
 library(oce)
-met <- read.met("ile-rouge-eng-hourly-06012008-06302008.csv")
+data(met)
 plot(met, which=3:4)
-}
 }
 \author{Dan Kelley}
 \keyword{hplot}
