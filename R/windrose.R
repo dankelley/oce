@@ -20,16 +20,25 @@ setMethod(f="[[",
 
 as.windrose <- function(x, y, dtheta = 15)
 {
+    if (inherits(x, "met")) {
+        tmp <- x
+        x <- tmp[["u"]]
+        y <- tmp[["v"]]
+    }
+    ok <- !is.na(x) & !is.na(y)
+    x <- x[ok]
+    y <- y[ok]
+    pi <- atan2(1, 1) * 4
     dt <- dtheta * pi / 180
     dt2 <- dt / 2
     R <- sqrt(x^2 + y^2)
     angle <- atan2(y, x)
     L <- max(R, na.rm=TRUE)
     nt <- 2 * pi / dt
-    theta <- count <- mean <- vector("numeric", nt)
+    count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)
+    theta <- seq(-pi, pi, length.out=nt)
     for (i in 1:nt) {
-        theta[i] <- i * dt
         if (theta[i] <= pi)
             inside <- (angle < (theta[i] + dt2)) & ((theta[i] - dt2) <= angle)
         else {
@@ -49,6 +58,7 @@ as.windrose <- function(x, y, dtheta = 15)
 
 plot.windrose <- function(x,
                           type=c("count","mean", "median", "fivenum"),
+                          convention=c("meteorological", "oceanographic"),
                           mgp=getOption("oceMgp"),
                           mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
                           col,
@@ -57,8 +67,13 @@ plot.windrose <- function(x,
     if (!inherits(x, "windrose"))
         stop("method is only for wind-rose objects")
     type <- match.arg(type)
+    convention <- match.arg(convention)
     nt <- length(x@data$theta)
-    t <- x@data$theta * pi / 180        # in radians
+    pi <- 4 * atan2(1, 1)
+    if (convention == "meteorological")
+        t <- x@data$theta * pi / 180   # in radians
+    else
+        t <- pi + x@data$theta * pi / 180  # in radians
     dt <- t[2] - t[1]
     dt2 <- dt / 2
                                         # Plot setup
@@ -88,7 +103,7 @@ plot.windrose <- function(x,
     text(-1,  0, "W", pos=2)
     text( 0,  1, "N", pos=3)
     text( 1,  0, "E", pos=4)
-                                        # Draw rose in a given type
+    ## Draw rose in a given type
     if (type == "count") {
         max <- max(x@data$count, na.rm=TRUE)
         for (i in 1:nt) {

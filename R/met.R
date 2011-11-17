@@ -100,8 +100,8 @@ read.met <- function(file, type=NULL, skip,
     pressure <- as.numeric(rawData[["Stn.Press..kPa."]])
     speed <- as.numeric(rawData[["Wind.Spd..km.h."]]) * 1000 / 3600
     direction <- 10 * as.numeric(rawData[["Wind.Dir..10.s.deg."]])
-    u <- speed * cos(-direction * atan2(1, 1) / 45)
-    v <- speed * sin(-direction * atan2(1, 1) / 45)
+    u <- -speed * sin(direction * atan2(1, 1) / 45)
+    v <- -speed * cos(direction * atan2(1, 1) / 45)
     res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v)
     res
 }
