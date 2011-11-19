@@ -58,6 +58,7 @@ as.windrose <- function(x, y, dtheta = 15)
 
 plot.windrose <- function(x,
                           type=c("count","mean", "median", "fivenum"),
+                          convention=c("meteorological", "oceanographic"),
                           mgp=getOption("oceMgp"),
                           mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]),
                           col,
@@ -66,8 +67,13 @@ plot.windrose <- function(x,
     if (!inherits(x, "windrose"))
         stop("method is only for wind-rose objects")
     type <- match.arg(type)
+    convention <- match.arg(convention)
     nt <- length(x@data$theta)
-    t <- x@data$theta * pi / 180        # in radians
+    pi <- 4 * atan2(1, 1)
+    if (convention == "meteorological")
+        t <- x@data$theta * pi / 180   # in radians
+    else
+        t <- pi + x@data$theta * pi / 180  # in radians
     dt <- t[2] - t[1]
     dt2 <- dt / 2
                                         # Plot setup

@@ -1,3 +1,6 @@
+0.8-4
+- ADV objects: add access to slow variables (e.g. headingSlow)
+
 0.8-3
 - add 'met' class
 - subset.oce() handles section objects
