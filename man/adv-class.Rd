@@ -16,9 +16,12 @@
 
     \subsection{Extracting values}{Data may be accessed as e.g.
         \code{adv[["u1"]]}, where the string could also be \code{"u2"} or
-        \code{"u3"} for the other velocity components, or \code{"heading"},
-        \code{"pitch"} or \code{"roll"} for the instrument angles, or
-        \code{"temperature"} for the temperature.}
+        \code{"u3"} for the other velocity components, or \code{"v"} for a
+        matrix holding all of these components.  The instrument heading is
+        retrieved with \code{"heading"} or \code{"headingSlow"} (if
+        appropriate), and similarly for \code{"pitch"}, \code{"pitchSlow"},
+        \code{"roll"}  or \code{"rollSlow"}. Temperature and pressure are
+        retrieved with \code{"temperature"} and \code{"pressure"}.}
 
     \subsection{Assigning values}{(not available yet)}
 
