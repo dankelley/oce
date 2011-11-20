@@ -849,6 +849,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         open(file, "r")
         on.exit(close(file))
     }
+    res <- new("ctd")
     ## Header
     scientist <- ship <- institute <- address <- NULL
     filename.orig <- NULL
@@ -1027,10 +1028,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                      names=names,
                      labels=labels,
                      src=filename)
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
-    res <- new("ctd")
     res@metadata <- metadata
     res@data <- data
     if (missing(processingLog))
