@@ -1,4 +1,5 @@
 0.8-4
+- fullFilename(): handle URLs properly
 - ADV objects: add access to slow variables (e.g. headingSlow)
 
 0.8-3

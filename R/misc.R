@@ -328,6 +328,8 @@ fullFilename <- function(filename)
     first.char <- substr(filename, 1, 1)
     if (first.char == '/' || first.char == '~')
         return(filename)
+    if (substr(filename, 1, 5) == "http:")
+        return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
 matrixSmooth <- function(m)
