@@ -6,7 +6,7 @@
 
 \description{Show metadata item}
 
-\usage{showMetadataItem(object, name, label="", postlabel="", isdate=FALSE)}
+\usage{showMetadataItem(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)}
 
 \arguments{
   \item{object}{an object inheriting from the base \code{oce} class.}
@@ -14,6 +14,7 @@
   \item{label}{label to print before item}
   \item{postlabel}{label to print after item}
   \item{isdate}{boolean indicating whether the item is a time}
+  \item{quote}{boolean indicating whether to enclose the item in quotes}
 }
 
 \details{This is a helper function for various \code{summary} functions.}
