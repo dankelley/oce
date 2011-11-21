@@ -7,8 +7,8 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <-temperature 
               if (!missing(salinity)) .Object@data$salinity <- salinity
               .Object@metadata$filename <- filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'ctd' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
           })
 
@@ -849,6 +849,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
         open(file, "r")
         on.exit(close(file))
     }
+    res <- new("ctd")
     ## Header
     scientist <- ship <- institute <- address <- NULL
     filename.orig <- NULL
@@ -1027,10 +1028,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
                      names=names,
                      labels=labels,
                      src=filename)
-    if (missing(processingLog))
-        processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
-    res <- new("ctd")
     res@metadata <- metadata
     res@data <- data
     if (missing(processingLog))

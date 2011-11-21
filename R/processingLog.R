@@ -1,10 +1,13 @@
 "processingLog<-" <- function(x, value)
 {
     if (inherits(x, "oce")) {
-        h <- list(time=x@processingLog[[1]], value=x@processingLog[[2]]) # using indices to allow renaming
-        h$time <- c(h$time, as.POSIXct(Sys.time(), tz="UTC"))
-        h$value <- c(h$value, value)
-        x@processingLog <- h
+        browser()
+        if (0 == length(x@processingLog)) {
+            x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
+        } else {
+            x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
+            x@processingLog$value <- c(x@processingLog$value, value)
+        }
     } else {
         stop("'x' is not an oce object")
     }
@@ -14,8 +17,13 @@
 processingLog <- function(h, value="")
 {
     res <- if (is.null(h)) list(time=NULL, value=NULL) else h
-    res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
-    res$value <- c(res$value, value)
+    if (is.null(h$time[1])) {
+        res$time <- as.POSIXct(Sys.time(), tz="UTC")
+        res$value <- value
+    } else {
+        res$time <- c(res$time, as.POSIXct(Sys.time(), tz="UTC"))
+        res$value <- c(res$value, value)
+    }
     res
 }
 

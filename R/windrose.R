@@ -1,8 +1,8 @@
 setMethod(f="initialize",
           signature="windrose",
           definition=function(.Object) {
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'windrose' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'windrose' object"
               return(.Object)
           })
 

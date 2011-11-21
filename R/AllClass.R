@@ -2,10 +2,9 @@ setClass("oce",
          representation(metadata="list",
                         data="list",
                         processingLog="list"),
-         ## some advise NOT creating e.g. metadata, because we want daughters to do that
          prototype=list(metadata=list(),
                         data=list(),
-                        processingLog=list(time = Sys.time(), value = "create base 'oce' object")))
+                        processingLog=list()))
 
 setClass("adv", contains="oce")
 setClass("adp", contains="oce")

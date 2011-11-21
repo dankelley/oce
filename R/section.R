@@ -1,8 +1,8 @@
 setMethod(f="initialize",
           signature="section",
           definition=function(.Object) {
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'section' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'section' object"
               return(.Object)
           })
 

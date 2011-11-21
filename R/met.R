@@ -7,8 +7,8 @@ setMethod(f="initialize",
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
               .Object@metadata$filename <- filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'met' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'met' object"
               return(.Object)
           })
 
@@ -46,6 +46,7 @@ read.met <- function(file, type=NULL, skip,
         open(file, "r")
         on.exit(close(file))
     }
+    res <- new('met', time=1)
     text <- readLines(file, encoding="latin1")
     ##print(header[1:19])
     textItem <- function(text, name, numeric=TRUE) {
@@ -70,7 +71,6 @@ read.met <- function(file, type=NULL, skip,
     if (missing(skip)) {
         skip <- grep("^\"Date/Time\"", text)[1] - 1
     }
-    res <- new('met', time=1)
     res@metadata <- list(latitude=latitude,
                          longitude=longitude,
                          elevation=elevation,
@@ -103,6 +103,9 @@ read.met <- function(file, type=NULL, skip,
     u <- -speed * sin(direction * atan2(1, 1) / 45)
     v <- -speed * cos(direction * atan2(1, 1) / 45)
     res@data <- list(time=time, temperature=temperature, pressure=pressure, u=u, v=v)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
     res
 }
 
@@ -137,12 +140,13 @@ setMethod(f="plot",
 summary.met <- function(object, ...)
 {
     cat("Met Summary\n-----------\n\n")
-    showMetadataItem(object, "latitude", "Latitude   ")
-    showMetadataItem(object, "longitude", "Longitude ")
+    showMetadataItem(object, "filename", "Source     ", quote=TRUE)
+    showMetadataItem(object, "latitude", "Latitude     ")
+    showMetadataItem(object, "longitude", "Longitude   ")
     showMetadataItem(object, "elevation", "Elevation   ")
-    showMetadataItem(object, "climateIdentifier", "Climate Identifer ")
-    showMetadataItem(object, "WMOIdentifier", "WMO Identifer ")
-    showMetadataItem(object, "TCIdentifier", "TC Identifer ")
+    showMetadataItem(object, "climateIdentifier", "Climate Identifer          ")
+    showMetadataItem(object, "WMOIdentifier", "World Met Office Identifer ")
+    showMetadataItem(object, "TCIdentifier", "Transport Canada Identifer ")
     cat("* Statistics of subsample::\n")
     ndata <- length(object@data)
     threes <- matrix(nrow=ndata-1, ncol=3)
