@@ -103,10 +103,12 @@ summary.adv <- function(object, ...)
                 format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
                 format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
                 1 / object@metadata$subsampleDeltat), ...)
-    if ("burst" == object@metadata$samplingMode) {
-        cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
-    } else {
-        cat("* Sampling in continuous mode\n")
+    if ("samplingMode" %in% names(object@metadata)) {
+        if ("burst" == object@metadata$samplingMode) {
+            cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
+        } else {
+            cat("* Sampling in continuous mode\n")
+        }
     }
     cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
     cat("* Coordinate system:     ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
@@ -128,6 +130,7 @@ summary.adv <- function(object, ...)
     rownames(threes) <- dataNames[-grep("^time", dataNames)]
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes)
+    processingLogShow(object)
 }
 
 setMethod(f="plot",
