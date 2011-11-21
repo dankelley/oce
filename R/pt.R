@@ -5,8 +5,8 @@ setMethod(f="initialize",
               if (!missing(pressure)) .Object@data$pressure <- pressure
               if (!missing(temperature)) .Object@data$temperature <- temperature
               .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'pt' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'pt' object"
               return(.Object)
           })
 ## the default 'oce' object is sufficient for other methods

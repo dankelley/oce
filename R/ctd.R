@@ -7,8 +7,8 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <-temperature 
               if (!missing(salinity)) .Object@data$salinity <- salinity
               .Object@metadata$filename <- filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'ctd' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'ctd' object"
               return(.Object)
           })
 

@@ -7,8 +7,8 @@ setMethod(f="initialize",
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
               .Object@metadata$filename <- filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'met' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'met' object"
               return(.Object)
           })
 

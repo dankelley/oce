@@ -5,8 +5,8 @@ setMethod(f="initialize",
               if (!missing(longitude)) .Object@data$longitude <- longitude
               .Object@metadata$filename <- filename
               .Object@metadata$fillable <- fillable
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'coastline' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'coastline' object"
               return(.Object)
           })
 ## the default 'oce' object is sufficient for other methods

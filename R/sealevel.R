@@ -4,8 +4,8 @@ setMethod(f="initialize",
               if (missing(elevation)) stop("must give elevation")
               .Object@data$elevation <- elevation
               if (!missing(time)) .Object@data$time <- time 
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'sealevel' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'sealevel' object"
               return(.Object)
           })
 

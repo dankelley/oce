@@ -5,8 +5,8 @@ setMethod(f="initialize",
               if (!missing(latitude)) .Object@data$latitude <- latitude
               if (!missing(z)) .Object@data$z <- z
               .Object@metadata$filename <- filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'topo' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'topo' object"
               return(.Object)
           })
 
