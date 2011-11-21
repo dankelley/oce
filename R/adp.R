@@ -314,6 +314,7 @@ summary.adp <- function(object, ...)
     colnames(threes) <- c("Min.", "Mean", "Max.")
     cat("* Statistics of subsample::\n\n")
     print(threes)
+    processingLogShow(object)
 }
 
 setMethod(f="plot",
