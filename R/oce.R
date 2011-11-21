@@ -224,17 +224,18 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         y <- rep(y, length(x))
     if (despike)
         y <- despike(y)
+    print(ylab)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
-             ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
+             ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
-             ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
+             ylab=ylab,
              ylim=if (missing(ylim)) NULL else ylim,
              type=type, cex=cex, ...)
     }
