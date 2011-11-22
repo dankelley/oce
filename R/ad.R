@@ -42,13 +42,12 @@ beamToXyz <- function(x, ...)
         stop("class of object must inherit from either 'adv' or 'adp'")
 }
 
-xyzToEnu <- function(x, declination=0, debug=getOption("oceDebug"))
+xyzToEnu <- function(x, ...)
 {
-    ##cat("ad.R:xyzToEnu(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")
     if (inherits(x, "adp"))
-        xyzToEnuAdp(x=x, declination-declination, debug=debug)
+        xyzToEnuAdp(x=x, ...)
     else if (inherits(x, "adv"))
-        xyzToEnuAdv(x=x, declination-declination, debug=debug)
+        xyzToEnuAdv(x=x, ...)
     else
         stop("class of object must inherit from either 'adv' or 'adp'")
 }

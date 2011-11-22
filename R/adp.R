@@ -1214,7 +1214,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res@data$v[,c,3] <- enu$up
     }
     res@metadata$oceCoordinate <- "enu"
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLog(res@processingLog,
+                                       paste("xyzToEnu(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
     oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
     res
 }

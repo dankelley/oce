@@ -866,7 +866,12 @@ xyzToEnuAdv <- function(x, declination=0,
     x@data$v[,2] <- enu$north
     x@data$v[,3] <- enu$up
     x@metadata$oceCoordinate <- "enu"
-    x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    x@processingLog <- processingLog(x@processingLog,
+                                     paste("xyzToEnu(x",
+                                           ", declination=", declination, 
+                                           ", horizontalCase=", if (missing(horizontalCase)) "(missing)" else horizontalCase,
+                                           ", sensorOrientiation=", if (missing(sensorOrientation)) "(missing)" else sensorOrientation,
+                                           ", debug=", debug, ")", sep=""))
     oceDebug(debug, "\b\b} # xyzToEnuAdv()\n")
     x
 }
