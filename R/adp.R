@@ -1104,6 +1104,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
+    ##cat("adp.R:xyzToEnuAdp(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "\b\bxyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
