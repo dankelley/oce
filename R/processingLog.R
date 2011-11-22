@@ -1,7 +1,6 @@
 "processingLog<-" <- function(x, value)
 {
     if (inherits(x, "oce")) {
-        browser()
         if (0 == length(x@processingLog)) {
             x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
         } else {
