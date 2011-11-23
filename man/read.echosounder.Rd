@@ -44,13 +44,14 @@ plot(e)
 }
 
 \references{
-    
-    \url{http://www.biosonicsinc.com/}
+    Various echousounder instruments provided by BioSonics are described at the
+    company website, \url{http://www.biosonicsinc.com/}.  The following document
 
-    \url{http://support.echoview.com/WebHelp/Reference/File_formats/BioSonics_files.htm}
-
-    \url{http://www.echoview.com/files/WebHelp/Echoview.htm}
-}
+    Biosonics, 2010.  DT4 Data File Format Specification.  BioSonics Advanced
+    Digital Hydroacoustics. July, 2010.  SOFTWARE AND ENGINEERING LIBRARY
+    REPORT BS&E-2004-07-0009-2.0.  (This document was provided to the author of
+    this function in November 2011, which suggests that the data format was not
+    changed since July 2010.)}
 
 \author{Dan Kelley}
 

@@ -7,9 +7,9 @@
 as.echosounder(time, depth, data, src="")
 }
 \arguments{
-  \item{time}{}
-  \item{depth}{}
-  \item{data}{}
+  \item{time}{...FIXME: put something meaningful here}
+  \item{depth}{...FIXME: decide on args based on an actual data file}
+  \item{data}{...FIXME: this is all provisional}
   \item{src}{optional string indicating data source}
 }
 

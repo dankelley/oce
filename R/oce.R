@@ -725,7 +725,10 @@ magic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
         return("shapefile")
     }
-
+    if (bytes[1] == 0xff && bytes[2] == 0xff && bytes[3] == 0xff && bytes[4] == 0xff) {
+        oceDebug(debug, "this is a biosonics echosounder file")
+        return("echosounder")
+    }
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         ## 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
@@ -822,6 +825,8 @@ read.oce <- function(file, ...)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         stop("cannot read shapefiles")
+    if (type == "echosounder")
+        return(read.echosounder(file, ...))
     if (type == "adp/rdi")
         return(read.adp.rdi(file, processingLog=processingLog, ...))
     if (type == "adp/sontek")

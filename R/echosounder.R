@@ -84,22 +84,79 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
     filename <- NULL
     if (is.character(file)) {
         filename <- fullFilename(file)
-        file <- file(file, "r")
+        file <- file(file, "rb")
         on.exit(close(file))
     }
     if (!inherits(file, "connection"))
         stop("argument `file' must be a character string or connection")
     if (!isOpen(file)) {
-        open(file, "r")
+        open(file, "rb")
         on.exit(close(file))
     }
-    warning("should read echosounder data now")
-    res <- new("echosounder")
-    processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res <- new("echosounder", filename=filename)
+    seek(file, 0, "start")
+    seek(file, where=0, origin="end")
+    fileSize <- seek(file, where=0)
+    oceDebug(debug, "fileSize=", fileSize, "\n")
+    buf <- readBin(file, what="raw", n=fileSize, endian="little")
+
+    ## Section 3.3 of the Biosonics doc (see ?echosounder-class) describes the
+    ## file format.  Note that the files are little endian.
+    ##
+    ## Data are organized as a sequence of tuples, in the following format:
+    ##   N = 2-byte unsigned int that indicates the size of the tuple.
+    ##   code = 2-byte code (see table below)
+    ##   data = N bytes (depends on code)
+    ##   N6 = 2 bytes that must equal N+6, or the data are corrupted
+    ##
+    ## The codes, from the table in section 3.5 of Biosonics doc (see ?echosounder-class)
+    ## are as follows.  The first tuple in a file must have code 0xFFFF, and the
+    ## second must have code 001E, 0018, or 0001.
+    ##
+    ##   0xFFFF Signature (for start of file)
+    ##   0x001E V3 File Header
+    ##   0x0018 ￼V2 File Header
+    ##   0x0001 ￼V1 File Header
+    ##   0x0012 Channel Descriptor
+    ##   0x0036 Extended Channel Descriptor
+    ##   0x0015 ￼Single-Beam Ping
+    ##   0x001C Dual-Beam Ping
+    ##   0x001D Split-Beam Ping
+    ##   0x000F or 0x0020 ￼ Time
+    ##   0x000E ￼Position
+    ##   0x0011 ￼Navigation String
+    ##   0x0030 Timestamped Navigation String
+    ##   0x0031 Transducer Orientation
+    ##   0x0032 Bottom Pick
+    ##   0x0033 ￼Single Echoes
+    ##   0x0034 ￼Comment
+    ##   ￼0xFFFE ￼End of File
+    tuple <- 1
+    offset <- 0
+    while (offset < fileSize) {
+        cat("tuple=", tuple, " offset=", offset, "\n")
+        N <- readBin(buf[offset+1:2],"integer", size=2, n=1, endian="small", signed=FALSE)
+        cat("  N=", N, "\n")
+        code <- readBin(buf[offset+3:4],"integer", size=2, n=1, endian="small", signed=FALSE)
+        cat("  code=", code, "\n")
+        cat("  data= ... not read yet (FIXME)\n")
+        N6 <- readBin(buf[offset+N+4+1:2],"integer", size=2, n=1, endian="small", signed=FALSE)
+        cat("  N6=", N6, "should equal N+6 ... and we should check that (FIXME)\n")
+        if (N6 != N + 6)
+            stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
+        offset <- offset + N + 6
+        tuple <- tuple + 1
+    }
+    warning("should work until end of file!  should read the data!  FIXME")
+    res@data <- list(test=3)
+    res@processingLog <- processingLog(res@processingLog,
+                                       paste("read.echosounder(\"", filename, ", debug=", debug, ")"))
     ## FIXME insert data, pl etc
     res
 }
-
+## test (until I can get a dataset)
+##   writeBin(as.raw(c(0x00, 0x00, 0xFF, 0xFF, 0x00, 0x06)), file("test", "wb"))
+##   source('~/src/R-kelley/oce/R/echosounder.R'); read.echosounder('test')
 
 summary.echosounder <- function(object, ...)
 {
