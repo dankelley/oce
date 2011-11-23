@@ -224,7 +224,6 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         y <- rep(y, length(x))
     if (despike)
         y <- despike(y)
-    print(ylab)
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
