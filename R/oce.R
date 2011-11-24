@@ -725,7 +725,7 @@ magic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
         return("shapefile")
     }
-    if (bytes[1] == 0xff && bytes[2] == 0xff && bytes[3] == 0xff && bytes[4] == 0xff) {
+    if (bytes[3] == 0xff && bytes[4] == 0xff) {
         oceDebug(debug, "this is a biosonics echosounder file")
         return("echosounder")
     }

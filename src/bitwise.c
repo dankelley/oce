@@ -463,3 +463,9 @@ void dan(int *n, long int *in, unsigned long int *out)
     Rprintf("i=%d in=%d:%d out=%d\n", i, *in, *in, *out);
   }
 }
+
+// uint16_le: assemble two bytes into unsigned int (little-endian)
+void uint16_le(unsigned char *b1, unsigned char *b2, int *out)
+{
+  *out = (int)(*b1) + 256 * (int)(*b2);
+}

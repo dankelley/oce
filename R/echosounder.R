@@ -98,7 +98,7 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
-    buf <- readBin(file, what="raw", n=fileSize, endian="little")
+    buf <<- readBin(file, what="raw", n=fileSize, endian="little")
 
     ## Section 3.3 of the Biosonics doc (see ?echosounder-class) describes the
     ## file format.  Note that the files are little endian.
@@ -133,21 +133,62 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
     ##   ￼0xFFFE ￼End of File
     tuple <- 1
     offset <- 0
+    code1Vec <<- NULL
+    pingLengthVec <<- NULL
+    ## > unique(pingLengthVec)
+    ## [1] 6808 6810 6794 6806 6804 6800 6802 6792 6798
+    Ntime <- 0
+    NsingleBeamPing <- 0
     while (offset < fileSize) {
-        cat("tuple=", tuple, " offset=", offset, "\n")
-        N <- readBin(buf[offset+1:2],"integer", size=2, n=1, endian="small", signed=FALSE)
-        cat("  N=", N, "\n")
+        print <- tuple < 15 || tuple > 4400
+        N <- .C("uint16_le", buf[offset+1], buf[offset+2], res=integer(1))$res
+        code1 <- buf[offset+3]
+        code2 <- buf[offset+4]
         code <- readBin(buf[offset+3:4],"integer", size=2, n=1, endian="small", signed=FALSE)
-        cat("  code=", code, "\n")
-        cat("  data= ... not read yet (FIXME)\n")
-        N6 <- readBin(buf[offset+N+4+1:2],"integer", size=2, n=1, endian="small", signed=FALSE)
-        cat("  N6=", N6, "should equal N+6 ... and we should check that (FIXME)\n")
+        if (print) cat("tuple=", tuple, " offset=", offset, " N=", N, " code 0x", code1, " 0x", code2, sep="")
+        if (tuple > 1) {
+            if (code2 == 0xff) {
+                cat("\n")
+                break
+            }
+            if (code2 != 0x00)
+                stop("tuple code should start with 0x00, but it starts with 0x", code1)
+        }
+        if (code1 == 0x15) {
+            if (print) cat("  single-beam ping\n")
+            pingLengthVec <<- c(pingLengthVec, N)
+            NsingleBeamPing <- NsingleBeamPing + 1 
+        } else if (code1 == 0x0f || code == 0x20) {
+            if (print) cat("  time\n")
+            Ntime <- Ntime + 1
+        } else if (code1 == 0x11) {
+            if (print) cat("  navigation string\n")
+        } else if (code1 == 0x0e) {
+            if (print) cat("  position\n")
+        } else if (code1 == 0x12) {
+            if (print) cat("  channel descriptor\n")
+        } else if (code1 == 0x13) {
+            if (print) cat("  13: unknown\n")
+        } else if (code1 == 0xff && tuple > 1) {
+            if (print) cat("  EOF\n")
+        } else if (code1 == 0x1e) {
+            if (print) cat("  V3 file header\n")
+        } else if (code1 == 0x18) {
+            if (print) cat("  V2 file header\n")
+        } else if (code1 == 0x01) {
+            if (print) cat("  V1 file header\n")
+        } else {
+            if (print) cat("\n")
+        }
+        code1Vec <<- c(code1Vec, code1)
+        ## FIXME: read the data!
+        N6 <- .C("uint16_le", buf[offset+N+5], buf[offset+N+6], res=integer(1))$res
         if (N6 != N + 6)
             stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
-    warning("should work until end of file!  should read the data!  FIXME")
+    cat("pings:", NsingleBeamPing, " times:", Ntime, "\n")
     res@data <- list(test=3)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", debug=", debug, ")"))
