@@ -17,11 +17,9 @@
     FIXME: material below is cut/paste from ctd, and needs replacement
 
     \emph{Accessing values.} Data may be accessed as e.g.
-    \code{echosounder[["salinity"]]}, where the string could also be e.g.
-    \code{"temperature"} or \code{"pressure"} for column data, or
-    \code{"latitude"} or \code{"longitude"} for scalars.  (The names of the
-    columns are displayed with \code{show().} The name of the source file is
-    found with \code{"filename"}.
+    \code{echosounder[["time"]]}, where the string could also be e.g.  FIXME
+    (add more).  The names of the columns are displayed with \code{show().} The
+    name of the source file is found with \code{"filename"}.
 
     Derived data are also available: \code{"distance"} calls
     \code{\link{geodDist}} to compute locations, and calculates distance along
