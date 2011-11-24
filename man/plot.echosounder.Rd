@@ -10,7 +10,7 @@
 
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
-     col="black", lwd=2,
+     type="l", col="black", lwd=2,
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -28,8 +28,10 @@
       \item \code{which=2} gives a distance-depth section image
       \item \code{which=3} gives a map showing the cruise track
     }}
-  \item{col}{color for line}
-  \item{lwd}{line width}
+  \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
+      \code{"b"} for both.}
+  \item{col}{color for line, or points}
+  \item{lwd}{line width (ignored if \code{type="p"})}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, 

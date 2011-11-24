@@ -32,7 +32,7 @@ as.echosounder <- function(time, depth, data, src="") # just guessing on args
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
-                              col="black", lwd=2,
+                              type="l", col="black", lwd=2,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -59,8 +59,12 @@ setMethod(f="plot",
               }
               for (w in 1:length(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
-                  if (which[w] == 1) {
-                      cat("should plot z-t graph\n")
+                  if (which[w] == 1) { # z-t graph
+                      lat <- x[["latitude"]]
+                      lon <- x[["longitude"]]
+                      distance <- geodDist(lat, lon, alongPath=TRUE)
+                      time <- x[["time"]]
+                      oce.plot.ts(time, distance, col=col, lwd=lwd, ylab="Distance [km]", type=type)
                   } else if (which[w] == 2) {
                       cat("should plot z-distance graph\n")
                   } else if (which[w] == 3) {
@@ -103,7 +107,7 @@ setMethod(f="plot",
               invisible()
           })
 
-read.echosounder <- function(file, debug=getOption("oceDebug"))
+read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     ofile <- file
     filename <- NULL
@@ -164,14 +168,15 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
     ## [1] 6808 6810 6794 6806 6804 6800 6802 6792 6798
     Ntime <- 0
     NsingleBeamPing <- 0
-    latitude <- longitude <- NULL
+    time <- latitude <- longitude <- NULL
+    timeLast <- 0
     while (offset < fileSize) {
-        print <- tuple < 15 || tuple > 4400
+        print <- tuple < 50# || tuple > 4420
         N <- .C("uint16_le", buf[offset+1], buf[offset+2], res=integer(1))$res
         code1 <- buf[offset+3]
         code2 <- buf[offset+4]
         code <- readBin(buf[offset+3:4],"integer", size=2, n=1, endian="small", signed=FALSE)
-        if (print) cat("tuple=", tuple, " offset=", offset, " N=", N, " code 0x", code1, " 0x", code2, sep="")
+        if (print) cat(tuple, " @ ", offset, " N=", N, " code 0x", code1, " 0x", code2, sep="")
         if (tuple > 1) {
             if (code2 == 0xff) {
                 cat("\n")
@@ -180,21 +185,34 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
             if (code2 != 0x00)
                 stop("tuple code should start with 0x00, but it starts with 0x", code1)
         }
-        if (code1 == 0x15) {
-            if (print) cat("  single-beam ping\n")
+        if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
+            pingNumber <- readBin(buf[offset+6 + 1:4],"integer", size=4, n=1, endian="little", signed=FALSE)
+            channelNumber <- .C("uint16_le", buf[offset+4], buf[offset+5], res=integer(1))$res
+            numechoes <- .C("uint16_le", buf[offset+15], buf[offset+16], res=integer(1))$res
+            if (print) {
+                cat("  single-beam ping", pingNumber, "; numechoes=", numechoes, " channel=", channelNumber, "\n")
+                cat("   0x", buf[offset+0], " 0x", buf[offset+1], " ", sep="")
+                cat("0x", buf[offset+2], " 0x", buf[offset+3], " ", sep="")
+                cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
+            }
             pingLengthVec <<- c(pingLengthVec, N)
             NsingleBeamPing <- NsingleBeamPing + 1 
         } else if (code1 == 0x0f || code == 0x20) {
-            if (print) cat("  time\n")
+            timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", signed=FALSE, size=4, n=1)
+            timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", signed=FALSE, size=4, n=1)/1e3
+            timeSubSec <- (as.numeric(buf[offset+9]) - 0*128) / 100
+            timeLast <- timeSec + 0*timeSubSec
+            if (print) cat("  time", timeSec, " ", timeSubSec, "; elapsed", timeElapsedSec, "\n")
             Ntime <- Ntime + 1
         } else if (code1 == 0x11) {
             if (print) cat("  navigation string\n")
         } else if (code1 == 0x0e) {
             if (print) cat("  position\n")
-            lat <- readBin(buf[offset + 4 + 1:4], "integer", signed=FALSE, size=4, n=1) / 6e6
-            lon <- readBin(buf[offset + 8 + 1:4], "integer", signed=FALSE, size=4, n=1) / 6e6
+            lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", signed=TRUE, size=4, n=1) / 6e6
+            lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", signed=TRUE, size=4, n=1) / 6e6
             latitude <- c(latitude, lat)
             longitude <- c(longitude, lon)
+            time <- c(time, timeLast)
         } else if (code1 == 0x12) {
             if (print) cat("  channel descriptor\n")
         } else if (code1 == 0x13) {
@@ -219,10 +237,10 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
         tuple <- tuple + 1
     }
     cat("pings:", NsingleBeamPing, " times:", Ntime, "\n")
-    res@data <- list(latitude=latitude, longitude=longitude)
+    ## FIXME add tz arg
+    res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), latitude=latitude, longitude=longitude)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", debug=", debug, ")"))
-    ## FIXME insert data, pl etc
     res
 }
 ## test (until I can get a dataset)

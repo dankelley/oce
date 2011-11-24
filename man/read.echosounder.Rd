@@ -6,12 +6,13 @@
 \description{Read an echosounder data file, producing an object of type \code{echosounder}.}
 
 \usage{
-read.echosounder(file, debug=getOption("oceDebug"))
+read.echosounder(file, tz=getOption("oceTz"), debug=getOption("oceDebug"))
 }
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
+  \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
 }
