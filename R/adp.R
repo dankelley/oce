@@ -572,7 +572,7 @@ setMethod(f="plot",
                       if (!skip) {
                           if (gave.xlim) {
                               imagep(x=tt, y=x@data$distance, z=z,
-                                     xlim=xlim,
+                                     xlim=xlim[w,],
                                      zlim=zlim,
                                      flip.y=flip.y,
                                      col=if (gave.col) col else oceColorsPalette(128, 1),
