@@ -406,7 +406,9 @@ setMethod(f="plot",
                           stop("xlim must be a vector of length 2, or a 2-column matrix")
                       xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
                   }
+                  class(xlim2) <- class(xlim)
                   xlim <- xlim2
+                  print(format(xlim))
               }
               if (missing(zlim)) {
                   gave.zlim <- FALSE
@@ -568,22 +570,42 @@ setMethod(f="plot",
                           skip <- TRUE
                       }
                       if (!skip) {
-                          imagep(x=tt, y=x@data$distance, z=z,
-                                 zlim=zlim,
-                                 flip.y=flip.y,
-                                 col=if (gave.col) col else oceColorsPalette(128, 1),
-                                 ylab=resizableLabel("distance"),
-                                 xlab="Time",
-                                 zlab=zlab,
-                                 drawTimeRange=drawTimeRange,
-                                 drawContours=FALSE,
-                                 adorn=adorn[w],
-                                 mgp=mgp,
-                                 mar=mar,
-                                 cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
-                                 main=main[w],
-                                 debug=debug-1,
-                                 ...)
+                          if (gave.xlim) {
+                              imagep(x=tt, y=x@data$distance, z=z,
+                                     xlim=xlim[w,],
+                                     zlim=zlim,
+                                     flip.y=flip.y,
+                                     col=if (gave.col) col else oceColorsPalette(128, 1),
+                                     ylab=resizableLabel("distance"),
+                                     xlab="Time",
+                                     zlab=zlab,
+                                     drawTimeRange=drawTimeRange,
+                                     drawContours=FALSE,
+                                     adorn=adorn[w],
+                                     mgp=mgp,
+                                     mar=mar,
+                                     cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                     main=main[w],
+                                     debug=debug-1,
+                                     ...)
+                          } else {
+                               imagep(x=tt, y=x@data$distance, z=z,
+                                     zlim=zlim,
+                                     flip.y=flip.y,
+                                     col=if (gave.col) col else oceColorsPalette(128, 1),
+                                     ylab=resizableLabel("distance"),
+                                     xlab="Time",
+                                     zlab=zlab,
+                                     drawTimeRange=drawTimeRange,
+                                     drawContours=FALSE,
+                                     adorn=adorn[w],
+                                     mgp=mgp,
+                                     mar=mar,
+                                     cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                     main=main[w],
+                                     debug=debug-1,
+                                     ...)
+                          }
                       }
                       if (showBottom)
                           lines(x@data$time, bottom)
