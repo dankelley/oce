@@ -30,53 +30,79 @@ as.echosounder <- function(time, depth, data, src="") # just guessing on args
 }
 
 setMethod(f="plot",
-           signature=signature("echosounder"),
-           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
-                               adorn=NULL,
-                               mgp=getOption("oceMgp"),
-                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
-                               debug=getOption("oceDebug"),
-                               ...)
-           {
-               oceDebug(debug, "\b\bplot.echosounder() {\n")
-               opar <- par(no.readonly = TRUE)
-               lw <- length(which)
-               adorn.length <- length(adorn)
-               if (adorn.length == 1) {
-                   adorn <- rep(adorn, lw)
-                   adorn.length <- lw
-               }
-               par(mgp=mgp, mar=mar)
-               if (lw > 1) {
-                   on.exit(par=opar)
-                   if (lw > 2)
-                       lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
-                   else
-                       lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
-               }
- 
-               warning("not actually plotting anything")
-
+          signature=signature("echosounder"),
+          definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
+                              col="black",
+                              lwd=2,
+                              adorn=NULL,
+                              mgp=getOption("oceMgp"),
+                              mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                              debug=getOption("oceDebug"),
+                              ...)
+          {
+              dots <- list(...)
+              dotsNames <- names(dots)
+              oceDebug(debug, "\b\bplot() { # for echosounder\n")
+              opar <- par(no.readonly = TRUE)
+              lw <- length(which)
+              adorn.length <- length(adorn)
+              if (adorn.length == 1) {
+                  adorn <- rep(adorn, lw)
+                  adorn.length <- lw
+              }
+              par(mgp=mgp, mar=mar)
+              if (lw > 1) {
+                  on.exit(par=opar)
+                  if (lw > 2)
+                      lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
+                  else
+                      lay <- layout(matrix(1:2, nrow=2, byrow=TRUE))
+              }
               for (w in 1:length(which)) {
-                   oceDebug(debug, "this which:", w, "\n")
-                   if (which[w] == 1) {
-                       cat("should plot z-t graph\n")
-                   } else if (which[w] == 2) {
-                       cat("should plot z-distance graph\n")
-                   } else if (which[w] == 3) {
-                       cat("should plot map\n")
-                   } else {
-                       stop("unknown value of which=", which, " (must be 1, 2, or 3)")
-                   }
-                   if (w <= adorn.length && nchar(adorn[w]) > 0) {
-                       t <- try(eval(adorn[w]), silent=TRUE)
-                       if (class(t) == "try-error")
-                           warning("cannot evaluate adorn[", w, "]\n")
-                   }
-               }
-               oceDebug(debug, "\b\b} # plot.echosounder()\n")
-               invisible()
-           })
+                  oceDebug(debug, "this which:", which[w], "\n")
+                  if (which[w] == 1) {
+                      cat("should plot z-t graph\n")
+                  } else if (which[w] == 2) {
+                      cat("should plot z-distance graph\n")
+                  } else if (which[w] == 3) {
+                      ## scale in km
+                      lat <- x[["latitude"]]
+                      lon <- x[["longitude"]]
+                      asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
+                      latm <- mean(lat, na.rm=TRUE)
+                      lonm <- mean(lon, na.rm=TRUE)
+                      radius <- max(geodDist(latm, lonm, lat, lon))
+                      if ("radius" %in% dotsNames) {
+                          radius <- max(radius, dots$radius)
+                      }
+                      km_per_lat_deg <- geodDist(latm, lonm, latm+1, lonm) 
+                      km_per_lon_deg <- geodDist(latm, lonm, latm, lonm+1) 
+                      lonr <- lonm + radius / km_per_lon_deg * c(-1, 1)
+                      latr <- latm + radius / km_per_lat_deg * c(-1, 1)
+                      plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                      if ("coastline" %in% dotsNames) {
+                          coastline <- dots$coastline
+                          if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
+                              polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
+                              polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
+                          } else {
+                              lines(coastline[["longitude"]], coastline[["latitude"]], col="darkgray")
+                              lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
+                          }
+                      }
+                      lines(lon, lat, col=col, lwd=lwd)
+                  } else {
+                      stop("unknown value of which=", which, " (must be 1, 2, or 3)")
+                  }
+                  if (w <= adorn.length && nchar(adorn[w]) > 0) {
+                      t <- try(eval(adorn[w]), silent=TRUE)
+                      if (class(t) == "try-error")
+                          warning("cannot evaluate adorn[", w, "]\n")
+                  }
+              }
+              oceDebug(debug, "\b\b} # plot.echosounder()\n")
+              invisible()
+          })
 
 read.echosounder <- function(file, debug=getOption("oceDebug"))
 {
@@ -139,6 +165,7 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
     ## [1] 6808 6810 6794 6806 6804 6800 6802 6792 6798
     Ntime <- 0
     NsingleBeamPing <- 0
+    latitude <- longitude <- NULL
     while (offset < fileSize) {
         print <- tuple < 15 || tuple > 4400
         N <- .C("uint16_le", buf[offset+1], buf[offset+2], res=integer(1))$res
@@ -165,6 +192,10 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
             if (print) cat("  navigation string\n")
         } else if (code1 == 0x0e) {
             if (print) cat("  position\n")
+            lat <- readBin(buf[offset + 4 + 1:4], "integer", signed=FALSE, size=4, n=1) / 6e6
+            lon <- readBin(buf[offset + 8 + 1:4], "integer", signed=FALSE, size=4, n=1) / 6e6
+            latitude <- c(latitude, lat)
+            longitude <- c(longitude, lon)
         } else if (code1 == 0x12) {
             if (print) cat("  channel descriptor\n")
         } else if (code1 == 0x13) {
@@ -189,7 +220,7 @@ read.echosounder <- function(file, debug=getOption("oceDebug"))
         tuple <- tuple + 1
     }
     cat("pings:", NsingleBeamPing, " times:", Ntime, "\n")
-    res@data <- list(test=3)
+    res@data <- list(latitude=latitude, longitude=longitude)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", debug=", debug, ")"))
     ## FIXME insert data, pl etc

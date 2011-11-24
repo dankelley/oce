@@ -10,6 +10,7 @@
 
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
+     col="black",
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -27,6 +28,8 @@
       \item \code{which=2} gives a distance-depth section image
       \item \code{which=3} gives a map showing the cruise track
     }}
+  \item{col}{color for line}
+  \item{lwd}{line width}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, 
