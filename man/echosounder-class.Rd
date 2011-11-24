@@ -14,8 +14,6 @@
 
 \section{Methods}{
 
-    FIXME: material below is cut/paste from ctd, and needs replacement
-
     \emph{Accessing values.} Data may be accessed as e.g.
     \code{echosounder[["time"]]}, where the string could also be e.g.  FIXME
     (add more).  The names of the columns are displayed with \code{show().} The
@@ -26,7 +24,8 @@
     the ship track.
 
     \emph{Assigning values.} Everything that may be accessed may also be
-    assigned, e.g.  \code{echosounder[["salinity"]] <- rep(35,10)}.
+    assigned, e.g.  \code{echosounder[["time"]] <- 3600 +
+        echosounder[["time"]]} adds an hour to time.
 
     \emph{Overview of contents.} The \code{show} method (e.g.
     \code{show(echosounder)}) displays information about the object.
