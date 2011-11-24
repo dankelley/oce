@@ -32,8 +32,7 @@ as.echosounder <- function(time, depth, data, src="") # just guessing on args
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
-                              col="black",
-                              lwd=2,
+                              col="black", lwd=2,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),

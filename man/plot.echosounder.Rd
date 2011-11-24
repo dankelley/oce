@@ -10,7 +10,7 @@
 
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
-     col="black",
+     col="black", lwd=2,
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
