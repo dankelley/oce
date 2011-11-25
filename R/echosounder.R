@@ -167,6 +167,10 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
     time <- latitude <- longitude <- NULL
     timeLast <- 0
     first <- TRUE
+    nrow <- 4000 # FIXME testing
+    ncol <- 4000 # FIXME testing
+    image <- matrix(data=0, nrow=nrow, ncol=ncol) # FIXME testing
+    col <- 1
     while (offset < fileSize) {
         print <- tuple < 50# || tuple > 4420
         N <- .C("uint16_le", buf[offset+1], buf[offset+2], res=integer(1))$res
@@ -195,17 +199,21 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
             pingLengthVec <<- c(pingLengthVec, N)
             NsingleBeamPing <- NsingleBeamPing + 1 
             ping<<-buf[offset+16+1:(2*ns)]
-            if (tuple < 200) {
+            if (tuple < 4000) {
                 DD <- NULL
                 for (i in 0:(ns-1)) {
                     DD <- c(DD, .C("uint16_le",ping[2*i+1],ping[2*i+2],res=integer(1))$res)
                 }
+                if (0){
                 if (first)
                     plot(c(1,200), c(0, 4000))
                 else {
                     points(rep(tuple, ns), 1:ns, col=hsv(DD/max(DD), 1, 1,), pch='+', cex=0.5)
                 }
                 first <- FALSE
+                }
+                image[1:nrow,col] <- DD[1:nrow] # FIXME testing
+                col <- col + 1
             }
         } else if (code1 == 0x0f || code == 0x20) {
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
@@ -248,10 +256,12 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
         tuple <- tuple + 1
     }
     cat("pings:", NsingleBeamPing, "tuples:", tuple, " times:", Ntime, "\n")
-    ## FIXME add tz arg
-    res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), latitude=latitude, longitude=longitude)
+    image <- t(image[dim(image)[1]:1,]) # reshape image
+    ## imagep(t(d@data$image[1:2314,1:1686]), zlim=c(0,200),col=oceColorsJet)
+    res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), latitude=latitude, longitude=longitude,
+                     image=image) # FIXME testing
     res@processingLog <- processingLog(res@processingLog,
-                                       paste("read.echosounder(\"", filename, ", debug=", debug, ")"))
+                                       paste("read.echosounder(\"", filename, ", tz=\"", tz, "\", debug=", debug, ")"))
     res
 }
 
