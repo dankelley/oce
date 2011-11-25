@@ -1,7 +1,0 @@
-library(oce)
-data(adp)
-range(time(adp))
-source('R/adp.R')
-source('R/imagep.R')
-plot(adp, which='u1', xlim=as.POSIXct(c("2008-06-26 08:00", "2008-06-26 16:00"), tz="UTC"))
-abline(v=as.POSIXct(c("2008-06-26 08:00", "2008-06-26 16:00"), tz="UTC"))
