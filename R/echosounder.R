@@ -15,7 +15,7 @@ setMethod(f="[[",
               as(x, "oce")[[i, j, drop]]
           })
 
-as.echosounder <- function(time, depth, data, src="") # just guessing on args
+as.echosounder <- function(time, depth, data, src="") # FIXME change this, when read.echosounder() finalized
 {
     warning("not doing much yet!")
     res <- new('echosounder')
@@ -63,9 +63,11 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE),
                                   type=type, col=col, lwd=lwd, ylab="Distance [km]")
                   } else if (which[w] == 2) {
-                      warning("why can't we have time on the x axis?")
-                      warning("should use sound speed to calculate the y axis")
-                      imagep(x=1:length(d@data$timePing), y=1:(dim(d@data$amplitude)[2]), z=log10(1+d@data$amplitude),col=oceColorsJet)
+                      imagep(x=1:length(d@data$timePing),
+                             y=-rev(d@data$depth),
+                             ylab="z [m]",
+                             ##y=1:(dim(d@data$amplitude)[2]),
+                             z=log10(1+d@data$amplitude),col=oceColorsJet)
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
@@ -105,7 +107,8 @@ setMethod(f="plot",
               invisible()
           })
 
-read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
+                             tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     ofile <- file
     filename <- NULL
@@ -161,13 +164,13 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
     tuple <- 1
     offset <- 0
     Ntime <- 0
-    NsingleBeamPing <- 0
     time <- latitude <- longitude <- NULL
     timeLast <- 0
     first <- TRUE
     scan <- 1
     intensity <- list()
     timePing <- list()
+    samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1], buf[offset+2], res=integer(1))$res
@@ -184,6 +187,7 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
                 stop("tuple code should start with 0x00, but it starts with 0x", code1)
         }
         if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
+            ## FIXME: what is this "RLE expansion" business??
             pingNumber <- readBin(buf[offset+6 + 1:4],"integer", size=4, n=1, endian="little")
             channelNumber <- .C("uint16_le", buf[offset+4], buf[offset+5], res=integer(1))$res
             ns <- .C("uint16_le", buf[offset+15], buf[offset+16], res=integer(1))$res # number of samples
@@ -193,10 +197,13 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
                 ##cat("0x", buf[offset+2], " 0x", buf[offset+3], " ", sep="")
                 ##cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
             }
-            NsingleBeamPing <- NsingleBeamPing + 1 
             intensity[[scan]] <- .C("v_uint16_le", buf[offset+16+1:(2*ns)], ns, res=integer(ns))$res
             timePing[[scan]] <- timeLast
             scan <- scan + 1
+            if (scan < 20) {
+                cat("ping number:", readBin(buf[offset+6+1:4], "integer", n=1, size=4), " ")
+                cat("time offset:", readBin(buf[offset+10+1:4], "integer", n=1, size=4)/1000, "\n")
+            }
         } else if (code1 == 0x0f || code == 0x20) {
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
@@ -215,6 +222,7 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
             time <- c(time, timeLast)
         } else if (code1 == 0x12) {
             if (print) cat("  channel descriptor\n")
+            samplingDeltat <- .C("uint16_le", buf[offset+12+1], buf[offset+12+2], res=integer(1))$res / 1e9
         } else if (code1 == 0x13) {
             if (print) cat("  13: unknown\n")
         } else if (code1 == 0xff && tuple > 1) {
@@ -222,9 +230,9 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
         } else if (code1 == 0x1e) {
             if (print) cat("  V3 file header\n")
         } else if (code1 == 0x18) {
-            if (print) cat("  V2 file header\n")
+            warning("Biosonics file of type 'V2' detected ... errors may crop up")
         } else if (code1 == 0x01) {
-            if (print) cat("  V1 file header\n")
+            warning("Biosonics file of type 'V1' detected ... errors may crop up")
         } else if (code1 == 0x1c) {
             warning("cannot handle dual-beam ping")
         } else {
@@ -236,7 +244,7 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
-    oceDebug(debug, "pings:", NsingleBeamPing, "tuples:", tuple, " times:", Ntime, "\n")
+    oceDebug(debug, "tuples:", tuple, " times:", Ntime, "\n")
     ##image <- t(image[dim(image)[1]:1,]) # reshape image
     ## imagep(t(d@data$image[1:2314,1:1686]), zlim=c(0,200),col=oceColorsJet)
     ncol <- max(sapply(intensity, length))
@@ -245,7 +253,10 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
     for (row in seq_along(intensity)) {
         amplitude[row,1:length(intensity[[row]])] <- rev(intensity[[row]]) # FIXME what about ragged bottom?
     }
+    res@metadata$soundSpeed <- soundSpeed
+    res@metadata$samplingDeltat <- samplingDeltat # nanoseconds
     res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
+                     depth=seq(0, -1+dim(amplitude)[2]) * res@metadata$soundSpeed * res@metadata$samplingDeltat,
                      timePing=unlist(timePing) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
