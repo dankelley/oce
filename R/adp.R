@@ -407,8 +407,8 @@ setMethod(f="plot",
                       xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
                   }
                   class(xlim2) <- class(xlim)
+                  attr(xlim2, "tzone") <- attr(xlim, "tzone")
                   xlim <- xlim2
-                  print(format(xlim))
               }
               if (missing(zlim)) {
                   gave.zlim <- FALSE
