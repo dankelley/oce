@@ -63,7 +63,9 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE),
                                   type=type, col=col, lwd=lwd, ylab="Distance [km]")
                   } else if (which[w] == 2) {
-                      stop("should plot z-distance graph now (FIXME)")
+                      warning("why can't we have time on the x axis?")
+                      warning("should use sound speed to calculate the y axis")
+                      imagep(x=1:length(d@data$timePing), y=1:(dim(d@data$amplitude)[2]), z=log10(1+d@data$amplitude),col=oceColorsJet)
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
@@ -123,7 +125,7 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
     seek(file, where=0, origin="end")
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
-    buf <<- readBin(file, what="raw", n=fileSize, endian="little")
+    buf <- readBin(file, what="raw", n=fileSize, endian="little")
 
     ## Section 3.3 of the Biosonics doc (see ?echosounder-class) describes the
     ## file format.  Note that the files are little endian.
@@ -158,21 +160,16 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
     ##   ￼0xFFFE ￼End of File
     tuple <- 1
     offset <- 0
-    code1Vec <<- NULL
-    pingLengthVec <<- NULL
-    ## > unique(pingLengthVec)
-    ## [1] 6808 6810 6794 6806 6804 6800 6802 6792 6798
     Ntime <- 0
     NsingleBeamPing <- 0
     time <- latitude <- longitude <- NULL
     timeLast <- 0
     first <- TRUE
-    nrow <- 4000 # FIXME testing
-    ncol <- 4000 # FIXME testing
-    image <- matrix(data=0, nrow=nrow, ncol=ncol) # FIXME testing
-    col <- 1
+    scan <- 1
+    intensity <- list()
+    timePing <- list()
     while (offset < fileSize) {
-        print <- tuple < 50# || tuple > 4420
+        print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1], buf[offset+2], res=integer(1))$res
         code1 <- buf[offset+3]
         code2 <- buf[offset+4]
@@ -196,14 +193,10 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
                 ##cat("0x", buf[offset+2], " 0x", buf[offset+3], " ", sep="")
                 ##cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
             }
-            pingLengthVec <<- c(pingLengthVec, N)
             NsingleBeamPing <- NsingleBeamPing + 1 
-            ping<<-buf[offset+16+1:(2*ns)]
-            if (col < ncol) {
-                DD <- .C("v_uint16_le", ping, ns, res=integer(ns))$res
-                image[1:nrow,col] <- DD[1:nrow] # FIXME testing
-                col <- col + 1
-            }
+            intensity[[scan]] <- .C("v_uint16_le", buf[offset+16+1:(2*ns)], ns, res=integer(ns))$res
+            timePing[[scan]] <- timeLast
+            scan <- scan + 1
         } else if (code1 == 0x0f || code == 0x20) {
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
@@ -237,18 +230,26 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
         } else {
             if (print) cat("\n")
         }
-        code1Vec <<- c(code1Vec, code1)
         N6 <- .C("uint16_le", buf[offset+N+5], buf[offset+N+6], res=integer(1))$res
         if (N6 != N + 6)
             stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
-    cat("pings:", NsingleBeamPing, "tuples:", tuple, " times:", Ntime, "\n")
-    image <- t(image[dim(image)[1]:1,]) # reshape image
+    oceDebug(debug, "pings:", NsingleBeamPing, "tuples:", tuple, " times:", Ntime, "\n")
+    ##image <- t(image[dim(image)[1]:1,]) # reshape image
     ## imagep(t(d@data$image[1:2314,1:1686]), zlim=c(0,200),col=oceColorsJet)
-    res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), latitude=latitude, longitude=longitude,
-                     image=image) # FIXME testing
+    ncol <- max(sapply(intensity, length))
+    nrow <- length(intensity)
+    amplitude <- matrix(1, nrow=nrow, ncol=ncol) # FIXME using 1 for missing
+    for (row in seq_along(intensity)) {
+        amplitude[row,1:length(intensity[[row]])] <- rev(intensity[[row]]) # FIXME what about ragged bottom?
+    }
+    res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
+                     timePing=unlist(timePing) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
+                     latitude=latitude,
+                     longitude=longitude,
+                     amplitude=amplitude)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", tz=\"", tz, "\", debug=", debug, ")"))
     res
