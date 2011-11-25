@@ -469,3 +469,11 @@ void uint16_le(unsigned char *b1, unsigned char *b2, int *out)
 {
   *out = (int)(*b1) + 256 * (int)(*b2);
 }
+
+// v_uint16_le: vectorized assemble two bytes into unsigned int (little-endian)
+void v_uint16_le(unsigned char *b, int *n, int *out)
+{
+  for (int i = 0; i < *n; i++) {
+    out[i] = (int)b[2*i] + 256 * (int)b[1+2*i];
+  }
+}

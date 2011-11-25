@@ -199,19 +199,8 @@ read.echosounder <- function(file, tz=getOption("oceTz"), debug=getOption("oceDe
             pingLengthVec <<- c(pingLengthVec, N)
             NsingleBeamPing <- NsingleBeamPing + 1 
             ping<<-buf[offset+16+1:(2*ns)]
-            if (tuple < 4000) {
-                DD <- NULL
-                for (i in 0:(ns-1)) {
-                    DD <- c(DD, .C("uint16_le",ping[2*i+1],ping[2*i+2],res=integer(1))$res)
-                }
-                if (0){
-                if (first)
-                    plot(c(1,200), c(0, 4000))
-                else {
-                    points(rep(tuple, ns), 1:ns, col=hsv(DD/max(DD), 1, 1,), pch='+', cex=0.5)
-                }
-                first <- FALSE
-                }
+            if (col < ncol) {
+                DD <- .C("v_uint16_le", ping, ns, res=integer(ns))$res
                 image[1:nrow,col] <- DD[1:nrow] # FIXME testing
                 col <- col + 1
             }
