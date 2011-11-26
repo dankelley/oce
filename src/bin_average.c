@@ -32,7 +32,7 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
 #ifdef DEBUG
     Rprintf("nb=%d\n", nb);
 #endif
-    int *num = (int*)R_alloc(nb, sizeof(int));
+    int *num = (int*)R_alloc(nb, sizeof(int)); // R will clean up memory after .C() returns
     for (int b = 0; b < nb; b++) {
         num[b] = 0;
         means[b] = 0.0;

@@ -174,6 +174,7 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
     timePing <- list()
     samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
     channelNumber <- NULL
+    channelID <- NULL
     channelDeltat <- NULL
     while (offset < fileSize) {
         print <- debug && tuple < 200
@@ -187,7 +188,7 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
             ## FIXME: what is this "RLE expansion" business??
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
-            channel <- .C("uint16_le", buf[offset+4:5], 1L, res=integer(1))$res
+            channel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             ns <- .C("uint16_le", buf[offset+15:16], 1L, res=integer(1))$res # number of samples
             if (print) {
                 cat(" single-beam ping)", pingNumber, " ns=", ns, " channel=", channel, "\n")
@@ -195,16 +196,19 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                 ##cat("0x", buf[offset+2], " 0x", buf[offset+3], " ", sep="")
                 ##cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
             }
-            intensity[[scan]] <- .C("uint16_le", buf[offset+16+1:(2*ns)], as.integer(ns), res=integer(ns))$res
-            timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
-            scan <- scan + 1
-            if (scan < 20) {
-                cat("  ping number:", readBin(buf[offset+6+1:4], "integer", n=1, size=4), " ")
-                cat("  time offset:", readBin(buf[offset+10+1:4], "integer", n=1, size=4)/1000, "\n")
+            if (channel == channelNumber[1]) { ## FIXME: only plotting first channel, as a test
+                intensity[[scan]] <- .C("uint16_le", buf[offset+16+1:(2*ns)], as.integer(ns), res=integer(ns))$res
+                ## FIXME: should decode ping using RLE special-format float
+                timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
+                scan <- scan + 1
+                if (scan < 20) {
+                    cat("  ping number:", readBin(buf[offset+6+1:4], "integer", n=1, size=4), " ")
+                    cat("  time offset:", readBin(buf[offset+10+1:4], "integer", n=1, size=4)/1000, "\n")
+                }
             }
         } else if (code1 == 0x0f || code == 0x20) { # time
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
-            timeSubSec <- .C("biosonic_ss", buf[offset+10], res=numeric(1))$res
+            timeSubSec <- .C("biosonics_ss", buf[offset+10], res=numeric(1))$res
             timeFull <- timeSec + timeSubSec
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
             ## centisecond = ss & 0x7F (according to section 4.7)
@@ -227,9 +231,9 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         } else if (code1 == 0x11) {
             if (print) cat(" navigation string, which is ignored)\n")
         } else if (code1 == 0x12) {
-            if (print) cat(" channel descriptor)\n")
-            channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
+            channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
+            if (print) cat(" channel descriptor) number=", tail(channelNumber, 1), " dt=", tail(channelDeltat, 1), "\n")
         } else if (code1 == 0x30) {
             if (print) cat(" time-stamped navigation string, which is ignored)\n")
         } else if (code1 == 0xff && tuple > 1) {
@@ -261,7 +265,7 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
     res@metadata$soundSpeed <- soundSpeed
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
-                     depth=seq(0, -1+dim(amplitude)[2]) * res@metadata$soundSpeed * res@metadata$samplingDeltat,
+                     depth=seq(0,-1+dim(amplitude)[2]) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2,
                      timePing=unlist(timePing) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,

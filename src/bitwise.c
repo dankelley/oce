@@ -473,12 +473,3 @@ void uint16_le(unsigned char *b, int *n, int *out)
   }
 }
 
-// subsecond time for Biosonic echosounder
-// REF: p19 of Biosonics "DT4 Data File Format Specification" [July, 2010]
-void biosonic_ss(unsigned char *b, double *out)
-{
-  if (!(0x80 & *b))
-    *out = 0.0;
-  else
-    *out = (float)((int)(0x7F & *b)) / 100;
-}
