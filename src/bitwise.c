@@ -464,13 +464,6 @@ void dan(int *n, long int *in, unsigned long int *out)
   }
 }
 
-//// uint16_le: assemble two bytes into unsigned int (little-endian)
-//void uint16_le(unsigned char *b1, unsigned char *b2, int *out)
-//{
-//  *out = (int)(*b1) + 256 * (int)(*b2);
-//}
-
-//
 // create (*n) unsigned 16-bit little-endian int values from 2*(*n) bytes, e.g.
 // .C("uint16_le", as.raw(c(0x01, 0x02)), 1L, res=integer(1))$res
 void uint16_le(unsigned char *b, int *n, int *out)
@@ -478,4 +471,14 @@ void uint16_le(unsigned char *b, int *n, int *out)
   for (int i = 0; i < *n; i++) {
     out[i] = (int)b[2*i] + 256 * (int)b[1+2*i];
   }
+}
+
+// subsecond time for Biosonic echosounder
+// REF: p19 of Biosonics "DT4 Data File Format Specification" [July, 2010]
+void biosonic_ss(unsigned char *b, double *out)
+{
+  if (!(0x80 & *b))
+    *out = 0.0;
+  else
+    *out = (float)((int)(0x7F & *b)) / 100;
 }

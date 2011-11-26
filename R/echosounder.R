@@ -63,11 +63,7 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE),
                                   type=type, col=col, lwd=lwd, ylab="Distance [km]")
                   } else if (which[w] == 2) {
-                      imagep(x=1:length(d@data$timePing),
-                             y=-rev(d@data$depth),
-                             ylab="z [m]",
-                             ##y=1:(dim(d@data$amplitude)[2]),
-                             z=log10(1+d@data$amplitude),col=oceColorsJet)
+                      imagep(x=d@data$timePing, y=-rev(d@data$depth), ylab="z [m]", z=log10(1+d@data$amplitude), col=oceColorsJet)
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
@@ -181,20 +177,15 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         code2 <- buf[offset+4]
         code <- readBin(buf[offset+3:4],"integer", size=2, n=1, endian="small", signed=FALSE)
         if (print) cat("buf[", 1+offset, ", ...] (0x", code1, sep="")
-        if (code2 == 0xff) {
-            if (tuple == 1) {
-                if (print) cat(" file start code)\n")
-            } else {
-                if (debug) cat(" file end code)\n")
-                break
-            }
-        } else if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
+        ## The ordering of the code1 tests is not too systematic here; frequently-encountered
+        ## codes are placed first, but then it's a bit random.
+        if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
             ## FIXME: what is this "RLE expansion" business??
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
-            channelNumber <- .C("uint16_le", buf[offset+4:5], 1L, res=integer(1))$res
+            channel <- .C("uint16_le", buf[offset+4:5], 1L, res=integer(1))$res
             ns <- .C("uint16_le", buf[offset+15:16], 1L, res=integer(1))$res # number of samples
             if (print) {
-                cat(" single-beam ping)", pingNumber, " ns=", ns, " channel=", channelNumber, "\n")
+                cat(" single-beam ping)", pingNumber, " ns=", ns, " channel=", channel, "\n")
                 ##cat("   0x", buf[offset+0], " 0x", buf[offset+1], " ", sep="")
                 ##cat("0x", buf[offset+2], " 0x", buf[offset+3], " ", sep="")
                 ##cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
@@ -208,26 +199,35 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
             }
         } else if (code1 == 0x0f || code == 0x20) { # time
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
+            timeSubSec <- .C("biosonic_ss", buf[offset+10], res=numeric(1))$res
+            timeFull <- timeSec + timeSubSec
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
             ## centisecond = ss & 0x7F (according to section 4.7)
-            timeSubSec <- (as.numeric(buf[offset+9]) + 127) / 100
-            timeLast <- timeSec + 0*timeSubSec
-            if (print) cat(" time) ", timeSec, "+", timeSubSec, "; elapsed", timeElapsedSec, "\n")
+            timeLast <- timeSec + timeSubSec
+            if (print) cat(sprintf(" time) calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
             Ntime <- Ntime + 1
-        } else if (code1 == 0x11) {
-            if (print) cat(" navigation string, which is ignored)\n")
-        } else if (code1 == 0x0e) {
-            if (print) cat(" position)\n")
+        } else if (code1 == 0x0e) { # position
             lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             latitude <- c(latitude, lat)
             longitude <- c(longitude, lon)
             time <- c(time, timeLast)
+            if (print) cat(" position)", lat, "N", lon, "E\n")
+        } else if (code2 == 0xff) {
+            if (tuple == 1) {
+                if (print) cat(" file start code)\n")
+            } else {
+                break
+            }
+        } else if (code1 == 0x11) {
+            if (print) cat(" navigation string, which is ignored)\n")
         } else if (code1 == 0x12) {
             if (print) cat(" channel descriptor)\n")
-            channelDeltat <- 1e-9 * c(channelDeltat, .C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
+            channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
             browser()
+        } else if (code1 == 0x30) {
+            if (print) cat(" time-stamped navigation string, which is ignored)\n")
         } else if (code1 == 0xff && tuple > 1) {
             if (print) cat("  EOF\n")
         } else if (code1 == 0x1e) {
@@ -242,16 +242,12 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
             if (print) cat(" unknown code)\n")
         }
         N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1))$res
-        if (N6 != N + 6) {
-            browser()
+        if (N6 != N + 6)
             stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
-        }
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
     oceDebug(debug, "tuples:", tuple, " times:", Ntime, "\n")
-    ##image <- t(image[dim(image)[1]:1,]) # reshape image
-    ## imagep(t(d@data$image[1:2314,1:1686]), zlim=c(0,200),col=oceColorsJet)
     ncol <- max(sapply(intensity, length))
     nrow <- length(intensity)
     amplitude <- matrix(1, nrow=nrow, ncol=ncol) # FIXME using 1 for missing
@@ -275,6 +271,12 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
 summary.echosounder <- function(object, ...)
 {
     cat("Echosounder Summary\n-------------------\n\n")
-    showMetadataItem(object, "filename", "File source:        ")
-    warning("FIXME: should summarize now")
+    showMetadataItem(object, "filename", "File source:         ", quote=TRUE)
+    time <- object[["timePing"]]
+    tz <- attr(time[1], "tzone")
+    nt <- length(time)
+    cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
+    cat(sprintf("* Assumed sound speed: %.2f m/s\n", object[["soundSpeed"]]))
+    cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
 }
+
