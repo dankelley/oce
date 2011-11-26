@@ -58,8 +58,8 @@ plot(e)
         \item This function was written for and tested with files of type V3,
         and may not work properly with older Biosonics file formats.
 
-        \item The fractional parts of time-stamps are ignored, because the
-        values in a test file appeared to be incorrect (negative).
+        \item There are several time items in the data format, and it remains
+        to be seen whether the one used here is appropriate.
 
     }
 }

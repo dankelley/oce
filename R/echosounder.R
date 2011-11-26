@@ -1,5 +1,10 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+## FIXME I need to read this quirky format with more care.  The docs say:
+## FIXME    The amplitude counts value is in a custom floating- point format,
+## FIXME    with a 4-bit exponent and a 12-bit mantissa.
+## FIXME and also that a run-length-encoding method is used.  I handle neither here.
+
 setMethod(f="initialize",
           signature="echosounder",
           definition=function(.Object, filename="") {
@@ -225,7 +230,6 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
             if (print) cat(" channel descriptor)\n")
             channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
-            browser()
         } else if (code1 == 0x30) {
             if (print) cat(" time-stamped navigation string, which is ignored)\n")
         } else if (code1 == 0xff && tuple > 1) {
@@ -264,7 +268,6 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                      amplitude=amplitude)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", tz=\"", tz, "\", debug=", debug, ")"))
-    browser()
     res
 }
 
