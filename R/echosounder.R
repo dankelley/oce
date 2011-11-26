@@ -68,7 +68,9 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE),
                                   type=type, col=col, lwd=lwd, ylab="Distance [km]")
                   } else if (which[w] == 2) {
-                      imagep(x=d@data$timePing, y=-rev(d@data$depth), ylab="z [m]", z=log10(1+d@data$amplitude), col=oceColorsJet)
+                      imagep(x=d@data$timePing, y=-rev(d@data$depth), ylab="z [m]",
+                             z=log10(ifelse(d@data$amplitude > 0, d@data$amplitude, 1)),
+                             col=oceColorsJet, ...)
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
@@ -202,7 +204,7 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                 ## FIXME: should decode ping using RLE special-format float
                 timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
-                if (scan < 20) {
+                if (debug > 0 && scan < 20) {
                     cat("  ping number:", readBin(buf[offset+6+1:4], "integer", n=1, size=4), " ")
                     cat("  time offset:", readBin(buf[offset+10+1:4], "integer", n=1, size=4)/1000, "\n")
                 }
