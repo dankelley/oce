@@ -110,6 +110,7 @@ setMethod(f="plot",
 read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                              tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "\b\bread.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="")
     ofile <- file
     filename <- NULL
     if (is.character(file)) {
@@ -171,64 +172,66 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
     intensity <- list()
     timePing <- list()
     samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
+    channelNumber <- NULL
+    channelDeltat <- NULL
     while (offset < fileSize) {
         print <- debug && tuple < 200
-        N <- .C("uint16_le", buf[offset+1], buf[offset+2], res=integer(1))$res
+        N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1))$res
         code1 <- buf[offset+3]
         code2 <- buf[offset+4]
         code <- readBin(buf[offset+3:4],"integer", size=2, n=1, endian="small", signed=FALSE)
-        if (print) cat(tuple, " @ ", offset, " N=", N, " code 0x", code1, " 0x", code2, sep="")
-        if (tuple > 1) {
-            if (code2 == 0xff) {
-                cat("\n")
+        if (print) cat("buf[", 1+offset, ", ...] (0x", code1, sep="")
+        if (code2 == 0xff) {
+            if (tuple == 1) {
+                if (print) cat(" file start code)\n")
+            } else {
+                if (debug) cat(" file end code)\n")
                 break
             }
-            if (code2 != 0x00)
-                stop("tuple code should start with 0x00, but it starts with 0x", code1)
-        }
-        if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
+        } else if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
             ## FIXME: what is this "RLE expansion" business??
-            pingNumber <- readBin(buf[offset+6 + 1:4],"integer", size=4, n=1, endian="little")
-            channelNumber <- .C("uint16_le", buf[offset+4], buf[offset+5], res=integer(1))$res
-            ns <- .C("uint16_le", buf[offset+15], buf[offset+16], res=integer(1))$res # number of samples
+            pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
+            channelNumber <- .C("uint16_le", buf[offset+4:5], 1L, res=integer(1))$res
+            ns <- .C("uint16_le", buf[offset+15:16], 1L, res=integer(1))$res # number of samples
             if (print) {
-                cat("  single-beam ping", pingNumber, "; ns=", ns, " channel=", channelNumber, "\n")
+                cat(" single-beam ping)", pingNumber, " ns=", ns, " channel=", channelNumber, "\n")
                 ##cat("   0x", buf[offset+0], " 0x", buf[offset+1], " ", sep="")
                 ##cat("0x", buf[offset+2], " 0x", buf[offset+3], " ", sep="")
                 ##cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
             }
-            intensity[[scan]] <- .C("v_uint16_le", buf[offset+16+1:(2*ns)], ns, res=integer(ns))$res
-            timePing[[scan]] <- timeLast
+            intensity[[scan]] <- .C("uint16_le", buf[offset+16+1:(2*ns)], as.integer(ns), res=integer(ns))$res
+            timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
             scan <- scan + 1
             if (scan < 20) {
-                cat("ping number:", readBin(buf[offset+6+1:4], "integer", n=1, size=4), " ")
-                cat("time offset:", readBin(buf[offset+10+1:4], "integer", n=1, size=4)/1000, "\n")
+                cat("  ping number:", readBin(buf[offset+6+1:4], "integer", n=1, size=4), " ")
+                cat("  time offset:", readBin(buf[offset+10+1:4], "integer", n=1, size=4)/1000, "\n")
             }
-        } else if (code1 == 0x0f || code == 0x20) {
+        } else if (code1 == 0x0f || code == 0x20) { # time
             timeSec <- readBin(buf[offset+4 + 1:4], what="integer", endian="little", size=4, n=1)
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
-            timeSubSec <- (as.numeric(buf[offset+9]) - 128) / 100
+            ## centisecond = ss & 0x7F (according to section 4.7)
+            timeSubSec <- (as.numeric(buf[offset+9]) + 127) / 100
             timeLast <- timeSec + 0*timeSubSec
-            if (print) cat("  time", timeSec, " ", timeSubSec, "; elapsed", timeElapsedSec, "\n")
+            if (print) cat(" time) ", timeSec, "+", timeSubSec, "; elapsed", timeElapsedSec, "\n")
             Ntime <- Ntime + 1
         } else if (code1 == 0x11) {
-            if (print) cat("  navigation string (ignored)\n")
+            if (print) cat(" navigation string, which is ignored)\n")
         } else if (code1 == 0x0e) {
-            if (print) cat("  position\n")
+            if (print) cat(" position)\n")
             lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             latitude <- c(latitude, lat)
             longitude <- c(longitude, lon)
             time <- c(time, timeLast)
         } else if (code1 == 0x12) {
-            if (print) cat("  channel descriptor\n")
-            samplingDeltat <- .C("uint16_le", buf[offset+12+1], buf[offset+12+2], res=integer(1))$res / 1e9
-        } else if (code1 == 0x13) {
-            if (print) cat("  13: unknown\n")
+            if (print) cat(" channel descriptor)\n")
+            channelDeltat <- 1e-9 * c(channelDeltat, .C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
+            channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
+            browser()
         } else if (code1 == 0xff && tuple > 1) {
             if (print) cat("  EOF\n")
         } else if (code1 == 0x1e) {
-            if (print) cat("  V3 file header\n")
+            if (print) cat(" V3 file header)\n")
         } else if (code1 == 0x18) {
             warning("Biosonics file of type 'V2' detected ... errors may crop up")
         } else if (code1 == 0x01) {
@@ -236,11 +239,13 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         } else if (code1 == 0x1c) {
             warning("cannot handle dual-beam ping")
         } else {
-            if (print) cat("\n")
+            if (print) cat(" unknown code)\n")
         }
-        N6 <- .C("uint16_le", buf[offset+N+5], buf[offset+N+6], res=integer(1))$res
-        if (N6 != N + 6)
+        N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1))$res
+        if (N6 != N + 6) {
+            browser()
             stop("error reading tuple number ", tuple, " (mismatch in redundant header-length flags)")
+        }
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
@@ -251,10 +256,10 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
     nrow <- length(intensity)
     amplitude <- matrix(1, nrow=nrow, ncol=ncol) # FIXME using 1 for missing
     for (row in seq_along(intensity)) {
-        amplitude[row,1:length(intensity[[row]])] <- rev(intensity[[row]]) # FIXME what about ragged bottom?
+        amplitude[row,1:length(intensity[[row]])] <- rev(intensity[[row]])
     }
     res@metadata$soundSpeed <- soundSpeed
-    res@metadata$samplingDeltat <- samplingDeltat # nanoseconds
+    res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      depth=seq(0, -1+dim(amplitude)[2]) * res@metadata$soundSpeed * res@metadata$samplingDeltat,
                      timePing=unlist(timePing) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
@@ -263,6 +268,7 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                      amplitude=amplitude)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", tz=\"", tz, "\", debug=", debug, ")"))
+    browser()
     res
 }
 

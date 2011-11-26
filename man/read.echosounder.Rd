@@ -51,6 +51,18 @@ e <- read.echosounder('data.dt4')
 plot(e)
 }
 }
+    
+\section{Notes}{
+    \itemize{
+
+        \item This function was written for and tested with files of type V3,
+        and may not work properly with older Biosonics file formats.
+
+        \item The fractional parts of time-stamps are ignored, because the
+        values in a test file appeared to be incorrect (negative).
+
+    }
+}
 
 \references{
     Various echousounder instruments provided by BioSonics are described at the
