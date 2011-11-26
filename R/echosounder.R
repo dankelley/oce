@@ -197,7 +197,8 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                 ##cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
             }
             if (channel == channelNumber[1]) { ## FIXME: only plotting first channel, as a test
-                intensity[[scan]] <- .C("uint16_le", buf[offset+16+1:(2*ns)], as.integer(ns), res=integer(ns))$res
+                #intensity[[scan]] <- .C("uint16_le", buf[offset+16+1:(2*ns)], as.integer(ns), res=integer(ns))$res
+                intensity[[scan]] <-.Call("biosonics_ping", buf[offset+16+1:(2*ns)], ns)
                 ## FIXME: should decode ping using RLE special-format float
                 timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
@@ -287,3 +288,15 @@ summary.echosounder <- function(object, ...)
     cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
 }
 
+
+## NOTES
+##
+## on our test file, RP's code gives as follows.  Although
+## this is not too useful, I guess I may as well read it
+## from the file.
+##        absorb: 0
+##            sv: 1.4466e+03
+##   temperature: 10
+##      salinity: 0
+##         power: 0
+##          nsdr: 2

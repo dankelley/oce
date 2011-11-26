@@ -18,33 +18,32 @@ void biosonics_ss(unsigned char *byte, double *out)
 //     run-length-encoding
 // res: the result
 // .Call("biosonic_png", as.raw(c(0x01, 0x02)), 1, res
-SEXP biosonics_ping(SEXP bytes, SEXP ns, SEXP res)
+SEXP biosonics_ping(SEXP bytes, SEXP ns)
 {
   PROTECT(bytes = AS_RAW(bytes));
+  PROTECT(ns = AS_NUMERIC(ns));
   unsigned char *bytep = RAW(bytes);
   double *nsp = REAL(ns);
   int n = (int)(*nsp);
+  SEXP res;
   PROTECT(res = allocVector(REALSXP, n));
   double *resp = REAL(res);
-  Rprintf("n=%d\n", n);
   int nb = LENGTH(bytes);
-  Rprintf("nb=%d\n", nb);
-  Rprintf("is this 16? %d\n", sizeof((unsigned short)(1)));
   // exponent 4 bits, mantissa 12 bits
   for (int i = 0; i < n; i++) {
     unsigned short us;
     us = (0xFF00 & bytep[2*i]) | (0x00FF & bytep[1+2*i]);
-    Rprintf("us= %d\n", us);
-    Rprintf("us= 0x%x\n", us);
-    unsigned int mantissa = (us & 0x000F);
+    unsigned int mantissa = (us & 0x0FFF);
     unsigned int exponent = (us & 0xF000) >> 12;
     if (exponent == 0)
       resp[i] = (float)mantissa;
     else
       resp[i] = (mantissa + 0x1000) << (exponent - 1);
-    Rprintf("0x%x 0x%x %f\n", bytep[2*i], bytep[1+2*i], resp[i]);
+#ifdef DEBUG
+    Rprintf("0x%x 0x%x m=%d e=%d %f\n", bytep[2*i], bytep[1+2*i], mantissa, exponent, resp[i]);
+#endif
   }
-  UNPROTECT(2);
+  UNPROTECT(3);
   return(res);
 }
 //
