@@ -4,16 +4,16 @@
 \description{Coerces a dataset into a echosounder dataset.}
 
 \usage{
-as.echosounder(time, depth, data, src="")
+as.echosounder(time, depth, amplitude, src="")
 }
 \arguments{
-  \item{time}{...FIXME: put something meaningful here}
-  \item{depth}{...FIXME: decide on args based on an actual data file}
-  \item{data}{...FIXME: this is all provisional}
+  \item{time}{times of pings}
+  \item{depth}{depths of samples within pings}
+  \item{amplitude}{matrix of amplitudes}
   \item{src}{optional string indicating data source}
 }
 
-\details{Reads a biosonics echosounder file.}
+\details{Creates a biosonics echosounder file.}
 
 \value{An object of \code{\link[base]{class}} \code{"echosounder"}; for details
     of this data type, see \code{\link{echosounder-class}}).}

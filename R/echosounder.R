@@ -15,16 +15,20 @@ setMethod(f="[[",
               as(x, "oce")[[i, j, drop]]
           })
 
-as.echosounder <- function(time, depth, data, src="") # FIXME change this, when read.echosounder() finalized
+as.echosounder <- function(time, depth, amplitude, src="") # FIXME change this, when read.echosounder() finalized
 {
-    warning("not doing much yet!")
-    res <- new('echosounder')
-    data <- data.frame(time=time,
-                       depth=depth,
-                       data=data)
-    metadata <- list(src=src)
-    res@metadata <- metadata
-    res@data <- data
+    res <- new('echosounder', filename=src)
+    res@metadata$channel <- 1
+    res@metadata$soundSpeed <- soundSpeed=swSoundSpeed(35, 10, 50)
+    res@metadata$samplingDeltat <- as.numeric(time[2]) - as.numeric(time[1])
+    dim <- dim(amplitude)
+    res@metadata$pingsInFile <- dim[1]
+    res@metadata$samplesPerPing <- dim[2]
+    res@data$timePing <- time
+    res@data$latitude <- NULL 
+    res@data$longitude <- NULL 
+    res@data$depth <- depth
+    res@data$amplitude <- amplitude 
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -33,6 +37,7 @@ setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
                               type="l", col="black", lwd=2,
+                              paintbottom,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -67,6 +72,18 @@ setMethod(f="plot",
                       imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
                              z=log10(ifelse(amplitude > 0, amplitude, 1)),
                              col=oceColorsJet, ...)
+                      if (!missing(paintbottom)) {
+                          if (is.logical(paintbottom))
+                              paintbottom <- "white"
+                          wm <- runmed(apply(amplitude, 1, which.max), 5)
+                          ## FIXME: not sure why we need to reverse depth
+                          time <-  x[["timePing"]]
+                          time <- c(time[1], time, time[length(time)])
+                          axisBottom <- par('usr')[3]
+                          depth <- -rev(x[["depth"]])[wm]
+                          depth <- c(axisBottom, depth, axisBottom)
+                          polygon(time, depth, col=paintbottom)
+                      }
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
@@ -184,12 +201,11 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         ## The ordering of the code1 tests is not too systematic here; frequently-encountered
         ## codes are placed first, but then it's a bit random.
         if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
-            ## FIXME must handle RLE in biosonics_ping
             thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
             pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
             ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res # number of samples
-            if (thisChannel == channelNumber[channel]) { ## FIXME: only plotting first channel, as a test
+            if (thisChannel == channelNumber[channel]) {
                 if (debug > 0) {
                     cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
                         " scan=", scan,
@@ -302,15 +318,3 @@ summary.echosounder <- function(object, ...)
     cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
 }
 
-
-## NOTES
-##
-## on our test file, RP's code gives as follows.  Although
-## this is not too useful, I guess I may as well read it
-## from the file.
-##        absorb: 0
-##            sv: 1.4466e+03
-##   temperature: 10
-##      salinity: 0
-##         power: 0
-##          nsdr: 2
