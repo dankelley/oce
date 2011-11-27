@@ -21,11 +21,6 @@ void biosonics_ss(unsigned char *byte, double *out)
 // pairs of bytes, assembled in order to get
 // a 4-bit exponent followed by 12-bit mantissa. 
 //  
-// NOTE. tests show that the bytes are assembled in
-// order, which is a bit of a surprise since the 
-// Biosonics documents suggest a little-endian
-// scheme.
-// 
 // ARGUMENTS
 //   bytes
 //      the data ('raw' in R notation)
