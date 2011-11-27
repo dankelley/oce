@@ -18,8 +18,8 @@ void biosonics_ss(unsigned char *byte, double *out)
 //
 // DETAILS.  Assemble bytes into integers, using the
 // Biosonics-defined floating-point type, which uses
-// pairs of bytes, assembled in order to get
-// a 4-bit exponent followed by 12-bit mantissa. 
+// pairs of bytes, from which we extract an
+// 4-bit exponent and a 12-bit mantissa. 
 //  
 // ARGUMENTS
 //   bytes
@@ -30,10 +30,7 @@ void biosonics_ss(unsigned char *byte, double *out)
 // BUGS
 //   1. not employing run-length-encoding
 //
-// RETURN VALUE. numerical values (integers)
-//
-//
-
+// RETURN VALUE. numerical values of type double
 double biosonic_float(unsigned char byte1, unsigned char byte2)
 {
     unsigned int assembled_bytes = ((short)byte2 << 8) | ((short)byte1); // little endian
@@ -64,7 +61,8 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp)
   PROTECT(res = allocVector(REALSXP, lres));
   double *resp = REAL(res);
   for (int i = 0; i < lres; i++) {
-    if (nbytes <= (2*i)) { // zero fill at end, if needed (should not be)
+    // zero fill at end, if needed
+    if (nbytes <= (2*i)) {
 #ifdef DEBUG
       Rprintf("    padding %d data\n", (2*lres - nbytes)/2);
 #endif
@@ -87,6 +85,7 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp)
       }
       i += zeros - 1;
     } else {
+      // normal 2-byte datum
       resp[i] = biosonic_float(bytep[2*i], bytep[1+2*i]);
     }
   }
