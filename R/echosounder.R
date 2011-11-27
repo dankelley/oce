@@ -1,10 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-## FIXME I need to read this quirky format with more care.  The docs say:
-## FIXME    The amplitude counts value is in a custom floating- point format,
-## FIXME    with a 4-bit exponent and a 12-bit mantissa.
-## FIXME and also that a run-length-encoding method is used.  I handle neither here.
-
 setMethod(f="initialize",
           signature="echosounder",
           definition=function(.Object, filename="") {
