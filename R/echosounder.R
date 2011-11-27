@@ -188,25 +188,23 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         ## The ordering of the code1 tests is not too systematic here; frequently-encountered
         ## codes are placed first, but then it's a bit random.
         if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
-            ## FIXME: what is this "RLE expansion" business??
-            pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
+            ## FIXME must handle RLE in biosonics_ping
             channel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
-            ns <- .C("uint16_le", buf[offset+15:16], 1L, res=integer(1))$res # number of samples
-            if (print) {
-                cat(" single-beam ping)", pingNumber, " ns=", ns, " channel=", channel, "\n")
-                ##cat("   0x", buf[offset+0], " 0x", buf[offset+1], " ", sep="")
-                ##cat("0x", buf[offset+2], " 0x", buf[offset+3], " ", sep="")
-                ##cat("0x", buf[offset+3], " 0x", buf[offset+4], "\n", sep="")
-            }
+            pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
+            pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
+            ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res # number of samples
             if (channel == channelNumber[1]) { ## FIXME: only plotting first channel, as a test
                 #intensity[[scan]] <- .C("uint16_le", buf[offset+16+1:(2*ns)], as.integer(ns), res=integer(ns))$res
-                intensity[[scan]] <-.Call("biosonics_ping", buf[offset+16+1:(2*ns)], ns)
-                ## FIXME: should decode ping using RLE special-format float
+                intensity[[scan]] <-.Call("biosonics_ping", buf[offset+16+1:(2*ns)], ns) # FIXME: not ns in both places
                 timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
-                if (debug > 0 && scan < 20) {
-                    cat("  ping number:", readBin(buf[offset+6+1:4], "integer", n=1, size=4), " ")
-                    cat("  time offset:", readBin(buf[offset+10+1:4], "integer", n=1, size=4)/1000, "\n")
+                if (debug > 0) {
+                    cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
+                        " ping=", pingNumber,
+                        " ns=", ns,
+                        " channel=", channel,
+                        " elapsedTime=", pingElapsedTime,
+                        "\n", sep="")
                 }
             }
         } else if (code1 == 0x0f || code == 0x20) { # time
@@ -232,7 +230,7 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                 break
             }
         } else if (code1 == 0x11) {
-            if (print) cat(" navigation string, which is ignored)\n")
+            if (print) cat(" navigation string) ... ignored\n")
         } else if (code1 == 0x12) {
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
             channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)

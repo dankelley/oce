@@ -1,4 +1,5 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
+//#define DEBUG 1
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -32,6 +33,9 @@ void biosonics_ss(unsigned char *byte, double *out)
 //       number of samples, which may exceed length(bytes)/2 because of
 //       run-length-encoding
 //
+// BUGS
+//   1. not employing run-length-encoding
+//
 // RETURN VALUE. numerical values (integers)
 SEXP biosonics_ping(SEXP bytes, SEXP ns)
 {
@@ -44,21 +48,25 @@ SEXP biosonics_ping(SEXP bytes, SEXP ns)
   PROTECT(res = allocVector(REALSXP, n));
   double *resp = REAL(res);
   int nb = LENGTH(bytes);
-  // exponent 4 bits, mantissa 12 bits
   for (int i = 0; i < n; i++) {
     if (nb < (2*i)) {
       Rprintf("BUG: not enough bytes to fill out a Biosonics ping vector\n");
       break;
     }
-    unsigned short assembled_bytes = (0xFF00 & bytep[2*i]) | (0x00FF & bytep[1+2*i]);
-    unsigned int mantissa = (assembled_bytes & 0x0FFF);
-    unsigned int exponent = (assembled_bytes & 0xF000) >> 12;
-    if (exponent == 0)
-      resp[i] = (double)mantissa;
-    else
-      resp[i] = (double)((mantissa + 0x1000) << (exponent - 1));
+    unsigned int assembled_bytes;
+    assembled_bytes = (((short)bytep[1+2*i])<<8) | ((short)bytep[2*i]); // little endian
+    unsigned int mantissa = (assembled_bytes & 0x0FFF); // rightmost 12 bits
+    int exponent = (assembled_bytes & 0xF000) >> 12; // leftmost 4 bits, shifted to RHS
+    unsigned long res;
+    if (exponent == 0) {
+      res = mantissa;
+    } else {
+      res = (mantissa + 0x1000) << (exponent - 1);
+    }
+    resp[i] = (double)res;
 #ifdef DEBUG
-    Rprintf("   0x%x 0x%x m=%d e=%d %f\n", bytep[2*i], bytep[1+2*i], mantissa, exponent, resp[i]);
+    if (i < 4)
+      Rprintf(" ***  0x%x%x mantissa=%d exponent=%d res=%f\n", bytep[2*i], bytep[1+2*i], mantissa, exponent, resp[i]);
 #endif
   }
   UNPROTECT(3);
