@@ -1,10 +1,5 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
-## FIXME I need to read this quirky format with more care.  The docs say:
-## FIXME    The amplitude counts value is in a custom floating- point format,
-## FIXME    with a 4-bit exponent and a 12-bit mantissa.
-## FIXME and also that a run-length-encoding method is used.  I handle neither here.
-
 setMethod(f="initialize",
           signature="echosounder",
           definition=function(.Object, filename="") {
@@ -195,17 +190,26 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
             ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res # number of samples
             if (thisChannel == channelNumber[channel]) { ## FIXME: only plotting first channel, as a test
-                tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
-                amplitude[scan, ] <- rev(tmp) # note reversal in time
-                timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
-                scan <- scan + 1
                 if (debug > 0) {
                     cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
+                        " scan=", scan,
                         " ping=", pingNumber,
                         " ns=", ns,
                         " channel=", thisChannel,
                         " elapsedTime=", pingElapsedTime,
                         "\n", sep="")
+                }
+                tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
+                amplitude[scan, ] <- rev(tmp) # note reversal in time
+                timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
+                scan <- scan + 1
+           } else {
+               if (debug > 0) {
+                   cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
+                       " ping=", pingNumber,
+                       " ns=", ns,
+                        " channel=", thisChannel,
+                        " IGNORED)\n", sep="")
                 }
             }
         } else if (code1 == 0x0f || code == 0x20) { # time
@@ -267,14 +271,6 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         offset <- offset + N + 6
         tuple <- tuple + 1
     }
-    oceDebug(debug, "tuples:", tuple, " times:", Ntime, "\n")
-
-#    ##pingsInFile= 931  samplesPerPing= 3399 
-#    #amplitude <- matrix(1, nrow=nrow, ncol=ncol) # FIXME using 1 for missing
-#    for (row in seq_along(intensity)) {
-#        amplitude[row,1:length(intensity[[row]])] <- rev(intensity[[row]])
-#    }
-
     res@metadata$channel <- channel
     res@metadata$soundSpeed <- soundSpeed
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
@@ -288,7 +284,6 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      amplitude=amplitude)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", tz=\"", tz, "\", debug=", debug, ")"))
-    warning("read.echosounder() does not handle runlength encoding yet")
     res
 }
 

@@ -1,5 +1,5 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
-//#define DEBUG 1
+// #define DEBUG 1
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -51,7 +51,7 @@ double biosonic_float(unsigned char byte1, unsigned char byte2)
       res = (mantissa + 0x1000) << (exponent - 1);
     }
 #ifdef DEBUG
-    Rprintf(" ***  0x%x%x mantissa=%d exponent=%d res=%f\n", bytep[2*i], bytep[1+2*i], mantissa, exponent, resp[i]);
+//    Rprintf(" ***  0x%x%x mantissa=%d exponent=%d res=%f\n", byte1, byte2, mantissa, exponent, resp[i]);
 #endif
     return((double)res);
 }
@@ -71,20 +71,29 @@ SEXP biosonics_ping(SEXP bytes, SEXP spp)
   for (int i = 0; i < lres; i++) {
     if (nbytes <= (2*i)) { // zero fill at end, if needed (should not be)
 #ifdef DEBUG
-      Rprintf("    padding %d data\n", 2*lres - nbytes);
+      Rprintf("    padding %d data\n", (2*lres - nbytes)/2);
 #endif
       while (i < lres)
 	resp[i++] = (double)0.0;
       break;
     }
-    // RLE must start with odd-numbered (even-numbered??) byte
+    // The RLE starting code is 0xFF in an odd-numbered byte.
     if (bytep[1+2*i] == 0xFF) {
+      int zeros = 2 + (int)bytep[2*i];
 #ifdef DEBUG
       Rprintf("  > RLE at i=%d [IGNORED]\n", i);
-      Rprintf("  > n=%d\n", 1+(int)bytep[2*i]);
+      Rprintf("  > n=%d\n", zeros);
 #endif
+      for (int z = 0; z < zeros; z++) {
+	resp[i + z] = 0.0;
+#ifdef DEBUG
+	Rprintf("  * %d\n", i + z);
+#endif
+      }
+      i += zeros - 1;
+    } else {
+      resp[i] = biosonic_float(bytep[2*i], bytep[1+2*i]);
     }
-    resp[i] = biosonic_float(bytep[2*i], bytep[1+2*i]);
   }
   UNPROTECT(3);
   return(res);
