@@ -29,33 +29,20 @@ void biosonics_ss(unsigned char *byte, double *out)
 // ARGUMENTS
 //   bytes
 //      the data ('raw' in R notation)
-//   ns
-//       number of samples, which may exceed length(bytes)/2 because of
-//       run-length-encoding
+//   spp
+//       samples per ping (after RLE expansion), i.e. length of return value
 //
 // BUGS
 //   1. not employing run-length-encoding
 //
 // RETURN VALUE. numerical values (integers)
-SEXP biosonics_ping(SEXP bytes, SEXP ns)
+//
+//
+
+double biosonic_float(unsigned char byte1, unsigned char byte2)
 {
-  PROTECT(bytes = AS_RAW(bytes));
-  PROTECT(ns = AS_NUMERIC(ns));
-  unsigned char *bytep = RAW(bytes);
-  double *nsp = REAL(ns);
-  int n = (int)(*nsp);
-  SEXP res;
-  PROTECT(res = allocVector(REALSXP, n));
-  double *resp = REAL(res);
-  int nb = LENGTH(bytes);
-  for (int i = 0; i < n; i++) {
-    if (nb < (2*i)) {
-      Rprintf("BUG: not enough bytes to fill out a Biosonics ping vector\n");
-      break;
-    }
-    unsigned int assembled_bytes;
-    assembled_bytes = (((short)bytep[1+2*i])<<8) | ((short)bytep[2*i]); // little endian
-    unsigned int mantissa = (assembled_bytes & 0x0FFF); // rightmost 12 bits
+    unsigned int assembled_bytes = ((short)byte2 << 8) | ((short)byte1); // little endian
+    unsigned int mantissa = (assembled_bytes & 0x0FFF); // rightmost 12 bits (again, little endian)
     int exponent = (assembled_bytes & 0xF000) >> 12; // leftmost 4 bits, shifted to RHS
     unsigned long res;
     if (exponent == 0) {
@@ -63,11 +50,41 @@ SEXP biosonics_ping(SEXP bytes, SEXP ns)
     } else {
       res = (mantissa + 0x1000) << (exponent - 1);
     }
-    resp[i] = (double)res;
 #ifdef DEBUG
-    if (i < 4)
-      Rprintf(" ***  0x%x%x mantissa=%d exponent=%d res=%f\n", bytep[2*i], bytep[1+2*i], mantissa, exponent, resp[i]);
+    Rprintf(" ***  0x%x%x mantissa=%d exponent=%d res=%f\n", bytep[2*i], bytep[1+2*i], mantissa, exponent, resp[i]);
 #endif
+    return((double)res);
+}
+ 
+
+SEXP biosonics_ping(SEXP bytes, SEXP spp)
+{
+  PROTECT(bytes = AS_RAW(bytes));
+  PROTECT(spp = AS_NUMERIC(spp));
+  unsigned int nbytes = LENGTH(bytes);
+  unsigned char *bytep = RAW(bytes);
+  double *sppPtr = REAL(spp);
+  int lres = (int)(*sppPtr);
+  SEXP res;
+  PROTECT(res = allocVector(REALSXP, lres));
+  double *resp = REAL(res);
+  for (int i = 0; i < lres; i++) {
+    if (nbytes <= (2*i)) { // zero fill at end, if needed (should not be)
+#ifdef DEBUG
+      Rprintf("    padding %d data\n", 2*lres - nbytes);
+#endif
+      while (i < lres)
+	resp[i++] = (double)0.0;
+      break;
+    }
+    // RLE must start with odd-numbered (even-numbered??) byte
+    if (bytep[1+2*i] == 0xFF) {
+#ifdef DEBUG
+      Rprintf("  > RLE at i=%d [IGNORED]\n", i);
+      Rprintf("  > n=%d\n", 1+(int)bytep[2*i]);
+#endif
+    }
+    resp[i] = biosonic_float(bytep[2*i], bytep[1+2*i]);
   }
   UNPROTECT(3);
   return(res);

@@ -6,13 +6,16 @@
 \description{Read an echosounder data file, producing an object of type \code{echosounder}.}
 
 \usage{
-read.echosounder(file, soundSpeed=swSoundSpeed(35,10,50), tz=getOption("oceTz"), debug=getOption("oceDebug"))
+read.echosounder(file, channel=1, soundSpeed=swSoundSpeed(35,10,50),
+                 tz=getOption("oceTz"), debug=getOption("oceDebug"))
 }
 
 \arguments{
 
   \item{file}{a connection or a character string giving the name of the file to
       load.}
+
+  \item{channel}{sequence number of channel to extract, for multi-channel files.}
 
   \item{soundSpeed}{sound speed, in m/s.  (The documents on Biosonics
       instruments suggest that this could be inferred from values in the file

@@ -68,8 +68,9 @@ setMethod(f="plot",
                       oce.plot.ts(x[["time"]], geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE),
                                   type=type, col=col, lwd=lwd, ylab="Distance [km]")
                   } else if (which[w] == 2) {
-                      imagep(x=d@data$timePing, y=-rev(d@data$depth), ylab="z [m]",
-                             z=log10(ifelse(d@data$amplitude > 0, d@data$amplitude, 1)),
+                      amplitude <- x[["amplitude"]]
+                      imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
+                             z=log10(ifelse(amplitude > 0, amplitude, 1)),
                              col=oceColorsJet, ...)
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
@@ -110,7 +111,7 @@ setMethod(f="plot",
               invisible()
           })
 
-read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
+read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50),
                              tz=getOption("oceTz"), debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bread.echosounder(file=\"", file, "\", tz=\"", tz, "\", debug=", debug, ") {\n", sep="")
@@ -189,20 +190,20 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         ## codes are placed first, but then it's a bit random.
         if (code1 == 0x15) {           # single-beam ping tuple (section 4.6.1)
             ## FIXME must handle RLE in biosonics_ping
-            channel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
+            thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             pingNumber <- readBin(buf[offset+6+1:4], "integer", size=4, n=1, endian="little")
             pingElapsedTime <- readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000
             ns <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res # number of samples
-            if (channel == channelNumber[1]) { ## FIXME: only plotting first channel, as a test
-                #intensity[[scan]] <- .C("uint16_le", buf[offset+16+1:(2*ns)], as.integer(ns), res=integer(ns))$res
-                intensity[[scan]] <-.Call("biosonics_ping", buf[offset+16+1:(2*ns)], ns) # FIXME: not ns in both places
+            if (thisChannel == channelNumber[channel]) { ## FIXME: only plotting first channel, as a test
+                tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
+                amplitude[scan, ] <- rev(tmp) # note reversal in time
                 timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
                 if (debug > 0) {
                     cat("buf[", 1+offset, ", ...] (0x", code1, " single-beam ping)", 
                         " ping=", pingNumber,
                         " ns=", ns,
-                        " channel=", channel,
+                        " channel=", thisChannel,
                         " elapsedTime=", pingElapsedTime,
                         "\n", sep="")
                 }
@@ -234,7 +235,17 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         } else if (code1 == 0x12) {
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
             channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
-            if (print) cat(" channel descriptor) number=", tail(channelNumber, 1), " dt=", tail(channelDeltat, 1), "\n")
+            pingsInFile <- readBin(buf[offset+6+1:4], "integer", n=1, size=4, endian="little")
+            samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1))$res
+            if (1 == length(channelNumber)) { # get space
+                amplitude <- matrix(1, nrow=pingsInFile, ncol=samplesPerPing)
+            }
+            if (print) cat(" channel descriptor)",
+                           " number=", tail(channelNumber, 1),
+                           " dt=", tail(channelDeltat, 1),
+                           " pingsInFile=", pingsInFile,
+                           " samplesPerPing=", samplesPerPing, 
+                           "\n")
         } else if (code1 == 0x30) {
             if (print) cat(" time-stamped navigation string, which is ignored)\n")
         } else if (code1 == 0xff && tuple > 1) {
@@ -257,14 +268,18 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
         tuple <- tuple + 1
     }
     oceDebug(debug, "tuples:", tuple, " times:", Ntime, "\n")
-    ncol <- max(sapply(intensity, length))
-    nrow <- length(intensity)
-    amplitude <- matrix(1, nrow=nrow, ncol=ncol) # FIXME using 1 for missing
-    for (row in seq_along(intensity)) {
-        amplitude[row,1:length(intensity[[row]])] <- rev(intensity[[row]])
-    }
+
+#    ##pingsInFile= 931  samplesPerPing= 3399 
+#    #amplitude <- matrix(1, nrow=nrow, ncol=ncol) # FIXME using 1 for missing
+#    for (row in seq_along(intensity)) {
+#        amplitude[row,1:length(intensity[[row]])] <- rev(intensity[[row]])
+#    }
+
+    res@metadata$channel <- channel
     res@metadata$soundSpeed <- soundSpeed
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
+    res@metadata$pingsInFile <- pingsInFile
+    res@metadata$samplesPerPing <- samplesPerPing
     res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      depth=seq(0,-1+dim(amplitude)[2]) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2,
                      timePing=unlist(timePing) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
@@ -273,6 +288,7 @@ read.echosounder <- function(file, soundSpeed=swSoundSpeed(35, 10, 50),
                      amplitude=amplitude)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, ", tz=\"", tz, "\", debug=", debug, ")"))
+    warning("read.echosounder() does not handle runlength encoding yet")
     res
 }
 
@@ -283,9 +299,12 @@ summary.echosounder <- function(object, ...)
     time <- object[["timePing"]]
     tz <- attr(time[1], "tzone")
     nt <- length(time)
+    cat(sprintf("* Channel:             %d\n", object[["channel"]]))
     cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
     cat(sprintf("* Assumed sound speed: %.2f m/s\n", object[["soundSpeed"]]))
     cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
+    cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
+    cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
 }
 
 
