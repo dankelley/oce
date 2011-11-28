@@ -34,8 +34,8 @@
   \item{col}{color for line, or points}
   \item{lwd}{line width (ignored if \code{type="p"})}
 
-  \item{deband}{remove vertical banding by using \code{\link{runmed}} to do a
-      three-point running median filter across the rows of the image.}
+  \item{deband}{remove vertical banding by using \code{\link{smooth}} to smooth
+      across image columns, row by row.}
 
   \item{paintbottom}{optional flag used for section images.  If \code{TRUE},
       then the bottom is inferred as a smoothed version of the ridge of highest

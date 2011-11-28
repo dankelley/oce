@@ -67,7 +67,8 @@ setMethod(f="plot",
                   if (which[w] == 1) {
                       amplitude <- x[["amplitude"]]
                       if (deband) {
-                          amplitude <- apply(amplitude, 2, runmed, k=3)
+                          ##amplitude <- apply(amplitude, 2, runmed, k=3)
+                          amplitude <- apply(amplitude, 2, smooth)
                       }
                       if (!missing(paintbottom)) {
                           if (is.logical(paintbottom))
