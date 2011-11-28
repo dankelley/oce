@@ -89,6 +89,7 @@ setMethod(f="plot",
                       } else {
                           imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
                                  z=log10(ifelse(amplitude > 0, amplitude, 1)),
+                                 ylim=c(-max(abs(x[["depth"]])), 0),
                              col=oceColorsJet, ...)
                       }
                   } else if (which[w] == 2) {
@@ -200,6 +201,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     channelNumber <- NULL
     channelID <- NULL
     channelDeltat <- NULL
+    blankedSamples <- 0
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1))$res
@@ -263,6 +265,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             if (print) cat(" navigation string) ... ignored\n")
         } else if (code1 == 0x12) {
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
+            blankedSamples <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1))$res
             channelDeltat <- c(channelDeltat, 1e-9*.C("uint16_le", buf[offset+12+1:2], 1L, res=integer(1))$res)
             pingsInFile <- readBin(buf[offset+6+1:4], "integer", n=1, size=4, endian="little")
             samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1))$res
@@ -271,6 +274,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             }
             if (print) cat(" channel descriptor)",
                            " number=", tail(channelNumber, 1),
+                           " blankedSamples=", blankedSamples,
                            " dt=", tail(channelDeltat, 1),
                            " pingsInFile=", pingsInFile,
                            " samplesPerPing=", samplesPerPing, 
@@ -297,12 +301,14 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         tuple <- tuple + 1
     }
     res@metadata$channel <- channel
+    res@metadata$blankedSamples <- blankedSamples
     res@metadata$soundSpeed <- soundSpeed
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
+    range  <- (blankedSamples + seq(0,-1+dim(amplitude)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
     res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
-                     depth=seq(0,-1+dim(amplitude)[2]) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2,
+                     depth=range,
                      timePing=unlist(timePing) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude,
                      longitude=longitude,
