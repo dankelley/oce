@@ -9,8 +9,9 @@
 \description{Plot echosounder data}
 
 \usage{\S4method{plot}{echosounder}(x,
-     which=2, 
-     type="l", col="black", lwd=2, paintbottom,
+     which=1, 
+     type="l", col="black", lwd=2,
+     deband=FALSE, paintbottom,
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -24,14 +25,17 @@
       \code{\link{as.echosounder}}.}
   \item{which}{list of desired plot types.  
     \itemize{
-      \item \code{which=1} gives a time-distance graph
-      \item \code{which=2} gives a section image
+      \item \code{which=1} gives a depth-time image
+      \item \code{which=2} gives a depth-distance image
       \item \code{which=3} gives a map showing the cruise track
     }}
   \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
       \code{"b"} for both.}
   \item{col}{color for line, or points}
   \item{lwd}{line width (ignored if \code{type="p"})}
+
+  \item{deband}{remove vertical banding by using \code{\link{runmed}} to do a
+      three-point running median filter across the rows of the image.}
 
   \item{paintbottom}{optional flag used for section images.  If \code{TRUE},
       then the bottom is inferred as a smoothed version of the ridge of highest

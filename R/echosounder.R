@@ -37,7 +37,7 @@ setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
                               type="l", col="black", lwd=2,
-                              paintbottom,
+                              deband=FALSE, paintbottom,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -64,11 +64,11 @@ setMethod(f="plot",
               }
               for (w in 1:length(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
-                  if (which[w] == 1) { # z-t graph
-                      oce.plot.ts(x[["time"]], geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE),
-                                  type=type, col=col, lwd=lwd, ylab="Distance [km]")
-                  } else if (which[w] == 2) {
+                  if (which[w] == 1) {
                       amplitude <- x[["amplitude"]]
+                      if (deband) {
+                          amplitude <- apply(amplitude, 2, runmed, k=3)
+                      }
                       if (!missing(paintbottom)) {
                           if (is.logical(paintbottom))
                               paintbottom <- "white"
@@ -90,6 +90,8 @@ setMethod(f="plot",
                                  z=log10(ifelse(amplitude > 0, amplitude, 1)),
                              col=oceColorsJet, ...)
                       }
+                  } else if (which[w] == 2) {
+                      stop("which=2 not handled yet")
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
