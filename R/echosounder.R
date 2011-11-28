@@ -19,7 +19,7 @@ as.echosounder <- function(time, depth, amplitude, src="") # FIXME change this, 
 {
     res <- new('echosounder', filename=src)
     res@metadata$channel <- 1
-    res@metadata$soundSpeed <- soundSpeed=swSoundSpeed(35, 10, 50)
+    res@metadata$soundSpeed <- swSoundSpeed(35, 10, 50)
     res@metadata$samplingDeltat <- as.numeric(time[2]) - as.numeric(time[1])
     dim <- dim(amplitude)
     res@metadata$pingsInFile <- dim[1]
@@ -69,20 +69,26 @@ setMethod(f="plot",
                                   type=type, col=col, lwd=lwd, ylab="Distance [km]")
                   } else if (which[w] == 2) {
                       amplitude <- x[["amplitude"]]
-                      imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
-                             z=log10(ifelse(amplitude > 0, amplitude, 1)),
-                             col=oceColorsJet, ...)
                       if (!missing(paintbottom)) {
                           if (is.logical(paintbottom))
                               paintbottom <- "white"
                           wm <- runmed(apply(amplitude, 1, which.max), 5)
-                          ## FIXME: not sure why we need to reverse depth
+                          axisBottom <- par('usr')[3]
+                          waterDepth <- -rev(x[["depth"]])[wm]
+                          deepestWater <- max(abs(waterDepth))
+                          imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
+                                 ylim=c(-deepestWater,0),
+                                 z=log10(ifelse(amplitude > 0, amplitude, 1)),
+                                 col=oceColorsJet, ...)
+                          axisBottom <- par('usr')[3]
+                          waterDepth <- c(axisBottom, waterDepth, axisBottom)
                           time <-  x[["timePing"]]
                           time <- c(time[1], time, time[length(time)])
-                          axisBottom <- par('usr')[3]
-                          depth <- -rev(x[["depth"]])[wm]
-                          depth <- c(axisBottom, depth, axisBottom)
-                          polygon(time, depth, col=paintbottom)
+                          polygon(time, waterDepth, col=paintbottom)
+                      } else {
+                          imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
+                                 z=log10(ifelse(amplitude > 0, amplitude, 1)),
+                             col=oceColorsJet, ...)
                       }
                   } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]

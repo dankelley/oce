@@ -9,7 +9,7 @@
 \description{Plot echosounder data}
 
 \usage{\S4method{plot}{echosounder}(x,
-     which=1, 
+     which=2, 
      type="l", col="black", lwd=2, paintbottom,
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -61,8 +61,10 @@
 \examples{
 library(oce)
 \dontrun{
-e <- read.echosounder("myfile")
+e <- read.echosounder("myfile.dt4")
 plot(echosounder)
+plot(echosounder, paintbottom="gray")
+plot(echosounder, which=3) # map
 }
 }
 
