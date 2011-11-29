@@ -10,7 +10,18 @@
 \title{Class to store echosounder data}
 
 \description{Class to store echosounder data, with standard slots
-    \code{metadata}, \code{data} and \code{processingLog}.}
+    \code{metadata}, \code{data} and \code{processingLog}. The \code{data} slot is a list containing
+    \itemize{
+        \item \code{timeLocation}, the POSIX times at which location data are available
+        \item \code{latitude}, latitude of location
+        \item \code{longitude}, longitude of location
+        \item \code{depth}, vector of depths of samples (meausured positive downwards in the water column)
+        \item \code{time}, vector of POSIXct times of samples
+        \item \code{amplitude}, matrix of samples, with first dimension
+        matching length of \code{time} and second dimension matching length of
+        \code{depth}.
+    }
+}
 
 \section{Methods}{
 

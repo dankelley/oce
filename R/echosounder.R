@@ -24,9 +24,8 @@ as.echosounder <- function(time, depth, amplitude, src="") # FIXME change this, 
     dim <- dim(amplitude)
     res@metadata$pingsInFile <- dim[1]
     res@metadata$samplesPerPing <- dim[2]
-    res@data$timePing <- time
-    res@data$latitude <- NULL 
-    res@data$longitude <- NULL 
+    ## FIXME: what about timeLocation, latitude, and longitude?
+    res@data$time <- time
     res@data$depth <- depth
     res@data$amplitude <- amplitude 
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
@@ -77,17 +76,17 @@ setMethod(f="plot",
                           axisBottom <- par('usr')[3]
                           waterDepth <- -rev(x[["depth"]])[wm]
                           deepestWater <- max(abs(waterDepth))
-                          imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
+                          imagep(x=x[["time"]], y=-rev(x[["depth"]]), ylab="z [m]",
                                  ylim=c(-deepestWater,0),
                                  z=log10(ifelse(amplitude > 0, amplitude, 1)),
                                  col=oceColorsJet, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, waterDepth, axisBottom)
-                          time <-  x[["timePing"]]
+                          time <-  x[["time"]]
                           time <- c(time[1], time, time[length(time)])
                           polygon(time, waterDepth, col=paintbottom)
                       } else {
-                          imagep(x=x[["timePing"]], y=-rev(x[["depth"]]), ylab="z [m]",
+                          imagep(x=x[["time"]], y=-rev(x[["depth"]]), ylab="z [m]",
                                  z=log10(ifelse(amplitude > 0, amplitude, 1)),
                                  ylim=c(-max(abs(x[["depth"]])), 0),
                              col=oceColorsJet, ...)
@@ -190,13 +189,12 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ##   ￼0xFFFE ￼End of File
     tuple <- 1
     offset <- 0
-    Ntime <- 0
-    time <- latitude <- longitude <- NULL
+    timeLocation <- latitude <- longitude <- NULL
     timeLast <- 0
     first <- TRUE
     scan <- 1
     intensity <- list()
-    timePing <- list()
+    time <- list()
     samplingDeltat <- 2.4e-05 # a guess, to avoid being unknown if the header cannot be read
     channelNumber <- NULL
     channelID <- NULL
@@ -228,7 +226,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 }
                 tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
                 amplitude[scan, ] <- rev(tmp) # note reversal in time
-                timePing[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
+                time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
            } else {
                if (debug > 0) {
@@ -245,15 +243,14 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             timeFull <- timeSec + timeSubSec
             timeElapsedSec <- readBin(buf[offset+10+1:4], what="integer", endian="little", size=4, n=1)/1e3
             ## centisecond = ss & 0x7F (according to section 4.7)
-            timeLast <- timeSec + timeSubSec
+            timeLast <- timeSec + timeSubSec # used for positioning
             if (print) cat(sprintf(" time) calendar: %s   elapsed %.2f\n", timeFull+as.POSIXct("1970-01-01 00:00:00", tz="UTC"), timeElapsedSec))
-            Ntime <- Ntime + 1
         } else if (code1 == 0x0e) { # position
             lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             latitude <- c(latitude, lat)
             longitude <- c(longitude, lon)
-            time <- c(time, timeLast)
+            timeLocation <- c(timeLocation, timeLast)
             if (print) cat(" position)", lat, "N", lon, "E\n")
         } else if (code2 == 0xff) {
             if (tuple == 1) {
@@ -306,15 +303,14 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
-    range  <- (blankedSamples + seq(0,-1+dim(amplitude)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
-    res@data <- list(time=time + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
+    range  <- (blankedSamples + seq(1,dim(amplitude)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
+    res@data <- list(timeLocation=timeLocation + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
+                     latitude=latitude, longitude=longitude,
                      depth=range,
-                     timePing=unlist(timePing) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
-                     latitude=latitude,
-                     longitude=longitude,
+                     time=unlist(time) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), # FIXME
                      amplitude=amplitude)
     res@processingLog <- processingLog(res@processingLog,
-                                       paste("read.echosounder(\"", filename, ", tz=\"", tz, "\", debug=", debug, ")"))
+                                       paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
     res
 }
 
@@ -322,14 +318,30 @@ summary.echosounder <- function(object, ...)
 {
     cat("Echosounder Summary\n-------------------\n\n")
     showMetadataItem(object, "filename", "File source:         ", quote=TRUE)
-    time <- object[["timePing"]]
+    time <- object[["time"]]
     tz <- attr(time[1], "tzone")
     nt <- length(time)
     cat(sprintf("* Channel:             %d\n", object[["channel"]]))
     cat(sprintf("* Measurements:        %s %s to %s %s\n", format(time[1]), tz, format(time[nt]), tz))
     cat(sprintf("* Assumed sound speed: %.2f m/s\n", object[["soundSpeed"]]))
     cat(sprintf("* Time between pings:  %.2e s\n", object[["samplingDeltat"]]))
+    cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
     cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
     cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
+    cat("* Statistics::\n")
+    dataNames <- names(object@data)
+    ndata <- length(dataNames)
+    threes <- matrix(nrow=ndata-length(grep("^time", dataNames)), ncol=3)
+    ii <- 1
+    for (i in 1:ndata) {
+        if (0 == length(grep("^time", dataNames[i]))) {
+            threes[ii,] <- threenum(object@data[[i]])
+            ii <- ii + 1
+        }
+    }
+    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
+    colnames(threes) <- c("Min.", "Mean", "Max.")
+    print(threes)
+    processingLogShow(object)
 }
 

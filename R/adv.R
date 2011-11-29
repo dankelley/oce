@@ -127,7 +127,7 @@ summary.adv <- function(object, ...)
             ii <- ii + 1
         }
     }
-    rownames(threes) <- dataNames[-grep("^time", dataNames)]
+    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes)
     processingLogShow(object)
