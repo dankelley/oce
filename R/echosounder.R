@@ -64,6 +64,9 @@ setMethod(f="plot",
               for (w in 1:length(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
+                      time <- x[["time"]]
+                      if (!length(time))
+                          stop("plot.echosounder() cannot plot, because @data$time has zero length")
                       a <- x[["a"]]
                       if (despike) {
                           a <- apply(a, 2, smooth)
@@ -200,6 +203,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     channelDeltat <- NULL
     blankedSamples <- 0
     fileType <- "unknown" 
+    timeBottom <- rangeBottom <- NULL
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1))$res
@@ -292,7 +296,18 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x1c) {
             warning("cannot handle dual-beam ping")
         } else if (code1 == 0x32) {
-            if (print) cat(" bottom pick) IGNORED\n")
+            if (print) cat(" bottom pick)")
+            ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
+            ##thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
+            foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res
+            if (foundBottom) {
+                binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
+                ##timeBottom <- c(timeBottom, readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000)
+                timeBottom <- c(timeBottom, timeLast) ## FIXME: maybe should use the elapsed time (as in prev line)
+                if (print) cat(timeLast, " bin ", binBottom, "\n")
+            } else {
+                if (print) cat(" could not find bottom\n")
+            }
         } else if (code1 == 0x36) {
             if (print) cat(" extended channel descriptor) IGNORED\n")
         } else {
@@ -317,6 +332,10 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                      depth=range,
                      time=unlist(time) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), # FIXME
                      a=a)
+    if (!is.null(timeBottom) && !is.null(rangeBottom)) {
+        res@data$timeBottom <- timeBottom
+        res@data$rangeBottom <- rangeBottom
+    }
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
     res
