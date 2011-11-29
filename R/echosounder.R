@@ -79,34 +79,59 @@ setMethod(f="plot",
                               stop("cannot handle misordered newx (FIXME)")
                           ndepth <- dim(a)[2]
                           for (i in 1:ndepth) {
-                              a[,i] <- approx(oce::rescale(t), a[,i], oce::rescale(newx))$y
+                              aa <- a[,i]
+                              aa <- approx(oce::rescale(t), aa, oce::rescale(newx))$y
+                              aa[aa < 0] <- 0
+                              a[,i] <- aa
                           }
                           xInImage <- newx
                       }
                       if (despike) {
                           a <- apply(a, 2, smooth)
                       }
+                      z <- log10(ifelse(a > 0, a, 1))
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
-                          wm <- runmed(apply(a, 1, which.max), 5)
+                          ##wm <- runmed(apply(a, 1, which.max), 5)
+                          wm <- oce::despike(apply(a, 1, which.max))
                           axisBottom <- par('usr')[3]
                           waterDepth <- -rev(x[["depth"]])[wm]
                           deepestWater <- max(abs(waterDepth))
-                          imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
-                                 ylim=c(-deepestWater,0),
-                                 z=log10(ifelse(a > 0, a, 1)),
-                                 col=oceColorsJet, mar=mar, ...)
+                          if ("zlim" %in% dotsNames) {
+                              imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
+                                     ylim=c(-deepestWater,0),
+                                     z=z,
+                                     col=oceColorsJet, mar=mar, ...)
+                          } else {
+                              imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
+                                     ylim=c(-deepestWater,0),
+                                     z=z, zlim=c(0, max(z)),
+                                     col=oceColorsJet, mar=mar, ...)
+                          }
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, waterDepth, axisBottom)
                           time <-  x[["time"]]
-                          time2 <- c(time[1], time, time[length(time)])
-                          polygon(time2, waterDepth, col=drawBottom)
+                          if (newxGiven) {
+                              newx2 <- approx(as.numeric(time), newx, as.numeric(time))$y
+                              newx2 <- c(newx2[1], newx2, newx2[length(newx2)])
+                              polygon(newx2, waterDepth, col=drawBottom)
+                          } else {
+                              time2 <- c(time[1], time, time[length(time)])
+                              polygon(time2, waterDepth, col=drawBottom)
+                          }
                       } else {
-                          imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
-                                 z=log10(ifelse(a > 0, a, 1)),
-                                 ylim=c(-max(abs(x[["depth"]])), 0),
-                                 col=oceColorsJet, mar=mar, ...)
+                          if ("zlim" %in% dotsNames) {
+                              imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
+                                     ylim=c(-max(abs(x[["depth"]])), 0),
+                                     z=z,
+                                     col=oceColorsJet, mar=mar, ...)
+                          } else {
+                              imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
+                                     ylim=c(-max(abs(x[["depth"]])), 0),
+                                     z=z, zlim=if(!("zlim" %in% dotsNames)) c(0, max(z)),
+                                     col=oceColorsJet, mar=mar, ...)
+                          }
                       }
                       if (newxGiven) {
                           pretty <- pretty(time)
