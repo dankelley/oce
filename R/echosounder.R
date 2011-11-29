@@ -87,7 +87,7 @@ setMethod(f="plot",
                           a <- apply(a, 2, smooth)
                       }
                       if (!missing(drawBottom)) {
-                          if (is.logical(drawBottom) & drawBottom)
+                          if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
                           wm <- runmed(apply(a, 1, which.max), 5)
                           axisBottom <- par('usr')[3]
@@ -100,8 +100,8 @@ setMethod(f="plot",
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, waterDepth, axisBottom)
                           time <-  x[["time"]]
-                          time <- c(time[1], time, time[length(time)])
-                          polygon(time, waterDepth, col=drawBottom)
+                          time2 <- c(time[1], time, time[length(time)])
+                          polygon(time2, waterDepth, col=drawBottom)
                       } else {
                           imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
                                  z=log10(ifelse(a > 0, a, 1)),
@@ -111,7 +111,7 @@ setMethod(f="plot",
                       if (newxGiven) {
                           pretty <- pretty(time)
                           labels <- format(pretty, format="%H:%M:%S")
-                          at <- approx(time, newx, pretty)$y
+                          at <- approx(as.numeric(time), newx, as.numeric(pretty))$y
                           axis(3, at=at, labels=labels)
                       }
                   } else if (which[w] == 2) {
