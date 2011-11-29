@@ -11,6 +11,7 @@
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
      newx, xlab="",
+     zlim,
      type="l", col="black", lwd=2,
      despike=FALSE, drawBottom,
      adorn=NULL,
@@ -32,11 +33,14 @@
     }
   }
 
-  \item{newx}{optional vector of values to appear on x axis, instead of time.
-      This must be of the same length as the time vector.  Ignored unless
-      \code{which=1}.}
+  \item{newx}{optional vector of values to appear on the horizontal axis if
+      \code{which=1}, instead of time.  This must be of the same length as the
+      time vector, because the image is remapped from time to \code{newx} using
+      \code{\link{approx}}.}
 
   \item{xlab}{label for horizontal axis.}
+
+  \item{zlim}{optional range for colorscale.}
 
   \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
       \code{"b"} for both.}
