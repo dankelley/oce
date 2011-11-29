@@ -10,6 +10,7 @@
 
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
+     newx, xlab="",
      type="l", col="black", lwd=2,
      despike=FALSE, drawBottom,
      adorn=NULL,
@@ -28,7 +29,15 @@
       \item \code{which=1} gives a depth-time image
       \item \code{which=2} gives a depth-distance image
       \item \code{which=3} gives a map showing the cruise track
-    }}
+    }
+  }
+
+  \item{newx}{optional vector of values to appear on x axis, instead of time.
+      This must be of the same length as the time vector.  Ignored unless
+      \code{which=1}.}
+
+  \item{xlab}{label for horizontal axis.}
+
   \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
       \code{"b"} for both.}
   \item{col}{color for line, or points}

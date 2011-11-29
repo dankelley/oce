@@ -35,11 +35,12 @@ as.echosounder <- function(time, depth, a, src="") # FIXME change this, when rea
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
+                              newx, xlab="",
                               type="l", col="black", lwd=2,
                               despike=FALSE, drawBottom,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                              mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -65,9 +66,23 @@ setMethod(f="plot",
                   oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
                       time <- x[["time"]]
+                      xInImage <- time
                       if (!length(time))
                           stop("plot.echosounder() cannot plot, because @data$time has zero length")
                       a <- x[["a"]]
+                      newxGiven <- !missing(newx)
+                      if (newxGiven) {
+                          t <- as.numeric(time)
+                          if (length(newx) != length(t))
+                              stop("length of 'newx' must match that of time within the object")
+                          if (any(diff(order(newx))<0))
+                              stop("cannot handle misordered newx (FIXME)")
+                          ndepth <- dim(a)[2]
+                          for (i in 1:ndepth) {
+                              a[,i] <- approx(oce::rescale(t), a[,i], oce::rescale(newx))$y
+                          }
+                          xInImage <- newx
+                      }
                       if (despike) {
                           a <- apply(a, 2, smooth)
                       }
@@ -78,20 +93,26 @@ setMethod(f="plot",
                           axisBottom <- par('usr')[3]
                           waterDepth <- -rev(x[["depth"]])[wm]
                           deepestWater <- max(abs(waterDepth))
-                          imagep(x=x[["time"]], y=-rev(x[["depth"]]), ylab="z [m]",
+                          imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
                                  ylim=c(-deepestWater,0),
                                  z=log10(ifelse(a > 0, a, 1)),
-                                 col=oceColorsJet, ...)
+                                 col=oceColorsJet, mar=mar, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, waterDepth, axisBottom)
                           time <-  x[["time"]]
                           time <- c(time[1], time, time[length(time)])
                           polygon(time, waterDepth, col=drawBottom)
                       } else {
-                          imagep(x=x[["time"]], y=-rev(x[["depth"]]), ylab="z [m]",
+                          imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
                                  z=log10(ifelse(a > 0, a, 1)),
                                  ylim=c(-max(abs(x[["depth"]])), 0),
-                             col=oceColorsJet, ...)
+                                 col=oceColorsJet, mar=mar, ...)
+                      }
+                      if (newxGiven) {
+                          pretty <- pretty(time)
+                          labels <- format(pretty, format="%H:%M:%S")
+                          at <- approx(time, newx, pretty)$y
+                          axis(3, at=at, labels=labels)
                       }
                   } else if (which[w] == 2) {
                       stop("which=2 not handled yet")
