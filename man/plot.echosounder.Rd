@@ -11,7 +11,7 @@
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
      type="l", col="black", lwd=2,
-     deband=FALSE, paintbottom,
+     despike=FALSE, drawBottom,
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -34,13 +34,13 @@
   \item{col}{color for line, or points}
   \item{lwd}{line width (ignored if \code{type="p"})}
 
-  \item{deband}{remove vertical banding by using \code{\link{smooth}} to smooth
+  \item{despike}{remove vertical banding by using \code{\link{smooth}} to smooth
       across image columns, row by row.}
 
-  \item{paintbottom}{optional flag used for section images.  If \code{TRUE},
+  \item{drawBottom}{optional flag used for section images.  If \code{TRUE},
       then the bottom is inferred as a smoothed version of the ridge of highest
       image value, and data below that are whited out after the image is drawn.
-      If \code{paintbottom} is a colour, then that colour is used, instead of
+      If \code{drawBottom} is a colour, then that colour is used, instead of
       white.}
       
   \item{adorn}{list of expressions to be executed for the panels in turn, e.g.
@@ -67,7 +67,7 @@ library(oce)
 \dontrun{
 e <- read.echosounder("myfile.dt4")
 plot(echosounder)
-plot(echosounder, paintbottom="gray")
+plot(echosounder, drawBottom="gray")
 plot(echosounder, which=3) # map
 }
 }

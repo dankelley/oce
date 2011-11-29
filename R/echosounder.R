@@ -15,19 +15,19 @@ setMethod(f="[[",
               as(x, "oce")[[i, j, drop]]
           })
 
-as.echosounder <- function(time, depth, amplitude, src="") # FIXME change this, when read.echosounder() finalized
+as.echosounder <- function(time, depth, a, src="") # FIXME change this, when read.echosounder() finalized
 {
     res <- new('echosounder', filename=src)
     res@metadata$channel <- 1
     res@metadata$soundSpeed <- swSoundSpeed(35, 10, 50)
     res@metadata$samplingDeltat <- as.numeric(time[2]) - as.numeric(time[1])
-    dim <- dim(amplitude)
+    dim <- dim(a)
     res@metadata$pingsInFile <- dim[1]
     res@metadata$samplesPerPing <- dim[2]
     ## FIXME: what about timeLocation, latitude, and longitude?
     res@data$time <- time
     res@data$depth <- depth
-    res@data$amplitude <- amplitude 
+    res@data$a<- a
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
 }
@@ -36,7 +36,7 @@ setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
                               type="l", col="black", lwd=2,
-                              deband=FALSE, paintbottom,
+                              despike=FALSE, drawBottom,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -64,30 +64,29 @@ setMethod(f="plot",
               for (w in 1:length(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
                   if (which[w] == 1) {
-                      amplitude <- x[["amplitude"]]
-                      if (deband) {
-                          ##amplitude <- apply(amplitude, 2, runmed, k=3)
-                          amplitude <- apply(amplitude, 2, smooth)
+                      a <- x[["a"]]
+                      if (despike) {
+                          a <- apply(a, 2, smooth)
                       }
-                      if (!missing(paintbottom)) {
-                          if (is.logical(paintbottom))
-                              paintbottom <- "white"
-                          wm <- runmed(apply(amplitude, 1, which.max), 5)
+                      if (!missing(drawBottom)) {
+                          if (is.logical(drawBottom) & drawBottom)
+                              drawBottom <- "white"
+                          wm <- runmed(apply(a, 1, which.max), 5)
                           axisBottom <- par('usr')[3]
                           waterDepth <- -rev(x[["depth"]])[wm]
                           deepestWater <- max(abs(waterDepth))
                           imagep(x=x[["time"]], y=-rev(x[["depth"]]), ylab="z [m]",
                                  ylim=c(-deepestWater,0),
-                                 z=log10(ifelse(amplitude > 0, amplitude, 1)),
+                                 z=log10(ifelse(a > 0, a, 1)),
                                  col=oceColorsJet, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, waterDepth, axisBottom)
                           time <-  x[["time"]]
                           time <- c(time[1], time, time[length(time)])
-                          polygon(time, waterDepth, col=paintbottom)
+                          polygon(time, waterDepth, col=drawBottom)
                       } else {
                           imagep(x=x[["time"]], y=-rev(x[["depth"]]), ylab="z [m]",
-                                 z=log10(ifelse(amplitude > 0, amplitude, 1)),
+                                 z=log10(ifelse(a > 0, a, 1)),
                                  ylim=c(-max(abs(x[["depth"]])), 0),
                              col=oceColorsJet, ...)
                       }
@@ -200,6 +199,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     channelID <- NULL
     channelDeltat <- NULL
     blankedSamples <- 0
+    fileType <- "unknown" 
     while (offset < fileSize) {
         print <- debug && tuple < 200
         N <- .C("uint16_le", buf[offset+1:2], 1L, res=integer(1))$res
@@ -225,7 +225,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                         "\n", sep="")
                 }
                 tmp <- .Call("biosonics_ping", buf[offset+16+1:(2*ns)], samplesPerPing)
-                amplitude[scan, ] <- rev(tmp) # note reversal in time
+                a[scan, ] <- rev(tmp) # note reversal in time
                 time[[scan]] <- timeLast # FIXME many pings between times, so this is wrong
                 scan <- scan + 1
            } else {
@@ -267,7 +267,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
             pingsInFile <- readBin(buf[offset+6+1:4], "integer", n=1, size=4, endian="little")
             samplesPerPing <- .C("uint16_le", buf[offset+10+1:2], 1L, res=integer(1))$res
             if (1 == length(channelNumber)) { # get space
-                amplitude <- matrix(1, nrow=pingsInFile, ncol=samplesPerPing)
+                a <- matrix(1, nrow=pingsInFile, ncol=samplesPerPing)
             }
             if (print) cat(" channel descriptor)",
                            " number=", tail(channelNumber, 1),
@@ -277,19 +277,26 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                            " samplesPerPing=", samplesPerPing, 
                            "\n")
         } else if (code1 == 0x30) {
-            if (print) cat(" time-stamped navigation string, which is ignored)\n")
+            if (print) cat(" time-stamped navigation string) IGNORED\n")
         } else if (code1 == 0xff && tuple > 1) {
             if (print) cat("  EOF\n")
-        } else if (code1 == 0x1e) {
+        } else if (code1 == 0x1E) {
             if (print) cat(" V3 file header)\n")
+            fileType <- if (buf[offset + 1] == 0x10 & buf[offset + 2] == 0x00) "DT4 v2.3" else "DT4 pre v2.3"
         } else if (code1 == 0x18) {
             warning("Biosonics file of type 'V2' detected ... errors may crop up")
+            fileType <- "V2"
         } else if (code1 == 0x01) {
             warning("Biosonics file of type 'V1' detected ... errors may crop up")
+            fileType <- "V1"
         } else if (code1 == 0x1c) {
             warning("cannot handle dual-beam ping")
+        } else if (code1 == 0x32) {
+            if (print) cat(" bottom pick) IGNORED\n")
+        } else if (code1 == 0x36) {
+            if (print) cat(" extended channel descriptor) IGNORED\n")
         } else {
-            if (print) cat(" unknown code)\n")
+            if (print) cat(" unknown code) IGNORED\n")
         }
         N6 <- .C("uint16_le", buf[offset+N+5:6], 1L, res=integer(1))$res
         if (N6 != N + 6)
@@ -298,17 +305,18 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         tuple <- tuple + 1
     }
     res@metadata$channel <- channel
+    res@metadata$fileType <- fileType
     res@metadata$blankedSamples <- blankedSamples
     res@metadata$soundSpeed <- soundSpeed
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
-    range  <- (blankedSamples + seq(1,dim(amplitude)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
+    range  <- (blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
     res@data <- list(timeLocation=timeLocation + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude, longitude=longitude,
                      depth=range,
                      time=unlist(time) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), # FIXME
-                     amplitude=amplitude)
+                     a=a)
     res@processingLog <- processingLog(res@processingLog,
                                        paste("read.echosounder(\"", filename, "\", tz=\"", tz, "\", debug=", debug, ")", sep=""))
     res
@@ -328,6 +336,7 @@ summary.echosounder <- function(object, ...)
     cat(sprintf("* Blanked samples:     %d\n", object[["blankedSamples"]]))
     cat(sprintf("* Pings in file:       %d\n", object[["pingsInFile"]]))
     cat(sprintf("* Samples per ping:    %d\n", object[["samplesPerPing"]]))
+    cat(sprintf("* File type:           \"%s\"\n", object[["fileType"]]))
     cat("* Statistics::\n")
     dataNames <- names(object@data)
     ndata <- length(dataNames)

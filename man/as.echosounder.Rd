@@ -4,12 +4,12 @@
 \description{Coerces a dataset into a echosounder dataset.}
 
 \usage{
-as.echosounder(time, depth, amplitude, src="")
+as.echosounder(time, depth, a, src="")
 }
 \arguments{
   \item{time}{times of pings}
   \item{depth}{depths of samples within pings}
-  \item{amplitude}{matrix of amplitudes}
+  \item{a}{matrix of amplitudes}
   \item{src}{optional string indicating data source}
 }
 
