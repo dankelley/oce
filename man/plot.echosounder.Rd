@@ -12,7 +12,7 @@
      which=1, 
      newx, xlab="",
      zlim,
-     type="l", col="black", lwd=2,
+     type="l", col=oceColorsJet, lwd=2,
      despike=FALSE, drawBottom,
      adorn=NULL,
      mgp=getOption("oceMgp"),
@@ -25,13 +25,11 @@
   \item{x}{An \code{echosounder} object, e.g. as read by
       \code{\link{read.echosounder}}, or created by
       \code{\link{as.echosounder}}.}
-  \item{which}{list of desired plot types.  
-    \itemize{
-      \item \code{which=1} gives a depth-time image
-      \item \code{which=2} gives a depth-distance image
-      \item \code{which=3} gives a map showing the cruise track
-    }
-  }
+
+  \item{which}{list of desired plot types: \code{which=1} or \code{which="zt
+          image"} gives a z-time image, \code{which=2} or \code{which="zx image"}
+      gives a z-distance image, and \code{which=3} or \code{which="map"} gives
+      a map showing the cruise track.}
 
   \item{newx}{optional vector of values to appear on the horizontal axis if
       \code{which=1}, instead of time.  This must be of the same length as the
@@ -44,7 +42,9 @@
 
   \item{type}{type of graph, \code{"l"} for line, \code{"p"} for points, or
       \code{"b"} for both.}
-  \item{col}{color for line, or points}
+
+  \item{col}{colorscale for image, a function}
+
   \item{lwd}{line width (ignored if \code{type="p"})}
 
   \item{despike}{remove vertical banding by using \code{\link{smooth}} to smooth
@@ -64,6 +64,9 @@
       numerical vector to use for \code{par(mgp)}, and also for
       \code{par(mar)}, computed from this.  The default is tighter than the R
       default, in order to use more space for the data and less for the axes.}
+
+  \item{col}{color scheme to use in images.}
+
   \item{mar}{value to be used with \code{\link{par}("mar")}.} \item{debug}{set
       to an integer exceeding zero, to get debugging information during
       processing.}

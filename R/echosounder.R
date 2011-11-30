@@ -37,7 +37,7 @@ findBottom <- function(x, clean=despike) # FIXME: time, lat, lon, and then docum
     a <- x[["a"]]
     wm <- clean(apply(a, 1, which.max))
     depth <- x[["depth"]][wm]
-    list(depth=depth, time=x[["time"]], latitude=x[["latitude"]], longitude=x[["longitude"]])
+    list(depth=depth, time=x[["time"]], latitude=x[["latitude"]], longitude=x[["longitude"]], index=wm)
 }
 
 setMethod(f="plot",
@@ -45,7 +45,7 @@ setMethod(f="plot",
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
                               newx, xlab="",
                               zlim,
-                              type="l", col="black", lwd=2,
+                              type="l", col=oceColorsJet, lwd=2,
                               despike=FALSE, drawBottom,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
@@ -73,7 +73,7 @@ setMethod(f="plot",
               }
               for (w in 1:length(which)) {
                   oceDebug(debug, "this which:", which[w], "\n")
-                  if (which[w] == 1) {
+                  if (which[w] == 1 || which[w] == "zt image") {
                       time <- x[["time"]]
                       xInImage <- time
                       if (!length(time))
@@ -103,7 +103,7 @@ setMethod(f="plot",
                           imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
                                  ylim=c(-deepestWater,0),
                                  z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
-                                 col=oceColorsJet, mar=mar, ...)
+                                 col=col, mar=mar, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
@@ -119,7 +119,7 @@ setMethod(f="plot",
                           imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
                                  ylim=c(-max(abs(x[["depth"]])), 0),
                                  z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
-                                 col=oceColorsJet, mar=mar, ...)
+                                 col=col, mar=mar, ...)
                       }
                       if (newxGiven) {
                           pretty <- pretty(time)
@@ -127,9 +127,27 @@ setMethod(f="plot",
                           at <- approx(as.numeric(time), newx, as.numeric(pretty))$y
                           axis(3, at=at, labels=labels)
                       }
-                  } else if (which[w] == 2) {
-                      stop("which=2 not handled yet")
-                  } else if (which[w] == 3) { # map: optional extra arguments 'radius' and 'coastline'
+                  } else if (which[w] == 2 || which[w] == "zx image") {
+                      distance <- geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE)
+                      a <- x[["a"]]
+                      if (despike)
+                          a <- apply(a, 2, smooth)
+                      z <- log10(ifelse(a > 0, a, 1))
+                      imagep(distance, -x[["depth"]], xlab="Distance [km]", ylab="z [m]",
+                             z, zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                             col=col)
+                      if (!missing(drawBottom)) {
+                          if (is.logical(drawBottom) && drawBottom)
+                              drawBottom <- "white"
+                          b <- findBottom(x)
+                          ndistance <- length(distance)
+                          distance2 <- c(distance[1], distance, distance[ndistance])
+                          depth <- x[["depth"]][b$index]
+                          axisBottom <- par('usr')[3]
+                          depth2 <- c(axisBottom, -depth, axisBottom)
+                          polygon(distance2, depth2, col=drawBottom)
+                      }
+                  } else if (which[w] == 3 || which[w] == "map") { # map: optional extra arguments 'radius' and 'coastline'
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
                       asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
@@ -297,7 +315,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 break
             }
         } else if (code1 == 0x11) {
-            if (print) cat(" navigation string) ... ignored\n")
+            if (print) cat(" navigation string) IGNORED\n")
         } else if (code1 == 0x12) {
             channelNumber <- c(channelNumber, .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res)
             blankedSamples <- .C("uint16_le", buf[offset+20+1:2], 1L, res=integer(1))$res
@@ -330,7 +348,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x1c) {
             warning("cannot handle dual-beam ping")
         } else if (code1 == 0x32) {
-            if (print) cat(" bottom pick)")
+            if (print) cat(" bottom pick) ")
             ##thisChannel <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             ##thisPing <- .C("uint16_le", buf[offset+4+1:2], 1L, res=integer(1))$res
             foundBottom <- .C("uint16_le", buf[offset+14+1:2], 1L, res=integer(1))$res
@@ -338,12 +356,16 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
                 binBottom <- readBin(buf[offset+16+1:4], "integer", size=4, n=1, endian="little")
                 ##timeBottom <- c(timeBottom, readBin(buf[offset+10+1:4], "integer", size=4, n=1, endian="little") / 1000)
                 timeBottom <- c(timeBottom, timeLast) ## FIXME: maybe should use the elapsed time (as in prev line)
-                if (print) cat(timeLast, " bin ", binBottom, "\n")
+                if (print) cat(" bin ", binBottom, "... this value not used in oce package\n")
             } else {
                 if (print) cat(" could not find bottom\n")
             }
         } else if (code1 == 0x36) {
             if (print) cat(" extended channel descriptor) IGNORED\n")
+        } else if (code1 == 0x33) {
+            if (print) cat(" single echo tuple) IGNORED ... see p26 of DT4_format_2010.pdf\n")
+        } else if (code1 == 0x1D) {
+            if (print) cat(" split-beam tuple) IGNORED ... see p8 of DT4_format_2010.pdf\n")
         } else {
             if (print) cat(" unknown code) IGNORED\n")
         }

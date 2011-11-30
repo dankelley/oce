@@ -10,7 +10,6 @@
 \title{Class to store echosounder data}
 
 \description{Class to store echosounder data, with standard slots
-
     \code{metadata}, \code{data} and \code{processingLog}. The \code{data} slot
     is a list containing
 
@@ -18,7 +17,7 @@
 
         \item An infrequently updated record of the intrument position, in
         \code{timeSlow}, \code{latitudeSlow} and \code{longitudeSlow}.   These
-        are used in plotting maps.
+        are used in plotting maps with \code{\link{plot.echosounder}}.
       
         \item An interpolated record of the instrument position, in
         \code{time}, \code{latitude}, and \code{longitude}.  Linear
