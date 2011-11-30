@@ -37,9 +37,7 @@ findBottom <- function(x, clean=despike) # FIXME: time, lat, lon, and then docum
     a <- x[["a"]]
     wm <- clean(apply(a, 1, which.max))
     depth <- x[["depth"]][wm]
-    list(depth=depth, time=x[["time"]])
-#         latitude=x[["latitudePing"]],
-#         longitude=x[["longitudePing"]]) # FIXME: these lat and long not yet defined
+    list(depth=depth, time=x[["time"]], latitude=x[["latitude"]], longitude=x[["longitude"]])
 }
 
 setMethod(f="plot",
@@ -227,7 +225,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     ##   ￼0xFFFE ￼End of File
     tuple <- 1
     offset <- 0
-    timeLocation <- latitude <- longitude <- NULL
+    timeSlow <- latitudeSlow <- longitudeSlow <- NULL # accumulate using c() because length unknown
     timeLast <- 0
     first <- TRUE
     scan <- 1
@@ -288,9 +286,9 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
         } else if (code1 == 0x0e) { # position
             lat <- readBin(buf[offset + 4 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
             lon <- readBin(buf[offset + 8 + 1:4], "integer", endian="little", size=4, n=1) / 6e6
-            latitude <- c(latitude, lat)
-            longitude <- c(longitude, lon)
-            timeLocation <- c(timeLocation, timeLast)
+            latitudeSlow <- c(latitudeSlow, lat)
+            longitudeSlow <- c(longitudeSlow, lon)
+            timeSlow <- c(timeSlow, timeLast)
             if (print) cat(" position)", lat, "N", lon, "E\n")
         } else if (code2 == 0xff) {
             if (tuple == 1) {
@@ -363,12 +361,40 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
     range  <- rev(blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
-    res@data <- list(timeLocation=timeLocation + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
-                     latitude=latitude, longitude=longitude,
+
+    time <- as.numeric(time)
+
+    ## interpolate to "fast" latitude and longitude, after extending to ensure spans
+    ## enclose the ping times.
+    n <- length(latitudeSlow)
+    t <- c(2*timeSlow[1]-timeSlow[2], timeSlow, 2*timeSlow[n] - timeSlow[n-1])
+    approx2 <- function(x, y, xout)
+    {
+        nx <- length(x)
+        nxout <- length(xout)
+        before <- y[1] + (y[2] - y[1]) * (xout[1] - x[1]) / (x[2] - x[1])
+        after <- y[n-1] + (y[n] - y[n-1]) * (xout[nxout] - x[n-1]) / (x[n] - x[n-1])
+        approx(c(xout[1], x, xout[nxout]), c(before, y, after), xout)$y
+    }
+    latitude <- approx2(timeSlow, latitudeSlow, time)
+    longitude <- approx2(timeSlow, longitudeSlow, time)
+
+    ## TEST:
+    ## par(mfrow=c(2,1))
+    ## plot(timeSlow[1:5], latitudeSlow[1:5])
+    ## lines(time, latitude)
+    ## plot(timeSlow[length(latitudeSlow)+(-5:0)], latitudeSlow[length(latitudeSlow)+(-5:0)])
+    ## lines(time, latitude)
+
+    res@data <- list(timeSlow=timeSlow+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
+                     latitudeSlow=latitudeSlow,
+                     longitudeSlow=longitudeSlow,
                      depth=range,
-                     time=unlist(time) + as.POSIXct("1970-01-01 00:00:00", tz="UTC"), # FIXME
+                     time=time+as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
+                     latitude=latitude,
+                     longitude=longitude,
                      a=a)
-    if (!is.null(timeBottom) && !is.null(rangeBottom)) {
+    if (!is.null(timeBottom) && !is.null(rangeBottom)) { # FIXME: not documented, or used
         res@data$timeBottom <- timeBottom
         res@data$rangeBottom <- rangeBottom
     }

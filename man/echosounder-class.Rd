@@ -10,16 +10,33 @@
 \title{Class to store echosounder data}
 
 \description{Class to store echosounder data, with standard slots
-    \code{metadata}, \code{data} and \code{processingLog}. The \code{data} slot is a list containing
+
+    \code{metadata}, \code{data} and \code{processingLog}. The \code{data} slot
+    is a list containing
+
     \itemize{
-        \item \code{timeLocation}, the POSIX times at which location data are available
-        \item \code{latitude}, latitude of location
-        \item \code{longitude}, longitude of location
-        \item \code{depth}, vector of depths of samples (meausured positive downwards in the water column)
-        \item \code{time}, vector of POSIXct times of samples
-        \item \code{a}, matrix of samples, with first dimension
-        matching length of \code{time} and second dimension matching length of
-        \code{depth}.
+
+        \item An infrequently updated record of the intrument position, in
+        \code{timeSlow}, \code{latitudeSlow} and \code{longitudeSlow}.   These
+        are used in plotting maps.
+      
+        \item An interpolated record of the instrument position, in
+        \code{time}, \code{latitude}, and \code{longitude}.  Linear
+        interpolation is used to infer the latitude and longitude from the
+        variables listed above.
+        
+        \item \code{depth}, vector of depths of echo samples (measured positive
+        downwards in the water column).  This is calculated from the
+        inter-sample time interval and the sound speed provided as the
+        \code{soundSpeed} argument to \code{\link{read.echosounder}}, so
+        altering the value of the latter will alter the echosounder plots
+        provided by \code{\link{plot.echosounder}}.
+
+        \item The echosounder signal amplitude \code{a}, a matrix with number
+        of rows equal to the length of \code{time}, etc., and number of columns
+        equal to the length of \code{depth}.  Thus, for example, \code{a[100,]}
+        represents the depth-dependent amplitude at the time of the 100th ping.
+
     }
 }
 
