@@ -37,7 +37,7 @@ findBottom <- function(x, clean=despike) # FIXME: time, lat, lon, and then docum
     a <- x[["a"]]
     wm <- clean(apply(a, 1, which.max))
     depth <- x[["depth"]][wm]
-    list(depth=depth, time=x[["time"]], latitude=x[["latitude"]], longitude=x[["longitude"]], index=wm)
+    list(time=x[["time"]], depth=depth, index=wm)
 }
 
 setMethod(f="plot",
@@ -93,7 +93,7 @@ setMethod(f="plot",
                       }
                       if (despike)
                           a <- apply(a, 2, smooth)
-                      z <- log10(ifelse(a > 0, a, 1))
+                      z <- log10(ifelse(a > 1, a, 1)) # FIXME: make an argument for this '1'
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
@@ -132,7 +132,7 @@ setMethod(f="plot",
                       a <- x[["a"]]
                       if (despike)
                           a <- apply(a, 2, smooth)
-                      z <- log10(ifelse(a > 0, a, 1))
+                      z <- log10(ifelse(a > 1, a, 1)) # FIXME: make an argument for this '1'
                       imagep(distance, -x[["depth"]], xlab="Distance [km]", ylab="z [m]",
                              z, zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                              col=col)

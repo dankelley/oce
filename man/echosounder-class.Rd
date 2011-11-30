@@ -63,7 +63,9 @@
     created with \code{\link{as.echosounder}}.
   
   Statistical summaries are provided by \code{\link{summary.echosounder}},
-  while \code{\link{show}} displays an overview.
+  while \code{\link{show}} displays an overview.  The \code{\link{findBottom}}
+  function infers the ocean bottom from tracing the strongest reflector from
+  ping to ping.
   
   Echosounder objects may be plotted with \code{\link{plot.echosounder}}.
 

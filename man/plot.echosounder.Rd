@@ -29,7 +29,9 @@
   \item{which}{list of desired plot types: \code{which=1} or \code{which="zt
           image"} gives a z-time image, \code{which=2} or \code{which="zx image"}
       gives a z-distance image, and \code{which=3} or \code{which="map"} gives
-      a map showing the cruise track.}
+      a map showing the cruise track.  In the image plots, the display is of
+      \code{\link{log10}} of amplitude, trimmed to zero for any amplitude
+      values less than 1 (including missing values, which equal 0).}
 
   \item{newx}{optional vector of values to appear on the horizontal axis if
       \code{which=1}, instead of time.  This must be of the same length as the
@@ -64,8 +66,6 @@
       numerical vector to use for \code{par(mgp)}, and also for
       \code{par(mar)}, computed from this.  The default is tighter than the R
       default, in order to use more space for the data and less for the axes.}
-
-  \item{col}{color scheme to use in images.}
 
   \item{mar}{value to be used with \code{\link{par}("mar")}.} \item{debug}{set
       to an integer exceeding zero, to get debugging information during
