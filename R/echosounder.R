@@ -32,6 +32,16 @@ as.echosounder <- function(time, depth, a, src="") # FIXME change this, when rea
     res
 }
 
+findBottom <- function(x, clean=despike) # FIXME: time, lat, lon, and then document (incl. for bathy!)
+{
+    a <- x[["a"]]
+    wm <- clean(apply(a, 1, which.max))
+    depth <- x[["depth"]][wm]
+    list(depth=depth, time=x[["time"]])
+#         latitude=x[["latitudePing"]],
+#         longitude=x[["longitudePing"]]) # FIXME: these lat and long not yet defined
+}
+
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
@@ -89,17 +99,15 @@ setMethod(f="plot",
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
-                          ##wm <- runmed(apply(a, 1, which.max), 5)
-                          wm <- oce::despike(apply(a, 1, which.max))
+                          waterDepth <- findBottom(x)$depth
                           axisBottom <- par('usr')[3]
-                          waterDepth <- -rev(x[["depth"]])[wm]
                           deepestWater <- max(abs(waterDepth))
-                          imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
+                          imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
                                  ylim=c(-deepestWater,0),
                                  z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
                                  col=oceColorsJet, mar=mar, ...)
                           axisBottom <- par('usr')[3]
-                          waterDepth <- c(axisBottom, waterDepth, axisBottom)
+                          waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
                           if (newxGiven) {
                               newx2 <- approx(as.numeric(time), newx, as.numeric(time))$y
@@ -110,7 +118,7 @@ setMethod(f="plot",
                               polygon(time2, waterDepth, col=drawBottom)
                           }
                       } else {
-                          imagep(xInImage, y=-rev(x[["depth"]]), xlab=xlab, ylab="z [m]",
+                          imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
                                  ylim=c(-max(abs(x[["depth"]])), 0),
                                  z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
                                  col=oceColorsJet, mar=mar, ...)
@@ -354,7 +362,7 @@ read.echosounder <- function(file, channel=1, soundSpeed=swSoundSpeed(35, 10, 50
     res@metadata$samplingDeltat <- channelDeltat[1] # nanoseconds
     res@metadata$pingsInFile <- pingsInFile
     res@metadata$samplesPerPing <- samplesPerPing
-    range  <- (blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
+    range  <- rev(blankedSamples + seq(1,dim(a)[2])) * res@metadata$soundSpeed * res@metadata$samplingDeltat / 2
     res@data <- list(timeLocation=timeLocation + as.POSIXct("1970-01-01 00:00:00", tz="UTC"),
                      latitude=latitude, longitude=longitude,
                      depth=range,
