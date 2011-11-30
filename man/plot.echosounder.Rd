@@ -66,10 +66,17 @@
       default, in order to use more space for the data and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.} \item{debug}{set
       to an integer exceeding zero, to get debugging information during
-      processing.} \item{\dots}{optional arguments passed to plotting
-      functions.} }
+      processing.}
 
-\details{FIXME: add more here}
+  \item{\dots}{optional arguments passed to plotting
+      functions.  For example, for maps, it is possible to specify the radius
+      of the view in kilometres, with \code{radius}.}
+
+}
+
+\details{Simple linear approximation is used when a \code{newx} value is
+    specifie with the \code{which=2} method, but arguably a gridding method
+    should be used, and this may be added in the future.}
 
 \seealso{The documentation for \code{\link{echosounder-class}} explains the
     structure of echosounder objects, and also outlines the other functions
