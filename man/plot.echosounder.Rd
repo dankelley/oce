@@ -11,7 +11,7 @@
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
      newx, xlab="",
-     zlim,
+     xlim, ylim, zlim,
      type="l", col=oceColorsJet, lwd=2,
      despike=FALSE, drawBottom,
      adorn=NULL,
@@ -39,6 +39,10 @@
       \code{\link{approx}}.}
 
   \item{xlab}{label for horizontal axis.}
+
+  \item{xlim}{optional range for x axis.}
+
+  \item{ylim}{optional range for y axis.}
 
   \item{zlim}{optional range for colorscale.}
 

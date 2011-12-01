@@ -27,12 +27,14 @@
 \arguments{
 
   \item{x,y}{locations of grid lines along which values of \code{z} are
-      measured.   The values must be finite, non-missing, and in increasing
-      order.  By default, equally spaced values from 0 to 1 are used. If
-      \code{x} is a list, its components \code{x$x} and \code{x$y} are used for
-      \code{x} and \code{y}, respectively. If the list has component \code{z}
-      this is used for \code{z}. (NOTE: these arguments are meant to mimic
-      those of \code{\link{image}}, which explains the same description here.)}
+      measured.   The values must be finite, non-missing, and distinct.  If
+      they are out of order, they will be ordered (and the \code{z} data will
+      be similarly ordered).  By default, equally spaced values from 0 to 1 are
+      used. If \code{x} is a list, its components \code{x$x} and \code{x$y} are
+      used for \code{x} and \code{y}, respectively. If the list has component
+      \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
+      mimic those of \code{\link{image}}, which explains the same description
+      here.)}
 
   \item{z}{a matrix containing the values to be plotted (NAs are allowed). Note
       that x can be used instead of z for convenience. (NOTE: these arguments

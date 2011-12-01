@@ -44,7 +44,7 @@ setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
                               newx, xlab="",
-                              zlim,
+                              xlim, ylim, zlim,
                               type="l", col=oceColorsJet, lwd=2,
                               despike=FALSE, drawBottom,
                               adorn=NULL,
@@ -96,7 +96,7 @@ setMethod(f="plot",
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth))
                           imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
-                                 ylim=c(-deepestWater,0),
+                                 ylim=if(missing(ylim)) c(-deepestWater,0) else ylim,
                                  z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
                                  col=col, mar=mar, ...)
                           axisBottom <- par('usr')[3]
@@ -112,7 +112,7 @@ setMethod(f="plot",
                           }
                       } else {
                           imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
-                                 ylim=c(-max(abs(x[["depth"]])), 0),
+                                 ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
                                  z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
                                  col=col, mar=mar, ...)
                       }
