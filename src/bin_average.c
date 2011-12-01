@@ -1,4 +1,5 @@
 #include <R.h>
+#include <Rdefines.h>
 #include <Rinternals.h>
 
 /*
@@ -22,7 +23,7 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     if (*nx < 1)
         error("invalid vector length (%d)", *nx);
     if (*xmin >= *xmax)
-        error("cannot have xmin (%f) larger than or equal to xmax (%f)", *xmin, *xmax);
+        error("xmin (%f) may not exceed xmax (%f)", *xmin, *xmax);
     if (*xinc <= 0)
         error("cannot have non-positive xinc (%f)", *xinc);
     // 'b' stands for bin

@@ -7,6 +7,7 @@ findInOrdered <- function(x, f)
         stop("'f' missing")
     .Call("bisect", x, f)
 }
+
 filterSomething <- function(x, filter)
 {
     if (is.raw(x)) {
@@ -43,7 +44,6 @@ smoothSomething <- function(x, ...)
     res
 }
 
-
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
@@ -62,7 +62,9 @@ binAverage <- function(x, y, xmin, xmax, xinc)
     if (nb < 1)
         stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
     xx <- seq(xmin, xmax-xinc, xinc) + xinc / 2
-    yy <- .C("bin_average", length(x), as.double(x), as.double(y), xmin, xmax, xinc, means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
+    yy <- .C("bin_average", length(x), as.double(x), as.double(y),
+             as.double(xmin), as.double(xmax), as.double(xinc),
+             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
     list(x=xx, y=yy)
 }
 
@@ -951,8 +953,6 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         stop("method is only for oce objects")
     oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
-    warning("FIXME decimate() not doing anything yet")
-    return(res)
     do.filter <- !missing(filter)
     if (missing(to))
         to <- length(x@data$time[[1]])
@@ -960,8 +960,11 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     oceDebug(debug, vectorShow(select, "select:"))
     if (inherits(x, "adp")) {
         oceDebug(debug, "decimate() on an ADP object\n")
+        warning("decimate(adp) not working yet ... just returning the adp unchanged")
+        return(res) # FIXME
         nbeam <- dim(x@data$v)[3]
         for (name in names(x@data)) {
+            oceDebug(debug, "decimating item named '", name, "'\n")
             if ("distance" == name)
                 next
             if ("time" == name) {
@@ -981,9 +984,10 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 }
             } else if (is.array(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
+                print(dim)
                 for (k in 1:dim[2]) {
-                    for (j in 1: dim[3]) {
-                        oceDebug(debug, "subsetting x@data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
+                    for (j in 1:dim[3]) {
+                        oceDebug(debug, "subsetting x@data[[", name, "]][", j, ",", k, "], which is an array\n", sep="")
                         if (do.filter)
                             res@data[[name]][,j,k] <- filterSomething(x@data[[name]][,j,k], filter)
                         res@data[[name]][,j,k] <- res@data[[name]][,j,k][select]
@@ -1033,6 +1037,18 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             stop("cannot (yet) filter pt data during decimation") # FIXME
         for (name in names(res@data))
             res@data[[name]] <- x@data[[name]][select]
+    } else if (inherits(x, "echosounder")) {
+        oceDebug(debug, "decimate() on an 'echosounder' object\n")
+        ## use 'by', ignoring 'to' and filter'
+        if (length(by) != 2)
+            stop("length(by) must equal 2.  First element is width of boxcar in pings, second is width in depths")
+        byPing <- by[1]
+        byDepth <- by[2]
+        depth <- x[["depth"]]
+        ndepth <- length(depth)
+        depth2 <- binAverage(1:ndepth, depth, 1, ndepth, byDepth)
+        stop("FIXME JUST TESTING decimation of echosounder -- CODE IN DEVELOPMENT")
+        ## do depth, rows of matrix, time, cols of matrix
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }

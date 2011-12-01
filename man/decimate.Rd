@@ -1,7 +1,7 @@
 \name{decimate}
 \alias{decimate}
-\title{Decimate an oce object}
-\description{Decimate, or subsample, an oce object.}
+\title{Smooth and decimate an oce object}
+\description{Smooth and decimate, or subsample, an oce object.}
 \usage{decimate(x, by=10, to, filter, debug=getOption("oceDebug"))}
 \arguments{
   \item{x}{an \code{oce} object containing a \code{data} element.}
@@ -22,6 +22,9 @@
   \code{\link{ctdDecimate}} will be retired in favour of this, a more
   general, function.  The filtering is done with the
   \code{\link{filter}} function of the stats package.}
+
+\section{Bugs}{This does not work!  It is just a placeholder for an envisioned
+    function of this name.}
 
 \value{An object of \code{\link[base]{class}} \code{"oce"} that has been
   subsampled appropriately.}
