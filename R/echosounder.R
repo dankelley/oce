@@ -97,10 +97,13 @@ setMethod(f="plot",
                           waterDepth <- findBottom(x, ignore=ignore, ...)$depth
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth))
-                          imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
-                                 ylim=if(missing(ylim)) c(-deepestWater,0) else ylim,
-                                 z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
-                                 col=col, mar=mar, ...)
+                          imagep(xInImage, y=-x[["depth"]], z=z,
+                                 xlab=xlab, ylab="z [m]",
+                                 xlim=xlim,
+                                 ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
+                                 zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                                 col=col,
+                                 mgp=mgp, mar=mar, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
@@ -113,10 +116,13 @@ setMethod(f="plot",
                               polygon(time2, waterDepth, col=drawBottom)
                           }
                       } else {
-                          imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
+                          imagep(xInImage, y=-x[["depth"]], z=z,
+                                 xlab=xlab, ylab="z [m]",
+                                 xlim=xlim,
                                  ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
-                                 z=z, zlim=if(missing(zlim)) c(0, max(z)) else zlim,
-                                 col=col, mar=mar, ...)
+                                 zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                                 col=col,
+                                 mgp=mgp, mar=mar, ...)
                       }
                       if (newxGiven) {
                           pretty <- pretty(time)
