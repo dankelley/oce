@@ -644,6 +644,28 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             rval@data[[i]] <- x@data[[i]][r]
         }
         names(rval@data) <- names(x@data)
+    } else if (inherits(x, "echosounder")) {
+        subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+        oceDebug(debug, "subsetString='", subsetString, "'\n")
+        if (length(grep("time", subsetString))) {
+            oceDebug(debug, "subsetting an echosounder object by time\n")
+            keep <- eval(substitute(subset), x@data, parent.frame())
+            rval <- x
+            rval[["time"]] <- rval[["time"]][keep]
+            rval[["latitude"]] <- rval[["latitude"]][keep]
+            rval[["longitude"]] <- rval[["longitude"]][keep]
+            rval[["time"]] <- rval[["time"]][keep]
+            rval[["a"]] <- rval[["a"]][keep,]
+            warning("only subsetting ping-based data, not timeSlow, latitudeSlow or longitudeSlow")
+        } else if (length(grep("depth", subsetString))) {
+            oceDebug(debug, "subsetting an echosounder object by depth\n")
+            keep <- eval(substitute(subset), x@data, parent.frame())
+            rval <- x
+            rval[["depth"]] <- rval[["depth"]][keep]
+            rval[["a"]] <- rval[["a"]][,keep]
+        } else {
+            stop("can only subset an echosounder object by 'time' or 'depth'")
+        }
     } else {
         if (isS4(x)) {
             r <- eval(substitute(subset), x@data, parent.frame())
