@@ -1,4 +1,4 @@
-## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
+#/# vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 setMethod(f="initialize",
           signature="echosounder",
@@ -86,10 +86,7 @@ setMethod(f="plot",
                               stop("length of 'newx' must match that of time within the object")
                           if (any(diff(order(newx))<0))
                               stop("cannot handle misordered newx (FIXME)")
-                          ndepth <- dim(a)[2]
-                          for (i in 1:ndepth)
-                              a[,i] <- approx(oce::rescale(t), a[,i], oce::rescale(newx))$y
-                          xInImage <- newx
+                         xInImage <- newx
                       }
                       if (despike)
                           a <- apply(a, 2, smooth)
