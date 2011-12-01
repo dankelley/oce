@@ -81,9 +81,9 @@
       to an integer exceeding zero, to get debugging information during
       processing.}
 
-  \item{\dots}{optional arguments passed to plotting
-      functions.  For example, for maps, it is possible to specify the radius
-      of the view in kilometres, with \code{radius}.}
+  \item{\dots}{optional arguments passed to plotting functions.  For example,
+      for maps, it is possible to specify the radius of the view in kilometres,
+      with \code{radius}.}
 
 }
 

@@ -32,11 +32,11 @@ as.echosounder <- function(time, depth, a, src="") # FIXME change this, when rea
     res
 }
 
-findBottom <- function(x, ignore=5, clean=despike, ...) # FIXME: time, lat, lon, and then document (incl. for bathy!)
+findBottom <- function(x, ignore=5, clean=despike)
 {
     a <- x[["a"]]
     keep <- x[["depth"]] >= ignore
-    wm <- clean(apply(a[,keep], 1, which.max), ...)
+    wm <- clean(apply(a[,keep], 1, which.max))
     depth <- x[["depth"]][wm]
     list(time=x[["time"]], depth=depth, index=wm)
 }
@@ -94,7 +94,7 @@ setMethod(f="plot",
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
-                          waterDepth <- findBottom(x, ignore=ignore, ...)$depth
+                          waterDepth <- findBottom(x, ignore=ignore)$depth
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth))
                           imagep(xInImage, y=-x[["depth"]], z=z,
@@ -145,7 +145,7 @@ setMethod(f="plot",
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
-                          b <- findBottom(x, ignore=ignore, ...)
+                          b <- findBottom(x, ignore=ignore)
                           ndistance <- length(distance)
                           distance2 <- c(distance[1], distance, distance[ndistance])
                           depth <- x[["depth"]][b$index]
