@@ -32,11 +32,11 @@ as.echosounder <- function(time, depth, a, src="") # FIXME change this, when rea
     res
 }
 
-findBottom <- function(x, ignore=5, clean=despike) # FIXME: time, lat, lon, and then document (incl. for bathy!)
+findBottom <- function(x, ignore=5, clean=despike, ...) # FIXME: time, lat, lon, and then document (incl. for bathy!)
 {
     a <- x[["a"]]
     keep <- x[["depth"]] >= ignore
-    wm <- clean(apply(a[,keep], 1, which.max))
+    wm <- clean(apply(a[,keep], 1, which.max), ...)
     depth <- x[["depth"]][wm]
     list(time=x[["time"]], depth=depth, index=wm)
 }
@@ -47,7 +47,8 @@ setMethod(f="plot",
                               newx, xlab="",
                               xlim, ylim, zlim,
                               type="l", col=oceColorsJet, lwd=2,
-                              despike=FALSE, drawBottom,
+                              despike=FALSE,
+                              drawBottom, ignore=5,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
@@ -93,7 +94,7 @@ setMethod(f="plot",
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
-                          waterDepth <- findBottom(x)$depth
+                          waterDepth <- findBottom(x, ignore=ignore, ...)$depth
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth))
                           imagep(xInImage, y=-x[["depth"]], xlab=xlab, ylab="z [m]",
@@ -138,7 +139,7 @@ setMethod(f="plot",
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
-                          b <- findBottom(x)
+                          b <- findBottom(x, ignore=ignore, ...)
                           ndistance <- length(distance)
                           distance2 <- c(distance[1], distance, distance[ndistance])
                           depth <- x[["depth"]][b$index]
