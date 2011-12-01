@@ -64,6 +64,20 @@ imagep <- function(x, y, z,
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
 
+    ## ensure that x and y increase (BUT, for now, no check on equal values, and also no xlim reversals FIXME)
+    ox <- order(x)
+    if (any(diff(ox) < 0)) {
+        warning("reordered some x values")
+        x <- x[ox]
+        z <- z[ox, ]
+    }
+    oy <- order(y)
+    if (any(diff(oy) < 0)) {
+        warning("reordered some x values")
+        y <- y[oy]
+        z <- z[,oy]
+    }
+
     omai <- par("mai")
     omar <- par("mar")
     ocex <- par("cex")
