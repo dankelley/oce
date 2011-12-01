@@ -84,8 +84,6 @@ setMethod(f="plot",
                           t <- as.numeric(time)
                           if (length(newx) != length(t))
                               stop("length of 'newx' must match that of time within the object")
-                          if (any(diff(order(newx))<0))
-                              stop("cannot handle misordered newx (FIXME)")
                          xInImage <- newx
                       }
                       if (despike)
