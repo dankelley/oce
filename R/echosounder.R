@@ -128,8 +128,10 @@ setMethod(f="plot",
                           axis(3, at=at, labels=labels)
                       }
                   } else if (which[w] == 2 || which[w] == "zx image") {
-                      distance <- geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE)
-                      distance <- distance + rnorm(length(distance), sd=1e-6) # jitter by 1mm to avoid zero diff
+                      latitude <- x[["latitude"]]
+                      longitude <- x[["longitude"]]
+                      jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
+                      distance <- geodDist(jitter + latitude, longitude, alongPath=TRUE)
                       a <- x[["a"]]
                       if (despike)
                           a <- apply(a, 2, smooth)
