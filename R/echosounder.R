@@ -32,10 +32,11 @@ as.echosounder <- function(time, depth, a, src="") # FIXME change this, when rea
     res
 }
 
-findBottom <- function(x, clean=despike) # FIXME: time, lat, lon, and then document (incl. for bathy!)
+findBottom <- function(x, ignore=5, clean=despike) # FIXME: time, lat, lon, and then document (incl. for bathy!)
 {
     a <- x[["a"]]
-    wm <- clean(apply(a, 1, which.max))
+    keep <- x[["depth"]] >= ignore
+    wm <- clean(apply(a[,keep], 1, which.max))
     depth <- x[["depth"]][wm]
     list(time=x[["time"]], depth=depth, index=wm)
 }

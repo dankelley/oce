@@ -13,7 +13,8 @@
      newx, xlab="",
      xlim, ylim, zlim,
      type="l", col=oceColorsJet, lwd=2,
-     despike=FALSE, drawBottom,
+     despike=FALSE,
+     drawBottom, ignore=5,
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -60,8 +61,13 @@
       then the bottom is inferred as a smoothed version of the ridge of highest
       image value, and data below that are whited out after the image is drawn.
       If \code{drawBottom} is a colour, then that colour is used, instead of
-      white.}
-      
+      white.  The bottom is detected with \code{\link{findBottom}}, using the
+      \code{ignore} value described next.}
+
+  \item{ignore}{optional flag specifying the thickness in metres of a surface
+      region to be ignored during the bottom-detection process.  This is
+      ignored unless \code{drawBottom=TRUE}.}
+
   \item{adorn}{list of expressions to be executed for the panels in turn, e.g.
       to adorn the plots.  If the number matches the number of panels, then the
       strings are applied to the appropriate panels, as they are drawn from

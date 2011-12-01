@@ -3,10 +3,11 @@
 \title{Find the ocean bottom in an echosounder object}
 \description{Find the ocean bottom in an echosounder object}
 
-\usage{findBottom(x, clean=despike)}
+\usage{findBottom(x, ignore=5, clean=despike)}
 
 \arguments{
   \item{x}{an object of class \code{echosounder}}
+  \item{ignore}{number of metres of data to ignore, near the surface}
   \item{clean}{a function to clean the inferred depth of spikes}
 }
 
