@@ -129,6 +129,7 @@ setMethod(f="plot",
                       }
                   } else if (which[w] == 2 || which[w] == "zx image") {
                       distance <- geodDist(x[["latitude"]], x[["longitude"]], alongPath=TRUE)
+                      distance <- distance + rnorm(length(distance), sd=1e-6) # jitter by 1mm to avoid zero diff
                       a <- x[["a"]]
                       if (despike)
                           a <- apply(a, 2, smooth)
