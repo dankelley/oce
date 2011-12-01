@@ -128,7 +128,7 @@ setMethod(f="plot",
                           pretty <- pretty(time)
                           labels <- format(pretty, format="%H:%M:%S")
                           at <- approx(as.numeric(time), newx, as.numeric(pretty))$y
-                          axis(3, at=at, labels=labels)
+                          axis(3, at=at, labels=labels, cex.axis=par('cex'))
                       }
                   } else if (which[w] == 2 || which[w] == "zx image") {
                       latitude <- x[["latitude"]]
