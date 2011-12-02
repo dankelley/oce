@@ -61,7 +61,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
     nb <- floor(1 + (xmax - xmin) / xinc)
     if (nb < 1)
         stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
-    xx <- seq(xmin, xmax-xinc, xinc) + xinc / 2
+    xx <- seq(xmin, xmax, xinc) + xinc / 2
     yy <- .C("bin_average", length(x), as.double(x), as.double(y),
              as.double(xmin), as.double(xmax), as.double(xinc),
              means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
@@ -1050,26 +1050,22 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             stop("length(by) must equal 2.  First element is width of boxcar in pings, second is width in depths")
         by <- as.integer(by)
         byPing <- by[1]
-        if (0 == byPing%%2) {
-            warning("increasing byPing to make it an odd number")
-            byPing <- byPing + 1
-        }
+        kPing <- as.integer(by[1])
+        if (0 == kPing%%2)
+            kPing <- kPing + 1
         byDepth <- by[2]
-        if (0 == byDepth%%2) {
-            warning("increasing byDepth to make it an odd number")
-            byDepth <- byDepth + 1
-        }
+        kDepth <- as.integer(by[2])
+        if (0 == kDepth%%2)
+            kDepth <- kDepth + 1
         if (byDepth > 1) {
             depth <- x[["depth"]]
             a <- x[["a"]]
-            nrow <- nrow(a)
             ncol <- ncol(a)
-            ncol2 <- floor(1+(ncol-1)/byDepth)
             ii <- 1:ncol
             depth2 <- binAverage(ii, depth, 1, ncol, byDepth)$y
-            a2 <- matrix(nrow=nrow, ncol=ncol2)
+            a2 <- matrix(nrow=nrow(a), ncol=length(depth2))
             for (r in 1:nrow) {
-                a2[r,] <- binAverage(ii, runmed(a[r,], byDepth), 1, ncol, byDepth)$y
+                a2[r,] <- binAverage(ii, runmed(a[r,], kDepth), 1, ncol, byDepth)$y
             }
             res <- x
             res[["depth"]] <- depth2
@@ -1080,14 +1076,11 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             time <- x[["time"]]
             a <- x[["a"]]
             nrow <- nrow(a)
-            ncol <- ncol(a)
-            ## FIXME dammit
-            nrow2 <- floor(1+(nrow-1)/byPing)
             jj <- 1:nrow
             time2 <- time[seq.int(1, nrow, by=byPing)]
-            a2 <- matrix(nrow=nrow2, ncol=ncol)
+            a2 <- matrix(nrow=length(time2), ncol=ncol(a))
             for (c in 1:ncol)
-                a2[,c] <- binAverage(jj, runmed(a[,c], byPing), 1, nrow, byPing)$y
+                a2[,c] <- binAverage(jj, runmed(a[,c], kPing), 1, nrow, byPing)$y
             res <- x
             res[["time"]] <- time2
             res[["latitude"]] <- binAverage(ii, x[["latitude"]], 1, ncol, byPing)$y
