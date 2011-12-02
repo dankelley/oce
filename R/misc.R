@@ -1044,10 +1044,37 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             stop("length(by) must equal 2.  First element is width of boxcar in pings, second is width in depths")
         byPing <- by[1]
         byDepth <- by[2]
-        depth <- x[["depth"]]
-        ndepth <- length(depth)
-        depth2 <- binAverage(1:ndepth, depth, 1, ndepth, byDepth)
-        stop("FIXME JUST TESTING decimation of echosounder -- CODE IN DEVELOPMENT")
+        if (byDepth > 1) {
+            depth <- x[["depth"]]
+            a <- x[["a"]]
+            nrow <- nrow(a)
+            ncol <- ncol(a)
+            ncol2 <- ncol / byDepth
+            ii <- 1:ncol
+            depth2 <- binAverage(ii, depth, 1, ncol, byDepth)$y
+            a2 <- matrix(nrow=nrow, ncol=ncol2)
+            for (r in 1:nrow)
+                a2[r,] <- binAverage(ii, runmed(a[r,], byDepth), 1, ncol, byDepth)$y
+            res <- x
+            res[["depth"]] <- depth2
+            res[["a"]] <- a2
+            x <- res # need for next step
+        }
+        if (byPing > 1) {
+            time <- x[["time"]]
+            a <- x[["a"]]
+            nrow <- nrow(a)
+            ncol <- ncol(a)
+            nrow2 <- nrow / byPing
+            jj <- 1:nrow
+            time2 <- time[seq.int(1, nrow, by=byPing)]
+            a2 <- matrix(nrow=nrow2, ncol=ncol)
+            for (c in 1:ncol)
+                a2[,c] <- binAverage(jj, runmed(a[,c], byPing), 1, nrow, byPing)$y
+            res <- x
+            res[["time"]] <- time2
+            res[["a"]] <- a2
+        }
         ## do depth, rows of matrix, time, cols of matrix
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
