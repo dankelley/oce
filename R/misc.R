@@ -58,7 +58,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
         stop("must have xmax > xmin")
     if (xinc <= 0)
         stop("must have xinc > 0")
-    nb <- floor((xmax - xmin) / xinc)
+    nb <- floor(1 + (xmax - xmin) / xinc)
     if (nb < 1)
         stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
     xx <- seq(xmin, xmax-xinc, xinc) + xinc / 2
@@ -1048,19 +1048,29 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         ## use 'by', ignoring 'to' and filter'
         if (length(by) != 2)
             stop("length(by) must equal 2.  First element is width of boxcar in pings, second is width in depths")
+        by <- as.integer(by)
         byPing <- by[1]
+        if (0 == byPing%%2) {
+            warning("increasing byPing to make it an odd number")
+            byPing <- byPing + 1
+        }
         byDepth <- by[2]
+        if (0 == byDepth%%2) {
+            warning("increasing byDepth to make it an odd number")
+            byDepth <- byDepth + 1
+        }
         if (byDepth > 1) {
             depth <- x[["depth"]]
             a <- x[["a"]]
             nrow <- nrow(a)
             ncol <- ncol(a)
-            ncol2 <- ncol / byDepth
+            ncol2 <- floor(1+(ncol-1)/byDepth)
             ii <- 1:ncol
             depth2 <- binAverage(ii, depth, 1, ncol, byDepth)$y
             a2 <- matrix(nrow=nrow, ncol=ncol2)
-            for (r in 1:nrow)
+            for (r in 1:nrow) {
                 a2[r,] <- binAverage(ii, runmed(a[r,], byDepth), 1, ncol, byDepth)$y
+            }
             res <- x
             res[["depth"]] <- depth2
             res[["a"]] <- a2
@@ -1071,7 +1081,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             a <- x[["a"]]
             nrow <- nrow(a)
             ncol <- ncol(a)
-            nrow2 <- nrow / byPing
+            ## FIXME dammit
+            nrow2 <- floor(1+(nrow-1)/byPing)
             jj <- 1:nrow
             time2 <- time[seq.int(1, nrow, by=byPing)]
             a2 <- matrix(nrow=nrow2, ncol=ncol)
@@ -1079,6 +1090,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 a2[,c] <- binAverage(jj, runmed(a[,c], byPing), 1, nrow, byPing)$y
             res <- x
             res[["time"]] <- time2
+            res[["latitude"]] <- binAverage(ii, x[["latitude"]], 1, ncol, byPing)$y
+            res[["longitude"]] <- binAverage(ii, x[["longitude"]], 1, ncol, byPing)$y
             res[["a"]] <- a2
         }
         ## do depth, rows of matrix, time, cols of matrix

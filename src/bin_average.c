@@ -27,7 +27,8 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     if (*xinc <= 0)
         error("cannot have non-positive xinc (%f)", *xinc);
     // 'b' stands for bin
-    int nb = (int)floor(((*xmax - *xmin) / *xinc));
+    //int nb = (int)floor(((*xmax - *xmin) / *xinc));
+    int nb = (int)floor(1.0 + ((*xmax - *xmin) / *xinc));
     if (nb < 1)
         error("calculated number of regions (%d) is less than 1", nb);
 #ifdef DEBUG
@@ -42,7 +43,7 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     for (int i = 0; i < *nx; i++) {
         if (ISNA(y[i]))
             continue;
-        b = (int)floor((x[i] - *xmin) / *xinc);
+        b = (int)floor(0.5 + (x[i] - *xmin) / *xinc);
 #ifdef DEBUG
         if (b > 131 & b < 133)
             Rprintf("i=%d x=%f  y=%f  b=%d\n", i, x[i], y[i], b);
