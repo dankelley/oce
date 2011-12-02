@@ -956,8 +956,10 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
     do.filter <- !missing(filter)
     if (missing(to))
         to <- length(x@data$time[[1]])
-    select <- seq(from=1, to=to, by=by)
-    oceDebug(debug, vectorShow(select, "select:"))
+    if (length(by) == 1) { # FIXME: probably should not be here
+        select <- seq(from=1, to=to, by=by)
+        oceDebug(debug, vectorShow(select, "select:"))
+    }
     if (inherits(x, "adp")) {
         oceDebug(debug, "decimate() on an ADP object\n")
         warning("decimate(adp) not working yet ... just returning the adp unchanged")
@@ -1061,12 +1063,12 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             depth <- x[["depth"]]
             a <- x[["a"]]
             ncol <- ncol(a)
+            nrow <- nrow(a)
             ii <- 1:ncol
             depth2 <- binAverage(ii, depth, 1, ncol, byDepth)$y
             a2 <- matrix(nrow=nrow(a), ncol=length(depth2))
-            for (r in 1:nrow) {
+            for (r in 1:nrow)
                 a2[r,] <- binAverage(ii, runmed(a[r,], kDepth), 1, ncol, byDepth)$y
-            }
             res <- x
             res[["depth"]] <- depth2
             res[["a"]] <- a2
@@ -1075,16 +1077,17 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         if (byPing > 1) {
             time <- x[["time"]]
             a <- x[["a"]]
+            ncol <- ncol(a)
             nrow <- nrow(a)
             jj <- 1:nrow
-            time2 <- time[seq.int(1, nrow, by=byPing)]
+            time2 <- binAverage(jj, as.numeric(x[["latitude"]]), 1, nrow, byPing)$y + as.POSIXct("1970-01-01 00:00:00", tz="UTC")
             a2 <- matrix(nrow=length(time2), ncol=ncol(a))
             for (c in 1:ncol)
                 a2[,c] <- binAverage(jj, runmed(a[,c], kPing), 1, nrow, byPing)$y
             res <- x
             res[["time"]] <- time2
-            res[["latitude"]] <- binAverage(ii, x[["latitude"]], 1, ncol, byPing)$y
-            res[["longitude"]] <- binAverage(ii, x[["longitude"]], 1, ncol, byPing)$y
+            res[["latitude"]] <- binAverage(jj, x[["latitude"]], 1, nrow, byPing)$y
+            res[["longitude"]] <- binAverage(jj, x[["longitude"]], 1, nrow, byPing)$y
             res[["a"]] <- a2
         }
         ## do depth, rows of matrix, time, cols of matrix
