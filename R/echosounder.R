@@ -134,23 +134,32 @@ setMethod(f="plot",
                       latitude <- x[["latitude"]]
                       longitude <- x[["longitude"]]
                       jitter <- rnorm(length(latitude), sd=1e-8) # jitter lat by equiv 1mm to avoid colocation
-                      distance <- geodDist(jitter + latitude, longitude, alongPath=TRUE)
+                      distance <- geodDist(jitter + latitude, longitude, alongPath=TRUE) ## FIXME: jitter should be in imagep
+                      depth <- x[["depth"]]
                       a <- x[["a"]]
                       if (despike)
                           a <- apply(a, 2, smooth)
                       z <- log10(ifelse(a > 1, a, 1)) # FIXME: make an argument for this '1'
-                      imagep(distance, -x[["depth"]], xlab="Distance [km]", ylab="z [m]",
-                             z, zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                      deepestWater <- max(abs(depth))
+                      if (!missing(drawBottom)) {
+                          if (is.logical(drawBottom) && drawBottom)
+                              drawBottom <- "white"
+                          waterDepth <- findBottom(x, ignore=ignore)
+                          axisBottom <- par('usr')[3]
+                          deepestWater <- max(abs(waterDepth$depth))
+                      }
+                      imagep(distance, -depth, z,
+                             xlab="Distance [km]", ylab="z [m]",
+                             ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
+                             zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                              col=col)
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
                               drawBottom <- "white"
-                          b <- findBottom(x, ignore=ignore)
                           ndistance <- length(distance)
                           distance2 <- c(distance[1], distance, distance[ndistance])
-                          depth <- x[["depth"]][b$index]
                           axisBottom <- par('usr')[3]
-                          depth2 <- c(axisBottom, -depth, axisBottom)
+                          depth2 <- c(axisBottom, -depth[waterDepth$index], axisBottom)
                           polygon(distance2, depth2, col=drawBottom)
                       }
                   } else if (which[w] == 3 || which[w] == "map") { # map: optional extra arguments 'radius' and 'coastline'
