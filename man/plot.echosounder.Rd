@@ -99,12 +99,11 @@
 library(oce)
 \dontrun{
 e <- read.echosounder("myfile.dt4")
-plot(echosounder)
-plot(echosounder, drawBottom="gray")
+plot(echosounder, drawBottom=TRUE)
 plot(echosounder, which=3) # map
 }
 }
 
-\author{Dan Kelley}
+\author{Dan Kelley, with extensive help from Clark Richards}
 
 \keyword{hplot}

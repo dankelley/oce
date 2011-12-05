@@ -30,18 +30,10 @@ read.echosounder(file, channel=1, soundSpeed=swSoundSpeed(35,10,50),
 
 \details{Reads a biosonics echosounder file.}
 
-\value{An object of \code{\link[base]{class}} \code{"echosounder"}, with
-    standard slots as follows.
-    
-    \item{metadata}{a list containing the following items
-        \describe{
-            \item{\code{filename}}{name of the file passed to \code{read.echosounder}.}
-        }
-    }
-    \item{data}{a list containing (FIXME: add content here)}
-
-    \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
-}
+\value{An object of \code{\link[base]{class}} \code{"echosounder"} with
+    standard slots \code{metadata}, \code{data} and \code{processingLog} that
+    are described in the documentation for the object
+    \code{\link{echosounder-class}}.}
 
 \seealso{The documentation for \code{\link{echosounder-class}} explains the
     structure of \code{ctd} objects, and also outlines the other functions
