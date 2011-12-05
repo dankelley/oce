@@ -529,6 +529,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                  phase2=phase2,         # FIXME: remove later
                  p=p)
     rval <- new('tidem')
+    rval@metadata <- list(rc=rc)
     rval@data <- data
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval

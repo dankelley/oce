@@ -59,11 +59,14 @@ setValidity("oce",
 setMethod(f="show",
           signature="oce",
           definition=function(object) {
-              filename <- object[["filename"]]
+              if ("filename" %in% names(object@metadata))
+                  filename <- object[["filename"]]
+              else
+                  filename <- "(no filename known)"
               if (is.null(filename) || filename == "")
                   cat(class(object)[1], " object has data as follows.\n", sep="")
               else
-                  cat(class(object)[1], " object, from file '", object[["filename"]], "', has data as follows.\n", sep="")
+                  cat(class(object)[1], " object, from file '", filename, "', has data as follows.\n", sep="")
               names <- names(object@data)
               ncol <- length(names)
               for (i in 1:ncol) {
