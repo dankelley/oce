@@ -1080,7 +1080,7 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             ncol <- ncol(a)
             nrow <- nrow(a)
             jj <- 1:nrow
-            time2 <- binAverage(jj, as.numeric(x[["latitude"]]), 1, nrow, byPing)$y + as.POSIXct("1970-01-01 00:00:00", tz="UTC")
+            time2 <- binAverage(jj, as.numeric(x[["time"]]), 1, nrow, byPing)$y + as.POSIXct("1970-01-01 00:00:00", tz="UTC")
             a2 <- matrix(nrow=length(time2), ncol=ncol(a))
             for (c in 1:ncol)
                 a2[,c] <- binAverage(jj, runmed(a[,c], kPing), 1, nrow, byPing)$y
