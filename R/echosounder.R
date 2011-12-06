@@ -65,9 +65,10 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
+              opar <- par(no.readonly = TRUE)
               par(mgp=mgp, mar=mar)
               if (lw > 1) {
-                  on.exit(par=opar)
+                  on.exit(par(opar))
                   if (lw > 2)
                       lay <- layout(matrix(1:4, nrow=2, byrow=TRUE))
                   else

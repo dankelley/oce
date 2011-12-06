@@ -447,7 +447,6 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
            {
-               ##if (!inherits(x, "ctd")) stop("method is only for ctd objects")
                oceDebug(debug, "\b\bplot.ctd() {\n")
                opar <- par(no.readonly = TRUE)
                lw <- length(which)
