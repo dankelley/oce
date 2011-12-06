@@ -187,7 +187,7 @@ setMethod(f="plot",
                               lines(coastline[["longitude"]]+360, coastline[["latitude"]], col="darkgray")
                           }
                       }
-                      lines(lon, lat, col=col, lwd=lwd)
+                      lines(lon, lat, col=if(!is.function(col)) col else "black", lwd=lwd)
                   } else {
                       stop("unknown value of which=", which, " (must be 1, 2, or 3)")
                   }
