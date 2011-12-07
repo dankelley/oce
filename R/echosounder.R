@@ -176,8 +176,8 @@ setMethod(f="plot",
                           radius <- max(radius, geodDist(latm, lonm, lat, lon))
                       km_per_lat_deg <- geodDist(latm, lonm, latm+1, lonm) 
                       km_per_lon_deg <- geodDist(latm, lonm, latm, lonm+1) 
-                      lonr <- lonm + radius / km_per_lon_deg * c(-1, 1)
-                      latr <- latm + radius / km_per_lat_deg * c(-1, 1)
+                      lonr <- lonm + radius / km_per_lon_deg * c(-2, 2)
+                      latr <- latm + radius / km_per_lat_deg * c(-2, 2)
                       plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
                       if (!missing(coastline)) {
                           coastline <- coastline
