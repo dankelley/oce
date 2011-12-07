@@ -49,6 +49,7 @@ setMethod(f="plot",
                               type="l", col=oceColorsJet, lwd=2,
                               despike=FALSE,
                               drawBottom, ignore=5,
+                              radius, coastline,
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
@@ -163,23 +164,23 @@ setMethod(f="plot",
                           depth2 <- c(axisBottom, -depth[waterDepth$index], axisBottom)
                           polygon(distance2, depth2, col=drawBottom)
                       }
-                  } else if (which[w] == 3 || which[w] == "map") { # map: optional extra arguments 'radius' and 'coastline'
+                  } else if (which[w] == 3 || which[w] == "map") {
                       lat <- x[["latitude"]]
                       lon <- x[["longitude"]]
                       asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
                       radius <- max(geodDist(latm, lonm, lat, lon))
-                      if ("radius" %in% dotsNames) {
-                          radius <- max(radius, dots$radius)
+                      if (!missing(radius)) {
+                          radius <- max(radius, radius)
                       }
                       km_per_lat_deg <- geodDist(latm, lonm, latm+1, lonm) 
                       km_per_lon_deg <- geodDist(latm, lonm, latm, lonm+1) 
                       lonr <- lonm + radius / km_per_lon_deg * c(-1, 1)
                       latr <- latm + radius / km_per_lat_deg * c(-1, 1)
                       plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
-                      if ("coastline" %in% dotsNames) {
-                          coastline <- dots$coastline
+                      if (!missing(coastline)) {
+                          coastline <- coastline
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
                               polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)

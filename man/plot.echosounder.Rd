@@ -15,6 +15,7 @@
      type="l", col=oceColorsJet, lwd=2,
      despike=FALSE,
      drawBottom, ignore=5,
+     radius, coastline,
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -67,6 +68,12 @@
   \item{ignore}{optional flag specifying the thickness in metres of a surface
       region to be ignored during the bottom-detection process.  This is
       ignored unless \code{drawBottom=TRUE}.}
+
+  \item{radius}{radius to use for maps; ignored unless \code{which=3} or
+      \code{which="map"}.}
+
+  \item{coastline}{coastline to use for maps; ignored unless \code{which=3} or
+      \code{which="map"}.}
 
   \item{adorn}{list of expressions to be executed for the panels in turn, e.g.
       to adorn the plots.  If the number matches the number of panels, then the
