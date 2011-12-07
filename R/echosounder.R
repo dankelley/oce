@@ -170,10 +170,10 @@ setMethod(f="plot",
                       asp <- 1 / cos(mean(range(lat, na.rm=TRUE))*pi/180)
                       latm <- mean(lat, na.rm=TRUE)
                       lonm <- mean(lon, na.rm=TRUE)
-                      radius <- max(geodDist(latm, lonm, lat, lon))
-                      if (!missing(radius)) {
-                          radius <- max(radius, radius)
-                      }
+                      if (missing(radius))
+                          radius <- max(geodDist(latm, lonm, lat, lon))
+                      else
+                          radius <- max(radius, geodDist(latm, lonm, lat, lon))
                       km_per_lat_deg <- geodDist(latm, lonm, latm+1, lonm) 
                       km_per_lon_deg <- geodDist(latm, lonm, latm, lonm+1) 
                       lonr <- lonm + radius / km_per_lon_deg * c(-1, 1)
