@@ -11,12 +11,12 @@ setMethod(f="initialize",
           })
 ## the default 'oce' object is sufficient for other methods
 
-as.coastline <- function(latitude, longitude)
+as.coastline <- function(latitude, longitude, fillable=FALSE)
 {
     n <- length(latitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
-    rval <- new("coastline", latitude=latitude, longitude=longitude)
+    rval <- new("coastline", latitude=latitude, longitude=longitude, fillable=fillable)
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
