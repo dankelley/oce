@@ -60,7 +60,7 @@
 
   \item{drawBottom}{optional flag used for section images.  If \code{TRUE},
       then the bottom is inferred as a smoothed version of the ridge of highest
-      image value, and data below that are whited out after the image is drawn.
+      image value, and data below that are grayed out after the image is drawn.
       If \code{drawBottom} is a colour, then that colour is used, instead of
       white.  The bottom is detected with \code{\link{findBottom}}, using the
       \code{ignore} value described next.}
@@ -103,11 +103,11 @@
     dealing with them.}
 
 \examples{
-library(oce)
 \dontrun{
-e <- read.echosounder("myfile.dt4")
-plot(echosounder, drawBottom=TRUE)
-plot(echosounder, which=3) # map
+library(oce)
+d <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
+data(coastlineSLE)
+plot(d, which=c(1,3), coastline=coastlineSLE, radius=2, drawBottom=TRUE)
 }
 }
 

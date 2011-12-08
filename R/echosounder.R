@@ -95,7 +95,7 @@ setMethod(f="plot",
                       z <- log10(ifelse(a > 1, a, 1)) # FIXME: make an argument for this '1'
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
-                              drawBottom <- "white"
+                              drawBottom <- "lightgray"
                           waterDepth <- findBottom(x, ignore=ignore)$depth
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth))
