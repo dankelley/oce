@@ -16,6 +16,7 @@
      bg,
      fill='lightgray',
      axes=TRUE,
+     add=FALSE,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -57,6 +58,8 @@
     by \code{\link{read.coastline}}).  Set to \code{NULL} to turn off
     filling.} 
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
+  \item{add}{boolean, set to \code{TRUE} to draw the coastline on 
+      an existing plot.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For
