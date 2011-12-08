@@ -58,8 +58,10 @@
     by \code{\link{read.coastline}}).  Set to \code{NULL} to turn off
     filling.} 
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
-  \item{add}{boolean, set to \code{TRUE} to draw the coastline on 
-      an existing plot.}
+  \item{add}{boolean, set to \code{TRUE} to draw the coastline on an existing
+      plot.  Note that this retains the aspect ratio of that existing plot, so
+      it is important to set that correctly, e.g. with \code{asp=1/cos(lat * pi
+          / 180)}, where \code{clat} is the central latitude of the plot.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For
