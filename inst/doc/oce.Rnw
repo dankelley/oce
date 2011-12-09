@@ -458,7 +458,7 @@ png("topo.png", width=800, height=400, pointsize=13)
 <<>>=
 library(oce)
 data(topoMaritimes)
-plot(topoMaritimes, center=c(46,-62), span=800,
+plot(topoMaritimes, center=c(-62, 46), span=800,
     water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
     lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
 @

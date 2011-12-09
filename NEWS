@@ -1,4 +1,5 @@
 0.8-4
+- 'center' argument for plotting topography and coastline is now (lon, lat)
 - add 'echosounder' class
 - fullFilename(): handle URLs properly
 - ADV objects: add access to slow variables (e.g. headingSlow)

@@ -38,9 +38,11 @@
     to get good world views you should set \code{asp=1} or 
     set \code{ylim} to be symmetric about zero.  Any given value of
     \code{asp} is ignored, if \code{center} is given.}
-  \item{center}{optional center of map, a vector containing latitude in
-    degrees north, then longitude in degrees east. (Must be accompanied
-    by \code{span}.)}
+  \item{center}{optional center of map, a vector containing longitude in
+      degrees east, followed by latitude in degrees north.  If \code{center} is
+      given, then the aspect ratio of the plot is calculated from the latitude,
+      and any provided value of \code{asp} is ignored.  If \code{center} is
+      given, then \code{span} must be given also.)}
   \item{span}{optional suggested span of plot, in kilometers (must be
     supplied, if \code{center} is supplied).}
   \item{expand}{numerical factor for the expansion of plot limits,

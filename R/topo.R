@@ -73,13 +73,13 @@ plot.topo <- function(x,
         stop("must give both 'center' and 'span', or neither one")
     if (gave.center) {
         if (length(center) != 2)
-            stop("'center' must contain two values, latitude in deg N and longitude in deg E")
+            stop("'center' must contain two values, longitude in deg E and then latitude in deg N")
         if (!missing(asp))
             warning("argument 'asp' being ignored, because argument 'center' was given")
-        asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
-        yr <- center[1] + span * c(-1/2, 1/2) / 111.11
-        xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
-        oceDebug(debug, "gave center; calculated xr=",xr," yr=", yr, " asp=", asp, "\n")
+        asp <- 1 / cos(center[2] * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
+        xr <- center[1] + span * c(-1/2, 1/2) / 111.11 / asp
+        yr <- center[2] + span * c(-1/2, 1/2) / 111.11
+        oceDebug(debug, "gave center; calculated xr=", xr," yr=", yr, " asp=", asp, "\n")
     } else {
         if (missing(asp)) {
             if ("ylim" %in% names(dots))
@@ -192,7 +192,11 @@ if (0){
     xclip <- xx < xr[1] | xr[2] < xx
     yclip <- yy < yr[1] | yr[2] < yy
     xx <- xx[!xclip]
+    if (length(xx) < 1)
+        stop("there are no topographic data within the longitudes of the plot region.  Hint: make sure 'center' gives lon, then lat.")
     yy <- yy[!yclip]
+    if (length(yy) < 1)
+        stop("there are no topographic data within the latitudes of the plot region.  Hint: make sure 'center' gives lon, then lat.")
     zz <- x[["z"]][!xclip, !yclip]
     zr <- range(zz)
 

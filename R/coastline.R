@@ -25,7 +25,7 @@ plot.coastline <- function (x,
                             xlab="", ylab="",
                             asp,
                             center, span,
-                            expand=1.5,
+                            expand=1,
                             mgp=getOption("oceMgp"),
                             mar=c(mgp[1]+1,mgp[1]+1,1,1),
                             bg,
@@ -38,7 +38,7 @@ plot.coastline <- function (x,
     opar <- par(no.readonly = TRUE)
     oceDebug(debug, "\b\bplot.coastline(...,",
              "center=", if(missing(center)) "(missing)" else paste("c(", paste(center, collapse=","), ")"),
-             "span=", if(missing(span)) "(missing)" else span, ", ...) {\n")
+             ", span=", if(missing(span)) "(missing)" else span, ", ...) {\n", sep="")
     if (is.list(x) && "latitude" %in% names(x)) {
         if (!("longitude" %in% names(x)))
             stop("list must contain item named 'longitude'")
@@ -57,10 +57,12 @@ plot.coastline <- function (x,
         stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
     }
     if (add) {
-        if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable)
+        if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
             polygon(x[["longitude"]], x[["latitude"]], col=fill, ...)
-        else
+            box()                      # clean up edges
+        } else {
             lines(x[["longitude"]], x[["latitude"]], ...)
+        }
     } else {
         gave.center <- !missing(center)
         gave.span <- !missing(span)
@@ -71,22 +73,21 @@ plot.coastline <- function (x,
                 stop("'center' must contain two values, latitude in deg N and longitude in deg E")
             if (!missing(asp))
                 warning("argument 'asp' being ignored, because argument 'center' was given")
-            asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
-            yr <- center[1] + span * c(-1/2, 1/2) / 111.11
-            xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
-            oceDebug(debug, "gave center and span; calculated xr=",xr," and yr=",yr,"\n")
+            asp <- 1 / cos(center[2] * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
+            xr <- center[1] + span * c(-1/2, 1/2) / 111.11 / asp
+            yr <- center[2] + span * c(-1/2, 1/2) / 111.11
+            oceDebug(debug, "xr=", xr," yr=", yr, " asp=", asp, "\n")
         } else {
-            if (missing(asp)) {
-                if ("ylim" %in% names(dots))
-                    asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
-                else
-                    asp <- 1 / cos(mean(range(x@data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
-            }
-            ## Expand
             xr0 <- range(x@data$longitude, na.rm=TRUE)
             yr0 <- range(x@data$latitude, na.rm=TRUE)
-            oceDebug(debug, "xr0=", xr0, "\n")
-            oceDebug(debug, "yr0=", yr0, "\n")
+            oceDebug(debug, "xr0=", xr0, " yr0=", yr0, "\n")
+            if (missing(asp)) {
+                if ("ylim" %in% names(dots))
+                    asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * atan2(1, 1) / 45) # dy/dx
+                else
+                    asp <- 1 / cos(mean(yr0) * atan2(1, 1) / 45) # dy/dx
+            }
+            ## Expand
             if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
                 xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
                 yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
@@ -94,7 +95,10 @@ plot.coastline <- function (x,
                 xr <- xr0
                 yr <- yr0
             }
+            oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
         }
+        ## FIXME: this aspect-ratio hacking (put another way, margin-hacking) may be incorrect
+
         ## The following is a somewhat provisional hack, to get around a
         ## tendency of plot() to produce latitudes past the poles.
         ## BUG: the use of par("pin") seems to mess up resizing in aqua windows.
@@ -103,14 +107,16 @@ plot.coastline <- function (x,
         if (asp < asp.page) {
             oceDebug(debug, "type 1 (will narrow x range)\n")
             d <- asp / asp.page * diff(xr)
+            oceDebug(debug, "  xr original:", xr, "\n")
             xr <- mean(xr) + d * c(-1/2, 1/2)
-            oceDebug(debug, "xr narrowed to:", xr, "\n")
+            oceDebug(debug, "  xr narrowed:", xr, "\n")
             ## xr[2] <- xr[1] + (xr[2] - xr[1]) * (asp / asp.page)
         } else {
             oceDebug(debug, "type 2 (will narrow y range)\n")
             d <- asp / asp.page * diff(yr)
+            oceDebug(debug, "  yr original:", yr, "\n")
             yr <- mean(yr) + d * c(-1/2, 1/2)
-            oceDebug(debug, "yr narrowed to:", yr, "\n")
+            oceDebug(debug, "  yr narrowed:", yr, "\n")
             ##yr[2] <- yr[1] + (yr[2] - yr[1]) / (asp / asp.page)
         }
         if (xr[1] < (-180))
@@ -121,15 +127,13 @@ plot.coastline <- function (x,
             yr[1] <- (-90)
         if (yr[2] >  90)
             yr[2] <- 90
-        oceDebug(debug, "xr:", xr, "\n")
-        oceDebug(debug, "yr:", yr, "\n")
+        oceDebug(debug, "after range trimming, xr=", xr, " yr=", yr, "\n")
         if (!missing(bg) && x@metadata$fillable) {
             plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
             usr <- par("usr")
             polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
             par(new=TRUE)
         }
-        oceDebug(debug, "xr=", xr, "yr=",yr,"\n")
         plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
         if (axes) {
             if (1 == prod(par('mfrow')) * prod(par('mfcol'))) {
@@ -170,16 +174,20 @@ plot.coastline <- function (x,
             yscale <- 180 / (yaxp[2] - yaxp[1])
             ##oceDebug(debug, "yscale",yscale," new opin[2]", yscale*opin[2],"\n")
             ##        par(pin=c(opin[1], yscale*opin[2]))
-            if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable)
+            if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                 polygon(x@data$longitude, x@data$latitude, col=fill, ...)
-            else
+                box()
+            } else {
                 lines(x@data$longitude, x@data$latitude, ...)
+            }
             ##par("pin"=opin)
         } else {
-            if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable)
+            if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                 polygon(x@data$longitude, x@data$latitude, col=fill, ...)
-            else
+                box()
+            } else {
                 lines(x@data$longitude, x@data$latitude, ...)
+            }
         }
         oceDebug(debug, "lat lim:", range(x@data$latitude,na.rm=TRUE), "\n")
         oceDebug(debug, "lon lim:", range(x@data$longitude,na.rm=TRUE), "\n")
