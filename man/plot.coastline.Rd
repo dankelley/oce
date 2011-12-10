@@ -1,12 +1,14 @@
 \name{plot.coastline}
 
 \alias{plot.coastline}
+\alias{plot,coastline,missing-method}
+\alias{plot,coastline-method}
 
 \title{Plot a coastline}
 
-\description{Plot a coastline.}
+\description{Plot a coastline}
 
-\usage{\method{plot}{coastline}(x,
+\usage{\S4method{plot}{coastline}(x,
      xlab="", ylab="",
      asp,
      center, span,
