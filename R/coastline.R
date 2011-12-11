@@ -179,8 +179,10 @@ setMethod(f="plot",
                       if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                           polygon(longitude, latitude, col=fill, ...)
                           rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
+                          stop()
                       } else {
                           lines(longitude, latitude, ...)
+                          rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
                       }
                   }
               }
