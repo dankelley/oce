@@ -418,6 +418,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
     oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
+    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+    oceDebug(debug, "subsetString='", subsetString, "'\n")
     if (inherits(x, "cm")) {
         if (!is.null(indices)) {
             oceDebug(debug, vectorShow(keep, "keeping indices"))
@@ -427,8 +429,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 rval@data[[name]] <- x@data[[name]][keep]
             }
         } else if (!missing(subset)) {
-            subsetString <- deparse(substitute(subset))
-            oceDebug(debug, "subsetString='", subsetString, "'\n")
+            ##subsetString <- deparse(substitute(subset))
+            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
             if (length(grep("time", subsetString))) {
                 oceDebug(debug, "subsetting a cm by time\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
@@ -451,8 +453,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             oceDebug(debug, vectorShow(keep, "keeping indices"))
             stop("this version of oce cannot subset adp data by index")
         } else if (!missing(subset)) {
-            subsetString <- deparse(substitute(subset))
-            oceDebug(debug, "subsetString='", subsetString, "'\n")
+            ##subsetString <- deparse(substitute(subset))
+            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
             if (length(grep("time", subsetString))) {
                 oceDebug(debug, "subsetting an adp by time\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
@@ -521,8 +523,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             rval@data <- data
             rval@processingLog <- unclass(x@processingLog)
         } else {                        # subset within the stations
-            subsetString <- deparse(substitute(subset))
-            oceDebug(debug, "subsetString='", subsetString, "'\n")
+            ##subsetString <- deparse(substitute(subset))
+            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
             rval <- x
             if (length(grep("distance", subsetString))) {
                 l <- list(distance=geodDist(rval))
@@ -588,8 +590,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             stop("cannot specify 'indices' for adv objects (not coded yet)")
         if (missing(subset))
             stop("must specify a 'subset'")
-        subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-        oceDebug(debug, "subsetString='", subsetString, "'\n")
+        ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+        ##oceDebug(debug, "subsetString='", subsetString, "'\n")
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an adv object by time\n")
             keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
@@ -645,8 +647,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         }
         names(rval@data) <- names(x@data)
     } else if (inherits(x, "echosounder")) {
-        subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-        oceDebug(debug, "subsetString='", subsetString, "'\n")
+        ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+        ##oceDebug(debug, "subsetString='", subsetString, "'\n")
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an echosounder object by time\n")
             keep <- eval(substitute(subset), x@data, parent.frame())
@@ -666,6 +668,14 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         } else {
             stop("can only subset an echosounder object by 'time' or 'depth'")
         }
+    } else if (inherits(x, "coastline")) {
+        if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
+            stop("can only subset a coastline by 'latitude' or 'longitude'")
+        oceDebug(debug, "subsetting a coastline object\n")
+        keep <- eval(substitute(subset), x@data, parent.frame())
+        rval <- x
+        rval@data$latitude[!keep] <- NA
+        rval@data$longitude[!keep] <- NA
     } else {
         if (isS4(x)) {
             r <- eval(substitute(subset), x@data, parent.frame())

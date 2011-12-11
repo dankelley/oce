@@ -179,7 +179,6 @@ setMethod(f="plot",
                       if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                           polygon(longitude, latitude, col=fill, ...)
                           rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
-                          stop()
                       } else {
                           lines(longitude, latitude, ...)
                           rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
@@ -191,14 +190,20 @@ setMethod(f="plot",
               invisible()
           })
 
-read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
+read.coastline <- function(file,
+                           type=c("R","S","mapgen","shapefile"),
                            debug=getOption("oceDebug"),
                            monitor=FALSE,
                            processingLog)
 {
-    oceDebug(debug, "\b\bread.coastline() {\n")
-    file <- fullFilename(file)
     type <- match.arg(type)
+    oceDebug(debug, "\b\bread.coastline(file=\"", file, "\", type=\"", type, "\", ...) {\n", sep="")
+    file <- fullFilename(file)
+    if (is.character(file)) {
+        filename <- file
+    } else {
+        filename <- "(unknown)"
+    }
     if (type == "shapefile") {
         res <- read.coastline.shapefile(file, monitor=monitor, debug=debug)
     } else if (type == "R" || type == "S") {
@@ -217,7 +222,7 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
             on.exit(close(file))
         }
         data <- read.table(file, col.names=c("longitude", "latitude"))
-        res <- new("coastline", latitude=data$latitude, longitude=data$longitude, fillable=FALSE)
+        res <- new("coastline", latitude=data$latitude, longitude=data$longitude, fillable=FALSE, filename=filename)
     } else if (type == "mapgen") {
         header <- scan(file, what=character(0), nlines=1, quiet=TRUE) # slow, but just one line
         oceDebug(debug, "method is mapgen\nheader:", header, "\n")
@@ -249,8 +254,9 @@ read.coastline <- function(file,type=c("R","S","mapgen","shapefile"),
     } else {
         stop("unknown method.  Should be \"R\", \"S\", or \"mapgen\"")
     }
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res@processingLog <- processingLog(res@processingLog, processingLogItem(processingLog))
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
     oceDebug(debug, "\b\b} # read.coastline()\n")
     res
 }

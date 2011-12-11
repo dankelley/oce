@@ -1031,7 +1031,6 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res@data <- data
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    processingLogItem <- processingLogItem(processingLog)
     res@processingLog <- processingLog(res@processingLog, processingLog)
     oceDebug(debug, "\b\b} # read.ctd.woce()\n") # FIXME: use S4 for ctd / woce
     res

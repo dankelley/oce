@@ -17,7 +17,8 @@ read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
 
 \arguments{
   \item{file}{name of file containing coastline data.}
-  \item{type}{type of file, one of "R", "S", or "mapgen"}
+  \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"} or
+      \code{"shapefile"}.}
   \item{debug}{set to TRUE to print information about the header, etc.}
   \item{latlim}{range of (signed) latitudes, used only for shapefiles.
     Regions that do not intersect this range are skipped.}
@@ -77,8 +78,17 @@ lines(lon-360, lat)
 }
 }
 
-\references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a good
-    source for coastline data files.}
+\references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a
+    popular source for coastline data files.
+
+    Canadian coastlines in ``shapefile'' format are provided at
+    \url{http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm}
+    (link tested December 2011) or, with registration, from
+    \url{http://www.geobase.ca/geobase/en/search.do?produit=nrn&language=en}
+    (link tested December 2011).  The ``shapefile'' format is described in
+    \emph{ESRI Shapefile Technical Description}, March 1998, available at
+    \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf} (link
+    tested December 2011).  }
 
 \author{Dan Kelley}
 \keyword{misc}
