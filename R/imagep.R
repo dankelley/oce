@@ -12,6 +12,7 @@ imagep <- function(x, y, z,
                    drawContours=FALSE,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
+                   filledContour=FALSE,
                    mgp=getOption("oceMgp"),
                    mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
                          mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -188,12 +189,19 @@ imagep <- function(x, y, z,
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
     if (x.is.time) {
-        if (!gave.breaks) {
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+        if (filledContour) {
+            storage.mode(z) <- "double"
+            plot.new()
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
         } else {
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            if (!gave.breaks) {
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
+                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            } else {
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
+                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            }
         }
         box()
         if (axes) {
@@ -201,14 +209,21 @@ imagep <- function(x, y, z,
             axis(2, cex.axis=cex, cex.lab=cex)
         }
     } else {
-        if (!gave.breaks) {
-            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+        if (filledContour) {
+            storage.mode(z) <- "double"
+            plot.new()
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
         } else {
-            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            if (!gave.breaks) {
+                image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, col=col,
+                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            } else {
+                image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
+                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            }
+            box()
         }
-        box()
         if (axes) {
             axis(1, cex.axis=cex, cex.lab=cex)
             axis(2, cex.axis=cex, cex.lab=cex)

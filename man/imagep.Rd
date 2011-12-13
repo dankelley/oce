@@ -10,6 +10,7 @@
       drawContours=FALSE,
       drawTimeRange=getOption("oceDrawTimeRange"),
       drawPalette=TRUE,
+      filledContour=FALSE,
       mgp=getOption("oceMgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -69,6 +70,8 @@
       have been drawn.  This last form is useful for producing stacked plots
       with uniform left and right margins, but with palettes on only some of
       the images.}
+  \item{filledContour}{boolean value indicating whether to use filled
+      contours to plot the image.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
