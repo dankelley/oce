@@ -47,8 +47,11 @@ imagep <- function(x, y, z,
         x <- x$x
     } else if (!missing(x) && is.matrix(x)) {
         z <- x
-        y <- seq(0, 1, length.out=ncol(x))
-        x <- seq(0, 1, length.out=nrow(x))
+        xcontour <- seq(0, 1, length.out=nrow(x)) # FIXME: does this help issue186?
+        ycontour <- seq(0, 1, length.out=ncol(x)) # FIXME: does this help issue186?
+        y <- seq(0, 1, length.out=ncol(x)+1) # FIXME: does this help issue186?
+        x <- seq(0, 1, length.out=nrow(x)+1) # FIXME: does this help issue186?
+        cat("ok 1\n")
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
         x <- seq(0, 1, length.out=nrow(z))
         y <- seq(0, 1, length.out=ncol(z))
@@ -155,7 +158,6 @@ imagep <- function(x, y, z,
                 } else {
                     palette <- seq(zlim[1], zlim[2], length.out=300)
                 }
-
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaks.orig,
                       col=col,
@@ -208,7 +210,7 @@ imagep <- function(x, y, z,
             oce.axis.POSIXct(side=1, x=x, cex=cex, cex.axis=cex, cex.lab=cex, drawTimeRange=drawTimeRange, mar=mar, mgp=mgp)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
-    } else {
+    } else {                           # x is not a POSIXt
         if (filledContour) {
             storage.mode(z) <- "double"
             plot.new()
@@ -231,8 +233,9 @@ imagep <- function(x, y, z,
     }
     if (main != "")
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
+    cat("ok 2\n")
     if (drawContours)
-        contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
+        contour(x=xcontour, y=ycontour, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
     if (!missing(adorn)) {
         t <- try(eval.parent(adorn), silent=!TRUE)
