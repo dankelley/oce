@@ -26,7 +26,8 @@ setMethod(f="plot",
           definition=function (x,
                                xlab="", ylab="",
                                asp,
-                               center, span,
+                               clatitude, clongitude, span,
+                               ## center, span,
                                expand=1,
                                mgp=getOption("oceMgp"),
                                mar=c(mgp[1]+1,mgp[1]+1,1,1),
@@ -38,7 +39,8 @@ setMethod(f="plot",
                                ...)
           {
               oceDebug(debug, "\b\bplot.coastline(...,",
-                       "center=", if(missing(center)) "(missing)" else paste("c(", paste(center, collapse=","), ")"),
+                       "clatitude=", if(missing(clatitude)) "(missing)" else paste("c(", paste(clatitude, collapse=","), ")"),
+                       "clongitude=", if(missing(clongitude)) "(missing)" else paste("c(", paste(clongitude, collapse=","), ")"),
                        ", span=", if(missing(span)) "(missing)" else span, ", ...) {\n", sep="")
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
@@ -51,14 +53,11 @@ setMethod(f="plot",
               longitude <- x[["longitude"]]
               latitude <- x[["latitude"]]
               dots <- list(...)
-              names.dots <- names(dots)
+              dotsNames <- names(dots)
+              if ("center" %in% dotsNames) stop("please use 'clatitude' and 'clongitude' instead of 'center'")
+              if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
+              if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
               par(mgp=mgp, mar=mar)
-              if ("xlim" %in% names.dots) {
-                  stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
-              }
-              if ("ylim" %in% names.dots) {
-                  stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
-              }
               if (add) {
                   if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                       polygon(longitude, latitude, col=fill, ...)
@@ -67,25 +66,22 @@ setMethod(f="plot",
                       lines(longitude, latitude, ...)
                   }
               } else {
-                  gave.center <- !missing(center)
+                  gave.center <- !missing(clatitude) && !missing(clongitude)
                   gave.span <- !missing(span)
-                  if (gave.center != gave.span)
-                      stop("must give both 'center' and 'span', or neither one")
+                  if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them FIXME")
                   if (gave.center) {
-                      if (length(center) != 2)
-                          stop("'center' must contain two values, latitude in deg N and longitude in deg E")
                       if (!missing(asp))
                           warning("argument 'asp' being ignored, because argument 'center' was given")
-                      asp <- 1 / cos(center[2] * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
-                      xr <- center[1] + span * c(-1/2, 1/2) / 111.11 / asp
-                      yr <- center[2] + span * c(-1/2, 1/2) / 111.11
+                      asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
+                      xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
+                      yr <- clatitude + span * c(-1/2, 1/2) / 111.11
                       oceDebug(debug, "xr=", xr," yr=", yr, " asp=", asp, "\n")
                   } else {
                       xr0 <- range(longitude, na.rm=TRUE)
                       yr0 <- range(latitude, na.rm=TRUE)
                       oceDebug(debug, "xr0=", xr0, " yr0=", yr0, "\n")
                       if (missing(asp)) {
-                          if ("ylim" %in% names(dots))
+                          if ("ylim" %in% dotsNames)
                               asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * atan2(1, 1) / 45) # dy/dx
                           else
                               asp <- 1 / cos(mean(yr0) * atan2(1, 1) / 45) # dy/dx

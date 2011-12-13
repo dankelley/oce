@@ -596,8 +596,7 @@ setMethod(f="plot",
                        plotTS(x, Slim=Slim, Tlim=Tlim,
                               grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                               useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, ...)
-                   }
-                   else if (which[w] == 4 || which[w] == "text") {
+                   } else if (which[w] == 4 || which[w] == "text") {
                        text.item <- function(item, label, cex=0.8) {
                            if (!is.null(item) && !is.na(item)) {
                                text(xloc, yloc, paste(label, item), adj = c(0, 0), cex=cex)
@@ -670,12 +669,12 @@ setMethod(f="plot",
                                if (missing(latlim)) {
                                    latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                    span <- diff(range(latlim.c)) / 1.5 * 111
-                                   plot(coastline, center=c(mean(latlim.c), clon), span=span, debug=debug-1)
+                                   plot(coastline, clatitude=mean(latlim.c), clongitude=clon, span=span, debug=debug-1)
                                    oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
                                } else {
                                    clat <- mean(latlim)
                                    span <- diff(range(latlim)) / 1.5 * 111
-                                   plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                                   plot(coastline, clatitude=clat, clongitude=clon, span=span, debug=debug-1)
                                    oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                                }
                                if (round(which[w],1) == 5.1) # HIDDEN FEATURE
@@ -686,12 +685,12 @@ setMethod(f="plot",
                                    latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                                    clat <- mean(latlim.c)
                                    span <- diff(range(latlim.c)) / 1.5 * 111
-                                   plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                                   plot(coastline, clatitude=clat, clongitude=clon, span=span, debug=debug-1)
                                    oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
                                } else {
                                    clat <- mean(latlim)
                                    span <- diff(range(latlim)) / 1.5 * 111
-                                   plot(coastline, center=c(clat, clon), span=span, debug=debug-1)
+                                   plot(coastline, clatitude=clat, clongitude=clon, span=span, debug=debug-1)
                                    oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                                }
                            }

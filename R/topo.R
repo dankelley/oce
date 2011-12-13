@@ -41,7 +41,8 @@ topoInterpolate <- function(latitude, longitude, topo)
 plot.topo <- function(x,
                       xlab="", ylab="",
                       asp,
-                      center, span,
+                      clatitude, clongitude, span,
+                      ##center, span,
                       expand=1.5,
                       water.z,
                       col.water,
@@ -65,24 +66,22 @@ plot.topo <- function(x,
     ##on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
+    dotsNames <- names(dots)
+    if ("center" %in% dotsNames) stop("please use 'clatitude' and 'clongitude' instead of 'center'")
+    gave.center <- !missing(clatitude) && !missing(clongitude)
 
-    ######
-    gave.center <- !missing(center)
     gave.span <- !missing(span)
-    if (gave.center != gave.span)
-        stop("must give both 'center' and 'span', or neither one")
+    if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
     if (gave.center) {
-        if (length(center) != 2)
-            stop("'center' must contain two values, longitude in deg E and then latitude in deg N")
         if (!missing(asp))
             warning("argument 'asp' being ignored, because argument 'center' was given")
-        asp <- 1 / cos(center[2] * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
-        xr <- center[1] + span * c(-1/2, 1/2) / 111.11 / asp
-        yr <- center[2] + span * c(-1/2, 1/2) / 111.11
+        asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
+        xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
+        yr <- clatitude  + span * c(-1/2, 1/2) / 111.11
         oceDebug(debug, "gave center; calculated xr=", xr," yr=", yr, " asp=", asp, "\n")
     } else {
         if (missing(asp)) {
-            if ("ylim" %in% names(dots))
+            if ("ylim" %in% dotsNames)
                 asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
             else
                 asp <- 1 / cos(mean(range(x[["latitude"]],na.rm=TRUE)) * pi / 180) # dy/dx
@@ -154,25 +153,10 @@ plot.topo <- function(x,
     xr.pretty <- pretty(xr)
     yr.pretty <- pretty(yr)
     oceDebug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
-    oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
-
-if (0){
-    if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
-        yr.pretty <- seq(-90, 90, 45)
-    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1])
-    yr.pretty <- subset(yr.pretty, yr.pretty <= yr[2])
-    if (!(min(xr.pretty) > 0 && max(xr.pretty) < 360))
-        xr.pretty <- seq(0, 360, 45)
-    oceDebug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
-    oceDebug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
-}
-
-
-    oceDebug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
-    oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
     xr.pretty <- subset(xr.pretty, xr.pretty >= xr[1] & xr.pretty <= xr[2])
-    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1] & yr.pretty <= yr[2])
     oceDebug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
+    oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
+    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1] & yr.pretty <= yr[2])
     oceDebug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
 
     lines(c(xr[1], xr[2], xr[2], xr[1], xr[1]), c(yr[1], yr[1], yr[2], yr[2], yr[1])) # axis box
@@ -192,11 +176,12 @@ if (0){
     xclip <- xx < xr[1] | xr[2] < xx
     yclip <- yy < yr[1] | yr[2] < yy
     xx <- xx[!xclip]
+    browser()
     if (length(xx) < 1)
-        stop("there are no topographic data within the longitudes of the plot region.  Hint: make sure 'center' gives lon, then lat.")
+        stop("there are no topographic data within the longitudes of the plot region.")
     yy <- yy[!yclip]
     if (length(yy) < 1)
-        stop("there are no topographic data within the latitudes of the plot region.  Hint: make sure 'center' gives lon, then lat.")
+        stop("there are no topographic data within the latitudes of the plot region.")
     zz <- x[["z"]][!xclip, !yclip]
     zr <- range(zz)
 
@@ -276,8 +261,6 @@ if (0){
         legend(location, lwd=lwd[o], lty=lty[o],
                bg="white", legend=legend[o], col=col[o])
     }
-    if (debug && !missing(center))
-        points(center[2], center[1], cex=10, col='red')
     oceDebug(debug, "\b\b} # plot.topo()\n")
     invisible()
 }

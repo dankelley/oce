@@ -11,7 +11,7 @@
 \usage{\S4method{plot}{coastline}(x,
      xlab="", ylab="",
      asp,
-     center, span,
+     clatitude, clongitude, span,
      expand=1,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
@@ -29,24 +29,27 @@
     \code{latitude} and \code{longitude}.} 
   \item{xlab}{label for x axis}
   \item{ylab}{label for y axis}
-  \item{asp}{Aspect ratio for plot.  The default is for
-    \code{plot.coastline} to set the aspect ratio to give natural
-    latitude-longitude scaling somewhere near the centre latitude on the
-    plot. Often, it makes sense to set \code{asp} yourself, e.g. to get
-    correct shapes at 45N, use \code{asp=1/cos(45*pi/180)}. 
-    Note that the land mass is not symmetric about the equator, so
-    to get good world views you should set \code{asp=1} or 
-    set \code{ylim} to be symmetric about zero. Any given value of
-    \code{asp} is ignored, if \code{center} is given.}
-
-  \item{center}{optional center of map, a vector containing longitude in
-      degrees east, followed by latitude in degrees north.  If provided, then
-      any provided value of \code{asp} is ignored, and instead the plot aspect
-      ratio is computed based on the center latitude.  If \code{center} is
+  \item{asp}{Aspect ratio for plot.  The default is for \code{plot.coastline}
+      to set the aspect ratio to give natural latitude-longitude scaling
+      somewhere near the centre latitude on the plot. Often, it makes sense to
+      set \code{asp} yourself, e.g. to get correct shapes at 45N, use
+      \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric
+      about the equator, so to get good world views you should set \code{asp=1}
+      or set \code{ylim} to be symmetric about zero. Any given value of
+      \code{asp} is ignored, if \code{clatitude} and \code{clongitude} are
+      given.}
+  \item{clatitude}{optional center latitude of map, in degrees north.  If this
+      and \code{clongitude} are provided, then any provided value of \code{asp}
+      is ignored, and instead the plot aspect ratio is computed based on the
+      center latitude.  Also, if \code{clatitude} and \code{clongitude} are
       provided, then \code{span} must be, also.}
-
-  \item{span}{optional suggested span of plot, in kilometers (must be
-    supplied, if \code{center} is supplied).}
+  \item{clongitude}{optional center longitude of map, in degrees east; see
+      \code{clatitude}.}
+  \item{span}{optional suggested span of plot, in kilometers.  The suggestion
+      is an upper limit on the scale; depending on the aspect ratio of the
+      plotting device, the radius may be smaller than \code{span}.  A value for
+      \code{span} must be supplied, if \code{clatitude} and \code{clongitude}
+      are supplied.}
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
     coastline, and then an actual coastline to show the ocean boundary.
@@ -95,6 +98,7 @@
 library(oce)
 data(coastlineWorld)
 plot(coastlineWorld)
+plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)
 }
 
 \author{Dan Kelley}
