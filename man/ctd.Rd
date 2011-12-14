@@ -14,7 +14,7 @@
 \examples{
 library(oce)
 data(ctd)
-plot(ctd)
+plot(ctd, which=c(1,2,3,5), coastline="coastlineHalifax")
 }
 
 \source{This is a trimmed version of the \code{\link{ctdRaw}} dataset.}
