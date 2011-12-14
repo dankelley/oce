@@ -104,14 +104,17 @@ imagep <- function(x, y, z,
     if (!gave.breaks) {
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
-            if (missing(col))
+            if (missing(col)) {
                 breaks <- pretty(zrange)
-            else
+                if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
+                if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
+            } else {
                 breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
+            }
             breaks.orig <- breaks
         } else {
             if (missing(col))
-                breaks <- pretty(zlim)
+                breaks <- c(zlim[1], pretty(zlim), zlim[2])
             else
                 breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
             breaks.orig <- breaks
@@ -155,7 +158,6 @@ imagep <- function(x, y, z,
                 } else {
                     palette <- seq(zlim[1], zlim[2], length.out=300)
                 }
-
                 image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
                       breaks=breaks.orig,
                       col=col,
@@ -208,20 +210,15 @@ imagep <- function(x, y, z,
             oce.axis.POSIXct(side=1, x=x, cex=cex, cex.axis=cex, cex.lab=cex, drawTimeRange=drawTimeRange, mar=mar, mgp=mgp)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
-    } else {
+    } else {                           # x is not a POSIXt
         if (filledContour) {
             storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
         } else {
-            if (!gave.breaks) {
-                image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            } else {
-                image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            }
+            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
+                  xlim=xlim, ylim=ylim, ...)
             box()
         }
         if (axes) {
