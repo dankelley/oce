@@ -47,11 +47,8 @@ imagep <- function(x, y, z,
         x <- x$x
     } else if (!missing(x) && is.matrix(x)) {
         z <- x
-        xcontour <- seq(0, 1, length.out=nrow(x)) # FIXME: does this help issue186?
-        ycontour <- seq(0, 1, length.out=ncol(x)) # FIXME: does this help issue186?
-        y <- seq(0, 1, length.out=ncol(x)+1) # FIXME: does this help issue186?
-        x <- seq(0, 1, length.out=nrow(x)+1) # FIXME: does this help issue186?
-        cat("ok 1\n")
+        y <- seq(0, 1, length.out=ncol(x))
+        x <- seq(0, 1, length.out=nrow(x))
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
         x <- seq(0, 1, length.out=nrow(z))
         y <- seq(0, 1, length.out=ncol(z))
@@ -107,14 +104,17 @@ imagep <- function(x, y, z,
     if (!gave.breaks) {
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
-            if (missing(col))
+            if (missing(col)) {
                 breaks <- pretty(zrange)
-            else
+                if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
+                if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
+            } else {
                 breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
+            }
             breaks.orig <- breaks
         } else {
             if (missing(col))
-                breaks <- pretty(zlim)
+                breaks <- c(zlim[1], pretty(zlim), zlim[2])
             else
                 breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
             breaks.orig <- breaks
@@ -217,13 +217,8 @@ imagep <- function(x, y, z,
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
         } else {
-            if (!gave.breaks) {
-                image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            } else {
-                image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
-                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
-            }
+            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
+                  xlim=xlim, ylim=ylim, ...)
             box()
         }
         if (axes) {
@@ -233,9 +228,8 @@ imagep <- function(x, y, z,
     }
     if (main != "")
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
-    cat("ok 2\n")
     if (drawContours)
-        contour(x=xcontour, y=ycontour, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
+        contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
     mtext(zlab, side=3, cex=par("cex"), adj=1, line=1/8)
     if (!missing(adorn)) {
         t <- try(eval.parent(adorn), silent=!TRUE)
