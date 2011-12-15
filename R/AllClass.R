@@ -25,19 +25,38 @@ setClass("windrose", contains="oce")
 setMethod(f="[[",
           signature="oce",
           definition=function(x, i, j, drop) {
-              if (i == "metadata") return(x@metadata)
-              else if (i == "data") return(x@data)
-              else if (i %in% names(x@metadata)) return(x@metadata[[i]])
-              else if (i %in% names(x@data)) return(x@data[[i]])
-              else stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              if (i == "metadata") {
+                  return(x@metadata)
+              } else if (i == "data") {
+                  return(x@data)
+              } else if (i == "processingLog") {
+                  return(x@processingLog)
+              } else if (i %in% names(x@metadata)) {
+                  return(x@metadata[[i]])
+              } else if (i %in% names(x@data)) {
+                  return(x@data[[i]])
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
           })
 
 setMethod(f="[[<-",
           signature="oce",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
-              else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+              } else if (i %in% names(x@data)) {
+                  x@data[[i]] <- value
+              } else if (i == "processingLog") {
+                  if (0 == length(x@processingLog)) {
+                      x@processingLog <- list(time=as.POSIXct(Sys.time(), tz="UTC"), value=value)
+                  } else {
+                      x@processingLog$time <- c(x@processingLog$time, as.POSIXct(Sys.time(), tz="UTC"))
+                      x@processingLog$value <- c(x@processingLog$value, value)
+                  }
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
               validObject(x)
               invisible(x)
           })
