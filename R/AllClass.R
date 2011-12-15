@@ -25,7 +25,9 @@ setClass("windrose", contains="oce")
 setMethod(f="[[",
           signature="oce",
           definition=function(x, i, j, drop) {
-              if (i %in% names(x@metadata)) return(x@metadata[[i]])
+              if (i == "metadata") return(x@metadata)
+              else if (i == "data") return(x@data)
+              else if (i %in% names(x@metadata)) return(x@metadata[[i]])
               else if (i %in% names(x@data)) return(x@data[[i]])
               else stop("there is no item named \"", i, "\" in this ", class(x), " object")
           })
