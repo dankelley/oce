@@ -11,7 +11,6 @@
 
 \usage{
 processingLog(x) <- value
-x[["processingLog"]] <- value
 processingLog(h, value="")
 processingLogItem(value="")
 processingLogShow(x)

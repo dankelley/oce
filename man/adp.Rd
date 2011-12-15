@@ -37,7 +37,7 @@ par(mfrow=c(1,2))
 plot(adp, which="uv+ellipse+arrow")
 data(coastlineSLE)
 plot(coastlineSLE, clongitude=adp[["longitude"]], clatitude=adp[["latitude"]], span=50)
-points(adp[["longitude"]], adp[["latitude"]], cex=3, col="red")
+points(adp[["longitude"]], adp[["latitude"]], pch='+', cex=2, col='red')
 }
 
 \usage{data(adp)}
