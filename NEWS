@@ -1,5 +1,6 @@
 0.8-4
-- replace 'center' argument for plotting topography and coastline with clat and clon
+- replace 'center' argument for plotting topography and coastline with
+  clatitude and clongitude
 - add 'echosounder' class
 - fullFilename(): handle URLs properly
 - ADV objects: add access to slow variables (e.g. headingSlow)
