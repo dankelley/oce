@@ -1,3 +1,6 @@
+0.8-5
+- improve support for shapefile coastlines
+
 0.8-4
 - replace 'center' argument for plotting topography and coastline with
   clatitude and clongitude
