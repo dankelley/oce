@@ -55,14 +55,8 @@ setMethod(f="plot",
               dots <- list(...)
               dotsNames <- names(dots)
               gave.center <- !missing(clatitude) && !missing(clongitude)
-              if ("center" %in% dotsNames) {
-                  if (!gave.center) {
-                      clatitude <- center[1]
-                      clongitude <- center[2]
-                      gave.center <- TRUE
-                  }
-                  warning("please use 'clatitude' and 'clongitude' instead of 'center'")
-              }
+              if ("center" %in% dotsNames)
+                  stop("please use 'clatitude' and 'clongitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
               if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
               par(mgp=mgp, mar=mar)
