@@ -8,9 +8,9 @@ all: force
 	R --no-save <oce-demo-3.R
 	convert -background white -geometry '200x200' Rplots.pdf oce-demo-3-thumbmail.png
 	convert -background white -density '150x150' Rplots.pdf oce-demo-3.png
-	pygmentize -f html -O full -o oce-demo-3.html oce-demo-3.R
-	pygmentize -f html -O full -o oce-demo-1.html oce-demo-1.R
-	pygmentize -f html -O full -o oce-demo-2.html oce-demo-2.R
+	#pygmentize -f html -O full -o oce-demo-3.html oce-demo-3.R
+	#pygmentize -f html -O full -o oce-demo-1.html oce-demo-1.R
+	#pygmentize -f html -O full -o oce-demo-2.html oce-demo-2.R
 	make clean
 
 force:
