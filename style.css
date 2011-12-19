@@ -50,8 +50,7 @@ h1 {
     pre{
         -webkit-text-size-adjust:none;
         font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
-        margin-left: 1em;
-        font: 3em Arial, Helvetica, sans-serif;
+        margin-left: 0.5em;
     }
 }
 
