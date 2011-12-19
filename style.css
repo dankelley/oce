@@ -48,6 +48,7 @@ h1 {
         font: 3em Arial, Helvetica, sans-serif;
     }
     pre{
+        margin-top:1em;
         font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     }
 }
