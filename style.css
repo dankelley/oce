@@ -47,5 +47,9 @@ h1 {
         width:100%;
         font: 3em Arial, Helvetica, sans-serif;
     }
+    pre,code{
+        font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
+        font: 3em Arial, Helvetica, sans-serif;
+    }
 }
 
