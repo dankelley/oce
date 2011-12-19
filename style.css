@@ -4,7 +4,6 @@ a, a:visited {
  text-decoration: underline;
 }
 body{
-  background-color:white;
   font-family: helvetica,arial,freesans,clean,sans-serif;
   font-size:small;
 }
@@ -19,7 +18,6 @@ pre,code{
   margin-left: 1em;
   font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
   font-size:90%;
-  background:#FFE;
 }
 
 body *{line-height:1.4em;}
@@ -29,7 +27,6 @@ table.gallery {
 
 table.galleryitem, table.galleryitembottom a{
   text-align: center;
-  background:white;
 }
 div.center {
   text-align:center;
