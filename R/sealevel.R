@@ -1,9 +1,10 @@
 setMethod(f="initialize",
           signature="sealevel",
           definition=function(.Object, elevation, time) {
-              if (missing(elevation)) stop("must give elevation")
-              .Object@data$elevation <- elevation
-              if (!missing(time)) .Object@data$time <- time 
+              if (!missing(elevation))
+                  .Object@data$elevation <- elevation
+              if (!missing(time))
+                  .Object@data$time <- time 
               .Object@processingLog$time <- as.POSIXct(Sys.time())
               .Object@processingLog$value <- "create 'sealevel' object"
               return(.Object)
@@ -60,6 +61,7 @@ as.sealevel <- function(elevation,
 {
     if (missing(elevation))
         stop("must supply sealevel height, elevation, in metres")
+    rval <- new('sealevel')
     n <- length(elevation)
     if (missing(time)) {              # construct hourly from time "zero"
         start <- as.POSIXct("0000-01-01 00:00:00", tz="UTC")
@@ -90,7 +92,8 @@ as.sealevel <- function(elevation,
                      n=length(t),
                      deltat=deltat)
     logItem <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- new('sealevel', time=time, elevation=elevation)
+    rval@data$elevation <- elevation
+    rval@data$time <- time
     rval@metadata <- metadata
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
     rval
@@ -298,6 +301,7 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
     decimationMethod <- NA
     referenceOffset <- NA
     referenceCode <- NA
+    rval <- new('sealevel')
     if (substr(firstLine, 1, 12) == "Station_Name") { # type 2
         oceDebug(debug, "File is of format 1 (e.g. as in MEDS archives)\n")
         ## Station_Name,HALIFAX
@@ -413,7 +417,8 @@ read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getO
                      deltat=as.numeric(difftime(time[2], time[1], units="hours")))
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    rval <- new('sealevel', time=time, elevation=elevation)
+    rval@data$elevation <- elevation
+    rval@data$time <- time
     rval@metadata <- metadata
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()),sep="",collapse=""))
     rval
@@ -424,25 +429,10 @@ summary.sealevel <- function(object, ...)
     if (!inherits(object, "sealevel"))
         stop("method is only for sealevel objects")
     threes <- matrix(nrow=1, ncol=3)
-    info <- list(number=object@metadata$stationNumber,
-                 version=if (is.null(object@metadata$version)) "?" else object@metadata$version,
-                 name=object@metadata$stationName,
-                 region=if (is.null(object@metadata$region)) "?" else object@metadata$region,
-                 latitude=object@metadata$latitude,
-                 longitude=object@metadata$longitude,
-                 number=object@metadata$n,
-                 nonmissing=sum(!is.na(object@data$elevation)),
-                 deltat=object@metadata$deltat)#,
-#                 year=object@metadata$year,
-#                 startTime=min(object@data$time, na.rm=TRUE),
-#                 endTime=max(object@data$time, na.rm=TRUE),
-#                 gmtOffset=if (is.na(object@metadata$GMTOffset)) "?" else object@metadata$GMTOffset,
-#                 threes=threes,
-#                 processingLog=object@processingLog)
     cat("Sealevel Summary\n----------------\n\n")
-    showMetadataItem(object, "number",  "number:              ")
+    showMetadataItem(object, "stationNumber",  "number:              ")
     showMetadataItem(object, "version", "version:             ")
-    showMetadataItem(object, "name",    "name:                ")
+    showMetadataItem(object, "stationName",    "name:                ")
     showMetadataItem(object, "region",  "region:              ")
     showMetadataItem(object, "deltat",  "sampling delta-t:    ")
     cat("* Location:           ",       latlonFormat(object@metadata$latitude,

@@ -45,7 +45,7 @@ time <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT") + 7*360
 elevation <- tuk$V2
 sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
   stationName="Tuktoyaktuk", region="NWT", stationNumber=6485,
-  longitude=133.0292, latitude=69.43889,
+  longitude=-133.0292, latitude=69.43889,
   year=1975, GMTOffset=0)
 #save(sealevelTuktoyaktuk, file="oce/data/sealevelTuktoyaktuk.rda")
 } % preformatted
