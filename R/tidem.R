@@ -1,3 +1,21 @@
+setMethod(f="initialize",
+          signature="tidem",
+          definition=function(.Object) {
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'tidem' object"
+              return(.Object)
+          })
+
+setMethod(f="[[",
+          signature="tidem",
+          definition=function(x, i, j, drop) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("coef"))
+              if (i == "coef") return("FIXME: coef")
+              else stop("cannot access \"", i, "\"") # cannot get here
+          })
+#
 plot.tidem <- function(x,
                        which=1,
                        label.if=NULL,
@@ -9,7 +27,7 @@ plot.tidem <- function(x,
     draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
     {
         abline(v=frequency, col=col, lty="dotted")
-        if (frequency > par('usr')[2]) {
+        if (frequency <= par('usr')[2]) {
             if (is.null(adj))
                 mtext(name, side=side, at=frequency, col=col, cex=0.8)
             else
@@ -41,9 +59,9 @@ plot.tidem <- function(x,
     lw <- length(which)
     if (lw > 1) on.exit(par(opar))
     par(mgp=mgp, mar=mar)
-    frequency <- x$freq[-1] # trim z0
-    amplitude <- x$amplitude[-1]
-    name      <- x$name[-1]
+    frequency <- x@data$freq[-1] # trim z0
+    amplitude <- x@data$amplitude[-1]
+    name      <- x@data$name[-1]
     nc <- length(frequency)
     for (w in 1:lw) {
         if (which[w] == 2) {
@@ -308,7 +326,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     if (inherits(x, "sealevel")) {
         sl <- x
         oceDebug(debug, "'x' recognized as a sealevel object\n")
-        t <- x$data$time
+        t <- x@data$time
     } else {
         if (missing(t))
             stop("must supply 't', since 'x' is not a sealevel object")
@@ -405,7 +423,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     }
     nc <- length(freq)
     ## Check Rayleigh criterion
-    interval <- as.numeric(difftime(max(sl$data$time,na.rm=TRUE), min(sl$data$time,na.rm=TRUE), units="hours"))
+    interval <- as.numeric(difftime(max(sl@data$time,na.rm=TRUE), min(sl@data$time,na.rm=TRUE), units="hours"))
     drop.term <- NULL
     for (i in 1:nc) {
         cc <- which(tc2$name == kmpr[i])
@@ -425,15 +443,21 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         kmpr <- kmpr[-drop.term]
     }
     nc <- length(freq)
-    nt <- length(sl$data$elevation)
+    nt <- length(sl@data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-    hour <- unclass(as.POSIXct(sl$data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
-    centralindex <- floor(length(sl$data$t) / 2)
-    ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
-    ##    hour2pi <- 2 * pi * hour.wrt.centre
-    hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
-    hour2pi <- 2 * pi * hour.offset
+    hour <- unclass(as.POSIXct(sl@data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
+    if (TRUE) { # isolate test code
+        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+        t <- unclass(as.POSIXct(sl@data$time, tz="UTC")) - unclass(tRef)
+        hour2pi <- 2 * 4 * atan2(1,1) * t * 3600
+    } else {
+        ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
+        ##    hour2pi <- 2 * pi * hour.wrt.centre
+        hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
+        hour2pi <- 2 * pi * hour.offset
+    }
+    centralindex <- floor(length(sl@data$time) / 2)
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
     for (i in 1:nc) {
@@ -444,7 +468,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
-    elevation <- sl$data$elevation
+    elevation <- sl@data$elevation
     model <- lm(elevation ~ x, na.action=na.exclude)
     if (debug > 0)
         print(summary(model))
@@ -466,15 +490,18 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                                         # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
                                         #                == s * sin(t) + c * cos(t)
                                         # thus tan(phase) is -c/s
-        phase[i]     <- -atan2(-c, s)   # atan2(y,x)
+        phase[i] <- -atan2(-c, s)   # atan2(y,x)
                                         # FIXME: is the sign right?
-        p[i]         <- 0.5 * (p.all[is] + p.all[ic])
+        if (TRUE) { # isolate test code
+            ## adjust the phases as in webtide()
+        }
+        p[i] <- 0.5 * (p.all[is] + p.all[ic])
     }
     if (debug > 0)
         cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
 
-    centraltime <- as.POSIXct(sl$data$t[1] + 3600*centralindex, tz="UTC")
+    centraltime <- as.POSIXct(sl@data$t[1] + 3600*centralindex, tz="UTC")
     if (debug > 0) {
         cat("centraltime=")
         print(centraltime)
@@ -482,18 +509,16 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         cat("L199 index:",index,"(length=",length(index),")\n")
     }
 
-    if (is.null(latitude)) latitude <- sl$metadata$latitude
+    if (is.null(latitude)) latitude <- sl@metadata$latitude
     vuf <- tidemVuf(centraltime, c(0, index), latitude)
     vu <- c(0, (vuf$v + vuf$u) * 360)
     phase2 <- phase - vu                # FIXME: plus or minus??
     negate <- phase2 < 0
     phase2[negate] <- 360 + phase2[negate]
                                         #    phase <- phase2
-
     if (debug > 0)
         cat("vu=",vu,"\n")
-
-    rval <- list(model=model,
+    data <- list(model=model,
                  call=cl,
                  startTime=as.POSIXct(startTime),
                  const=c(1,   index),
@@ -503,57 +528,50 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                  phase=phase,
                  phase2=phase2,         # FIXME: remove later
                  p=p)
-    class(rval) <- "tidem"
-    oceDebug(debug, "\b\b} # tidem()\n")
+    rval <- new('tidem')
+    rval@metadata <- list(rc=rc)
+    rval@data <- data
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval
 }
 
 summary.tidem <- function(object, p, constituent, ...)
 {
-    n <- length(object$p)
-    if (!missing(p)) ok <- (object$p <= p) else ok = seq(1, n)
+    n <- length(object@data$p)
+    if (!missing(p)) ok <- (object@data$p <= p) else ok = seq(1, n)
     if (missing(constituent)) {
-        fit <- data.frame(Const=object$const[ok],
-                          Name=object$name[ok],
-                          Freq=object$freq[ok],
-                          Amplitude=object$amplitude[ok],
-                          Phase=object$phase[ok],
-                          p=object$p[ok])
-    }
-    else {
-        i <- which(object$name==constituent)
+        fit <- data.frame(Const=object@data$const[ok],
+                          Name=object@data$name[ok],
+                          Freq=object@data$freq[ok],
+                          Amplitude=object@data$amplitude[ok],
+                          Phase=object@data$phase[ok],
+                          p=object@data$p[ok])
+    } else {
+        i <- which(object@data$name==constituent)
         if (length(i) == 0)
             stop("there is no such constituent '", constituent, "'")
-        fit <- data.frame(Const=object$const[i],
-                          Name=object$name[i],
-                          Freq=object$freq[i],
-                          Amplitude=object$amplitude[i],
-                          Phase=object$phase[i],
+        fit <- data.frame(Const=object@data$const[i],
+                          Name=object@data$name[i],
+                          Freq=object@data$freq[i],
+                          Amplitude=object@data$amplitude[i],
+                          Phase=object@data$phase[i],
                           p=p)
     }
-    misfit <- sqrt(var(object$model$residuals))
-    rval <- list(fit=fit, startTime=as.POSIXct(object$startTime), call=object$call,
-                 misfit=misfit)
-    class(rval) <- c("summary.tidem")
-    rval
-}
-
-print.summary.tidem <- function(x, digits=max(6, getOption("digits") - 1),
-                                signif.stars= getOption("show.signif.stars"),
-                                ...)
-{
+    cat("tidem summary\n-------------\n")
     cat("\nCall:\n")
-    cat(paste(deparse(x$call), sep="\n", collapse="\n"), "\n", sep="")
+    cat(paste(deparse(object@data$call), sep="\n", collapse="\n"), "\n", sep="")
     cat("\nStart time: ",
-        paste(as.character(x$startTime),as.character(attr(x$startTime,"tz"))), "\n")
-    cat("RMS misfit to data: ", x$misfit, "\n")
+        paste(as.character(object@data$startTime),as.character(attr(object@data$startTime,"tz"))), "\n")
+    cat("RMS misfit to data: ", sqrt(var(object@data$model$residuals)), '\n')
     cat("\nFitted model:\n")
-    f <- x$fit[3:6]
-    rownames(f) <- as.character(x$fit[,2])
+    f <- fit[3:6]
+    rownames(f) <- as.character(fit[,2])
+    digits <- 5
     printCoefmat(f, digits=digits,
-                 signif.stars=signif.stars, signif.legend=TRUE,
+                 signif.stars=getOption("show.signif.stars"),
+                 signif.legend=TRUE,
                  P.values=TRUE, has.Pvalue=TRUE, ...)
-    invisible(x)
+    processingLogShow(object)
 }
 
 predict.tidem <- function(object, newdata, ...)
@@ -561,14 +579,14 @@ predict.tidem <- function(object, newdata, ...)
     if (!missing(newdata) && !is.null(newdata)) {
         newdata.class <- class(newdata)
         if (inherits(newdata, "POSIXt")) {
-            freq <- object$freq[-1]     # drop first (intercept)
-            name <- object$name[-1]     # drop "z0" (intercept)
+            freq <- object@data$freq[-1]     # drop first (intercept)
+            name <- object@data$name[-1]     # drop "z0" (intercept)
             nc <- length(freq)
             hour <- unclass(as.POSIXct(newdata, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00 (FIXME: is tz OK??)
             nt <- length(hour)
             x <- array(dim=c(nt, 2 * nc))
             x[,1] <- rep(1, nt)
-            hour.offset <- unclass(hour - unclass(as.POSIXct(object$startTime, tz="UTC"))/3600)
+            hour.offset <- unclass(hour - unclass(as.POSIXct(object@data$startTime, tz="UTC"))/3600)
             hour2pi <- 2 * pi * hour.offset
             for (i in 1:nc) {
                 omega.t <- freq[i] * hour2pi
@@ -578,12 +596,80 @@ predict.tidem <- function(object, newdata, ...)
             name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
             dim(name2) <- c(2 * length(name), 1)
             colnames(x) <- name2
-            rval <- predict(object$model, newdata=list(x=x), ...)
+            rval <- predict(object@data$model, newdata=list(x=x), ...)
         } else {
             stop("newdata must be of class POSIXt")
         }
     } else {
-        rval <- predict(object$model, ...)
+        rval <- predict(object@data$model, ...)
     }
     as.numeric(rval)
 }
+
+webtide <- function(action=c("map", "predict"), latitude, longitude, time,
+                    basedir="/usr/local/WebTide", region="nwatl", plot=TRUE)
+{
+    action <- match.arg(action)
+    subdir <- paste(basedir, "/data/", region, sep="")
+    filename <- paste(subdir, "/", region, "_ll.nod", sep="")
+    triangles <- read.table(filename, col.names=c("triangle","longitude","latitude"))
+    if (action == "map") {
+        if (interactive() && missing(latitude) && missing(longitude)) {
+            asp <- 1 / cos(pi/180*mean(range(triangles$latitude, na.rm=TRUE)))
+            plot(triangles$longitude, triangles$latitude, pch=2, cex=1/8, lwd=1/8, asp=asp, xlab="", ylab="")
+            par(mfrow=c(1,1), mar=c(3,3,2,1), mgp=c(2,0.7,0))
+            point <- locator(1)
+            node <- which.min(geodDist(triangles$latitude, triangles$longitude, point$y, point$x))
+            longitude <- triangles$longitude[node]
+            latitude <- triangles$latitude[node]
+            points(longitude, latitude, pch=20, cex=2, col='red')
+        } else  {
+            node <- 1
+            longitude <- triangles$longitude[node]
+            latitude <- triangles$latitude[node]
+        }
+        return(list(latitude=latitude, longitude=longitude))
+    } else {
+        if (missing(time))
+            stop("must supply list of times in 'time'")
+        node <- which.min(geodDist(triangles$latitude, triangles$longitude, latitude, longitude))
+        constituentse <- dir(path=subdir, pattern="*.s2c")
+        abbrev <- substr(constituentse, 1, 2)
+        constituentsuv <- dir(path=subdir, pattern="*.v2c")
+        nconstituents <- length(constituentse)
+        period <- ampe <- phasee <- ampu <- phaseu <- ampv <- phasev <- vector("numeric", length(nconstituents))
+        data(tidedata)
+        tidedata  <- get("tidedata",   pos=globalenv())
+        for (i in 1:nconstituents) {
+            period[i]  <- 1/tidedata$const$freq[which(abbrev[i] == tidedata$const$name)]
+            cone <- read.table(paste(subdir,constituentse[i],sep="/"), skip=3)[node,]
+            ampe[i] <- cone[[2]]
+            phasee[i] <- cone[[3]]
+            conuv <- read.table(paste(subdir,constituentsuv[i],sep="/"), skip=3)[node,]
+            ampu[i] <- conuv[[2]]
+            phaseu[i] <- conuv[[3]]
+            ampv[i] <- conuv[[4]]
+            phasev[i] <- conuv[[5]]
+        }
+        df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
+        elevation <- u <- v <- rep(0, length(time))
+        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+        h <- (as.numeric(time) - as.numeric(tRef)) / 3600
+        for (i in 1:nconstituents) {
+            vuf <- oce:::tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
+            phaseOffset <- (vuf$u + vuf$v) * 360
+            elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
+            u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
+            v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
+        }
+        if (plot) {
+            par(mfrow=c(3,1))
+            oce.plot.ts(time, elevation, type='l', xlab="", ylab=resizableLabel("elevation"), 
+                        main=sprintf("node %d:  %.6f N   %.6f E", node, latitude, longitude, xlab=""))
+            oce.plot.ts(time, u, type='l', xlab="", ylab=resizableLabel("u"), drawTimeRange=FALSE)
+            oce.plot.ts(time, v, type='l', xlab="", ylab=resizableLabel("v"), drawTimeRange=FALSE)
+        }
+    }
+    invisible(list(time=time, elevation=elevation, u=u, v=v, node=node, basedir=basedir, region=region))
+}
+

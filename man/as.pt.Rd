@@ -7,7 +7,7 @@
 \description{Create an pt temperature-depth recorder file, producing an object of type \code{pt}.}
 
 \usage{ as.pt(time, temperature, pressure,
-      filename="", instrumentType="rbr", serialNumber="",
+      filename="", instrumentType="rbr", serialNumber="", model="", pressureAtmospheric=NA,
       processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -17,6 +17,8 @@
   \item{filename}{optional name of file containing the data}
   \item{instrumentType}{type of instrument}
   \item{serialNumber}{serial number for instrument}
+  \item{model}{instrument model type, e.g. \code{"RBRduo"}}
+  \item{pressureAtmospheric}{optional atmospheric pressure, in the same unit as seawater pressure}
   \item{processingLog}{if provided, the action item to be stored in the
     log.  (Typically only provided for internal calls; the default that
     it provides is better for normal calls by a user.)}
@@ -45,8 +47,8 @@
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{This is used by \code{\link{read.pt}}, and the help for the latter
-   function lists other relevant functions.}
+\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+    PT objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
 

@@ -1,13 +1,15 @@
 \name{plot.section}
 
 \alias{plot.section}
+\alias{plot,section,missing-method}
+\alias{plot,section-method}
 
 \title{Plot a CTD section}
 
 \description{Plot a CTD section.}
 
-\usage{\method{plot}{section}(x,
-     which=1:4,
+\usage{\S4method{plot}{section}(x,
+     which=c("salinity", "temperature", "sigmaTheta", "map"),
      at=NULL,
      labels=TRUE,
      grid=FALSE,
@@ -34,11 +36,10 @@
     \code{\link{makeSection}}.}
   \item{which}{list of desired plot types.  There may be up to four
     panels in total, and the desired plots are placed in these panels,
-    in reading order. Set \code{which=1} or \code{"temperature"} to
-    contour temperature, to \code{2} or \code{"salinity"} to contour
-    salinity, to \code{3} or \code{"sigmaTheta"} to contour
-    \code{sigmaTheta}, or to \code{4} or \code{"map"} to plot a map of station
-    locations.  If only one panel is plotted, \code{par} is not
+    in reading order.  The codes for the plot types are explained in the 
+    \dQuote{Details} section.
+   
+    If only one panel is plotted, \code{par} is not
     adjusted, which makes it easy to add to the plot with subsequent
     plotting commands.}
   \item{at}{if \code{NULL} (the default), the x axis will indicate the
@@ -50,10 +51,8 @@
     the x axis, or a vector that is a list of labels to be placed at the x
     positions indicated by \code{at}.} 
   \item{grid}{if \code{TRUE}, points are drawn at data locations.}
-  \item{contourLevels}{if not \code{NULL}, and if a \code{field} was
-    specified, this specifies contour levels (see details)}
-  \item{contourLabels}{if not \code{NULL}, and if a \code{field} was
-    specified, this specifies contour labels (see details)}
+  \item{contourLevels}{optional contour levels}
+  \item{contourLabels}{optional contour labels}
   \item{stationIndices}{optional list of the indices of stations to
     use.  Note that an index is \emph{not} a station number, e.g. to
     show the first 4 stations, use \code{station.indices=1:4}.}
@@ -69,7 +68,8 @@
     helpful in ensuring that a recognizable coastline can be seen}
   \item{xtype}{type of x axis, for contour plots, either
     \code{"distance"} for distance (in km) to the first point in the
-    section, or \code{"track"} for distance along the cruise track.
+    section, \code{"track"} for distance along the cruise track,
+    or \code{"longitude"} or \code{"latitude"}.
     Note that if the x values are not in order, they will be put in
     order (which may make no sense) and a warning will be printed.}
   \item{ytype}{type of y axis for contour plots, either
@@ -94,31 +94,36 @@
     e.g. using \code{labcex=1} will increase the size of contour labels.}
 }
 
-\details{Creates a summary plot for a CTD section. If a \code{field} is
-  supplied, then just that single field is contoured. If no \code{field}
-  is supplied, then temperature, salinity, and sigma are contoured. A
-  location plot is also drawn if a \code{coastline} is provided; in
-  this, the first station in the section is indicated with a different
-  symbol than the rest.
-
-  The y-axis for the contours is pressure, plotted in the conventional
-  reversed form, so that the water surface appears at the top of the
-  plot. The x-axis is more complicated. If \code{at} is not supplied,
-  then the routine calculates x as the distance between the first
-  station in the section and each of the other stations. (This will
-  produce an error if the stations are not ordered geographically,
-  because the \code{\link{contour}} routine cannot handle non-increasing
-  axis coordinates.) If \code{at} is specified, then it is taken to be
-  the location, in arbitrary units, along the x-axis of labels specified
-  by \code{labels}; the way this works is designed to be the same as for
-  \code{\link{axis}}.
+\details{Creates a summary plot for a CTD section, with one panel for each
+    value of \code{which}.  The codes are as follows.
+    \itemize{ 
+        \item \code{which=1} or \code{"temperature"} for temperature contours
+        \item \code{which=2} or \code{"salinity"} for salinity contours
+        \item \code{which=3} or \code{"sigmaTheta"} for sigma-theta contours
+        \item \code{which=4} or \code{"nitrate"} for nitrate concentration contours
+        \item \code{which=5} or \code{"nitrite"} for nitrite concentration contours
+        \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
+        \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
+        \item \code{which=8} or \code{"silicate"} for silicate concentration contours
+        \item \code{which=99} or \code{"map"} for a location map
+    }
+    The y-axis for the contours is pressure, plotted in the conventional
+    reversed form, so that the water surface appears at the top of the plot.
+    The x-axis is more complicated. If \code{at} is not supplied, then the
+    routine calculates x as the distance between the first station in the
+    section and each of the other stations. (This will produce an error if the
+    stations are not ordered geographically, because the \code{\link{contour}}
+    routine cannot handle non-increasing axis coordinates.) If \code{at} is
+    specified, then it is taken to be the location, in arbitrary units, along
+    the x-axis of labels specified by \code{labels}; the way this works is
+    designed to be the same as for \code{\link{axis}}.
 }
 
 \value{None.}
 
-\seealso{Sections may be created with \code{\link{makeSection}} or
-  \code{\link{read.section}}, and may be summarized with
-  \code{\link{summary.section}}.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
 
 \examples{
 library(oce)
@@ -129,7 +134,7 @@ plot(section, coastline=coastlineHalifax)
 
 # Gulf Stream
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0,2000,100))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))

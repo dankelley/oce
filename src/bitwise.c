@@ -454,3 +454,22 @@ SEXP match3bytes(SEXP buf, SEXP m1, SEXP m2, SEXP m3)
   UNPROTECT(5);
   return(res);
 }
+void dan(int *n, long int *in, unsigned long int *out)
+{
+  if (*n < 1)
+    error("invalid n (%d); must be 1 or higher ", *n);
+  for (int i = 0; i < (*n); i++) {
+    *out++ = (unsigned int) *in++;
+    Rprintf("i=%d in=%d:%d out=%d\n", i, *in, *in, *out);
+  }
+}
+
+// create (*n) unsigned 16-bit little-endian int values from 2*(*n) bytes, e.g.
+// .C("uint16_le", as.raw(c(0x01, 0x02)), 1L, res=integer(1))$res
+void uint16_le(unsigned char *b, int *n, int *out)
+{
+  for (int i = 0; i < *n; i++) {
+    out[i] = (int)b[2*i] + 256 * (int)b[1+2*i];
+  }
+}
+

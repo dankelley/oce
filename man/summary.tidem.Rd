@@ -5,24 +5,14 @@
 
 \title{Summarize a tide-model object}
 
-\usage{
-\method{summary}{tidem}(object, p, constituent, \dots)
-
-\method{print}{summary.tidem}(x, digits=max(6, getOption("digits")-1),
-      signif.stars= getOption("show.signif.stars"), \dots)
-}
+\usage{\method{summary}{tidem}(object, p, constituent, \dots)}
 
 \arguments{
   \item{object}{an object of class \code{"tidem"}, usually, a result of a
     call to \code{tidem}.}
-  \item{x}{an object of class \code{"tidem"}, usually, a result of a
-    call to \code{summary.tidem}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{p}{optional value of the maximum p value for the display of an
     individual coefficient.  If not given, all coefficients are shown.}
   \item{constituent}{optional name of constituent on which to focus.}
-  \item{signif.stars}{logical. If \code{TRUE}, \sQuote{significance
-      stars} are printed for each value.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 

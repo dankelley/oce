@@ -1,10 +1,14 @@
 pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
+                   plot=TRUE,
                    debug=getOption("oceDebug"), ...)
 {
+    ##http://octave.svn.sourceforge.net/viewvc/octave/trunk/octave-forge/main/signal/inst/pwelch.m
+
     hamming.local <- function (n) # avoid having to pull in the signal library
     {
-        if (!(n == round(n) && n > 0))
-            stop("n must be a positive integer > 0")
+        n <- round(n)
+        if (n < 0)
+            stop("n must round to a positive integer")
         if (n == 1)
             c = 1
         else {
@@ -30,9 +34,11 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     gave.window <- !missing(window)
     gave.nfft <- !missing(nfft)
     gave.fs <- !missing(fs)
-    oceDebug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, ...) {\n",
+    gave.noverlap <- !missing(noverlap)
+    oceDebug(debug, sprintf("\b\bpwelch(x, window=%s, nfft=%s, fs=%s, noverlap=%s, ...) {\n",
                              if (gave.window) window else "(not given)",
                              if (gave.nfft) nfft else "(not given)",
+                             if (gave.noverlap) noverlap else "(not given)",
                              if (gave.fs) fs else "(not given)"))
     if (is.ts(x)) {
         if (missing(fs))
@@ -56,7 +62,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
             stop("if both 'window' and 'nfft' are given, then length(window) must equal nfft")
         if (length(window) == 1) {
             window <- hamming.local(floor(x.len / window))
-        } else {
+        } else if (!is.vector(window)) {
             stop("for now, 'window' may only be a list of numbers, or a single number")
         }
     } else {
@@ -67,7 +73,12 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
                 nfft <- x.len
             window <- hamming.local(nfft)
         } else {
-            window <- hamming.local(floor(x.len / 8))
+            if (gave.noverlap) {
+                windowLength <- min(x.len, floor(x.len / 8))
+            } else {
+                windowLength <- min(x.len, floor(x.len / 8 / 0.5))
+            }
+            window <- hamming.local(windowLength)
         }
     }
     normalization <- mean(window^2)
@@ -97,8 +108,8 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
         args$detrend <- TRUE
     while (TRUE) {
         oceDebug(debug, "  subspectrum at indices ", start, "to", end, "\n")
-        xx <- ts(window * x[start:end], frequency=fs)
-        args$x <- xx
+        xx <- ts(window * detrend(x[start:end]), frequency=fs)
+        args$x <- as.vector(xx)
         s <- do.call(spectrum, args=args)
         if (nrow == 0)
             freq <- s$freq
@@ -113,5 +124,14 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
     oceDebug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
     oceDebug(debug, "\b\b} # pwelch()\n")
-    list(freq=freq, spec=2*apply(psd, 2, mean), nwindow=nrow)
+    rval <- list(freq=freq, spec=apply(psd, 2, mean), 
+                 method="Welch", series=deparse(substitute(x)),
+                 df=s$df * (x.len / length(window)),
+                 bandwidth=s$bandwidth, # FIXME: wrong formulae
+                 demean=FALSE, detrend=TRUE)
+    class(rval) <- "spec"
+    if (plot) {
+        plot(rval, ...)
+        return(invisible(rval))
+    } else return(rval)
 }

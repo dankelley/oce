@@ -15,12 +15,13 @@
 
 \value{A new \code{ctd} object.}
 
-\seealso{\code{read.ctd} reads a \code{ctd} object, and \code{write.ctd} writes one.}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
 data(ctd) 
-ctd$data$p <- ctd$data$p + 3 # adjust pressures
+ctd@data$pressure <- ctd@data$pressure + 3
 ctdNew <- ctdUpdateHeader(ctd)
 }
 

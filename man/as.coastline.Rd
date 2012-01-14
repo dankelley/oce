@@ -4,10 +4,11 @@
 \description{
   Coerces a sequence of latitudes and longitudes into a coastline dataset.
 }
-\usage{as.coastline(latitude, longitude)}
+\usage{as.coastline(latitude, longitude, fillable)}
 \arguments{
   \item{latitude}{the latitude in decimal degrees, positive north of the equator.}
   \item{longitude}{the longitude in decimal degrees, positive north of Greenwich.}
+  \item{fillable}{boolean indicating whether the coastline can be drawn as a filled polygon.}
 }
 \details{
 This may be used when \code{\link{read.coastline}} cannot read a file, or when
@@ -16,11 +17,10 @@ the data have been manipulated.
 
 \value{An object of \code{\link[base]{class}} \code{"coastline"} (for details, see \code{\link{read.coastline}}).}
 
-\seealso{
-You may also use \code{\link{read.coastline}} to read a coastline file.
-Plotting is typically done with \code{\link{plot.coastline}}, although
-it is sufficient to just use \code{plot} for coastline objects.
-}
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
+
 \examples{
 \dontrun{
 d<-read.table("bbasin.dat",header=FALSE) # dataset not provided with oce

@@ -1,7 +1,6 @@
 \name{summary.adv}
 
 \alias{summary.adv}
-\alias{print.summary.adv}
 
 \title{Summarize an ADV object}
 
@@ -9,15 +8,11 @@
 
 \usage{
 \method{summary}{adv}(object, \dots)
-\method{print}{summary.adv}(x, digits=max(5, getOption("digits")-1), \dots)
 }
 
 \arguments{
   \item{object}{an object of class \code{"adv"}, usually, a result of a
     call to \code{\link{read.adv}}.}
-  \item{x}{an object of class \code{"summary.adv"}, usually, a result of a
-    call to \code{summary.adv}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 
@@ -26,7 +21,8 @@
 \value{An object of class \code{"summary.adv"}, which contains
   pertinent information about the ADV record and its processing.}
 
-\seealso{A \code{adv} object may be read with \code{\link{read.adv}}.}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

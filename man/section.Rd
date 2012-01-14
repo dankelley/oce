@@ -4,10 +4,6 @@
 \description{A CTD section running the length of Halifax Harbour}
 \usage{data(section)}
 
-\format{The individual stations are available as \code{ctd} objects, in
-  \code{section$data$station[[i]]}, with \code{i} in the range from 1 to
-  7.}
-
 \source{This section is based on measurements made during October of
   2003 in Halifax Harbour by students in the \emph{Introduction to
   Physical Oceanography} class at Dalhousie University.  The course was
@@ -29,7 +25,7 @@ stn12 <- oceEdit(stn12, "latitude", 44 + 39.894 / 60,
                  reason="typo in lat minutes", person="Dan Kelley")
 stn13 <- ctdTrim(read.ctd("BED0313.CNV", station="13"))
 stn15 <- ctdTrim(read.ctd("BED0315.CNV", station="15"))
-stn15 <- oceEdit(stn15, "latitude", stn15$metadata$latitude + 1,
+stn15 <- oceEdit(stn15, "latitude", stn15@metadata$latitude + 1,
                  reason="typo in lat degrees", person="Dan Kelley")
 section <- makeSection(stn08,stn09,stn10,stn01,stn11,stn12,stn13,stn15)
 section <- oceEdit(section, "sectionId",  "Halifax-Harbour-2003-oct",
@@ -48,8 +44,9 @@ data(coastlineHalifax)
 plot(section, coastline=coastlineHalifax, grid=TRUE)
 }
 
-\references{A summary of the stations can be obtained from \code{\link{summary.section}},
-and a plot can be created with \code{\link{plot.section}}.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the functions dealing with
+    them.}
 
 \author{Dan Kelley}
 

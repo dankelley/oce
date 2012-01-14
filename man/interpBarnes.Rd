@@ -44,17 +44,17 @@ library(oce)
 
 # Contouring example, with wind-speed data from Koch et al. (1983)
 data(wind)
-u <- interpBarnes(wind$x, wind$y, wind$u)
+u <- interpBarnes(wind$x, wind$y, wind$z)
 contour(u$xg, u$yg, u$zg, col="red", labcex=1)
-text(wind$x, wind$y, wind$u, cex=0.7, col="blue")
+text(wind$x, wind$y, wind$z, cex=0.7, col="blue")
 
 # One-dimensional example, smoothing a salinity profile
 data(ctd)
-p <- ctd$data$pressure
+p <- pressure(ctd)
 y <- rep(1, length(p)) # fake y data, with arbitrary value
-S <- ctd$data$salinity
+S <- salinity(ctd)
 pg <- pretty(p, n=100)
-g <- interpBarnes(p, y, S, xg=pg, xr=2)
+g <- interpBarnes(p, y, S, xg=pg, xr=1)
 plot(S, p, cex=0.5, col="blue", ylim=rev(range(p)))
 lines(g$zg, g$xg, col="red")
 }
@@ -63,6 +63,8 @@ lines(g$zg, g$xg, col="red")
   interactive Barnes objective map anlaysis scheme for use with
   satellite and conventional data,'' \emph{J.  Climate Appl.  Met.}, vol
   22, p. 1487-1503.}
+
+\seealso{See \code{\link{wind}}.}
 
 \author{Dan Kelley}
 

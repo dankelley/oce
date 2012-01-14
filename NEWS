@@ -1,5 +1,69 @@
+0.8-5
+- improve support for shapefile coastlines
+
+0.8-4
+- replace 'center' argument for plotting topography and coastline with
+  clatitude and clongitude
+- add 'echosounder' class
+- fullFilename(): handle URLs properly
+- ADV objects: add access to slow variables (e.g. headingSlow)
+
+0.8-3
+- add 'met' class
+- subset.oce() handles section objects
+- draw.section(): permit xtype="latitude" or "longitude"
+- imagpe() has drawPalette="space" option
+
+0.8-2
+- fix bug in read.coastline(), reversing lon and lat [issue162]
+- fix bug in S4 adp validity checker
+- geodDist(): add argument 'alongPath'
+- remove compilation warning about doc for summary.ctd()
+
+0.8-1
+- switch to S4 classes, and add new accessors and 'show' functions.
+- add support for RBR 'rsk' files
+- plot.section() now uses 'col' if supplied
+
+0.7-1
+- improve oceColorsJet()
+- improve plotProfile() vertical range with missing data
+- add data(drag)
+- plotProfile() and plot.ctd(): add xtype="spice"
+- add data(geosecs235)
+- plotProfile() and plot.ctd(): add argument 'keepNA'
+- as.ctd(): add arguments 'other' and 'missingValue'
+- read.lobo(): tolerate more formats, including missing velocities
+- add data(schmitt)
+- add accessor spice()
+- handle O2 and nutrients in CTD data and sections
+- swSCTp(): use surface pressure as a default
+- plotTS(): add arguments inSitu and referencePressure
+- plotTS(): handle section objects
+- fix bugs reported in issues 150, 151, 153, 155, 156
+- imagep(): change default drawContours to FALSE
+
+0.6-1
+- add 'adv' dataset
+- generalize swN2() by adding new arg 'derivs'
+- oce.plot.ts() gets new arg 'axes'
+- add accessor distance()
+- rename to plotTS() and plotScan() to avoid S3 check warnings
+- switch makeFilter's argument asKernel to TRUE
+
+0.5-1
+- add support for ARGO drifters
+- latitude() and longitude(): new argument to repeat byDepth
+- addCtdColumn(): replace if column already exists
+- add CTD accessors for latitude, longitude, pressure, salinity, temperaure
+
 0.4-1
-- add CTD accessors longitude(), latitude(), and time()
+- plot.sealevel(): only show 3 panels, for clarity
+- plot.ctd(): add argument 'type'
+- imagep(): handle x, y, and z as image() does
+- oce.plot.ts(): inferred ylim matches data range within provided xlim
+- read.adv.nortek(): handle extra analog data
+- add CTD accessors longitude(), latitude(), time(), elevation(), etc
 
 0.3-1
 - add read.oce.odf()

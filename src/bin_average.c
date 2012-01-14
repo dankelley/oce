@@ -1,4 +1,5 @@
 #include <R.h>
+#include <Rdefines.h>
 #include <Rinternals.h>
 
 /*
@@ -22,17 +23,18 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     if (*nx < 1)
         error("invalid vector length (%d)", *nx);
     if (*xmin >= *xmax)
-        error("cannot have xmin (%f) larger than or equal to xmax (%f)", *xmin, *xmax);
+        error("xmin (%f) may not exceed xmax (%f)", *xmin, *xmax);
     if (*xinc <= 0)
         error("cannot have non-positive xinc (%f)", *xinc);
     // 'b' stands for bin
-    int nb = (int)floor(((*xmax - *xmin) / *xinc));
+    //int nb = (int)floor(((*xmax - *xmin) / *xinc));
+    int nb = (int)floor(1.0 + ((*xmax - *xmin) / *xinc));
     if (nb < 1)
         error("calculated number of regions (%d) is less than 1", nb);
 #ifdef DEBUG
     Rprintf("nb=%d\n", nb);
 #endif
-    int *num = (int*)R_alloc(nb, sizeof(int));
+    int *num = (int*)R_alloc(nb, sizeof(int)); // R will clean up memory after .C() returns
     for (int b = 0; b < nb; b++) {
         num[b] = 0;
         means[b] = 0.0;
@@ -41,7 +43,7 @@ void bin_average(int *nx, double *x, double *y, double *xmin, double *xmax, doub
     for (int i = 0; i < *nx; i++) {
         if (ISNA(y[i]))
             continue;
-        b = (int)floor((x[i] - *xmin) / *xinc);
+        b = (int)floor(0.5 + (x[i] - *xmin) / *xinc);
 #ifdef DEBUG
         if (b > 131 & b < 133)
             Rprintf("i=%d x=%f  y=%f  b=%d\n", i, x[i], y[i], b);

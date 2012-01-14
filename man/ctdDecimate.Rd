@@ -48,25 +48,23 @@ procedure, but it can be avoided as follows
 
 \preformatted{
 xd <- ctdDecimate(x)
-xd$data$sigmaTheta <- swSigmaTheta(xd$data$salinity, 
-  xd$data$temperature, xd$data$pressure)
+xd@data$sigmaTheta <- swSigmaTheta(xd@data$salinity, 
+  xd@data$temperature, xd@data$pressure)
 } % preformatted
 } %details
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with pressures that are as set by the \code{"p"} parameter. In other respects, the return value is identical with the input \code{ctd} object (apart from its having an additional log entry indicating that the data have been altered.)}
 
-\seealso{A \code{ctd} object may be read with \code{\link{read.ctd}},
-  and \code{\link{ctdTrim}} is useful in trimming spurious data
-  (e.g. those obtained during the upcast).
-}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
 data(RRprofile)
 ctd <- as.ctd(RRprofile$salinity,RRprofile$temperature,RRprofile$depth)
-plot.profile(ctd, "T", Tlim=c(2,9))
+plotProfile(ctd, "T", Tlim=c(2,9))
 ctd2 <- ctdDecimate(ctd,p=seq(0,2000,1),method="reiniger-ross")
-lines(ctd2$data$temperature, ctd2$data$pressure, col="blue")
+lines(temperature(ctd2), pressure(ctd2), col="blue")
 }
 
 \references{R.F. Reiniger and C.K. Ross, 1968.  A method of

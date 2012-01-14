@@ -21,9 +21,10 @@ toEnu(x, \dots)
   \item{\dots}{extra arguments that are passed on to the called function.}
 }
 
-\value{An object of the same type as \code{x}, but with \code{data$v}
+\value{An object of the same type as \code{x}, but with \code{x@data$v}
     converted from beam coordinates to xyz coordinates, and with
-    \code{metadata$oceCoordinate} changed from \code{"beam"} to \code{"xyz"}.}
+    \code{x@metadata$oceCoordinate} changed from \code{"beam"} to
+    \code{"xyz"}.}
 
 \details{Each of these functions checks the type of object, and calls the
     corresponding function, as appropriate.  For example, \code{beamToXyz}

@@ -26,10 +26,9 @@
   Creative Commons license
   (\url{http://creativecommons.org/licenses/by-sa/3.0/}).}
 
-\seealso{Coastlines may be read with
-\code{\link{read.coastline}}, or created with
-\code{\link{as.coastline}}; see these for details of the data format.  Other coastline datasets provided with
-oce are \code{\link{coastlineHalifax}} and \code{\link{coastlineMaritimes}}.}
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
 
 \author{Dan Kelley}
 

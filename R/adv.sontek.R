@@ -70,21 +70,24 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     serialNumber <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
     velocityScale <- 0.1e-3
-    v <- array(numeric(), dim=c(len, 3))
-    v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
-    v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
-    v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
-    a <- array(raw(), dim=c(len, 3))
-    a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    a[,3] <- as.raw(readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    c <- array(raw(), dim=c(len, 3))
-    c[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    c[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    c[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
-    pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
-
+    time <- start[1] + (serialNumber - serialNumber[1]) * deltat
+    deltat <- mean(diff(as.numeric(time))) # FIXME: should rename this to avoid confusion
+    res <- new("adv", time=time, filename=filename)
+    ## FIXME: emulate this direct injection in other functions, in hopes of reducing memory footprint
+    res@data$v <- array(numeric(), dim=c(len, 3))
+    res@data$v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    res@data$v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    res@data$v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    res@data$a <- array(raw(), dim=c(len, 3))
+    res@data$a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$a[,3] <- as.raw(readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$c <- array(raw(), dim=c(len, 3))
+    res@data$c[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$c[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$c[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
+    res@data$pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
     ## FIXME: Sontek ADV transformation matrix equal for all units?  (Nortek Vector is not.)
     ## below for sontek serial number B373H
     ## Transformation Matrix ----->    2.710   -1.409   -1.299
@@ -99,43 +102,33 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     ##                              c(  291,  9716, -10002),
     ##                              c( 1409,  1409,   1409)) / 4096
     transformationMatrix <- NULL
-    time <- start[1] + (serialNumber - serialNumber[1]) * deltat
-    deltat <- mean(diff(as.numeric(time)))
     metadata <- list(manufacturer="sontek",
                      instrumentType="adv",
                      filename=filename,
                      latitude=latitude,
                      longitude=longitude,
-                     numberOfSamples=dim(v)[1],
-                     numberOfBeams=dim(v)[2],
+                     numberOfSamples=len,
+                     numberOfBeams=3,
                      serialNumber="?",
                      transformationMatrix=transformationMatrix,
                      measurementStart=time[1],
                      measurementEnd=time[length(time)],
                      measurementDeltat=deltat,
-                     subsampleStart=time[1],
-                     subsampleEnd=mean(diff(as.numeric(time))),
+                     subsampleStart=time[1], # FIXME: this seems wrong
+                     subsampleEnd=time[length(time)], # FIXME: this seems wrong
                      subsampleDeltat=deltat,
                      coordinateSystem="xyz", # guess
                      oceCoordinate="xyz",    # guess
                      orientation="upward") # guess
-
-    nt <- length(time)
-    data <- list(v=v,
-                 a=a,
-                 c=c,
-                 time=time,
-                 heading=rep(0, nt), # user will need to fill this in
-                 pitch=rep(0, nt), #  user will need to fill this in
-                 roll=rep(0, nt),  # user will need to fill this in
-                 temperature=temperature,
-                 pressure=pressure)
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
+    res@data$heading <- rep(0, len)
+    res@data$pitch <- rep(0, len)
+    res@data$roll <- rep(0, len)
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    hitem <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=hitem)
-    class(res) <- c("sontek", "adv", "oce")
+    res@processingLog <- processingLog(res@processingLog, processingLog)
+    gc()
     res
 }
 
@@ -248,11 +241,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
             stop("cannot handle data files for ADV files that lack pressure data")
 
         ## we report pressure in dbar, so use the fact that 1 nanobar/count = 1e-8 dbar/count
-        metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little", signed=FALSE)
+        metadata$pressureScale <- 1e-8 * readBin(hardwareConfiguration[9:12], "integer", size=4, n=1, endian="little")
         oceDebug(debug, "pressureScale=", metadata$pressureScale,"dbar/count (header gives in nanobar/count)\n")
 
         ## we report pressure in dbar, so use the fact that 1 microbar = 1e-5 dbar
-        metadata$pressureOffset <- 1e-5 * readBin(hardwareConfiguration[13:16], "integer", size=4, n=1, endian="little", signed=TRUE)
+        metadata$pressureOffset <- 1e-5 * readBin(hardwareConfiguration[13:16], "integer", size=4, n=1, endian="little")
         oceDebug(debug, "pressureOffset=", metadata$pressureOffset,"dbar (header gives in microbar)\n")
 
         metadata$compassOffset <- readBin(hardwareConfiguration[23:24], "integer", size=2, n=1, endian="little", signed=TRUE)
@@ -586,11 +579,13 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                  roll=roll,
                  temperature=temperature,
                  pressure=pressure)
+    res <- new("adv")
+    res@data <- data
+    res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    processingLog <- processingLogItem(processingLog)
-    res <- list(data=data, metadata=metadata, processingLog=processingLog)
-    class(res) <- c("sontek", "adv", "oce")
+    hitem <- processingLogItem(processingLog)
+    res@processingLog <- hitem
     res
 }
 
@@ -736,9 +731,12 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
                      oceCoordinate=coordinateSystem,
                      coordinateSystem=coordinateSystem)
     warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
-    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
-    res <- list(data=data, metadata=metadata, processingLog=processingLogItem(processingLog))
-    class(res) <- c("sontek", "adv", "oce")
-    res
+    res <- new("adv")
+    res@data <- data
+    res@metadata <- metadata
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    hitem <- processingLogItem(processingLog)
+    res@processingLog <- hitem
 }
 

@@ -1,3 +1,29 @@
+setMethod(f="initialize",
+          signature="topo",
+          definition=function(.Object,longitude,latitude,z,filename="") {
+              if (!missing(longitude)) .Object@data$longitude <- longitude
+              if (!missing(latitude)) .Object@data$latitude <- latitude
+              if (!missing(z)) .Object@data$z <- z
+              .Object@metadata$filename <- filename
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'topo' object"
+              return(.Object)
+          })
+
+setMethod(f="[[",
+          signature="topo",
+          definition=function(x, i, j, drop) {
+              ## 'j' can be for times, as in OCE
+              ##if (!missing(j)) cat("j=", j, "*****\n")
+              i <- match.arg(i, c("longitude","latitude","z", "filename"))
+              if (i == "longitude") return(x@data$longitude)
+              else if (i == "latitude") return(x@data$latitude)
+              else if (i == "z") return(x@data$z)
+              else if (i == "filename") return(x@metadata$filename)
+              else stop("cannot access \"", i, "\"") # cannot get here
+          })
+
+
 topoInterpolate <- function(latitude, longitude, topo)
 {
     if (missing(latitude))
@@ -8,14 +34,15 @@ topoInterpolate <- function(latitude, longitude, topo)
         stop("must supply topo")
     if (length(latitude) != length(longitude))
         stop("lengths of latitude and longitude must match")
-    .Call("topo_interpolate", latitude, longitude, topo$data$latitude, topo$data$longitude, topo$data$z)
+    .Call("topo_interpolate", latitude, longitude, topo[["latitude"]], topo[["longitude"]], topo[["z"]])
 }
 
 
 plot.topo <- function(x,
                       xlab="", ylab="",
                       asp,
-                      center, span,
+                      clatitude, clongitude, span,
+                      ##center, span,
                       expand=1.5,
                       water.z,
                       col.water,
@@ -39,31 +66,29 @@ plot.topo <- function(x,
     ##on.exit(par(opar))
     par(mgp=mgp, mar=mar)
     dots <- list(...)
+    dotsNames <- names(dots)
+    if ("center" %in% dotsNames) stop("please use 'clatitude' and 'clongitude' instead of 'center'")
+    gave.center <- !missing(clatitude) && !missing(clongitude)
 
-    ######
-    gave.center <- !missing(center)
     gave.span <- !missing(span)
-    if (gave.center != gave.span)
-        stop("must give both 'center' and 'span', or neither one")
+    if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them")
     if (gave.center) {
-        if (length(center) != 2)
-            stop("'center' must contain two values, latitude in deg N and longitude in deg E")
         if (!missing(asp))
             warning("argument 'asp' being ignored, because argument 'center' was given")
-        asp <- 1 / cos(center[1] * pi / 180) #  ignore any provided asp
-        yr <- center[1] + span * c(-1/2, 1/2) / 111.11
-        xr <- center[2] + span * c(-1/2, 1/2) / 111.11 * asp
-        oceDebug(debug, "gave center; calculated xr=",xr," yr=", yr, " asp=", asp, "\n")
+        asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
+        xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
+        yr <- clatitude  + span * c(-1/2, 1/2) / 111.11
+        oceDebug(debug, "gave center; calculated xr=", xr," yr=", yr, " asp=", asp, "\n")
     } else {
         if (missing(asp)) {
-            if ("ylim" %in% names(dots))
+            if ("ylim" %in% dotsNames)
                 asp <- 1 / cos(mean(range(dots$ylim, na.rm=TRUE)) * pi / 180) # dy/dx
             else
-                asp <- 1 / cos(mean(range(x$data$latitude,na.rm=TRUE)) * pi / 180) # dy/dx
+                asp <- 1 / cos(mean(range(x[["latitude"]],na.rm=TRUE)) * pi / 180) # dy/dx
         }
         ## Expand
-        xr0 <- range(x$data$longitude, na.rm=TRUE)
-        yr0 <- range(x$data$latitude, na.rm=TRUE)
+        xr0 <- range(x[["longitude"]], na.rm=TRUE)
+        yr0 <- range(x[["latitude"]], na.rm=TRUE)
         oceDebug(debug, "xr0=", xr0, "\n")
         oceDebug(debug, "yr0=", yr0, "\n")
         if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
@@ -74,7 +99,7 @@ plot.topo <- function(x,
             yr <- yr0
         }
     }
-    zr <- range(x$data$z, na.rm=TRUE)
+    zr <- range(x[["z"]], na.rm=TRUE)
     if (gave.center && !is.null(dots$xlim))
         stop("cannot give 'xlim' argument if the 'center' argument was given")
     if (gave.center && !is.null(dots$ylim))
@@ -114,8 +139,8 @@ plot.topo <- function(x,
     oceDebug(debug, "yr:", yr, "(after trimming)\n")
 
     ## Data may not extend across plot region
-    lon.range <- range(x$data$longitude, na.rm=TRUE)
-    lat.range <- range(x$data$latitude, na.rm=TRUE)
+    lon.range <- range(x[["longitude"]], na.rm=TRUE)
+    lat.range <- range(x[["latitude"]], na.rm=TRUE)
     if (xr[1] < lon.range[1]) xr[1] <- lon.range[1]
     if (xr[2] > lon.range[2]) xr[2] <- lon.range[2]
     if (yr[1] < lat.range[1]) yr[1] <- lat.range[1]
@@ -128,25 +153,10 @@ plot.topo <- function(x,
     xr.pretty <- pretty(xr)
     yr.pretty <- pretty(yr)
     oceDebug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
-    oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
-
-if (0){
-    if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
-        yr.pretty <- seq(-90, 90, 45)
-    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1])
-    yr.pretty <- subset(yr.pretty, yr.pretty <= yr[2])
-    if (!(min(xr.pretty) > 0 && max(xr.pretty) < 360))
-        xr.pretty <- seq(0, 360, 45)
-    oceDebug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
-    oceDebug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
-}
-
-
-    oceDebug(debug, "xr.pretty=", xr.pretty, "(before trimming)\n")
-    oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
     xr.pretty <- subset(xr.pretty, xr.pretty >= xr[1] & xr.pretty <= xr[2])
-    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1] & yr.pretty <= yr[2])
     oceDebug(debug, "xr.pretty=", xr.pretty, "(after trimming)\n")
+    oceDebug(debug, "yr.pretty=", yr.pretty, "(before trimming)\n")
+    yr.pretty <- subset(yr.pretty, yr.pretty >= yr[1] & yr.pretty <= yr[2])
     oceDebug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
 
     lines(c(xr[1], xr[2], xr[2], xr[1], xr[1]), c(yr[1], yr[1], yr[2], yr[2], yr[1])) # axis box
@@ -161,11 +171,18 @@ if (0){
     oceDebug(debug, "par(pin)",par("pin"),"\n")
 
     ## need to clip because contour() does not do so
-    xclip <- x$data$longitude < xr[1] | xr[2] < x$data$longitude
-    yclip <- x$data$latitude < yr[1] | yr[2] < x$data$latitude
-    xx <- x$data$longitude[!xclip]
-    yy <- x$data$latitude[!yclip]
-    zz <- x$data$z[!xclip, !yclip]
+    xx <- x[["longitude"]]
+    yy <- x[["latitude"]]
+    xclip <- xx < xr[1] | xr[2] < xx
+    yclip <- yy < yr[1] | yr[2] < yy
+    xx <- xx[!xclip]
+    browser()
+    if (length(xx) < 1)
+        stop("there are no topographic data within the longitudes of the plot region.")
+    yy <- yy[!yclip]
+    if (length(yy) < 1)
+        stop("there are no topographic data within the latitudes of the plot region.")
+    zz <- x[["z"]][!xclip, !yclip]
     zr <- range(zz)
 
     contour(xx, yy, zz,
@@ -205,7 +222,6 @@ if (0){
         lwd    <- c(lwd,    lwd.water)
         lty    <- c(lty,    lty.water)
         col    <- c(col,    col.water)
-        #contour(x$data$longitude, x$data$latitude, x$data$z,
         contour(xx, yy, zz,
                 levels=water.z, lwd=lwd.water, lty=lty.water, col=col.water,
                 drawlabels=FALSE, add=TRUE, ...)
@@ -245,8 +261,6 @@ if (0){
         legend(location, lwd=lwd[o], lty=lty[o],
                bg="white", legend=legend[o], col=col[o])
     }
-    if (debug && !missing(center))
-        points(center[2], center[1], cex=10, col='red')
     oceDebug(debug, "\b\b} # plot.topo()\n")
     invisible()
 }
@@ -283,13 +297,12 @@ as.topo <- function(longitude, latitude, z, filename="", processingLog)
         stop("longitude vector has length ", ncols, ", which does not match matrix width ", dim[1])
     if (dim[2] != nrows)
         stop("latitude vector has length ", ncols, ", which does not match matrix height ", dim[2])
-    data <- list(longitude=longitude, latitude=latitude, z=z)
-    metadata <- list(filename=file, ncols=ncols, nrows=nrows,
-                     longitudeLowerLeft=longitudeLowerLeft, latitudeLowerLeft=latitudeLowerLeft)
     if (missing(processingLog))
         processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval <- list(data=data, metadata=metadata, processingLog=processingLog)
-    class(rval) <- c("topo", "oce")
+    rval <- new("topo", latitude=latitude, longitude=longitude, z=z, filename=filename)
+    if (missing(processingLog))
+        processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    rval@processingLog <- processingLog(rval@processingLog, processingLog)
     rval
 }
 
@@ -297,23 +310,18 @@ summary.topo <- function(object, ...)
 {
     if (!inherits(object, "topo"))
         stop("method is only for topo objects")
-    res <- list(lat.range=range(object$data$lat, na.rm=TRUE),
-                lon.range=range(object$data$lon, na.rm=TRUE),
-                z.range=range(object$data$z, na.rm=TRUE),
-                processingLog=object$processingLog)
-    class(res) <- "summary.topo"
-    res
+    digits <- 4
+    latRange <- range(object[["latitude"]], na.rm=TRUE)
+    lonRange <- range(object[["longitude"]], na.rm=TRUE)
+    zRange <- range(object[["z"]], na.rm=TRUE)
+    cat("\nTopo dataset\n------------\n")
+    cat("* Source:          ", object[["filename"]], "\n")
+    cat("* Latitude range:  ", format(latRange[1], digits),
+        " to ", format(latRange[2], digits), "\n")
+    cat("* Longitude range: ", format(lonRange[1], digits),
+        " to ", format(lonRange[2], digits), "\n")
+    cat("* Elevation range: ", format(zRange[1], digits=digits),
+        " to ", format(zRange[2], digits), "\n")
+    processingLogShow(object)
 }
 
-print.summary.topo <- function(x, digits=max(6, getOption("digits") - 1), ...)
-{
-    cat("\ntopo dataset\n")
-    cat("* latitude range:", format(x$lat.range[1], digits),
-        " to ", format(x$lat.range[2], digits), "\n")
-    cat("* longitude range:", format(x$lon.range[1], digits),
-        " to ", format(x$lon.range[2], digits), "\n")
-    cat("* elevation range:", format(x$z.range[1], digits=digits),
-        " to ", format(x$z.range[2], digits), "\n")
-    print(summary(x$processingLog))
-    invisible(x)
-}

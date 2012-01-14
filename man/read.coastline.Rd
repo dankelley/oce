@@ -17,7 +17,8 @@ read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
 
 \arguments{
   \item{file}{name of file containing coastline data.}
-  \item{type}{type of file, one of "R", "S", or "mapgen"}
+  \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"} or
+      \code{"shapefile"}.}
   \item{debug}{set to TRUE to print information about the header, etc.}
   \item{latlim}{range of (signed) latitudes, used only for shapefiles.
     Regions that do not intersect this range are skipped.}
@@ -55,11 +56,9 @@ which is a \code{\link[base]{list}} containing
   \item{processingLog}{A processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{The generic function \code{\link{read.oce}} provides an
-  alternative to this.  Coastlines may be created from
-  latitude/longitude pairs with \code{\link{as.coastline}}, summarized
-  with \code{\link{summary.coastline}} and plotted with
-  \code{\link{plot.coastline}}.  }
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 \dontrun{
@@ -68,18 +67,28 @@ cl <- read.coastline("7404.dat")
 # If no plot yet:
 plot(cl)
 # To add to an existing plot:
-lines(cl$data$longitude, cl$data$latitude)
+lon <- longitude(cl)
+lat <- latitude(cl)
+lines(lon, lat)
 # Note: another trick is to do something like the following,
 # to get issues of whether longitude is defined in (-180,180)
 # or (0,360)
-lines(cl$datas$longitude, cl$data$latitude)
-lines(cl$data$longitude-360, cl$data$latitude)
+lines(lon, lat)
+lines(lon-360, lat)
 }
 }
 
-\references{The NOAA site
-\url{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html} is a good
-source for coastline data files.}
+\references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a
+    popular source for coastline data files.
+
+    Canadian coastlines in ``shapefile'' format are provided at
+    \url{http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm}
+    (link tested December 2011) or, with registration, from
+    \url{http://www.geobase.ca/geobase/en/search.do?produit=nrn&language=en}
+    (link tested December 2011).  The ``shapefile'' format is described in
+    \emph{ESRI Shapefile Technical Description}, March 1998, available at
+    \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf} (link
+    tested December 2011).  }
 
 \author{Dan Kelley}
 \keyword{misc}

@@ -1,25 +1,17 @@
 \name{summary.cm}
 
 \alias{summary.cm}
-\alias{print.summary.cm}
 
 \title{Summarize a cm (current meter) object}
 
 \description{Summarize a \code{cm} (current meter) object}
 
-\usage{
-\method{summary}{cm}(object, \dots)
-
-\method{print}{summary.cm}(x, digits=max(6, getOption("digits")-1), \dots)
-}
+\usage{ \method{summary}{cm}(object, \dots) }
 
 \arguments{
   \item{object}{an object of class \code{"cm"}, as read by
   \code{\link{read.cm.s4}}, perhaps called automatically by
   \code{\link{read.cm}} or \code{\link{read.oce}}.}
-  \item{x}{an object of class \code{"summary.cm"}, created by
-    \code{summary.cm}.}
-  \item{digits}{the number of significant digits to use when printing.}
   \item{\dots}{further arguments passed to or from other methods.}
 }
 
@@ -29,8 +21,8 @@
   containing pertinent information about the \code{cm} object and its
   processing.}
 
-\seealso{A \code{cm} object may  be read with \code{\link{read.cm}} or
-  \code{\link{read.oce}}, and plotted with \code{\link{plot.cm}}.}
+\seealso{The documentation for \code{\link{cm-class}} explains the structure of
+    CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

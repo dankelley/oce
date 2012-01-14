@@ -66,7 +66,6 @@ stopifnot(all.equal.numeric(v, 1731.995, 0.001))
 sp <- swSpice(35,10,100)
 stopifnot(all.equal.numeric(sp, 1.131195, 0.0000015))
 
-## spice (not from any trusted source, merely from the code [2008-10-02]
 depth <- swDepth(10000, 30)
 stopifnot(all.equal.numeric(depth, 9712.653, 0.001))
 

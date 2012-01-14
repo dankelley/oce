@@ -1,3 +1,4 @@
+/* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -42,11 +43,12 @@ static double phi_z(int i0, double z0, double *z, double *phi, int len) /* Reini
     if (z0 > *(z + i0 + 1)) error("z0=%f must equal or be smaller than [(i0+1)=%d]=%f\n", z0, i0+1, *(z + i0+1));
     return (fabs(phiR - phiP1) * phiP2 + fabs(phiR - phiP2) * phiP1) / (fabs(phiR - phiP1) + fabs(phiR - phiP2));
   } else {
-    error("phi_z given bad i0=%d", i0);
+    error("phi_z given bad i0=%d (not in range 1 to %d)", i0, len-1);
   }
 }
 static double phi_R(int i0, double z0, double *z, double *phi, int len) /* Reiniger & Ross (1968, eqn 3a) */
 {
+  //Rprintf("phi_R ...\n");
   if (0 < i0 && i0 < (len - 2)) {
     double phi12 = phi_ij(i0-1, i0  , z0, z, phi, len);
     double phi23 = phi_ij(i0  , i0+1, z0, z, phi, len);
@@ -57,7 +59,7 @@ static double phi_R(int i0, double z0, double *z, double *phi, int len) /* Reini
                   /
                   (SQR(phi23 - phi34) + SQR(phi12 - phi23)));
   } else
-    error("phi_R given bad i0=%d", i0);
+    error("phi_R given bad i0=%d (note that len=%d)", i0, len);
 }
 
 
@@ -113,22 +115,19 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
   yp = REAL(y);
   PROTECT(ans = allocVector(REALSXP, xout_len));
   ansp = REAL(ans);
-  int i;
 #if 0
-  Rprintf("DEBUG: x="); for (i = 0; i < x_len; i++) Rprintf("%f ", *(xp + i));  Rprintf("\n");
-  Rprintf("DEBUG: y="); for (i = 0; i < x_len; i++) Rprintf("%f ", *(yp + i));  Rprintf("\n");
-  Rprintf("DEBUG: xout="); for (i = 0; i < xout_len; i++) Rprintf("%f ", *(xoutp + i));  Rprintf("\n");
+  Rprintf("DEBUG: x="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(xp + i));  Rprintf("\n");
+  Rprintf("DEBUG: y="); for (int i = 0; i < x_len; i++) Rprintf("%f ", *(yp + i));  Rprintf("\n");
+  Rprintf("DEBUG: xout="); for (int i = 0; i < xout_len; i++) Rprintf("%f ", *(xoutp + i));  Rprintf("\n");
 #endif
-  for (i = 0; i < xout_len; i++) {
+  for (int i = 0; i < xout_len; i++) {
     //Rprintf("xout[%d] = %f\n",i,*(xoutp+i));
-    int j;
     double val;
     int found;
     found = 0;
-    //Rprintf("x[%d]=%.1f...", j, *(xp + j));
-    for (j = 0; j < x_len - 1; j++) {
+    for (int j = 0; j < x_len - 1; j++) {
+      //Rprintf("x[%d]=%.1f\n", j, *(xp + j));
       double xx = *(xoutp + i);
-      //Rprintf("%.1f", *(xp + j));
       // Look for neighbors (BUG: what about hitting directly?)
       if (xx == *(xp + j)) {
         val = *(yp + j);
@@ -141,9 +140,12 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
           val = *yp + (xx - *xp) * (*(yp + 1) - *(yp)) / (*(xp + 1) - *xp);
           //Rprintf("j=0 ... xx=%f yields val=%f since x[0,1]=%f , %f have y[0,1]=%f , %f\n", xx, val, *xp, *(xp+1), *yp,*(yp+1));
         } else if (j == x_len - 1) {
-          val = *(yp + j - 1) + (xx - *(xp + j - 1)) * (*(yp + j) - *(yp + j - 1)) / (*(xp + j) - *(xp + j - 1));
+	  val = *(yp + j - 1) + (xx - *(xp + j - 1)) * (*(yp + j) - *(yp + j - 1)) / (*(xp + j) - *(xp + j - 1));
         } else {
-          val = phi_z(j, xx, xp, yp, x_len);
+	  if (j >= x_len - 2)
+	    val = NA_REAL;
+	  else
+	    val = phi_z(j, xx, xp, yp, x_len);
         }
         //Rprintf("Y j=%d VAL=%f\n", j, val);
         found = 1;

@@ -9,9 +9,10 @@ imagep <- function(x, y, z,
                    flip.y=FALSE,
                    xlab="", ylab="", zlab="",
                    breaks, col,
-                   drawContours=TRUE,
+                   drawContours=FALSE,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
+                   filledContour=FALSE,
                    mgp=getOption("oceMgp"),
                    mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
                          mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -29,17 +30,54 @@ imagep <- function(x, y, z,
     oceDebug(debug, paste("  xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep=""))
     oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-    if (missing(x))
-        stop("must supply x")
-    if (missing(y))
-        stop("must supply y")
-    if (missing(z))
-        stop("must supply z")
+    if (!missing(x) && is.list(x)) {
+        names <- names(x)
+        if (!missing(y))
+            stop("may not give y, since x is a list")
+        if (!missing(z))
+            stop("may not give z, since x is a list")
+        if (!("x" %in% names))
+            stop("since x is a list, it must have an item named 'x'")
+        if (!("y" %in% names))
+            stop("since x is a list, it must have an item named 'y'")
+        if (!("z" %in% names))
+            stop("since x is a list, it must have an item named 'z'")
+        y <- x$y
+        z <- x$z
+        x <- x$x
+    } else if (!missing(x) && is.matrix(x)) {
+        z <- x
+        y <- seq(0, 1, length.out=ncol(x))
+        x <- seq(0, 1, length.out=nrow(x))
+    } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
+        x <- seq(0, 1, length.out=nrow(z))
+        y <- seq(0, 1, length.out=ncol(z))
+        z <- z
+    } else {
+        if (missing(y))
+            stop("must supply y")
+        if (missing(z))
+            stop("must supply z")
+    }
     dim <- dim(z)
-    if (dim[1] != length(x))
-        stop("image width, dim(z)[1], must equal length(x)")
-    if (dim[2] != length(y))
-        stop("image height, dim(z)[2], must equal length(y)")
+    if (nrow(z) != length(x) && (1+nrow(z)) != length(x))
+        stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
+    if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
+        stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
+
+    ## ensure that x and y increase (BUT, for now, no check on equal values, and also no xlim reversals FIXME)
+    ox <- order(x)
+    if (any(diff(ox) < 0)) {
+        warning("reordered some x values")
+        x <- x[ox]
+        z <- z[ox, ]
+    }
+    oy <- order(y)
+    if (any(diff(oy) < 0)) {
+        warning("reordered some x values")
+        y <- y[oy]
+        z <- z[,oy]
+    }
 
     omai <- par("mai")
     omar <- par("mar")
@@ -66,19 +104,25 @@ imagep <- function(x, y, z,
     if (!gave.breaks) {
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
-            if (missing(col))
+            if (missing(col)) {
                 breaks <- pretty(zrange)
-            else
+                if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
+                if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
+            } else {
                 breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
+            }
             breaks.orig <- breaks
         } else {
             if (missing(col))
-                breaks <- pretty(zlim)
+                breaks <- c(zlim[1], pretty(zlim), zlim[2])
             else
                 breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
             breaks.orig <- breaks
-            breaks[1] <- zrange[1]
-            breaks[length(breaks)] <- zrange[2]
+            ##cat('range(z):', zrange, '\n')
+            ##cat('ORIG  range(breaks):', range(breaks), '\n')
+            breaks[1] <- min(zrange[1], breaks[1])
+            breaks[length(breaks)] <- max(breaks[length(breaks)], zrange[2])
+            ##cat('later range(breaks):', range(breaks), '\n')
         }
     } else {
         breaks.orig <- breaks
@@ -88,7 +132,7 @@ imagep <- function(x, y, z,
     if (is.function(col))
         col <- col(n=length(breaks)-1)
 
-    if (drawPalette) {
+    if (TRUE == drawPalette || "space" == drawPalette) {
         the.mai <- c(omai[1],
                      widths$main + widths$mar.lhs + widths$palette.separation,
                      omai[3],
@@ -97,34 +141,39 @@ imagep <- function(x, y, z,
         the.mai <- clipmin(the.mai, 0.1)         # just in case
         oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
         par(mai=the.mai, cex=cex)
-        if (!gave.breaks) {
-            if (missing(zlim)) {
-                palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
+        if (TRUE == drawPalette) {
+            if (!gave.breaks) {
+                if (missing(zlim)) {
+                    palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
+                } else {
+                    palette <- seq(zlim[1], zlim[2], length.out=300)
+                }
+                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                      breaks=breaks,
+                      col=col,
+                      zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
             } else {
-                palette <- seq(zlim[1], zlim[2], length.out=300)
+                if (missing(zlim)) {
+                    palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
+                } else {
+                    palette <- seq(zlim[1], zlim[2], length.out=300)
+                }
+                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                      breaks=breaks.orig,
+                      col=col,
+                      zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
             }
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
-                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+            if (drawContours)
+                abline(h=breaks)
+            box()
+            axis(side=4, at=pretty(palette), cex.axis=cex) # FIXME: decide on font size
         } else {
-            if (missing(zlim)) {
-                palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
-            } else {
-                palette <- seq(zlim[1], zlim[2], length.out=300)
-            }
-
-            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
-                  breaks=breaks.orig,
-                  col=col,
-                  zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
+            plot(x=c(0,1), y=c(0,1), type='n', axes=FALSE, xlab="", ylab="")
         }
-        if (drawContours)
-            abline(h=breaks)
-        box()
-        axis(side=4, at=pretty(palette), cex.axis=cex) # FIXME: decide on font size
     }
 
     ## main image
-    if (drawPalette) {
+    if (TRUE == drawPalette || "space" == drawPalette) {
         the.mai <- c(omai[1],
                      widths$mar.lhs,
                      omai[3],
@@ -142,27 +191,36 @@ imagep <- function(x, y, z,
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
     if (x.is.time) {
-        if (!gave.breaks) {
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+        if (filledContour) {
+            storage.mode(z) <- "double"
+            plot.new()
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
         } else {
-            image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            if (!gave.breaks) {
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
+                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            } else {
+                image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, breaks=breaks, col=col,
+                      xlim=xlim, ylim=ylim, zlim=zlim, ...)
+            }
         }
         box()
         if (axes) {
             oce.axis.POSIXct(side=1, x=x, cex=cex, cex.axis=cex, cex.lab=cex, drawTimeRange=drawTimeRange, mar=mar, mgp=mgp)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
-    } else {
-        if (!gave.breaks) {
-            image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+    } else {                           # x is not a POSIXt
+        if (filledContour) {
+            storage.mode(z) <- "double"
+            plot.new()
+            plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
+            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
         } else {
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
-                  xlim=xlim, ylim=ylim, zlim=zlim, ...)
+                  xlim=xlim, ylim=ylim, ...)
+            box()
         }
-        box()
         if (axes) {
             axis(1, cex.axis=cex, cex.lab=cex)
             axis(2, cex.axis=cex, cex.lab=cex)

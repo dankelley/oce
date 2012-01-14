@@ -7,9 +7,10 @@
       flip.y=FALSE,
       xlab="", ylab="", zlab="",
       breaks, col,
-      drawContours=TRUE,
+      drawContours=FALSE,
       drawTimeRange=getOption("oceDrawTimeRange"),
       drawPalette=TRUE,
+      filledContour=FALSE,
       mgp=getOption("oceMgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -25,12 +26,25 @@
       \dots)
 }
 \arguments{
+
   \item{x,y}{locations of grid lines along which values of \code{z} are
-    measured.  The values must be finite, non-missing, and in increasing
-    order.}
-  \item{z}{matrix containing data to be indicated on the plot.
-    \code{dim(z)[1]} must equal \code{length(x)}, and the same for y.}
+      measured.   The values must be finite, non-missing, and distinct.  If
+      they are out of order, they will be ordered (and the \code{z} data will
+      be similarly ordered).  By default, equally spaced values from 0 to 1 are
+      used. If \code{x} is a list, its components \code{x$x} and \code{x$y} are
+      used for \code{x} and \code{y}, respectively. If the list has component
+      \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
+      mimic those of \code{\link{image}}, which explains the same description
+      here.)}
+
+  \item{z}{a matrix containing the values to be plotted (NAs are allowed). Note
+      that x can be used instead of z for convenience. (NOTE: these arguments
+      are meant to mimic those of \code{\link{image}}, which explains the same
+      description here.)} 
+      
+
   \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
+
   \item{flip.y}{boolean, with \code{TRUE} indicating that the image
     should be flipped top to bottom (as to produce a profile image
     for a downward-looking acoustic-doppler profile).}
@@ -47,8 +61,17 @@
     data (not the axis) is indicated at the top-left margin of the
     graph.  This is useful because the labels on time axes only indicate
     hours if the range is less than a day, etc.}
-  \item{drawPalette}{boolean, with value \code{TRUE} to draw a palette
-    at the right-hand side of the main image.}
+  \item{drawPalette}{indication of the type of palette to draw, if any.  If
+      \code{drawPalette=TRUE}, a palette is drawn at the right-hand side of the
+      main image.  If \code{drawPalette=FALSE}, no palette is drawn, and the
+      right-hand side of the plot has a thin margin.  If
+      \code{drawPalette="space"}, then no palette is drawn, but space is put in
+      the right-hand margin to occupy the region in which the palette would
+      have been drawn.  This last form is useful for producing stacked plots
+      with uniform left and right margins, but with palettes on only some of
+      the images.}
+  \item{filledContour}{boolean value indicating whether to use filled
+      contours to plot the image.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
@@ -83,7 +106,15 @@
 
   The palette is drawn before the image, so that further drawing can be done on
   the image if desired, if the user prefers not to use the \code{adorn}
-  argument.}
+  argument.
+
+  NOTE: \code{imagep} is an analogue of \code{\link{image}}, and so it borrows
+  a somewhat odd convention: the number of rows in the matrix corresponds to
+  the \code{x} axis, not the \code{y} axis.  (Actually, \code{\link{image}}
+  permits the length of \code{x} to match either \code{nrow(z)} or
+  \code{1+nrow(z)}, but here only the first is permitted.)
+
+}
 
 \value{None.}
 
@@ -92,7 +123,6 @@
 }
 \examples{
 library(oce)
-opar <- par(no.readonly = TRUE)
 par(mfrow=c(1,1))
 h <- seq(0, 50, length.out=200)
 drho <- seq(1, 3, length.out=200)
@@ -100,7 +130,7 @@ speed <- sqrt(9.8*outer(drho/1024, h, "*"))
 imagep(h, drho, speed, xlab="Equivalent depth [m]",
   ylab=expression(paste(Delta*rho, " [kg/m^3]")),
   zlab="Internal-wave speed [m/s]")
-par(opar)
+imagep(volcano)
 }
 \author{Dan Kelley}
 \keyword{misc}

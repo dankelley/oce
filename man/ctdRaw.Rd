@@ -19,10 +19,7 @@ Oceanography 4120/5120 class.}
 
 \author{Dan Kelley}
 
-\seealso{See \code{\link{ctd}}, which is derived from this.  See
-    \code{\link{read.ctd}} for the data format, and for a list of the many
-    functions that work with objects of class \code{"ctd"}, of which this is a
-    sample.}
-
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \keyword{datasets}

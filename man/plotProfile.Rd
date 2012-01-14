@@ -1,14 +1,14 @@
-\name{plot.profile}
+\name{plotProfile}
 
-\alias{plot.profile}
+\alias{plotProfile}
 
 \title{Plot a CTD profile of various quantities}
 
 \description{Plot a CTD profile, in any of several common formats.}
 
-\usage{plot.profile(x,
+\usage{plotProfile(x,
              xtype="salinity+temperature", 
-             ytype=c("pressure", "z"),
+             ytype=c("pressure", "z", "sigmaTheta"),
              col.salinity="darkgreen",
              col.temperature="red",
              col.rho="blue",
@@ -23,6 +23,7 @@
              xaxs="r", yaxs="r",
              cex=1, pch=1,
              useSmoothScatter=FALSE,
+	     keepNA=FALSE,
              type='l',
              mgp=getOption("oceMgp"),
              mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
@@ -42,10 +43,9 @@
 	\code{\link{ctdTrim}}).}
       \item{\code{S+T}}{Profile of salinity and temperature within a
 	single axis frame.}
-      \item{\code{N2}}{Profile of square of buoyancy frequency
-	\eqn{N^2}{N^2}, calculated with \code{\link{swN2}} with an
-	optional argument setting of \code{df=length(x$p)/4} to do some
-	smoothing.}
+      \item{\code{N2}}{Profile of square of buoyancy frequency \eqn{N^2}{N^2},
+          calculated with \code{\link{swN2}} with an optional argument setting
+          of \code{df=length(x@data$pressure)/4} to do some smoothing.}
       \item{\code{density+N2}}{Profile of sigma-theta and the square of buoyancy
 	frequency within a single axis frame.}
       \item{\code{density+dpdt}}{Profile of sigma-theta and dP/dt for
@@ -55,8 +55,9 @@
 	grid-point wiggles that result because the SBE software only
 	writes 3 decimal places in pressure).  Note that dP/dt may be
 	off by a scale factor; this should not be a problem if there is
-	a \code{x$data$time} column, or a \code{x$metadata$sample.rate}
+	a \code{x@data$time} column, or a \code{x@metadata$sample.rate}
 	value in the header.}
+      \item{\code{spice}}{Profile of spice}
     }
   }
   \item{ytype}{variable to use on y axis.}
@@ -84,7 +85,8 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
-  \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
+\item{keepNA}{FALSE},
+\item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
@@ -98,13 +100,13 @@
 \value{None.}
 
 \seealso{\code{\link{read.ctd}} scans ctd information from a file, and
-  \code{\link{plot.TS}} plots a temperature-salinity diagram. 
+  \code{\link{plotTS}} plots a temperature-salinity diagram. 
 }
 
 \examples{
 library(oce)
 data(ctd)
-plot.profile(ctd, xtype="temperature")
+plotProfile(ctd, xtype="temperature")
 }
 
 \author{Dan Kelley}

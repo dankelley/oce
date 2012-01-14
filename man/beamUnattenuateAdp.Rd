@@ -21,7 +21,7 @@
     corrected by adding the term \eqn{20\log10(r)}{20*log10(r)}, where
     \eqn{r}{r} is the distance from the sensor head to the water from
     which scattering is occuring.  \eqn{r}{r} is given by
-    \code{x$data$distance}.
+    \code{x@data$distance}.
 }
 
 \value{An object of \code{\link[base]{class}} \code{"adp"}.}
@@ -34,8 +34,8 @@ adp.att <- beamUnattenuateAdp(adp)
 plot(adp.att, which=5) # beam 1 echo intensity
 ## Profiles
 par(mar=c(4, 4, 1, 1))
-plot(apply(adp$data$a,2,mean),adp$data$distance,type='l',xlim=c(0,256))
-lines(apply(adp.att$data$a,2,mean),adp$data$distance,type='l',col='red')
+plot(apply(adp@data$a,2,mean),adp@data$distance,type='l',xlim=c(0,256))
+lines(apply(adp.att@data$a,2,mean),adp@data$distance,type='l',col='red')
 legend("topright",lwd=1,col=c("black","red"),legend=c("original","attenuated"))
 ## Image
 plot(adp.att, which="amplitude",col=oceColorsJet(100))

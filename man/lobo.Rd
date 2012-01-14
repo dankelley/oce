@@ -21,9 +21,11 @@ uri <- paste("http://lobo.satlantic.com/cgi-bin/nph-data.cgi?",
 "y=current_across1,current_along1,nitrate,fluorescence,salinity,temperature&",
 "data_format=text",sep="")
 lobo <- read.lobo(uri)
-save(lobo, file="oce/data/lobo.rda")
 }
 }
+
+\seealso{The documentation for \code{\link{lobo-class}} explains the structure
+    of LOBO objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
 \keyword{datasets}

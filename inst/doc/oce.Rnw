@@ -12,6 +12,7 @@
 \usepackage{hyperref}
 \usepackage{makeidx}
 \usepackage{titlesec}
+\usepackage{color}
 \makeindex
 
 \parskip=1.5ex plus 1.5ex minus 1.25ex
@@ -71,10 +72,12 @@ analysis.
   \begin{center}
     \includegraphics[width=0.5\hsize]{ctd-object}
   \end{center}
+
   \caption{\label{f:ctdobject}Sketch of the contents of a \texttt{ctd}
-    object. The elements \texttt{data}, \texttt{metadata}, and
-    \texttt{processingLog} are shared by all \texttt{oce} objects, although
-    their contents vary from object to object.}
+  object. All \texttt{oce} objects contain slots named \texttt{data},
+  \texttt{metadata}, and \texttt{processingLog}, with the contents depending on
+  the type of data.}
+
 \end{figure}
 
 The need to scan diverse data files was one motivation for the creation of
@@ -90,19 +93,28 @@ fairly comfortable tool today, and it should remain so as it grows.
 
 \section{Object design}
 
-As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object is a list
-containing three elements: (a) \texttt{data}, a list or a data frame containing
-the actual data (e.g., for a CTD object, this will contain pressure,
-temperature, etc.), (b) \texttt{metadata}, a list containing data such things as
-file headers, the location of a CTD cast, etc., and (c) \texttt{processingLog},
-a list that documents how the file was created (often by a \texttt{read} or
-\texttt{as} method) and how it was changed thereafter (e.g. by decimating a CTD
-cast).
+As illustrated in Figure~\ref{f:ctdobject}, each \texttt{oce} object contains
+three slots: (a) \texttt{data}, a list or a data frame containing the actual
+data (e.g., for a CTD object, this will contain pressure, temperature, etc.),
+(b) \texttt{metadata}, a list containing data such things as file headers, the
+location of a CTD cast, etc., and (c) \texttt{processingLog}, a list that
+documents how the file was created (often by a \texttt{read} or \texttt{as}
+method) and how it was changed thereafter (e.g. by decimating a CTD cast).
 
 The uniformity of the various \texttt{oce} objects makes it easy to build skill
-in examining and modifying objects.  A simple S3-based object inheritance scheme
-permits somewhat generic processing of \texttt{oce} objects, e.g. \verb@plot(x)@
-produces different sorts of plots for different sorts of \verb@x@ objects.
+in examining and modifying objects.  The package provides for simple and general
+processing of \texttt{oce} objects.  For example, if \verb@x@ is an \verb@oce@
+object, then the function call \verb@plot(x)@ will produce one type of plot if
+\verb@x@ contains hydrographic data from a CTD, and quite another type of plot
+if it contains velocity data from an ADCP.  This applies for a variety of
+actions that can be undertaken on the \verb@oce@ objects, and it makes for easy
+programming, e.g. for over a dozen types of oceanographic data files, the
+following general code produces a summary plot:
+<<eval=false>>=
+library(oce)
+plot(read.oce(filename))
+@
+where \verb@filename@ is the name of a file containing the data.
 
 
 \section{Calculations of seawater properties}
@@ -193,10 +205,10 @@ names(ctd)
 etc.
 
 Of course, you may apply any \verb@R@ techniques to the data in \verb@oce@
-objects, e.g. \verb@hist(ctd$data$temperature)@ would produce a histogram of
-temperature for the \verb@ctd@ object.  It is always worth checking, though, to
-see if \verb@oce@ has already defined a function that you may be applying,
-e.g. \verb@plot.TS@ will produce a lovely temperature-salinity diagram, with
+objects, e.g. \verb@hist(ctd@@\verb@data$temperature)@ would produce a histogram
+of temperature for the \verb@ctd@ object.  It is always worth checking, though,
+to see if \verb@oce@ has already defined a function that you may be applying,
+e.g. \verb@plotTS@ will produce a lovely temperature-salinity diagram, with
 isopycnals and proper units on the axes.
 
 The package provides facilities for some common operations with oceanographic
@@ -230,7 +242,7 @@ from these sections are spurious and must be trimmed as a first step in
 processing. For example, consider the following code.
 <<label=ctdrawplot,eval=FALSE>>=
 data(ctdRaw)
-plot.ctd.scan(ctdRaw)
+plotScan(ctdRaw)
 @
 \begin{figure}
 \begin{center}
@@ -253,10 +265,10 @@ is a convenient index for extraction of the downcast portion of the profile by
 an essentially manual method, e.g. proceeding with a sequence of commands such
 as
 <<ctdscaneg,eval=false>>=
-plot.ctd.scan(ctdTrim(ctdRaw, "range",
-                      parameters=list(item="scan", from=140, to=250)))
-plot.ctd.scan(ctdTrim(ctdRaw, "range",
-                      parameters=list(item="scan", from=150, to=250)))
+plotScan(ctdTrim(ctdRaw, "range",
+                 parameters=list(item="scan", from=140, to=250)))
+plotScan(ctdTrim(ctdRaw, "range",
+                 parameters=list(item="scan", from=150, to=250)))
 @
 This is the ``gold standard'' method, which is recommended for detailed
 work. However, for quick work, you may find that the automatic downcast
@@ -303,8 +315,8 @@ Of course, R provides access to object constituents, so that you are
 free to do such things as
 <<ctdfix1,eval=false>>=
 x <- read.ctd("nnsa_00934_00001_ct1.csv", type="WOCE")
-x$metadata$institute <- "SIO" # bad way
-x$metadata$scientist <- "DAM" # bad way
+x@metadata$institute <- "SIO" # bad way
+x@metadata$scientist <- "DAM" # bad way
 @
 but it is \emph{bad practice} to alter metadata in such a way, because
 doing so alters the object without altering its documentation.  The
@@ -340,9 +352,9 @@ for (i in 1:length(files)) {
     cat(files[i], "\n")
     x <- read.ctd(files[i])
     if (i == 1) {
-        plot.TS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
+        plotTS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
     } else {
-        lines(x$data$salinity, x$data$temperature, col="red")
+        lines(x@data$salinity, x@data$temperature, col="red")
     }
 }
 @
@@ -354,8 +366,8 @@ problems. The graph that is produced by this code has several spurious lines
 oriented horizontally (indicating spurious salinity) and vertically (indicating
 spurious temperature). One way to find such values is to put the lines
 <<rangeg,eval=false>>=
-print(range(x$data$temperature))
-print(range(x$data$salinity))
+print(range(x@data$temperature))
+print(range(x@data$salinity))
 @
 after the \verb@read.ctd()@ command. One thing you'll find is that station 987
 has a minimum salinity range of 0.0009 to 987. These values are clearly in
@@ -398,7 +410,7 @@ png("a03.png", width=600, height=700, pointsize=12)
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1
 # a03 <- read.section("a03_hy1.csv")
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 1600, 25))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-85,-(64+13/60)))
@@ -437,7 +449,11 @@ has the advantage of providing data in Splus format.  The function
 \verb@read.coastline@ can handle reading that format (plus some other formats),
 and \verb@plot@ on the resulting object will produce a simple coastline map.
 The only real advantage over plotting things yourself is that latitude and
-longitude are scaled to give natural shapes near the centre of the plot.
+longitude are scaled to give natural shapes near the centre of the
+plot.  (All \verb@oce@ functions that have arguments for latitude and
+longitude place latitude first, in accordance with convention as documented in
+the ISO standard 6709 ``Standard representation of geographic point location by
+coordinates.'')
 
 Bathymetric charts, or more generally topographic maps, can be produced easily, e.g. (Figure~\ref{fig:topo})
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
@@ -446,7 +462,7 @@ png("topo.png", width=800, height=400, pointsize=13)
 <<>>=
 library(oce)
 data(topoMaritimes)
-plot(topoMaritimes, center=c(46,-62), span=800,
+plot(topoMaritimes, clatitude=46, clongitude=-62, span=800,
     water.z=c(  -50, -100, -150, -200, -300, -400, -500, -1000, -2000),
     lwd.water=c(  1,    1,    1,    1,    1,   1,   1.5,   1.5,   1.5))
 @
@@ -602,7 +618,7 @@ png("adp.png", width=800, height=400, pointsize=20)
 library(oce)
 data(adp)
 plot(adp, which=1,
-  adorn=expression({lines(x$data$time, x$data$pressure, col='green', lwd=2)}))
+  adorn=expression({lines(x@data$time, x@data$pressure, col='green', lwd=2)}))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
@@ -679,7 +695,7 @@ swRho(34, 10, 100)
 swTheta(34, 10, 100)
 swRho(34, swTheta(34, 10, 100), 0)
 swRho(34, swTheta(34, 10, 100, 200), 200)
-plot.TS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
+plotTS(as.ctd(c(30,40),c(-2,20),rep(0,2)), grid=TRUE, col="white")
 @
 
 \workedanswer{2}{Profile plots}
@@ -689,15 +705,15 @@ library(oce)
 data(ctd)
 pycnocline <- ctdTrim(ctd, "range",
                       parameters=list(item="pressure", from=5, to=12))
-plot.profile(pycnocline, which="density+N2")
+plotProfile(pycnocline, which="density+N2")
 @
 and another is
 \index{subset!extracting a portion of a profile}
 <<>>=
 library(oce)
 data(ctd)
-pycnocline <- subset(ctd, 5<=pressure & pressure<=12)
-plot.profile(pycnocline, which="density+N2")
+pycnocline <- subset.oce(ctd, 5<=pressure & pressure<=12)
+plotProfile(pycnocline, which="density+N2")
 @
 
 \index{section!extracting profile data from}
@@ -707,7 +723,7 @@ The simplest way is to use accessor functions to extract salinity, etc.
 library(oce)
 data(section)
 ctd <- as.ctd(salinity(section), temperature(section), pressure(section))
-plot.TS(ctd)
+plotTS(ctd)
 @
 but the point of \emph{this} exercise is to do the extraction manually, so a
 more appropriate solution is as follows
@@ -715,14 +731,14 @@ more appropriate solution is as follows
 library(oce)
 data(section)
 SS <- TT <- pp <- id <- NULL
-n <- length(section$data$station)
-for (stn in section$data$station) {
-    SS <- c(SS, stn$data$salinity)
-    TT <- c(TT, stn$data$temperature)
-    pp <- c(pp, stn$data$pressure)
+n <- length(section@data$station)
+for (stn in section@data$station) {
+    SS <- c(SS, stn@data$salinity)
+    TT <- c(TT, stn@data$temperature)
+    pp <- c(pp, stn@data$pressure)
 }
 ctd <- as.ctd(SS, TT, pp)
-plot.TS(ctd)
+plotTS(ctd)
 @
 
 
@@ -733,14 +749,14 @@ plot.TS(ctd)
 <<>>=
 library(oce)
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset.oce(a03, indices=124:102)
 dh <- swDynamicHeight(GS)
 par(mfrow=c(2,1))
 plot(dh$distance, dh$height, type='b', xlab="", ylab="Dyn. Height [m]")
 grid()
 # 1e3 metres per kilometre
-f <- coriolis(GS$data$station[[1]]$metadata$latitude)
-g <- gravity(GS$data$station[[1]]$metadata$latitude)
+f <- coriolis(GS@data$station[[1]]@metadata$latitude)
+g <- gravity(GS@data$station[[1]]@metadata$latitude)
 v <- diff(dh$height)/diff(dh$distance) * g / f / 1e3
 plot(dh$distance[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
 grid()
@@ -762,12 +778,20 @@ mtext("Hurricane\nJuan", at=as.POSIXct("2003-09-29 04:00:00", tz="UTC"), col="re
 @
 
 \workedanswer{6}{Sealevel spectrum}
-Notice the use of \verb@(object)$data$(item)@ here.  All \verb@oce@ objects are lists,
-and all of them contain a \verb@data@ element of a similar form to this.
+
+The first step is to load the data.
 <<>>=
 library(oce)
 data(sealevelHalifax)
-spectrum(sealevelHalifax$data$elevation, spans=c(3,7))
+@
+Next, we extract the elevation data
+<<>>=
+elevation <- sealevelHalifax[["elevation"]]
+@
+and then we return to standard R processing, to compute the spectrum, and 
+indicate the M2 tide.
+<<>>=
+spectrum(elevation, spans=c(3,7))
 abline(v=1/12.42)
 mtext("M2",at=1/12.42,side=3)
 @

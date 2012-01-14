@@ -14,14 +14,12 @@
 \examples{
 library(oce)
 data(ctd)
-plot(ctd)
+plot(ctd, which=c(1,2,3,5), coastline="coastlineHalifax")
 }
 
 \source{This is a trimmed version of the \code{\link{ctdRaw}} dataset.}
 
-\seealso{See \code{\link{ctdRaw}}, from which this is derived.  See
-    \code{\link{read.ctd}} for the data format, and for a list of the many
-    functions that work with objects of class \code{"ctd"}, of which this is a
-    sample.}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \keyword{datasets}

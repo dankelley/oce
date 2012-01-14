@@ -1,23 +1,23 @@
-\name{plot.ctd.scan}
+\name{plotScan}
 
-\alias{plot.ctd.scan}
+\alias{plotScan}
 
 \title{Plot seawater data in a low-level fashion}
 
 \description{Plot CTD data as time-series against scan number, to help
   with trimming extraneous data from a CTD cast.}
 
-\usage{plot.ctd.scan(x, name = "scan", 
- S.col = "darkgreen", T.col= "darkred", p.col = "blue",
+\usage{plotScan(x, name = "scan", 
+ Scol = "darkgreen", Tcol= "darkred", pcol = "black",
  adorn=NULL, mgp=getOption("oceMgp"), \dots)
 }
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{name}{name of variable for x axis}
-  \item{S.col}{colour for salinity}
-  \item{T.col}{colour for temperature}
-  \item{p.col}{colour for pressure}
+  \item{Scol}{colour for salinity}
+  \item{Tcol}{colour for temperature}
+  \item{pcol}{colour for pressure}
   \item{adorn}{list of character strings containing commands to be
     executed for the panels.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, as
@@ -43,11 +43,11 @@
 \examples{
 library(oce)
 data(ctd) 
-plot.ctd.scan(ctd)
+plotScan(ctd)
 
 # demonstrate adding elements to plots, e.g. to narrow
 # down on good start end points
-plot.ctd.scan(ctd, adorn="abline(v=240,col='red')")
+plotScan(ctd, adorn="abline(v=240,col='red')")
 }
 
 \author{Dan Kelley}

@@ -6,18 +6,18 @@ velocityStatistics <- function(x, control, ...)
         if (!missing(control) && !is.null(control$bin)) {
             if (control$bin < 1)
                 stop("cannot have control$bin less than 1, but got ", control$bin)
-            max.bin <- dim(x$data$v)[2]
+            max.bin <- dim(x@data$v)[2]
             if (control$bin > max.bin)
                 stop("cannot have control$bin larger than ", max.bin," but got ", control$bin)
-            u <- x$data$v[,control$bin,1]
-            v <- x$data$v[,control$bin,2]
+            u <- x@data$v[,control$bin,1]
+            v <- x@data$v[,control$bin,2]
         } else {
-            u <- apply(x$data$v[,,1], 1, mean, na.rm=TRUE) # depth mean
-            v <- apply(x$data$v[,,2], 1, mean, na.rm=TRUE) # depth mean
+            u <- apply(x@data$v[,,1], 1, mean, na.rm=TRUE) # depth mean
+            v <- apply(x@data$v[,,2], 1, mean, na.rm=TRUE) # depth mean
         }
     } else if (inherits(x, "adv")) {
-        u <- x$data$v[, 1]
-        v <- x$data$v[, 2]
+        u <- x@data$v[, 1]
+        v <- x@data$v[, 2]
     }
     ok <- !is.na(u) & !is.na(v)
     u <- u[ok]
@@ -45,9 +45,9 @@ beamToXyz <- function(x, ...)
 xyzToEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))
-        xyzToEnuAdp(x, ...)
+        xyzToEnuAdp(x=x, ...)
     else if (inherits(x, "adv"))
-        xyzToEnuAdv(x, ...)
+        xyzToEnuAdv(x=x, ...)
     else
         stop("class of object must inherit from either 'adv' or 'adp'")
 }
@@ -55,9 +55,9 @@ xyzToEnu <- function(x, ...)
 enuToOther <- function(x, ...)
 {
     if (inherits(x, "adp"))
-        enuToOther(x, ...)
+        enuToOtherAdp(x, ...)
     else if (inherits(x, "adv"))
-        enuToOther(x, ...)
+        enuToOtherAdv(x, ...)
     else
         stop("class of object must inherit from either 'adv' or 'adp'")
 }

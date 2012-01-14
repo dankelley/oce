@@ -4,7 +4,8 @@
 \description{Plot a wind-rose diagram}
 
 \usage{
-plot.windrose(x, type=c("count","mean","median","fivenum"),
+\method{plot}{windrose}(x, type=c("count","mean","median","fivenum"),
+              convention=c("meteorological", "oceanographic"),
               mgp=getOption("oceMgp"), 
               mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]), col, \dots)}
 
@@ -14,20 +15,24 @@ plot.windrose(x, type=c("count","mean","median","fivenum"),
 	the angle interval, the mean of the values in the interval, the
 	median of the values, or a \code{\link{fivenum}} representation of
 	the values.}
-  \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
-    also for \code{par(mar)}, computed from this.  The default is
-    tighter than the R default, in order to use more space for the
-    data and less for the axes.}
+   \item{convention}{string indicating whether to use meteorological convention
+       or oceanographic convention for the arrows that emanate from the centre
+       of the rose.  In meteorological convenction, an arrow emanates towards
+       the right on the diagram if the wind is from the east; in oceanographic
+       convention, such an arrow indicates flow \emph{to} the east.} 
+   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and also
+       for \code{par(mar)}, computed from this.  The default is tighter than
+       the R default, in order to use more space for the data and less for the
+       axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{col}{an optional list of colours to use.  If not set, the
-    colours will be \code{c("red", "pink", "blue", "lightgray")}.  For
-    the first three types of plot, the first colour in this list is 
-    used to fill in the rose, the third is used for the petals of the
-    rose, and the fourth is used for grid lines. For the
-    \code{"fivenum"} type, the first colour is used for the
-    inter-quartile range, the second is used outside this range, the 
-    third is used for the median, and the fourth is, again, used for 
-    the grid lines.}   
+  \item{col}{an optional list of colours to use.  If not set, the colours will
+      be \code{c("red", "pink", "blue", "lightgray")}.  For the first three
+      types of plot, the first colour in this list is used to fill in the rose,
+      the third is used for the petals of the rose, and the fourth is used for
+      grid lines. For the \code{"fivenum"} type, the first colour is used for
+      the inter-quartile range, the second is used outside this range, the
+      third is used for the median, and the fourth is, again, used for the grid
+      lines.}   
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 

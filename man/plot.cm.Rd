@@ -78,8 +78,8 @@
     }
 }
 
-\seealso{See \code{\link{read.cm}} for notes on functions relating to
-  \code{"cm"} objects.}
+\seealso{The documentation for \code{\link{cm-class}} explains the structure of
+    CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{

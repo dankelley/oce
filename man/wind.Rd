@@ -6,7 +6,7 @@
 \usage{data(wind)}
 
 \format{Columns \code{wind$x} and \code{wind$y} are location, while
-  \code{wind$u} is the wind speed, in m/s.}
+  \code{wind$z} is the wind speed, in m/s.}
 
 \source{The data are taken from Figure 5 of Koch et al. (1983).}
 
@@ -14,6 +14,8 @@
 interactive Barnes objective map anlaysis scheme for use with satellite
 and conventional data,'' \emph{J.  Climate Appl.  Met.}, vol 22,
 p. 1487-1503.}
+
+\seealso{See \code{\link{interpBarnes}}.}
 
 \author{Dan Kelley}
 

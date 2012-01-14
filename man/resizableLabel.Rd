@@ -4,12 +4,17 @@
 
 \title{Provide axis names in adjustable sizes}
 
-\description{Provide axis names in adjustable sizes, e.g. using T
-  instead of Temperature.}
+\description{Provide axis names in adjustable sizes, e.g. using T instead of
+    Temperature, and including units as appropriate.}
 
 \usage{
-resizableLabel(item=c("S", "T", "p", "z", "distance",
-  "heading", "pitch", "roll"),
+resizableLabel(item=c("S", "T", "theta", "sigmaTheta",
+  "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium", "spice",
+  "p", "z", "distance",
+  "heading", "pitch", "roll",
+  "u", "v", "w", "speed", "direction",
+  "eastward", "northward",
+  "elevation"),
   axis=c("x", "y"))}
 
 \arguments{

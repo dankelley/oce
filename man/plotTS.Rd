@@ -1,12 +1,14 @@
-\name{plot.TS}
+\name{plotTS}
 
-\alias{plot.TS}
+\alias{plotTS}
 
 \title{Plot temperature-salinity diagram for seawater (CTD) data}
 
 \description{Plot temperature-salinity diagram for seawater (CTD) data.}
 
-\usage{plot.TS(x,
+\usage{plotTS(x,
+     inSitu=FALSE,
+     referencePressure=0,
      rhoLevels = 6,
      grid = TRUE,
      col.grid = "lightgray",
@@ -30,7 +32,13 @@
 }
 
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
+  \item{x}{An object containing salinity and temperature data, typically a
+      \code{cdt} object or \code{section} object.}
+  \item{inSitu}{A boolean indicating whether to use in-situ temperature or (the
+      default) potential temperature, calculated with reference pressure given
+      by \code{referencePressure}.}
+  \item{referencePressure}{reference pressure, to be used in calculating
+      potential temperature, if \code{inSitu} is \code{FALSE}.}
   \item{rhoLevels}{Either a list of density levels for which to draw isopycnal
       lines, or a suggestion for the number of levels.  In the latter case,
       \code{pretty()} is used to select levels.}
@@ -71,12 +79,8 @@
 
 \examples{
 library(oce)
-# Plot TS diagram for a mid-Atlantic station at 36N
-# See demo(TS) for a section-spanning TS diagram
-data(a03)
-profile <- a03$data$station[[60]] # 124 stations in total
-plot.TS(profile)
-title("Mid-Atlantic at 36N")
+data(ctd)
+plotTS(ctd)
 }
 
 \author{Dan Kelley}

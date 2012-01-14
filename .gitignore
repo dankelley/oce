@@ -1,3 +1,4 @@
+TAGS
 *.o
 *.so
 .Rhistory
@@ -5,3 +6,4 @@
 Rplots.pdf
 src-*
 *.swp
+TAGS

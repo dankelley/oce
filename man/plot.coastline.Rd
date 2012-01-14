@@ -1,21 +1,24 @@
 \name{plot.coastline}
 
 \alias{plot.coastline}
+\alias{plot,coastline,missing-method}
+\alias{plot,coastline-method}
 
 \title{Plot a coastline}
 
-\description{Plot a coastline.}
+\description{Plot a coastline}
 
-\usage{\method{plot}{coastline}(x,
+\usage{\S4method{plot}{coastline}(x,
      xlab="", ylab="",
      asp,
-     center, span,
-     expand=1.5,
+     clatitude, clongitude, span,
+     expand=1,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
      bg,
      fill='lightgray',
      axes=TRUE,
+     add=FALSE,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -26,20 +29,27 @@
     \code{latitude} and \code{longitude}.} 
   \item{xlab}{label for x axis}
   \item{ylab}{label for y axis}
-  \item{asp}{Aspect ratio for plot.  The default is for
-    \code{plot.coastline} to set the aspect ratio to give natural
-    latitude-longitude scaling somewhere near the centre latitude on the
-    plot. Often, it makes sense to set \code{asp} yourself, e.g. to get
-    correct shapes at 45N, use \code{asp=1/cos(45*pi/180)}. 
-    Note that the land mass is not symmetric about the equator, so
-    to get good world views you should set \code{asp=1} or 
-    set \code{ylim} to be symmetric about zero. Any given value of
-    \code{asp} is ignored, if \code{center} is given.}
-  \item{center}{optional center of map, a vector containing latitude in
-    degrees north, then longitude in degrees east. (Must be accompanied
-    by \code{span}.)}
-  \item{span}{optional suggested span of plot, in kilometers (must be
-    supplied, if \code{center} is supplied).}
+  \item{asp}{Aspect ratio for plot.  The default is for \code{plot.coastline}
+      to set the aspect ratio to give natural latitude-longitude scaling
+      somewhere near the centre latitude on the plot. Often, it makes sense to
+      set \code{asp} yourself, e.g. to get correct shapes at 45N, use
+      \code{asp=1/cos(45*pi/180)}.  Note that the land mass is not symmetric
+      about the equator, so to get good world views you should set \code{asp=1}
+      or set \code{ylim} to be symmetric about zero. Any given value of
+      \code{asp} is ignored, if \code{clatitude} and \code{clongitude} are
+      given.}
+  \item{clatitude}{optional center latitude of map, in degrees north.  If this
+      and \code{clongitude} are provided, then any provided value of \code{asp}
+      is ignored, and instead the plot aspect ratio is computed based on the
+      center latitude.  Also, if \code{clatitude} and \code{clongitude} are
+      provided, then \code{span} must be, also.}
+  \item{clongitude}{optional center longitude of map, in degrees east; see
+      \code{clatitude}.}
+  \item{span}{optional suggested span of plot, in kilometers.  The suggestion
+      is an upper limit on the scale; depending on the aspect ratio of the
+      plotting device, the radius may be smaller than \code{span}.  A value for
+      \code{span} must be supplied, if \code{clatitude} and \code{clongitude}
+      are supplied.}
   \item{expand}{numerical factor for the expansion of plot limits,
     showing area outside the plot, e.g. if showing a ship track as a
     coastline, and then an actual coastline to show the ocean boundary.
@@ -57,6 +67,10 @@
     by \code{\link{read.coastline}}).  Set to \code{NULL} to turn off
     filling.} 
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
+  \item{add}{boolean, set to \code{TRUE} to draw the coastline on an existing
+      plot.  Note that this retains the aspect ratio of that existing plot, so
+      it is important to set that correctly, e.g. with \code{asp=1/cos(lat * pi
+          / 180)}, where \code{clat} is the central latitude of the plot.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For
@@ -76,14 +90,15 @@
 
 \value{None.}
 
-\seealso{\code{\link{read.coastline}} can read coastlines from data
-  files, provided that they are in a certain class of formats.  A
-  coastline may be summarized by \code{\link{summary.coastline}}.}
+\seealso{The documentation for \code{\link{coastline-class}} explains the
+    structure of coastline objects, and also outlines the other functions
+    dealing with them.}
 
 \examples{
 library(oce)
 data(coastlineWorld)
 plot(coastlineWorld)
+plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)
 }
 
 \author{Dan Kelley}

@@ -1,19 +1,21 @@
 \name{plot.ctd}
 
 \alias{plot.ctd}
+\alias{plot,ctd,missing-method}
+\alias{plot,ctd-method}
 
 \title{Plot seawater CTD data}
 
-\description{Plot a summary diagram for CTD data.}
+\description{Plot CTD data}
 
-\usage{\method{plot}{ctd}(x,
+\usage{\S4method{plot}{ctd}(x,
      which=1:4, 
      ref.lat=NaN,
      ref.lon=NaN, 
      grid=TRUE,
      col.grid="lightgray",
      lty.grid="dotted",
-     coastline,
+     coastline="coastlineWorld",
      Slim, 
      Tlim, 
      plim,
@@ -28,6 +30,8 @@
      cex=1,
      pch=1,
      useSmoothScatter=FALSE,
+     keepNA=FALSE,
+     type='l',
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
@@ -35,7 +39,7 @@
      \dots)
 }
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}, or a
+  \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
       list containing items named \code{salinity} and \code{temperature}.}
   \item{which}{list of desired plot types.  
     \itemize{
@@ -65,6 +69,8 @@
       \item \code{which=10} or \code{which="temperature"} gives a temperature profile
       \item \code{which=11} or \code{which="density"} gives a density profile
       \item \code{which=12} or \code{which="N2"} gives an \eqn{N^2}{N^2} profile
+      \item \code{which=13} or \code{which="spice"} gives a spiciness profile
+      \item \code{which=14} or \code{which="tritium"} gives a tritium profile
     }
   }
   \item{ref.lat}{Latitude of reference point for distance calculation}
@@ -72,8 +78,17 @@
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
   \item{col.grid}{colour for the grid.}
   \item{lty.grid}{line type for grid.}
-  \item{coastline}{a \code{coastline} object, e.g. as read by
-    \code{\link{read.coastline}} (ignored if no map plotted).}
+  \item{coastline}{a \code{coastline} object, or a character string naming one.
+      There are several built-in datasets: \code{coastlineWorld} (the default),
+      \code{coastlineMaritimes}, \code{coastlineHalifax}, and
+      \code{coastlineSLE}, and any other coastline object (e.g. as read by
+      \code{\link{read.coastline}}) may be used also.  There is a speed penalty
+      for providing \code{coastline} as a character string, because it forces
+      \code{plot.coastline} to load it on every call.  So, if
+      \code{plot.coastline} is to be called several times for a given
+      coastline, it makes sense to load it in before the first call, and to
+      supply the object as an argument, as opposed to the name of the object.
+      If no coastline is desired, use \code{coastline="none"}.}
   \item{Slim}{optional limits of salinity axes}
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}
@@ -92,6 +107,9 @@
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
     the plot.}
+  \item{keepNA}{flag indicating whether to keep \code{NA} values in linegraphs,
+      which will yield breaks in the lines.}
+  \item{type}{type of plot to draw, using the same scheme as \code{\link{plot}}.}
   \item{adorn}{list of expressions to be executed for the panels in
     turn, e.g. to adorn the plots.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, 
@@ -123,23 +141,14 @@
   further additions may be made to the plot.
 }
 
-\seealso{The profiles are plotted with \code{\link{plot.profile}}, and
-  the TS diagram is plotted with \code{\link{plot.TS}}.  CTD data can be
-  created with \code{\link{as.ctd}} or read with \code{\link{read.ctd}}.
-  Summaries of CTD data are provided by \code{\link{summary.ctd}}.}
+\seealso{The documentation for \code{\link{ctd-class}} explains the structure
+    of CTD objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
 data(ctd) 
 plot(ctd)
-
-data(coastlineSLE)
-lonlim <- -(69 + c(52, 41) / 60)
-latlim <- 47 + c(48, 58) / 60
-# IAL = Ile aux Lievres
-plot(ctd, which=c(1,2,3,5),
-     coastline=coastlineSLE,
-     adorn=expression({},{},{},{text(-69.72,47.85,'IAL',pos=4)}))
+plot(ctd, which=c(1,2,3,5), coastline="coastlineHalifax")
 }
 \author{Dan Kelley}
 \keyword{hplot}

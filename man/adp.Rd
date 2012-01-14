@@ -36,19 +36,16 @@ plot(adp, which=15:18)
 par(mfrow=c(1,2))
 plot(adp, which="uv+ellipse+arrow")
 data(coastlineSLE)
-# plot local area
-plot(coastlineSLE, center=c(adp$metadata$latitude,adp$metadata$longitude),
-  span=50)
-points(adp$metadata$longitude, adp$metadata$latitude, cex=3, col="red")
+plot(coastlineSLE, clongitude=adp[["longitude"]], clatitude=adp[["latitude"]], span=50)
+points(adp[["longitude"]], adp[["latitude"]], pch='+', cex=2, col='red')
 }
 
 \usage{data(adp)}
 
 \source{This file came from the SLEIWEX-2008 experiment.}
 
-\seealso{See \code{\link{read.adp}} for notes on the contents of
-  \code{adp} objects, and for functions to work with them.  Also, see
-  \code{\link{plot.adp}} to learn about plotting ADP objects.}
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}
 

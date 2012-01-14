@@ -5,6 +5,7 @@
 
 \usage{read.section(file, sectionId="", flags, 
              ship="", scientist="", institute="",
+             missingValue=-999,
              debug=getOption("oceDebug"),
   processingLog)}
 
@@ -26,6 +27,7 @@
     function tries \code{SALNTY} (yes, that is the spelling!) instead.
     But if neither has an acceptable flag, the datum will not be
     read.}
+  \item{missingValue}{numerical value used to indicate missing data}
   \item{debug}{logical. If \code{TRUE}, print some information that 
     might be helpful during debugging.}
   \item{processingLog}{if provided, the action item to be stored in the
@@ -56,30 +58,32 @@ and
 \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{\code{\link{makeSection}} can be used to bind together \code{ctd} objects into a section.}
+\seealso{The documentation for \code{\link{section-class}} explains the
+    structure of section objects, and also outlines the other functions dealing
+    with them.}
+
 \examples{
 library(oce)
 data(a03)
-GS <- subset(a03, indices=124:102)
+GS <- subset.oce(a03, indices=124:102)
 GSg <- sectionGrid(GS, p=seq(0, 5000, 100))
 data(coastlineWorld)
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
 \dontrun{
 # Plot stations individually (good for quality-control)
 pdf("a03_stations.pdf")
-for (s in seq_along(na03$data$station)) {
-    plot(na03$data$station[[s]])
+for (s in seq_along(na03@data$station)) {
+    plot(na03@data$station[[s]])
 }
 dev.off()
 }
 }
 
-\references{Several repository sites provide section data. An example
-  that is perhaps likely to exist for years is
-  \url{http://cchdo.ucsd.edu}, but a search on \code{"WOCE bottle data"}
-  should turn up other sites, if this one ceases to exist. Only the
-  so-called \emph{exchange BOT} data format can be processed by
-  read.section() at this time.}
+\references{Several repository sites provide section data. An example that is
+    perhaps likely to exist for years is \url{http://cchdo.ucsd.edu}, but a
+    search on \code{"WOCE bottle data"} should turn up other sites, if this one
+    ceases to exist. Only the so-called \emph{exchange BOT} data format can be
+    processed by read.section() at this time.}
 
 \author{Dan Kelley}
 

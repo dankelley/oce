@@ -21,6 +21,7 @@ read.adv(file, from=1, to, by=1, tz=getOption("oceTz"),
 read.adv.nortek(file, from=1, to, by=1, tz=getOption("oceTz"), 
   header=TRUE,
   latitude=NA, longitude=NA,
+  haveAnalog1=FALSE, haveAnalog2=FALSE,
   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 
 read.adv.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -54,6 +55,12 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   \item{from}{index number of the first profile to be read, or the time of that profile, as created
     with \code{\link{as.POSIXct}} (hint: use \code{tz="UTC"}).  This argument is ignored if
     \code{header==FALSE}. See \dQuote{Examples}.}
+
+  \item{haveAnalog1}{optional argument, only for Nortek devices: indicates whether to extract the
+    ``analog1'' (8-bit) data.}
+
+  \item{haveAnalog2}{optional argument, only for Nortek devices: indicates whether to extract the
+    ``analog2'' (16-bit) data.}
 
   \item{to}{indication of the last profile to read, in a format matching that of \code{from}.  This
     is ignored if \code{header==FALSE}.}
@@ -244,10 +251,8 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
   \code{by} \emph{should} mean, for those variables.  Indeed, this is an argument for deleting
   \code{by} from the argument list, and this may be done in a future version of \code{read.adv}.}
 
-
-\seealso{Objects of class \code{adv} may be plotted with \code{\link{plot.adv}} or summarized with
-  \code{\link{summary.adv}}.  Coordinate transformations are done with \code{\link{beamToXyzAdv}},
-  \code{\link{xyzToEnuAdv}}, and \code{\link{enuToOtherAdv}}, in that order.}
+\seealso{The documentation for \code{\link{adv-class}} explains the structure
+    of ADV objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{
