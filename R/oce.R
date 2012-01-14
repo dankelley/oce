@@ -239,20 +239,28 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
              type=type, cex=cex, ...)
     }
     if (axes) {
-        xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                                  mgp=mgp,
-                                  cex=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
-                                  debug=debug-1)#, ...)
+        xaxt <- list(...)["xaxt"]
+        drawxaxis <- !is.null(xaxt) && xaxt != 'n'
+        yaxt <- list(...)["yaxt"]
+        drawyaxis <- !is.null(yaxt) && yaxt != 'n'
+        if (drawxaxis) {
+            xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
+                                      mgp=mgp,
+                                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                      debug=debug-1)#, ...)
+        }
         if (grid) {
             lwd <- par("lwd")
-            abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+            if (drawxaxis)
+                abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
             yaxp <- par("yaxp")
             abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
                    col="lightgray", lty="dotted", lwd=lwd)
         }
         box()
         ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-        axis(2, cex.axis=cex.axis)
+        if (drawyaxis)
+            axis(2, cex.axis=cex.axis, cex=cex.axis)
         axis(4, labels=FALSE)
     }
     if (!is.null(adorn)) {
