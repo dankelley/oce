@@ -1,4 +1,5 @@
 0.8-5
+- oce.plot.ts(): obey arguments xaxt and yaxt
 - improve support for shapefile coastlines
 
 0.8-4
