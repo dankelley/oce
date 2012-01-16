@@ -508,15 +508,17 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 rval@data$v <- rval@data$v[keep,,]
                 rval@data$a <- rval@data$a[keep,,]
                 rval@data$q <- rval@data$q[keep,,]
-                rval@data$bottomRange <- rval@data$bottomRange[keep,]
                 rval@data$time <- rval@data$time[keep]
-                rval@data$pressure <- rval@data$pressure[keep]
-                rval@data$temperature <- rval@data$temperature[keep]
-                rval@data$salinity <- rval@data$salinity[keep]
-                rval@data$depth <- rval@data$depth[keep]
-                rval@data$heading <- rval@data$heading[keep]
-                rval@data$pitch <- rval@data$pitch[keep]
-                rval@data$roll <- rval@data$roll[keep]
+                ## the items below may not be in the dataset
+                names <- names(rval@data)
+                if ("bottomRange" %in% names) rval@data$bottomRange <- rval@data$bottomRange[keep,]
+                if ("pressure" %in% names) rval@data$pressure <- rval@data$pressure[keep]
+                if ("temperature" %in% names) rval@data$temperature <- rval@data$temperature[keep]
+                if ("salinity" %in% names) rval@data$salinity <- rval@data$salinity[keep]
+                if ("depth" %in% names) rval@data$depth <- rval@data$depth[keep]
+                if ("heading" %in% names) rval@data$heading <- rval@data$heading[keep]
+                if ("pitch" %in% names) rval@data$pitch <- rval@data$pitch[keep]
+                if ("roll" %in% names) rval@data$roll <- rval@data$roll[keep]
             } else {
                 stop("should express the subset in terms of distance or time")
             }
