@@ -1316,7 +1316,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
                       bg="white", fg="black", mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom, ", xright=", xright, ", ytop=", ytop, ".,.) {\n")
+    oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom, ", xright=", xright, ", ytop=", ytop, ",  ...) {\n")
     rect(xleft, ybottom, xright, ytop, col=bg, border=fg)
     mai <- par('mai')                  # bottom left top right
     oceDebug(debug, "par('mai')=", par('mai'), '\n')
@@ -1334,4 +1334,8 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     expr
     par(mai=mai, usr=usr)              # reset to starting values
 }
-
+if (0){
+    library(oce)
+    data(ctd)
+    source('R/oce.R');plot(ctd, which="TS");plotInset(29.9, 2.8, 31.1, 9,expr=plot(ctd, which='map', coastline="coastlineMaritimes", span=250, mar=NULL))#, cex.axis=.7)
+}

@@ -15,7 +15,7 @@
      Slim, Tlim, plim, densitylim, dpdtlim, timelim,
      lonlim, latlim, span,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
-     cex=1,
+     cex=1, cex.axis=par('cex.axis'),
      pch=1,
      useSmoothScatter=FALSE,
      keepNA=FALSE,
@@ -92,6 +92,7 @@
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
   \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+  \item{cex.axis}{size factor for axis labels (see \code{\link{par}})}
   \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw

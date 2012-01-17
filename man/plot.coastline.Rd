@@ -17,7 +17,7 @@
      mar=c(mgp[1]+1,mgp[1]+1,1,1),
      bg,
      fill='lightgray',
-     axes=TRUE,
+     axes=TRUE, cex.axis=par('cex.axis'),
      add=FALSE,
      debug=getOption("oceDebug"),
      \dots)}
@@ -69,6 +69,7 @@
     by \code{\link{read.coastline}}).  Set to \code{NULL} to turn off
     filling.} 
   \item{axes}{boolean, set to \code{TRUE} to plot axes.}
+  \item{cex.axis}{value for axis font size factor.}
   \item{add}{boolean, set to \code{TRUE} to draw the coastline on an existing
       plot.  Note that this retains the aspect ratio of that existing plot, so
       it is important to set that correctly, e.g. with \code{asp=1/cos(lat * pi

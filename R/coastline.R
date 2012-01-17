@@ -33,7 +33,7 @@ setMethod(f="plot",
                                mar=c(mgp[1]+1,mgp[1]+1,1,1),
                                bg,
                                fill='lightgray',
-                               axes=TRUE,
+                               axes=TRUE, cex.axis=par('cex.axis'),
                                add=FALSE,
                                debug=getOption("oceDebug"),
                                ...)
@@ -41,7 +41,9 @@ setMethod(f="plot",
               oceDebug(debug, "\bplot.coastline(...,",
                        "clatitude=", if(missing(clatitude)) "(missing)" else paste("c(", paste(clatitude, collapse=","), ")"),
                        "clongitude=", if(missing(clongitude)) "(missing)" else paste("c(", paste(clongitude, collapse=","), ")"),
-                       ", span=", if(missing(span)) "(missing)" else span, ", ...) {\n", sep="")
+                       ", span=", if(missing(span)) "(missing)" else span,
+                       ", cex.axis=", cex.axis, 
+                       ", ...) {\n", sep="")
               ##cat("top of plot(ctd, which=", which, "...)   mai=", par('mai'), "\n") # FIXME
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
@@ -154,13 +156,13 @@ setMethod(f="plot",
                       usrTrimmed[4] <- min(  90, usrTrimmed[4])
                       oceDebug(debug, "par('usr')", par('usr'), "\n")
                       oceDebug(debug, "usrTrimmed", usrTrimmed, "\n")
-                      axis(1, at=xr.pretty, pos=usrTrimmed[3])
+                      axis(1, at=xr.pretty, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom y axis at", usrTrimmed[3], "\n")
-                      axis(2, at=yr.pretty, pos=usrTrimmed[1])
+                      axis(2, at=yr.pretty, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
                       oceDebug(debug, "putting left x axis at", usrTrimmed[1], "\n")
-                      axis(3, at=xr.pretty, pos=usrTrimmed[4], labels=FALSE)
-                      oceDebug(debug, "putting top x axis at", usrTrimmed[4], "\n")
-                      axis(4, at=yr.pretty, pos=usrTrimmed[2], labels=FALSE)
+                      ##axis(3, at=xr.pretty, pos=usrTrimmed[4], labels=FALSE)
+                      ##oceDebug(debug, "putting top x axis at", usrTrimmed[4], "\n")
+                      axis(4, at=yr.pretty, pos=usrTrimmed[2], labels=FALSE, cex.axis=cex.axis)
                       oceDebug(debug, "putting right y axis at", usrTrimmed[2], "\n")
                   }
                   yaxp <- par("yaxp")

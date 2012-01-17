@@ -436,7 +436,7 @@ setMethod(f="plot",
                               Slim, Tlim, plim, densitylim, dpdtlim, timelim,
                               lonlim, latlim, span,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
-                              cex=1,
+                              cex=1, cex.axis=par('cex.axis'),
                               pch=1,
                               useSmoothScatter=FALSE,
                               keepNA=FALSE,
@@ -661,7 +661,7 @@ setMethod(f="plot",
                       if (is.character(coastline)) {
                           if (coastline == "none") {
                               if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
-                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="")
+                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="", cex.axis=cex.axis)
                               } else {
                                   warning("no latitude or longitude in object's metadata, so cannot draw map")
                               }
@@ -697,7 +697,7 @@ setMethod(f="plot",
                               if (missing(span))
                                   span <- diff(range(latlim.c)) / 1.5 * 111
                               plot(coastline, clatitude=mean(latlim.c), clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
+                                   span=span, mgp=mgp, mar=mar, cex.axis=cex.axis, debug=debug-1)
                               oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
                           } else {
                               oceDebug(debug, "latlim was provided\n")
@@ -705,7 +705,7 @@ setMethod(f="plot",
                               if (missing(span))
                                   span <- diff(range(latlim)) / 1.5 * 111
                               plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
+                                   span=span, mgp=mgp, mar=mar, cex.axis=cex.axis, debug=debug-1)
                               oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                           }
                           if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
@@ -720,7 +720,7 @@ setMethod(f="plot",
                               if (missing(span))
                                   span <- diff(range(latlim.c)) / 1.5 * 111
                               plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
+                                   span=span, mgp=mgp, mar=mar, cex.axis=cex.axis, debug=debug-1)
                               oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
                           } else {
                               oceDebug(debug, "latlim was provided\n")
@@ -728,7 +728,7 @@ setMethod(f="plot",
                               if (missing(span))
                                   span <- diff(range(latlim)) / 1.5 * 111
                               plot(coastline, clatitude=clat, clongitude=clon,
-                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
+                                   span=span, mgp=mgp, mar=mar, cex.axis=cex.axis, debug=debug-1)
                               oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                           }
                       }

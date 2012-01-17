@@ -53,7 +53,7 @@ library(oce)
 data(ctd) 
 plot(ctd, which="TS")
 plotInset(29.9, 2.8, 31.1, 9,
-          expr=plot(ctd, which='map', coastline="coastlineMaritimes", span=250, mar=NULL))
+          expr=plot(ctd, which='map', coastline="coastlineMaritimes", span=250, mar=NULL, cex.axis=3/4))
 }
 \author{Dan Kelley}
 \keyword{hplot}
