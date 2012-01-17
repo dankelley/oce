@@ -38,10 +38,11 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
           {
-              oceDebug(debug, "\b\bplot.coastline(...,",
+              oceDebug(debug, "\bplot.coastline(...,",
                        "clatitude=", if(missing(clatitude)) "(missing)" else paste("c(", paste(clatitude, collapse=","), ")"),
                        "clongitude=", if(missing(clongitude)) "(missing)" else paste("c(", paste(clongitude, collapse=","), ")"),
                        ", span=", if(missing(span)) "(missing)" else span, ", ...) {\n", sep="")
+              ##cat("top of plot(ctd, which=", which, "...)   mai=", par('mai'), "\n") # FIXME
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
                       stop("list must contain item named 'longitude'")
@@ -59,7 +60,8 @@ setMethod(f="plot",
                   stop("please use 'clatitude' and 'clongitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
               if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
-              par(mgp=mgp, mar=mar)
+              if (4 == length(mar)) par(mar=mar)
+              if (3 == length(mgp)) par(mgp=mgp)
               if (add) {
                   if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                       polygon(longitude, latitude, col=fill, ...)

@@ -7,17 +7,18 @@
 ##             oceStackPop()
 library(oce)
 source('~/src/R-kelley/oce/R/ctd.R')
+source('~/src/R-kelley/oce/R/coastline.R')
 data(ctd)
 plot(ctd, which='TS')
 plotInset <- function(xleft, ybottom, xright, ytop, expr,
-                      bg="pink", mar=c(3.5, 3.5, 1, 1),
+                      bg="white", fg="black", mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
 {
     if (debug) {
         cat("at plotInset entry, mar=", par('mar'), '\n')
         cat("at plotInset entry, mai=", par('mai'), '\n')
     }
-    rect(xleft, ybottom, xright, ytop, col=bg, border=bg)
+    rect(xleft, ybottom, xright, ytop, col=bg, border=fg)
     mai <- par('mai')                  # bottom left top right
     usr <- par('usr')                  # xmin xmax ymin ymax
     din <- dev.size(units='in')        # width height
@@ -48,6 +49,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     }
 }
 #plotInset(30, 4, 31, 8, expr=plot(ctd, which='temperature', mar=NULL), debug=2) # almost works (mar wrong)
-plotInset(30, 4, 31, 8, expr=plot(ctd, which='map', mar=NULL, debug=3), debug=2) # fails (mar very wrong)
+## use mar=NULL to prevent inset plot from taking whole device
+plotInset(29.9, 2.8, 31.1, 9, expr=plot(ctd, which='map', coastline="coastlineMaritimes", span=250, mar=NULL, debug=3), debug=2) # fails (mar very wrong)
 #plotInset(29.9, 3.1, 31, 8, expr=plot(1:10, (1:10)^2), debug=2) # works
 
