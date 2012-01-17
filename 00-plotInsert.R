@@ -6,11 +6,12 @@
 ##     after which, when plotting is done, we would do
 ##             oceStackPop()
 library(oce)
+source('~/src/R-kelley/oce/R/oce.R')
 source('~/src/R-kelley/oce/R/ctd.R')
 source('~/src/R-kelley/oce/R/coastline.R')
 data(ctd)
 plot(ctd, which='TS')
-plotInset <- function(xleft, ybottom, xright, ytop, expr,
+testplotInset <- function(xleft, ybottom, xright, ytop, expr,
                       bg="white", fg="black", mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
 {
@@ -48,8 +49,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
         cat("after plot, mai=", par('mai'), '\n')
     }
 }
-#plotInset(30, 4, 31, 8, expr=plot(ctd, which='temperature', mar=NULL), debug=2) # almost works (mar wrong)
-## use mar=NULL to prevent inset plot from taking whole device
-plotInset(29.9, 2.8, 31.1, 9, expr=plot(ctd, which='map', coastline="coastlineMaritimes", span=250, mar=NULL, debug=3), debug=2) # fails (mar very wrong)
-#plotInset(29.9, 3.1, 31, 8, expr=plot(1:10, (1:10)^2), debug=2) # works
+#plotInset(30, 4, 31, 8, expr=plot(ctd, which='temperature', mar=NULL), debug=2)
+plotInset(29.9, 2.8, 31.1, 9, expr=plot(ctd, which='map', coastline="coastlineMaritimes", span=250, mar=NULL, debug=3), debug=2)
+#plotInset(29.9, 3.1, 31, 8, expr=plot(1:10, (1:10)^2), debug=2)
 
