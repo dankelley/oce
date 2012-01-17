@@ -434,7 +434,7 @@ setMethod(f="plot",
                               grid = TRUE, col.grid="lightgray", lty.grid="dotted",
                               coastline="coastlineWorld",
                               Slim, Tlim, plim, densitylim, dpdtlim, timelim,
-                              lonlim, latlim,
+                              lonlim, latlim, span,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1,
                               pch=1,
@@ -443,7 +443,7 @@ setMethod(f="plot",
                               type='l',
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                              mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1]+1,mgp[1]+1),
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -500,8 +500,8 @@ setMethod(f="plot",
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
-
-              par(mgp=mgp, mar=mar)
+              if (4 == length(mar)) par(mar=mar)
+              if (4 == length(mgp)) par(mar=mgp)
 
               if (lw > 1) {
                   oldpar <- par(no.readonly = TRUE)
@@ -655,7 +655,9 @@ setMethod(f="plot",
                                                          ",", dec_deg(ref.lat), ") = ", kms), adj = c(0, 0), cex=cex)
                           yloc <- yloc - d.yloc
                       }
-                  } else if (round(which[w]) == 5 || which[w] == "map") {
+                  } else if (which[w] == "map" || round(which[w]) == 5) {
+                      oceDebug(debug, "draw(ctd, ...) of type MAP\n")
+                      ## get coastline file
                       if (is.character(coastline)) {
                           if (coastline == "none") {
                               if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
@@ -665,7 +667,7 @@ setMethod(f="plot",
                               }
                           } else { # named coastline
                               if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
-                                  oceDebug(debug, "loading coastline file \"", coastline, "\"")
+                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
                                   if (coastline == "coastlineWorld") {
                                       data(coastlineWorld)
                                       coastline <- coastlineWorld
@@ -684,37 +686,53 @@ setMethod(f="plot",
                               }
                           }
                       }
+                      oceDebug(debug, "will draw a map with span=", span, "\n")
                       if (missing(lonlim)) {
+                          oceDebug(debug, "lonlim was not provided\n")
                           lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
                           clon <- mean(lonlim.c)
                           if (missing(latlim)) {
+                              oceDebug(debug, "latlim was not provided\n")
                               latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
-                              span <- diff(range(latlim.c)) / 1.5 * 111
-                              plot(coastline, clatitude=mean(latlim.c), clongitude=clon, span=span, debug=debug-1)
+                              if (missing(span))
+                                  span <- diff(range(latlim.c)) / 1.5 * 111
+                              plot(coastline, clatitude=mean(latlim.c), clongitude=clon,
+                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
                               oceDebug(debug, "CASE 1: both latlim and lonlim missing\n")
                           } else {
+                              oceDebug(debug, "latlim was provided\n")
                               clat <- mean(latlim)
-                              span <- diff(range(latlim)) / 1.5 * 111
-                              plot(coastline, clatitude=clat, clongitude=clon, span=span, debug=debug-1)
+                              if (missing(span))
+                                  span <- diff(range(latlim)) / 1.5 * 111
+                              plot(coastline, clatitude=clat, clongitude=clon,
+                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
                               oceDebug(debug, "CASE 2: latlim given, lonlim missing\n")
                           }
-                          if (round(which[w],1) == 5.1) # HIDDEN FEATURE
+                          if (is.numeric(which[w]) && round(which[w],1) == 5.1) # HIDDEN FEATURE
                               mtext(gsub(".*/", "", x@metadata$filename), side=3, line=0.1, cex=0.7*cex)
                       } else {
+                          oceDebug(debug, "lonlim was provided\n")
                           clon <- mean(lonlim)
                           if (missing(latlim)) {
+                              oceDebug(debug, "latlim was not provided\n")
                               latlim.c <- x@metadata$latitude + c(-1, 1) * min(abs(range(coastline[["latitude"]],na.rm=TRUE) - x@metadata$latitude))
                               clat <- mean(latlim.c)
-                              span <- diff(range(latlim.c)) / 1.5 * 111
-                              plot(coastline, clatitude=clat, clongitude=clon, span=span, debug=debug-1)
+                              if (missing(span))
+                                  span <- diff(range(latlim.c)) / 1.5 * 111
+                              plot(coastline, clatitude=clat, clongitude=clon,
+                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
                               oceDebug(debug, "CASE 3: lonlim given, latlim missing\n")
                           } else {
+                              oceDebug(debug, "latlim was provided\n")
                               clat <- mean(latlim)
-                              span <- diff(range(latlim)) / 1.5 * 111
-                              plot(coastline, clatitude=clat, clongitude=clon, span=span, debug=debug-1)
+                              if (missing(span))
+                                  span <- diff(range(latlim)) / 1.5 * 111
+                              plot(coastline, clatitude=clat, clongitude=clon,
+                                   span=span, mgp=mgp, mar=mar, debug=debug-1)
                               oceDebug(debug, "CASE 4: both latlim and lonlim given\n")
                           }
                       }
+                      oceDebug(debug, "about to add a station point[s] to map; mai=", par('mai'), '\n')
                       points(x@metadata$longitude, x@metadata$latitude, cex=latlon.cex, col=latlon.col, pch=latlon.pch)
                       if (!is.null(x@metadata$station) && !is.na(x@metadata$station))
                           mtext(paste("Station", x@metadata$station), side=3, adj=0, cex=0.8*par("cex"))
@@ -748,8 +766,8 @@ plotScan <- function(x,
         stop("method is only for ctd objects")
     opar <- par(no.readonly=TRUE)
     on.exit(par(opar))
-    par(mgp=mgp)
-    par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+2))
+    if (4 == length(mgp)) par(mgp=mgp)
+    if (4 == length(mgp)) par(mar=c(mgp[1], mgp[1]+1, 1, mgp[1]+2))
 
     adorn.length <- length(adorn)
     if (adorn.length == 1) {
@@ -1612,7 +1630,8 @@ plotTS <- function (x,
     omgp <- par("mgp")
     opar <- par(no.readonly = TRUE)
     on.exit(par(mar=omar, mgp=omgp))
-    par(mgp=mgp, mar=mar)
+    if (4 == length(mgp)) par(mgp=mgp)
+    if (4 == length(mar)) par(mgp=mgp)
     axis.name.loc <- mgp[1]
     if (missing(xlab))
         xlab <- resizableLabel("S","x")
@@ -1741,7 +1760,7 @@ plotProfile <- function (x,
                     pressure=resizableLabel("p", "y"),
                     z=resizableLabel("z", "y"),
                     sigmaTheta=resizableLabel("sigmaTheta", "y"))
-    par(mgp=mgp, mar=mar)
+##    par(mgp=mgp, mar=mar)
     if (missing(ylim))
         ylim <- switch(ytype,
                        pressure = rev(range(x@data$pressure, na.rm=TRUE)),
@@ -1904,6 +1923,8 @@ plotProfile <- function (x,
             plot(x@data$temperature[look], y[look],
                  xlim=Tlim, ylim=ylim,
                  type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+            if (debug) cat("IN plot.ctd() mar=", par('mar'), "\n")
+            #browser()
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)

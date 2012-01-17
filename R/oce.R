@@ -1312,3 +1312,26 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC
     }
 }
 
+plotInset <- function(xleft, ybottom, xright, ytop, expr,
+                      bg="white", fg="black", mar=c(2, 2, 1, 1),
+                      debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "plotInset(xleft=", xleft, ", ybottom=", ybottom, ", xright=", xright, ", ytop=", ytop, ".,.) {\n")
+    rect(xleft, ybottom, xright, ytop, col=bg, border=fg)
+    mai <- par('mai')                  # bottom left top right
+    oceDebug(debug, "par('mai')=", par('mai'), '\n')
+    usr <- par('usr')                  # xmin xmax ymin ymax
+    oceDebug(debug, "par('usr')=", par('usr'), '\n')
+    din <- dev.size(units='in')        # width height
+    oceDebug(debug, "dev.size(units='in')=", din, '\n')
+    x2in <- function(x) mai[2] + (x-usr[1]) * (din[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+    y2in <- function(y) mai[1] + (y-usr[3]) * (din[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+    nmai <- c(y2in(ybottom), x2in(xleft), din[2]-y2in(ytop), din[1]-x2in(xright))
+    oceDebug(debug, "nmai:", nmai, "\n")
+    par(new=TRUE, mai=nmai)
+    thismar <- par('mar')
+    par(mar=thismar+mar)
+    expr
+    par(mai=mai, usr=usr)              # reset to starting values
+}
+

@@ -1,4 +1,5 @@
 0.8-5
+- plotInset() added
 - subset(): permit subsetting ADP by pressure
 - oce.plot.ts(): obey arguments xaxt and yaxt
 - improve support for shapefile coastlines

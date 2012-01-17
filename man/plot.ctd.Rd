@@ -8,25 +8,13 @@
 
 \description{Plot CTD data}
 
-\usage{\S4method{plot}{ctd}(x,
-     which=1:4, 
-     ref.lat=NaN,
-     ref.lon=NaN, 
-     grid=TRUE,
-     col.grid="lightgray",
-     lty.grid="dotted",
+\usage{\S4method{plot}{ctd}(x, which=1:4, 
+     ref.lat=NaN, ref.lon=NaN, 
+     grid=TRUE, col.grid="lightgray", lty.grid="dotted",
      coastline="coastlineWorld",
-     Slim, 
-     Tlim, 
-     plim,
-     densitylim, 
-     dpdtlim,
-     timelim,
-     lonlim,
-     latlim,
-     latlon.pch=20,
-     latlon.cex=1.5,
-     latlon.col="red",
+     Slim, Tlim, plim, densitylim, dpdtlim, timelim,
+     lonlim, latlim, span,
+     latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1,
      pch=1,
      useSmoothScatter=FALSE,
@@ -34,7 +22,7 @@
      type='l',
      adorn=NULL,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1]+1,mgp[1]+1),
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -99,6 +87,7 @@
     map plotted)} 
   \item{latlim}{optional limits of latitude axis of map (ignored if no
     map plotted)} 
+  \item{span}{optional span of map, in km (ignored unless a map is being drawn)}
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
@@ -120,7 +109,8 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
-  \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.  For maps that are
+      to be inset into an existing plot, use \code{mar=NULL}.}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{swN2} calculations.} 

@@ -59,7 +59,9 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
     data and less for the axes.}
-  \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.  If \code{mar} is
+      not \code{NULL}, then the plot will fill the whole page.  Thus, to inset
+      maps into other diagrams, use \code{mar=NULL}.}
   \item{bg}{optional colour to be used for the background of the map.
     This comes in handy for drawing insets (see \dQuote{details}).}
   \item{fill}{colour to be used to fill land regions.  This is ignored
