@@ -33,15 +33,14 @@
   \item{fg}{colour for the box enclosing the inset diagram}
 
   \item{mar}{margins, in line heights, to be used at the four sides of the
-      inset diagram.}
+      inset diagram.  (This is often helpful to save space.)}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.} 
 }
   
-
 \details{Adds an inset diagram to an existing plot.  Note that if the inset is
-    a map or coastline, it will be necessary to supply \code{mar=NULL} to
+    a map or coastline, it will be necessary to supply \code{inset=TRUE} to
     prevent the inset diagram from occupying the whole device width.}
 
 \section{Notes}{This is a provisional function that may be removed, or that act

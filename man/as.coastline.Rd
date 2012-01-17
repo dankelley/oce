@@ -6,7 +6,10 @@
 }
 \usage{as.coastline(latitude, longitude, fillable)}
 \arguments{
-  \item{latitude}{the latitude in decimal degrees, positive north of the equator.}
+  \item{latitude}{the latitude in decimal degrees, positive north of the
+      equator, or a data frame with columns named \code{latitude} and
+      \code{longitude}, in which case these values are extracted from the data
+      frame and the second argument is ignored.}
   \item{longitude}{the longitude in decimal degrees, positive north of Greenwich.}
   \item{fillable}{boolean indicating whether the coastline can be drawn as a filled polygon.}
 }

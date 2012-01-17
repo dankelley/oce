@@ -23,6 +23,7 @@
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1]+1,mgp[1]+1),
+     inset=FALSE,
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -110,8 +111,11 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
-  \item{mar}{value to be used with \code{\link{par}("mar")}.  For maps that are
-      to be inset into an existing plot, use \code{mar=NULL}.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+      effect is to prevent the present function from adjusting margins, which
+      is necessary because margin adjustment is the basis for the method
+      used by \code{\link{plotInset}}.}
   \item{debug}{set to \code{TRUE} to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{swN2} calculations.} 

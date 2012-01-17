@@ -18,7 +18,7 @@
      bg,
      fill='lightgray',
      axes=TRUE, cex.axis=par('cex.axis'),
-     add=FALSE,
+     add=FALSE, inset=FALSE,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -59,9 +59,7 @@
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
     data and less for the axes.}
-  \item{mar}{value to be used with \code{\link{par}("mar")}.  If \code{mar} is
-      not \code{NULL}, then the plot will fill the whole page.  Thus, to inset
-      maps into other diagrams, use \code{mar=NULL}.}
+  \item{mar}{value to be used with \code{\link{par}("mar")}.}
   \item{bg}{optional colour to be used for the background of the map.
     This comes in handy for drawing insets (see \dQuote{details}).}
   \item{fill}{colour to be used to fill land regions.  This is ignored
@@ -74,6 +72,10 @@
       plot.  Note that this retains the aspect ratio of that existing plot, so
       it is important to set that correctly, e.g. with \code{asp=1/cos(lat * pi
           / 180)}, where \code{clat} is the central latitude of the plot.}
+  \item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+      effect is to prevent the present function from adjusting margins, which
+      is necessary because margin adjustment is the basis for the method
+      used by \code{\link{plotInset}}.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For

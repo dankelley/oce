@@ -13,6 +13,13 @@ setMethod(f="initialize",
 
 as.coastline <- function(latitude, longitude, fillable=FALSE)
 {
+    if (class(latitude) == "data.frame") {
+        names <- names(latitude)
+        if (!("longitude" %in% names)) stop("list must contain a column named 'longitude'")
+        if (!("latitude" %in% names)) stop("list must contain a column named 'latitude'")
+        longitude <- latitude$longitude
+        latitude <- latitude$latitude
+    }
     n <- length(latitude)
     if (n != length(longitude))
         stop("Lengths of longitude and latitude must be equal")
@@ -34,7 +41,7 @@ setMethod(f="plot",
                                bg,
                                fill='lightgray',
                                axes=TRUE, cex.axis=par('cex.axis'),
-                               add=FALSE,
+                               add=FALSE, inset=FALSE,
                                debug=getOption("oceDebug"),
                                ...)
           {
@@ -43,6 +50,7 @@ setMethod(f="plot",
                        "clongitude=", if(missing(clongitude)) "(missing)" else paste("c(", paste(clongitude, collapse=","), ")"),
                        ", span=", if(missing(span)) "(missing)" else span,
                        ", cex.axis=", cex.axis, 
+                       ", inset=", inset, 
                        ", ...) {\n", sep="")
               ##cat("top of plot(ctd, which=", which, "...)   mai=", par('mai'), "\n") # FIXME
               if (is.list(x) && "latitude" %in% names(x)) {
@@ -62,8 +70,9 @@ setMethod(f="plot",
                   stop("please use 'clatitude' and 'clongitude' instead of 'center'")
               if ("xlim" %in% dotsNames) stop("cannot supply 'xlim'; please use 'center' and 'span' instead")
               if ("ylim" %in% dotsNames) stop("cannot supply 'ylim'; please use 'center' and 'span' instead")
-              if (4 == length(mar)) par(mar=mar)
-              if (3 == length(mgp)) par(mgp=mgp)
+              if (!inset)
+                  par(mar=mar)
+              par(mgp=mgp)
               if (add) {
                   if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                       polygon(longitude, latitude, col=fill, ...)
