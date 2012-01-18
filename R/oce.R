@@ -1326,10 +1326,22 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
     din <- dev.size(units='in')        # width height
     oceDebug(debug, "dev.size(units='in')=", din, '\n')
-    x2in <- function(x) mai[2] + (x-usr[1]) * (din[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
-    y2in <- function(y) mai[1] + (y-usr[3]) * (din[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+    x2in <- function(x) {
+        if (par('xlog'))
+            mai[2] + (log10(x) - usr[1]) * (din[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+        else
+            mai[2] + (x-usr[1]) * (din[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+    }
+    y2in <- function(y) {
+        if (par('ylog'))
+            mai[1] + (log10(y) - usr[3]) * (din[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+        else
+            mai[1] + (y-usr[3]) * (din[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+    }
     nmai <- c(y2in(ybottom), x2in(xleft), din[2]-y2in(ytop), din[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
+    nmai[nmai<0] <- 0
+    oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
     par(new=TRUE, mai=nmai)
     thismar <- par('mar')
     par(mar=thismar+mar)

@@ -44,16 +44,25 @@
     a map or coastline, it will be necessary to supply \code{inset=TRUE} to
     prevent the inset diagram from occupying the whole device width.}
 
-\section{Notes}{This is a provisional function that may be removed, or that act
-    differently, until it is tested on several real-world cases.  It should be
-    used with caution.  Bug: both axes must be linear.}
+\section{Notes}{This is a provisional function.  The algorithm may be changed
+    in a future version, and the user interface may be altered as well.  The
+    deciding factor will be how this function fits in real-life applications.}
 
 \examples{
 library(oce)
+## power law in linear and log form
+x<-1:10
+y<-x^2
+plot(x, y, log='xy',type='l')
+plotInset(3, 1, 10, 8,
+          expr=plot(x,y,type='l',cex.axis=3/4,mgp=c(3/2,1/2,0)),
+          mar=c(2.5,2.5,1,1))
+## CTD data with location
 data(ctd) 
 plot(ctd, which="TS")
 plotInset(29.9, 2.7, 31, 10,
           expr=plot(ctd, which='map', coastline="coastlineWorld", span=5000, mar=NULL, cex.axis=3/4))
 }
+
 \author{Dan Kelley}
 \keyword{hplot}
