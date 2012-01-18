@@ -25,7 +25,8 @@
   \item{ytop}{location of top side of the inset diagram, in the existing plot
       units.}
 
-  \item{expr}{An expression that draws the inset plot.}
+  \item{expr}{An expression that draws the inset plot.  This may be a single
+      plot command, or a sequence of commands enclosed in curly braces.}
 
   \item{bg}{colour of the background, to be painted under the inset.  (Try e.g.
       \code{"yellow"} to debug the margins as set by \code{mar}.)}
@@ -45,13 +46,14 @@
 
 \section{Notes}{This is a provisional function that may be removed, or that act
     differently, until it is tested on several real-world cases.  It should be
-    used with caution.}
+    used with caution.  Bug: both axes must be linear.}
 
 \examples{
 library(oce)
 data(ctd) 
 plot(ctd, which="TS")
-plotInset(29.9, 2.7, 31, 10, expr=plot(ctd, which='map', coastline="coastlineHalifax", span=12, mar=NULL, cex.axis=3/4))
+plotInset(29.9, 2.7, 31, 10,
+          expr=plot(ctd, which='map', coastline="coastlineWorld", span=5000, mar=NULL, cex.axis=3/4))
 }
 \author{Dan Kelley}
 \keyword{hplot}
