@@ -331,8 +331,9 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         warning("file size is ", file.size, " but the header suggests it to be ", file.size.header, "; using the former")
     shape.type.file <- readBin(buf[33:36], "integer", n=1, size=4, endian="little")
     oceDebug(debug, "shape.type.file=", shape.type.file, "\n")
-    if (shape.type.file != 5)
-        stop("can only deal with shape-type 5 (polygon) in this version of the software\n")
+    if (shape.type.file != 5 && shape.type.file != 3)
+        error("can only deal with shape-type 3 (polyline) and 5 (polygon) in this version of the software\n")
+    warning("support for shapefile of type 3 (polyline) is provisional")
     xmin <- readBin(buf[37+0:7], "double", n=1, size=8, endian="little")
     ymin <- readBin(buf[45+0:7], "double", n=1, size=8, endian="little")
     xmax <- readBin(buf[53+0:7], "double", n=1, size=8, endian="little")
@@ -396,7 +397,7 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         }
         o <- o + 53 + 4 * number.parts + 2 * number.points * 8 - 1
     }
-    res <- new("coastline", latitude=latitude, longitude=longitude, fillable=TRUE)
+    res <- new("coastline", latitude=latitude, longitude=longitude, fillable=shape.type.file==5)
     res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
