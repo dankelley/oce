@@ -78,6 +78,28 @@ lines(lon-360, lat)
 }
 }
 
+\section{A hack for depth contours}{
+    The following demonstrates that this code is getting close to working with
+    depth contours.  But this should be handled more internally, and a new
+    object for depth contours should be constructed, of which coastlines could be a subset.
+    \preformatted{
+        library(oce)
+        d <- read.coastline.shapefile("~/Dropbox/DepthContours/DepthContours.shp")
+        isna <- is.na(d[["latitude"]])
+        idx<-1+cumsum(isna)
+        lat<-split(d[["latitude"]][!isna], idx[!isna])
+        lon<-split(d[["longitude"]][!isna], idx[!isna])
+        depths <- d[["depths"]]
+        n <- length(depths)
+        D<-200
+        plot.window(c(-180,180),c(-90,90), xlab="", ylab="", asp=1)
+        for (i in 1:n) {
+            if (depths[i]==D)
+                lines(lon[[i]],lat[[i]])
+        }
+    }
+}
+
 \references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a
     popular source for coastline data files.
 

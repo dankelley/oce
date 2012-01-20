@@ -1319,6 +1319,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     oceDebug(debug, "\bplotInset(xleft=", xleft, ", ybottom=", ybottom,
              ", xright=", xright, ", ytop=", ytop, ",  ...) {\n",
              sep="")
+    opar <- par(no.readonly=TRUE)
     rect(xleft, ybottom, xright, ytop, col=bg, border=fg)
     mai <- par('mai')                  # bottom left top right
     oceDebug(debug, "par('mai')=", par('mai'), '\n')
@@ -1346,7 +1347,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     thismar <- par('mar')
     par(mar=thismar+mar)
     expr
-    par(mai=mai, usr=usr)              # reset to starting values
+    par(opar)                          # reset to starting values
     oceDebug(debug, "\b\b} # plotInset()\n")
     invisible()
 }

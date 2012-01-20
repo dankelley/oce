@@ -332,16 +332,14 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
     shape.type.file <- readBin(buf[33:36], "integer", n=1, size=4, endian="little")
     oceDebug(debug, "shape.type.file=", shape.type.file, "\n")
     if (shape.type.file != 5 && shape.type.file != 3)
-        error("can only deal with shape-type 3 (polyline) and 5 (polygon) in this version of the software\n")
+        stop("can only deal with shape-type 3 (polyline) and 5 (polygon) in this version of the software\n")
     if (shape.type.file == 3) {
-        cat("shape.type.file == 3, so assuming a depth-contour file\n")
-        cat("filename:", filename, "\n")
+        oceDebug(debug, "shape.type.file == 3, so assuming a depth-contour file\n")
+        warning("shapefile of type 3 (polyline) requires library(foreign) to work")
         dbfName <- paste(gsub(".shp$", "", filename), ".dbf", sep="")
-        cat("look for DBF file '", dbfName, "'\n", sep="")
-        library(foreign)
-        depths <- read.dbf(dbfName)[[1]]
+        oceDebug(debug, "reading DBF file '", dbfName, "'\n", sep="")
+        depths <- foreign::read.dbf(dbfName)[[1]]
     }
-    warning("support for shapefile of type 3 (polyline) is provisional")
     xmin <- readBin(buf[37+0:7], "double", n=1, size=8, endian="little")
     ymin <- readBin(buf[45+0:7], "double", n=1, size=8, endian="little")
     xmax <- readBin(buf[53+0:7], "double", n=1, size=8, endian="little")
@@ -414,10 +412,6 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     oceDebug(debug, "\b\b} # read.shape()\n")
-    ## isna <- is.na(d[["latitude"]])
-    ## idx<-1+cumsum(isna)
-    ## lat<-split(d[["latitude"]][!isna], idx[!isna])
-    ## lon<-split(d[["longitude"]][!isna], idx[!isna])
     res
 }
 
