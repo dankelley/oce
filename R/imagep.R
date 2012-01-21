@@ -196,6 +196,7 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
+            mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             if (!gave.breaks) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
