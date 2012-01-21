@@ -192,7 +192,8 @@ imagep <- function(x, y, z,
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
     if (x.is.time) {
         if (filledContour) {
-            storage.mode(z) <- "double"
+            if (!is.double(z))
+                storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
