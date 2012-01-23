@@ -228,14 +228,16 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
+             xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
              ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
-             ylab=ylab,
+        plot(x, y, axes=FALSE, xaxs=xaxs,
+             xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
+             xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
     }
     if (axes) {
@@ -246,6 +248,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         if (drawxaxis) {
             xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
                                       mgp=mgp,
+                                      xlim=if(missing(xlim)) range(x) else xlim,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
                                       debug=debug-1)#, ...)
         }
@@ -1160,7 +1163,6 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     }
     if (!mat)
         z <- x[is.finite(x)]
-
     ##
     ## FIXME: I was twiddling the numbers, to get more labels, but xaxs="r" fixes that.
     twiddle <- 0.04 * diff(as.numeric(range))  # FIXME: do I need this anymore?
