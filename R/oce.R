@@ -1327,29 +1327,48 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     oceDebug(debug, "par('mai')=", par('mai'), '\n')
     usr <- par('usr')                  # xmin xmax ymin ymax
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
-    din <- dev.size(units='in')        # width height
-    oceDebug(debug, "dev.size(units='in')=", din, '\n')
+    ##din <- dev.size(units='in')        # width height
+    fin <- par('fin') # figure width height
+    oceDebug(debug, "figure width and height=", fin, '\n')
     x2in <- function(x) {
         if (par('xlog'))
-            mai[2] + (log10(x) - usr[1]) * (din[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+            mai[2] + (log10(x) - usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
         else
-            mai[2] + (x-usr[1]) * (din[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+            mai[2] + (x-usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
     }
     y2in <- function(y) {
         if (par('ylog'))
-            mai[1] + (log10(y) - usr[3]) * (din[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+            mai[1] + (log10(y) - usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
         else
-            mai[1] + (y-usr[3]) * (din[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+            mai[1] + (y-usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
     }
-    nmai <- c(y2in(ybottom), x2in(xleft), din[2]-y2in(ytop), din[1]-x2in(xright))
+    nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
     nmai[nmai<0] <- 0
     oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
     par(new=TRUE, mai=nmai)
     thismar <- par('mar')
     par(mar=thismar+mar)
+    if (debug > 1) {
+        cat("\n\nBEFORE expr, PAR IS:\n");
+        print(par())
+    }
+    mfg <- par('mfg')
     expr
-    par(opar)                          # reset to starting values
+    ## Reset par to starting values, except ...
+    par(opar)
+    ## ... adjust 'new' to permit the use of par(mfrow)
+    if (mfg[1] == mfg[3] && mfg[2] == mfg[4]) {
+        oceDebug(debug, "setting new=FALSE; mfg=", mfg, "\n")
+        par(new=FALSE)
+    } else {
+        oceDebug(debug, "setting new=TRUE; mfg=", mfg, "n")
+        par(new=TRUE)
+    }
+    if (debug > 1) {
+        cat("\n\nAFTER expr, PAR IS RESET TO IC:\n");
+        print(opar)
+    }
     oceDebug(debug, "\b\b} # plotInset()\n")
     invisible()
 }
