@@ -176,7 +176,6 @@ plot.topo <- function(x,
     xclip <- xx < xr[1] | xr[2] < xx
     yclip <- yy < yr[1] | yr[2] < yy
     xx <- xx[!xclip]
-    browser()
     if (length(xx) < 1)
         stop("there are no topographic data within the longitudes of the plot region.")
     yy <- yy[!yclip]
