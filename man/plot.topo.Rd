@@ -96,7 +96,7 @@
 library(oce)
 data(topoWorld)
 plot(topoWorld)
-plot(topoWorld, clatitude=44.6, clongitude=-63.6, span=1000)
+plot(topoWorld, clatitude=45, clongitude=300, span=10000)
 }
 
 \author{Dan Kelley}
