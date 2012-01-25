@@ -1445,7 +1445,8 @@ drawPalette <- function(zlim,
     gave.zlim <- !missing(zlim)
     gave.breaks <- !missing(breaks)
     if (gave.zlim)
-        oceDebug(debug, "\b\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
+        oceDebug(debug, "\b\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", if (is.character(zlab)) zlab else
+            "(expression)", "\", ...) {\n", sep="")
     else
         oceDebug(debug, "palette() with no arguments: set space to right of a graph\n")
     oceDebug(debug, if (gave.breaks) "gave breaks\n" else "did not give breaks\n")
@@ -1453,7 +1454,7 @@ drawPalette <- function(zlim,
     oceDebug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
     omar <- par("mar")
     oceDebug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
-    device.width <- par("din")[1]
+    device.width <- par("fin")[1]
     oceDebug(debug, "device.width = ", device.width, " inches\n")
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
     tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
