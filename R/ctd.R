@@ -567,16 +567,18 @@ setMethod(f="plot",
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
-                  } else if (which[w] == 11 || which[w] == "density")
+                  } else if (which[w] == 11 || which[w] == "density") {
                       plotProfile(x, xtype="density",
                                   ylim=plim,
+                                  densitylim=densitylim,
                                   grid=grid,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid=col.grid, lty.grid=lty.grid,
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
-                  else if (which[w] == 12 || which[w] == "N2")
+                  } else if (which[w] == 12 || which[w] == "N2")
                       plotProfile(x, xtype="N2",
                                   ylim=plim,
+                                  N2lim=N2lim,
                                   grid=grid,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid=col.grid, lty.grid=lty.grid,
