@@ -116,7 +116,7 @@
       effect is to prevent the present function from adjusting margins, which
       is necessary because margin adjustment is the basis for the method
       used by \code{\link{plotInset}}.}
-  \item{debug}{set to \code{TRUE} to get debugging information during processing.}
+  \item{debug}{set to a positive value to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{swN2} calculations.} 
 }

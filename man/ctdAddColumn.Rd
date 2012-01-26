@@ -5,9 +5,7 @@
 
 \description{Add a column to a \code{ctd} file, updating the header as appropriate.}
 
-\usage{
-ctdAddColumn(x, column, name, label, debug=FALSE)
-}
+\usage{ctdAddColumn(x, column, name, label, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -22,19 +20,13 @@ ctdAddColumn(x, column, name, label, debug=FALSE)
   \item{label}{Optional character string or expression indicating the
     name of the column, as it will appear in plot labels.  (If not
     given, \code{name} will be used.)}
-  \item{debug}{Set \code{TRUE} to see information about the processing.}
+  \item{debug}{set to a positive value to get debugging information during processing.}
 }
 
 \details{
-  These functions add the column to the the data frame in the the object.
+  This function adds a column to the object's data slot (i.e. to \code{x@data}).
 }
 
-\note{
-  Note that the arguments to this function were changed in version
-  0.1.77 of the package, in order to remove confusion about their
-  function, and in order to make the function better able to deal with a
-  wider range of CTD devices.
-}
 
 \value{An object of \code{\link[base]{class}} \code{"ctd"}, with a new column.}
 

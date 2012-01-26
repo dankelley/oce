@@ -117,7 +117,7 @@ as.ctd <- function(salinity, temperature, pressure,
     res
 }
 
-ctdAddColumn <- function (x, column, name, label, debug = FALSE)
+ctdAddColumn <- function (x, column, name, label, debug = getOption("oceDebug"))
 {
     oceDebug(debug, "\bctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="")
     if (missing(column))
