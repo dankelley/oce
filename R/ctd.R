@@ -1756,6 +1756,7 @@ plotProfile <- function (x,
     }
     ##if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     ylimGiven <- !missing(ylim)
+    densitylimGiven <- !missing(densitylim)
     dots <- list(...)
     ytype <- match.arg(ytype)
     yname <- switch(ytype,
@@ -1942,11 +1943,13 @@ plotProfile <- function (x,
     } else if (xtype == "density") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
         look <- if (keepNA) 1:length(y) else !is.na(st) & !is.na(y)
-        if (missing(densitylim))
-            densitylim <- range(st, na.rm=TRUE)
-        plot(st[look], y[look],
-             xlim=densitylim, ylim=ylim,
-             type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+        ## FIXME: if this works, extend to other x types
+        look <- look & (min(ylim) <= y & y <= max(ylim))
+        if (densitylimGiven) {
+            plot(st[look], y[look], xlim=densitylim, ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+        } else {
+            plot(st[look], y[look], xlim=range(st[look], na.rm=TRUE), ylim=ylim, type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
+        }
         mtext(expression(paste(sigma[theta], " [ ", kg/m^3, " ]")), side = 3, line = axis.name.loc, col = col.rho, cex=par("cex"))
         axis(2)
         axis(3, col = col.rho, col.axis = col.rho, col.lab = col.rho)
