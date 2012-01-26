@@ -346,6 +346,7 @@ setMethod(f="plot",
               oceDebug(debug, "early in plot.adp:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+              oceDebug(debug, "  par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               gave.col <- !missing(col)
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")

@@ -85,7 +85,7 @@ imagep <- function(x, y, z,
     ## set overall graphical parameters (note: get opai after setting mar)
     par(mgp=mgp, mar=mar, cex=cex)
     omai <- par("mai")
-    device.width <- par("din")[1]
+    device.width <- par("fin")[1]      # FIXME: should call this figureWidth
     oceDebug(debug, sprintf("paper width: %.2f inches\n", device.width))
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
     tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
