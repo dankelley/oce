@@ -117,8 +117,9 @@ as.ctd <- function(salinity, temperature, pressure,
     res
 }
 
-ctdAddColumn <- function (x, column, name, label, debug = getOption("oceDebug"))
+ctdAddColumn <- function (x, column, name, label, unit, debug = getOption("oceDebug"))
 {
+    ## FIXME: not using the unit
     oceDebug(debug, "\bctdAddColumn(x, column, name=\"", name, "\", label=\"", label, "\", debug) {\n", sep="")
     if (missing(column))
         stop("must supply column data")
@@ -1388,15 +1389,15 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         } else {
             stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
         }
-        res <- ctdAddColumn(res, S, "salinity", "Salinity", "PSU")
+        res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit="PSU", debug=debug-1)
     }
     if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
         g <- if (found.header.latitude) gravity(latitude) else 9.8
         rho0 <- swSigmaTheta(median(res@data$salinity), median(res@data$temperature), rep(0, length(res@data$salinity)))
-        res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, "pressure", "Pressure", "dbar")
+        res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure", unit="dbar", debug=debug-1)
     }
     res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
-                        "sigmaTheta", "Sigma Theta kg/m^3", debug=debug-1)
+                        name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -1530,8 +1531,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     res@data <- data
     res@metadata <- metadata
     res@processingLog <- hitem
-    res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure), "sigmaTheta",
-                        "Sigma Theta", "kg/m^3")
+    res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
+                        name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
     oceDebug(debug, "} # read.ctd.odf()\n")
     res
 }

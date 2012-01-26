@@ -5,7 +5,7 @@
 
 \description{Add a column to a \code{ctd} file, updating the header as appropriate.}
 
-\usage{ctdAddColumn(x, column, name, label, debug=getOption("oceDebug"))}
+\usage{ctdAddColumn(x, column, name, label, unit, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
@@ -20,6 +20,7 @@
   \item{label}{Optional character string or expression indicating the
     name of the column, as it will appear in plot labels.  (If not
     given, \code{name} will be used.)}
+  \item{unit}{Optional character string indicating unit.}
   \item{debug}{set to a positive value to get debugging information during processing.}
 }
 
