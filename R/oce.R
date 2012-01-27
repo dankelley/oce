@@ -1330,7 +1330,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
     ##din <- dev.size(units='in')        # width height
     fin <- par('fin') # figure width height
-    oceDebug(debug, "figure width and height=", fin, '\n')
+    oceDebug(1+debug, "figure width and height=", fin, '\n')
     x2in <- function(x) {
         if (par('xlog'))
             mai[2] + (log10(x) - usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
@@ -1349,10 +1349,10 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
         warning("part of inset is of the page")
     }
     nmai[nmai<0] <- 0
-    if (nmai[1] < 0) nmai[1] <- fin[1]
-    if (nmai[2] < 0) nmai[2] <- fin[1]
-    if (nmai[3] > fin[1] - 0.2) nmai[3] <- fin[1] - 0.2
-    if (nmai[4] > fin[2] - 0.2) nmai[4] <- fin[2] - 0.2
+    if (nmai[1] < 0) nmai[1] <- {cat("**1**\n");fin[1]}
+    if (nmai[2] < 0) nmai[2] <- {cat("**2**\n");fin[1]}
+    if (nmai[3] > fin[2] - 0.2) {cat("**3**\n");nmai[3] <- fin[2] - 0.2}
+    if (nmai[4] > fin[1] - 0.2) {cat("**4**\n");nmai[4] <- fin[1] - 0.2}
     oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
     cat("after setting margins, mfg=", par('mfg'), "(contrast orig", opar$mfg, ")\n")
     mfg2 <- par('mfg')
