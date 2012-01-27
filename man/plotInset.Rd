@@ -14,7 +14,8 @@
 \arguments{
 
   \item{xleft}{location of left-hand of the inset diagram, in the existing plot
-      units.}
+      units.   (PROVISIONAL FEATURE: this may also be \code{"bottomleft"}, to
+      put the inset there.  Eventually, other positions may be added.)}
   
   \item{ybottom}{location of bottom side of the inset diagram, in the existing
       plot units.}
@@ -42,11 +43,10 @@
   
 \details{Adds an inset diagram to an existing plot.  Note that if the inset is
     a map or coastline, it will be necessary to supply \code{inset=TRUE} to
-    prevent the inset diagram from occupying the whole device width.}
-
-\section{Notes}{This is a provisional function.  The algorithm may be changed
-    in a future version, and the user interface may be altered as well.  The
-    deciding factor will be how this function fits in real-life applications.}
+    prevent the inset diagram from occupying the whole device width.  After
+    \code{plotInset()} has been called, any further plotting will take place
+    within the inset, so it is essential to finish a plot before drawing an
+    inset.}
 
 \examples{
 library(oce)
