@@ -336,6 +336,7 @@ setMethod(f="plot",
                               xlim, ylim,
                               control,
                               useLayout=FALSE,
+                              coastline="coastlineWorld",
                               main="",
                               debug=getOption("oceDebug"),
                               ...)
@@ -346,6 +347,7 @@ setMethod(f="plot",
               oceDebug(debug, "early in plot.adp:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+              oceDebug(debug, "  par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               gave.col <- !missing(col)
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
@@ -485,6 +487,7 @@ setMethod(f="plot",
                       else if (ww == "bottom velocity3") which2[w] <- 53 # beam3
                       else if (ww == "bottom velocity4") which2[w] <- 54 # beam4 (if there is one)
                       else if (ww == "heaving") which2[w] <- 55
+                      else if (ww == "map") which2[w] <- 60
                       else stop("unknown 'which':", ww)
                   }
               }
@@ -999,6 +1002,40 @@ setMethod(f="plot",
                               oce.plot.ts(x@data$time, x@data$bottomVelocity[,4], ylab="Beam 4 velocity [m/s]")
                       } else {
                           warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
+                      }
+                  } else if (which[w] == 60) {
+                      oceDebug(debug, "draw(ctd, ...) of type MAP\n")
+                      ## get coastline file
+                      if (is.character(coastline)) {
+                          if (coastline == "none") {
+                              if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
+                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="")
+                              } else {
+                                  warning("no latitude or longitude in object's metadata, so cannot draw map")
+                              }
+                          } else { # named coastline
+                              if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
+                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
+                                  if (coastline == "coastlineWorld") {
+                                      data(coastlineWorld)
+                                      coastline <- coastlineWorld
+                                  } else if (coastline == "coastlineMaritimes") {
+                                      data(coastlineMaritimes)
+                                      coastline <- coastlineMaritimes
+                                  } else if (coastline == "coastlineHalifax") {
+                                      data(coastlineHalifax)
+                                      coastline <- coastlineHalifax
+                                  } else if (coastline == "coastlineSLE") {
+                                      data(coastlineSLE)
+                                      coastline <- coastlineSLE
+                                  } else {
+                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  }
+                              }
+                          }
+                          ## FIXME: span should be an arg
+                          plot(coastline, clatitude=x[["latitude"]], clongitude=x[["longitude"]], span=50)
+                          points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                       }
                   } else {
                       stop("unknown value of which (", which[w], ")")
