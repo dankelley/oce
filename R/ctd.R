@@ -434,7 +434,8 @@ setMethod(f="plot",
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE, col.grid="lightgray", lty.grid="dotted",
                               coastline="coastlineWorld",
-                              Slim, Tlim, plim, densitylim, dpdtlim, timelim,
+                              Slim, Tlim, plim, densitylim, N2lim,
+                              dpdtlim, timelim,
                               lonlim, latlim, span,
                               latlon.pch=20, latlon.cex=1.5, latlon.col="red",
                               cex=1, cex.axis=par('cex.axis'),
@@ -1985,6 +1986,7 @@ plotProfile <- function (x,
         if (missing(N2lim))
             N2lim <- range(N2, na.rm=TRUE)
         look <- if (keepNA) 1:length(y) else !is.na(N2) & !is.na(y)
+        cat("n2lim=",N2lim,"\n")
         plot(N2[look], y[look],
              xlim=N2lim, ylim=ylim,
              type = "n", xlab = "", ylab = yname, axes = FALSE)

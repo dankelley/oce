@@ -12,7 +12,8 @@
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE, col.grid="lightgray", lty.grid="dotted",
      coastline="coastlineWorld",
-     Slim, Tlim, plim, densitylim, dpdtlim, timelim,
+     Slim, Tlim, plim, densitylim, N2lim,
+     dpdtlim, timelim,
      lonlim, latlim, span,
      latlon.pch=20, latlon.cex=1.5, latlon.col="red",
      cex=1, cex.axis=par('cex.axis'),
@@ -82,6 +83,7 @@
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}
   \item{densitylim}{optional limits of density axis}
+  \item{N2lim}{optional limits of \eqn{N^2}{N^2} axis}
   \item{dpdtlim}{optional limits of dP/dt axis}
   \item{timelim}{optional limits of delta-time axis}
   \item{lonlim}{optional limits of longitude axis of map (ignored if no
