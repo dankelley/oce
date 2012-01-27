@@ -25,6 +25,7 @@
      xlim, ylim, 
      control,
      useLayout=FALSE,
+     coastline="coastlineWorld",
      main="",
      debug=getOption("oceDebug"),
      \dots)}
@@ -101,6 +102,9 @@
   \item{useLayout}{set to \code{FALSE} to prevent using
     \code{\link{layout}} to set up the plot.  This is needed if the call
     is to be part of a sequence set up by e.g. \code{par(mfrow)}.}
+  \item{coastline}{a \code{coastline} object, or a character string naming one.
+      This is used only for \code{which="map"}.  See notes at
+      \code{\link{plot.ctd}} for more information on built-in coastlines.}
   \item{main}{main title for plot, used just on the top panel, if there are several panels.}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
