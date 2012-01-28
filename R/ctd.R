@@ -451,6 +451,7 @@ setMethod(f="plot",
                               ...)
           {
               oceDebug(debug, "\b\bplot.ctd(..., which=", which, ", inset=", inset, ", ...) {\n")
+              dots <- list(...)
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (lw > 1) on.exit(par(opar))
@@ -599,9 +600,13 @@ setMethod(f="plot",
                                   cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
                   else if (which[w] == 3 || which[w] == "TS") {
                       ##par(mar=c(3.5,3,2,2))
+                      lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
+                      lty.rho <- if ("lty.rho" %in% names(dots)) dots$lty.rho else par('lty')
                       plotTS(x, Slim=Slim, Tlim=Tlim,
                              grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, ...) # FIXME use inset here
+                             lwd.rho=lwd.rho, lty.rho=lty.rho,
+                             useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, 
+                             debug=debug-1, ...) # FIXME use inset here
                   } else if (which[w] == 4 || which[w] == "text") {
                       text.item <- function(item, label, cex=0.8) {
                           if (!is.null(item) && !is.na(item)) {
@@ -1591,9 +1596,11 @@ plotTS <- function (x,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
+                    debug=getOption("oceDebug"),
                     ...)
 {
                                         # FIXME: should check for lobo ... or maybe make as.ctd() handle that...
+    oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ", ...) {\n", sep="")
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
             salinity <- salinity(x) # FIXME: new accessors?
@@ -1642,17 +1649,23 @@ plotTS <- function (x,
              xlab = xlab, ylab=ylab,
              xaxs = if (min(x@data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
              cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
-             xlim=Slim, ylim=Tlim,
-             ...)
-        if (connectPoints)
-            lines(x@data$salinity, y, col=col, ...)
+             xlim=Slim, ylim=Tlim, ...)
+        if (connectPoints) {
+            lwd <- list(...)["lwd"]
+            if (!is.null(lwd))
+                lines(x@data$salinity, y, col=col, lwd=lwd)
+            else
+                lines(x@data$salinity, y, col=col)
+        }
     }
     ## grid, isopycnals, then freezing-point line
     if (grid) grid(col=col.grid, lty=lty.grid)
-    drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
+    drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000,
+                   cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, swTFreeze(salinity=Sr, pressure=0), col="darkblue")
+    oceDebug(debug, "\b} # plotTS(...)\n", sep="")
 }
 
 drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))

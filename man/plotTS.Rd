@@ -28,6 +28,7 @@
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
      lwd.rho=par("lwd"), lty.rho=par("lty"),
+     debug=getOption("oceDebug"),
      \dots)
 }
 
@@ -63,8 +64,13 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{lwd.rho}{line width for density lines},
-  \item{lty.rho}{line type for density lines},
+  \item{lwd.rho}{line width for density lines.  If \code{connectPoints=TRUE},
+      then the line connecting points may be controlled by including a
+      \code{lwd} value in the optional arguments.}
+  \item{lty.rho}{line type for density lines.  (See the note about
+      \code{connectPoints} for \code{lwd.rho}.)},
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+      moderate amount of debugging information, or to 2 to get more.}
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
