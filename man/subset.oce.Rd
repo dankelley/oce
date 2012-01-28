@@ -11,20 +11,19 @@
 \arguments{
   \item{x}{an \code{oce} object.}
   \item{subset}{a condition to be applied to the \code{data} portion of
-    \code{x} (ignored for \code{station} objects).}
+    \code{x}.  See \sQuote{Details}.}
   \item{indices}{list of station indices (used only for \code{section} objects).}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{ignored.}
 }
 
-\details{This is analogous to \code{\link{subset.data.frame}}.  Note
-  that it only works for objects in which the \code{data} portion is a
-  data frame, e.g. \code{ctd} objects.
-
-  For objects of class \code{adp}, the \code{subset} may be in terms
-  of \code{time} or \code{distance}; to combine these, use two steps
-  (see \dQuote{Examples}).
+\details{This function is somewhat analogous to
+    \code{\link{subset.data.frame}}, but it is more limited because it works by
+    individualized inspection of \code{x} depending on its class.  Only one
+    independent variable may be used in \code{subset} in any call to the
+    function, which means that repeated calls will be necessary to, subset
+    based on more than one independent variable (e.g. time and distance).
 }
 
 \value{A new \code{oce} object.}

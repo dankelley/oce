@@ -1,8 +1,8 @@
 setMethod(f="initialize",
           signature="tidem",
           definition=function(.Object) {
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'tidem' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'tidem' object"
               return(.Object)
           })
 
@@ -529,6 +529,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                  phase2=phase2,         # FIXME: remove later
                  p=p)
     rval <- new('tidem')
+    rval@metadata <- list(rc=rc)
     rval@data <- data
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     rval

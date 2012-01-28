@@ -14,7 +14,9 @@
 \usage{data(coastlineMaritimes)}
 
 \source{The data were extracted from the the 1:2,000,000 ``World Data Bank II''
-    dataset at the NOAA site.}
+    dataset at the NOAA site, with a few ``fake'' points added to create a closed
+    geometry that can be drawn as a filled polygon.}
+
 \references{\url{http://www.ngdc.noaa.gov/mgg_coastline/index.jsp?llat=43.0&ulat=47.2&llon=-66.8&rlon=-59.5}}
 
 \seealso{The documentation for \code{\link{coastline-class}} explains the

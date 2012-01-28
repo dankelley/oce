@@ -10,8 +10,8 @@ setMethod(f="initialize",
               if (!missing(temperature)) .Object@data$temperature <-temperature 
               if (!missing(pressure)) .Object@data$pressure <- pressure
               .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'drifter' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'drifter' object"
               return(.Object)
           })
 

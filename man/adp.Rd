@@ -36,10 +36,8 @@ plot(adp, which=15:18)
 par(mfrow=c(1,2))
 plot(adp, which="uv+ellipse+arrow")
 data(coastlineSLE)
-# plot local area
-plot(coastlineSLE, center=c(adp@metadata$latitude,adp@metadata$longitude),
-  span=50)
-points(adp@metadata$longitude, adp@metadata$latitude, cex=3, col="red")
+plot(coastlineSLE, clongitude=adp[["longitude"]], clatitude=adp[["latitude"]], span=50)
+points(adp[["longitude"]], adp[["latitude"]], pch='+', cex=2, col='red')
 }
 
 \usage{data(adp)}

@@ -6,31 +6,46 @@ setMethod(f="initialize",
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
               .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'adv' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'adv' object"
               return(.Object)
           })
 
 setMethod(f="[[",
           signature="adv",
           definition=function(x, i, j, drop) {
-              if (i == "filename") return(x@metadata$filename)
-              else if (i == "time") return(x@data$time)
-              else if (i == "u1") return(x@data$v[,1])
-              else if (i == "u2") return(x@data$v[,2])
-              else if (i == "u3") return(x@data$v[,3])
-              else if (i == "heading") {
+              if (i == "filename") {
+                  return(x@metadata$filename)
+              } else if (i == "time") {
+                  return(x@data$time)
+              } else if (i == "timeSlow") {
+                  return(x@data$timeSlow)
+              } else if (i == "v") {
+                  return(x@data$v)
+              } else if (i == "u1") {
+                  return(x@data$v[,1])
+              } else if (i == "u2") {
+                  return(x@data$v[,2])
+              } else if (i == "u3") {
+                  return(x@data$v[,3])
+              } else if (i == "heading") {
                   if ("heading" %in% names(x@data)) return(x@data$heading)
                   else if ("headingSlow" %in% names(x@data)) return(x@data$headingSlow)
                   else return(NULL)
+              } else if (i == "headingSlow") {
+                  return(x@data$headingSlow)
               } else if (i == "pitch") {
                    if ("pitch" %in% names(x@data)) return(x@data$pitch)
                   else if ("pitchSlow" %in% names(x@data)) return(x@data$pitchSlow)
                   else return(NULL)
+              } else if (i == "pitchSlow") {
+                  return(x@data$pitchSlow)
               } else if (i == "roll") {
                   if ("roll" %in% names(x@data)) return(x@data$roll)
                   else if ("rollSlow" %in% names(x@data)) return(x@data$rollSlow)
                   else return(NULL)
+              } else if (i == "rollSlow") {
+                  return(x@data$rollSlow)
               } else if (i == "temperature") {
                   return(x@data$temperature)
               } else stop("cannot access \"", i, "\"") # cannot get here
@@ -88,10 +103,12 @@ summary.adv <- function(object, ...)
                 format(object@metadata$subsampleStart), attr(object@metadata$subsampleStart, "tzone"),
                 format(object@metadata$subsampleEnd),  attr(object@metadata$subsampleEnd, "tzone"),
                 1 / object@metadata$subsampleDeltat), ...)
-    if ("burst" == object@metadata$samplingMode) {
-        cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
-    } else {
-        cat("* Sampling in continuous mode\n")
+    if ("samplingMode" %in% names(object@metadata)) {
+        if ("burst" == object@metadata$samplingMode) {
+            cat("* Burst sampling by       ", paste(object@metadata$samplesPerBurst, sep=","), "(all, or first 4)\n")
+        } else {
+            cat("* Sampling in continuous mode\n")
+        }
     }
     cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
     cat("* Coordinate system:     ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
@@ -110,9 +127,10 @@ summary.adv <- function(object, ...)
             ii <- ii + 1
         }
     }
-    rownames(threes) <- dataNames[-grep("^time", dataNames)]
+    rownames(threes) <- paste("    ", dataNames[-grep("^time", dataNames)])
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes)
+    processingLogShow(object)
 }
 
 setMethod(f="plot",
@@ -848,7 +866,12 @@ xyzToEnuAdv <- function(x, declination=0,
     x@data$v[,2] <- enu$north
     x@data$v[,3] <- enu$up
     x@metadata$oceCoordinate <- "enu"
-    x@processingLog <- processingLog(x@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    x@processingLog <- processingLog(x@processingLog,
+                                     paste("xyzToEnu(x",
+                                           ", declination=", declination, 
+                                           ", horizontalCase=", if (missing(horizontalCase)) "(missing)" else horizontalCase,
+                                           ", sensorOrientiation=", if (missing(sensorOrientation)) "(missing)" else sensorOrientation,
+                                           ", debug=", debug, ")", sep=""))
     oceDebug(debug, "\b\b} # xyzToEnuAdv()\n")
     x
 }

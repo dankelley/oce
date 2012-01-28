@@ -27,6 +27,7 @@
              type='l',
              mgp=getOption("oceMgp"),
              mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
+             inset=FALSE,
              debug=getOption("oceDebug"),
              \dots)
 }
@@ -92,6 +93,10 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+      effect is to prevent the present function from adjusting margins, which
+      is necessary because margin adjustment is the basis for the method
+      used by \code{\link{plotInset}}.}
   \item{debug}{a flag that turns on debugging, if it exceeds 0.}
   \item{\dots}{Optional arguments passed to other functions.  A common example is
     to set \code{df}, for use in \link{swN2} calculations.} 

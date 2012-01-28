@@ -10,6 +10,7 @@
       drawContours=FALSE,
       drawTimeRange=getOption("oceDrawTimeRange"),
       drawPalette=TRUE,
+      filledContour=FALSE,
       mgp=getOption("oceMgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -27,12 +28,14 @@
 \arguments{
 
   \item{x,y}{locations of grid lines along which values of \code{z} are
-      measured.   The values must be finite, non-missing, and in increasing
-      order.  By default, equally spaced values from 0 to 1 are used. If
-      \code{x} is a list, its components \code{x$x} and \code{x$y} are used for
-      \code{x} and \code{y}, respectively. If the list has component \code{z}
-      this is used for \code{z}. (NOTE: these arguments are meant to mimic
-      those of \code{\link{image}}, which explains the same description here.)}
+      measured.   The values must be finite, non-missing, and distinct.  If
+      they are out of order, they will be ordered (and the \code{z} data will
+      be similarly ordered).  By default, equally spaced values from 0 to 1 are
+      used. If \code{x} is a list, its components \code{x$x} and \code{x$y} are
+      used for \code{x} and \code{y}, respectively. If the list has component
+      \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
+      mimic those of \code{\link{image}}, which explains the same description
+      here.)}
 
   \item{z}{a matrix containing the values to be plotted (NAs are allowed). Note
       that x can be used instead of z for convenience. (NOTE: these arguments
@@ -67,6 +70,8 @@
       have been drawn.  This last form is useful for producing stacked plots
       with uniform left and right margins, but with palettes on only some of
       the images.}
+  \item{filledContour}{boolean value indicating whether to use filled
+      contours to plot the image.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the

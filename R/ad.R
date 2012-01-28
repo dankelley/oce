@@ -45,9 +45,9 @@ beamToXyz <- function(x, ...)
 xyzToEnu <- function(x, ...)
 {
     if (inherits(x, "adp"))
-        xyzToEnuAdp(x, ...)
+        xyzToEnuAdp(x=x, ...)
     else if (inherits(x, "adv"))
-        xyzToEnuAdv(x, ...)
+        xyzToEnuAdv(x=x, ...)
     else
         stop("class of object must inherit from either 'adv' or 'adp'")
 }

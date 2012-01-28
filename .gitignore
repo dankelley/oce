@@ -7,3 +7,6 @@ Rplots.pdf
 src-*
 *.swp
 TAGS
+issue*R
+issue*dat
+issue*png

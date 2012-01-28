@@ -17,7 +17,8 @@ read.coastline.shapefile(file, lonlim=c(-180,180), latlim=c(-90,90),
 
 \arguments{
   \item{file}{name of file containing coastline data.}
-  \item{type}{type of file, one of "R", "S", or "mapgen"}
+  \item{type}{type of file, one of \code{"R"}, \code{"S"}, \code{"mapgen"} or
+      \code{"shapefile"}.}
   \item{debug}{set to TRUE to print information about the header, etc.}
   \item{latlim}{range of (signed) latitudes, used only for shapefiles.
     Regions that do not intersect this range are skipped.}
@@ -77,8 +78,39 @@ lines(lon-360, lat)
 }
 }
 
-\references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a good
-    source for coastline data files.}
+\section{A hack for depth contours}{
+    The following demonstrates that this code is getting close to working with
+    depth contours.  But this should be handled more internally, and a new
+    object for depth contours should be constructed, of which coastlines could be a subset.
+    \preformatted{
+        library(oce)
+        d <- read.coastline.shapefile("~/Dropbox/DepthContours/DepthContours.shp")
+        isna <- is.na(d[["latitude"]])
+        idx<-1+cumsum(isna)
+        lat<-split(d[["latitude"]][!isna], idx[!isna])
+        lon<-split(d[["longitude"]][!isna], idx[!isna])
+        depths <- d[["depths"]]
+        n <- length(depths)
+        D<-200
+        plot.window(c(-180,180),c(-90,90), xlab="", ylab="", asp=1)
+        for (i in 1:n) {
+            if (depths[i]==D)
+                lines(lon[[i]],lat[[i]])
+        }
+    }
+}
+
+\references{The NOAA site \url{http://www.ngdc.noaa.gov/mgg/coast/} is a
+    popular source for coastline data files.
+
+    Canadian coastlines in ``shapefile'' format are provided at
+    \url{http://coastalmap.marine.usgs.gov/GISdata/basemaps/canada/shoreline/canada_wvs_geo_wgs84.htm}
+    (link tested December 2011) or, with registration, from
+    \url{http://www.geobase.ca/geobase/en/search.do?produit=nrn&language=en}
+    (link tested December 2011).  The ``shapefile'' format is described in
+    \emph{ESRI Shapefile Technical Description}, March 1998, available at
+    \url{http://www.esri.com/library/whitepapers/pdfs/shapefile.pdf} (link
+    tested December 2011).  }
 
 \author{Dan Kelley}
 \keyword{misc}

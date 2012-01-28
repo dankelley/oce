@@ -7,8 +7,8 @@ setMethod(f="initialize",
               if (!missing(a)) .Object@data$a <- a 
               if (!missing(q)) .Object@data$q <- q
               .Object@metadata$filename <- if (missing(filename)) "" else filename
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create 'adp' object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'adp' object"
               return(.Object)
           })
 
@@ -314,6 +314,7 @@ summary.adp <- function(object, ...)
     colnames(threes) <- c("Min.", "Mean", "Max.")
     cat("* Statistics of subsample::\n\n")
     print(threes)
+    processingLogShow(object)
 }
 
 setMethod(f="plot",
@@ -335,6 +336,7 @@ setMethod(f="plot",
                               xlim, ylim,
                               control,
                               useLayout=FALSE,
+                              coastline="coastlineWorld",
                               main="",
                               debug=getOption("oceDebug"),
                               ...)
@@ -345,6 +347,7 @@ setMethod(f="plot",
               oceDebug(debug, "early in plot.adp:\n")
               oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
               oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+              oceDebug(debug, "  par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
               gave.col <- !missing(col)
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
@@ -405,6 +408,8 @@ setMethod(f="plot",
                           stop("xlim must be a vector of length 2, or a 2-column matrix")
                       xlim2 <- matrix(xlim[1:2], ncol=2, nrow=nw, byrow=TRUE)
                   }
+                  class(xlim2) <- class(xlim)
+                  attr(xlim2, "tzone") <- attr(xlim, "tzone")
                   xlim <- xlim2
               }
               if (missing(zlim)) {
@@ -482,6 +487,7 @@ setMethod(f="plot",
                       else if (ww == "bottom velocity3") which2[w] <- 53 # beam3
                       else if (ww == "bottom velocity4") which2[w] <- 54 # beam4 (if there is one)
                       else if (ww == "heaving") which2[w] <- 55
+                      else if (ww == "map") which2[w] <- 60
                       else stop("unknown 'which':", ww)
                   }
               }
@@ -567,22 +573,42 @@ setMethod(f="plot",
                           skip <- TRUE
                       }
                       if (!skip) {
-                          imagep(x=tt, y=x@data$distance, z=z,
-                                 zlim=zlim,
-                                 flip.y=flip.y,
-                                 col=if (gave.col) col else oceColorsPalette(128, 1),
-                                 ylab=resizableLabel("distance"),
-                                 xlab="Time",
-                                 zlab=zlab,
-                                 drawTimeRange=drawTimeRange,
-                                 drawContours=FALSE,
-                                 adorn=adorn[w],
-                                 mgp=mgp,
-                                 mar=mar,
-                                 cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
-                                 main=main[w],
-                                 debug=debug-1,
-                                 ...)
+                          if (gave.xlim) {
+                              imagep(x=tt, y=x@data$distance, z=z,
+                                     xlim=xlim[w,],
+                                     zlim=zlim,
+                                     flip.y=flip.y,
+                                     col=if (gave.col) col else oceColorsPalette(128, 1),
+                                     ylab=resizableLabel("distance"),
+                                     xlab="Time",
+                                     zlab=zlab,
+                                     drawTimeRange=drawTimeRange,
+                                     drawContours=FALSE,
+                                     adorn=adorn[w],
+                                     mgp=mgp,
+                                     mar=mar,
+                                     cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                     main=main[w],
+                                     debug=debug-1,
+                                     ...)
+                          } else {
+                               imagep(x=tt, y=x@data$distance, z=z,
+                                     zlim=zlim,
+                                     flip.y=flip.y,
+                                     col=if (gave.col) col else oceColorsPalette(128, 1),
+                                     ylab=resizableLabel("distance"),
+                                     xlab="Time",
+                                     zlab=zlab,
+                                     drawTimeRange=drawTimeRange,
+                                     drawContours=FALSE,
+                                     adorn=adorn[w],
+                                     mgp=mgp,
+                                     mar=mar,
+                                     cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                     main=main[w],
+                                     debug=debug-1,
+                                     ...)
+                          }
                       }
                       if (showBottom)
                           lines(x@data$time, bottom)
@@ -977,6 +1003,40 @@ setMethod(f="plot",
                       } else {
                           warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
                       }
+                  } else if (which[w] == 60) {
+                      oceDebug(debug, "draw(ctd, ...) of type MAP\n")
+                      ## get coastline file
+                      if (is.character(coastline)) {
+                          if (coastline == "none") {
+                              if (!is.null(x@metadata$station) && !is.na(x@metadata$station)) {
+                                  plot(x@metadata$longitude, x@metadata$latitude, xlab="", ylab="")
+                              } else {
+                                  warning("no latitude or longitude in object's metadata, so cannot draw map")
+                              }
+                          } else { # named coastline
+                              if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
+                                  oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
+                                  if (coastline == "coastlineWorld") {
+                                      data(coastlineWorld)
+                                      coastline <- coastlineWorld
+                                  } else if (coastline == "coastlineMaritimes") {
+                                      data(coastlineMaritimes)
+                                      coastline <- coastlineMaritimes
+                                  } else if (coastline == "coastlineHalifax") {
+                                      data(coastlineHalifax)
+                                      coastline <- coastlineHalifax
+                                  } else if (coastline == "coastlineSLE") {
+                                      data(coastlineSLE)
+                                      coastline <- coastlineSLE
+                                  } else {
+                                      stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                  }
+                              }
+                          }
+                          ## FIXME: span should be an arg
+                          plot(coastline, clatitude=x[["latitude"]], clongitude=x[["longitude"]], span=50)
+                          points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
+                      }
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
@@ -1103,6 +1163,7 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
 
 xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
+    ##cat("adp.R:xyzToEnuAdp(): called as", paste(deparse(match.call()), sep="", collapse=""), "\n")
     debug <- if (debug > 0) 1 else 0
     oceDebug(debug, "\b\bxyzToEnuAdp(x, declination=", declination, ", debug=", debug, ") {\n", sep="")
     if (!inherits(x, "adp"))
@@ -1212,7 +1273,8 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res@data$v[,c,3] <- enu$up
     }
     res@metadata$oceCoordinate <- "enu"
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    res@processingLog <- processingLog(res@processingLog,
+                                       paste("xyzToEnu(x", ", declination=", declination, ", debug=", debug, ")", sep=""))
     oceDebug(debug, "\b\b\b} # xyzToEnuAdp()\n")
     res
 }

@@ -8,38 +8,28 @@
 
 \description{Plot CTD data}
 
-\usage{\S4method{plot}{ctd}(x,
-     which=1:4, 
-     ref.lat=NaN,
-     ref.lon=NaN, 
-     grid=TRUE,
-     col.grid="lightgray",
-     lty.grid="dotted",
-     coastline,
-     Slim, 
-     Tlim, 
-     plim,
-     densitylim, 
-     dpdtlim,
-     timelim,
-     lonlim,
-     latlim,
-     latlon.pch=20,
-     latlon.cex=1.5,
-     latlon.col="red",
-     cex=1,
+\usage{\S4method{plot}{ctd}(x, which=1:4, 
+     ref.lat=NaN, ref.lon=NaN, 
+     grid=TRUE, col.grid="lightgray", lty.grid="dotted",
+     coastline="coastlineWorld",
+     Slim, Tlim, plim, densitylim, N2lim,
+     dpdtlim, timelim,
+     lonlim, latlim, span,
+     latlon.pch=20, latlon.cex=1.5, latlon.col="red",
+     cex=1, cex.axis=par('cex.axis'),
      pch=1,
      useSmoothScatter=FALSE,
      keepNA=FALSE,
      type='l',
      adorn=NULL,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1]+1.5,mgp[1]+1),
+     inset=FALSE,
      debug=getOption("oceDebug"),
      \dots)
 }
 \arguments{
-  \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}, or a
+  \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
       list containing items named \code{salinity} and \code{temperature}.}
   \item{which}{list of desired plot types.  
     \itemize{
@@ -78,22 +68,34 @@
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
   \item{col.grid}{colour for the grid.}
   \item{lty.grid}{line type for grid.}
-  \item{coastline}{a \code{coastline} object, e.g. as read by
-    \code{\link{read.coastline}} (ignored if no map plotted).}
+  \item{coastline}{a \code{coastline} object, or a character string naming one.
+      There are several built-in datasets: \code{coastlineWorld} (the default),
+      \code{coastlineMaritimes}, \code{coastlineHalifax}, and
+      \code{coastlineSLE}, and any other coastline object (e.g. as read by
+      \code{\link{read.coastline}}) may be used also.  There is a speed penalty
+      for providing \code{coastline} as a character string, because it forces
+      \code{plot.coastline} to load it on every call.  So, if
+      \code{plot.coastline} is to be called several times for a given
+      coastline, it makes sense to load it in before the first call, and to
+      supply the object as an argument, as opposed to the name of the object.
+      If no coastline is desired, use \code{coastline="none"}.}
   \item{Slim}{optional limits of salinity axes}
   \item{Tlim}{optional limits of temperature axes}
   \item{plim}{optional limits of pressure axes}
   \item{densitylim}{optional limits of density axis}
+  \item{N2lim}{optional limits of \eqn{N^2}{N^2} axis}
   \item{dpdtlim}{optional limits of dP/dt axis}
   \item{timelim}{optional limits of delta-time axis}
   \item{lonlim}{optional limits of longitude axis of map (ignored if no
     map plotted)} 
   \item{latlim}{optional limits of latitude axis of map (ignored if no
     map plotted)} 
+  \item{span}{optional span of map, in km (ignored unless a map is being drawn)}
   \item{latlon.pch}{pch for sample location (ignored if no map plotted)}
   \item{latlon.cex}{cex for sample location (ignored if no map plotted)}
   \item{latlon.col}{col for sample location (ignored if no map plotted)}
   \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
+  \item{cex.axis}{size factor for axis labels (see \code{\link{par}})}
   \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{useSmoothScatter}{boolean, set to \code{TRUE} to use 
     \code{\link{smoothScatter}} instead of \code{\link{plot}} to draw
@@ -112,7 +114,11 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{debug}{set to \code{TRUE} to get debugging information during processing.}
+  \item{inset}{set to \code{TRUE} for use within \code{\link{plotInset}}.  The
+      effect is to prevent the present function from adjusting margins, which
+      is necessary because margin adjustment is the basis for the method
+      used by \code{\link{plotInset}}.}
+  \item{debug}{set to a positive value to get debugging information during processing.}
   \item{\dots}{optional arguments passed to plotting functions. A common
     example is to set \code{df}, for use in \link{swN2} calculations.} 
 }
@@ -139,14 +145,7 @@
 library(oce)
 data(ctd) 
 plot(ctd)
-
-data(coastlineSLE)
-lonlim <- -(69 + c(52, 41) / 60)
-latlim <- 47 + c(48, 58) / 60
-# IAL = Ile aux Lievres
-plot(ctd, which=c(1,2,3,5),
-     coastline=coastlineSLE,
-     adorn=expression({},{},{},{text(-69.72,47.85,'IAL',pos=4)}))
+plot(ctd, which=c(1,2,3,5), coastline="coastlineHalifax")
 }
 \author{Dan Kelley}
 \keyword{hplot}

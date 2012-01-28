@@ -7,6 +7,7 @@ findInOrdered <- function(x, f)
         stop("'f' missing")
     .Call("bisect", x, f)
 }
+
 filterSomething <- function(x, filter)
 {
     if (is.raw(x)) {
@@ -43,7 +44,6 @@ smoothSomething <- function(x, ...)
     res
 }
 
-
 binAverage <- function(x, y, xmin, xmax, xinc)
 {
     if (missing(y))
@@ -58,11 +58,13 @@ binAverage <- function(x, y, xmin, xmax, xinc)
         stop("must have xmax > xmin")
     if (xinc <= 0)
         stop("must have xinc > 0")
-    nb <- floor((xmax - xmin) / xinc)
+    nb <- floor(1 + (xmax - xmin) / xinc)
     if (nb < 1)
         stop("must have (xmin, xmax, xinc) such as to yield more than 0 bins")
-    xx <- seq(xmin, xmax-xinc, xinc) + xinc / 2
-    yy <- .C("bin_average", length(x), as.double(x), as.double(y), xmin, xmax, xinc, means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
+    xx <- seq(xmin, xmax, xinc) + xinc / 2
+    yy <- .C("bin_average", length(x), as.double(x), as.double(y),
+             as.double(xmin), as.double(xmax), as.double(xinc),
+             means=double(nb), NAOK=TRUE, PACKAGE="oce")$means
     list(x=xx, y=yy)
 }
 
@@ -327,6 +329,8 @@ fullFilename <- function(filename)
 {
     first.char <- substr(filename, 1, 1)
     if (first.char == '/' || first.char == '~')
+        return(filename)
+    if (substr(filename, 1, 5) == "http:")
         return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
@@ -949,17 +953,20 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         stop("method is only for oce objects")
     oceDebug(debug, "in decimate(x,by=", by, ",to=", if (missing(to)) "unspecified" else to, "...)\n")
     res <- x
-    warning("FIXME decimate() not doing anything yet")
-    return(res)
     do.filter <- !missing(filter)
     if (missing(to))
         to <- length(x@data$time[[1]])
-    select <- seq(from=1, to=to, by=by)
-    oceDebug(debug, vectorShow(select, "select:"))
+    if (length(by) == 1) { # FIXME: probably should not be here
+        select <- seq(from=1, to=to, by=by)
+        oceDebug(debug, vectorShow(select, "select:"))
+    }
     if (inherits(x, "adp")) {
         oceDebug(debug, "decimate() on an ADP object\n")
+        warning("decimate(adp) not working yet ... just returning the adp unchanged")
+        return(res) # FIXME
         nbeam <- dim(x@data$v)[3]
         for (name in names(x@data)) {
+            oceDebug(debug, "decimating item named '", name, "'\n")
             if ("distance" == name)
                 next
             if ("time" == name) {
@@ -979,9 +986,10 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
                 }
             } else if (is.array(x@data[[name]])) {
                 dim <- dim(x@data[[name]])
+                print(dim)
                 for (k in 1:dim[2]) {
-                    for (j in 1: dim[3]) {
-                        oceDebug(debug, "subsetting x@data[[", name, ",", j, ",", k, "]], which is an array\n", sep="")
+                    for (j in 1:dim[3]) {
+                        oceDebug(debug, "subsetting x@data[[", name, "]][", j, ",", k, "], which is an array\n", sep="")
                         if (do.filter)
                             res@data[[name]][,j,k] <- filterSomething(x@data[[name]][,j,k], filter)
                         res@data[[name]][,j,k] <- res@data[[name]][,j,k][select]
@@ -991,6 +999,8 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
         }
     } else if (inherits(x, "adv")) { # FIXME: the (newer) adp code is probably better than this ADV code
         oceDebug(debug, "decimate() on an ADV object\n")
+        warning("decimate(adv) not working yet ... just returning the adv unchanged")
+        return(res) # FIXME
         for (name in names(x@data)) {
             if ("time" == name) {
                 res@data[[name]] <- x@data[[name]][select]
@@ -1022,19 +1032,69 @@ decimate <- function(x, by=10, to, filter, debug=getOption("oceDebug"))
             }
         }
     } else if (inherits(x, "ctd")) {
+        warning("decimate(ctd) not working yet ... just returning the ctd unchanged")
+        return(res) # FIXME
         if (do.filter)
             stop("cannot (yet) filter ctd data during decimation") # FIXME
         select <- seq(1, dim(x@data)[1], by=by)
         res@data <- x@data[select,]
     } else if (inherits(x, "pt")) {
+        warning("decimate(pt) not working yet ... just returning the pt unchanged")
+        return(res) # FIXME
         if (do.filter)
             stop("cannot (yet) filter pt data during decimation") # FIXME
         for (name in names(res@data))
             res@data[[name]] <- x@data[[name]][select]
+    } else if (inherits(x, "echosounder")) {
+        oceDebug(debug, "decimate() on an 'echosounder' object\n")
+        ## use 'by', ignoring 'to' and filter'
+        if (length(by) != 2)
+            stop("length(by) must equal 2.  First element is width of boxcar in pings, second is width in depths")
+        by <- as.integer(by)
+        byPing <- by[1]
+        kPing <- as.integer(by[1])
+        if (0 == kPing%%2)
+            kPing <- kPing + 1
+        byDepth <- by[2]
+        kDepth <- as.integer(by[2])
+        if (0 == kDepth%%2)
+            kDepth <- kDepth + 1
+        if (byDepth > 1) {
+            depth <- x[["depth"]]
+            a <- x[["a"]]
+            ncol <- ncol(a)
+            nrow <- nrow(a)
+            ii <- 1:ncol
+            depth2 <- binAverage(ii, depth, 1, ncol, byDepth)$y
+            a2 <- matrix(nrow=nrow(a), ncol=length(depth2))
+            for (r in 1:nrow)
+                a2[r,] <- binAverage(ii, runmed(a[r,], kDepth), 1, ncol, byDepth)$y
+            res <- x
+            res[["depth"]] <- depth2
+            res[["a"]] <- a2
+            x <- res # need for next step
+        }
+        if (byPing > 1) {
+            time <- x[["time"]]
+            a <- x[["a"]]
+            ncol <- ncol(a)
+            nrow <- nrow(a)
+            jj <- 1:nrow
+            time2 <- binAverage(jj, as.numeric(x[["time"]]), 1, nrow, byPing)$y + as.POSIXct("1970-01-01 00:00:00", tz="UTC")
+            a2 <- matrix(nrow=length(time2), ncol=ncol(a))
+            for (c in 1:ncol)
+                a2[,c] <- binAverage(jj, runmed(a[,c], kPing), 1, nrow, byPing)$y
+            res <- x
+            res[["time"]] <- time2
+            res[["latitude"]] <- binAverage(jj, x[["latitude"]], 1, nrow, byPing)$y
+            res[["longitude"]] <- binAverage(jj, x[["longitude"]], 1, nrow, byPing)$y
+            res[["a"]] <- a2
+        }
+        ## do depth, rows of matrix, time, cols of matrix
     } else {
         stop("decimation does not work (yet) for objects of class ", paste(class(x), collapse=" "))
     }
-    if ("deltat" %in% names(x@metadata)) # KLUDGE
+    if ("deltat" %in% names(x@metadata)) # FIXME: should handle for individual cases, not here
         res@metadata$deltat <- by * x@metadata$deltat
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -1385,7 +1445,8 @@ drawPalette <- function(zlim,
     gave.zlim <- !missing(zlim)
     gave.breaks <- !missing(breaks)
     if (gave.zlim)
-        oceDebug(debug, "\b\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", zlab, "\", ...) {\n", sep="")
+        oceDebug(debug, "\b\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", if (is.character(zlab)) zlab else
+            "(expression)", "\", ...) {\n", sep="")
     else
         oceDebug(debug, "palette() with no arguments: set space to right of a graph\n")
     oceDebug(debug, if (gave.breaks) "gave breaks\n" else "did not give breaks\n")
@@ -1393,7 +1454,7 @@ drawPalette <- function(zlim,
     oceDebug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
     omar <- par("mar")
     oceDebug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
-    device.width <- par("din")[1]
+    device.width <- par("fin")[1]
     oceDebug(debug, "device.width = ", device.width, " inches\n")
     line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
     tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
@@ -1482,12 +1543,13 @@ drawPalette <- function(zlim,
     invisible()
 }
 
-showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE)
+showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE, quote=FALSE)
 {
-    if (name %in% names(object@metadata))
-        cat(paste("* ", label,
-                  if (isdate) format(object@metadata[[name]]) else object@metadata[[name]],
-                  postlabel,
-                  "\n", sep=""))
+    if (name %in% names(object@metadata)) {
+        item <- object@metadata[[name]]
+        if (isdate) item <- format(item)
+        if (quote) item <- paste('"', item, '"', sep="")
+        cat(paste("* ", label, item, postlabel, "\n", sep=""))
+    }
 }
 

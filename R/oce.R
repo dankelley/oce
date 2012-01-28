@@ -228,31 +228,42 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
         plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
-             ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
+             xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
+             ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
-             ylab=if (missing(ylab)) deparse(substitute(y)) else ylab,
+        plot(x, y, axes=FALSE, xaxs=xaxs,
+             xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
+             xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
     }
     if (axes) {
-        xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
-                                  mgp=mgp,
-                                  cex=cex.axis, cex.axis=cex.axis, cex.main=cex.main,
-                                  debug=debug-1)#, ...)
+        xaxt <- list(...)["xaxt"]
+        drawxaxis <- !is.null(xaxt) && xaxt != 'n'
+        yaxt <- list(...)["yaxt"]
+        drawyaxis <- !is.null(yaxt) && yaxt != 'n'
+        if (drawxaxis) {
+            xlabs <- oce.axis.POSIXct(1, x=x, drawTimeRange=drawTimeRange, main=main,
+                                      mgp=mgp,
+                                      xlim=if(missing(xlim)) range(x) else xlim,
+                                      cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                      debug=debug-1)#, ...)
+        }
         if (grid) {
             lwd <- par("lwd")
-            abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
+            if (drawxaxis)
+                abline(v=xlabs, col="lightgray", lty="dotted", lwd=lwd)
             yaxp <- par("yaxp")
             abline(h=seq(yaxp[1], yaxp[2], length.out=1+yaxp[3]),
                    col="lightgray", lty="dotted", lwd=lwd)
         }
         box()
         ##cat("cex.axis=",cex.axis,"; par('cex.axis') is", par('cex.axis'), "; par('cex') is", par('cex'), "\n")
-        axis(2, cex.axis=cex.axis)
+        if (drawyaxis)
+            axis(2, cex.axis=cex.axis, cex=cex.axis)
         axis(4, labels=FALSE)
     }
     if (!is.null(adorn)) {
@@ -418,6 +429,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
     oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
+    subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+    oceDebug(debug, "subsetString='", subsetString, "'\n")
     if (inherits(x, "cm")) {
         if (!is.null(indices)) {
             oceDebug(debug, vectorShow(keep, "keeping indices"))
@@ -427,8 +440,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                 rval@data[[name]] <- x@data[[name]][keep]
             }
         } else if (!missing(subset)) {
-            subsetString <- deparse(substitute(subset))
-            oceDebug(debug, "subsetString='", subsetString, "'\n")
+            ##subsetString <- deparse(substitute(subset))
+            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
             if (length(grep("time", subsetString))) {
                 oceDebug(debug, "subsetting a cm by time\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
@@ -451,8 +464,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             oceDebug(debug, vectorShow(keep, "keeping indices"))
             stop("this version of oce cannot subset adp data by index")
         } else if (!missing(subset)) {
-            subsetString <- deparse(substitute(subset))
-            oceDebug(debug, "subsetString='", subsetString, "'\n")
+            ##subsetString <- deparse(substitute(subset))
+            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
             if (length(grep("time", subsetString))) {
                 oceDebug(debug, "subsetting an adp by time\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
@@ -492,6 +505,23 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                         rval@data[[name]] <- x@data[[name]][,keep,]
                     }
                 }
+            } else if (length(grep("pressure", subsetString))) {
+                keep <- eval(substitute(subset), x@data, parent.frame())
+                rval <- x
+                rval@data$v <- rval@data$v[keep,,]
+                rval@data$a <- rval@data$a[keep,,]
+                rval@data$q <- rval@data$q[keep,,]
+                rval@data$time <- rval@data$time[keep]
+                ## the items below may not be in the dataset
+                names <- names(rval@data)
+                if ("bottomRange" %in% names) rval@data$bottomRange <- rval@data$bottomRange[keep,]
+                if ("pressure" %in% names) rval@data$pressure <- rval@data$pressure[keep]
+                if ("temperature" %in% names) rval@data$temperature <- rval@data$temperature[keep]
+                if ("salinity" %in% names) rval@data$salinity <- rval@data$salinity[keep]
+                if ("depth" %in% names) rval@data$depth <- rval@data$depth[keep]
+                if ("heading" %in% names) rval@data$heading <- rval@data$heading[keep]
+                if ("pitch" %in% names) rval@data$pitch <- rval@data$pitch[keep]
+                if ("roll" %in% names) rval@data$roll <- rval@data$roll[keep]
             } else {
                 stop("should express the subset in terms of distance or time")
             }
@@ -521,8 +551,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             rval@data <- data
             rval@processingLog <- unclass(x@processingLog)
         } else {                        # subset within the stations
-            subsetString <- deparse(substitute(subset))
-            oceDebug(debug, "subsetString='", subsetString, "'\n")
+            ##subsetString <- deparse(substitute(subset))
+            ##oceDebug(debug, "subsetString='", subsetString, "'\n")
             rval <- x
             if (length(grep("distance", subsetString))) {
                 l <- list(distance=geodDist(rval))
@@ -588,8 +618,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             stop("cannot specify 'indices' for adv objects (not coded yet)")
         if (missing(subset))
             stop("must specify a 'subset'")
-        subsetString <- paste(deparse(substitute(subset)), collapse=" ")
-        oceDebug(debug, "subsetString='", subsetString, "'\n")
+        ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+        ##oceDebug(debug, "subsetString='", subsetString, "'\n")
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an adv object by time\n")
             keep <- eval(substitute(subset), x@data, parent.frame()) # used for $ts and $ma, but $tsSlow gets another
@@ -644,6 +674,36 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             rval@data[[i]] <- x@data[[i]][r]
         }
         names(rval@data) <- names(x@data)
+    } else if (inherits(x, "echosounder")) {
+        ##subsetString <- paste(deparse(substitute(subset)), collapse=" ")
+        ##oceDebug(debug, "subsetString='", subsetString, "'\n")
+        if (length(grep("time", subsetString))) {
+            oceDebug(debug, "subsetting an echosounder object by time\n")
+            keep <- eval(substitute(subset), x@data, parent.frame())
+            rval <- x
+            rval[["time"]] <- rval[["time"]][keep]
+            rval[["latitude"]] <- rval[["latitude"]][keep]
+            rval[["longitude"]] <- rval[["longitude"]][keep]
+            rval[["time"]] <- rval[["time"]][keep]
+            rval[["a"]] <- rval[["a"]][keep,]
+            warning("only subsetting ping-based data, not timeSlow, latitudeSlow or longitudeSlow")
+        } else if (length(grep("depth", subsetString))) {
+            oceDebug(debug, "subsetting an echosounder object by depth\n")
+            keep <- eval(substitute(subset), x@data, parent.frame())
+            rval <- x
+            rval[["depth"]] <- rval[["depth"]][keep]
+            rval[["a"]] <- rval[["a"]][,keep]
+        } else {
+            stop("can only subset an echosounder object by 'time' or 'depth'")
+        }
+    } else if (inherits(x, "coastline")) {
+        if (!length(grep("latitude", subsetString)) && !length(grep("longitude", subsetString)))
+            stop("can only subset a coastline by 'latitude' or 'longitude'")
+        oceDebug(debug, "subsetting a coastline object\n")
+        keep <- eval(substitute(subset), x@data, parent.frame())
+        rval <- x
+        rval@data$latitude[!keep] <- NA
+        rval@data$longitude[!keep] <- NA
     } else {
         if (isS4(x)) {
             r <- eval(substitute(subset), x@data, parent.frame())
@@ -660,6 +720,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         }
         names(rval@data) <- names(x@data)
     }
+    ## fix up metadata
     if (inherits(x, "adp") || inherits(x, "adv")) {
         rval@metadata$numberOfSamples <- dim(rval@data$v)[1]
         rval@metadata$numberOfCells <- dim(rval@data$v)[2]
@@ -725,7 +786,10 @@ magic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
         return("shapefile")
     }
-
+    if (bytes[3] == 0xff && bytes[4] == 0xff) {
+        oceDebug(debug, "this is a biosonics echosounder file")
+        return("echosounder")
+    }
     if (bytes[1] == 0x10 && bytes[2] == 0x02) {
         ## 'ADPManual v710.pdf' p83
         if (96 == readBin(bytes[3:4], "integer", n=1, size=2,endian="little"))
@@ -821,7 +885,9 @@ read.oce <- function(file, ...)
     type <- magic(file)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
-        stop("cannot read shapefiles")
+        return(read.coastline.shapefile(file, ...))
+    if (type == "echosounder")
+        return(read.echosounder(file, ...))
     if (type == "adp/rdi")
         return(read.adp.rdi(file, processingLog=processingLog, ...))
     if (type == "adp/sontek")
@@ -1097,7 +1163,6 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     }
     if (!mat)
         z <- x[is.finite(x)]
-
     ##
     ## FIXME: I was twiddling the numbers, to get more labels, but xaxs="r" fixes that.
     twiddle <- 0.04 * diff(as.numeric(range))  # FIXME: do I need this anymore?
@@ -1247,5 +1312,99 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC
     } else {
         stop("type must be \"unix\", \"matlab\" or \"GPS\"")
     }
+}
+
+plotInset <- function(xleft, ybottom, xright, ytop, expr,
+                      bg="white", fg="black", mar=c(2, 2, 1, 1),
+                      debug=getOption("oceDebug"))
+{
+    xLog <- par('xlog')
+    yLog <- par('ylog')
+    x2in <- function(x) {
+        if (xLog)
+            mai[2] + (log10(x) - usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+        else
+            mai[2] + (x-usr[1]) * (fin[1]-mai[2]-mai[4]) / (usr[2]-usr[1])
+    }
+    y2in <- function(y) {
+        if (yLog)
+            mai[1] + (log10(y) - usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+        else
+            mai[1] + (y-usr[3]) * (fin[2]-mai[1]-mai[3]) / (usr[4]-usr[3])
+    }
+ 
+    usr <- par('usr')                  # xmin xmax ymin ymax
+    if (is.character(xleft)) {
+        if (xleft != "bottomleft")
+            stop("only named position is \"bottomleft\"")
+        f1 <- 0.02
+        f2 <- 1/3
+        if (xLog) {
+            stop("cannot handle xlog yet")
+        } else {
+            xleft <- usr[1] + f1 * (usr[2] - usr[1])
+            xright <- usr[1] + f2 * (usr[2] - usr[1])
+        }
+        if (yLog) {
+            stop("cannot handle ylog yet")
+        } else {
+            ybottom <- usr[3] + f1 * (usr[4] - usr[3])
+            ytop <- usr[3] + f2 * (usr[4] - usr[3])
+        }
+    } else {
+        oceDebug(debug, "\bplotInset(xleft=", xleft, ", ybottom=", ybottom,
+                 ", xright=", xright, ", ytop=", ytop, ",  ...) {\n",
+                 sep="")
+    }
+    oceDebug(debug, "TOP: par('mfg')=", par('mfg'), "\n")
+    opar <- par(no.readonly=TRUE)
+    rect(xleft, ybottom, xright, ytop, col=bg, border=fg)
+    mai <- par('mai')                  # bottom left top right
+    oceDebug(debug, "par('mai')=", par('mai'), '\n')
+    oceDebug(debug, "par('usr')=", par('usr'), '\n')
+    ##din <- dev.size(units='in')        # width height
+    fin <- par('fin') # figure width height
+    oceDebug(debug, "figure width and height=", fin, '\n')
+    nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
+    oceDebug(debug, "nmai:", nmai, "\n")
+    if (any(nmai < 0)) {
+        warning("part of inset is of the page")
+    }
+    nmai[nmai<0] <- 0
+    if (nmai[1] < 0) nmai[1] <- {cat("**1**\n");fin[1]}
+    if (nmai[2] < 0) nmai[2] <- {cat("**2**\n");fin[1]}
+    if (nmai[3] > fin[2] - 0.2) {cat("**3**\n");nmai[3] <- fin[2] - 0.2}
+    if (nmai[4] > fin[1] - 0.2) {cat("**4**\n");nmai[4] <- fin[1] - 0.2}
+    oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
+    oceDebug(debug, "after setting margins, mfg=", par('mfg'), "(contrast orig", opar$mfg, ")\n")
+    mfg2 <- par('mfg')
+    par(new=TRUE, mai=nmai)
+    thismar <- par('mar')
+    par(mar=thismar+mar)
+    if (debug > 1) {
+        cat("\n\nBEFORE expr, PAR IS:\n");
+        print(par())
+    }
+    mfg <- par('mfg')
+    oceDebug(debug, "BEFORE expr, mfg=", mfg, "\n")
+    expr
+    ## adjust 'new' to permit the use of par(mfrow)
+    if (mfg[1] == mfg[3] && mfg[2] == mfg[4]) {
+        ## finished filling in the plot region
+        oceDebug(debug, "setting new=FALSE; mfg=", mfg, "... ")
+        ## par(new=FALSE)
+    } else {
+        oceDebug(debug, "setting new=TRUE; mfg=", mfg, "... ")
+        ## par(new=FALSE)
+    }
+    ## reset some things that could have been set in the inset
+    par(mai=opar$mai, cex=opar$cex, lwd=opar$lwd, bg=opar$bg)
+    if (debug > 1) {
+        cat("par('mfg')=", par('mfg'), "opar$mfg=", opar$mfg, "; mfg2=", mfg2, "\n")
+        cat("\n\nAFTER expr, PAR IS RESET TO IC:\n");
+        print(opar)
+    }
+    oceDebug(debug, "\b\b} # plotInset()\n")
+    invisible()
 }
 

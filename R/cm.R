@@ -2,8 +2,8 @@
 setMethod(f="initialize",
           signature="cm",
           definition=function(.Object) {
-              .Object@processingLog$time=c(.Object@processingLog$time, Sys.time())
-              .Object@processingLog$value=c(.Object@processingLog$value, "create cm object")
+              .Object@processingLog$time <- as.POSIXct(Sys.time())
+              .Object@processingLog$value <- "create 'cm' object"
               return(.Object)
           })
 ## the default 'oce' object is sufficient for other methods
