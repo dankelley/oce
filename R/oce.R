@@ -1364,7 +1364,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
     ##din <- dev.size(units='in')        # width height
     fin <- par('fin') # figure width height
-    oceDebug(1+debug, "figure width and height=", fin, '\n')
+    oceDebug(debug, "figure width and height=", fin, '\n')
     nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
     if (any(nmai < 0)) {
