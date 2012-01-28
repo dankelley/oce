@@ -327,7 +327,10 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                 s0 <- ss[0.25*length(ss)]
                 p0 <- pp[1]
                 p1 <- max(pp) #pp[0.9*length(pp)]
-                dpds0 <-  diff(range(pp)) / diff(range(ss))
+                if (length(ss) > 2)
+                    dpds0 <-  diff(range(pp, na.rm=TRUE)) / diff(range(ss, na.rm=TRUE))
+                else
+                   dpds0 <- 0 
                 t <- try(m <- nls(pp ~ bilinear1(ss, s0, dpds),
                                   start=list(s0=s0, dpds=dpds0)),
                          silent=TRUE)
@@ -337,8 +340,8 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
                         oceDebug(debug, "trimming scan numbers below", s0, "\n")
                         keep <- keep & (x@data$scan > (coef(m)[[1]]))
                     }
-                } else {
-                    warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
+                    ##} else {
+                    ##warning("unable to complete step 5 of the trim operation (removal of initial equilibrium phase)")
                 }
             }
         } else if (method == "range") {

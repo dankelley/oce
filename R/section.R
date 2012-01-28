@@ -189,7 +189,7 @@ setMethod(f="plot",
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline=NULL,
+                              coastline="coastlineWorld",
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               xtype="distance",
@@ -235,6 +235,30 @@ setMethod(f="plot",
                           plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
                       }
                       if (!is.null(coastline)) {
+                          if (is.character(coastline)) {
+                              if (coastline == "none") {
+                                  next
+                              } else { # named coastline
+                                  if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
+                                      oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
+                                      if (coastline == "coastlineWorld") {
+                                          data(coastlineWorld)
+                                          coastline <- coastlineWorld
+                                      } else if (coastline == "coastlineMaritimes") {
+                                          data(coastlineMaritimes)
+                                          coastline <- coastlineMaritimes
+                                      } else if (coastline == "coastlineHalifax") {
+                                          data(coastlineHalifax)
+                                          coastline <- coastlineHalifax
+                                      } else if (coastline == "coastlineSLE") {
+                                          data(coastlineSLE)
+                                          coastline <- coastlineSLE
+                                      } else {
+                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                      }
+                                  }
+                              }
+                          }
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
                               polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)

@@ -16,7 +16,7 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline=NULL,
+     coastline="coastlineWorld",
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
