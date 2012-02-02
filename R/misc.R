@@ -1520,7 +1520,7 @@ drawPalette <- function(zlim,
                  omai[3]+top,
                  widths$mar.rhs)
     oceDebug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
-    the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
+    ##the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
     oceDebug(debug, "setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
     if (gave.zlim) {
         par(mai=the.mai)
@@ -1546,7 +1546,7 @@ drawPalette <- function(zlim,
                  widths$mar.lhs,
                  omai[3],
                  widths$palette.separation + widths$palette.width + widths$mar.rhs)
-    the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
+    ##the.mai <- ifelse(the.mai < 0.1, 0.1, the.mai)
     oceDebug(debug, "original par(mai)=", format(omai, digits=2), "\n")
     oceDebug(debug, "setting  par(mai)=", format(the.mai, digits=2), "\n")
     oceDebug(debug, "drawPalette orig mar=",par('mar'),"\n")
