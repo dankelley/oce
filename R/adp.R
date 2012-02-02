@@ -338,6 +338,7 @@ setMethod(f="plot",
                               useLayout=FALSE,
                               coastline="coastlineWorld",
                               main="",
+                              grid=FALSE, grid.col='darkgray', grid.lty='dotted', grid.lwd=1,
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -1040,6 +1041,8 @@ setMethod(f="plot",
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
+                  if (grid)
+                      grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")

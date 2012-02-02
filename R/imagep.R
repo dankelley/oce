@@ -87,19 +87,21 @@ imagep <- function(x, y, z,
     omai <- par("mai")
     device.width <- par("fin")[1]      # FIXME: should call this figureWidth
     oceDebug(debug, sprintf("paper width: %.2f inches\n", device.width))
-    line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
-    tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
+##    line.height <- 1.5*par("cin")[2]        # inches (not sure on this ... this is character height)
+##    tic.length <- abs(par("tcl")) * line.height # inches (not sure on this)
 
     ## widths of items [in inches]
-    widths <- list(mar.lhs=omai[2],    # width of LHS margin
-                   main=NA,            # main image width
-                   palette.separation=1/8, # between main & palette
-                   palette.width=1/4,  # palette width
-                   mar.rhs=line.height+tic.length) # width of RHS margin
-    ## next line ensures that things add up... but see FIXME below
-    widths$main <- device.width - widths$mar.lhs - widths$palette.separation - widths$palette.width - widths$mar.rhs
+##    widths <- list(mar.lhs=omai[2],    # width of LHS margin
+##                   main=NA,            # main image width
+##                   palette.separation=1/8, # between main & palette
+##                   palette.width=1/4,  # palette width
+##                   mar.rhs=line.height+tic.length) # width of RHS margin
+##    ## next line ensures that things add up... but see FIXME below
+##    widths$main <- device.width - widths$mar.lhs - widths$palette.separation - widths$palette.width - widths$mar.rhs
+##    cat("\n*** widths ***\n"); print(widths)
+    pc <- paletteCalculations()
     if (debug > 0)
-        str(widths)
+        str(pc)
     gave.breaks <- !missing(breaks)
     if (!gave.breaks) {
         zrange <- range(z, na.rm=TRUE)
@@ -133,10 +135,14 @@ imagep <- function(x, y, z,
         col <- col(n=length(breaks)-1)
 
     if (TRUE == drawPalette || "space" == drawPalette) {
-        the.mai <- c(omai[1],
-                     widths$main + widths$mar.lhs + widths$palette.separation,
-                     omai[3],
-                     widths$mar.rhs)
+        ##        the.mai <- c(omai[1],
+        ##                     widths$main + widths$mar.lhs + widths$palette.separation,
+        ##                     omai[3],
+        ##                     widths$mar.rhs)
+        the.mai <- c(pc$omai[1],
+                     pc$main + pc$marLHS + pc$paletteSeparation,
+                     pc$omai[3],
+                     pc$marRHS)
         oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
         the.mai <- clipmin(the.mai, 0.1) # do not let palettes collide if mar[1] or mar[3] are zero
         oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
@@ -174,15 +180,16 @@ imagep <- function(x, y, z,
 
     ## main image
     if (TRUE == drawPalette || "space" == drawPalette) {
-        the.mai <- c(omai[1],
-                     widths$mar.lhs,
-                     omai[3],
-                     widths$palette.separation + widths$palette.width + widths$mar.rhs)
+        the.mai <- c(pc$omai[1],
+                     pc$marLHS,
+                     pc$omai[3],
+                     pc$paletteSeparation + pc$paletteWidth + pc$marRHS)
         the.mai <- clipmin(the.mai, 0)         # just in case
         if (debug > 0)
-            str(widths)
+            str(pc)
         oceDebug(debug, "original value of par(mai)=", format(omai, digits=2), "\n")
         oceDebug(debug, "MAIN: setting     par(mai)=", format(the.mai, digits=2), "\n")
+        ##browser()
         par(new=TRUE, mai=the.mai, cex=cex)
     }
 

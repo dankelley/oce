@@ -27,6 +27,7 @@
      useLayout=FALSE,
      coastline="coastlineWorld",
      main="",
+     grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -106,6 +107,13 @@
       This is used only for \code{which="map"}.  See notes at
       \code{\link{plot.ctd}} for more information on built-in coastlines.}
   \item{main}{main title for plot, used just on the top panel, if there are several panels.}
+  \item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
+      argument is needed, because calling \code{\link{grid}} after doing a
+      sequence of plots will not result in useful results for the individual
+      panels.}
+  \item{grid.col}{color of grid}
+  \item{grid.lty}{line type of grid}
+  \item{grid.lwd}{line width of grid}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions,

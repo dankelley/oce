@@ -7,7 +7,7 @@
 
 \usage{
 oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="", 
-            drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL, fill=FALSE,
+            drawTimeRange=TRUE, xaxs="r", adorn=NULL, fill=FALSE,
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
@@ -15,6 +15,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
             main="",
             despike=FALSE,
             axes=TRUE,
+            grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
             debug=getOption("oceDebug"),
             \dots)}
 
@@ -29,9 +30,6 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
 \item{xaxs}{character indicating whether image should extend to edge
   of x axis (with value \code{"i"}) or not; see
   \code{\link[graphics]{par}}("xaxs").}
-\item{grid}{boolean, set to \code{TRUE} to get a grid on the plot.  (Note that
-  \code{\link{grid}} does work correctly because it does not account
-  properly for tic locations on the time axis.}
 \item{adorn}{optional \code{\link{expression}} to be performed
   immediately after drawing the panel. (See \code{\link{plot.adp}} for
   an example.)}
@@ -49,6 +47,13 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
 \item{main}{title of plot.}
 \item{despike}{boolean flag that can turn on despiking with \code{\link{despike}}.}
+\item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
+    argument is needed, because calling \code{\link{grid}} after doing a
+    sequence of plots will not result in useful results for the individual
+    panels.}
+\item{grid.col}{color of grid}
+\item{grid.lty}{line type of grid}
+\item{grid.lwd}{line width of grid}
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a
   moderate amount of debugging information, or to 2 to get more.}
 \item{axes}{boolean, set to \code{TRUE} to get axes plotted}

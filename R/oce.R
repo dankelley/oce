@@ -186,7 +186,7 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 
 
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
-                        drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL, fill=FALSE,
+                        drawTimeRange=TRUE, xaxs="r", adorn=NULL, fill=FALSE,
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
@@ -196,6 +196,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
                         main="",
                         despike=FALSE,
                         axes=TRUE,
+                        grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
                         debug=getOption("oceDebug"),
                         ...)
 {
@@ -266,6 +267,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
             axis(2, cex.axis=cex.axis, cex=cex.axis)
         axis(4, labels=FALSE)
     }
+    if (grid)
+        grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error")
@@ -1079,12 +1082,12 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(t.start, t.end, by="day")
+        z <- seq(t.start, t.end, by="hour")
         z.sub <- seq(t.start, t.end, by="hour")
         oceDebug(debug, vectorShow(z, "Time range is under 3 days; z="))
         oceDebug(debug, vectorShow(z.sub, "Time range is under 3 days; z.sub="))
         if (missing(format))
-            format <- "%b %d"
+            format <- "%H"             #b %d"
     } else if (d <= 60 * 60 * 24 * 5) {        # under 5 days: label day; show 2-h subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
