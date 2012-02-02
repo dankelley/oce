@@ -138,7 +138,7 @@ imagep <- function(x, y, z,
                      omai[3],
                      widths$mar.rhs)
         oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
-        the.mai <- clipmin(the.mai, 0)         # just in case
+        the.mai <- clipmin(the.mai, 0.1) # do not let palettes collide if mar[1] or mar[3] are zero
         oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
         par(mai=the.mai, cex=cex)
         if (TRUE == drawPalette) {

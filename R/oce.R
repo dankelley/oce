@@ -1241,6 +1241,8 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     axis(side, at=z, line=0, labels=labels, mgp=mgp, cex=cex, cex.main=cex.main, cex.axis=cex.axis, ...)
     par(cex=ocex, cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
     oceDebug(debug, "\b\b} # oce.axis.ts()\n")
+    zzz <- as.numeric(z)
+    par(xaxp=c(min(zzz), max(zzz), -1+length(zzz)))
     invisible()
 }
 
