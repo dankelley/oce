@@ -7,14 +7,15 @@
 
 \usage{
 oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="", 
-            drawTimeRange=TRUE, xaxs="r", adorn=NULL, fill=FALSE,
+            drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
+            xaxs="i", yaxs="i",
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
-            mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
-                  mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1, mgp[2]+3/4),
+            mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
             main="",
             despike=FALSE,
             axes=TRUE,
+            marginsAsImage=FALSE,
             grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
             debug=getOption("oceDebug"),
             \dots)}
@@ -27,9 +28,6 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
 \item{ylim}{optional limit for y axis.}
 \item{drawTimeRange}{a boolean, set to \code{TRUE} to indicate the range of times 
   in the top-left margin.}
-\item{xaxs}{character indicating whether image should extend to edge
-  of x axis (with value \code{"i"}) or not; see
-  \code{\link[graphics]{par}}("xaxs").}
 \item{adorn}{optional \code{\link{expression}} to be performed
   immediately after drawing the panel. (See \code{\link{plot.adp}} for
   an example.)}
@@ -37,6 +35,10 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
   does incorrectly if there are missing values in \code{y}).}
 \item{xlab}{names for x axis.}
 \item{ylab}{names for y axis.}
+\item{xaxs}{character indicating whether image should extend to edge
+  of x axis (with value \code{"i"}) or not; see
+  \code{\link[graphics]{par}}("xaxs").}
+\item{yaxs}{as \code{xaxs} but for y axis.}
 \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
 \item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
 \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
@@ -57,6 +59,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
 \item{debug}{a flag that turns on debugging.  Set to 1 to get a
   moderate amount of debugging information, or to 2 to get more.}
 \item{axes}{boolean, set to \code{TRUE} to get axes plotted}
+\item{marginsAsImage}{FALSE},
 \item{\dots}{graphical parameters passed down to \code{\link{plot}}.}
 }
 
