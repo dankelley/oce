@@ -1,7 +1,120 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
+
 clipmin <- function(x, min=0)
 {
     ifelse(x < min, min, x)
+}
+
+paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label) # in inches
+{
+    omai <- par('mai')
+    figureWidth <- par("fin")[1]
+    lineHeight <- 1.5 * par("cin")[2]  # character height in inches (times a safety for superscripts etc)
+    ticLength <- abs(par("tcl")) * lineHeight # inches (not sure on this)
+    pc <- list()
+    pc$marLHS <- omai[2]               # width of LHS margin for panel to left of palette
+    pc$paletteSeparation <- paletteSeparation # space between palette and panel to its left
+    pc$paletteWidth <- paletteWidth    # palette width
+    pc$marRHS <- lineHeight + ticLength # space to right of palette
+    if (!missing(label))
+        pc$marRHS <- pc$marRHS + strheight(label)*par('cin')[1]
+    pc$main <- figureWidth - pc$marLHS - pc$paletteSeparation - pc$paletteWidth - pc$marRHS # width of main panel
+    pc$omai <- omai
+    pc$figureWidth <- figureWidth      # total width of figure (main panel, palette, space between, and margins)
+    pc 
+}
+
+drawPalette <- function(zlim,
+                        zlab="",
+                        breaks,
+                        col,
+                        top=0, bottom=0,
+                        drawContours=FALSE,
+                        debug=getOption("oceDebug"),
+                        ...)
+{
+    debug <- min(1, max(debug, 0))
+    zlimGiven <- !missing(zlim)
+    breaksGiven <- !missing(breaks)
+    if (zlimGiven)
+        oceDebug(debug, "\b\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", if (is.character(zlab)) zlab else
+            "(expression)", "\", ...) {\n", sep="")
+    else
+        oceDebug(debug, "palette() with no arguments: set space to right of a graph\n")
+    oceDebug(debug, if (breaksGiven) "gave breaks\n" else "did not give breaks\n")
+    omai <- par("mai")
+    oceDebug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
+    omar <- par("mar")
+    oceDebug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
+
+    pc <- paletteCalculations()
+    contours <- NULL
+    if (zlimGiven) {
+        if (breaksGiven) {
+            breaksOrig <- breaks
+        } else {
+            zrange <- zlim
+            if (missing(col)) {
+                breaks <- pretty(zlim)
+                contours <- breaks
+            } else {
+                if (is.function(col)) {
+                    breaks <- seq(zlim[1], zlim[2], length.out=256) # smooth image colorscale
+                    contours <- pretty(zlim)
+                } else {
+                    breaks <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                    contours <- seq(zlim[1], zlim[2], length.out=1+length(col))
+                }
+            }
+            breaksOrig <- breaks
+            breaks[1] <- zrange[1]
+            breaks[length(breaks)] <- zrange[2]
+        }
+        if (missing(col))
+            col <- oceColorsPalette(n=length(breaks)-1)
+        if (is.function(col))
+            col <- col(n=length(breaks)-1)
+    }
+    theMai <- c(pc$omai[1]+bottom,
+                pc$main + pc$marLHS + pc$paletteSeparation,
+                pc$omai[3]+top,
+                pc$marRHS)
+    oceDebug(1+debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
+    if (zlimGiven) {
+        cat("theMai=", theMai, "\n")
+        par(mai=theMai)
+        if (!breaksGiven) {
+            palette <- seq(zlim[1], zlim[2], length.out=300)
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="", col=col,
+                  zlim=zlim)
+        } else {
+            palette <- seq(zlim[1], zlim[2], length.out=300)
+            image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
+                  breaks=breaksOrig,
+                  col=col,
+                  zlim=zlim)
+        }
+        if (drawContours)
+            abline(h=contours)
+        box()
+        axis(side=4, at=if (is.null(contours)) contours else pretty(palette), mgp=c(2.5,0.7,0))
+        if (nchar(zlab) > 0)
+            mtext(zlab, side=4, line=2.0, cex=par('cex'))
+    }
+    theMai <- c(pc$omai[1],
+                pc$marLHS,
+                pc$omai[3],
+                pc$paletteSeparation + pc$paletteWidth + pc$marRHS)
+    oceDebug(debug, "original par(mai)=", format(omai, digits=2), "\n")
+    oceDebug(debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
+    oceDebug(debug, "drawPalette orig mar=",par('mar'),"\n")
+    if (zlimGiven)
+        par(new=TRUE, mai=theMai)
+    else
+        par(mai=theMai)
+    oceDebug(debug, "drawPalette at end mar=",par('mar'),"\n")
+    oceDebug(debug, "\b\b} # drawPalette()\n")
+    invisible()
 }
 
 imagep <- function(x, y, z,
@@ -81,14 +194,8 @@ imagep <- function(x, y, z,
     ocex <- par("cex")
     ## set overall graphical parameters (note: get opai after setting mar)
     par(mgp=mgp, mar=mar, cex=cex)
-    omai <- par("mai")
-    device.width <- par("fin")[1]      # FIXME: should call this figureWidth
-    oceDebug(debug, sprintf("paper width: %.2f inches\n", device.width))
-    pc <- paletteCalculations()
-    if (debug > 0)
-        str(pc)
-    gave.breaks <- !missing(breaks)
-    if (!gave.breaks) {
+    breaksGiven <- !missing(breaks)
+    if (!breaksGiven) {
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
             if (missing(col)) {
@@ -98,13 +205,13 @@ imagep <- function(x, y, z,
             } else {
                 breaks <- seq(zrange[1], zrange[2], length.out=if(is.function(col))128 else 1+length(col))
             }
-            breaks.orig <- breaks
+            breaksOrig <- breaks
         } else {
             if (missing(col))
                 breaks <- c(zlim[1], pretty(zlim), zlim[2])
             else
                 breaks <- seq(zlim[1], zlim[2], length.out=if(is.function(col))128 else 1+length(col))
-            breaks.orig <- breaks
+            breaksOrig <- breaks
             ##cat('range(z):', zrange, '\n')
             ##cat('ORIG  range(breaks):', range(breaks), '\n')
             breaks[1] <- min(zrange[1], breaks[1])
@@ -112,66 +219,16 @@ imagep <- function(x, y, z,
             ##cat('later range(breaks):', range(breaks), '\n')
         }
     } else {
-        breaks.orig <- breaks
+        breaksOrig <- breaks
     }
     if (missing(col))
         col <- oceColorsPalette(n=length(breaks)-1)
     if (is.function(col))
         col <- col(n=length(breaks)-1)
 
-    if (TRUE == drawPalette || "space" == drawPalette) {
-        the.mai <- c(pc$omai[1],
-                     pc$main + pc$marLHS + pc$paletteSeparation,
-                     pc$omai[3],
-                     pc$marRHS)
-        oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (before clipping)\n")
-        the.mai <- clipmin(the.mai, 0.1) # do not let palettes collide if mar[1] or mar[3] are zero
-        oceDebug(debug, "PALETTE: setting  par(mai)=", format(the.mai, digits=2), " (after clipping)\n")
-        par(mai=the.mai, cex=cex)
-        if (TRUE == drawPalette) {
-            if (!gave.breaks) {
-                if (missing(zlim)) {
-                    palette <- seq(min(z, na.rm=TRUE), max(z, na.rm=TRUE), length.out=300)
-                } else {
-                    palette <- seq(zlim[1], zlim[2], length.out=300)
-                }
-                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
-                      breaks=breaks,
-                      col=col,
-                      zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
-            } else {
-                if (missing(zlim)) {
-                    palette <- seq(breaks[1], breaks[length(breaks)], length.out=300)
-                } else {
-                    palette <- seq(zlim[1], zlim[2], length.out=300)
-                }
-                image(x=1, y=palette, z=matrix(palette, nrow=1), axes=FALSE, xlab="", ylab="",
-                      breaks=breaks.orig,
-                      col=col,
-                      zlim=if(missing(zlim))range(z,na.rm=TRUE) else zlim)
-            }
-            if (drawContours)
-                abline(h=breaks)
-            box()
-            axis(side=4, at=pretty(palette), cex.axis=cex) # FIXME: decide on font size
-        } else {
-            plot(x=c(0,1), y=c(0,1), type='n', axes=FALSE, xlab="", ylab="")
-        }
-    }
-
-    ## main image
-    if (TRUE == drawPalette || "space" == drawPalette) {
-        the.mai <- c(pc$omai[1],
-                     pc$marLHS,
-                     pc$omai[3],
-                     pc$paletteSeparation + pc$paletteWidth + pc$marRHS)
-        the.mai <- clipmin(the.mai, 0)         # just in case
-        if (debug > 0)
-            str(pc)
-        oceDebug(debug, "original value of par(mai)=", format(omai, digits=2), "\n")
-        oceDebug(debug, "MAIN: setting     par(mai)=", format(the.mai, digits=2), "\n")
-        ##browser()
-        par(new=TRUE, mai=the.mai, cex=cex)
+    if (drawPalette) {
+        zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
+        drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, drawContours=drawContours)
     }
 
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
@@ -187,7 +244,7 @@ imagep <- function(x, y, z,
             .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
-            if (!gave.breaks) {
+            if (!breaksGiven) {
                 image(x=x, y=y, z=z, axes=FALSE, xlab="", ylab=ylab, col=col,
                       xlim=xlim, ylim=ylim, zlim=zlim, ...)
             } else {
