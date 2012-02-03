@@ -1,17 +1,18 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
-paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4)
+
+paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4) # in inches
 {
     omai <- par('mai')
     figureWidth <- par("fin")[1]
-    lineHeight <- 1.5 * par("cin")[2]   # inches (not sure on this ... this is character height)
+    lineHeight <- 1.5 * par("cin")[2]  # character height in inches (times a safety for superscripts etc)
     ticLength <- abs(par("tcl")) * lineHeight # inches (not sure on this)
-    pc <- list(marLHS=omai[2],         # width of LHS margin
-               paletteSeparation=paletteSeparation, # between main & palette
+    pc <- list(marLHS=omai[2],         # width of LHS margin for panel to left of palette
+               paletteSeparation=paletteSeparation, # space between palette and panel to its left
                paletteWidth=paletteWidth, # palette width
-               marRHS=lineHeight+ticLength) # width of RHS margin
-    pc$main <- figureWidth - pc$marLHS - pc$paletteSeparation - pc$paletteWidth - pc$marRHS
+               marRHS=lineHeight+ticLength) # width of RHS margin to right of palette
+    pc$main <- figureWidth - pc$marLHS - pc$paletteSeparation - pc$paletteWidth - pc$marRHS # width of main panel
     pc$omai <- omai
-    pc$figureWidth <- figureWidth
+    pc$figureWidth <- figureWidth      # total width of figure (main panel, palette, space between, and margins)
     pc 
 }
 
