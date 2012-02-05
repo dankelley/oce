@@ -81,7 +81,6 @@ drawPalette <- function(zlim,
                 pc$marRHS)
     oceDebug(debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
     if (zlimGiven) {
-        cat("theMai=", theMai, "\n")
         par(mai=theMai)
         if (!breaksGiven) {
             palette <- seq(zlim[1], zlim[2], length.out=300)
