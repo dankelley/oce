@@ -79,7 +79,7 @@ drawPalette <- function(zlim,
                 pc$main + pc$marLHS + pc$paletteSeparation,
                 pc$omai[3]+top,
                 pc$marRHS)
-    oceDebug(1+debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
+    oceDebug(debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
     if (zlimGiven) {
         cat("theMai=", theMai, "\n")
         par(mai=theMai)
