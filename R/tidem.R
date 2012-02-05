@@ -11,9 +11,12 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("coef"))
-              if (i == "coef") return("FIXME: coef")
-              else stop("cannot access \"", i, "\"") # cannot get here
+              if (i == "coef") {
+                  x@data$model$coef
+              } else {
+                  ## I use 'as' because I could not figure out callNextMethod() etc
+                  as(x, "oce")[[i, j, drop]]
+              }
           })
 #
 plot.tidem <- function(x,
