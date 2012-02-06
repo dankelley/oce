@@ -794,6 +794,10 @@ plotScan <- function(x,
     }
     if (xxlen != length(x@data$pressure))
         stop(paste("length mismatch.  '", name, "' has length ", xxlen, " but pressure has length ", length(x@data$pressure),sep=""))
+    browser()
+    if (!("scan" %in% names(x@data))) {
+        x@data[["scan"]] <- 1:length(x@data$pressure)
+    }
     plot(x@data[[name]], x@data$pressure,
          xlab=name, ylab=resizableLabel("p", "y"),
          type="l", col=pcol)
