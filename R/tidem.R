@@ -355,6 +355,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
 
     if (debug > 0)
         print(tc)
+    browser()
 
     name <- freq <- kmpr <- NULL
     indices <- NULL
@@ -378,8 +379,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                 freq <- tc$freq[standard][-1]
                 kmpr <- tc$kmpr[standard][-1]
                 indices <- c(indices, seq(1:ntc)[tc$standard])
-            }
-            else {
+            } else {
                 if (substr(constituents[i], 1, 1) == "-") {
                     cc <- substr(constituents[i], 2, nchar(constituents[i]))
                     delete <- which(tc$name == cc)
@@ -387,8 +387,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                         indices <- indices[indices != delete]
                     else
                         stop("cannot delete constituent '", cc, "' from the list because it is not there")
-                }
-                else {
+                } else {
                     add <- which(tc$name == constituents[i])
                     if (length(add) == 1) {
                         if (0 == sum(indices == add)) {
