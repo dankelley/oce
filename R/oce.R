@@ -191,6 +191,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
+                        mai.palette=c(0, 1/8, 0, 3/8),
                         main="",
                         despike=FALSE,
                         axes=TRUE,
@@ -202,14 +203,17 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
     ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
-    oceDebug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
-    oceDebug(debug, "mgp=",mgp,"\n")
+    oceDebug(debug, "\boce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="")
+    oceDebug(debug, "  mar=c(", paste(mar, collapse=", "), "),\n", sep="")
+    oceDebug(debug, "  mai.palette=c(", paste(mar, collapse=", "), "),\n", sep="")
+    oceDebug(debug, "  mgp=c(",paste(mgp, collapse=", "),"),\n", sep="")
+    oceDebug(debug, "  ...) {\n", sep="")
     oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
     oceDebug(debug, "marginsAsImage=",marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
-    pc <- paletteCalculations()
+    pc <- paletteCalculations(mai=mai.palette)
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -229,11 +233,13 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
     if (marginsAsImage) {
         ## FIXME: obey their mar?
         the.mai <- c(pc$omai[1],
-                     pc$marLHS,
+                     pc$maiLHS,
                      pc$omai[3],
-                     pc$paletteSeparation + pc$paletteWidth + pc$marRHS)
+                     pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
         the.mai <- clipmin(the.mai, 0)         # just in case
         par(mai=the.mai, cex=cex)
+        warning("oce.R:241: FIXME: should probably just use drawPalette(-none-) here\n")
+        drawPalette(zlim=NULL, zlab="", mai=mai.palette)
     }
     if (fill) {
         xx <- c(x[1], x, x[length(x)])

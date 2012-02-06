@@ -5,20 +5,23 @@ clipmin <- function(x, min=0)
     ifelse(x < min, min, x)
 }
 
-paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label) # in inches
+paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
+                                mai=c(0, 1/8, 0, 1/4))
 {
     omai <- par('mai')
     figureWidth <- par("fin")[1]
     lineHeight <- 1.5 * par("cin")[2]  # character height in inches (times a safety for superscripts etc)
     ticLength <- abs(par("tcl")) * lineHeight # inches (not sure on this)
     pc <- list()
-    pc$marLHS <- omai[2]               # width of LHS margin for panel to left of palette
-    pc$paletteSeparation <- paletteSeparation # space between palette and panel to its left
+    pc$maiLHS <- omai[2]               # width of LHS margin for panel to left of palette
+    ##pc$paletteSeparation <- paletteSeparation # space between palette and panel to its left
+    pc$paletteSeparation <- mai[2]     # space between palette and panel to its left
     pc$paletteWidth <- paletteWidth    # palette width
-    pc$marRHS <- lineHeight + ticLength # space to right of palette
-    if (!missing(label))
-        pc$marRHS <- pc$marRHS + strheight(label)*par('cin')[1]
-    pc$main <- figureWidth - pc$marLHS - pc$paletteSeparation - pc$paletteWidth - pc$marRHS # width of main panel
+    #pc$marRHS <- lineHeight + ticLength # space to right of palette
+    pc$maiRHS <- mai[4]                # space to right of palette
+    ##if (!missing(label))
+    ##    pc$marRHS <- pc$marRHS + strheight(label)*par('cin')[1]
+    pc$main <- figureWidth - pc$maiLHS - pc$paletteSeparation - pc$paletteWidth - pc$maiRHS # width of main panel
     pc$omai <- omai
     pc$figureWidth <- figureWidth      # total width of figure (main panel, palette, space between, and margins)
     pc 
@@ -28,12 +31,21 @@ drawPalette <- function(zlim,
                         zlab="",
                         breaks,
                         col,
+                        mai=c(0, 1/8, 0, 3/8),
                         top=0, bottom=0,
                         drawContours=FALSE,
                         debug=getOption("oceDebug"),
                         ...)
 {
     debug <- min(1, max(debug, 0))
+    if (top != 0) {
+        warning("drawPalette(): please use mai instead of top\n")
+        mai[3] <- top
+    }
+    if (bottom != 0) {
+        warning("drawPalette(): please use mai instead of bottom\n")
+        mai[1] <- bottom
+    }
     zlimGiven <- !missing(zlim)
     breaksGiven <- !missing(breaks)
     if (zlimGiven)
@@ -47,7 +59,8 @@ drawPalette <- function(zlim,
     omar <- par("mar")
     oceDebug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
 
-    pc <- paletteCalculations()
+    pc <- paletteCalculations(mai=mai)
+
     contours <- NULL
     if (zlimGiven) {
         if (breaksGiven) {
@@ -75,10 +88,14 @@ drawPalette <- function(zlim,
         if (is.function(col))
             col <- col(n=length(breaks)-1)
     }
-    theMai <- c(pc$omai[1]+bottom,
-                pc$main + pc$marLHS + pc$paletteSeparation,
-                pc$omai[3]+top,
-                pc$marRHS)
+##    theMai <- c(pc$omai[1]+mai[1],
+##                pc$main + pc$marLHS + pc$paletteSeparation + mai[2],
+##                pc$omai[3]+mai[3],
+##                pc$marRHS+mai[4])
+    theMai <- c(pc$omai[1]+mai[1],
+                pc$main + pc$maiLHS + mai[2],
+                pc$omai[3]+mai[3],
+                pc$maiRHS)
     oceDebug(debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
     if (zlimGiven) {
         par(mai=theMai)
@@ -101,9 +118,9 @@ drawPalette <- function(zlim,
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
     }
     theMai <- c(pc$omai[1],
-                pc$marLHS,
+                pc$maiLHS,
                 pc$omai[3],
-                pc$paletteSeparation + pc$paletteWidth + pc$marRHS)
+                pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
     oceDebug(debug, "original par(mai)=", format(omai, digits=2), "\n")
     oceDebug(debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
     oceDebug(debug, "drawPalette orig mar=",par('mar'),"\n")
@@ -127,6 +144,7 @@ imagep <- function(x, y, z,
                    filledContour=FALSE,
                    mgp=getOption("oceMgp"),
                    mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
+                   mai.palette=c(0, 1/8, 0, 3/8),
                    xaxs = "i", yaxs = "i",
                    cex=par("cex"),
                    adorn,
@@ -227,7 +245,8 @@ imagep <- function(x, y, z,
 
     if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
-        drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, drawContours=drawContours)
+        drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, drawContours=drawContours,
+                    mai=mai.palette)
     }
 
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")

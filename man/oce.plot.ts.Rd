@@ -3,7 +3,8 @@
 \encoding{UTF-8}
 \title{Plot a time-series, obeying the timezone}
 
-\description{Plot a time-series, obeying the timezone and possibly drawing the range in the top-left margin}
+\description{Plot a time-series, obeying the timezone and possibly drawing the
+    range in the top-left margin}
 
 \usage{
 oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="", 
@@ -12,6 +13,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
+            mai.palette=c(0, 1/8, 0, 3/8),
             main="",
             despike=FALSE,
             axes=TRUE,
@@ -47,6 +49,7 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
   tighter than the R default, in order to use more space for the
   data and less for the axes.}
 \item{mar}{value to be used with \code{\link{par}("mar")}.}
+\item{mai.palette}{margins, in inches, for the palette}
 \item{main}{title of plot.}
 \item{despike}{boolean flag that can turn on despiking with \code{\link{despike}}.}
 \item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
