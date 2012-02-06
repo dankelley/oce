@@ -22,9 +22,9 @@
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.}
-    \item{top}{\strong{DEPRECATED (use mar instead)} ... extra space to
+    \item{top}{\strong{DEPRECATED (use mai instead)} ... extra space to
             insert at top of palette, in inches]}
-    \item{bottom}{\strong{DEPRECATED (use mar instead)} ... extra space to
+    \item{bottom}{\strong{DEPRECATED (use mai instead)} ... extra space to
             insert at bottom of palette, in inches]}
     \item{drawContours}{boolean, \code{TRUE} to get contours on the
         palette, at the colour breaks.}

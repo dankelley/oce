@@ -238,8 +238,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
                      pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
         the.mai <- clipmin(the.mai, 0)         # just in case
         par(mai=the.mai, cex=cex)
-        warning("oce.R:241: FIXME: should probably just use drawPalette(-none-) here\n")
-        drawPalette(zlim=NULL, zlab="", mai=mai.palette)
+        drawPalette(mai=mai.palette)
     }
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
