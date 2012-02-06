@@ -6,7 +6,9 @@
 
 \description{Draw a palette on the right-hand side of plot device}
 
-\usage{drawPalette(zlim, zlab="", breaks, col, top=0, bottom=0, drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
+\usage{drawPalette(zlim, zlab="", breaks, col,
+            mai=c(0, 1/8, 0, 3/8), top=0, bottom=0,
+            drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
 
 \arguments{
     \item{zlim}{two-element vector containing the lower and upper limits of z.
@@ -18,8 +20,12 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
-    \item{top}{extra space to insert at top of palette, in inches}
-    \item{bottom}{extra space to insert at bottom of palette, in inches}
+    \item{mai}{margins for palette, as defined in the usual way; see
+        \code{\link{par}}.}
+    \item{top}{\strong{DEPRECATED (use mar instead)} ... extra space to
+            insert at top of palette, in inches]}
+    \item{bottom}{\strong{DEPRECATED (use mar instead)} ... extra space to
+            insert at bottom of palette, in inches]}
     \item{drawContours}{boolean, \code{TRUE} to get contours on the
         palette, at the colour breaks.}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
@@ -27,8 +33,11 @@
     \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{
+\section{Deprecation note}{Use \code{mai} instead of \code{top} and
+    \code{bottom}; the latter arguments will be delete very soon, and without
+    notice!}
 
+\details{
     In the normal use, \code{drawPalette} draws an image palette near the
     right-hand side of the plotting device, and then adjusts the global margin
     settings in such a way as to cause the next plot to appear to the left of

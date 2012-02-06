@@ -20,6 +20,7 @@
      useSmoothScatter,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+     mai.palette=c(0, 1/8, 0, 3/8),
      marginsAsImage=FALSE,
      cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
      xlim, ylim, 
@@ -27,6 +28,7 @@
      useLayout=FALSE,
      coastline="coastlineWorld",
      main="",
+     grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -85,6 +87,7 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{mai.palette}{margins, in inches, for the palette}
   \item{marginsAsImage}{boolean, \code{TRUE} to put a wide margin to the
     right of time-series plots, even if there are no images in the \code{which}
     list.  (The margin is made wide if there are some images in the sequence.)}
@@ -106,6 +109,13 @@
       This is used only for \code{which="map"}.  See notes at
       \code{\link{plot.ctd}} for more information on built-in coastlines.}
   \item{main}{main title for plot, used just on the top panel, if there are several panels.}
+  \item{grid}{if \code{TRUE}, a grid will be drawn for each panel.  (This
+      argument is needed, because calling \code{\link{grid}} after doing a
+      sequence of plots will not result in useful results for the individual
+      panels.}
+  \item{grid.col}{color of grid}
+  \item{grid.lty}{line type of grid}
+  \item{grid.lwd}{line width of grid}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{optional arguments passed to plotting functions,
