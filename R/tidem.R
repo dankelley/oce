@@ -87,7 +87,7 @@ tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
     data("tidedata")
-    tidedata   <- get("tidedata",   pos=globalenv())
+    tidedata <- get("tidedata", pos=globalenv())
     a <- tidemAstron(t)
 
     if (debug > 0) print(a)
@@ -363,7 +363,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         name <- tc$name[standard][-1]
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
-        indices <- c(indices, seq(1:ntc)[standard])
+        indices <- c(indices, seq(1:ntc)[standard]) # FIXME: why is Z0 not chopped, as for last 3 lines?
         if (debug > 0)
             print(name)
     } else {
@@ -378,8 +378,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                 freq <- tc$freq[standard][-1]
                 kmpr <- tc$kmpr[standard][-1]
                 indices <- c(indices, seq(1:ntc)[tc$standard])
-            }
-            else {
+            } else {
                 if (substr(constituents[i], 1, 1) == "-") {
                     cc <- substr(constituents[i], 2, nchar(constituents[i]))
                     delete <- which(tc$name == cc)
@@ -387,8 +386,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                         indices <- indices[indices != delete]
                     else
                         stop("cannot delete constituent '", cc, "' from the list because it is not there")
-                }
-                else {
+                } else {
                     add <- which(tc$name == constituents[i])
                     if (length(add) == 1) {
                         if (0 == sum(indices == add)) {
@@ -403,6 +401,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                 cat("<<", tc$name[indices], ">>\n")
         }
     }
+    ## FIXME: what's going on here?  we already have name, etc.  What is tc2 for??
     indices <- indices[order(indices)]
     tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
 
@@ -449,24 +448,19 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     nt <- length(sl@data$elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-    hour <- unclass(as.POSIXct(sl@data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
-    if (TRUE) { # isolate test code
-        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
-        t <- unclass(as.POSIXct(sl@data$time, tz="UTC")) - unclass(tRef)
-        hour2pi <- 2 * 4 * atan2(1,1) * t * 3600
-    } else {
-        ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
-        ##    hour2pi <- 2 * pi * hour.wrt.centre
-        hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
-        hour2pi <- 2 * pi * hour.offset
-    }
-    centralindex <- floor(length(sl@data$time) / 2)
+    pi <- 4 * atan2(1, 1)
+    hour2pi <- 2 * pi * (as.numeric(as.POSIXct(sl@data$time, tz="UTC")) -
+                         as.numeric(ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC"))) / 3600
+    centralindex <- floor(nt / 2)
+    oceDebug(debug, "centralindex=", centralindex, "\n")
+    oceDebug(debug, "nc=", nc, "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
     for (i in 1:nc) {
-        omega.t <- freq[i] * hour2pi
-        x[,2*i-1] <- sin(omega.t)
-        x[,2*i  ] <- cos(omega.t)
+        oceDebug(debug, "setting coefficients for", name[i], "at", freq[i], "cph", "\n")
+        ft <- freq[i] * hour2pi
+        x[,2*i-1] <- sin(ft)
+        x[,2*i  ] <- cos(ft)
     }
     name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
@@ -477,7 +471,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         print(summary(model))
     coef  <- model$coefficients
     p.all <- summary(model)$coefficients[,4]
-    amplitude <- phase <- p <-vector("numeric", length=1+nc)
+    amplitude <- phase <- p <- vector("numeric", length=1+nc)
     ## FIXME: should do offset/trend removal explicitly
     amplitude[1] <- coef[1]
     phase[1] <- 0
