@@ -29,27 +29,32 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
     ok <- !is.na(x) & !is.na(y)
     x <- x[ok]
     y <- y[ok]
+    xlen <- length(x)
     pi <- atan2(1, 1) * 4
     dt <- dtheta * pi / 180
     dt2 <- dt / 2
     R <- sqrt(x^2 + y^2)
     angle <- atan2(y, x)
     L <- max(R, na.rm=TRUE)
-    nt <- 2 * pi / dt
+    nt <- round(2 * pi / dt)
     count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)
     theta <- seq(-pi+dt2, pi-dt2, length.out=nt)
+    ai <- 1+floor((angle+pi)/dt)
+    if (min(ai) < 1)
+        stop("problem setting up bins (ai<1)")
+    if (max(ai) > nt)
+        stop("problem setting up bins (ai>xlen)")
     for (i in 1:nt) {
-        if (theta[i] <= pi)
-            inside <- (angle < (theta[i] + dt2)) & ((theta[i] - dt2) <= angle)
-        else {
-            inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((theta[i] - dt2) <= (2*pi+angle))
-        }
-        oceDebug(debug, sum(inside), "counts for", 180/pi*(theta[i]+dt2), "< angle <", 180/pi*(theta[i]-dt2), "\n")
+        inside <- ai==i
+        oceDebug(debug, sum(inside), "counts for angle category", i,
+                 "(", round(180/pi*(theta[i]-dt2), 4), "to", round(180/pi*(theta[i]+dt2), 4), "deg)\n")
         count[i] <- sum(inside)
         mean[i] <- mean(R[inside], na.rm=TRUE)
         fives[i,] <- fivenum(R[inside])
     }
+    if (sum(count) != xlen)
+        stop("miscount in angles")
     res <- new('windrose')
     res@data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi,
                      count=count, mean=mean, fives=fives)
