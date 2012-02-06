@@ -2,7 +2,9 @@
 \alias{as.windrose}
 \title{Create a windrose object}
 \description{Create a wind-rose object, typically for plotting with plot.windrose().}
-\usage{as.windrose(x, y, dtheta = 15)}
+
+\usage{as.windrose(x, y, dtheta = 15, debug=getOption("oceDebug"))}
+
 \arguments{
   \item{x}{the x component of wind speed (or stress) \emph{or} an object of
       class \code{met} (see \link{met-class}), in which case the \code{u} and
@@ -10,6 +12,8 @@
       speed, and \code{y} here is ignored.}
   \item{y}{the y component of wind speed (or stress).}
   \item{dtheta}{the angle increment (in degrees) within which to classify the data}
+  \item{debug}{a flag that turns on debugging.  Set to 1 to get a
+    moderate amount of debugging information, or to 2 to get more.} 
 }
 \details{This is analagous to a histogram, but with breaks being angles.}
 
