@@ -18,8 +18,9 @@ setMethod(f="[[",
               else stop("cannot access \"", i, "\"") # cannot get here
           })
 
-as.windrose <- function(x, y, dtheta = 15)
+as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "\bas.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="")
     if (inherits(x, "met")) {
         tmp <- x
         x <- tmp[["u"]]
@@ -37,13 +38,14 @@ as.windrose <- function(x, y, dtheta = 15)
     nt <- 2 * pi / dt
     count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)
-    theta <- seq(-pi, pi, length.out=nt)
+    theta <- seq(-pi+dt2, pi-dt2, length.out=nt)
     for (i in 1:nt) {
         if (theta[i] <= pi)
             inside <- (angle < (theta[i] + dt2)) & ((theta[i] - dt2) <= angle)
         else {
             inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((theta[i] - dt2) <= (2*pi+angle))
         }
+        oceDebug(debug, sum(inside), "counts for", 180/pi*(theta[i]+dt2), "< angle <", 180/pi*(theta[i]-dt2), "\n")
         count[i] <- sum(inside)
         mean[i] <- mean(R[inside], na.rm=TRUE)
         fives[i,] <- fivenum(R[inside])
@@ -53,6 +55,7 @@ as.windrose <- function(x, y, dtheta = 15)
                      count=count, mean=mean, fives=fives)
     res@metadata <- list(dtheta=dtheta)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b} # as.windrose()\n", sep="")
     res
 }
 
