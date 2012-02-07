@@ -48,5 +48,5 @@ wr <- as.windrose(xcomp, ycomp)
 summary(wr)
 plot(wr)
 }
-\author{Dan Kelley}
+\author{Dan Kelley, with considerable help from the \code{github.com} member named \code{adeckmyn}.}
 \keyword{misc}

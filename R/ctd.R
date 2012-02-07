@@ -27,6 +27,7 @@ setMethod(f="[[",
 
 as.ctd <- function(salinity, temperature, pressure,
                    oxygen, nitrate, nitrite, phosphate, silicate,
+                   scan,
                    other,
                    missingValue,
                    quality,
@@ -61,13 +62,19 @@ as.ctd <- function(salinity, temperature, pressure,
         temperature <- rep(temperature[1], depths)
     if (missing(quality))
         quality <- rep(2, depths)
+    if (missing(scan))
+        scan <- 1:depths
+    else if (length(scan) < depths)
+        scan <- rep(scan[1], depths)
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
+    scan <- as.vector(scan)
     rval <- new('ctd')
     nSalinity <- length(salinity)
     data <- data.frame(salinity=salinity,
                        temperature=temperature,
                        pressure=pressure,
+                       scan=scan,
                        oxygen=   if (!missing(oxygen)    && !is.null(oxygen))    oxygen    else rep(NA, nSalinity),
                        nitrate=  if (!missing(nitrate)   && !is.null(nitrate))   nitrate   else rep(NA, nSalinity),
                        nitrite=  if (!missing(nitrite)   && !is.null(nitrite))   nitrite   else rep(NA, nSalinity),

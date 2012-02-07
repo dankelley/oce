@@ -40,7 +40,13 @@ as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
     count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)
     theta <- seq(-pi+dt2, pi-dt2, length.out=nt)
-    ai <- 1+floor((angle+pi)/dt)
+    ## The bin-detection code was faulty until 2012-02-07.  This
+    ## was pointed out by the github.com member named adeckmnyn,
+    ## who also suggested the present solution.  His issue reports,
+    ## available on github.com/dankelley/oce/issues, are a model
+    ## of patience and insight.
+    ai <- 1 + floor((angle+pi)/dt)
+    ai <- (ai-1)%%nt + 1 # clean up problems (thanks, adeckmyn at github!!)
     if (min(ai) < 1)
         stop("problem setting up bins (ai<1)")
     if (max(ai) > nt)
