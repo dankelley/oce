@@ -18,23 +18,19 @@
 \details{This is analagous to a histogram, but with breaks being angles.}
 
 \value{An object of \code{\link[base]{class}} \code{"windrose"},
-  which is a \code{\link[base]{list}} containing the following items
-  \item{data}{a \code{\link[base]{list}} containing
+    which contains the standard \code{oce} slots named \code{data}, \code{metadata} and 
+    \code{proxessingLog}.  The \code{data} slot contains
     \describe{
-      \item{\code{n}}{the number of x values}
-      \item{\code{x.mean}}{the mean of the x values}
-      \item{\code{y.mean}}{the mean of the y values}
-      \item{\code{theta}}{the central angle (in degrees) for the class}
-      \item{\code{count}}{the number of observations in this class}
-      \item{\code{mean}}{the mean of the observations in this class}
-      \item{\code{fivenum}}{the \code{\link{fivenum}} vector for
-	observations in this class (the min, the lower hinge, the
-	median, the upper hinge, and the max)}
+        \item{\code{n}}{the number of x values}
+        \item{\code{x.mean}}{the mean of the x values}
+        \item{\code{y.mean}}{the mean of the y values}
+        \item{\code{theta}}{the central angle (in degrees) for the class}
+        \item{\code{count}}{the number of observations in this class}
+        \item{\code{mean}}{the mean of the observations in this class}
+        \item{\code{fivenum}}{the \code{\link{fivenum}} vector for
+            observations in this class (the min, the lower hinge, the
+            median, the upper hinge, and the max)}
     }
-  }
-  \item{metadata}{a list containing \code{dtheta}, the size of the 
-      angle category, in degrees}
-  \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 \seealso{Use \code{\link{plot.windrose}} to produce a summary plot, and
