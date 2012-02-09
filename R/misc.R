@@ -858,7 +858,7 @@ undriftTime <- function(x, slowEnd = 0, tname="time")
         time.out <- seq.POSIXt(from=time[1], by=sampleInterval, length.out=nt.out)
         i <- seq(from=1, by=1, length.out=nt)
         i.out <- seq(from=1, to=nt, length.out = nt.out)
-        out <- data.frame(array(dim=c(nt.out, dim(x@data)[2])))
+        out <- data.frame(array(dim=c(nt.out, length(x@data))))
         names(out) <- names
         out[[tname]] <- time.out
         for (name in names) {
