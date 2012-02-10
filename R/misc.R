@@ -629,15 +629,14 @@ makeFilter <- function(type=c("blackman-harris", "rectangular", "hamming", "hann
     } else if (type == "hann") {
         coef <- 0.50 - 0.50 * cos(2 * pi * i / (m-1))
     }
-    coef <- coef / sum(coef)
+    coef <- coef / sum(coef)           # ensure unit sum
     if (!asKernel)
         return(coef)
     if (m == 2 * floor(m/2))
         stop("m must be odd")
     middle <- ceiling(m / 2)
     coef <- coef[middle:m]
-    ## Note retention of original 'm' in name
-    return(kernel(coef=coef, m=length(coef)-1, name=paste(type, "(", m, ")", sep="")))
+    return(kernel(coef=coef, name=paste(type, "(", m, ")", sep="")))
 }
 
 oceFilter <- function(x, a=1, b, zero.phase=FALSE)
