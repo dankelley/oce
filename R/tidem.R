@@ -445,14 +445,16 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         kmpr <- kmpr[-drop.term]
     }
     nc <- length(freq)
-    nt <- length(sl@data$elevation)
+    elevation <- sl[["elevation"]]
+    time <- sl[["time"]]
+    nt <- length(elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
     pi <- 4 * atan2(1, 1)
     tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
-    browser()
-    hour2pi <- 2 * pi * (as.numeric(as.POSIXct(sl[["time"]], tz="UTC")) - as.numeric(tRef)) / 3600
-    centralindex <- floor(nt / 2)
+    centralindex <- as.integer(floor(nt / 2))
+    tRef <- time[centralindex]
+    hour2pi <- 2 * pi * (as.numeric(time, tz="UTC") - as.numeric(tRef)) / 3600
     oceDebug(debug, "centralindex=", centralindex, "\n")
     oceDebug(debug, "nc=", nc, "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
@@ -466,7 +468,6 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
-    elevation <- sl@data$elevation
     model <- lm(elevation ~ x, na.action=na.exclude)
     if (debug > 0)
         print(summary(model))
@@ -477,7 +478,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     amplitude[1] <- coef[1]
     phase[1] <- 0
     p[1] <- p.all[1]
-    for (i in seq.int(2,nc+1)) { # FIXME: why nc+1???
+    for (i in seq.int(2,nc+1)) {
         is <- 2 * (i - 1)
         ic <- 2 * (i - 1) + 1
         s <- coef[is]                   # coefficient on sin(t)
@@ -485,32 +486,40 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         if (debug > 0)
             cat(name[i-1], "gives s=",s,"and c=",c,"\n")
         amplitude[i] <- sqrt(s^2 + c^2)
-        ## Phase calclution.  Generally, we have
+        ## Phase calculation.  Generally, we have
         ##    sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
         ## In this case, the coefficient on sin(t) is "s", and that
         ## on cos(t) is "c", so we may also write
         ##    sin(t - phase) == s * sin(t) + c * cos(t)
         ## Comparing formulae, using s=cos(phase), etc, yields
         ##    tan(phase) == sin(phase)/cos(phase) = -c/s
-        phase[i] <- atan2(-c, s)   # atan2(y,x)
+        ## phase[i] <- atan2(-c, s)   # atan2(y,x)
+        ## 
+        ## COS ...
+        ##    cos(t - phase) == cos(phase)*cos(t) + sin(phase)*sin(t)
+        ##                   == c*cos(t) + s*sin(t)
+        ##                   == atan2(y,x)
+        phase[i] <- atan2(s, c)
         if (TRUE) { # isolate test code
-            if (i==2) cat(tidedata$const$name)
-            cat("phase=", 180*phase[i]/pi, " deg")
-            cat(" name[i-1=", i-1, "] = ", name[i-1])
+            if (i==2) cat(tidedata$const$name, "\n")
+            cat("name[i-1=", i-1, "] = ", name[i-1])
+            cat(" phase=", 180*phase[i]/pi, " deg")
             j <- which(tidedata$const$name==name[i-1])
             cat(" gives j=", j)
-            vuf <- tidemVuf(tRef, j=j, lat=latitude) # FIXME: how to calculate j?
+            vuf <- tidemVuf(tRef, j=j, lat=latitude)
+            vuf <- tidemVuf(time[centralindex], j=j, lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
             cat(" phaseOffset=", phaseOffset, "[rad]", phaseOffset*180/pi, "[deg]\n")
-            phase[i] <- phase[i] - phaseOffset # SEEALSO line663
-
-            ## adjust the phases as in webtide()
+            ## tide12_r2.f line 406
+            phase[i] <- phase[i] + phaseOffset # FIXME: cf approx line 663
         }
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
     }
     if (debug > 0)
         cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
+    phase <- ifelse(phase < -360, 720 + phase, phase)
+    phase <- ifelse(phase < 0, 360 + phase, phase)
 
     centraltime <- as.POSIXct(sl@data$t[1] + 3600*centralindex, tz="UTC")
     if (debug > 0) {
@@ -538,6 +547,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                  amplitude=amplitude,
                  phase=phase,
                  phase2=phase2,         # FIXME: remove later
+                 phase3=-phase,
                  p=p)
     rval <- new('tidem')
     rval@metadata <- list(rc=rc)
