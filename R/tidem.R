@@ -449,8 +449,9 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
     pi <- 4 * atan2(1, 1)
-    hour2pi <- 2 * pi * (as.numeric(as.POSIXct(sl@data$time, tz="UTC")) -
-                         as.numeric(ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC"))) / 3600
+    tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+    browser()
+    hour2pi <- 2 * pi * (as.numeric(as.POSIXct(sl[["time"]], tz="UTC")) - as.numeric(tRef)) / 3600
     centralindex <- floor(nt / 2)
     oceDebug(debug, "centralindex=", centralindex, "\n")
     oceDebug(debug, "nc=", nc, "\n")
@@ -476,7 +477,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     amplitude[1] <- coef[1]
     phase[1] <- 0
     p[1] <- p.all[1]
-    for (i in seq(2,nc+1)) {
+    for (i in seq.int(2,nc+1)) { # FIXME: why nc+1???
         is <- 2 * (i - 1)
         ic <- 2 * (i - 1) + 1
         s <- coef[is]                   # coefficient on sin(t)
@@ -484,12 +485,25 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         if (debug > 0)
             cat(name[i-1], "gives s=",s,"and c=",c,"\n")
         amplitude[i] <- sqrt(s^2 + c^2)
-                                        # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
-                                        #                == s * sin(t) + c * cos(t)
-                                        # thus tan(phase) is -c/s
-        phase[i] <- -atan2(-c, s)   # atan2(y,x)
-                                        # FIXME: is the sign right?
+        ## Phase calclution.  Generally, we have
+        ##    sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
+        ## In this case, the coefficient on sin(t) is "s", and that
+        ## on cos(t) is "c", so we may also write
+        ##    sin(t - phase) == s * sin(t) + c * cos(t)
+        ## Comparing formulae, using s=cos(phase), etc, yields
+        ##    tan(phase) == sin(phase)/cos(phase) = -c/s
+        phase[i] <- atan2(-c, s)   # atan2(y,x)
         if (TRUE) { # isolate test code
+            if (i==2) cat(tidedata$const$name)
+            cat("phase=", 180*phase[i]/pi, " deg")
+            cat(" name[i-1=", i-1, "] = ", name[i-1])
+            j <- which(tidedata$const$name==name[i-1])
+            cat(" gives j=", j)
+            vuf <- tidemVuf(tRef, j=j, lat=latitude) # FIXME: how to calculate j?
+            phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
+            cat(" phaseOffset=", phaseOffset, "[rad]", phaseOffset*180/pi, "[deg]\n")
+            phase[i] <- phase[i] - phaseOffset # SEEALSO line663
+
             ## adjust the phases as in webtide()
         }
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
