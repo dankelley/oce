@@ -129,29 +129,6 @@
     open question.} 
 }
 
-\section{Test with \code{data(sealevelTuktoyaktuk)}}{
-
-\strong{Note: this is only a preliminary test, since
-\code{tidem} does not yet do nodal corrections, and also since
-the test dos not add the P1 and K2 constituents, as in the Foreman and
-\code{T_TIDE} cases.  FIXME: delete this note when the code is finished.}
-
-The Foreman package produces M2 amplitude 0.4904m and phase 77.70
-(Appendix 7.3), when P1 and K2 are added to the standard constituents.
-Under what one may assume are the same conditions, the demonstration
-within \code{T_TIDE} gives 0.4904m \eqn{\pm}{+/-} 0.037m and phase
-77.70 \eqn{\pm}{+/-} 3.94.
-
-Under the same conditions, the test given below results in 
-amplitude 0.50072m and phase 143.1.
-\preformatted{
-  data(sealevelTuktoyaktuk)
-  tide <- tidem(sealevelTuktoyaktuk)
-  summary(tide)
-}
-
-} % section
-
 \seealso{\code{\link{summary.tidem}} summarizes a "\code{tide}" object,
   \code{\link{plot.tidem}} plots one, and \code{\link{predict.tidem}}
   makes predictions from one.  As for the input, sealevel objects may be
