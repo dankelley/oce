@@ -347,6 +347,11 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
 
     cl <- match.call()
     startTime <- t[1]
+    endTime <- tail(t, 1)
+    centralTime <- numberAsPOSIXct((as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
+    years <- as.numeric(difftime(endTime,startTime, units="secs")) / 86400 / 365.25
+    if (years > 18.6)
+        warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
     data("tidedata")
     td <- get("tidedata", pos=globalenv())
@@ -451,11 +456,10 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
     pi <- 4 * atan2(1, 1)
-    tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
-    centralindex <- as.integer(floor(nt / 2))
-    tRef <- time[centralindex]
+    ## tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+    tRef <- centralTime
     hour2pi <- 2 * pi * (as.numeric(time, tz="UTC") - as.numeric(tRef)) / 3600
-    oceDebug(debug, "centralindex=", centralindex, "\n")
+    oceDebug(debug, "tRef=", tRef, "\n")
     oceDebug(debug, "nc=", nc, "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
@@ -503,7 +507,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         if (TRUE) { # isolate test code
             j <- which(tidedata$const$name==name[i-1])
             ## FIXME: central time should be mean of start and end
-            vuf <- tidemVuf(time[centralindex], j=j, lat=latitude)
+            vuf <- tidemVuf(tRef, j=j, lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
             ## cf. tide12_r2.f line 406
             phase[i] <- phase[i] + phaseOffset # FIXME: cf approx line 663
@@ -516,8 +520,8 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     phase <- ifelse(phase < -360, 720 + phase, phase)
     phase <- ifelse(phase < 0, 360 + phase, phase)
 
-    if (debug > 0)
-        cat("vu=",vu,"\n")
+    ## FIXME: do 'inference corrections' [t_tide.m:468-488] [tide12_r2.f:420-480?]
+
     data <- list(model=model,
                  call=cl,
                  startTime=as.POSIXct(startTime),
@@ -652,11 +656,13 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
         }
         df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
-        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+        ## NOTE: tref is the *central time* for tidem()
+        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         for (i in 1:nconstituents) {
             vuf <- oce:::tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
+            ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
             u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
             v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)
