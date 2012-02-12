@@ -88,6 +88,7 @@ tidemVuf <- function(t, j, lat=NULL)
     debug <- 0
     data("tidedata")
     tidedata <- get("tidedata", pos=globalenv())
+
     a <- tidemAstron(t)
 
     if (debug > 0) print(a)
@@ -323,13 +324,15 @@ tidemAstron <- function(t)
 
 tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\btidem(x, ...) {\n", sep="")
+    oceDebug(debug, "\btidem(x, t, constituents,",
+             "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="")
     if (missing(x))
         stop("must supply 'x'")
     if (inherits(x, "sealevel")) {
         sl <- x
-        oceDebug(debug, "'x' recognized as a sealevel object\n")
-        t <- x@data$time
+        t <- x[["time"]]
+        if (is.null(latitude))
+            latitude <- x[["latitude"]]
     } else {
         if (missing(t))
             stop("must supply 't', since 'x' is not a sealevel object")
@@ -354,8 +357,8 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
     data("tidedata")
-    td <- get("tidedata", pos=globalenv())
-    tc <- td$const
+    tidedata <- get("tidedata", pos=globalenv())
+    tc <- tidedata$const
     ntc <- length(tc$name)
 
     if (debug > 0)
@@ -506,17 +509,13 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         if (debug > 0)
             cat(name[i-1], "F=", vuf$f, "angle adj=", (vuf$u+vuf$v)*360, "; amp=", amplitude[i], " phase=", phase[i], "\n")
     }
-    if (debug > 0)
-        cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
     phase <- ifelse(phase < -360, 720 + phase, phase)
     phase <- ifelse(phase < 0, 360 + phase, phase)
 
-    ## FIXME: do 'astronomical phase argument and nodal modulation
-    ## phase and amplitude corrections' (in Foreman's phrasing)
-    ## ~/src/t_tide_v1.3beta/t_tide.m:468 to 488
-    ## ~/src/foreman/tide12_r2.f:405 uses FX and VUX from his VUF() subroutine
-    ## ~/src/foreman/tide12_r2.f:509 defines VUF()
+    ## FIXME: if 'inference calculation' is to be done, it should match
+    ##     ~/src/t_tide_v1.3beta/t_tide.m:468
+    ##     ~/src/foreman/tide12_r2.f:422
 
     data <- list(model=model,
                  call=cl,
