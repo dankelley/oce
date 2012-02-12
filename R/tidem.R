@@ -540,8 +540,8 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
 
 summary.tidem <- function(object, p, constituent, ...)
 {
-    n <- length(object@data$p)
-    if (!missing(p)) ok <- (object@data$p <= p) else ok = seq(1, n)
+    n <- length(object[["p"]])
+    ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
     if (missing(constituent)) {
         fit <- data.frame(Const=object@data$const[ok],
                           Name=object@data$name[ok],
@@ -562,14 +562,15 @@ summary.tidem <- function(object, p, constituent, ...)
     }
     cat("tidem summary\n-------------\n")
     cat("\nCall:\n")
-    cat(paste(deparse(object@data$call), sep="\n", collapse="\n"), "\n", sep="")
+    cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
+    startTime <- object[["startTime"]]
     cat("\nStart time: ",
-        paste(as.character(object@data$startTime),as.character(attr(object@data$startTime,"tz"))), "\n")
-    cat("RMS misfit to data: ", sqrt(var(object@data$model$residuals)), '\n')
+        paste(as.character(startTime), as.character(attr(startTime, "tz"))), "\n")
+    cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
     cat("\nFitted model:\n")
     f <- fit[3:6]
     rownames(f) <- as.character(fit[,2])
-    digits <- 5
+    digits <- 3
     printCoefmat(f, digits=digits,
                  signif.stars=getOption("show.signif.stars"),
                  signif.legend=TRUE,
