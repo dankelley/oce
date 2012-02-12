@@ -500,9 +500,10 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         ## and thus phase is defined by
         ##    tan(phase) == s/c
         phase[i] <- atan2(s, c)
-        ## Adjust the phase, as in ~/src/foreman/tide12_r2.f:406
+        ## Adjust amplitude phase, as in ~/src/foreman/tide12_r2.f:405
         j <- which(tidedata$const$name==name[i-1])
         vuf <- tidemVuf(tRef, j=j, lat=latitude)
+        amplitude[i] <- amplitude[i] / vuf$f
         phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
         phase[i] <- phase[i] + phaseOffset 
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
