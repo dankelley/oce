@@ -109,9 +109,6 @@
       future version of this function. Perhaps a significance level should be presented, as in the
       software developed by both Foreman and Pawlowicz.}
     
-    \item{4.}{The phase is wrong, at least judging by the Foreman
-      test data set. (For M2, this gives -98.838841 but Foreman gives 77.70.)}
-    
   } % enumerate
   
 } % note
