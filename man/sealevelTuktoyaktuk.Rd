@@ -4,18 +4,20 @@
 
 \alias{sealevelTuktoyaktuk}
 
-\title{Sea-level data set acquited in 1975 at Tuktoyaktuk}
+\title{Sea-level data set acquired in 1975 at Tuktoyaktuk}
 
 \description{This sea-level dataset is provided with in Appendix 7.2 of
   Foreman (1977) and also with the \code{T_TIDE} package (Pawlowicz et al.,
   2002). It results from measurements made in 1975 at Tuktoyaktuk,
   Northwest Territories, Canada.
 
-  The data set is a test contains 1584 points, some of which have NA for
-  sea-level height.  The first point in the set is at time 1975-07-06
-  0800 GMT.  However, the first 15 points of the series have NA for the
-  sealevel value, so that the first non-missing point is at 2300 GMT, or
-  1600 MST as in Foreman's Appendix 7.2.
+  The data set contains 1584 points, some of which have NA for sea-level
+  height.  
+  
+  Although Foreman's Appendix 7.2 states that times are in Mountain standard
+  time, the timezone is set to \code{UTC} in the present case, so that the
+  results will be similar to those he provides in his Appendix 7.3.  
+  
 } % description
 
 \examples{
@@ -31,13 +33,12 @@ lines(sealevelTuktoyaktuk@data$time, detided, col="red")
 
 \usage{data(sealevelTuktoyaktuk)}
 
-\source{The data were extracted from the \code{T_TIDE} dataset (which
-  Pawlowicz et al. (2002) seems to have based on Appendix 7.2 of Foreman
-  (1977), to build a test case), edited a bit to get the dates in a
-  format that \R could scan, and put into a data file.  This file was
-  then used to create \code{sealevel} object follows.
+\source{The data were based on the \code{T_TIDE} dataset,  which in turn seems
+    to be based on Appendix 7.2 of Foreman (1977).  Minor editing was on file
+    format, and then the \code{sealevelTuktoyaktuk} object was created as
+    follows.
 \preformatted{
-# Note: the data file is not supplied with the package.
+# Note: the data file is not supplied with Oce.
 tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
 time <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT"), tz="GMT")
 elevation <- tuk$V2
@@ -61,9 +62,7 @@ sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
 }
 
 \seealso{The documentation for \code{\link{sealevel-class}} explains the
-    structure of sealevel objects, and also outlines the other functions
+    structure of sea-level objects, and also outlines the other functions
     dealing with them.}
-
-\author{Dan Kelley, after data provided in Foreman's (1977) Appendix 7.2.}
 
 \keyword{datasets}

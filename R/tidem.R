@@ -490,29 +490,21 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         if (debug > 0)
             cat(name[i-1], "gives s=",s,"and c=",c,"\n")
         amplitude[i] <- sqrt(s^2 + c^2)
-        ## Phase calculation.  Generally, we have
-        ##    sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
-        ## In this case, the coefficient on sin(t) is "s", and that
-        ## on cos(t) is "c", so we may also write
-        ##    sin(t - phase) == s * sin(t) + c * cos(t)
-        ## Comparing formulae, using s=cos(phase), etc, yields
-        ##    tan(phase) == sin(phase)/cos(phase) = -c/s
-        ## phase[i] <- atan2(-c, s)   # atan2(y,x)
-        ## 
-        ## COS ...
+        ## Calculate phase from the coefficients on sin() and cos().  Generally,
         ##    cos(t - phase) == cos(phase)*cos(t) + sin(phase)*sin(t)
-        ##                   == c*cos(t) + s*sin(t)
-        ##                   == atan2(y,x)
+        ## By the definition of the regression model, we have
+        ##    cos(t - phase) == c * cos(t) + s * sin(t)
+        ## and thus phase is defined by
+        ##    tan(phase) == s/c
         phase[i] <- atan2(s, c)
-        if (TRUE) { # isolate test code
-            j <- which(tidedata$const$name==name[i-1])
-            ## FIXME: central time should be mean of start and end
-            vuf <- tidemVuf(tRef, j=j, lat=latitude)
-            phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
-            ## cf. tide12_r2.f line 406
-            phase[i] <- phase[i] + phaseOffset # FIXME: cf approx line 663
-        }
+        ## Adjust the phase, as in ~/src/foreman/tide12_r2.f:406
+        j <- which(tidedata$const$name==name[i-1])
+        vuf <- tidemVuf(tRef, j=j, lat=latitude)
+        phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
+        phase[i] <- phase[i] + phaseOffset 
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
+        if (debug > 0)
+            cat(name[i-1], "F=", vuf$f, "angle adj=", (vuf$u+vuf$v)*360, "; amp=", amplitude[i], " phase=", phase[i], "\n")
     }
     if (debug > 0)
         cat("coef:", coef, "\n")
@@ -520,7 +512,11 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     phase <- ifelse(phase < -360, 720 + phase, phase)
     phase <- ifelse(phase < 0, 360 + phase, phase)
 
-    ## FIXME: do 'inference corrections' [t_tide.m:468-488] [tide12_r2.f:420-480?]
+    ## FIXME: do 'astronomical phase argument and nodal modulation
+    ## phase and amplitude corrections' (in Foreman's phrasing)
+    ## ~/src/t_tide_v1.3beta/t_tide.m:468 to 488
+    ## ~/src/foreman/tide12_r2.f:405 uses FX and VUX from his VUF() subroutine
+    ## ~/src/foreman/tide12_r2.f:509 defines VUF()
 
     data <- list(model=model,
                  call=cl,
