@@ -501,16 +501,11 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         ##                   == atan2(y,x)
         phase[i] <- atan2(s, c)
         if (TRUE) { # isolate test code
-            if (i==2) cat(tidedata$const$name, "\n")
-            cat("name[i-1=", i-1, "] = ", name[i-1])
-            cat(" phase=", 180*phase[i]/pi, " deg")
             j <- which(tidedata$const$name==name[i-1])
-            cat(" gives j=", j)
-            vuf <- tidemVuf(tRef, j=j, lat=latitude)
+            ## FIXME: central time should be mean of start and end
             vuf <- tidemVuf(time[centralindex], j=j, lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
-            cat(" phaseOffset=", phaseOffset, "[rad]", phaseOffset*180/pi, "[deg]\n")
-            ## tide12_r2.f line 406
+            ## cf. tide12_r2.f line 406
             phase[i] <- phase[i] + phaseOffset # FIXME: cf approx line 663
         }
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
@@ -521,21 +516,6 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     phase <- ifelse(phase < -360, 720 + phase, phase)
     phase <- ifelse(phase < 0, 360 + phase, phase)
 
-    centraltime <- as.POSIXct(sl@data$t[1] + 3600*centralindex, tz="UTC")
-    if (debug > 0) {
-        cat("centraltime=")
-        print(centraltime)
-        cat("\n")
-        cat("L199 index:",index,"(length=",length(index),")\n")
-    }
-
-    if (is.null(latitude)) latitude <- sl@metadata$latitude
-    vuf <- tidemVuf(centraltime, c(0, index), latitude)
-    vu <- c(0, (vuf$v + vuf$u) * 360)
-    phase2 <- phase - vu                # FIXME: plus or minus??
-    negate <- phase2 < 0
-    phase2[negate] <- 360 + phase2[negate]
-                                        #    phase <- phase2
     if (debug > 0)
         cat("vu=",vu,"\n")
     data <- list(model=model,
@@ -546,8 +526,6 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                  freq=c(0,    freq),
                  amplitude=amplitude,
                  phase=phase,
-                 phase2=phase2,         # FIXME: remove later
-                 phase3=-phase,
                  p=p)
     rval <- new('tidem')
     rval@metadata <- list(rc=rc)

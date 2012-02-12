@@ -35,13 +35,11 @@ lines(sealevelTuktoyaktuk@data$time, detided, col="red")
   Pawlowicz et al. (2002) seems to have based on Appendix 7.2 of Foreman
   (1977), to build a test case), edited a bit to get the dates in a
   format that \R could scan, and put into a data file.  This file was
-  then used to create \code{sealevel} object follows.)
-
+  then used to create \code{sealevel} object follows.
 \preformatted{
-# Note: the data file is not supplied with the package,
-# and the 7h offset is to convert from Mountain Standard Time.
+# Note: the data file is not supplied with the package.
 tuk <- read.table("tuk/tuk_time_elev.dat", header=FALSE, as.is=TRUE)
-time <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT") + 7*3600, tz="GMT")
+time <- as.POSIXlt(strptime(tuk$V1, "\%d-\%b-\%Y \%H:\%M:\%S", tz="GMT"), tz="GMT")
 elevation <- tuk$V2
 sealevelTuktoyaktuk <- as.sealevel(elevation=elevation, time=time,
   stationName="Tuktoyaktuk", region="NWT", stationNumber=6485,
