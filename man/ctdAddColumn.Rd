@@ -13,10 +13,10 @@
     numeric vector, whose length matches that of columns in the
     objecct.}
   \item{name}{Character string indicating the name this column is to
-    have in the \code{data} dataframe.  For example, using
+    have in the \code{data} slot of \code{x}.  For example, using
     \code{name="hello"} in the creation of \code{d} would mean
     that the data could be accessed as \code{d@data$hello} or
-    \code{d@data[["hello"]]}.}
+    \code{d[["hello"]]}.}
   \item{label}{Optional character string or expression indicating the
     name of the column, as it will appear in plot labels.  (If not
     given, \code{name} will be used.)}
