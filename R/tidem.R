@@ -520,7 +520,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
 
     data <- list(model=model,
                  call=cl,
-                 startTime=as.POSIXct(startTime),
+                 tRef=tRef,
                  const=c(1,   index),
                  name=c("Z0", name),
                  freq=c(0,    freq),
@@ -559,9 +559,6 @@ summary.tidem <- function(object, p, constituent, ...)
     cat("tidem summary\n-------------\n")
     cat("\nCall:\n")
     cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
-    startTime <- object[["startTime"]]
-    cat("\nStart time: ",
-        paste(as.character(startTime), as.character(attr(startTime, "tz"))), "\n")
     cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
     cat("\nFitted model:\n")
     f <- fit[3:6]
@@ -582,12 +579,12 @@ predict.tidem <- function(object, newdata, ...)
             freq <- object@data$freq[-1]     # drop first (intercept)
             name <- object@data$name[-1]     # drop "z0" (intercept)
             nc <- length(freq)
-            hour <- unclass(as.POSIXct(newdata, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00 (FIXME: is tz OK??)
-            nt <- length(hour)
+            tt <- as.numeric(as.POSIXct(newdata, tz="UTC"))
+            nt <- length(tt)
             x <- array(dim=c(nt, 2 * nc))
             x[,1] <- rep(1, nt)
-            hour.offset <- unclass(hour - unclass(as.POSIXct(object@data$startTime, tz="UTC"))/3600)
-            hour2pi <- 2 * pi * hour.offset
+            hour2pi <- 2 * pi * (as.numeric(tt) - as.numeric(object[["tRef"]])) / 3600
+            browser()
             for (i in 1:nc) {
                 omega.t <- freq[i] * hour2pi
                 x[,2*i-1] <- sin(omega.t)
