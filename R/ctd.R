@@ -1609,6 +1609,7 @@ plotTS <- function (x,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
+                    add=FALSE,
                     debug=getOption("oceDebug"),
                     ...)
 {
@@ -1639,12 +1640,14 @@ plotTS <- function (x,
                                                      referencePressure=referencePressure)
     if (missing(Slim)) Slim <- range(x@data$salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(y, na.rm=TRUE)
-    omar <- par("mar")
-    omgp <- par("mgp")
-    opar <- par(no.readonly = TRUE)
-    on.exit(par(mar=omar, mgp=omgp))
-    if (4 == length(mgp)) par(mgp=mgp)
-    if (4 == length(mar)) par(mgp=mgp)
+    if (!add) {
+        omar <- par("mar")
+        omgp <- par("mgp")
+        opar <- par(no.readonly = TRUE)
+        on.exit(par(mar=omar, mgp=omgp))
+        if (4 == length(mgp)) par(mgp=mgp)
+        if (4 == length(mar)) par(mgp=mgp)
+    }
     axis.name.loc <- mgp[1]
     if (missing(xlab))
         xlab <- resizableLabel("S","x")
@@ -1658,11 +1661,15 @@ plotTS <- function (x,
                       xlim=Slim, ylim=Tlim,
                       ...)
     } else {
-        plot(x@data$salinity, y,
-             xlab = xlab, ylab=ylab,
-             xaxs = if (min(x@data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
-             cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
-             xlim=Slim, ylim=Tlim, ...)
+        if (add) {
+            points(x@data$salinity, y, cex=cex, pch=pch, col=col)
+        } else {
+            plot(x@data$salinity, y,
+                 xlab = xlab, ylab=ylab,
+                 xaxs = if (min(x@data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
+                 cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
+                 xlim=Slim, ylim=Tlim, ...)
+        }
         if (connectPoints) {
             lwd <- list(...)["lwd"]
             if (!is.null(lwd))
@@ -1672,7 +1679,8 @@ plotTS <- function (x,
         }
     }
     ## grid, isopycnals, then freezing-point line
-    if (grid) grid(col=col.grid, lty=lty.grid)
+    if (grid)
+        grid(col=col.grid, lty=lty.grid)
     drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000,
                    cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
