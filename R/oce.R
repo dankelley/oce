@@ -329,7 +329,7 @@ oce.as.POSIXlt <- function (x, tz = "")
     if (inherits(x, "POSIXlt"))
         return(x)
     if (inherits(x, "Date"))
-        return(.Internal(Date2POSIXlt(x)))
+        return(as.POSIXlt(x))
     tzone <- attr(x, "tzone")
     if (inherits(x, "date") || inherits(x, "dates"))
         x <- as.POSIXct(x)
@@ -343,7 +343,7 @@ oce.as.POSIXlt <- function (x, tz = "")
         stop(gettextf("do not know how to convert '%s' to class \"POSIXlt\"", deparse(substitute(x))))
     if (missing(tz) && !is.null(tzone))
         tz <- tzone[1]
-    .Internal(as.POSIXlt(x, tz))
+    as.POSIXlt(x, tz)
 }
 
 oceEdit <- function(x, item, value, action, reason="", person="",
