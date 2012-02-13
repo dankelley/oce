@@ -23,21 +23,22 @@ library(oce)
 #
 # 1. tidal anomaly
 data(sealevelTuktoyaktuk)
+time <- sealevelTuktoyaktuk[["time"]]
+elevation <- sealevelTuktoyaktuk[["elevation"]]
+oce.plot.ts(time, elevation, type='l', ylab="Height [m]", ylim=c(-2,6))
 tide <- tidem(sealevelTuktoyaktuk)
-oce.plot.ts(sealevelTuktoyaktuk@data$time, sealevelTuktoyaktuk@data$elevation,
-  type='l', ylim=c(-2,5))
-lines(sealevelTuktoyaktuk@data$time, sealevelTuktoyaktuk@data$elevation - predict(tide),
-  col="red")
+lines(time, elevation - predict(tide), col="red")
 abline(h=0, col="red")
 #
 # 2. prediction at specified times
 data(sealevelHalifax)
 m <- tidem(sealevelHalifax)
 look <- 1:24                          # examine first day
-oce.plot.ts(sealevelHalifax@data$time[look], sealevelHalifax@data$elevation[look])
+time <- sealevelHalifax[["time"]]
+elevation <- sealevelHalifax[["elevation"]]
+oce.plot.ts(time[look], elevation[look])
 # Notice that t is at a 10-minute interval
-t <- seq(from=sealevelHalifax@data$time[1], 
-  to=sealevelHalifax@data$time[max(look)], by=360)
+t <- seq(from=time[1], to=time[max(look)], by=360)
 lines(t, predict(m,newdata=t), col='red')
 legend("topright", col=c("black","red"),legend=c("data","model"),lwd=1)
 }

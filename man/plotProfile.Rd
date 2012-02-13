@@ -46,7 +46,7 @@
 	single axis frame.}
       \item{\code{N2}}{Profile of square of buoyancy frequency \eqn{N^2}{N^2},
           calculated with \code{\link{swN2}} with an optional argument setting
-          of \code{df=length(x@data$pressure)/4} to do some smoothing.}
+          of \code{df=length(x[["pressure"]])/4} to do some smoothing.}
       \item{\code{density+N2}}{Profile of sigma-theta and the square of buoyancy
 	frequency within a single axis frame.}
       \item{\code{density+dpdt}}{Profile of sigma-theta and dP/dt for
@@ -56,8 +56,8 @@
 	grid-point wiggles that result because the SBE software only
 	writes 3 decimal places in pressure).  Note that dP/dt may be
 	off by a scale factor; this should not be a problem if there is
-	a \code{x@data$time} column, or a \code{x@metadata$sample.rate}
-	value in the header.}
+	a \code{time} column in the \code{data} slot, or a \code{sample.rate}
+        in the \code{metadata} slot. }
       \item{\code{spice}}{Profile of spice}
     }
   }

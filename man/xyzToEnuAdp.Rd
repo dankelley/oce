@@ -19,7 +19,7 @@
 
 \details{The first step is to
     convert the (x,y,z) velocity components (stored in the three columns of
-    \code{x@data$v[,,1:3]}) into what RDI [1, pages 11 and 12] calls
+    \code{x[["v"]][,,1:3]}) into what RDI [1, pages 11 and 12] calls
     "ship" (or "righted") components.  For example, the z coordinate, which may
     point upwards or downwards depending on instrument orientation, is mapped
     onto a "mast" coordinate that points more nearly upwards than
@@ -27,7 +27,7 @@
     "starboard" and "forward", the meanings of which will be clear to 
     mariners.  Once the (x,y,z) velocities are converted to ship
     velocities, the orientation of the instrument is extracted from
-    heading, pitch, and roll vectors stored in \code{x@data}.  These angles
+    heading, pitch, and roll vectors stored in the object.  These angles
     are defined differently for RDI and Sontek profilers.
 
     The code handles every case individually, based on the table given below.
