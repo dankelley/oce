@@ -20,16 +20,15 @@
   \item{frequency}{not permitted yet.}
   \item{deltat}{not permitted yet}
   \item{extend}{not permitted yet}
-  \item{which}{string containing the name of the quantity on which
-    sampling is done.  Possibilities are \code{"time"}, which applies
-    the windowing on \code{x@data$time}, and \code{"distance"}, which
-    applies the windowing on \code{x@data$distance} (for those
-    objects, such as \code{adp}, that have a \code{x@data$distance}
-    component).}
-  \item{indexReturn}{boolean flag indicating whether to return a list
-    of the "kept" indices for \code{x@data$time} (and, if it exists,
-    \code{x@data$timeSlow}).  Either of these lists will be
-    \code{NULL}, if the object lacks the relevant items.}
+  \item{which}{string containing the name of the quantity on which sampling is
+      done.  Possibilities are \code{"time"}, which applies the windowing on
+      the \code{time} entry of the \code{data} slot, and \code{"distance"}, for
+      the \code{distance} entry (for those objects, such as \code{adp}, that
+      have this entry).}
+  \item{indexReturn}{boolean flag indicating whether to return a list of the
+      "kept" indices for the \code{time} entry of the \code{data} slot, as well
+      as the \code{timeSlow} entry, if there is one..  Either of these lists
+      will be \code{NULL}, if the object lacks the relevant items.}
   \item{debug}{a flag that turns on debugging.}
   \item{\dots}{ignored}
 }
@@ -45,7 +44,8 @@
 \value{Normally, this is new \code{oce} object.  However, if
     \code{indexReturn=TRUE}, the return value is two-element list containing
     items named \code{index} and \code{indexSlow}, which are the indices for
-    \code{oce@data$tme} (and \code{oce@data$timeSlow}, if it exists).}
+    the \code{time} entry of the \code{data} slot (and the \code{timeSlow}, if
+    it exists).}
 
 \seealso{\code{\link{subset.oce}} provides more flexible selection of
     subsets.}

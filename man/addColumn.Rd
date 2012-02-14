@@ -6,8 +6,8 @@
 
 \arguments{
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}.}
-  \item{data}{the data (length must match length of columns in existing
-    \code{x@data} data frame).}
+  \item{data}{the data.  The length of this item must match that of the
+      existing data entries in the \code{data} slot).}
   \item{name}{the name of the column.}
 }
 
