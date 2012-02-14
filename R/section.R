@@ -182,7 +182,7 @@ makeSection <- function(item, ...)
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
-                              which=c("salinity", "temperature", "sigmaTheta", "map"),
+                              which=c("salinity", "temperature", "sigmaTheta", "map", "data"),
                               at=NULL,
                               labels=TRUE,
                               grid = FALSE,
@@ -215,9 +215,9 @@ setMethod(f="plot",
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
                       for (i in 1:numStations) {
-                          thisStn <- x@data$statoin[[stationIndices[i]]]
-                          lat[i] <- x@data$station[[stationIndices[i]]]@metadata$latitude
-                          lon[i] <- x@data$station[[stationIndices[i]]]@metadata$longitude
+                          thisStation <- x[["station", stationIndices[i]]]
+                          lat[i] <- thisStation[["latitude"]]
+                          lon[i] <- thisStation[["longitude"]]
                       }
                       lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
@@ -288,8 +288,8 @@ setMethod(f="plot",
                           dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
                           text(xlab, ylab, x@metadata$stationId[numStations])
                       }
-                  } else {                        # not a map
-                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient") {
+                 } else {                        # not a map
+                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient" && variable != "data") {
                           stop("this section does not contain a variable named '", variable, "'")
                       }
                       ## FIXME: contours don't get to plot edges
@@ -300,6 +300,7 @@ setMethod(f="plot",
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
                       ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
+
                       if (is.null(at)) {
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
@@ -335,7 +336,7 @@ setMethod(f="plot",
                               dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
                                           / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
                               zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
-                          } else {
+                          } else if (variable != "data") {
                               zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
                           }
                           if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
@@ -388,37 +389,46 @@ setMethod(f="plot",
                       ## cannot contour with duplicates in x or y; the former is the only problem
 
                       xx.unique <- 0 != diff(xx)
-                      if (!is.null(contourLevels) && !is.null(contourLabels)) {
-                          oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
-                          if (!("labcex" %in% dots$labcex)) {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE, labcex=0.8,
-                                      levels=contourLevels,
-                                      labels=contourLabels,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
-                          } else {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
+                      if (variable == "data") {
+                          for (i in 1:numStations) {
+                              thisStation <- x[["station", i]]
+                              p <- thisStation[["pressure"]]
+                              points(rep(thisStation[["longitude"]], length(p)), -p)
+                              ##cat("stn", i, "lon", thisStation[["longitude"]], "head(p)", head(p), "\n")
                           }
                       } else {
-                          oceDebug(debug, "automatically-calculated contourLevels\n")
-                          if (is.null(dots$labcex)) {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE, labcex=0.8,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
+                          if (!is.null(contourLevels) && !is.null(contourLabels)) {
+                              oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
+                              if (!("labcex" %in% dots$labcex)) {
+                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                          axes=FALSE, labcex=0.8,
+                                          levels=contourLevels,
+                                          labels=contourLabels,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              } else {
+                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                          axes=FALSE,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              }
                           } else {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
+                              oceDebug(debug, "automatically-calculated contourLevels\n")
+                              if (is.null(dots$labcex)) {
+                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                          axes=FALSE, labcex=0.8,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              } else {
+                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                          axes=FALSE,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              }
                           }
                       }
                       if (length(bottom.x) == length(bottom.y))
@@ -453,11 +463,13 @@ setMethod(f="plot",
               num.depths <- length(firstStation@data$pressure)
 
               ## Check that pressures coincide
-              p1 <- firstStation@data$pressure
-              for (ix in 2:numStations) {
-                  thisStation <- x@data$station[[stationIndices[ix]]]
-                  if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
-                      stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
+              if (length(which) > 1 || which != "data") {
+                  p1 <- firstStation@data$pressure
+                  for (ix in 2:numStations) {
+                      thisStation <- x@data$station[[stationIndices[ix]]]
+                      if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
+                          stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
+                  }
               }
               zz <- matrix(nrow=numStations, ncol=num.depths)
               xx <- array(NA, numStations)
@@ -489,7 +501,6 @@ setMethod(f="plot",
               } else {
                   xx <- at
               }
-              dan.xx<<-xx
 
               if (which.ytype == 1) yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
               else if (which.ytype == 2) yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
@@ -512,6 +523,7 @@ setMethod(f="plot",
                       else if (ww == "oxygen") which2[w] <- 6
                       else if (ww == "phosphate") which2[w] <- 7
                       else if (ww == "silicate") which2[w] <- 8
+                      else if (ww == "data") which2[w] <- 20
                       else if (ww == "map") which2[w] <- 99
                       else stop("unknown 'which':", ww)
                   }
@@ -571,6 +583,8 @@ setMethod(f="plot",
                       if (which[w] == 8)
                           plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   }
+                  if (which[w] == 20)
+                      plotSubsection("data", "", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   if (which[w] == 99)
                       plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
                   if (w <= adorn.length) {

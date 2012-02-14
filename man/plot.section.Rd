@@ -9,7 +9,7 @@
 \description{Plot a CTD section.}
 
 \usage{\S4method{plot}{section}(x,
-     which=c("salinity", "temperature", "sigmaTheta", "map"),
+     which=c("salinity", "temperature", "sigmaTheta", "map", "data"),
      at=NULL,
      labels=TRUE,
      grid=FALSE,
@@ -105,6 +105,7 @@
         \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
         \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
         \item \code{which=8} or \code{"silicate"} for silicate concentration contours
+        \item \code{which=20} or \code{"data"} for a dot for each data location
         \item \code{which=99} or \code{"map"} for a location map
     }
     The y-axis for the contours is pressure, plotted in the conventional
