@@ -207,6 +207,7 @@ setMethod(f="plot",
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
+                                         legend=TRUE,
                                          debug=0,
                                          ...)
               {
@@ -437,7 +438,8 @@ setMethod(f="plot",
                       ##axis(1, pretty(xxOrig))
                       axis(1)
                       ##lines(xx, -waterDepth[ox], col='red')
-                      legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                      if (legend)
+                          legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
                   oceDebug(debug, "\b} # plotSubsection()\n")
               }                                   # plotSubsection
@@ -584,7 +586,7 @@ setMethod(f="plot",
                           plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   }
                   if (which[w] == 20)
-                      plotSubsection("data", "", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                      plotSubsection("data", "", xlim=xlim, ylim=ylim, debug=debug-1, legend=FALSE, ...)
                   if (which[w] == 99)
                       plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
                   if (w <= adorn.length) {
