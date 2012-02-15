@@ -269,6 +269,7 @@ ctdTrim <- function(x, method=c("downcast", "index", "range"),
     n <- length(x@data$pressure)
     if (n < 2) {
         warning("too few data to ctdTrim()")
+        return(res)
     } else {
         which.method <- pmatch(method, c("index", "downcast"), nomatch=0)
         method <- match.arg(method)
@@ -529,6 +530,10 @@ setMethod(f="plot",
               }
               ## Ignore any bottom region consisting of NA for temperature and salinity, e.g.
               ## as created by makeSection().
+              if (0 == length(x@data$salinity)) {
+                  warning("no data to plot in this object")
+                  return(invisible())
+              }
               last.good <- which(rev(is.na(x@data$salinity))==FALSE)[1]
               if (length(last.good) > 0) {
                   last.good <- length(x@data$temperature) - last.good + 1
@@ -708,7 +713,19 @@ setMethod(f="plot",
                               }
                           }
                       }
-                      oceDebug(debug, "will draw a map with span=", span, "\n")
+                      ## FIXME: perhaps use water depth to get default chart span (not used yet, though)
+                      if ("waterDepth" %in% names(x@metadata))
+                          waterDepth <- x[["waterDepth"]]
+                      else 
+                          waterDepth <- max(x[["pressure"]], na.rm=TRUE)
+                      spanDefault <- 5 # degree lat/lon for a default
+                      if (waterDepth < 50)
+                          spanDefault <- 0.2
+                      else if (waterDepth < 200)
+                          spanDefault <- 1
+                      else if (waterDepth < 2000)
+                          spanDefault <- 10
+                      ## FIXME: decide wheter to use the above-calculated span default
                       if (missing(lonlim)) {
                           lonlim.c <- x@metadata$longitude + c(-1, 1) * min(abs(range(coastline[["longitude"]], na.rm=TRUE) - x@metadata$longitude))
                           clon <- mean(lonlim.c)
@@ -1337,23 +1354,7 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         stop("no column named 'pressure', 'depth' or 'depSM'")
 
     ## If no water depth found, guess it from the maximum depth
-
-    ## Read the data as a table.
-    ## FIXME: should we match to standardized names?
-    ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag");
-    col.names.inferred <- tolower(col.names.inferred)
-    oceDebug(debug, "About to read these names:", col.names.inferred,"\n");
-    data <- read.table(file, col.names=col.names.inferred, colClasses="numeric");
-    names <- names(data)
-    labels <- names
-
-    if (!found.scan) {
-        newnames <- c("scan", names(data))
-        data <- cbind(seq(1,dim(data)[1]), data)
-        names(data) <- newnames
-        warning("data file lacked a 'scan' column, so one was created");
-    }
-    ##
+   ##
     ##    if (is.na(water.depth)) {
     ##        water.depth <- max(data$pressure, na.rm=TRUE)
     ##        print(data$pressure)
@@ -1381,33 +1382,55 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
                      names=names,
                      labels=labels,
                      filename=filename)
+
+    ## Read the data as a table.
+    ## FIXME: should we match to standardized names?
+    ##col.names.forced <- c("scan","pressure","temperature","conductivity","descent","salinity","sigmaThetaUnused","depth","flag");
+    col.names.inferred <- tolower(col.names.inferred)
+    oceDebug(debug, "About to read these names:", col.names.inferred,"\n");
+    data <- read.table(file, col.names=col.names.inferred, colClasses="numeric");
+    if (0 < dim(data)[1]) {
+        haveData <- TRUE
+        names <- names(data)
+        labels <- names
+        if (!found.scan) {
+            newnames <- c("scan", names(data))
+            data <- cbind(seq(1,dim(data)[1]), data)
+            names(data) <- newnames
+        }
+    } else {
+        haveData <- FALSE
+        warning("no data in CTD file \"", filename, "\"\n")
+        data <- list(scan=NULL, salinity=NULL, temperature=NULL, pressure=NULL)
+    }
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
     res <- new("ctd")
     res@metadata <- metadata
     res@data <- data
-###class(res) <- c("ctd", "oce")
     ## Add standard things, if missing
-    if (!found.salinity) {
-        if (found.conductivity.ratio) {
-            warning("cannot find 'salinity' in this file; calculating from T, C, and p");
-            S <- swSCTp(data$conductivityratio, data$temperature, data$pressure)
-        } else if (found.conductivity) {
-            warning("cannot find 'salinity' in this file; calculating from T, C-ratio, and p");
-            S <- swSCTp(data$conductivity/conductivity.standard, data$temperature, data$pressure)
-        } else {
-            stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
+    if (haveData) {
+        if (!found.salinity) {
+            if (found.conductivity.ratio) {
+                warning("cannot find 'salinity' in this file; calculating from T, C, and p");
+                S <- swSCTp(data$conductivityratio, data$temperature, data$pressure)
+            } else if (found.conductivity) {
+                warning("cannot find 'salinity' in this file; calculating from T, C-ratio, and p");
+                S <- swSCTp(data$conductivity/conductivity.standard, data$temperature, data$pressure)
+            } else {
+                stop("cannot find salinity in this file, nor conductivity or conductivity ratio")
+            }
+            res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit="PSU", debug=debug-1)
         }
-        res <- ctdAddColumn(res, S, name="salinity", label="Salinity", unit="PSU", debug=debug-1)
-    }
-    if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
-        g <- if (found.header.latitude) gravity(latitude) else 9.8
-        rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), rep(0, length(res@data$salinity)))
-        res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure", unit="dbar", debug=debug-1)
-    }
-    res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
+        if (found.depth && !found.pressure) { # BUG: this is a poor, nonrobust approximation of pressure
+            g <- if (found.header.latitude) gravity(latitude) else 9.8
+            rho0 <- 1000 + swSigmaTheta(median(res@data$salinity), median(res@data$temperature), rep(0, length(res@data$salinity)))
+            res <- ctdAddColumn(res, res@data$depth * g * rho0 / 1e4, name="pressure", label="Pressure", unit="dbar", debug=debug-1)
+        }
+        res <- ctdAddColumn(res, swSigmaTheta(res@data$salinity, res@data$temperature, res@data$pressure),
                         name="sigmaTheta", label="Sigma Theta", unit="kg/m^3", debug=debug-1)
+    }
     oceDebug(debug, "} # read.ctd.sbe()\n")
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -1953,7 +1976,6 @@ plotProfile <- function (x,
                  xlim=Tlim, ylim=ylim,
                  type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             if (debug) cat("IN plot.ctd() mar=", par('mar'), "\n")
-            #browser()
             mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)

@@ -45,9 +45,9 @@ setMethod(f="plot",
                                debug=getOption("oceDebug"),
                                ...)
           {
-              oceDebug(debug, "\bplot.coastline(...,",
-                       "clatitude=", if(missing(clatitude)) "(missing)" else paste("c(", paste(clatitude, collapse=","), ")"),
-                       "clongitude=", if(missing(clongitude)) "(missing)" else paste("c(", paste(clongitude, collapse=","), ")"),
+              oceDebug(debug, "\bplot.coastline(...",
+                       ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
+                       ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", span=", if(missing(span)) "(missing)" else span,
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
@@ -116,6 +116,8 @@ setMethod(f="plot",
                   oceDebug(debug, "par('pin')=", par('pin'), "\n")
                   oceDebug(debug, "asp=", asp, "\n")
                   oceDebug(debug, "asp.page=", asp.page, "\n")
+                  if (!is.finite(asp))
+                      asp <- 1 / cos(clatitude * atan2(1, 1) / 45)
                   if (asp < asp.page) {
                       oceDebug(debug, "type 1 (will narrow x range)\n")
                       d <- asp.page / asp * diff(xr)

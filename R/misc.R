@@ -303,6 +303,7 @@ oceSpectrum <- function(x, ...)
 
 vectorShow <- function(v, msg, digits=5)
 {
+    cat("HI DAN\n")
     n <- length(v)
     if (missing(msg))
         msg <- deparse(substitute(v))
