@@ -1745,12 +1745,12 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex
             if (Sok[length(Sok)] > SAxisMax) { # to right of box
                 i <- match(TRUE, Sok > SAxisMax)
                 if (rotateRhoLabels)
-                    mtext(rhoLabel, side=4, at=Tline[i], line=0.25, cex=cex, col=col)
+                    mtext(rhoLabel, side=4, at=Tline[i], line=0.1, cex=cex, col=col)
                 else
                     text(usr[2], Tline[i], rhoLabel, pos=4, cex=cex/cex.par, col=col, xpd=TRUE)
             } else { # above box ... if the line got there
                 if (max(Tok) > (TAxisMax - 0.05 * (TAxisMax - TAxisMin)))
-                    mtext(rhoLabel, side=3, at=Sline[Tn], line=0.25, cex=cex, col=col)
+                    mtext(rhoLabel, side=3, at=Sline[Tn], line=0.1, cex=cex, col=col)
             }
         }
     }
