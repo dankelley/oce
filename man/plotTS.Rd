@@ -9,18 +9,17 @@
 \usage{plotTS(x,
      inSitu=FALSE,
      referencePressure=0,
-     rhoLevels = 6,
-     grid = TRUE,
-     col.grid = "lightgray",
-     lty.grid = "dotted",
-     rho1000 = FALSE,
-     col = par("col"),
-     col.rho = "darkgray",
-     cex.rho = 0.9*par("cex"),
-     cex = par("cex"), pch = 1,
-     rotateRhoLabels = FALSE,
-     connectPoints = FALSE,
-     useSmoothScatter = FALSE,
+     rhoLevels=6,
+     grid=TRUE,
+     col.grid="lightgray",
+     lty.grid="dotted",
+     rho1000=FALSE,
+     cex=par("cex"), col=par("col"), pch=par("pch"),
+     col.rho="darkgray",
+     cex.rho=0.9*par("cex"),
+     rotateRhoLabels=FALSE,
+     connectPoints=FALSE,
+     useSmoothScatter=FALSE,
      xlab,
      ylab,
      Slim,
@@ -48,11 +47,11 @@
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}
   \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
+  \item{cex}{character-expansion factor for symbols, as in \code{\link{par}("cex")}.}
+  \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
   \item{col}{colour for symbols.}
   \item{col.rho}{colour for isopycnal lines.}
   \item{cex.rho}{size of isopycnal labels.}
-  \item{cex}{size to be used for plot symbols (see \code{\link{par}})}
-  \item{pch}{code for plotting symbol (see \code{\link{par}}).}
   \item{rotateRhoLabels}{if TRUE, labels in right-hand margin are written vertically}
   \item{connectPoints}{if TRUE, the points are connected with line segments, in sequence}
   \item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}

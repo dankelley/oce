@@ -27,6 +27,7 @@
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
+     cex=par("cex"), pch=par("pch"),
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -88,6 +89,10 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{cex}{value to be used with \code{\link{par}("cex")}, for any use of
+      \code{\link{points}}, e.g. for \code{which="data"}.}
+  \item{pch}{value to be used with \code{\link{par}("pch")} (see \code{cex},
+      above.)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.}
   \item{\dots}{optional arguments passed to the contouring function,

@@ -198,6 +198,7 @@ setMethod(f="plot",
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
+                              cex=par("cex"), pch=par("pch"),
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -393,9 +394,14 @@ setMethod(f="plot",
                       if (variable == "data") {
                           for (i in 1:numStations) {
                               thisStation <- x[["station", i]]
-                              p <- thisStation[["pressure"]]
-                              points(rep(thisStation[["longitude"]], length(p)), -p)
-                              ##cat("stn", i, "lon", thisStation[["longitude"]], "head(p)", head(p), "\n")
+                              pressure <- thisStation[["pressure"]]
+                              if (which.xtype == 4) {
+                                  longitude <- thisStation[["longitude"]]
+                                  points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch)
+                              } else {
+                                  ## FIXME: this seems OK for distance, but not sure on other types
+                                  points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch)
+                              }
                           }
                       } else {
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
