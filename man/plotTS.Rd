@@ -16,7 +16,7 @@
      rho1000=FALSE,
      cex=par("cex"), col=par("col"), pch=par("pch"),
      col.rho="darkgray",
-     cex.rho=0.9*par("cex"),
+     cex.rho=3/4*par("cex"),
      rotateRhoLabels=FALSE,
      connectPoints=FALSE,
      useSmoothScatter=FALSE,
