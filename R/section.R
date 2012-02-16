@@ -210,6 +210,7 @@ setMethod(f="plot",
                                          ylim=NULL,
                                          legend=TRUE,
                                          debug=0,
+                                         col=col,
                                          ...)
               {
                   oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
@@ -398,10 +399,10 @@ setMethod(f="plot",
                               pressure <- thisStation[["pressure"]]
                               if (which.xtype == 4) {
                                   longitude <- thisStation[["longitude"]]
-                                  points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch)
+                                  points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                               } else {
-                                  ## FIXME: this seems OK for distance, but not sure on other types
-                                  points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch)
+                                  ## FIXME: shouldn't the next line work for all types??
+                                  points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch, col=col)
                               }
                           }
                       } else {
