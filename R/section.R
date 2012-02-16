@@ -594,7 +594,7 @@ setMethod(f="plot",
                           plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   }
                   if (which[w] == 20)
-                      plotSubsection("data", "", xlim=xlim, ylim=ylim, debug=debug-1, legend=FALSE, ...)
+                      plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
                   if (which[w] == 99)
                       plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
                   if (w <= adorn.length) {
