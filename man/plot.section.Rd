@@ -9,7 +9,7 @@
 \description{Plot a CTD section.}
 
 \usage{\S4method{plot}{section}(x,
-     which=c("salinity", "temperature", "sigmaTheta", "map", "data"),
+     which=c("salinity", "temperature", "sigmaTheta", "map"),
      at=NULL,
      labels=TRUE,
      grid=FALSE,

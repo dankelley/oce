@@ -182,7 +182,7 @@ makeSection <- function(item, ...)
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
-                              which=c("salinity", "temperature", "sigmaTheta", "map", "data"),
+                              which=c("salinity", "temperature", "sigmaTheta", "map"),
                               at=NULL,
                               labels=TRUE,
                               grid = FALSE,
@@ -386,10 +386,11 @@ setMethod(f="plot",
                           xx <- xx[ox]
                           zz <- zz[ox,] ## FIXME keep this???
                           ##warning("plot.section() reordered the stations to make x monotonic")
+                          bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
+                          bottom.y <- c(graph.bottom, -waterDepth[ox], graph.bottom)
                       }
 
                       ## cannot contour with duplicates in x or y; the former is the only problem
-
                       xx.unique <- 0 != diff(xx)
                       if (variable == "data") {
                           for (i in 1:numStations) {
