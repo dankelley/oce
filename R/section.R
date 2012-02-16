@@ -198,7 +198,7 @@ setMethod(f="plot",
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
-                              cex=par("cex"), pch=par("pch"),
+                              col=par("col"), cex=par("cex"), pch=par("pch"),
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -210,7 +210,7 @@ setMethod(f="plot",
                                          ylim=NULL,
                                          legend=TRUE,
                                          debug=0,
-                                         col=col,
+                                         col=par("col"),
                                          ...)
               {
                   oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")

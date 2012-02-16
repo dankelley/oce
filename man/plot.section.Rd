@@ -27,7 +27,7 @@
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
-     cex=par("cex"), pch=par("pch"),
+     col=par("col"), cex=par("cex"), pch=par("pch"),
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -89,6 +89,7 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{col}{colour, as in \code{\link{par}("col")}.}
   \item{cex}{value to be used with \code{\link{par}("cex")}, for any use of
       \code{\link{points}}, e.g. for \code{which="data"}.}
   \item{pch}{value to be used with \code{\link{par}("pch")} (see \code{cex},
