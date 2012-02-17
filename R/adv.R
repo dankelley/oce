@@ -48,7 +48,9 @@ setMethod(f="[[",
                   return(x@data$rollSlow)
               } else if (i == "temperature") {
                   return(x@data$temperature)
-              } else stop("cannot access \"", i, "\"") # cannot get here
+              } else {
+                  return(as(x, "oce")[[i, j, drop]])
+              }
           })
 
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),

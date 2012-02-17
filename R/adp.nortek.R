@@ -16,7 +16,7 @@
 ## 5. beamAngle should be in data file
 ## 6. generally, docs should indicate everything that is in the files, e.g. (prominently!)
 ##    the beamAngles in the 'head' configuration section.
-## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
+## 7. the C code suggests the velocityScaleFactor is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
 decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
@@ -143,8 +143,8 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 
             user$mode <- byteToBinary(buf[o+59:60], endian="little")
             oceDebug(debug, "user$mode: ", user$mode, "\n")
-            user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
-            oceDebug(debug, "user$velocityScale: ", user$velocityScale, "\n")
+            user$velocityScaleFactor <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
+            oceDebug(debug, "user$velocityScaleFactor: ", user$velocityScaleFactor, "\n")
             tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
             if (tmp.cs == 0) user$coordinateSystem <- "enu" # page 31 of System Integrator Guide
             else if (tmp.cs == 1) user$coordinateSystem <- "xyz"
@@ -457,7 +457,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      transformationMatrix=header$head$transformationMatrix,
                      deploymentName=header$user$deploymentName,
                      cellSize=header$user$cellSize,
-                     velocityScale=header$user$velocityScale,
+                     velocityScaleFactor=header$user$velocityScaleFactor,
                      coordinateSystem=header$user$coordinateSystem,
                      oceCoordinate=header$user$coordinateSystem,
                      oceBeamUnattenuated=FALSE

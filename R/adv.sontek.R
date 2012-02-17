@@ -69,15 +69,15 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     oceDebug(debug, "dp:", paste(unique(diff(p)), collapse=","), "\n")
     serialNumber <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
-    velocityScale <- 0.1e-3
+    velocityScaleFactor <- 0.1e-3
     time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time))) # FIXME: should rename this to avoid confusion
     res <- new("adv", time=time, filename=filename)
     ## FIXME: emulate this direct injection in other functions, in hopes of reducing memory footprint
     res@data$v <- array(numeric(), dim=c(len, 3))
-    res@data$v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
-    res@data$v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
-    res@data$v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    res@data$v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScaleFactor
+    res@data$v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScaleFactor
+    res@data$v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScaleFactor
     res@data$a <- array(raw(), dim=c(len, 3))
     res@data$a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
@@ -117,6 +117,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      subsampleStart=time[1], # FIXME: this seems wrong
                      subsampleEnd=time[length(time)], # FIXME: this seems wrong
                      subsampleDeltat=deltat,
+                     velocityScaleFactor=velocityScaleFactor,
                      coordinateSystem="xyz", # guess
                      oceCoordinate="xyz",    # guess
                      orientation="upward") # guess
