@@ -69,7 +69,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     oceDebug(debug, "dp:", paste(unique(diff(p)), collapse=","), "\n")
     serialNumber <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
-    velocityScale <- 0.1e-3
+    velocityScale <- 1e-4
     time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time))) # FIXME: should rename this to avoid confusion
     res <- new("adv", time=time, filename=filename)
@@ -204,7 +204,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                      numberOfSamples=NA, # fill in later
                      numberOfBeams=NA, # fill in later
                      measurementDeltat=1,
-                     velocityScale=1)
+                     velocityScale=1e-4)
     if (header) {
         ##
         ## Slice out three headers
@@ -341,8 +341,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
         metadata$velocityRangeIndex <- as.numeric(deploymentParameters[20])
         oceDebug(debug, "velocityRangeIndex=", metadata$velocityRangeIndex, "\n")
-        if (metadata$velocityRangeIndex == 4)
+        if (metadata$velocityRangeIndex == 4) {
             metadata$velocityScale <- 2 * metadata$velocityScale # range 4 differs from ranges 1:3
+        }
 
         coordinateSystemCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
         metadata$coordinateSystem <- c("beam", "xyz", "enu")[1+coordinateSystemCode]
@@ -489,9 +490,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
     oceDebug(debug, "dataLength=", dataLength, "\n")
     oceDebug(debug, "burstHeaderLength=",burstHeaderLength,"\n")
-
     oceDebug(debug, "burstBufindexFocus:", paste(burstBufindexFocus, collapse=" "), "\n")
-    velocityScale <- 1e-4
+
+    velocityScale <- metadata$velocityScale
 
     for (b in 1:nburstsFocus) {
         n <- samplesPerBurstFocus[b]
