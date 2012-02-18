@@ -395,11 +395,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     v <- array(double(), dim=c(profilesToRead, numberOfCells,  numberOfBeams))
     a <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # echo amplitude
     q <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # correlation
+    velocityScale <- 1e-3              # FIXME: why not use the value in user$velocityScale?
     for (i in 1:profilesToRead) {
         o <- profileStart[i] + 54 ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
         ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        v[i,,] <- matrix(0.001 * readBin(buf[o + seq(0, 2*items-1)], "integer", n=items, size=2, endian="little", signed=TRUE),
-                         ncol=numberOfBeams, byrow=FALSE)
+        v[i,,] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)],
+                                                 "integer", n=items, size=2, endian="little", signed=TRUE),
+                                         ncol=numberOfBeams, byrow=FALSE)
         o <- o + items * 2
         a[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=items, byrow=TRUE)
         o <- o + items
@@ -410,6 +412,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         }
     }
     if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
+
     data <- list(v=v, a=a, q=q,
                  distance=seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells),
                  time=time,
@@ -440,7 +443,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      internalCodeVersion=header$hardware$picVersion,
                      hardwareRevision=header$hardware$hwRevision,
                      recSize=header$hardware$recSize,
-                     velocityRange=header$hardware$velocityRange,
+                     velocityRange=header$hardware$velocityRange, # FIXME: should check against velocityMaximum
                      firmwareVersion=header$hardware$fwVersion,
                      config=header$hardware$config,
                      configPressureSensor=header$head$configPressureSensor,
@@ -457,7 +460,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      transformationMatrix=header$head$transformationMatrix,
                      deploymentName=header$user$deploymentName,
                      cellSize=header$user$cellSize,
-                     velocityScale=header$user$velocityScale,
+                     velocityResolution=velocityScale,
+                     velocityMaximum=velocityScale * 2^15,
                      coordinateSystem=header$user$coordinateSystem,
                      oceCoordinate=header$user$coordinateSystem,
                      oceBeamUnattenuated=FALSE

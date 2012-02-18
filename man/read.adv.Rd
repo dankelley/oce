@@ -144,16 +144,11 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
   }
 
-  For both Sontek and Nortek instruments, the beam-wise velocity data are stored in a binary format
-  as 2-byte signed integers.  Such an integer must lie in the range -32768 to 32767 (roughly plus
-  and minus 2 raised to the power 15).  To get to velocities (in beam coordinates), a scale factor
-  is used.  This factor may be specified as the instrument is set up, and may be 0.1mm/s or 1mm/s
-  for Nortek instruments, and either 0.1mm/s or 0.2mm/s for Sontek instruments.  The functions
-  described here store the scale factor in the \code{metadata} slot as a variable named
-  \code{velocityScale}, and store the velocity resolution (the scale divided by 2 to the power 15)
-  in \code{velocityResolution}.  These values are accessable in the normal indexing way, e.g. for an
-  adv object named \code{d}, they are \code{d[["velocityScale"]]} and 
-  and \code{d[["velocityResolution"]]}.
+  In ADV data files, velocities are coded to signed 2-byte integers, with a
+  scale factor being used to convert to velocity in metres per second.  These
+  two facts control the maximum recordable velocity and the velocity
+  resolution, values that may be retrieved for an ADV object name \code{d} with
+  \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
   
 }
 

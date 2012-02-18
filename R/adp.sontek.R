@@ -261,10 +261,12 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         ##                                    /*           resolve lag             */
         ##} PCrecordType;
     }
+    velocityScale <- 1e-3
     if (profilesToRead > 0) {
         for (i in 1:profilesToRead) {
-            v_ <- matrix(readBin(buf[profileStart[i] + headerLength + seq(0, 2*nd-1)], "integer", n=nd, size=2, signed=TRUE, endian="little"),
-                         ncol=numberOfBeams, byrow=FALSE)/1000
+            v_ <- velocityScale * matrix(readBin(buf[profileStart[i] + headerLength + seq(0, 2*nd-1)],
+                                                 "integer", n=nd, size=2, signed=TRUE, endian="little"),
+                                         ncol=numberOfBeams, byrow=FALSE)
             a_ <- matrix(buf[profileStart[i] + headerLength + 2*nd + seq(0, nd-1)], ncol=numberOfBeams, byrow=FALSE)
             q_ <- matrix(buf[profileStart[i] + headerLength + 3*nd + seq(0, nd-1)], ncol=numberOfBeams, byrow=FALSE)
             for (b in 1:numberOfBeams) { # FIXME: probably could be speeded up
@@ -316,6 +318,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      numberOfSamples=dim(v)[1],
                      numberOfCells=dim(v)[2],
                      numberOfBeams=dim(v)[3],
+                     velocityResolution=velocityScale,
+                     velocityMaximum=velocityScale * 2^15,
                      measurementStart=measurementStart,
                      measurementEnd=measurementEnd,
                      measurementDeltat=measurementDeltat,

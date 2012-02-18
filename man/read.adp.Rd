@@ -118,8 +118,14 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{\code{q}}{A 3-D matrix of a measure of the quality of the data,
       corresponding to \code{v}.}
   }
-  In addition to the \code{data} entry, the \code{metadata} entry
-  holds general information about such things as beam geometry, etc.}
+
+  In ADP data files, velocities are coded to signed 2-byte integers, with a
+  scale factor being used to convert to velocity in metres per second.  These
+  two facts control the maximum recordable velocity and the velocity
+  resolution, values that may be retrieved for an ADP object name \code{d} with
+  \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
+
+}
 
 \section{Implementation notes}{
   \itemize{
