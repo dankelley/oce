@@ -125,6 +125,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@data$heading <- rep(0, len)
     res@data$pitch <- rep(0, len)
     res@data$roll <- rep(0, len)
+    metadata$velocityResolution <- metadata$velocityScale / 2^15
     res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -571,6 +572,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     roll <- roll[iii]
     metadata$numberOfSamples=dim(v)[1]
     metadata$numberOfBeams=dim(v)[2]
+    metadata$velocityResolution <- metadata$velocityScale / 2^15
     data <- list(v=v,
                  a=a,
                  c=c,
@@ -734,6 +736,7 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
     res <- new("adv")
     res@data <- data
+    metadata$velocityResolution <- metadata$velocityScale / 2^15
     res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")

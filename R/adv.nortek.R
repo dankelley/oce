@@ -426,6 +426,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     metadata$numberOfSamples <- dim(v)[1]
     metadata$numberOfBeams <- dim(v)[2]
+    metadata$velocityResolution <- metadata$velocityScale / 2^15
+
     ## FIXME: guess-based kludge to infer whether continuous or burst-mode sample 
     data <- list(v=v,                  # nortek vector
                  a=a,
