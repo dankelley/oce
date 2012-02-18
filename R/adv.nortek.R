@@ -80,7 +80,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      transformationMatrix=header$head$transformationMatrix,
                      deploymentName=header$user$deploymentName,
                      cellSize=header$user$cellSize,
-                     velocityScaleFactor=header$user$velocityScaleFactor,
+                     velocityScale=header$user$velocityScale,
                      coordinateSystem=header$user$coordinateSystem,
                      oceCoordinate=header$user$coordinateSystem,
                      oceBeamUnattenuated=FALSE,
@@ -154,8 +154,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ## factors, namely 1mm/s and 0.1mm/s.  Starting on 2010-09-13, the
     ## present function started using this possibility of two scale
     ## factors, as determined in the next code line, following p36.
-    metadata$velocityScaleFactor <- if ("0" == substr(byteToBinary(buf[vsdStart[1] + 23], endian="big"), 7, 7)) 1e-3 else 0.1e-3
-    oceDebug(debug, "velocity scale:", metadata$velocityScaleFactor, "m/s (from VSD header byte 24, 0x",
+    metadata$velocityScale <- if ("0" == substr(byteToBinary(buf[vsdStart[1] + 23], endian="big"), 7, 7)) 1e-3 else 0.1e-3
+    oceDebug(debug, "velocityScale=", metadata$velocityScale, "m/s (from VSD header byte 24, 0x",
               as.raw(buf[vsdStart[1] + 23]), "(bit 7 of",
               byteToBinary(buf[vsdStart[1] + 23], endian="big"), ")\n")
 
@@ -355,9 +355,9 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     pressure <- (65536 * p.MSB + p.LSW) / 1000
     oceDebug(debug, vectorShow(pressure, "pressure"))
     v <- array(dim=c(vvdLen, 3))
-    v[,1] <- metadata$velocityScaleFactor*readBin(buf[vvdStart2 + 10], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
-    v[,2] <- metadata$velocityScaleFactor*readBin(buf[vvdStart2 + 12], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
-    v[,3] <- metadata$velocityScaleFactor*readBin(buf[vvdStart2 + 14], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,1] <- metadata$velocityScale*readBin(buf[vvdStart2 + 10], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,2] <- metadata$velocityScale*readBin(buf[vvdStart2 + 12], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
+    v[,3] <- metadata$velocityScale*readBin(buf[vvdStart2 + 14], "integer", size=2, n=vvdLen, signed=TRUE, endian="little")
     if (debug > 0.9) {
         oceDebug(debug, "v[", dim(v), "] begins...\n")
         print(matrix(as.numeric(v[1:min(3,vvdLen),]), ncol=3))

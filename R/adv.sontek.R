@@ -69,15 +69,15 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     oceDebug(debug, "dp:", paste(unique(diff(p)), collapse=","), "\n")
     serialNumber <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
-    velocityScaleFactor <- 0.1e-3
+    velocityScale <- 0.1e-3
     time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time))) # FIXME: should rename this to avoid confusion
     res <- new("adv", time=time, filename=filename)
     ## FIXME: emulate this direct injection in other functions, in hopes of reducing memory footprint
     res@data$v <- array(numeric(), dim=c(len, 3))
-    res@data$v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScaleFactor
-    res@data$v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScaleFactor
-    res@data$v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScaleFactor
+    res@data$v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    res@data$v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    res@data$v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
     res@data$a <- array(raw(), dim=c(len, 3))
     res@data$a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
@@ -117,7 +117,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      subsampleStart=time[1], # FIXME: this seems wrong
                      subsampleEnd=time[length(time)], # FIXME: this seems wrong
                      subsampleDeltat=deltat,
-                     velocityScaleFactor=velocityScaleFactor,
+                     velocityScale=velocityScale,
                      coordinateSystem="xyz", # guess
                      oceCoordinate="xyz",    # guess
                      orientation="upward") # guess
@@ -202,7 +202,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                      numberOfSamples=NA, # fill in later
                      numberOfBeams=NA, # fill in later
                      measurementDeltat=1,
-                     velocityScaleFactor=1)
+                     velocityScale=1)
     if (header) {
         ##
         ## Slice out three headers
@@ -340,7 +340,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         metadata$velocityRangeIndex <- as.numeric(deploymentParameters[20])
         oceDebug(debug, "velocityRangeIndex=", metadata$velocityRangeIndex, "\n")
         if (metadata$velocityRangeIndex == 4)
-            metadata$velocityScaleFactor <- 2 # range indices 1 through 3 have factor 1
+            metadata$velocityScale <- 2 * metadata$velocityScale # range 4 differs from ranges 1:3
 
         coordinateSystemCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
         metadata$coordinateSystem <- c("beam", "xyz", "enu")[1+coordinateSystemCode]
@@ -560,7 +560,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     if (any(iii < 0))
         stop("got negative numbers in iii, which indicates a coding problem; range(iii)=",paste(range(iii), collapse=" to "))
     oceDebug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
-    v <- v[iii,] * metadata$velocityScaleFactor
+    v <- v[iii,] * metadata$velocityScale
     a <- a[iii,]
     c <- c[iii,]
     time <- time[iii]

@@ -411,6 +411,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             oceDebug(debug, "length(profileStart) = ", length(profileStart), "\n")
             if (profilesToRead < 1)
                 stop("no profilesToRead")
+            velocityScaleFactor <- 1e-3
             for (i in 1:profilesToRead) {     # recall: these start at 0x80 0x00
                 o <- profileStart[i] + header$dataOffset[3] - header$dataOffset[2] # 65 for workhorse; 50 for surveyor
                 ##oceDebug(debug, "chunk", i, "at byte", o, "; next 2 bytes are", as.raw(buf[o]), " and ", as.raw(buf[o+1]), " (expecting 0x00 and 0x01 for velocity)\n")
@@ -419,7 +420,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     vv <- readBin(buf[o + 1 + seq(1, 2*items)], "integer", n=items, size=2, endian="little", signed=TRUE)
                     ##cat(vectorShow(vv, "vv:"))
                     vv[vv==(-32768)] <- NA       # blank out bad data
-                    v[i,,] <- matrix(vv / 1000, ncol=numberOfBeams, byrow=TRUE)
+                    v[i,,] <- matrix(velocityScaleFactor * vv, ncol=numberOfBeams, byrow=TRUE)
                     ##cat(vectorShow(v[i,,], "v:"))
                     o <- o + items * 2 + 2 # skip over the velo data, plus a checksum; FIXME: use the checksum
                     if (buf[o] != 0x00)
@@ -532,6 +533,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$filename <- filename
             metadata$latitude <- latitude
             metadata$longitude <- longitude
+            metadata$velocityScaleFactor <- velocityScaleFactor
             metadata$numberOfSamples <- dim(v)[1]
             metadata$numberOfCells <- dim(v)[2]
             metadata$numberOfBeams <- dim(v)[3]

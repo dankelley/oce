@@ -508,10 +508,12 @@ setMethod(f="plot",
 
               tt <- x@data$time
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
-              if (!gave.zlim && all(which %in% 5:8)) { # single scale for all
-                  zlim <- range(abs(as.numeric(x@data[,,which[1]])), na.rm=TRUE) # FIXME name of item missing, was ma
-                  for (w in 2:length(which)) {
-                      zlim <- range(abs(c(zlim, x@data[[which[w]]])), na.rm=TRUE) # FIXME: check name
+              if (!gave.zlim && all(which %in% 5:8)) { # single scale for all 'a' (amplitude) data
+                  zlim <- range(abs(as.numeric(x[["a"]][,,which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
+                  if (length(which) > 1) {
+                      for (w in 2:length(which)) {
+                          zlim <- range(abs(c(zlim, x[["a"]][,,which[w]-4])), na.rm=TRUE) # FIXME: check name
+                      }
                   }
               }
               ##oceDebug(debug, "useLayout=", useLayout, "\n")
