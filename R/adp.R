@@ -447,6 +447,7 @@ setMethod(f="plot",
               which2 <- vector("numeric", length(which))
               for (w in 1:nw) {
                   ww <- which[w]
+                  oceDebug(debug, "which[", w, "] =", ww, "\n", sep="")
                   if (is.numeric(ww) || 1 == length(grep("^[0-9]*$", ww))) {
                       which2[w] <- as.numeric(ww)
                   } else {
@@ -507,7 +508,7 @@ setMethod(f="plot",
 
               tt <- x@data$time
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
-              if (gave.zlim && all(which %in% 5:8)) { # single scale for all
+              if (!gave.zlim && all(which %in% 5:8)) { # single scale for all
                   zlim <- range(abs(as.numeric(x@data[,,which[1]])), na.rm=TRUE) # FIXME name of item missing, was ma
                   for (w in 2:length(which)) {
                       zlim <- range(abs(c(zlim, x@data[[which[w]]])), na.rm=TRUE) # FIXME: check name
