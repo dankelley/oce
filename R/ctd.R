@@ -1667,7 +1667,7 @@ plotTS <- function (x,
         omgp <- par("mgp")
         opar <- par(no.readonly = TRUE)
         on.exit(par(mar=omar, mgp=omgp))
-        if (4 == length(mgp)) par(mgp=mgp)
+        if (3 == length(mgp)) par(mgp=mgp)
         if (4 == length(mar)) par(mgp=mgp)
     }
     axis.name.loc <- mgp[1]
@@ -1817,7 +1817,7 @@ plotProfile <- function (x,
                        pressure = rev(range(x@data$pressure, na.rm=TRUE)),
                        z = range(swZ(x), na.rm=TRUE),
                        sigmaTheta = rev(range(x@data$sigmaTheta, na.rm=TRUE)))
-    axis.name.loc <- par("mgp")[1]
+    axis.name.loc <- mgp[1]
     know.time.unit <- FALSE
     if ("time" %in% names(x@data)) {
         know.time.unit <- TRUE
@@ -1835,6 +1835,8 @@ plotProfile <- function (x,
         y <- swZ(x@data$pressure)
     else if (ytype == "sigmaTheta")
         y <- x@data$sigmaTheta # FIXME: are we sure this exists?
+
+    par(mar=mar, mgp=mgp)
 
     if (xtype == "index") {
         index <- 1:length(x@data$pressure)
