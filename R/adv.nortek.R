@@ -370,13 +370,13 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "a[", dim(a), "] begins...\n")
         print(matrix(as.numeric(a[1:min(3,vvdLen),]), ncol=3))
     }
-    c <- array(raw(), dim=c(vvdLen, 3))
-    c[,1] <- buf[vvdStart + 19]
-    c[,2] <- buf[vvdStart + 20]
-    c[,3] <- buf[vvdStart + 21]
+    q <- array(raw(), dim=c(vvdLen, 3))
+    q[,1] <- buf[vvdStart + 19]
+    q[,2] <- buf[vvdStart + 20]
+    q[,3] <- buf[vvdStart + 21]
     if (debug > 0.9) {
-        cat("c[", dim(c), "] begins...\n")
-        print(matrix(as.numeric(c[1:min(3,vvdLen),]), ncol=3))
+        cat("q[", dim(q), "] begins...\n")
+        print(matrix(as.numeric(q[1:min(3,vvdLen),]), ncol=3))
     }
     sec <- as.numeric(vsdTime) - as.numeric(vsdTime[1])
     vds <- var(diff(sec))
@@ -405,7 +405,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     pressure <- pressure[look]          # only output at burst headers, not with velo (FIXME: huh??)
     v <- v[look,]
     a <- a[look,]
-    c <- c[look,]
+    q <- q[look,]
     if (0 < sum(vvdhRecords)) {
         metadata$samplingMode <- "burst"
 
@@ -429,9 +429,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     metadata$velocityResolution <- metadata$velocityScale / 2^15
 
     ## FIXME: guess-based kludge to infer whether continuous or burst-mode sample 
-    data <- list(v=v,                  # nortek vector
-                 a=a,
-                 c=c,
+    data <- list(v=v, a=a, q=q,
                  time=time,
                  pressure=pressure,
 

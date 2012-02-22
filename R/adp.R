@@ -12,17 +12,48 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="adp",
+          definition=function(x, i, j, drop) {
+              if (i == "a") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$a
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$a
+                  }
+                  rval
+              } else if (i == "q") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$q
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$q
+                  }
+                  rval
+              } else {
+                  as(x, "oce")[[i, j, drop]]
+              }
+          })
+
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
-              else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+             } else if (i %in% names(x@data)) {
+                  x@data[[i]] <- value
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)
               invisible(x)
           })
-
 
 setValidity("adp",
             function(object) {

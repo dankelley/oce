@@ -82,10 +82,10 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     res@data$a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$a[,3] <- as.raw(readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    res@data$c <- array(raw(), dim=c(len, 3))
-    res@data$c[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    res@data$c[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    res@data$c[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$q <- array(raw(), dim=c(len, 3))
+    res@data$q[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$q[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$q[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
     res@data$pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
     ## FIXME: Sontek ADV transformation matrix equal for all units?  (Nortek Vector is not.)
@@ -485,7 +485,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     temperature <- array(numeric(), dim=c(ntotal, 1))
     pressure <- array(numeric(), dim=c(ntotal, 1))
     a <- array(raw(), dim=c(ntotal, 3))
-    c <- array(raw(), dim=c(ntotal, 3))
+    q <- array(raw(), dim=c(ntotal, 3))
     rowOffset <- 0
 
     oceDebug(debug, "dataLength=", dataLength, "\n")
@@ -508,9 +508,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         a[r,1] <- m[,7]
         a[r,2] <- m[,8]
         a[r,3] <- m[,9]
-        c[r,1] <- m[,10]
-        c[r,2] <- m[,11]
-        c[r,3] <- m[,12]
+        q[r,1] <- m[,10]
+        q[r,2] <- m[,11]
+        q[r,3] <- m[,12]
         time[r] <- as.numeric(burstTimeFocus[b]) + seq(0, n-1) / metadata$samplingRate
         ##cat(sprintf("%.2f %.2f %.2f\n", time[r[1]], time[r[2]], time[r[3]]))
         ##cat("time=", format(time[r[1]]), ";", format(burstTimeFocus[b]), "\n")
@@ -566,7 +566,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     oceDebug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
     v <- v[iii,]
     a <- a[iii,]
-    c <- c[iii,]
+    q <- q[iii,]
     time <- time[iii]
     pressure <- pressure[iii]
     temperature <- temperature[iii]
@@ -579,9 +579,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     metadata$velocityResolution <- velocityScale
     metadata$velocityMaximum <- velocityScale * 2^15
 
-    data <- list(v=v,
-                 a=a,
-                 c=c,
+    data <- list(v=v, a=a, q=q,
                  time=time,
                  heading=heading,
                  pitch=pitch,
@@ -701,10 +699,10 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     a[,1] <- as.raw(ts[,6])
     a[,2] <- as.raw(ts[,7])
     a[,3] <- as.raw(ts[,8])
-    c <- array(raw(), dim=c(len, 3))
-    c[,1] <- as.raw(ts[,9])
-    c[,2] <- as.raw(ts[,10])
-    c[,3] <- as.raw(ts[,11])
+    q <- array(raw(), dim=c(len, 3))
+    q[,1] <- as.raw(ts[,9])
+    q[,2] <- as.raw(ts[,10])
+    q[,3] <- as.raw(ts[,11])
     temperature <- ts[,15]
     pressure <- ts[,16]
     rm(ts)                              # may run tight on space
@@ -713,14 +711,12 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
     v <- v[ok,]
     a <- a[ok,]
-    c <- c[ok,]
+    q <- q[ok,]
     tt <- tt[ok]
     heading <- approx(t, heading, xout=tt, rule=2)$y
     pitch <- approx(t, pitch, xout=tt, rule=2)$y
     roll <- approx(t, roll, xout=tt, rule=2)$y
-    data <- list(v,
-                 a,
-                 c,
+    data <- list(v=v, a=a, q=q,
                  time=tt,
                  heading=heading,
                  pitch=pitch,
