@@ -243,7 +243,9 @@ imagep <- function(x, y, z,
     if (is.function(col))
         col <- col(n=length(breaks)-1)
 
-    if (drawPalette) {
+    if (drawPalette == "space") {
+        drawPalette()
+    } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
         drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, drawContours=drawContours,
                     mai=mai.palette)
