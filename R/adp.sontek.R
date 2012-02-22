@@ -572,7 +572,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     temperature <- 0.01 * readBin(buf[pp+46], "integer", n=np, size=2, signed=TRUE)
     v <- array(numeric(), dim=c(np, numberOfCells, numberOfBeams))
     vstd <- array(raw(), dim=c(np, numberOfCells, numberOfBeams))
-    amp <- array(raw(), dim=c(np, numberOfCells, numberOfBeams))
+    a <- array(raw(), dim=c(np, numberOfCells, numberOfBeams))
     ndata <- numberOfCells * numberOfBeams
     i1 <- seq(1, ndata)
     i2 <- seq(1, 2*ndata)
@@ -584,11 +584,11 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
         ## NOTE: vstd is std-dev; need to multiply by 0.001 to get in m/s
         vstd_ <- matrix(buf[p0 + i1], ncol=numberOfBeams, byrow=FALSE)
         p0 <- p0 + ndata
-        amp_ <- matrix(buf[p0 + i1], ncol=numberOfBeams, byrow=FALSE)
+        a_ <- matrix(buf[p0 + i1], ncol=numberOfBeams, byrow=FALSE)
         for (b in 1:numberOfBeams) {
             v[ip,,b] <- v_[,b]
             vstd[ip,,b] <- vstd_[,b]
-            amp[ip,,b] <- amp_[,b]
+            a[ip,,b] <- a_[,b]
         }
         if (monitor) {
             if ((ip %% 50))
@@ -632,7 +632,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      beamAngle=beamAngle,
                      oceBeamUnattenuated=FALSE,
                      orientation=orientation)
-    data <- list(v=v, vstd=vstd, amp=amp,
+    data <- list(v=v, vstd=vstd, a=a,
                  distance=distance,
                  time=time,
                  heading=heading, pitch=pitch, roll=roll,
