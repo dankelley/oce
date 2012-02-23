@@ -38,7 +38,8 @@
         if appropriate), etc.}
 
     \subsection{Assigning values}{This follows the standard form, e.g. to
-        modify a heading, use \code{d[["heading"]] <- 1 + d[["heading"]]}.}
+        increase all velocity data by 1 cm/s, use \code{d[["v"]] <- 0.01 +
+            d[["v"]]}.}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(d)}) displays information about an ADV object named
