@@ -29,15 +29,16 @@
 \section{Methods}{
 
     \subsection{Extracting values}{Data may be accessed as e.g.
-        \code{adv[["u1"]]}, where the string could also be \code{"u2"} or
-        \code{"u3"} for the other velocity components, or \code{"v"} for a
-        matrix holding all of these components.  The instrument heading is
-        retrieved with \code{"heading"} or \code{"headingSlow"} (if
-        appropriate), and similarly for \code{"pitch"}, \code{"pitchSlow"},
-        \code{"roll"}  or \code{"rollSlow"}. Temperature and pressure are
-        retrieved with \code{"temperature"} and \code{"pressure"}.}
+        for an object named \code{d}, the velocity matrix is retrieved by
+        \code{d[["v"]]}, the amplitude matrix by \code{d[["a"]]}, the
+        data-quality matrix by \code{d[["q"]]}, etc.  (The last two can be
+        retrieved in numerical form, as opposed to raw form, by e.g.
+        \code{d[["a", "numeric"]]}.)  Similarly, the vector quantities can be
+        retrieved by name, e.g. \code{d[["heading"]]} (or \code{"headingSlow"},
+        if appropriate), etc.}
 
-    \subsection{Assigning values}{(not available yet)}
+    \subsection{Assigning values}{This follows the standard form, e.g. to
+        modify a heading, use \code{d[["heading"]] <- 1 + d[["heading"]]}.}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(d)}) displays information about an ADV object named
