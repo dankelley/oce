@@ -461,6 +461,7 @@ setMethod(f="plot",
                       zlim.given <- zlim
                   }
               }
+
               ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
               if (missing(lwd))
                   lwd <- rep(par('lwd'), length.out=nw)
@@ -591,7 +592,11 @@ setMethod(f="plot",
                               ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2]
                           else
                               rep(TRUE, length(x@data$distance))
-                          zlim <- range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE)
+                          #zlim <- range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE)
+                          zlim <- if (gave.zlim)
+                              zlim.given[w,]
+                          else
+                              range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
                           zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
                       } else if (which[w] %in% 9:(8+x@metadata$numberOfBeams)) { # correlation
                           if ("q" %in% names(x@data)) {
