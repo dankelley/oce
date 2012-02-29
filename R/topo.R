@@ -52,6 +52,7 @@ plot.topo <- function(x,
                       col.land,
                       lty.land,
                       lwd.land,
+                      geographical=FALSE,
                       location="topright",
                       mgp=getOption("oceMgp"),
                       mar=c(mgp[1]+1,mgp[1]+1,1,1),
@@ -146,7 +147,7 @@ plot.topo <- function(x,
     if (yr[1] < lat.range[1]) yr[1] <- lat.range[1]
     if (yr[2] > lat.range[2]) yr[2] <- lat.range[2]
 
-    plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
+    plot(xr, yr, asp=asp, xlab="", ylab="", type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
     if (debug > 0)
         points(xr, yr, col="blue", pch=20, cex=3)
 
@@ -160,10 +161,33 @@ plot.topo <- function(x,
     oceDebug(debug, "yr.pretty=", yr.pretty, "(after trimming)\n")
 
     lines(c(xr[1], xr[2], xr[2], xr[1], xr[1]), c(yr[1], yr[1], yr[2], yr[2], yr[1])) # axis box
-    axis(1, at=xr.pretty, pos=yr[1])
+    xlabels <- format(xr.pretty)
+    ylabels <- format(yr.pretty)
+    if (geographical) {
+        xlabels <- sub("-", "", xlabels)
+        ylabels <- sub("-", "", ylabels)
+    }
+    axis(1, at=xr.pretty, pos=yr[1], labels=xlabels)
     axis(3, at=xr.pretty, pos=max(yr), labels=FALSE)
-    axis(2, at=yr.pretty, pos=xr[1])
+    axis(2, at=yr.pretty, pos=xr[1], labels=ylabels)
     axis(4, at=yr.pretty, pos=max(xr), labels=FALSE)
+    ## Use either mtext() or text() to position the label, depending on
+    ## whether the extra margin space has been placed to the sides
+    ## of the graph, or above and below it.
+    if (0 != nchar(xlab)) {
+        if (asp > asp.page) {
+            mtext(xlab, side=1, line=mgp[1])
+        } else {
+            text(mean(par('usr')[1:2]), yr[1], xlab, pos=1, offset=mgp[1]+mgp[2])
+        }
+    }
+    if (0 != nchar(ylab)) {
+        if (asp > asp.page) {
+            text(xr[1], mean(par('usr')[3:4]), ylab, pos=2, offset=mgp[1]+mgp[2], srt=90)
+        } else {
+            mtext(ylab, side=2, line=mgp[1])
+        }
+    }
 
     oceDebug(debug, "xr=", xr, "yr=",yr,"\n")
     yaxp <- par("yaxp")
