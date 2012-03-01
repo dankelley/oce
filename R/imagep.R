@@ -261,15 +261,9 @@ imagep <- function(x, y, z,
                 storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
-            ## The following permits the code to work for R versions both before and after 15.0,
-            ## and it will be altered as appropriate for submission to CRAN.
-            if (1 == compareVersion("15.0", R.version$minor)) {
-                cat("using .Internal(filledcontour) for R version < 15.0\n")
-                .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
-            } else {
-                cat("using .filled.contour for R version >= 15.0\n")
-                .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
-            }
+            ## The next line will not be permitted in R past version 14.2; it will
+            ## then become necessary to use a new function ".filled.contour()".
+            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             if (!breaksGiven) {
@@ -290,15 +284,9 @@ imagep <- function(x, y, z,
             storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
-            ## The following permits the code to work for R versions both before and after 15.0,
-            ## and it will be altered as appropriate for submission to CRAN.
-            if (1 == compareVersion("15.0", R.version$minor)) {
-                cat("using .Internal(filledcontour) for R version < 15.0\n")
-                .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
-            } else {
-                cat("using .filled.contour for R version >= 15.0\n")
-                .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
-            }
+            ## The next line will not be permitted in R past version 14.2; it will
+            ## then become necessary to use a new function ".filled.contour()".
+            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
         } else {
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
