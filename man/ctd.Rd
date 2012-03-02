@@ -17,7 +17,8 @@ data(ctd)
 plot(ctd, which=c(1,2,3,5), coastline="coastlineMaritimes")
 }
 
-\source{This is a trimmed version of the \code{\link{ctdRaw}} dataset.}
+\source{This is a station within the \code{\link{section}} dataset, and details
+   are provided in the documentation for the latter.}
 
 \seealso{The documentation for \code{\link{ctd-class}} explains the structure
     of CTD objects, and also outlines the other functions dealing with them.}

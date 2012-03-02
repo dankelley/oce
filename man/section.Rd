@@ -4,14 +4,13 @@
 \description{A CTD section running the length of Halifax Harbour}
 \usage{data(section)}
 
-\source{This section is based on measurements made during October of
-  2003 in Halifax Harbour by students in the \emph{Introduction to
-  Physical Oceanography} class at Dalhousie University.  The course was
-  taught by the author of this package, and supervision at sea was
-  provided by N. Bernier, who was then a PhD student at Dalhousie. Note
-  the alteration of two station locations, to correct errors in
-  transcribing field notes (e.g. a hand-written \code{8} was evidently
-  typed as \code{3}).
+\source{This section is based on measurements made during October of 2003 in
+    Halifax Harbour by students in Dan Kelley's \emph{Introduction to Physical
+        Oceanography} class at Dalhousie University.  The course was taught by
+    the author of this package, and supervision at sea was provided by N.
+    Bernier, who was then a PhD student at Dalhousie. Note the alteration of
+    two station locations, to correct errors in transcribing field notes (e.g.
+    a hand-written \code{8} was evidently typed as \code{3}).
 
 \preformatted{
 library(oce)
