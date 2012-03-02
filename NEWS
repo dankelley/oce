@@ -1,4 +1,5 @@
 0.8-5
+- reconstruct data(ctd) so plot will focus maps better
 - plotInset() added
 - grid() works for oce-based time axes
 - imagep(..., filledContours): obey ylab argument

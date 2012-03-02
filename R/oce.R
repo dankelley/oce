@@ -1428,3 +1428,14 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     invisible()
 }
 
+decodeTime <- function(time, time.formats=c("%b %d %Y %H:%M:%s", "%Y%m%d"), tz="UTC")
+{
+    rval <- NA
+    for (format in time.formats) {
+        if (!is.na(rval <-  as.POSIXct(time, format=format, tz=tz))) {
+            break
+        }
+    }
+    rval
+}
+

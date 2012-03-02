@@ -35,8 +35,8 @@ makeSection(item, \dots)
 library(oce)
 data(ctd)
 ctdWarmed <- ctd
-temperature(ctdWarmed) <- temperature(ctdWarmed) + 0.5
-latitude(ctdWarmed) <- latitude(ctdWarmed) + 0.1
+ctdWarmed[["temperature"]] <- ctdWarmed[["temperature"]] + 0.5
+ctdWarmed[["latitude"]] <- ctdWarmed[["latitude"]] + 0.1
 section <- makeSection(ctd, ctdWarmed)
 summary(section)
 

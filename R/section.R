@@ -392,7 +392,8 @@ setMethod(f="plot",
                       }
 
                       ## cannot contour with duplicates in x or y; the former is the only problem
-                      xx.unique <- 0 != diff(xx)
+                      xx.unique <- c(TRUE, 0 != diff(xx))
+                      yy.unique <- c(TRUE, 0 != diff(yy))
                       if (variable == "data") {
                           for (i in 1:numStations) {
                               thisStation <- x[["station", i]]
@@ -409,7 +410,7 @@ setMethod(f="plot",
                           if (!is.null(contourLevels) && !is.null(contourLabels)) {
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
-                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                           axes=FALSE, labcex=0.8,
                                           levels=contourLevels,
                                           labels=contourLabels,
@@ -417,7 +418,7 @@ setMethod(f="plot",
                                           xaxs="i", yaxs="i",
                                           ...)
                               } else {
-                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                           axes=FALSE,
                                           add=TRUE,
                                           xaxs="i", yaxs="i",
@@ -426,13 +427,13 @@ setMethod(f="plot",
                           } else {
                               oceDebug(debug, "automatically-calculated contourLevels\n")
                               if (is.null(dots$labcex)) {
-                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                           axes=FALSE, labcex=0.8,
                                           add=TRUE,
                                           xaxs="i", yaxs="i",
                                           ...)
                               } else {
-                                  contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
                                           axes=FALSE,
                                           add=TRUE,
                                           xaxs="i", yaxs="i",
