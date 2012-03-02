@@ -261,9 +261,12 @@ imagep <- function(x, y, z,
                 storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
-            ## The next line will not be permitted in R past version 14.2; it will
-            ## then become necessary to use a new function ".filled.contour()".
-            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
+            ## Filled contours became official in version 2.15.0 of R.
+            if (getRversion() >= "2.15.0") {
+                .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
+            } else {
+                .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
+            }
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             if (!breaksGiven) {
@@ -284,9 +287,12 @@ imagep <- function(x, y, z,
             storage.mode(z) <- "double"
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
-            ## The next line will not be permitted in R past version 14.2; it will
-            ## then become necessary to use a new function ".filled.contour()".
-            .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
+            ## Filled contours became official in version 2.15.0 of R.
+            if (getRversion() >= "2.15.0") {
+                .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
+            } else {
+                .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
+            }
         } else {
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
