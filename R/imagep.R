@@ -296,8 +296,8 @@ imagep <- function(x, y, z,
         } else {
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
-            box()
         }
+        box()
         if (axes) {
             axis(1, cex.axis=cex, cex.lab=cex)
             axis(2, cex.axis=cex, cex.lab=cex)
