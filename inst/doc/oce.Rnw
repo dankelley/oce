@@ -404,7 +404,7 @@ The Halifax section is supplied in a pre-gridded format, but some datasets have
 different pressure levels at each station.  For such cases, the
 \verb@sectionGrid@ function may be used, e.g.
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
-png("a03.png", width=600, height=700, pointsize=12)
+jpeg("a03.jpg", quality=75, width=600, height=700, pointsize=12)
 @
 <<>>=
 # File source -- http://cchdo.ucsd.edu/data_access?ExpoCode=90CT40_1

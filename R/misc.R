@@ -71,6 +71,7 @@ binAverage <- function(x, y, xmin, xmax, xinc)
 
 rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
 {
+    x <- as.numeric(x)
     r <- range(x, na.rm=TRUE)
     if (missing(xlow))
         xlow <- min(x, na.rm=TRUE)

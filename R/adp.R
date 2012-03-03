@@ -479,7 +479,7 @@ setMethod(f="plot",
               which2 <- vector("numeric", length(which))
               for (w in 1:nw) {
                   ww <- which[w]
-                  oceDebug(debug, "which[", w, "] =", ww, "\n", sep="")
+                  oceDebug(debug, "which[", w, "] =", ww, "\n")
                   if (is.numeric(ww) || 1 == length(grep("^[0-9]*$", ww))) {
                       which2[w] <- as.numeric(ww)
                   } else {
@@ -580,7 +580,7 @@ setMethod(f="plot",
                   if (which[w] %in% images) {                   # image types
                       skip <- FALSE
                       if (which[w] %in% 1:(x@metadata$numberOfBeams)) {    #velocity
-                          oceDebug(debug, "a velocity component image")
+                          oceDebug(debug, "a velocity component image\n")
                           z <- x@data$v[,,which[w]]
                           y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
                           zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)

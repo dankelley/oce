@@ -5,6 +5,32 @@ clipmin <- function(x, min=0)
     ifelse(x < min, min, x)
 }
 
+abbreviateTimeLabels <- function(tl)
+{
+    if (inherits(tl, "POSIXt"))
+        tl <- format(tl)
+    n <- length(tl)
+    if (n < 2)
+        return(tl)
+    year <- substr(tl, 1, 4)
+    ## strip years, if all the same
+    for (i in 2:n) if (year[i] != year[1]) return(tl)
+    tl <- substr(tl, 6, nchar(tl))
+    ## strip months, if all the same
+    month <- substr(tl, 1, 2)
+    for (i in 2:n) if (month[i] != month[1]) return(tl)
+    tl <- substr(tl, 4, nchar(tl))
+    ## strip seconds, if all the same
+    seconds <- substr(tl, nchar(tl)-2, nchar(tl))
+    for (i in 2:n) if (seconds[i] != seconds[1]) return(tl)
+    tl <- substr(tl, 1, nchar(tl)-3)
+    ## strip minutes, if all the same (this may be confusing)
+    minutes <- substr(tl, nchar(tl)-2, nchar(tl))
+    for (i in 2:n) if (minutes[i] != minutes[1]) return(tl)
+    tl <- substr(tl, 1, nchar(tl)-3)
+    return(tl)
+}
+
 paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
                                 mai=c(0, 1/8, 0, 1/4))
 {
@@ -37,7 +63,6 @@ drawPalette <- function(zlim,
                         debug=getOption("oceDebug"),
                         ...)
 {
-    debug <- min(1, max(debug, 0))
     if (top != 0) {
         warning("drawPalette(): please use mai instead of top\n")
         mai[3] <- top
@@ -49,11 +74,17 @@ drawPalette <- function(zlim,
     zlimGiven <- !missing(zlim)
     breaksGiven <- !missing(breaks)
     if (zlimGiven)
-        oceDebug(debug, "\b\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", if (is.character(zlab)) zlab else
+        oceDebug(debug, "\bdrawPalette(zlim=c(", zlim[1], ",", zlim[2], "), zlab=", "\"", if (is.character(zlab)) zlab else
             "(expression)", "\", ...) {\n", sep="")
     else
         oceDebug(debug, "palette() with no arguments: set space to right of a graph\n")
+    zIsTime <- zlimGiven && inherits(zlim[1], "POSIXt")
+    if (zIsTime) {
+        zlimOrig <- zlim
+        zlim <- as.numeric(zlim)
+    }
     oceDebug(debug, if (breaksGiven) "gave breaks\n" else "did not give breaks\n")
+    oceDebug(debug, "zIsTime=", zIsTime, "\n")
     omai <- par("mai")
     oceDebug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
     omar <- par("mar")
@@ -96,7 +127,7 @@ drawPalette <- function(zlim,
                 pc$main + pc$maiLHS + mai[2],
                 pc$omai[3]+mai[3],
                 pc$maiRHS)
-    oceDebug(debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
+    oceDebug(debug, "setting par(mai)=", format(theMai, digits=2), "\n")
     if (zlimGiven) {
         par(mai=theMai)
         if (!breaksGiven) {
@@ -113,7 +144,13 @@ drawPalette <- function(zlim,
         if (drawContours)
             abline(h=contours)
         box()
-        axis(side=4, at=if (is.null(contours)) contours else pretty(palette), mgp=c(2.5,0.7,0))
+        if (zIsTime) {
+            at <- as.numeric(pretty(zlim))
+        } else {
+            at <- if (!is.null(contours)) contours else pretty(palette) # FIXME: wrong on contours
+        }
+        labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at)) else format(at)
+        axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
     }
@@ -154,9 +191,9 @@ imagep <- function(x, y, z,
                    ...)
 {
     oceDebug(debug, "\b\bimagep() {\n")
-    oceDebug(debug, paste("  xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep=""))
-    oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oceDebug(debug, " xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep="")
+    oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
+    oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
     if (!missing(x) && is.list(x)) {
         names <- names(x)
         if (!missing(y))
@@ -248,7 +285,7 @@ imagep <- function(x, y, z,
     } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
         drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, drawContours=drawContours,
-                    mai=mai.palette)
+                    mai=mai.palette, debug=debug-1)
     }
 
     x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
