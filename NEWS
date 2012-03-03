@@ -1,3 +1,6 @@
+0.8-6
+- imagep(): permit POSIXt type for zlim
+
 0.8-5
 - reconstruct data(ctd) so plot will focus maps better
 - plotInset() added
