@@ -1,4 +1,4 @@
 library(oce)
 data(ctd)
-plot(ctd, which=c(1,2,3,5), coastline="coastlineHalifax")
+plot(ctd, which=c(1,2,3,5))
 
