@@ -6,7 +6,8 @@
 \usage{
 as.ctd(salinity, temperature, pressure,
    oxygen, nitrate, nitrite, phosphate, silicate,
-   other, missingValue,
+   scan, other,
+   missingValue,
    quality, 
    ship="", scientist="", institute="", address="", cruise="", station="", 
    date="", startTime="", recovery="",
@@ -28,6 +29,8 @@ as.ctd(salinity, temperature, pressure,
   \item{nitrite}{optional nitrite concentration [micromole/kg]}
   \item{phosphate}{optional phosphate concentration [micromole/kg]}
   \item{silicate}{optional silicate concentration [micromole/kg]}
+  \item{scan}{optional scan number.  If not provided, this will be set
+      to \code{1:length(salinity)}.}
   \item{other}{optional list of other data columns that are not in the standard list}
   \item{missingValue}{optional missing value, indicating data that should be
       taken as \code{NA}.}

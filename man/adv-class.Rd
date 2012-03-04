@@ -9,21 +9,37 @@
 
 \title{Class to store acoustic Doppler velocimeter data}
 
-\description{Class to store acoustic Doppler velocimeter data, with standard
-    slots \code{metadata}, \code{data} and \code{processingLog}.}
+\description{Class to store acoustic Doppler velocimeter data, holding the
+    three standard slots used in all objects in Oce.  The \code{metadata} slot
+    contains various items relating to the dataset, including source file name,
+    sampling rate, velocity resolution and scale, etc.  The
+    \code{processingLog} is in standard form and needs little comment.  The
+    \code{data} slot holds a numeric matrix \code{v} of velocities in m/s, with
+    the first index indicating time and the second indicating beam number.  The
+    meanings of the beams depends on whether the object is in beam
+    coordinates, frame coordinates, or earth coordinates.  The \code{data} slot
+    also contains identically-dimensioned raw matrices \code{a} and \code{q},
+    holding measures of signal strength and data quality quality, respectively.
+    It also contains a series of vectors, e.g. \code{time}, \code{temperature}
+    and \code{pressure}, etc., depending on what sensors are included in the
+    package.  For all of these quantities, the details can be different for
+    different instrument types, and it is assumed that the user will be
+    familiar with the details.}
 
 \section{Methods}{
 
     \subsection{Extracting values}{Data may be accessed as e.g.
-        \code{adv[["u1"]]}, where the string could also be \code{"u2"} or
-        \code{"u3"} for the other velocity components, or \code{"v"} for a
-        matrix holding all of these components.  The instrument heading is
-        retrieved with \code{"heading"} or \code{"headingSlow"} (if
-        appropriate), and similarly for \code{"pitch"}, \code{"pitchSlow"},
-        \code{"roll"}  or \code{"rollSlow"}. Temperature and pressure are
-        retrieved with \code{"temperature"} and \code{"pressure"}.}
+        for an object named \code{d}, the velocity matrix is retrieved by
+        \code{d[["v"]]}, the amplitude matrix by \code{d[["a"]]}, the
+        data-quality matrix by \code{d[["q"]]}, etc.  (The last two can be
+        retrieved in numerical form, as opposed to raw form, by e.g.
+        \code{d[["a", "numeric"]]}.)  Similarly, the vector quantities can be
+        retrieved by name, e.g. \code{d[["heading"]]} (or \code{"headingSlow"},
+        if appropriate), etc.}
 
-    \subsection{Assigning values}{(not available yet)}
+    \subsection{Assigning values}{This follows the standard form, e.g. to
+        increase all velocity data by 1 cm/s, use \code{d[["v"]] <- 0.01 +
+            d[["v"]]}.}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(d)}) displays information about an ADV object named

@@ -189,7 +189,7 @@ setMethod(f="plot",
                               contourLevels=NULL,
                               contourLabels=NULL,
                               stationIndices,
-                              coastline=NULL,
+                              coastline="coastlineWorld",
                               xlim=NULL, ylim=NULL,
                               map.xlim=NULL, map.ylim=NULL,
                               xtype="distance",
@@ -198,6 +198,7 @@ setMethod(f="plot",
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
+                              col=par("col"), cex=par("cex"), pch=par("pch"),
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -207,7 +208,9 @@ setMethod(f="plot",
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
+                                         legend=TRUE,
                                          debug=0,
+                                         col=par("col"),
                                          ...)
               {
                   oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
@@ -215,9 +218,9 @@ setMethod(f="plot",
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
                       for (i in 1:numStations) {
-                          thisStn <- x@data$statoin[[stationIndices[i]]]
-                          lat[i] <- x@data$station[[stationIndices[i]]]@metadata$latitude
-                          lon[i] <- x@data$station[[stationIndices[i]]]@metadata$longitude
+                          thisStation <- x[["station", stationIndices[i]]]
+                          lat[i] <- thisStation[["latitude"]]
+                          lon[i] <- thisStation[["longitude"]]
                       }
                       lon[lon<0] <- lon[lon<0] + 360
                       asp <- 1 / cos(mean(range(lat,na.rm=TRUE))*pi/180)
@@ -235,6 +238,30 @@ setMethod(f="plot",
                           plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
                       }
                       if (!is.null(coastline)) {
+                          if (is.character(coastline)) {
+                              if (coastline == "none") {
+                                  next
+                              } else { # named coastline
+                                  if (!exists(paste("^", coastline, "$", sep=""))) { # load it, if necessary
+                                      oceDebug(debug, " loading coastline file \"", coastline, "\"\n", sep="")
+                                      if (coastline == "coastlineWorld") {
+                                          data(coastlineWorld)
+                                          coastline <- coastlineWorld
+                                      } else if (coastline == "coastlineMaritimes") {
+                                          data(coastlineMaritimes)
+                                          coastline <- coastlineMaritimes
+                                      } else if (coastline == "coastlineHalifax") {
+                                          data(coastlineHalifax)
+                                          coastline <- coastlineHalifax
+                                      } else if (coastline == "coastlineSLE") {
+                                          data(coastlineSLE)
+                                          coastline <- coastlineSLE
+                                      } else {
+                                          stop("there is no built-in coastline file of name \"", coastline, "\"")
+                                      }
+                                  }
+                              }
+                          }
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
                               polygon(coastline[["longitude"]], coastline[["latitude"]], col="lightgray", lwd=3/4)
                               polygon(coastline[["longitude"]]+360, coastline[["latitude"]], col="lightgray", lwd=3/4)
@@ -264,8 +291,8 @@ setMethod(f="plot",
                           dy * sign(x@metadata$latitude[numStations-1]  - x@metadata$latitude[numStations])
                           text(xlab, ylab, x@metadata$stationId[numStations])
                       }
-                  } else {                        # not a map
-                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient") {
+                 } else {                        # not a map
+                      if (!(variable %in% names(x@data$station[[1]]@data)) && variable != "salinity gradient" && variable != "data") {
                           stop("this section does not contain a variable named '", variable, "'")
                       }
                       ## FIXME: contours don't get to plot edges
@@ -276,6 +303,7 @@ setMethod(f="plot",
                       ylim <- if (!is.null(ylim)) sort(-abs(ylim)) else yyrange
                       par(xaxs="i", yaxs="i")
                       ylab <- if ("ylab" %in% names(list(...))) list(...)$ylab else { if (which.ytype==1) resizableLabel("p") else "Depth [ m ]" }
+
                       if (is.null(at)) {
                           plot(xxrange, yyrange,
                                xaxs="i", yaxs="i",
@@ -311,7 +339,7 @@ setMethod(f="plot",
                               dSdp <- rev(diff(x@data$station[[stationIndices[i]]]@data[["salinity"]]) 
                                           / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
                               zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
-                          } else {
+                          } else if (variable != "data") {
                               zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
                           }
                           if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
@@ -359,42 +387,58 @@ setMethod(f="plot",
                           xx <- xx[ox]
                           zz <- zz[ox,] ## FIXME keep this???
                           ##warning("plot.section() reordered the stations to make x monotonic")
+                          bottom.x <- c(min(xxOrig), xxOrig[ox], max(xxOrig))
+                          bottom.y <- c(graph.bottom, -waterDepth[ox], graph.bottom)
                       }
 
                       ## cannot contour with duplicates in x or y; the former is the only problem
-
-                      xx.unique <- 0 != diff(xx)
-                      if (!is.null(contourLevels) && !is.null(contourLabels)) {
-                          oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
-                          if (!("labcex" %in% dots$labcex)) {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE, labcex=0.8,
-                                      levels=contourLevels,
-                                      labels=contourLabels,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
-                          } else {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
+                      xx.unique <- c(TRUE, 0 != diff(xx))
+                      yy.unique <- c(TRUE, 0 != diff(yy))
+                      if (variable == "data") {
+                          for (i in 1:numStations) {
+                              thisStation <- x[["station", i]]
+                              pressure <- thisStation[["pressure"]]
+                              if (which.xtype == 4) {
+                                  longitude <- thisStation[["longitude"]]
+                                  points(rep(longitude, length(pressure)), -pressure, cex=cex, pch=pch, col=col)
+                              } else {
+                                  ## FIXME: shouldn't the next line work for all types??
+                                  points(rep(xx[i], length(pressure)), -pressure, cex=cex, pch=pch, col=col)
+                              }
                           }
                       } else {
-                          oceDebug(debug, "automatically-calculated contourLevels\n")
-                          if (is.null(dots$labcex)) {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE, labcex=0.8,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
+                          if (!is.null(contourLevels) && !is.null(contourLabels)) {
+                              oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
+                              if (!("labcex" %in% dots$labcex)) {
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                          axes=FALSE, labcex=0.8,
+                                          levels=contourLevels,
+                                          labels=contourLabels,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              } else {
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                          axes=FALSE,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              }
                           } else {
-                              contour(x=xx[xx.unique], y=yy, z=zz[xx.unique,],
-                                      axes=FALSE,
-                                      add=TRUE,
-                                      xaxs="i", yaxs="i",
-                                      ...)
+                              oceDebug(debug, "automatically-calculated contourLevels\n")
+                              if (is.null(dots$labcex)) {
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                          axes=FALSE, labcex=0.8,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              } else {
+                                  contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
+                                          axes=FALSE,
+                                          add=TRUE,
+                                          xaxs="i", yaxs="i",
+                                          ...)
+                              }
                           }
                       }
                       if (length(bottom.x) == length(bottom.y))
@@ -403,7 +447,8 @@ setMethod(f="plot",
                       ##axis(1, pretty(xxOrig))
                       axis(1)
                       ##lines(xx, -waterDepth[ox], col='red')
-                      legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                      if (legend)
+                          legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
                   oceDebug(debug, "\b} # plotSubsection()\n")
               }                                   # plotSubsection
@@ -429,11 +474,13 @@ setMethod(f="plot",
               num.depths <- length(firstStation@data$pressure)
 
               ## Check that pressures coincide
-              p1 <- firstStation@data$pressure
-              for (ix in 2:numStations) {
-                  thisStation <- x@data$station[[stationIndices[ix]]]
-                  if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
-                      stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
+              if (length(which) > 1 || which != "data") {
+                  p1 <- firstStation@data$pressure
+                  for (ix in 2:numStations) {
+                      thisStation <- x@data$station[[stationIndices[ix]]]
+                      if (any(p1 != x@data$station[[stationIndices[ix]]]@data$pressure))
+                          stop("This section has stations with different pressure levels.\n  Please use e.g.\n\tsectionGridded <- sectionGrid(section)\n  to create a uniform grid, and then you'll be able to plot the section.")
+                  }
               }
               zz <- matrix(nrow=numStations, ncol=num.depths)
               xx <- array(NA, numStations)
@@ -465,7 +512,6 @@ setMethod(f="plot",
               } else {
                   xx <- at
               }
-              dan.xx<<-xx
 
               if (which.ytype == 1) yy <- rev(-x@data$station[[stationIndices[1]]]@data$pressure)
               else if (which.ytype == 2) yy <- rev(-swDepth(x@data$station[[stationIndices[1]]]@data$pressure))
@@ -488,6 +534,7 @@ setMethod(f="plot",
                       else if (ww == "oxygen") which2[w] <- 6
                       else if (ww == "phosphate") which2[w] <- 7
                       else if (ww == "silicate") which2[w] <- 8
+                      else if (ww == "data") which2[w] <- 20
                       else if (ww == "map") which2[w] <- 99
                       else stop("unknown 'which':", ww)
                   }
@@ -547,6 +594,8 @@ setMethod(f="plot",
                       if (which[w] == 8)
                           plotSubsection("silicate",    "silicate", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   }
+                  if (which[w] == 20)
+                      plotSubsection("data", "", xlim=xlim, ylim=ylim, col=col, debug=debug-1, legend=FALSE, ...)
                   if (which[w] == 99)
                       plotSubsection("map", indicate.stations=FALSE, debug=debug-1, ...)
                   if (w <= adorn.length) {

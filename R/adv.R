@@ -48,7 +48,29 @@ setMethod(f="[[",
                   return(x@data$rollSlow)
               } else if (i == "temperature") {
                   return(x@data$temperature)
-              } else stop("cannot access \"", i, "\"") # cannot get here
+              } else if (i == "a") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$a
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$a
+                  }
+                  return(rval)
+              } else if (i == "q") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$q
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$q
+                  }
+                  return(rval)
+              } else {
+                  return(as(x, "oce")[[i, j, drop]])
+              }
           })
 
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
@@ -304,7 +326,7 @@ setMethod(f="plot",
                   if (which[w] %in% 1:3) {        # u1, u2, u3
                       y <- as.numeric(x@data$v[,which[w]])
                       if (have.brushCorrelation && type == "p") {
-                          good <- as.numeric(x@data$c[,which[w]]) >= brushCorrelation
+                          good <- as.numeric(x@data$q[,which[w]]) >= brushCorrelation
                           oce.plot.ts(x@data$time[good], y[good], ylab=beamName(x, which[w]),
                                       drawTimeRange=drawTimeRange,
                                       adorn=adorn[w],
@@ -343,7 +365,7 @@ setMethod(f="plot",
                       y <- as.numeric(x@data$a[,which[w]-4])
                       oceDebug(debug, "range(y):", paste(range(y, na.rm=TRUE), sep="-"), "\n")
                       if (have.brushCorrelation && type == "p") {
-                          good <- as.numeric(x@data$c[,which[w]-4]) >= brushCorrelation
+                          good <- as.numeric(x@data$q[,which[w]-4]) >= brushCorrelation
                           oce.plot.ts(x@data$time[good], y[good],
                                       ylab=c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4],
                                       drawTimeRange=drawTimeRange,
@@ -375,9 +397,9 @@ setMethod(f="plot",
                       }
                       rm(y)                       # space may be tight
                   } else if (which[w] %in% 9:11) { # q1, q2, q3 (named c1, c2, and c3 in the object)
-                      y <- as.numeric(x@data$c[,which[w]-8])
+                      y <- as.numeric(x@data$q[,which[w]-8])
                       if (have.brushCorrelation && type == "p") {
-                          good <- as.numeric(x@data$c[,which[w]-8]) >= brushCorrelation
+                          good <- as.numeric(x@data$q[,which[w]-8]) >= brushCorrelation
                           oce.plot.ts(x@data$time[good], y[good],
                                       ylab=c(expression(q[1]),expression(q[2]),expression(q[3]),expression(q[4]))[which[w]-8],
                                       drawTimeRange=drawTimeRange,
@@ -535,7 +557,7 @@ setMethod(f="plot",
                       ## FIXME: should plot.adv() be passing mar, cex, etc to smoothScatter?
                   } else if (which[w] == 19) {    # beam 1 correlation-amplitude diagnostic plot
                       a <- as.numeric(x@data$a[,1])
-                      c <- as.numeric(x@data$c[,1])
+                      q <- as.numeric(x@data$q[,1])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                           plot(a, c, xlab="Amplitude", ylab="Correlation",
@@ -551,7 +573,7 @@ setMethod(f="plot",
                       mtext("beam 1")
                   } else if (which[w] == 20) {    # beam 2 correlation-amplitude diagnostic plot
                       a <- as.numeric(x@data$a[,2])
-                      c <- as.numeric(x@data$c[,2])
+                      q <- as.numeric(x@data$q[,2])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                           plot(a, c, xlab="Amplitude", ylab="Correlation",
@@ -567,7 +589,7 @@ setMethod(f="plot",
                       mtext("beam 2")
                   } else if (which[w] == 21) {    # beam 3 correlation-amplitude diagnostic plot
                       a <- as.numeric(x@data$a[,3])
-                      c <- as.numeric(x@data$c[,3])
+                      q <- as.numeric(x@data$q[,3])
                       n <- length(a)
                       if (n < 2000 || (!missing(useSmoothScatter) && !useSmoothScatter)) {
                           plot(a, c, xlab="Amplitude", ylab="Correlation",

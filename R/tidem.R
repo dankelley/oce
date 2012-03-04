@@ -11,9 +11,12 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               ## 'j' can be for times, as in OCE
               ##if (!missing(j)) cat("j=", j, "*****\n")
-              i <- match.arg(i, c("coef"))
-              if (i == "coef") return("FIXME: coef")
-              else stop("cannot access \"", i, "\"") # cannot get here
+              if (i == "coef") {
+                  x@data$model$coef
+              } else {
+                  ## I use 'as' because I could not figure out callNextMethod() etc
+                  as(x, "oce")[[i, j, drop]]
+              }
           })
 #
 plot.tidem <- function(x,
@@ -84,7 +87,8 @@ tidemVuf <- function(t, j, lat=NULL)
 {
     debug <- 0
     data("tidedata")
-    tidedata   <- get("tidedata",   pos=globalenv())
+    tidedata <- get("tidedata", pos=globalenv())
+
     a <- tidemAstron(t)
 
     if (debug > 0) print(a)
@@ -320,13 +324,15 @@ tidemAstron <- function(t)
 
 tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\btidem(x, ...) {\n", sep="")
+    oceDebug(debug, "\btidem(x, t, constituents,",
+             "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="")
     if (missing(x))
         stop("must supply 'x'")
     if (inherits(x, "sealevel")) {
         sl <- x
-        oceDebug(debug, "'x' recognized as a sealevel object\n")
-        t <- x@data$time
+        t <- x[["time"]]
+        if (is.null(latitude))
+            latitude <- x[["latitude"]]
     } else {
         if (missing(t))
             stop("must supply 't', since 'x' is not a sealevel object")
@@ -344,10 +350,15 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
 
     cl <- match.call()
     startTime <- t[1]
+    endTime <- tail(t, 1)
+    centralTime <- numberAsPOSIXct((as.numeric(startTime)+as.numeric(endTime))/2, tz=attr(startTime, "tzone"))
+    years <- as.numeric(difftime(endTime,startTime, units="secs")) / 86400 / 365.25
+    if (years > 18.6)
+        warning("Time series spans 18.6 years, but tidem() is ignoring this important fact")
 
     data("tidedata")
-    td <- get("tidedata", pos=globalenv())
-    tc <- td$const
+    tidedata <- get("tidedata", pos=globalenv())
+    tc <- tidedata$const
     ntc <- length(tc$name)
 
     if (debug > 0)
@@ -360,7 +371,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         name <- tc$name[standard][-1]
         freq <- tc$freq[standard][-1]
         kmpr <- tc$kmpr[standard][-1]
-        indices <- c(indices, seq(1:ntc)[standard])
+        indices <- c(indices, seq(1:ntc)[standard]) # FIXME: why is Z0 not chopped, as for last 3 lines?
         if (debug > 0)
             print(name)
     } else {
@@ -375,8 +386,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                 freq <- tc$freq[standard][-1]
                 kmpr <- tc$kmpr[standard][-1]
                 indices <- c(indices, seq(1:ntc)[tc$standard])
-            }
-            else {
+            } else {
                 if (substr(constituents[i], 1, 1) == "-") {
                     cc <- substr(constituents[i], 2, nchar(constituents[i]))
                     delete <- which(tc$name == cc)
@@ -384,8 +394,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                         indices <- indices[indices != delete]
                     else
                         stop("cannot delete constituent '", cc, "' from the list because it is not there")
-                }
-                else {
+                } else {
                     add <- which(tc$name == constituents[i])
                     if (length(add) == 1) {
                         if (0 == sum(indices == add)) {
@@ -400,6 +409,7 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
                 cat("<<", tc$name[indices], ">>\n")
         }
     }
+    ## FIXME: what's going on here?  we already have name, etc.  What is tc2 for??
     indices <- indices[order(indices)]
     tc2 <- list(name=tc$name[indices], freq=tc$freq[indices], kmpr=tc$kmpr[indices])
 
@@ -443,43 +453,39 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         kmpr <- kmpr[-drop.term]
     }
     nc <- length(freq)
-    nt <- length(sl@data$elevation)
+    elevation <- sl[["elevation"]]
+    time <- sl[["time"]]
+    nt <- length(elevation)
     x <- array(dim=c(nt, 2 * nc))
     x[,1] <- rep(1, nt)
-    hour <- unclass(as.POSIXct(sl@data$time, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00
-    if (TRUE) { # isolate test code
-        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
-        t <- unclass(as.POSIXct(sl@data$time, tz="UTC")) - unclass(tRef)
-        hour2pi <- 2 * 4 * atan2(1,1) * t * 3600
-    } else {
-        ##    hour.wrt.centre <- unclass(hour - hour[centralindex])
-        ##    hour2pi <- 2 * pi * hour.wrt.centre
-        hour.offset <- unclass(hour - unclass(as.POSIXct(startTime, tz="UTC"))/3600)
-        hour2pi <- 2 * pi * hour.offset
-    }
-    centralindex <- floor(length(sl@data$time) / 2)
+    pi <- 4 * atan2(1, 1)
+    ## tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+    tRef <- centralTime
+    hour2pi <- 2 * pi * (as.numeric(time, tz="UTC") - as.numeric(tRef)) / 3600
+    oceDebug(debug, "tRef=", tRef, "\n")
+    oceDebug(debug, "nc=", nc, "\n")
     ##    cat(sprintf("hour[1] %.3f\n",hour[1]))
     ##    cat(sprintf("hour.offset[1] %.3f\n",hour.offset[1]))
     for (i in 1:nc) {
-        omega.t <- freq[i] * hour2pi
-        x[,2*i-1] <- sin(omega.t)
-        x[,2*i  ] <- cos(omega.t)
+        oceDebug(debug, "setting coefficients for", name[i], "at", freq[i], "cph", "\n")
+        ft <- freq[i] * hour2pi
+        x[,2*i-1] <- sin(ft)
+        x[,2*i  ] <- cos(ft)
     }
     name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
-    elevation <- sl@data$elevation
     model <- lm(elevation ~ x, na.action=na.exclude)
     if (debug > 0)
         print(summary(model))
     coef  <- model$coefficients
     p.all <- summary(model)$coefficients[,4]
-    amplitude <- phase <- p <-vector("numeric", length=1+nc)
+    amplitude <- phase <- p <- vector("numeric", length=1+nc)
     ## FIXME: should do offset/trend removal explicitly
     amplitude[1] <- coef[1]
     phase[1] <- 0
     p[1] <- p.all[1]
-    for (i in seq(2,nc+1)) {
+    for (i in seq.int(2,nc+1)) {
         is <- 2 * (i - 1)
         ic <- 2 * (i - 1) + 1
         s <- coef[is]                   # coefficient on sin(t)
@@ -487,46 +493,39 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
         if (debug > 0)
             cat(name[i-1], "gives s=",s,"and c=",c,"\n")
         amplitude[i] <- sqrt(s^2 + c^2)
-                                        # sin(t - phase) == cos(phase)*sin(t) - sin(phase)*cos(t)
-                                        #                == s * sin(t) + c * cos(t)
-                                        # thus tan(phase) is -c/s
-        phase[i] <- -atan2(-c, s)   # atan2(y,x)
-                                        # FIXME: is the sign right?
-        if (TRUE) { # isolate test code
-            ## adjust the phases as in webtide()
-        }
+        ## Calculate phase from the coefficients on sin() and cos().  Generally,
+        ##    cos(t - phase) == cos(phase)*cos(t) + sin(phase)*sin(t)
+        ## By the definition of the regression model, we have
+        ##    cos(t - phase) == c * cos(t) + s * sin(t)
+        ## and thus phase is defined by
+        ##    tan(phase) == s/c
+        phase[i] <- atan2(s, c)
+        ## Adjust amplitude phase, as in ~/src/foreman/tide12_r2.f:405
+        j <- which(tidedata$const$name==name[i-1])
+        vuf <- tidemVuf(tRef, j=j, lat=latitude)
+        amplitude[i] <- amplitude[i] / vuf$f
+        phaseOffset <- (vuf$u + vuf$v) * 360 * pi / 180 # the 360 is because tidemVuf returns in cycles
+        phase[i] <- phase[i] + phaseOffset 
         p[i] <- 0.5 * (p.all[is] + p.all[ic])
+        if (debug > 0)
+            cat(name[i-1], "F=", vuf$f, "angle adj=", (vuf$u+vuf$v)*360, "; amp=", amplitude[i], " phase=", phase[i], "\n")
     }
-    if (debug > 0)
-        cat("coef:", coef, "\n")
     phase <- phase * 180 / pi
+    phase <- ifelse(phase < -360, 720 + phase, phase)
+    phase <- ifelse(phase < 0, 360 + phase, phase)
 
-    centraltime <- as.POSIXct(sl@data$t[1] + 3600*centralindex, tz="UTC")
-    if (debug > 0) {
-        cat("centraltime=")
-        print(centraltime)
-        cat("\n")
-        cat("L199 index:",index,"(length=",length(index),")\n")
-    }
+    ## FIXME: if 'inference calculation' is to be done, it should match
+    ##     ~/src/t_tide_v1.3beta/t_tide.m:468
+    ##     ~/src/foreman/tide12_r2.f:422
 
-    if (is.null(latitude)) latitude <- sl@metadata$latitude
-    vuf <- tidemVuf(centraltime, c(0, index), latitude)
-    vu <- c(0, (vuf$v + vuf$u) * 360)
-    phase2 <- phase - vu                # FIXME: plus or minus??
-    negate <- phase2 < 0
-    phase2[negate] <- 360 + phase2[negate]
-                                        #    phase <- phase2
-    if (debug > 0)
-        cat("vu=",vu,"\n")
     data <- list(model=model,
                  call=cl,
-                 startTime=as.POSIXct(startTime),
+                 tRef=tRef,
                  const=c(1,   index),
                  name=c("Z0", name),
                  freq=c(0,    freq),
                  amplitude=amplitude,
                  phase=phase,
-                 phase2=phase2,         # FIXME: remove later
                  p=p)
     rval <- new('tidem')
     rval@metadata <- list(rc=rc)
@@ -537,8 +536,8 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
 
 summary.tidem <- function(object, p, constituent, ...)
 {
-    n <- length(object@data$p)
-    if (!missing(p)) ok <- (object@data$p <= p) else ok = seq(1, n)
+    n <- length(object[["p"]])
+    ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
     if (missing(constituent)) {
         fit <- data.frame(Const=object@data$const[ok],
                           Name=object@data$name[ok],
@@ -559,14 +558,12 @@ summary.tidem <- function(object, p, constituent, ...)
     }
     cat("tidem summary\n-------------\n")
     cat("\nCall:\n")
-    cat(paste(deparse(object@data$call), sep="\n", collapse="\n"), "\n", sep="")
-    cat("\nStart time: ",
-        paste(as.character(object@data$startTime),as.character(attr(object@data$startTime,"tz"))), "\n")
-    cat("RMS misfit to data: ", sqrt(var(object@data$model$residuals)), '\n')
+    cat(paste(deparse(object[["call"]]), sep="\n", collapse="\n"), "\n", sep="")
+    cat("RMS misfit to data: ", sqrt(var(object[["model"]]$residuals)), '\n')
     cat("\nFitted model:\n")
     f <- fit[3:6]
     rownames(f) <- as.character(fit[,2])
-    digits <- 5
+    digits <- 3
     printCoefmat(f, digits=digits,
                  signif.stars=getOption("show.signif.stars"),
                  signif.legend=TRUE,
@@ -582,12 +579,12 @@ predict.tidem <- function(object, newdata, ...)
             freq <- object@data$freq[-1]     # drop first (intercept)
             name <- object@data$name[-1]     # drop "z0" (intercept)
             nc <- length(freq)
-            hour <- unclass(as.POSIXct(newdata, tz="UTC")) / 3600 # hour since 0000-01-01 00:00:00 (FIXME: is tz OK??)
-            nt <- length(hour)
+            tt <- as.numeric(as.POSIXct(newdata, tz="UTC"))
+            nt <- length(tt)
             x <- array(dim=c(nt, 2 * nc))
             x[,1] <- rep(1, nt)
-            hour.offset <- unclass(hour - unclass(as.POSIXct(object@data$startTime, tz="UTC"))/3600)
-            hour2pi <- 2 * pi * hour.offset
+            hour2pi <- 2 * pi * (as.numeric(tt) - as.numeric(object[["tRef"]])) / 3600
+            browser()
             for (i in 1:nc) {
                 omega.t <- freq[i] * hour2pi
                 x[,2*i-1] <- sin(omega.t)
@@ -653,11 +650,13 @@ webtide <- function(action=c("map", "predict"), latitude, longitude, time,
         }
         df <- data.frame(abbrev=abbrev, period=period, ampe=ampe, phasee=phasee, ampu=ampu, phaseu=phaseu, ampv=ampv, phasev=phasev)
         elevation <- u <- v <- rep(0, length(time))
-        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC")
+        ## NOTE: tref is the *central time* for tidem()
+        tRef <- ISOdate(1899, 12, 31, 12, 0, 0, tz="UTC") 
         h <- (as.numeric(time) - as.numeric(tRef)) / 3600
         for (i in 1:nconstituents) {
             vuf <- oce:::tidemVuf(tRef, j=which(tidedata$const$name==abbrev[i]), lat=latitude)
             phaseOffset <- (vuf$u + vuf$v) * 360
+            ## NOTE: phase is *subtracted* here, but *added* in tidem()
             elevation <- elevation + ampe[i] * cos((360 * h / period[i] - phasee[i] + phaseOffset) * pi / 180)
             u <- u + ampu[i] * cos((360 * h / period[i] - phaseu[i] + phaseOffset) * pi / 180)
             v <- v + ampv[i] * cos((360 * h / period[i] - phasev[i] + phaseOffset) * pi / 180)

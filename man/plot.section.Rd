@@ -16,7 +16,7 @@
      contourLevels=NULL,
      contourLabels=NULL,
      stationIndices,
-     coastline=NULL,
+     coastline="coastlineWorld",
      xlim=NULL,
      ylim=NULL,
      map.xlim=NULL,
@@ -27,6 +27,7 @@
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
+     col=par("col"), cex=par("cex"), pch=par("pch"),
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -88,6 +89,11 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{col}{colour, as in \code{\link{par}("col")}.}
+  \item{cex}{value to be used with \code{\link{par}("cex")}, for any use of
+      \code{\link{points}}, e.g. for \code{which="data"}.}
+  \item{pch}{value to be used with \code{\link{par}("pch")} (see \code{cex},
+      above.)}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.}
   \item{\dots}{optional arguments passed to the contouring function,
@@ -105,6 +111,7 @@
         \item \code{which=6} or \code{"oxygen"} for oxygen concentration  contours
         \item \code{which=7} or \code{"phosphate"} for phosphate concentration contours
         \item \code{which=8} or \code{"silicate"} for silicate concentration contours
+        \item \code{which=20} or \code{"data"} for a dot for each data location
         \item \code{which=99} or \code{"map"} for a location map
     }
     The y-axis for the contours is pressure, plotted in the conventional

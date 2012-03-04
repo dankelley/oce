@@ -72,8 +72,8 @@ plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
 \dontrun{
 # Plot stations individually (good for quality-control)
 pdf("a03_stations.pdf")
-for (s in seq_along(na03@data$station)) {
-    plot(na03@data$station[[s]])
+for (s in seq_along(a03[["stationId"]])) {
+    plot(a03[["station", s]])
 }
 dev.off()
 }

@@ -12,17 +12,48 @@ setMethod(f="initialize",
               return(.Object)
           })
 
+setMethod(f="[[",
+          signature="adp",
+          definition=function(x, i, j, drop) {
+              if (i == "a") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$a
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$a
+                  }
+                  rval
+              } else if (i == "q") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$q
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$q
+                  }
+                  rval
+              } else {
+                  as(x, "oce")[[i, j, drop]]
+              }
+          })
+
 setMethod(f="[[<-",
           signature="adp",
           definition=function(x, i, j, value) { # FIXME: use j for e.g. times
-              if (i %in% names(x@metadata)) x@metadata[[i]] <- value
-              else if (i %in% names(x@data)) x@data[[i]] <- value
-              else stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+             } else if (i %in% names(x@data)) {
+                  x@data[[i]] <- value
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
               ## Not checking validity because user may want to shorten items one by one, and check validity later.
               ## validObject(x)
               invisible(x)
           })
-
 
 setValidity("adp",
             function(object) {
@@ -331,6 +362,7 @@ setMethod(f="plot",
                               useSmoothScatter,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                              mai.palette=c(0, 1/8, 0, 3/8),
                               marginsAsImage=FALSE,
                               cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                               xlim, ylim,
@@ -338,16 +370,17 @@ setMethod(f="plot",
                               useLayout=FALSE,
                               coastline="coastlineWorld",
                               main="",
+                              grid=FALSE, grid.col='darkgray', grid.lty='dotted', grid.lwd=1,
                               debug=getOption("oceDebug"),
                               ...)
           {
               debug <- max(0, min(debug, 4))
               rval <- NULL
               oceDebug(debug, "\b\bplot.adp(x, which=", paste(which, collapse=","), ") {\n", sep="")
-              oceDebug(debug, "early in plot.adp:\n")
-              oceDebug(debug, "  par(mar)=", paste(par('mar'), collapse=" "), "\n")
-              oceDebug(debug, "  par(mai)=", paste(par('mai'), collapse=" "), "\n")
-              oceDebug(debug, "  par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
+              oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
+              oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
+              oceDebug(debug, "par(mfg)=", paste(par('mfg'), collapse=" "), "\n")
+              oceDebug(debug, "mai.palette=", paste(mai.palette, collapse=" "), "\n")
               gave.col <- !missing(col)
               if (!missing(ylim))
                   oceDebug(debug, "ylim=c(", paste(ylim, collapse=", "), ")\n")
@@ -428,6 +461,7 @@ setMethod(f="plot",
                       zlim.given <- zlim
                   }
               }
+
               ylim.given <- if (gave.ylim) dots[["ylim"]] else NULL
               if (missing(lwd))
                   lwd <- rep(par('lwd'), length.out=nw)
@@ -445,6 +479,7 @@ setMethod(f="plot",
               which2 <- vector("numeric", length(which))
               for (w in 1:nw) {
                   ww <- which[w]
+                  oceDebug(debug, "which[", w, "] =", ww, "\n")
                   if (is.numeric(ww) || 1 == length(grep("^[0-9]*$", ww))) {
                       which2[w] <- as.numeric(ww)
                   } else {
@@ -505,10 +540,12 @@ setMethod(f="plot",
 
               tt <- x@data$time
               class(tt) <- "POSIXct"              # otherwise image() gives warnings
-              if (gave.zlim && all(which %in% 5:8)) { # single scale for all
-                  zlim <- range(abs(as.numeric(x@data[,,which[1]])), na.rm=TRUE) # FIXME name of item missing, was ma
-                  for (w in 2:length(which)) {
-                      zlim <- range(abs(c(zlim, x@data[[which[w]]])), na.rm=TRUE) # FIXME: check name
+              if (!gave.zlim && all(which %in% 5:8)) { # single scale for all 'a' (amplitude) data
+                  zlim <- range(abs(as.numeric(x[["a"]][,,which[1]-4])), na.rm=TRUE) # FIXME name of item missing, was ma
+                  if (length(which) > 1) {
+                      for (w in 2:length(which)) {
+                          zlim <- range(abs(c(zlim, x[["a"]][,,which[w]-4])), na.rm=TRUE) # FIXME: check name
+                      }
                   }
               }
               ##oceDebug(debug, "useLayout=", useLayout, "\n")
@@ -543,7 +580,7 @@ setMethod(f="plot",
                   if (which[w] %in% images) {                   # image types
                       skip <- FALSE
                       if (which[w] %in% 1:(x@metadata$numberOfBeams)) {    #velocity
-                          oceDebug(debug, "a velocity component image")
+                          oceDebug(debug, "a velocity component image\n")
                           z <- x@data$v[,,which[w]]
                           y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
                           zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
@@ -555,7 +592,11 @@ setMethod(f="plot",
                               ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2]
                           else
                               rep(TRUE, length(x@data$distance))
-                          zlim <- range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE)
+                          #zlim <- range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE)
+                          zlim <- if (gave.zlim)
+                              zlim.given[w,]
+                          else
+                              range(as.numeric(x@data$a[,y.look,]), na.rm=TRUE) 
                           zlab <- c(expression(a[1]),expression(a[2]),expression(a[3]),expression(a[4]))[which[w]-4]
                       } else if (which[w] %in% 9:(8+x@metadata$numberOfBeams)) { # correlation
                           if ("q" %in% names(x@data)) {
@@ -587,6 +628,7 @@ setMethod(f="plot",
                                      adorn=adorn[w],
                                      mgp=mgp,
                                      mar=mar,
+                                     mai.palette=mai.palette,
                                      cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
                                      main=main[w],
                                      debug=debug-1,
@@ -604,6 +646,7 @@ setMethod(f="plot",
                                      adorn=adorn[w],
                                      mgp=mgp,
                                      mar=mar,
+                                     mai.palette=mai.palette,
                                      cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
                                      main=main[w],
                                      debug=debug-1,
@@ -619,8 +662,7 @@ setMethod(f="plot",
                       ##par(mgp=mgp, mar=mar, cex=cex)
                       tlim <- range(x@data$time)
                       if (which[w] == 13) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
+                          if (haveTimeImages) drawPalette(debug=debug-1)
                           oce.plot.ts(x@data$time, x@data$salinity,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
                                       ylim=if(gave.ylim) ylim[w,],
@@ -637,8 +679,7 @@ setMethod(f="plot",
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
                       }
                       if (which[w] == 14) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$temperature,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
                                       ylim=if(gave.ylim) ylim[w,],
@@ -652,13 +693,11 @@ setMethod(f="plot",
                                       type=type,
                                       mgp=mgp,
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
-                                      drawTimeRange=drawTimeRange,
                                       adorn=adorn[w],
                                       debug=debug-1)
                       }
                       if (which[w] == 15) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$pressure,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
                                       ylim=if(gave.ylim) ylim[w,],
@@ -675,8 +714,7 @@ setMethod(f="plot",
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
                       }
                       if (which[w] == 16) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$heading,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
                                       ylim=if(gave.ylim) ylim[w,],
@@ -693,8 +731,7 @@ setMethod(f="plot",
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
                       }
                       if (which[w] == 17) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$pitch,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
                                       ylim=if(gave.ylim) ylim[w,],
@@ -711,8 +748,7 @@ setMethod(f="plot",
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
                       }
                       if (which[w] == 18) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$roll,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
                                       ylim=if(gave.ylim) ylim[w,],
@@ -729,9 +765,8 @@ setMethod(f="plot",
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
                       }
                       if (which[w] == 19) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
-                          if (x@metadata$numberOfBeams > 0)
+                          if (x@metadata$numberOfBeams > 0) {
+                              if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,1], 1, mean, na.rm=TRUE),
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -745,15 +780,16 @@ setMethod(f="plot",
                                           type=type,
                                           mgp=mgp,
                                           mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          mai.palette=mai.palette,
                                           drawTimeRange=drawTimeRange,
                                           adorn=adorn[w], ...)
-                              else
+                          } else {
                                   warning("cannot plot beam/velo 1 because the device no beams")
+                          }
                       }
                       if (which[w] == 20) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
-                          if (x@metadata$numberOfBeams > 1)
+                          if (x@metadata$numberOfBeams > 1) {
+                              if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,2], 1, mean, na.rm=TRUE),
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -767,15 +803,16 @@ setMethod(f="plot",
                                           type=type,
                                           mgp=mgp,
                                           mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          mai.palette=mai.palette,
                                           drawTimeRange=drawTimeRange,
                                           adorn=adorn[w], ...)
-                              else
-                                  warning("cannot plot beam/velo 2 because the device has only ", x@metadata$numberOfBeams, " beams")
+                          } else {
+                              warning("cannot plot beam/velo 2 because the device has only ", x@metadata$numberOfBeams, " beams")
+                          }
                       }
                       if (which[w] == 21) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
-                          if (x@metadata$numberOfBeams > 2)
+                          if (x@metadata$numberOfBeams > 2) {
+                              if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,3], 1, mean, na.rm=TRUE),
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -789,15 +826,16 @@ setMethod(f="plot",
                                           type=type,
                                           mgp=mgp,
                                           mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          mai.palette=mai.palette,
                                           drawTimeRange=drawTimeRange,
                                           adorn=adorn[w], ...)
-                              else
+                          } else {
                                   warning("cannot plot beam/velo 3 because the device has only", x@metadata$numberOfBeams, "beams")
+                          }
                       }
                       if (which[w] == 22) {
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
-                          if (x@metadata$numberOfBeams > 3)
+                          if (x@metadata$numberOfBeams > 3) {
+                              if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,4], 1, mean, na.rm=TRUE),
                                           xlim=if(gave.xlim) xlim[w,] else tlim,
                                           ylim=if(gave.ylim) ylim[w,],
@@ -811,16 +849,17 @@ setMethod(f="plot",
                                           type=type,
                                           mgp=mgp,
                                           mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          mai.palette=mai.palette,
                                           drawTimeRange=drawTimeRange,
                                           adorn=adorn[w], ...)
-                              else
-                                  warning("cannot plot beam/velo 4 because the device has only", x@metadata$numberOfBeams, "beams")
+                          } else {
+                              warning("cannot plot beam/velo 4 because the device has only", x@metadata$numberOfBeams, "beams")
+                          }
                       }
                       if (which[w] %in% 55) { # heaving
-                          if (haveTimeImages)
-                              drawPalette(debug=debug-1)
-                      dt <- as.numeric(x@data$time[2]) - as.numeric(x@data$time[1])
-                      oce.plot.ts(x@data$time, dt * cumsum(apply(x@data$v[,,3], 1, mean)),
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
+                          dt <- as.numeric(x@data$time[2]) - as.numeric(x@data$time[1])
+                          oce.plot.ts(x@data$time, dt * cumsum(apply(x@data$v[,,3], 1, mean)),
                                   xlim=if(gave.xlim) xlim[w,] else tlim,
                                   ylim=if(gave.ylim) ylim[w,],
                                   xaxs="i",
@@ -833,6 +872,7 @@ setMethod(f="plot",
                                   type=type,
                                   mgp=mgp,
                                   mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                  mai.palette=mai.palette,
                                   drawTimeRange=drawTimeRange,
                                   adorn=adorn[w], ...)
                       drawTimeRange <- FALSE
@@ -1040,6 +1080,8 @@ setMethod(f="plot",
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
+                  if (grid)
+                      grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
                   if (w <= adorn.length) {
                       t <- try(eval(adorn[w]), silent=TRUE)
                       if (class(t) == "try-error")

@@ -9,22 +9,38 @@
 
 \title{Class to store acoustic Doppler profiler data}
 
-\description{Class to store acoustic Doppler proviler data, with standard
-    slots \code{metadata}, \code{data} and \code{processingLog}.}
-
+\description{Class to store acoustic Doppler profiler data, holding the three
+    standard slots used in all objects in Oce.  The \code{metadata} slot
+    contains various items relating to the dataset, including source file name,
+    sampling rate, velocity resolution and scale, etc.  The
+    \code{processingLog} is in standard form and needs little comment.  The
+    \code{data} slot holds a numeric matrix \code{v} of velocities in m/s, with
+    the first index indicating time, the second indicating bin number, and the
+    third indicating beam number.  The meanings of the beams depends on
+    whether the object is in beam coordinates, frame coordinates, or earth
+    coordinates.  The \code{data} slot also contains identically-dimensioned
+    raw matrices \code{a} and \code{q}, holding measures of signal strength and
+    data quality quality, respectively.  It also contains a series of vectors,
+    e.g. \code{time}, \code{temperature} and \code{pressure}, etc., depending
+    on what sensors are included in the package.  Finally, there is a vector
+    \code{distance} that indicates the bin locations.  For all of these
+    quantities, the details can be different for different instrument types,
+    and it is assumed that the user will be familiar with the details.}
 
 \section{Methods}{
 
-    \subsection{Extracting values}{Data may be accessed as e.g.
-        \code{adv[["u1"]]}, where the string could also be \code{"u2"}, etc.,
-        for the other velocity components.  Use \code{"heading"},
-        \code{"pitch"} or \code{"roll"} for the instrument angles.  Use
-        \code{"temperature"} or \code{"pressure"} for pressure, or
-        \code{"time"} for time.  Location data may be accessed with
-        \code{adp[["latitude"]]} and \code{adp[["longitude"]]}, which return
-        scalars.}
+    \subsection{Extracting values}{Matrix data may be accessed as e.g.  for an
+        adv object named \code{d}, the data are provided by \code{d[["v"]]},
+        \code{d[["a"]]}, and \code{d[["q"]]}.  As a convenience, the last two
+        of these can be accessed as numeric (as opposed to raw) values by e.g.
+        \code{d[["a", "numeric"]]}.  The vectors are accessed in a similar way,
+        e.g. \code{d[["heading"]]}, etc.  Quantities in the \code{metadata}
+        slot are also available by name, e.g. \code{d[["velocityResolution"]]},
+        etc.}
 
-    \subsection{Assigning values}{(not available yet)}
+    \subsection{Assigning values}{This follows the standard form, e.g. to
+        increase all velocity data by 1 cm/s, use \code{d[["v"]] <- 0.01 +
+            d[["v"]]}.}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(d)}) displays information about an ADV object named

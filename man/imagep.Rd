@@ -16,8 +16,8 @@
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
             mgp[2]+1/2, 
             1/2),
-      xaxs="i",
-      yaxs="i",
+      mai.palette=c(0, 1/8, 0, 3/8),
+      xaxs="i", yaxs="i",
       cex=par("cex"),
       adorn,
       axes=TRUE,
@@ -77,6 +77,7 @@
     tighter than the R default, in order to use more space for the
     data and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
+  \item{mai.palette}{margins, in inches, for the palette}
   \item{xaxs}{character indicating whether image should extend to edge
     of x axis (with value \code{"i"}) or not; see
     \code{\link[graphics]{par}}("xaxs").}

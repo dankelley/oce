@@ -186,28 +186,34 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 
 
 oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
-                        drawTimeRange=TRUE, xaxs="r", grid=TRUE, adorn=NULL, fill=FALSE,
+                        drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
+                        xaxs="i", yaxs="i",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
-                        mar=c(mgp[1]+if(nchar(xlab)>0) 1 else 0.5,
-                              mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
-                              mgp[2]+1,
-                              mgp[2]+3/4),
+                        mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
+                        mai.palette=c(0, 1/8, 0, 3/8),
                         main="",
                         despike=FALSE,
                         axes=TRUE,
+                        marginsAsImage=FALSE,
+                        grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
                         debug=getOption("oceDebug"),
                         ...)
 {
     ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
-    oceDebug(debug, "\boce.plot.ts(...,debug=", debug, ", type=\"", type, "\", mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
-    oceDebug(debug, "mgp=",mgp,"\n")
+    oceDebug(debug, "\boce.plot.ts(..., debug=", debug, ", type=\"", type, "\", \n", sep="")
+    oceDebug(debug, "  mar=c(", paste(mar, collapse=", "), "),\n", sep="")
+    oceDebug(debug, "  mai.palette=c(", paste(mar, collapse=", "), "),\n", sep="")
+    oceDebug(debug, "  mgp=c(",paste(mgp, collapse=", "),"),\n", sep="")
+    oceDebug(debug, "  ...) {\n", sep="")
     oceDebug(debug, "length(x)", length(x), "; length(y)", length(y), "\n")
     oceDebug(debug, "cex=",cex," cex.axis=", cex.axis, " cex.main=", cex.main, "\n")
     oceDebug(debug, "mar=c(",paste(mar, collapse=","), ")\n")
+    oceDebug(debug, "marginsAsImage=",marginsAsImage, ")\n")
     oceDebug(debug, "x has timezone", attr(x[1], "tzone"), "\n")
+    pc <- paletteCalculations(mai=mai.palette)
     par(mgp=mgp, mar=mar)
     args <- list(...)
     xlimGiven <- !missing(xlim)
@@ -224,6 +230,16 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
         y <- rep(y, length(x))
     if (despike)
         y <- despike(y)
+    if (marginsAsImage) {
+        ## FIXME: obey their mar?
+        the.mai <- c(pc$omai[1],
+                     pc$maiLHS,
+                     pc$omai[3],
+                     pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
+        the.mai <- clipmin(the.mai, 0)         # just in case
+        par(mai=the.mai, cex=cex)
+        drawPalette(mai=mai.palette)
+    }
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
@@ -266,6 +282,8 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
             axis(2, cex.axis=cex.axis, cex=cex.axis)
         axis(4, labels=FALSE)
     }
+    if (grid)
+        grid(col=grid.col, lty=grid.lty, lwd=grid.lwd)
     if (!is.null(adorn)) {
         t <- try(eval(adorn, enclos=parent.frame()), silent=TRUE)
         if (class(t) == "try-error")
@@ -311,7 +329,7 @@ oce.as.POSIXlt <- function (x, tz = "")
     if (inherits(x, "POSIXlt"))
         return(x)
     if (inherits(x, "Date"))
-        return(.Internal(Date2POSIXlt(x)))
+        return(as.POSIXlt(x))
     tzone <- attr(x, "tzone")
     if (inherits(x, "date") || inherits(x, "dates"))
         x <- as.POSIXct(x)
@@ -325,7 +343,7 @@ oce.as.POSIXlt <- function (x, tz = "")
         stop(gettextf("do not know how to convert '%s' to class \"POSIXlt\"", deparse(substitute(x))))
     if (missing(tz) && !is.null(tzone))
         tz <- tzone[1]
-    .Internal(as.POSIXlt(x, tz))
+    as.POSIXlt(x, tz)
 }
 
 oceEdit <- function(x, item, value, action, reason="", person="",
@@ -1079,12 +1097,12 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     } else if (d <= 60 * 60 * 24 * 3) {        # under 3 days: label day; show 1-hour subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
-        z <- seq(t.start, t.end, by="day")
+        z <- seq(t.start, t.end, by="hour")
         z.sub <- seq(t.start, t.end, by="hour")
         oceDebug(debug, vectorShow(z, "Time range is under 3 days; z="))
         oceDebug(debug, vectorShow(z.sub, "Time range is under 3 days; z.sub="))
         if (missing(format))
-            format <- "%b %d"
+            format <- "%H"             #b %d"
     } else if (d <= 60 * 60 * 24 * 5) {        # under 5 days: label day; show 2-h subticks
         t.start <- trunc(rr[1], "day")
         t.end <- trunc(rr[2] + 86400, "day")
@@ -1236,11 +1254,13 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     ocex.axis <- par('cex.axis')
     ocex.main <- par('cex.main')
     omgp <- par('mgp')
-    par(cex=cex, cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
+    par(cex.axis=cex.axis, cex.main=cex.main, mgp=mgp, tcl=-0.5)
     ##axis(side, at=z, line=0, labels=labels, cex=cex, cex.axis=cex.axis, cex.main=cex.main, mar=mar, mgp=mgp)
-    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex=cex, cex.main=cex.main, cex.axis=cex.axis, ...)
-    par(cex=ocex, cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
+    axis(side, at=z, line=0, labels=labels, mgp=mgp, cex.main=cex.main, cex.axis=cex.axis, ...)
+    par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
     oceDebug(debug, "\b\b} # oce.axis.ts()\n")
+    zzz <- as.numeric(z)
+    par(xaxp=c(min(zzz), max(zzz), -1+length(zzz)))
     invisible()
 }
 
@@ -1406,5 +1426,16 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     }
     oceDebug(debug, "\b\b} # plotInset()\n")
     invisible()
+}
+
+decodeTime <- function(time, time.formats=c("%b %d %Y %H:%M:%s", "%Y%m%d"), tz="UTC")
+{
+    rval <- NA
+    for (format in time.formats) {
+        if (!is.na(rval <-  as.POSIXct(time, format=format, tz=tz))) {
+            break
+        }
+    }
+    rval
 }
 

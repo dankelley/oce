@@ -16,17 +16,16 @@
   \item{tname}{name of time column.}
 }
 
-\details{It is assumed that the instrument clock matches the real time
-  at the start of the sampling, and that the clock drifts linearly
-  (i.e. is uniformly fast or slow) over the sampling interval.  Linear
-  interpolation is used to infer the values of all variables in the
-  \code{x@data}.  The data length is altered in this process, e.g. a
-  slow instrument clock (positive \code{slowEnd}) takes too few samples
-  in a given time interval, so \code{undriftTime} will increase the
-  number of data.}
+\details{It is assumed that the instrument clock matches the real time at the
+    start of the sampling, and that the clock drifts linearly (i.e. is
+    uniformly fast or slow) over the sampling interval.  Linear interpolation
+    is used to infer the values of all variables in the \code{data} slot.  The
+    data length is altered in this process, e.g. a slow instrument clock
+    (positive \code{slowEnd}) takes too few samples in a given time interval,
+    so \code{undriftTime} will increase the number of data.}
 
-\value{An object of the same class as \code{x}, with \code{x@data}
-  adjusted appropriately.}
+\value{An object of the same class as \code{x}, with the \code{data} slot
+    adjusted appropriately.}
 
 \examples{
 \dontrun{

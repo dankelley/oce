@@ -19,6 +19,7 @@
      fill='lightgray',
      axes=TRUE, cex.axis=par('cex.axis'),
      add=FALSE, inset=FALSE,
+     geographical=FALSE,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -76,6 +77,8 @@
       effect is to prevent the present function from adjusting margins, which
       is necessary because margin adjustment is the basis for the method
       used by \code{\link{plotInset}}.}
+  \item{geographical}{set to \code{TRUE} to get latitude and longitude labels
+      that are always positive.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For

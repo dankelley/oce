@@ -69,23 +69,23 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     oceDebug(debug, "dp:", paste(unique(diff(p)), collapse=","), "\n")
     serialNumber <- readBin(buf[pp+2], "integer", size=2, n=len, signed=FALSE, endian="little")
     serialNumber <- .Call("unwrap_sequence_numbers", serialNumber, 2)
-    velocityScale <- 0.1e-3
+    velocityScale <- 1e-4
     time <- start[1] + (serialNumber - serialNumber[1]) * deltat
     deltat <- mean(diff(as.numeric(time))) # FIXME: should rename this to avoid confusion
     res <- new("adv", time=time, filename=filename)
     ## FIXME: emulate this direct injection in other functions, in hopes of reducing memory footprint
     res@data$v <- array(numeric(), dim=c(len, 3))
-    res@data$v[,1] <- readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
-    res@data$v[,2] <- readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
-    res@data$v[,3] <- readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little") * velocityScale
+    res@data$v[,1] <- velocityScale * readBin(buf[pp+4], "integer", size=2, n=len, signed=TRUE, endian="little")
+    res@data$v[,2] <- velocityScale * readBin(buf[pp+6], "integer", size=2, n=len, signed=TRUE, endian="little")
+    res@data$v[,3] <- velocityScale * readBin(buf[pp+8], "integer", size=2, n=len, signed=TRUE, endian="little")
     res@data$a <- array(raw(), dim=c(len, 3))
     res@data$a[,1] <- as.raw(readBin(buf[p+10], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$a[,2] <- as.raw(readBin(buf[p+11], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$a[,3] <- as.raw(readBin(buf[p+12], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    res@data$c <- array(raw(), dim=c(len, 3))
-    res@data$c[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    res@data$c[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
-    res@data$c[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$q <- array(raw(), dim=c(len, 3))
+    res@data$q[,1] <- as.raw(readBin(buf[p+13], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$q[,2] <- as.raw(readBin(buf[p+14], "integer", size=1, n=len, signed=FALSE, endian="little"))
+    res@data$q[,3] <- as.raw(readBin(buf[p+15], "integer", size=1, n=len, signed=FALSE, endian="little"))
     res@data$temperature <- 0.01 * readBin(buf[pp+16], "integer", size=2, n=len, signed=TRUE, endian="little")
     res@data$pressure <- readBin(buf[pp+18], "integer", size=2, n=len, signed=FALSE, endian="little") # may be 0 for all
     ## FIXME: Sontek ADV transformation matrix equal for all units?  (Nortek Vector is not.)
@@ -117,7 +117,10 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      subsampleStart=time[1], # FIXME: this seems wrong
                      subsampleEnd=time[length(time)], # FIXME: this seems wrong
                      subsampleDeltat=deltat,
+                     ##velocityScale=velocityScale,
                      coordinateSystem="xyz", # guess
+                     velocityResolution=velocityScale,
+                     velocityMaximum=velocityScale * 2^15,
                      oceCoordinate="xyz",    # guess
                      orientation="upward") # guess
     warning("sontek adv in serial format lacks heading, pitch and roll: user must fill in")
@@ -201,7 +204,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                      numberOfSamples=NA, # fill in later
                      numberOfBeams=NA, # fill in later
                      measurementDeltat=1,
-                     velocityScaleFactor=1)
+                     velocityScale=1e-4)
     if (header) {
         ##
         ## Slice out three headers
@@ -338,8 +341,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 
         metadata$velocityRangeIndex <- as.numeric(deploymentParameters[20])
         oceDebug(debug, "velocityRangeIndex=", metadata$velocityRangeIndex, "\n")
-        if (metadata$velocityRangeIndex == 4)
-            metadata$velocityScaleFactor <- 2 # range indices 1 through 3 have factor 1
+        if (metadata$velocityRangeIndex == 4) {
+            metadata$velocityScale <- 2 * metadata$velocityScale # range 4 differs from ranges 1:3
+        }
 
         coordinateSystemCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
         metadata$coordinateSystem <- c("beam", "xyz", "enu")[1+coordinateSystemCode]
@@ -481,13 +485,14 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     temperature <- array(numeric(), dim=c(ntotal, 1))
     pressure <- array(numeric(), dim=c(ntotal, 1))
     a <- array(raw(), dim=c(ntotal, 3))
-    c <- array(raw(), dim=c(ntotal, 3))
+    q <- array(raw(), dim=c(ntotal, 3))
     rowOffset <- 0
 
     oceDebug(debug, "dataLength=", dataLength, "\n")
     oceDebug(debug, "burstHeaderLength=",burstHeaderLength,"\n")
-
     oceDebug(debug, "burstBufindexFocus:", paste(burstBufindexFocus, collapse=" "), "\n")
+
+    velocityScale <- metadata$velocityScale
 
     for (b in 1:nburstsFocus) {
         n <- samplesPerBurstFocus[b]
@@ -497,15 +502,15 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
         if (n != dim(m)[1])
             stop("something is wrong with the data.  Perhaps the record length is not the assumed value of ", dataLength)
         r <- rowOffset + 1:n
-        v[r,1] <- 1e-4 * readBin(t(m[,1:2]), "integer", n=n, size=2, signed=TRUE, endian="little")
-        v[r,2] <- 1e-4 * readBin(t(m[,3:4]), "integer", n=n, size=2, signed=TRUE, endian="little")
-        v[r,3] <- 1e-4 * readBin(t(m[,5:6]), "integer", n=n, size=2, signed=TRUE, endian="little")
+        v[r,1] <- velocityScale * readBin(t(m[,1:2]), "integer", n=n, size=2, signed=TRUE, endian="little")
+        v[r,2] <- velocityScale * readBin(t(m[,3:4]), "integer", n=n, size=2, signed=TRUE, endian="little")
+        v[r,3] <- velocityScale * readBin(t(m[,5:6]), "integer", n=n, size=2, signed=TRUE, endian="little")
         a[r,1] <- m[,7]
         a[r,2] <- m[,8]
         a[r,3] <- m[,9]
-        c[r,1] <- m[,10]
-        c[r,2] <- m[,11]
-        c[r,3] <- m[,12]
+        q[r,1] <- m[,10]
+        q[r,2] <- m[,11]
+        q[r,3] <- m[,12]
         time[r] <- as.numeric(burstTimeFocus[b]) + seq(0, n-1) / metadata$samplingRate
         ##cat(sprintf("%.2f %.2f %.2f\n", time[r[1]], time[r[2]], time[r[3]]))
         ##cat("time=", format(time[r[1]]), ";", format(burstTimeFocus[b]), "\n")
@@ -559,9 +564,9 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     if (any(iii < 0))
         stop("got negative numbers in iii, which indicates a coding problem; range(iii)=",paste(range(iii), collapse=" to "))
     oceDebug(debug, "dim(v)=", paste(dim(v), collapse=" "),"\n")
-    v <- v[iii,] * metadata$velocityScaleFactor
+    v <- v[iii,]
     a <- a[iii,]
-    c <- c[iii,]
+    q <- q[iii,]
     time <- time[iii]
     pressure <- pressure[iii]
     temperature <- temperature[iii]
@@ -570,9 +575,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
     roll <- roll[iii]
     metadata$numberOfSamples=dim(v)[1]
     metadata$numberOfBeams=dim(v)[2]
-    data <- list(v=v,
-                 a=a,
-                 c=c,
+
+    metadata$velocityResolution <- velocityScale
+    metadata$velocityMaximum <- velocityScale * 2^15
+
+    data <- list(v=v, a=a, q=q,
                  time=time,
                  heading=heading,
                  pitch=pitch,
@@ -581,6 +588,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
                  pressure=pressure)
     res <- new("adv")
     res@data <- data
+
     res@metadata <- metadata
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
@@ -682,17 +690,19 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
                  ncol=itemsPerSample, byrow=TRUE)
     len <- dim(ts)[1]
     v <- array(numeric(), dim=c(len, 3))
-    v[,1] <- ts[,3] / 100
-    v[,2] <- ts[,4] / 100
-    v[,3] <- ts[,5] / 100
+    ## FIXME: the odd velocity scale is because text files use cm/s.
+    velocityScale <- 1e-2
+    v[,1] <- velocityScale * ts[,3]
+    v[,2] <- velocityScale * ts[,4]
+    v[,3] <- velocityScale * ts[,5]
     a <- array(raw(), dim=c(len, 3))
     a[,1] <- as.raw(ts[,6])
     a[,2] <- as.raw(ts[,7])
     a[,3] <- as.raw(ts[,8])
-    c <- array(raw(), dim=c(len, 3))
-    c[,1] <- as.raw(ts[,9])
-    c[,2] <- as.raw(ts[,10])
-    c[,3] <- as.raw(ts[,11])
+    q <- array(raw(), dim=c(len, 3))
+    q[,1] <- as.raw(ts[,9])
+    q[,2] <- as.raw(ts[,10])
+    q[,3] <- as.raw(ts[,11])
     temperature <- ts[,15]
     pressure <- ts[,16]
     rm(ts)                              # may run tight on space
@@ -701,14 +711,12 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
     ok <- (from - 1/2) <= tt & tt <= (to + 1/2) # give 1/2 second extra
     v <- v[ok,]
     a <- a[ok,]
-    c <- c[ok,]
+    q <- q[ok,]
     tt <- tt[ok]
     heading <- approx(t, heading, xout=tt, rule=2)$y
     pitch <- approx(t, pitch, xout=tt, rule=2)$y
     roll <- approx(t, roll, xout=tt, rule=2)$y
-    data <- list(v,
-                 a,
-                 c,
+    data <- list(v=v, a=a, q=q,
                  time=tt,
                  heading=heading,
                  pitch=pitch,
@@ -722,6 +730,8 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
                      longitude=longitude,
                      numberOfSamples=dim(v)[1],
                      numberOfBeams=dim(v)[2],
+                     velocityResolution=velocityScale/10, # FIXME: guessing on the resolution for text files
+                     velocityMaximum=velocityScale/10 * 2^15, # FIXME: guessing on the max velocity for text files
                      cpuSoftwareVerNum=metadata$cpuSoftwareVerNum,
                      dspSoftwareVerNum=metadata$dspSoftwareVerNum,
                      transformationMatrix=if(!missing(transformationMatrix)) transformationMatrix else NULL,

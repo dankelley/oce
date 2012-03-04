@@ -21,7 +21,7 @@
 \examples{
 library(oce)
 data(ctd) 
-ctd@data$pressure <- ctd@data$pressure + 3
+ctd[["pressure"]] <- ctd[["pressure"]] + 3
 ctdNew <- ctdUpdateHeader(ctd)
 }
 

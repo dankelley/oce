@@ -45,7 +45,6 @@
 
 \examples{
 library(oce)
-opar <- par(no.readonly = TRUE)
 data(a03)
 
 # Dynamic height and geostrophy
@@ -54,29 +53,28 @@ par(mar=c(4.5,4.5,2,1))
 
 # Left-hand column: whole section
 # (The smoothing lowers Gulf Stream speed greatly)
-a03WestToEast <- subset.oce(a03, indices=124:1)
+a03WestToEast <- subset.oce(a03, indices=123:1)
 dh <- swDynamicHeight(a03WestToEast)
-plot(dh$distance, dh$height, type='p', xlab="", ylab="Dyn. Height [m]")
+plot(dh$distance, dh$height, type='p', xlab="", ylab="dyn. height [m]")
 ok <- !is.na(dh$height)
 smu <- supsmu(dh$distance, dh$height)
 lines(smu, col="blue")
-f <- coriolis(a03@data$station[[1]]@metadata$latitude)
-g <- gravity(a03@data$station[[1]]@metadata$latitude)
+f <- coriolis(a03[["station", 1]][["latitude"]])
+g <- gravity(a03[["station", 1]][["latitude"]])
 v <- diff(smu$y)/diff(smu$x) * g / f / 1e3 # 1e3 converts to m
-plot(smu$x[-1], v, type='l', col="blue", xlab="Distance [km]", ylab="Velocity [m/s]")
+plot(smu$x[-1], v, type='l', col="blue", xlab="distance [km]", ylab="velocity [m/s]")
 abline(h=0)
 
-# Right-hand column: Gulf Stream region, unsmoothed
-GS <- subset.oce(a03, indices=124:102)
-dh.GS <- swDynamicHeight(GS)
-plot(dh.GS$distance, dh.GS$height, type='b', xlab="", ylab="Dyn. Height [m]")
+# right-hand column: gulf stream region, unsmoothed
+gs <- subset.oce(a03, indices=124:102)
+dh.gs <- swDynamicHeight(gs)
+plot(dh.gs$distance, dh.gs$height, type='b', xlab="", ylab="dyn. height [m]")
 grid()
-v <- diff(dh.GS$height)/diff(dh.GS$distance) * g / f / 1e3
-plot(dh.GS$distance[-1], v, type='l', col="blue",
-  xlab="Distance [km]", ylab="Velocity [m/s]")
+v <- diff(dh.gs$height)/diff(dh.gs$distance) * g / f / 1e3
+plot(dh.gs$distance[-1], v, type='l', col="blue",
+  xlab="distance [km]", ylab="velocity [m/s]")
 grid()
 abline(h=0)
-par(opar)
 }
 
 \references{Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic

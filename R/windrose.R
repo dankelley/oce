@@ -18,8 +18,9 @@ setMethod(f="[[",
               else stop("cannot access \"", i, "\"") # cannot get here
           })
 
-as.windrose <- function(x, y, dtheta = 15)
+as.windrose <- function(x, y, dtheta = 15, debug=getOption("oceDebug"))
 {
+    oceDebug(debug, "\bas.windrose(x, y, dtheta=", dtheta, ", debug=", debug, ") {\n", sep="")
     if (inherits(x, "met")) {
         tmp <- x
         x <- tmp[["u"]]
@@ -28,31 +29,44 @@ as.windrose <- function(x, y, dtheta = 15)
     ok <- !is.na(x) & !is.na(y)
     x <- x[ok]
     y <- y[ok]
+    xlen <- length(x)
     pi <- atan2(1, 1) * 4
     dt <- dtheta * pi / 180
     dt2 <- dt / 2
     R <- sqrt(x^2 + y^2)
     angle <- atan2(y, x)
     L <- max(R, na.rm=TRUE)
-    nt <- 2 * pi / dt
+    nt <- round(2 * pi / dt)
     count <- mean <- vector("numeric", nt)
     fives <- matrix(0, nt, 5)
-    theta <- seq(-pi, pi, length.out=nt)
+    theta <- seq(-pi+dt2, pi-dt2, length.out=nt)
+    ## The bin-detection code was faulty until 2012-02-07.  This
+    ## was pointed out by Alex Deckmyn, who also suggested the
+    ## present solution.  His issue reports, available on 
+    ## github.com/dankelley/oce/issues, are a model of
+    ## patience and insight.
+    ai <- 1 + floor((angle+pi)/dt)
+    ai <- (ai-1)%%nt + 1 # clean up problems (thanks, adeckmyn at github!!)
+    if (min(ai) < 1)
+        stop("problem setting up bins (ai<1)")
+    if (max(ai) > nt)
+        stop("problem setting up bins (ai>xlen)")
     for (i in 1:nt) {
-        if (theta[i] <= pi)
-            inside <- (angle < (theta[i] + dt2)) & ((theta[i] - dt2) <= angle)
-        else {
-            inside <- ((2*pi+angle) < (theta[i] + dt2)) & ((theta[i] - dt2) <= (2*pi+angle))
-        }
+        inside <- ai==i
+        oceDebug(debug, sum(inside), "counts for angle category", i,
+                 "(", round(180/pi*(theta[i]-dt2), 4), "to", round(180/pi*(theta[i]+dt2), 4), "deg)\n")
         count[i] <- sum(inside)
         mean[i] <- mean(R[inside], na.rm=TRUE)
         fives[i,] <- fivenum(R[inside])
     }
+    if (sum(count) != xlen)
+        stop("miscount in angles")
     res <- new('windrose')
     res@data <- list(n=length(x), x.mean=mean(x, na.rm=TRUE), y.mean=mean(y, na.rm=TRUE), theta=theta*180/pi,
                      count=count, mean=mean, fives=fives)
     res@metadata <- list(dtheta=dtheta)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    oceDebug(debug, "\b} # as.windrose()\n", sep="")
     res
 }
 

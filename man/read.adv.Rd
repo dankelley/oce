@@ -72,7 +72,6 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
     colon-separated format, then this interval is divided by the sampling interval, to get the
     stride length. \emph{BUG:} \code{by} only partially works; see the \dQuote{Bugs} section below.}
     
-
   \item{header}{a boolean indicating whether the file contains a header at the start.  (This will
     not be the case for files that are created by data loggers that chop the raw data up into a
     series of sub-files, e.g. once per hour.)}
@@ -144,6 +143,12 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
   }
 
+  In ADV data files, velocities are coded to signed 2-byte integers, with a
+  scale factor being used to convert to velocity in metres per second.  These
+  two facts control the maximum recordable velocity and the velocity
+  resolution, values that may be retrieved for an ADV object name \code{d} with
+  \code{d[["velocityMaximum"]]} and \code{d[["velocityResolution"]]}.
+  
 }
 
 \section{Special considerations for NorTek files}{
