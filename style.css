@@ -12,8 +12,8 @@ tt{
   font-size:90%;
 }
 pre,code{
-  margin-top: -1em;
-  margin-bottom: -1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
   margin-left: 1em;
   font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
   font-size:90%;
@@ -42,13 +42,10 @@ h1 {
 }
 @media only screen and (max-width: 481px), only screen and (max-device-width: 480px) {
     body{
-        -webkit-text-size-adjust:none;
         padding:5px;
-        width:100%;
-        font: 3em Arial, Helvetica, sans-serif;
+        font: 3em Verdana, Tahoma, Arial, Helvetica, sans-serif;
     }
     pre{
-        margin-top:1em;
         font-family: Monaco,"Courier New","DejaVu Sans Mono","Bitstream Vera Sans Mono",monospace;
     }
 }
