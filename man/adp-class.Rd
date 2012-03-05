@@ -26,12 +26,12 @@
     
     The geometry of a four-beam profiler is illustrated below, for
     \code{d[["beamAngle"]]} equal to 20 degrees, \code{d[["bin1Distance"]]}
-    equal to 2m, and \code{d[["cellSize"]]} equal to 0.5m.   (In the diagram,
-    the viewer is in the plane containing two beams that are not shown, and the
-    two visible beams are separated by 40 degrees.)
+    equal to 2m, and \code{d[["cellSize"]]} equal to 1m.   (In the diagram, the
+    viewer is in the plane containing two beams that are not shown, so the two
+    visible beams are separated by 40 degrees.)
     
-    \if{html}{\figure{adpgeometry.png}{options: width=400px
-            alt="Figure: adpgeometry.png"}}
+    \if{html}{\figure{adpgeometry.png}{options: width=400px alt="Figure:
+            adpgeometry.png"}}
     
     The \code{data} slot holds a variety of items.  Again, assuming an object
     named \code{d}, \code{d[["v"]]} is a three-dimensional numeric matrix of
