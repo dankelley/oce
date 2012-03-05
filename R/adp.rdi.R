@@ -194,6 +194,8 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
     speedOfSound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
     oceDebug(debug, "speedOfSound = ", speedOfSound, "\n")
+    transducerDepth <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
+    oceDebug(debug, "transducerDepth = ", transducerDepth, "\n")
     if (speedOfSound < 1400 || speedOfSound > 1600)
         warning("speedOfSound is ", speedOfSound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
     list(instrumentType="adcp",
@@ -216,6 +218,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
          numberOfCells=numberOfCells,
          pingsPerEnsemble=pingsPerEnsemble,
          cellSize=cellSize,
+         transducerDepth=transducerDepth,
          profilingMode=profilingMode,
          dataOffset=dataOffset,
          lowCorrThresh=lowCorrThresh,

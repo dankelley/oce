@@ -299,7 +299,7 @@ summary.adp <- function(object, ...)
                 format(subsampleEnd),  attr(subsampleEnd, "tzone"),
                 1 / subsampleDeltat))
     cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                object@metadata$numberOfCells, object@data$distance[1],  object@data$distance[length(object@data$distance)], diff(object@data$distance[1:2])),  ...)
+                object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
     cat("* Coordinate system: ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
     cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnattenuated) & object@metadata$oceBeamUnattenuated) "beams (attenuated)" else "beams (not attenuated)",
