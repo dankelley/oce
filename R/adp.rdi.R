@@ -598,7 +598,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                 bottomRange[bottomRange.na] <- NA
                 data <- list(v=v, a=a, q=q, 
                              bottomRange=bottomRange, bottomVelocity=bottomVelocity,
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                             distance=seq(bin1Distance+cellSize, by=cellSize, length.out=numberOfCells),
                              time=time,
                              pressure=pressure,
                              temperature=temperature,
@@ -609,7 +609,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              roll=roll)
             } else {
                 data <- list(v=v, a=a, q=q, 
-                             distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
+                             distance=seq(bin1Distance+cellSize, by=cellSize, length.out=numberOfCells),
                              time=time,
                              pressure=pressure,
                              temperature=temperature,

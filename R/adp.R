@@ -303,7 +303,7 @@ summary.adp <- function(object, ...)
     cat("* Coordinate system: ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
     cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnattenuated) & object@metadata$oceBeamUnattenuated) "beams (attenuated)" else "beams (not attenuated)",
-        "oriented", object@metadata$orientation, "with angle", object@metadata$beam.angle, "deg to axis\n", ...)
+        "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
     if (!is.null(object@metadata$transformationMatrix)) {
         digits <- 4
         cat("* Transformation matrix::\n\n")
