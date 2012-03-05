@@ -8,10 +8,10 @@
     <body>
 <pre>
 library(oce)
-sl <- read.oce("h275a96.dat")
-m <- tidem(sl)
+data(sealevelHalifax)
+m <- tidem(sealevelHalifax)
 par(mfrow=c(2,1))
-plot.sealevel(sl, which=1)
+plot(sealevelHalifax, which=1)
 plot(m)
 </pre>
     </body>
