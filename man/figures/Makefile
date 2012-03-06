@@ -1,4 +1,7 @@
-all: adpgeometry.png
+all: adpgeometry.png adp_beams.png
 %.png:%.R
 	R --no-save < $<
+clean:
+	rm -f *~
+
 
