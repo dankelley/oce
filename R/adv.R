@@ -73,6 +73,28 @@ setMethod(f="[[",
               }
           })
 
+setMethod(f="[[<-",
+          signature="adv",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+              } else if (i %in% names(x@data)) {
+                 x@data[[i]] <- value
+              } else if (i == "heading") {
+                  x@data$headingSlow <- value
+              } else if (i == "pitch" || i == "pitchSlow") {
+                  x@data$pitchSlow <- value
+              } else if (i == "pitch" || i == "pitchSlow") {
+                  x@data$rollSlow <- value
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
+              ## Not checking validity because user may want to shorten items one by one, and check validity later.
+              ## validObject(x)
+              invisible(x)
+          })
+
+
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
