@@ -101,11 +101,11 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
     tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
     bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)
-    coordinateSystem <- "???"
-    if (bits == "00") coordinateSystem <- "beam"
-    else if (bits == "01") coordinateSystem <- "instrument"
-    else if (bits == "10") coordinateSystem <- "xyz"
-    else if (bits == "11") coordinateSystem <- "enu"
+    originalCoordinate <- "???"
+    if (bits == "00") originalCoordinate <- "beam"
+    else if (bits == "01") originalCoordinate <- "instrument"
+    else if (bits == "10") originalCoordinate <- "xyz"
+    else if (bits == "11") originalCoordinate <- "enu"
     headingAlignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little") # WCODF p 130
     headingBias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
     oceDebug(debug, "headingAlignment=", headingAlignment, "; headingBias=", headingBias, "\n")
@@ -228,7 +228,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
          ##tpp.minutes=tpp.minutes,
          ##tpp.seconds=tpp.seconds,
          ##tpp.hundredths=tpp.hundredths,
-         coordinateSystem=coordinateSystem,
+         originalCoordinate=originalCoordinate,
          headingAlignment=headingAlignment,
          headingBias=headingBias,
          sensorSource=sensorSource,
@@ -547,7 +547,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$bin1Distance <- bin1Distance
             metadata$xmitPulseLength <- xmitPulseLength
             metadata$oceBeamUnattenuated <- FALSE
-            metadata$oceCoordinate <- header$coordinateSystem
+            metadata$oceCoordinate <- header$originalCoordinate
             metadata$depth <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both

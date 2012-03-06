@@ -300,7 +300,7 @@ summary.adp <- function(object, ...)
                 1 / subsampleDeltat))
     cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
                 object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
-    cat("* Coordinate system: ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
+    cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
     cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnattenuated) & object@metadata$oceBeamUnattenuated) "beams (attenuated)" else "beams (not attenuated)",
         "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
@@ -329,7 +329,7 @@ summary.adp <- function(object, ...)
     res$beamConfig <- object@metadata$beamConfig
     res$transformationMatrix <- object@metadata$transformationMatrix
     res$orientation <- object@metadata$orientation
-    res$coordinateSystem <- object@metadata$coordinateSystem
+    res$originalCoordinate <- object@metadata$originalCoordinate
     res$oceCoordinate <- object@metadata$oceCoordinate
     res$processingLog <- object@processingLog
     dataNames <- names(object@data)

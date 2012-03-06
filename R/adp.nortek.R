@@ -146,11 +146,11 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$velocityScale <- if (substr(user$mode[2], 4, 4) == "0") 0.001 else 0.0001
             oceDebug(debug, "user$velocityScale: ", user$velocityScale, "\n")
             tmp.cs <- readBin(buf[o+33:34], "integer", n=1, size=2, endian="little")
-            if (tmp.cs == 0) user$coordinateSystem <- "enu" # page 31 of System Integrator Guide
-            else if (tmp.cs == 1) user$coordinateSystem <- "xyz"
-            else if (tmp.cs == 2) user$coordinateSystem <- "beam"
-            else stop("unknown coordinateSystem ", tmp.cs)
-            oceDebug(debug, "user$coordinateSystem: ", user$coordinateSystem, "\n")
+            if (tmp.cs == 0) user$originalCoordinate <- "enu" # page 31 of System Integrator Guide
+            else if (tmp.cs == 1) user$originalCoordinate <- "xyz"
+            else if (tmp.cs == 2) user$originalCoordinate <- "beam"
+            else stop("unknown originalCoordinate ", tmp.cs)
+            oceDebug(debug, "user$originalCoordinate: ", user$originalCoordinate, "\n")
             user$numberOfCells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$numberOfCells: ", user$numberOfCells, "\n")
             user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
@@ -462,8 +462,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      cellSize=header$user$cellSize,
                      velocityResolution=velocityScale,
                      velocityMaximum=velocityScale * 2^15,
-                     coordinateSystem=header$user$coordinateSystem,
-                     oceCoordinate=header$user$coordinateSystem,
+                     originalCoordinate=header$user$originalCoordinate,
+                     oceCoordinate=header$user$originalCoordinate,
                      oceBeamUnattenuated=FALSE
                      )
     res <- new("adp")

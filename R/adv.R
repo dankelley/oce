@@ -133,7 +133,7 @@ summary.adv <- function(object, ...)
         }
     }
     cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
-    cat("* Coordinate system:     ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
+    cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
     cat("* Orientation:           ", object@metadata$orientation, "\n")
     dataNames <- names(object@data)
     nrow <- length(dataNames) - length(grep("^time", dataNames))
@@ -711,6 +711,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
     oceDebug(debug, "\b\bbeamToXyzAdv() {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
+    browser()
     if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     if (is.null(x@metadata$transformationMatrix)) {

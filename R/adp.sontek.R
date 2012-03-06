@@ -123,8 +123,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "orientation=", orientation, "\n")
     temp.mode <- as.integer(buf[s+28])
     oceDebug(debug, "temp.mode=", temp.mode, "\n")
-    coordinateSystem <- as.integer(buf[s+29])
-    oceDebug(debug, "coordinateSystem=", coordinateSystem, "\n")
+    originalCoordinate <- as.integer(buf[s+29])
+    oceDebug(debug, "originalCoordinate=", originalCoordinate, "\n")
     numberOfCells <- readBin(buf[s+30:31], "integer", n=1, size=2, endian="little", signed=FALSE)
     oceDebug(debug, "numberOfCells=", numberOfCells, "\n")
     cellSize <- readBin(buf[s+32:33], "integer", n=1, size=2, endian="little", signed=FALSE) / 100 # metres
@@ -327,8 +327,8 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      cpuSoftwareVerNum=cpuSoftwareVerNum,
                      dspSoftwareVerNum=dspSoftwareVerNum,
                      boardRev=boardRev,
-                     coordinateSystem=c("beam", "xyz", "enu", "other")[coordinateSystem+1], # FIXME: check this
-                     oceCoordinate=c("beam", "xyz", "enu", "other")[coordinateSystem+1], # FIXME: check this
+                     originalCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
+                     oceCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
                      beamAngle=beamAngle,
                      oceBeamUnattenuated=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
@@ -502,15 +502,15 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
     }
     ## 28 is tempmode
     ## coord.system 0=beam 1=XYZ 2=ENU
-    coordinateSystem <- readBin(buf[p[1]+29], "integer", n=1, size=1, signed=FALSE)
-    if (coordinateSystem == 0)
-        coordinateSystem <- "beam"
-    else if (coordinateSystem == 1)
-        coordinateSystem <- "xyz"
-    else if (coordinateSystem == 2)
-        coordinateSystem <- "enu"
+    originalCoordinate <- readBin(buf[p[1]+29], "integer", n=1, size=1, signed=FALSE)
+    if (originalCoordinate == 0)
+        originalCoordinate <- "beam"
+    else if (originalCoordinate == 1)
+        originalCoordinate <- "xyz"
+    else if (originalCoordinate == 2)
+        originalCoordinate <- "enu"
     else
-        stop("coordinateSystem=", coordinateSystem, "but must be 0 (beam), 1 (xyz), or 2 (enu)")
+        stop("originalCoordinate=", originalCoordinate, "but must be 0 (beam), 1 (xyz), or 2 (enu)")
     numberOfCells <- readBin(buf[p[1]+30:31], "integer", n=1, size=2, signed=FALSE, endian="little")
     cellSize <- 0.01*readBin(buf[p[1]+32:33], what="integer", n=1, size=2, signed=FALSE, endian="little")
     blankingDistance <- 0.01*readBin(buf[p[1]+34:35], what="integer", n=1, size=2, signed=FALSE)
@@ -627,8 +627,8 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      frequency=NA, # FIXME
                      numberOfSamples=np,
                      numberOfBeams=numberOfBeams,
-                     coordinateSystem=coordinateSystem,
-                     oceCoordinate=coordinateSystem,
+                     originalCoordinate=originalCoordinate,
+                     oceCoordinate=originalCoordinate,
                      beamAngle=beamAngle,
                      oceBeamUnattenuated=FALSE,
                      orientation=orientation)
