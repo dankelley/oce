@@ -972,6 +972,23 @@ oceColorsJet <- function(n)
     }
 }
 
+oceColors9A <- function(n)
+{
+    oceColorsJet(n)
+}
+
+oceColors9B <- function(n)
+{
+    if (missing(n) || n <= 0)
+        colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
+                           "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))
+    else {
+        colorRampPalette(c("#00007F", "blue", "#007FFF", "#22e4e7",
+                           "white", "#ffe45e", "#FF7F00", "red", "#7F0000"))(n)
+    }
+}
+
+
 oceColorsPalette <- function(n, which=1)
 {
     if ((n <- as.integer(n[1])) > 0) {
@@ -1008,6 +1025,10 @@ oceColorsPalette <- function(n, which=1)
             rev(rgb(approx(i, r, xout, rule=1)$y,
                     approx(i, g, xout, rule=1)$y,
                     approx(i, b, xout, rule=1)$y))
+        } else if (which == 9.01 || which == "9A" || which == "jet") { # jet, also known as 9A or 9.01
+            oceColorsJet(n)
+        } else if (which == 9.02 || which == "9B") {
+            oceColors9B(n)
         } else stop("unknown which")
     }
     else character(0)
