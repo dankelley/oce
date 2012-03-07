@@ -1460,3 +1460,33 @@ decodeTime <- function(time, time.formats=c("%b %d %Y %H:%M:%s", "%Y%m%d"), tz="
     rval
 }
 
+drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE, type=1,
+                               debug=getOption("oceDebug"), ...)
+{
+    oceDebug(debug, "\b\bdrawDirectionField(...) {\n")
+    if (missing(x) || missing(y) || missing(u) || missing(v))
+        stop("must supply x, y, u, and v")
+    if ((missing(scalex) && missing(scaley)) || (!missing(scalex) && !missing(scaley)))
+        stop("either 'scalex' or 'scaley' must be specified (but not both)")
+    usr <- par('usr')
+    fin <- par('fin')
+    xPerInch <- diff(usr[1:2]) / fin[1]
+    yPerInch <- diff(usr[3:4]) / fin[2]
+    oceDebug(debug, 'fin=', fin, 'usr=', usr, 'xPerInch=', xPerInch, 'yPerInch=', yPerInch, '\n')
+    if (missing(scaley)) {
+        oceDebug(debug, "scaling for x\n")
+        uPerX <- 1 / scalex
+        vPerY <- uPerX * xPerInch / yPerInch
+    } else {
+        oceDebug(debug, "scaling for y\n")
+    }
+    oceDebug(debug, 'uPerX=', uPerX, '\n')
+    oceDebug(debug, 'vPerY=', vPerY, '\n')
+    if (add) {
+        points(x, y, ...)
+    } else {
+        plot(x, y, ...)
+    }
+    segments(x, y, x + u / uPerX, y + v / vPerY, ...)
+    oceDebug(debug, "\b\b} # drawDirectionField\n")
+}
