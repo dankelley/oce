@@ -98,7 +98,7 @@
             adp[["v"]]}.}
 
     \subsection{Overview of contents}{The \code{show} method (e.g.
-        \code{show(d)}) displays information about an ADV object named
+        \code{show(d)}) displays information about an ADP object named
         \code{d}.}
 }
 
@@ -121,10 +121,10 @@
     \code{\link{read.adp.sontek}} or
     \code{\link{read.adp.sontek.serial}}.
 
-    ADV data may be plotted with \code{\link{plot.adp}} function, which is a
+    ADP data may be plotted with \code{\link{plot.adp}} function, which is a
     generic function so it may be called simply as \code{plot}.
 
-    Statistical summaries of ADV data are provided by the generic function
+    Statistical summaries of ADP data are provided by the generic function
     \code{summary}, while briefer overviews are provided with \code{show}.
 
     Conversion from beam to xyz coordinates may be done with
