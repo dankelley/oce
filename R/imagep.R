@@ -330,6 +330,8 @@ imagep <- function(x, y, z,
             } else {
                 .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
             }
+            mtext(xlab, side=1, line=mgp[1])
+            mtext(ylab, side=2, line=mgp[1])
         } else {
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
