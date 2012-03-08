@@ -150,7 +150,6 @@ drawPalette <- function(zlim,
             at <- if (!is.null(contours)) pretty(contours) else pretty(palette) # FIXME: wrong on contours
         }
         labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at)) else format(at)
-        browser()
         axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
