@@ -12,6 +12,7 @@
       drawTimeRange=getOption("oceDrawTimeRange"),
       drawPalette=TRUE,
       filledContour=FALSE,
+      missingColor=NULL,
       mgp=getOption("oceMgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -71,6 +72,8 @@
       the images.}
   \item{filledContour}{boolean value indicating whether to use filled
       contours to plot the image.}
+  \item{missingColor}{a color to be used to indicate missing data, or
+      \code{NULL} to avoid making the indication.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the

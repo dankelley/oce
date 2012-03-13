@@ -182,6 +182,7 @@ imagep <- function(x, y, z,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
                    filledContour=FALSE,
+                   missingColor=NULL,
                    mgp=getOption("oceMgp"),
                    mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
                    mai.palette=c(0, 1/8, 0, 3/8),
@@ -346,6 +347,10 @@ imagep <- function(x, y, z,
             axis(1, cex.axis=cex, cex.lab=cex)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
+    }
+    if (!is.null(missingColor)) {
+        ## FIXME: the negation on is.na is confusing, but it comes from col and breaks together
+        image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0,1/2,1), add=TRUE)
     }
     if (main != "")
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
