@@ -57,6 +57,8 @@ drawPalette <- function(zlim,
                         zlab="",
                         breaks,
                         col,
+                        labels=NULL,
+                        at=NULL,
                         mai=c(0, 1/8, 0, 3/8),
                         top=0, bottom=0,
                         drawContours=FALSE,
@@ -144,12 +146,12 @@ drawPalette <- function(zlim,
         if (drawContours)
             abline(h=contours)
         box()
-        if (zIsTime) {
+        if (zIsTime & is.null(at)) {
             at <- as.numeric(pretty(zlim))
-        } else {
-            at <- if (!is.null(contours)) pretty(contours) else pretty(palette) # FIXME: wrong on contours
+        } else if (is.null(at)) {
+            at <- if (!is.null(contours) & is.null(at)) pretty(contours) else pretty(palette) # FIXME: wrong on contours
         }
-        labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at)) else format(at)
+        if (is.null(labels)) labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at)) else format(at)
         axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
@@ -175,6 +177,7 @@ imagep <- function(x, y, z,
                    flip.y=FALSE,
                    xlab="", ylab="", zlab="",
                    breaks, col,
+                   labels=NULL, at=NULL,
                    drawContours=FALSE,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
@@ -284,7 +287,9 @@ imagep <- function(x, y, z,
         drawPalette()
     } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
-        drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, drawContours=drawContours,
+        drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, 
+                    labels=labels, at=at,
+                    drawContours=drawContours,
                     mai=mai.palette, debug=debug-1)
     }
 

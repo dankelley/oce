@@ -1,5 +1,5 @@
 0.8-7
-- ...
+- imagep() and drawPalette() get arguments 'labels' and 'at'
 
 0.8-6
 - imagep(): permit POSIXt type for zlim
