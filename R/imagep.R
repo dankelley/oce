@@ -232,8 +232,8 @@ imagep <- function(x, y, z,
         stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
-
-    ## ensure that x and y increase (BUT, for now, no check on equal values, and also no xlim reversals FIXME)
+    ## ensure that x and y increase (BUT, for now, no check on equal values, 
+    ## and also no xlim reversals FIXME)
     ox <- order(x)
     if (any(diff(ox) < 0)) {
         warning("reordered some x values")
@@ -246,18 +246,16 @@ imagep <- function(x, y, z,
         y <- y[oy]
         z <- z[,oy]
     }
-
     omai <- par("mai")
     omar <- par("mar")
     ocex <- par("cex")
-    ## set overall graphical parameters (note: get opai after setting mar)
     par(mgp=mgp, mar=mar, cex=cex)
     breaksGiven <- !missing(breaks)
     if (!breaksGiven) {
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
             if (missing(col)) {
-                breaks <- pretty(zrange)
+                breaks <- pretty(zrange, n=10)
                 if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
                 if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
             } else {
@@ -278,6 +276,9 @@ imagep <- function(x, y, z,
         }
     } else {
         breaksOrig <- breaks
+        if (1 == length(breaks)) {
+            breaks <- pretty(z, n=breaks)
+        }
     }
     if (missing(col))
         col <- oceColorsPalette(n=length(breaks)-1)
@@ -351,6 +352,7 @@ imagep <- function(x, y, z,
     if (!is.null(missingColor)) {
         ## FIXME: the negation on is.na is confusing, but it comes from col and breaks together
         image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0,1/2,1), add=TRUE)
+        box()
     }
     if (main != "")
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))

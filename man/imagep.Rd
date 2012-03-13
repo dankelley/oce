@@ -46,7 +46,9 @@
     should be flipped top to bottom (as to produce a profile image
     for a downward-looking acoustic-doppler profile).}
   \item{xlab,ylab,zlab}{names for x axis, y axis, and the image values.}
-  \item{breaks}{the z values for breaks in the colour scheme.}
+  \item{breaks}{the z values for breaks in the colour scheme.  If this is of
+      length 1, the value indicates the desired number of breaks, which is
+      supplied to \code{\link{pretty}}, in determining clean break points.}
   \item{col}{either a vector of colours corresponding to the breaks, of length
      1 plus the number of breaks, or a function specifying colours,
      e.g. \code{\link{oceColorsJet}} for a rainbow.}
