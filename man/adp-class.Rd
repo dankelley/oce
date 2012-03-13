@@ -39,12 +39,15 @@
     
     The bin geometry of a four-beam profiler is illustrated below, for
     \code{adp[["beamAngle"]]} equal to 20 degrees, \code{adp[["bin1Distance"]]}
-    equal to 2m, and \code{adp[["cellSize"]]} equal to 1m.   (In the diagram,
+    equal to 2m, and \code{adp[["cellSize"]]} equal to 1m.   In the diagram,
     the viewer is in the plane containing two beams that are not shown, so the
-    two visible beams are separated by 40 degrees.)
+    two visible beams are separated by 40 degrees.  Circles indicate the centres
+    of the range-gated bins within the beams.  The lines enclosing those
+    circles indicate the coverage of beams that spread plus and minus 2.5
+    degrees from their centreline.
     
-    \if{html}{\figure{adpgeometry.png}{options: width=400px alt="Figure:
-            adpgeometry.png"}}
+    \if{html}{\figure{adpgeometry2.png}{options: width=400px alt="Figure:
+            adpgeometry2.png"}}
 
     Note that \code{adp[["oceCoordinate"]]} stores the present coordinate
     system of the object, and it has possible values \code{"beam"},
