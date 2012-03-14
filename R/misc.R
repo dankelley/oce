@@ -375,7 +375,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Temperature [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
     } else if (item == "sigmaTheta") {
-        full <- expression(paste("Potential density [", kg/m^3, "]"))
+        full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
         abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
     } else if (item == "theta") {
         full <- expression(paste("Potential Temperature [", degree, "C]"))
