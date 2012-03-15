@@ -128,7 +128,7 @@ setMethod(f="plot",
           {
               if (!inherits(x, "drifter"))
                   stop("method is only for drifter objects")
-              oceDebug(debug, "\b\bplot.drifter() {\n")
+              oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "), ...) {\n", sep="")
               opar <- par(no.readonly = TRUE)
               lw <- length(which)
               if (lw > 1) on.exit(par(opar))
@@ -152,19 +152,20 @@ setMethod(f="plot",
               if (level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               for (w in 1:nw) {
+                  oceDebug(debug, "which[", w, "] = ", which[w], "\n")
                   if (which[w] == 1 || which[w] == "trajectory") {
                       par(mar=omar)
                       asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
                       plot(x@data$longitude, x@data$latitude, asp=asp, 
-                           type=type, cex=cex, pch=pch,
+                           type=type[w], cex=cex[w], pch=pch[w],
                            col=if (missing(col)) "black" else col,
                            xlab="Longitude", ylab="Latitude", ...)
                       if (!missing(coastline)) {
                           polygon(coastline[["longitude"]], coastline[["latitude"]], col='lightgray')
-                          if (type == 'l')
+                          if (type[w] == 'l')
                               lines(x@data$longitude, x@data$latitude)
                           else
-                              points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=if(!missing(col))col)
+                              points(x@data$longitude, x@data$latitude, cex=cex[w], pch=pch[w], col=if(!missing(col))col)
                       }
                       par(mar=mar)
                   } else if (which[w] == 2) {    # salinity timeseries
@@ -175,7 +176,8 @@ setMethod(f="plot",
                           else
                               x@data$time
                           oce.plot.ts(t, as.vector(x@data$salinity[level,]),
-                                      ylab=resizableLabel("S", "y"), type=type, ...)
+                                      ylab=resizableLabel("S", "y"), type=type[w], 
+                                      col=if (missing(col)) "black" else col, ...)
                       } else {
                           warning("no non-missing salinity data")
                       }
@@ -187,13 +189,15 @@ setMethod(f="plot",
                           else
                               x@data$time
                           oce.plot.ts(t, x@data$temperature[level,],
-                                      ylab=resizableLabel("T", "y"), type=type, ...)
+                                      ylab=resizableLabel("T", "y"), type=type[w],
+                                      col=if (missing(col)) "black" else col, ...)
                       } else {
                           warning("no non-missing temperature data")
                       }
                   } else if (which[w] == 4) {    # TS
                       if (0 != sum(!is.na(x@data$temperature)) && 0 != sum(!is.na(x@data$salinity))) {
-                          plotTS(as.ctd(x@data$salinity[level,], x@data$temperature[level,], 0), ...)
+                          plotTS(as.ctd(x@data$salinity[level,], x@data$temperature[level,], 0), 
+                                 col=if (missing(col)) "black" else col, ...)
                       } else {
                           warning("no non-missing salinity data")
                       }

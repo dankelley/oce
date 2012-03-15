@@ -1,4 +1,5 @@
 0.8-7
+- plot.drifter(): improve multi-panel plots
 - imagep(): new argument 'missingColor'
 - imagep() and drawPalette(): new argument 'labels' and 'at'
 
