@@ -122,42 +122,42 @@ setMethod(f="plot",
                                col,
                                adorn=NULL,
                                mgp=getOption("oceMgp"),
-                               mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                               mar=c(mgp[1]+1, mgp[1]+1, 1.5, 1.5),
                                debug=getOption("oceDebug"),
                                ...)
           {
               if (!inherits(x, "drifter"))
                   stop("method is only for drifter objects")
-              oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "), ...) {\n", sep="")
-              opar <- par(no.readonly = TRUE)
+              oceDebug(debug, "\b\bplot.drifter(x, which=c(", paste(which,collapse=","), "),",
+                      " mgp=c(", paste(mgp, collapse=","), "),",
+                      " mar=c(", paste(mar, collapse=","), "),",
+                      " ...) {\n", sep="")
+              #opar <- par(no.readonly = TRUE)
               lw <- length(which)
-              if (lw > 1) on.exit(par(opar))
-              if (length(type) < lw)
-                  type <- rep(type, lw) # FIXME: recycle more sensibly
-              if (length(pch) < lw)
-                  pch <- rep(pch, lw) # FIXME: recycle more sensibly
-              if (length(cex) < lw)
-                  cex <- rep(cex, lw) # FIXME: recycle more sensibly
+              ##if (lw > 1) on.exit(par(opar))
+              ##if (length(type) < lw) type <- rep(type, lw) # FIXME: recycle more sensibly
+              ##if (length(pch) < lw) pch <- rep(pch, lw) # FIXME: recycle more sensibly
+              ##if (length(cex) < lw) cex <- rep(cex, lw) # FIXME: recycle more sensibly
               adorn.length <- length(adorn)
               if (adorn.length == 1) {
                   adorn <- rep(adorn, lw)
                   adorn.length <- lw
               }
               omar <- par('mar')
-              par(mgp=mgp, mar=mar)
               nw  <- length(which)
               if (nw > 1) {
-                  par(mfrow=c(nw, 1))
+                  par(mfrow=c(nw, 1), mgp=mgp, mar=mar)
+              } else {
+                  par(mgp=mgp, mar=mar)
               }
               if (level == "all")
                   level <- seq(1L, dim(x@data$temperature)[1])
               for (w in 1:nw) {
                   oceDebug(debug, "which[", w, "] = ", which[w], "\n")
                   if (which[w] == 1 || which[w] == "trajectory") {
-                      par(mar=omar)
                       asp <- 1 / cos(mean(range(x@data$latitude, na.rm=TRUE)) * atan2(1,1) / 45)
                       plot(x@data$longitude, x@data$latitude, asp=asp, 
-                           type=type[w], cex=cex[w], pch=pch[w],
+                           type=type, cex=cex, pch=pch,
                            col=if (missing(col)) "black" else col,
                            xlab="Longitude", ylab="Latitude", ...)
                       if (!missing(coastline)) {
@@ -165,7 +165,7 @@ setMethod(f="plot",
                           if (type[w] == 'l')
                               lines(x@data$longitude, x@data$latitude)
                           else
-                              points(x@data$longitude, x@data$latitude, cex=cex[w], pch=pch[w], col=if(!missing(col))col)
+                              points(x@data$longitude, x@data$latitude, cex=cex, pch=pch, col=if(!missing(col))col)
                       }
                       par(mar=mar)
                   } else if (which[w] == 2) {    # salinity timeseries
@@ -176,7 +176,7 @@ setMethod(f="plot",
                           else
                               x@data$time
                           oce.plot.ts(t, as.vector(x@data$salinity[level,]),
-                                      ylab=resizableLabel("S", "y"), type=type[w], 
+                                      ylab=resizableLabel("S", "y"), type=type, 
                                       col=if (missing(col)) "black" else col, ...)
                       } else {
                           warning("no non-missing salinity data")
@@ -189,7 +189,7 @@ setMethod(f="plot",
                           else
                               x@data$time
                           oce.plot.ts(t, x@data$temperature[level,],
-                                      ylab=resizableLabel("T", "y"), type=type[w],
+                                      ylab=resizableLabel("T", "y"), type=type,
                                       col=if (missing(col)) "black" else col, ...)
                       } else {
                           warning("no non-missing temperature data")

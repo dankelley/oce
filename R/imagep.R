@@ -5,10 +5,14 @@ clipmin <- function(x, min=0)
     ifelse(x < min, min, x)
 }
 
-abbreviateTimeLabels <- function(tl)
+abbreviateTimeLabels <- function(tl, ...)
 {
-    if (inherits(tl, "POSIXt"))
-        tl <- format(tl)
+    if (!inherits(tl, "POSIXt"))
+        return(tl)                     # not a time, so just return the argument
+    dots <- list(...)
+    if (!is.na(dots$format))
+        return(format(tl, dots$format)) # a format was specified, so just return the argument
+    tl <- format(tl, "%Y-%m-%d %H:%M:%S")
     n <- length(tl)
     if (n < 2)
         return(tl)
@@ -151,7 +155,7 @@ drawPalette <- function(zlim,
         } else if (is.null(at)) {
             at <- if (!is.null(contours) & is.null(at)) pretty(contours) else pretty(palette) # FIXME: wrong on contours
         }
-        if (is.null(labels)) labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at)) else format(at)
+        if (is.null(labels)) labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
         axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
