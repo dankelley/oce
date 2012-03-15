@@ -1120,14 +1120,18 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     oceDebug(debug, paste("4. [", x, "]\n", sep=""))
     x <- sub("[ \t]*$", "", ignore.case=TRUE, x)
     oceDebug(debug, paste("5. [", x, "]\n", sep=""))
-    x <- strsplit(x, " ")
-    if (length(x[[1]]) == 2) {
-        x <- as.double(x[[1]][1]) + as.double(x[[1]][2]) / 60
-        if (!positive)
-            x <- (-x)
+    if (0 == nchar(x)) {
+        x <- NA
     } else {
-        if (debug > 0)
-            warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
+        x <- strsplit(x, " ")
+        if (length(x[[1]]) == 2) {
+            x <- as.double(x[[1]][1]) + as.double(x[[1]][2]) / 60
+            if (!positive)
+                x <- (-x)
+        } else {
+            if (debug > 0)
+                warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
+        }
     }
     oceDebug(debug, sprintf("6. x = %f\n", x))
     x
@@ -1179,7 +1183,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         ## BUG: discovery of column names is brittle to format changes
         if (0 < (r <- regexpr("# name ", lline))) {
             oceDebug(debug, "lline: '",lline,"'\n",sep="")
-            tokens <- strsplit(line, split=" ")
+            tokens <- strsplit(line, split=" ", useBytes=TRUE)
+            oceDebug(debug, "   successfully tokenized\n")
             name <- tokens[[1]][6]
             oceDebug(debug, "  name: '",name,"'\n",sep="")
             if (0 < regexpr("scan", lline)) {
