@@ -79,8 +79,8 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
         xhigh <- max(x, na.rm=TRUE)
     rval <- rlow + (rhigh - rlow) * (x - xlow) / (xhigh - xlow)
     if (clip) {
-        rval <- ifelse(rval < rlow, rlow, rval)
-        rval <- ifelse(rval > rhigh, rhigh, rval)
+        rval <- ifelse(rval < min(rlow, rhigh), rlow, rval)
+        rval <- ifelse(rval > max(rlow, rhigh), rhigh, rval)
     }
     rval
 }
