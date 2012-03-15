@@ -1126,7 +1126,8 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
         if (!positive)
             x <- (-x)
     } else {
-        warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
+        if (debug > 0)
+            warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
     }
     oceDebug(debug, sprintf("6. x = %f\n", x))
     x
@@ -1630,7 +1631,10 @@ plotTS <- function (x,
                     ...)
 {
                                         # FIXME: should check for lobo ... or maybe make as.ctd() handle that...
-    oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ", ...) {\n", sep="")
+    oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
+             "mgp=c(", paste(mgp, collapse=","), "), ", 
+             "mar=c(", paste(mar, collapse=","), "), ", 
+             "...) {\n", sep="")
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
             salinity <- salinity(x) # FIXME: new accessors?
@@ -1662,7 +1666,7 @@ plotTS <- function (x,
         opar <- par(no.readonly = TRUE)
         on.exit(par(mar=omar, mgp=omgp))
         if (3 == length(mgp)) par(mgp=mgp)
-        if (4 == length(mar)) par(mgp=mgp)
+        if (4 == length(mar)) par(mar=mar)
     }
     axis.name.loc <- mgp[1]
     if (missing(xlab))
