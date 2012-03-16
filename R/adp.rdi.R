@@ -596,7 +596,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             if (haveBottomTrack) {
                 bottomRange.na <- bottomRange == 0.0
                 bottomRange[bottomRange.na] <- NA
-                data <- list(v=v, a=a, q=q, 
+                data <- list(v=v, q=q, a=a, g=g,
                              bottomRange=bottomRange, bottomVelocity=bottomVelocity,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                              time=time,
@@ -608,7 +608,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              pitch=pitch,
                              roll=roll)
             } else {
-                data <- list(v=v, a=a, q=q, 
+                data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                              time=time,
                              pressure=pressure,

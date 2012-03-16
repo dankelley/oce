@@ -152,9 +152,18 @@
     
     \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
       distance-time images of backscatter intensity of the respective beams.
+      (For data derived from Teledyn-RDI instruments, this is the item
+      called ``echo intensity.'')
 
     \item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield
-      distance-time images of signal quality for the respective beams.
+    distance-time images of signal quality for the respective beams.  (For RDI
+    data derived from instruments, this is the item called ``correlation
+    magnitude.'')
+
+    \item \code{which=70:73} (or \code{which="g1"} to \code{"g4"}) yield
+    distance-time images of percent-good for the respective beams.  (For data
+    derived from Teledyne-RDI instruments, which are the only instruments that
+    yield this item, it is called ``percent good.'')
 
     \item \code{which=13} (or \code{which="salinity"}) yields a
       time-series plot of salinity.

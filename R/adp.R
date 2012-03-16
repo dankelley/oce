@@ -35,7 +35,17 @@ setMethod(f="[[",
                       rval <- x@data$q
                   }
                   rval
-              } else {
+              } else if (i == "g") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$g
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$g
+                  }
+                  rval
+               } else {
                   as(x, "oce")[[i, j, drop]]
               }
           })
@@ -496,6 +506,10 @@ setMethod(f="plot",
                       else if (ww == "q2") which2[w] <- 10
                       else if (ww == "q3") which2[w] <- 11
                       else if (ww == "q4") which2[w] <- 12
+                      else if (ww == "g1") which2[w] <- 70
+                      else if (ww == "g2") which2[w] <- 71
+                      else if (ww == "g3") which2[w] <- 72
+                      else if (ww == "g4") which2[w] <- 73
                       else if (ww == "salinity") which2[w] <- 13
                       else if (ww == "temperature") which2[w] <- 14
                       else if (ww == "pressure") which2[w] <- 15
@@ -528,7 +542,7 @@ setMethod(f="plot",
                   }
               }
               which <- which2
-              images <- 1:12
+              images <- c(1:12, 70:73)
               timeseries <- c(13:22, 40:44, 50:54, 55)
               spatial <- 23:27
               speed <- 28
@@ -610,6 +624,15 @@ setMethod(f="plot",
                               dim(z) <- dim(x@data$amp)[1:2]
                               zlim <- c(0, max(as.numeric(x@data$amp)))
                               zlab <- c(expression(amp[1]),expression(amp[2]),expression(amp[3]))[which[w]-8]
+                          }
+                     } else if (which[w] %in% 70:(69+x@metadata$numberOfBeams)) { # correlation
+                          if ("g" %in% names(x@data)) {
+                              z <- as.numeric(x@data$g[,,which[w]-69])
+                              dim(z) <- dim(x@data$g)[1:2]
+                              zlim <- c(0, 100)
+                              zlab <- c(expression(g[1]),expression(g[2]),expression(g[3]))[which[w]-8]
+                          } else {
+                              warning("ADP object lacks a 'g' data item")
                           }
                       } else {
                           skip <- TRUE

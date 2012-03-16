@@ -78,6 +78,34 @@
     vectors for pressure (\code{adp[["pressure"]]}) or temperature
     (\code{adp[["temperature"]]}), depending on the setup of the instrument.
 
+    The precise meanings of the data items depend on the instrument type.  All
+    instruments have \code{v} (for velocity), \code{q} (for a measure of data
+    quality) and \code{a} (for a measure of backscatter amplitude).  Devices
+    from Teledyne-RDI profilers have an additional item \code{g} (for
+    percent-good).
+    
+    For RDI profilers (quoted phrases are quantities as defined in Figure 9 of
+    reference 1), four arrays hold data.  Each is three dimensional, with first
+    index indicating time, second indicating bin number, and third indicating
+    beam number (or coordinate number, for data in \code{xyz} or \code{enu} or
+    \code{other} coordinate systems).
+
+    \itemize{
+        \item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
+        integer values (multiplied by the scale factor that is stored in
+        \code{velocityScale} in the metadata).
+
+        \item \code{q} is ``correlation magnitude'' a one-byte quantity stored
+        as type \code{raw} in the object. The values may range from 0 to 255.
+
+        \item \code{a} is ``echo intensity'' a one-byte quantity stored as type
+        \code{raw} in the object.  The values may range from 0 to 255.
+
+        \item \code{g} is ``percent good'' a one-byte quantity stored as
+        \code{raw} in the object.  The values may range from 0 to 100.
+    
+    }
+    
     Finally, there is a vector \code{adp[["distance"]]} that indicates the bin
     distances from the sensor, meaasured in metres along an imaginary centre
     line bisecting beam pairs.  The length of this vector equals
@@ -117,6 +145,9 @@
     maximum value, and then ``wrapped around'' to smaller values?  Time spent
     on building confidence in data quality is seldom time wasted.}
 
+\references{1. Teledyne-RDI, 2007. \emph{WorkHorse commands and output data
+        format.} P/N 957-6156-00 (November 2007).  }
+
 \seealso{A file containing ADP data is usually recognized by Oce, and so
     \code{\link{read.oce}} will usually read the data.  If not, one may use the
     general ADP function \code{\link{read.adp}} or specialized variants
@@ -138,6 +169,7 @@
     \code{\link{enuToOtherAdp}}.
 }
 
+    
 \author{Dan Kelley}
 \keyword{classes}
 \keyword{oce}
