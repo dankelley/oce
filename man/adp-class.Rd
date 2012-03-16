@@ -84,12 +84,11 @@
     from Teledyne-RDI profilers have an additional item \code{g} (for
     percent-good).
     
-    For RDI profilers (quoted phrases are quantities as defined in Figure 9 of
-    reference 1), four arrays hold data.  Each is three dimensional, with first
-    index indicating time, second indicating bin number, and third indicating
-    beam number (or coordinate number, for data in \code{xyz} or \code{enu} or
-    \code{other} coordinate systems).
-
+    For RDI profilers, there are four three-dimensional arrays holding beamwise
+    data.  In these, the first index indicates time, the second bin number, and
+    the third beam number (or coordinate number, for data in \code{xyz},
+    \code{enu} or \code{other} coordiante systems).  In the list below, the
+    quoted phrases are quantities as defined in Figure 9 of reference 1.
     \itemize{
         \item \code{v} is ``velocity'' in m/s, inferred from two-byte signed
         integer values (multiplied by the scale factor that is stored in
