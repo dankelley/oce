@@ -27,6 +27,26 @@ filterSomething <- function(x, filter)
     res
 }
 
+formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
+{
+    type <- match.arg(type)
+    signs <- sign(latlon)
+    x <- abs(latlon)
+    degrees <- floor(x)
+    minutes <- floor(60 * (x - degrees))
+    seconds <- 3600 * (x - degrees - minutes / 60)
+    hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
+    if (type == "list") {
+        rval <- list(degrees, minutes, seconds, hemispheres)
+    } else if (type == "string") {
+        rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
+    } else {
+        warning("FIXME: formatLatLon cannot do expressions yet, so expect junk or errors")
+        rval <- expression(paste(sprintf("%d", degrees), degree, minutes, "'", seconds, '"')) # FIXME: how to do this??
+    }
+    rval
+}
+
 smoothSomething <- function(x, ...)
 {
     if (is.raw(x)) {
