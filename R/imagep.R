@@ -5,34 +5,34 @@ clipmin <- function(x, min=0)
     ifelse(x < min, min, x)
 }
 
-abbreviateTimeLabels <- function(tl, ...)
+abbreviateTimeLabels <- function(t, ...)
 {
-    if (!inherits(tl, "POSIXt"))
-        return(tl)                     # not a time, so just return the argument
+    if (!inherits(t, "POSIXt"))
+        return(t)                     # not a time, so just return the argument
     dots <- list(...)
     if (!is.na(dots$format))
-        return(format(tl, dots$format)) # a format was specified, so just return the argument
-    tl <- format(tl, "%Y-%m-%d %H:%M:%S")
-    n <- length(tl)
+        return(format(t, dots$format)) # a format was specified, so just return the argument
+    t <- format(t, "%Y-%m-%d %H:%M:%S")
+    n <- length(t)
     if (n < 2)
-        return(tl)
-    year <- substr(tl, 1, 4)
+        return(t)
+    year <- substr(t, 1, 4)
     ## strip years, if all the same
-    for (i in 2:n) if (year[i] != year[1]) return(tl)
-    tl <- substr(tl, 6, nchar(tl))
+    for (i in 2:n) if (year[i] != year[1]) return(t)
+    t <- substr(t, 6, nchar(t))
     ## strip months, if all the same
-    month <- substr(tl, 1, 2)
-    for (i in 2:n) if (month[i] != month[1]) return(tl)
-    tl <- substr(tl, 4, nchar(tl))
+    month <- substr(t, 1, 2)
+    for (i in 2:n) if (month[i] != month[1]) return(t)
+    t <- substr(t, 4, nchar(t))
     ## strip seconds, if all the same
-    seconds <- substr(tl, nchar(tl)-2, nchar(tl))
-    for (i in 2:n) if (seconds[i] != seconds[1]) return(tl)
-    tl <- substr(tl, 1, nchar(tl)-3)
+    seconds <- substr(t, nchar(t)-2, nchar(t))
+    for (i in 2:n) if (seconds[i] != seconds[1]) return(t)
+    t <- substr(t, 1, nchar(t)-3)
     ## strip minutes, if all the same (this may be confusing)
-    minutes <- substr(tl, nchar(tl)-2, nchar(tl))
-    for (i in 2:n) if (minutes[i] != minutes[1]) return(tl)
-    tl <- substr(tl, 1, nchar(tl)-3)
-    return(tl)
+    minutes <- substr(t, nchar(t)-2, nchar(t))
+    for (i in 2:n) if (minutes[i] != minutes[1]) return(t)
+    t <- substr(t, 1, nchar(t)-3)
+    return(t)
 }
 
 paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,

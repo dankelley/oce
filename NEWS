@@ -1,4 +1,5 @@
 0.8-7
+- plot(echosounder): new arguments atTop and labelsTop
 - adp objects now also hold 'percent good' for RDI instruments
 - plot.drifter(): improve multi-panel plots
 - imagep(): new argument 'missingColor'

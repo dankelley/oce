@@ -5,6 +5,7 @@ importFrom("graphics", plot)
 importFrom(utils, head, tail)
 exportMethods(plot)
 export("+.section",
+       abbreviateTimeLabels,
        beamName,
        addColumn,
        airRho,
