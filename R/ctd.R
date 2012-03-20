@@ -1096,6 +1096,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res
 }
 
+
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)

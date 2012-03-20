@@ -698,13 +698,22 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         if (length(grep("time", subsetString))) {
             oceDebug(debug, "subsetting an echosounder object by time\n")
             keep <- eval(substitute(subset), x@data, parent.frame())
+            oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
             rval <- x
-            rval[["time"]] <- rval[["time"]][keep]
-            rval[["latitude"]] <- rval[["latitude"]][keep]
-            rval[["longitude"]] <- rval[["longitude"]][keep]
-            rval[["time"]] <- rval[["time"]][keep]
-            rval[["a"]] <- rval[["a"]][keep,]
-            warning("only subsetting ping-based data, not timeSlow, latitudeSlow or longitudeSlow")
+            rval@data$time <- x@data$time[keep]
+            rval@data$latitude <- x@data$atitude[keep]
+            rval@data$longitude <- x@data$longitude[keep]
+            rval@data$a <- x@data$a[keep,]
+            ## slow variables
+            subsetStringSlow <- sub("time", "timeSlow", subsetString)
+            oceDebug(debug, "subsetting slow variables with string:", subsetStringSlow, "\n")
+            keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
+            oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")
+            for (slowName in names(x@data)[grep("Slow", names(x@data))]) {
+                ##oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
+                rval@data[[slowName]] <- x@data[[slowName]][keepSlow]
+                ##oceDebug(debug, "slow variable:", slowName, "new length", length(rval@data[[slowName]]), "\n")
+            }
         } else if (length(grep("depth", subsetString))) {
             oceDebug(debug, "subsetting an echosounder object by depth\n")
             keep <- eval(substitute(subset), x@data, parent.frame())
