@@ -74,9 +74,11 @@
     In addition to the matrices, there are time-based vectors.  The vector
     \code{adp[["time"]]} (of length equal to the first index of
     \code{adp[["v"]]}, etc.) holds POSIXt times of observation.  Depending on
-    the configuration of the instrument, there may also be corresponding
-    vectors for pressure (\code{adp[["pressure"]]}) or temperature
-    (\code{adp[["temperature"]]}), depending on the setup of the instrument.
+    type of instrument and its configuration, there may also be corresponding
+    vectors for sound speed (\code{adp[["soundSpeed"]]}), pressure
+    (\code{adp[["pressure"]]}), temperature (\code{adp[["temperature"]]}),
+    heading (\code{adp[["heading"]]}) pitch (\code{adp[["pitch"]]}), and roll
+    (\code{adp[["roll"]]}), depending on the setup of the instrument.
 
     The precise meanings of the data items depend on the instrument type.  All
     instruments have \code{v} (for velocity), \code{q} (for a measure of data

@@ -538,6 +538,7 @@ setMethod(f="plot",
                       else if (ww == "bottom velocity4") which2[w] <- 54 # beam4 (if there is one)
                       else if (ww == "heaving") which2[w] <- 55
                       else if (ww == "map") which2[w] <- 60
+                      else if (ww == "soundSpeed") which2[w] <- 100
                       else stop("unknown 'which':", ww)
                   }
               }
@@ -1103,6 +1104,9 @@ setMethod(f="plot",
                           plot(coastline, clatitude=x[["latitude"]], clongitude=x[["longitude"]], span=50)
                           points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                       }
+                  } else if (which[w] == 100) {
+                      oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
+                      oce.plot.ts(x[["time"]], x[["soundSpeed"]], ylab="Sound speed [m/s]")
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }

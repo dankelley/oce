@@ -192,12 +192,13 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
               "minute=", RTC.minute, "second=", RTC.second, "hundreds=", RTC.hundredths, ")\n")
     ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
     bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
-    speedOfSound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
-    oceDebug(debug, "speedOfSound = ", speedOfSound, "\n")
+    soundSpeed <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
+    oceDebug(1+debug, "soundSpeed= ", soundSpeed, "\n") # FIXME
     transducerDepth <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
     oceDebug(debug, "transducerDepth = ", transducerDepth, "\n")
-    if (speedOfSound < 1400 || speedOfSound > 1600)
-        warning("speedOfSound is ", speedOfSound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
+    if (soundSpeed < 1400 || soundSpeed > 1600)
+        warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
+                1600 m/s.  Something went wrong in decoding the data.")
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
          programVersionMajor=programVersionMajor,
@@ -247,7 +248,6 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
          ##time=time,
          ##ensembleNumberMSB=ensembleNumberMSB,
          ##bitResult=bitResult,
-         ##speedOfSound=speedOfSound,
          ##heading=heading,
          ##pitch=pitch,
          ##roll=roll,
@@ -491,6 +491,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 as.integer(buf[profileStart+8]),      # minute
                                 as.integer(buf[profileStart+9]),      # second
                                 tz=tz)
+
+
             if (length(badProfiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fillGap(as.numeric(time) - as.numeric(t0)) + t0
@@ -503,7 +505,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
-            speedOfSound <- 0.1 * readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
+            soundSpeed <- readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
             depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
             heading <- 0.01 * readBin(buf[profileStart2 + 18], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE) - header$headingBias
@@ -604,6 +606,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              temperature=temperature,
                              salinity=salinity,
                              depth=depth,
+                             soundSpeed=soundSpeed,
                              heading=heading,
                              pitch=pitch,
                              roll=roll)
@@ -615,6 +618,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                              temperature=temperature,
                              salinity=salinity,
                              depth=depth,
+                             soundSpeed=soundSpeed,
                              heading=heading,
                              pitch=pitch,
                              roll=roll)

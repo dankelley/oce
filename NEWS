@@ -1,4 +1,5 @@
 0.8-7
+- read.adp.rdi(): add soundSpeed vector
 - data(echosounder) added
 - formatPosition() added
 - plot(echosounder): new arguments atTop and labelsTop
