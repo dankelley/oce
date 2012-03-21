@@ -700,19 +700,34 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             keep <- eval(substitute(subset), x@data, parent.frame())
             oceDebug(debug, "keeping", 100 * sum(keep)/length(keep), "% of the fast-sampled data\n")
             rval <- x
-            rval@data$time <- x@data$time[keep]
-            rval@data$latitude <- x@data$atitude[keep]
-            rval@data$longitude <- x@data$longitude[keep]
+            ## trim fast variables, handling matrix 'a' differently, and skipping 'distance'
             rval@data$a <- x@data$a[keep,]
-            ## slow variables
+            dataNames <- names(x@data)
+            ## lots of debugging in here, in case other data types have other variable names
+            oceDebug(debug, "dataNames (orig):", dataNames, "\n")
+            if (length(grep('^a$', dataNames)))
+                dataNames <- dataNames[-grep('^a$', dataNames)]
+            oceDebug(debug, "dataNames (step 2):", dataNames, "\n")
+            if (length(grep('^depth$', dataNames)))
+                dataNames <- dataNames[-grep('^depth$', dataNames)]
+            oceDebug(debug, "dataNames (step 3):", dataNames, "\n")
+            if (length(grep('Slow', dataNames)))
+                dataNames <- dataNames[-grep('Slow', dataNames)]
+            oceDebug(debug, "dataNames (final), i.e. fast dataNames to be trimmed by time:", dataNames, "\n")
+            for (dataName in dataNames) {
+                oceDebug(debug, "fast variable:", dataName, "orig length", length(x@data[[dataName]]), "\n")
+                rval@data[[dataName]] <- x@data[[dataName]][keep]
+                oceDebug(debug, "fast variable:", dataName, "new length", length(rval@data[[dataName]]), "\n")
+            }
+            ## trim slow variables
             subsetStringSlow <- gsub("time", "timeSlow", subsetString)
             oceDebug(debug, "subsetting slow variables with string:", subsetStringSlow, "\n")
             keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
             oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")
             for (slowName in names(x@data)[grep("Slow", names(x@data))]) {
-                ##oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
+                oceDebug(debug, "slow variable:", slowName, "orig length", length(x@data[[slowName]]), "\n")
                 rval@data[[slowName]] <- x@data[[slowName]][keepSlow]
-                ##oceDebug(debug, "slow variable:", slowName, "new length", length(rval@data[[slowName]]), "\n")
+                oceDebug(debug, "slow variable:", slowName, "new length", length(rval@data[[slowName]]), "\n")
             }
         } else if (length(grep("depth", subsetString))) {
             oceDebug(debug, "subsetting an echosounder object by depth\n")

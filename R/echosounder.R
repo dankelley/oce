@@ -155,7 +155,7 @@ setMethod(f="plot",
                       deepestWater <- max(abs(depth))
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
-                              drawBottom <- "white"
+                              drawBottom <- "lightgray"
                           waterDepth <- findBottom(x, ignore=ignore)
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth$depth))
