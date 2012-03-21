@@ -705,7 +705,7 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             rval@data$longitude <- x@data$longitude[keep]
             rval@data$a <- x@data$a[keep,]
             ## slow variables
-            subsetStringSlow <- sub("time", "timeSlow", subsetString)
+            subsetStringSlow <- gsub("time", "timeSlow", subsetString)
             oceDebug(debug, "subsetting slow variables with string:", subsetStringSlow, "\n")
             keepSlow <-eval(parse(text=subsetStringSlow), x@data, parent.frame())
             oceDebug(debug, "keeping", 100 * sum(keepSlow)/length(keepSlow), "% of the slow-sampled data\n")

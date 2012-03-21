@@ -1,4 +1,5 @@
 0.8-7
+- data(echosounder) added
 - formatPosition() added
 - plot(echosounder): new arguments atTop and labelsTop
 - adp objects now also hold 'percent good' for RDI instruments
