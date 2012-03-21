@@ -544,7 +544,7 @@ setMethod(f="plot",
               }
               which <- which2
               images <- c(1:12, 70:73)
-              timeseries <- c(13:22, 40:44, 50:54, 55)
+              timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
               speed <- 28
 
@@ -902,7 +902,26 @@ setMethod(f="plot",
                                   mai.palette=mai.palette,
                                   drawTimeRange=drawTimeRange,
                                   adorn=adorn[w], ...)
-                      drawTimeRange <- FALSE
+                          drawTimeRange <- FALSE
+                      }
+                      if (which[w] == 100) {
+                          oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
+                          oce.plot.ts(x[["time"]], x[["soundSpeed"]],
+                                      xlim=if(gave.xlim) xlim[w,] else tlim,
+                                      ylim=if(gave.ylim) ylim[w,],
+                                      xaxs="i",
+                                      col=col[w],
+                                      lwd=lwd[w],
+                                      cex=cex*(1 - min(nw / 8, 1/4)),
+                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                      main=main[w],
+                                      ylab="Sound Speed [m/s]",
+                                      type=type,
+                                      mgp=mgp,
+                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                      adorn=adorn[w],
+                                      debug=debug-1)
                       }
                       ## FIXME delete the next block, after testing.
                       if (marginsAsImage && useLayout)  { # FIXME: I think this should be deleted
@@ -1104,9 +1123,6 @@ setMethod(f="plot",
                           plot(coastline, clatitude=x[["latitude"]], clongitude=x[["longitude"]], span=50)
                           points(x[["longitude"]], x[["latitude"]], cex=2*par('cex'))
                       }
-                  } else if (which[w] == 100) {
-                      oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
-                      oce.plot.ts(x[["time"]], x[["soundSpeed"]], ylab="Sound speed [m/s]")
                   } else {
                       stop("unknown value of which (", which[w], ")")
                   }
