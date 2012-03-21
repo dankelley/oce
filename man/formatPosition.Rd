@@ -24,6 +24,13 @@
 library(oce)
 formatPosition(10+1:10/60+2.8/3600)
 formatPosition(10+1:10/60+2.8/3600, type="string")
+# more realistic example (preview of possible style for axes)
+data(coastlineHalifax)
+plot(coastlineHalifax)
+lon <- pretty(coastlineHalifax[["longitude"]], n=3)
+lonlab <- formatPosition(lon, type="expression")
+mtext(side=1, at=lon, text=lonlab, line=-1, col='red')
+rug(lon, side=1, ticksize=0.03, col='red', lwd=3)
 }
 
 \author{Dan Kelley}

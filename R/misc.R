@@ -35,14 +35,19 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     degrees <- floor(x)
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
+    seconds <- round(seconds, 2)
     hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
     if (type == "list") {
         rval <- list(degrees, minutes, seconds, hemispheres)
     } else if (type == "string") {
         rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
-    } else {
-        warning("FIXME: formatLatLon cannot do expressions yet, so expect junk or errors")
-        rval <- expression(paste(sprintf("%d", degrees), degree, minutes, "'", seconds, '"')) # FIXME: how to do this??
+    } else if (type == "expression") {
+        n <- length(degrees)
+        rval <- vector("expression", n)
+        for (i in 1:n) {
+            rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
+                                                list(d=degrees[i],m=minutes[i],s=seconds[i])))
+        }
     }
     rval
 }
