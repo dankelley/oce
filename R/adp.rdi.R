@@ -461,13 +461,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             bottomVelocity <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             haveBottomTrack <- TRUE
                         }
-                        ## FIXME: figure out how to do bottom range, which is a bit confuing in the
-                        ## docs...below is the old way (commented out) and a newer way, but I think
-                        ## this newer way is wrong....
-                        ## range.lsb <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
-                        ## range.msb <- readBin(buf[o+78:81], "integer", n=4, size=1, signed=FALSE, endian="little")
-                        ## bottomRange[i,] <- (65536 * range.msb + range.lsb) / 100 # centimetres
-                        bottomRange[i,] <- 0.01 * readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
+                        ## the bottom range is in 3 bytes, split into two chunks
+                        rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
+                        rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
+                        bottomRange[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
                         bottomVelocity[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
                     }
                     if (monitor) {
