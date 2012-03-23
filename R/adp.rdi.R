@@ -457,15 +457,15 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             if (numberOfBeams != 4) {
                                 stop("expecting 4 beams, for this RDI adcp")
                             }
-                            bottomRange <- array(double(), dim=c(profilesToRead, numberOfBeams))
-                            bottomVelocity <- array(double(), dim=c(profilesToRead, numberOfBeams))
+                            br <- array(double(), dim=c(profilesToRead, numberOfBeams))
+                            bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             haveBottomTrack <- TRUE
                         }
                         ## the bottom range is in 3 bytes, split into two chunks
                         rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
                         rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
-                        bottomRange[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
-                        bottomVelocity[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
+                        br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
+                        bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
                     }
                     if (monitor) {
                         cat(".", ...)
@@ -597,10 +597,9 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oceTz")
             if (haveBottomTrack) {
-                bottomRange.na <- bottomRange == 0.0
-                bottomRange[bottomRange.na] <- NA
+                br[br == 0.0] <- NA    # clean up (not sure if needed)
                 data <- list(v=v, q=q, a=a, g=g,
-                             bottomRange=bottomRange, bottomVelocity=bottomVelocity,
+                             br=br, bv=bv,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                              time=time,
                              pressure=pressure,
