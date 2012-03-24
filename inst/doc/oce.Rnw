@@ -577,8 +577,8 @@ png("pt.png", width=600, height=300, pointsize=13)
 @
 <<>>=
 library(oce)
-data(ptr)
-plot(ptr, useSmoothScatter=TRUE)
+data(pt)
+plot(pt, useSmoothScatter=TRUE)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()

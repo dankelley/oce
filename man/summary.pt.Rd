@@ -27,8 +27,8 @@
 
 \examples{
 library(oce)
-data(ptr)
-summary(ptr)
+data(pt)
+summary(pt)
 }
 
 \author{Dan Kelley}

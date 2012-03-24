@@ -16,7 +16,7 @@
      abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
      useSmoothScatter=FALSE,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
      main="",
      debug=getOption("oceDebug"),
      \dots)}
@@ -79,8 +79,8 @@
 }
 
 \examples{
-data(ptr)
-plot(ptr, which=c(1,3), 
+data(pt)
+plot(pt, which=c(1,3), 
  adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'))}))
 }
 
