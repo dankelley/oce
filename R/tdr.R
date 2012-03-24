@@ -107,7 +107,7 @@ setMethod(f="plot",
                   oceDebug(debug, "which[", w, "]=", which[w], "\n")
                   if (which[w] == 1) {           # temperature timeseries
                       oce.plot.ts(x@data$time, x@data$temperature,
-                                  xlab=if (!missing(xlab))xlab,
+                                  xlab=if (!missing(xlab))xlab else "",
                                   ylab=if (missing(ylab)) resizableLabel("T", "y") else ylab,
                                   type='l',
                                   xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
@@ -120,7 +120,7 @@ setMethod(f="plot",
                       axis(2)
                   } else if (which[w] == 3) {    # pressure timeseries
                       oce.plot.ts(x@data$time, x@data$pressure,
-                                  xlab=if (!missing(xlab))xlab,
+                                  xlab=if (!missing(xlab))xlab else "",
                                   ylab=if (missing(ylab)) resizableLabel("p", "y") else ylab,
                                   type='l',
                                   xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
