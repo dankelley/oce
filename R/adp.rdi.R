@@ -453,19 +453,29 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     ##oceDebug(debug-1, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
                     if (buf[o+1] == 0x06) {
                         ##oceDebug(debug-1, "bottom track (range and velocity) chunk at byte", o, "\n")
-                        if (!haveBottomTrack) { # FIXME: maybe only 'surveyor' has bottom track ... if so, recode this
+                        ## It seems that spurious bottom-track records might occur sometimes,
+                        ## and the following tries to prevent that by insisting that bottom
+                        ## track data occur in the first profile, if they occur later; otherwise
+                        ## this flag will be ignored.
+                        if (i == 1 && !haveBottomTrack) {
                             if (numberOfBeams != 4) {
                                 stop("expecting 4 beams, for this RDI adcp")
                             }
                             br <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             haveBottomTrack <- TRUE
+                        } else {
+                            if (haveBottomTrack) {
+                                ## the bottom range is in 3 bytes, split into two chunks
+                                rangeLSB <- readBin(buf[o+c(16:23)], "integer",
+                                                    n=4, size=2, signed=FALSE, endian="little")
+                                rangeMSB <- readBin(buf[o+77:80], "integer",
+                                                    n=4, size=1, signed=FALSE, endian="little")
+                                br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
+                                bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer",
+                                                          n=4, size=2, signed=TRUE, endian="little")
+                            }
                         }
-                        ## the bottom range is in 3 bytes, split into two chunks
-                        rangeLSB <- readBin(buf[o+c(16:23)], "integer", n=4, size=2, signed=FALSE, endian="little")
-                        rangeMSB <- readBin(buf[o+77:80], "integer", n=4, size=1, signed=FALSE, endian="little")
-                        br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
-                        bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer", n=4, size=2, signed=TRUE, endian="little")
                     }
                     if (monitor) {
                         cat(".", ...)
