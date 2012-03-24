@@ -24,8 +24,8 @@
 
 \examples{
 library(oce)
-data(ptr)
-print(ptPatm(ptr))
+data(pt)
+print(ptPatm(pt))
 }
 
 \author{Dan Kelley}

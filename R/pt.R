@@ -50,7 +50,7 @@ setMethod(f="plot",
                               abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
                               useSmoothScatter=FALSE,
                               mgp=getOption("oceMgp"),
-                              mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
+                              mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
                               main="",
                               debug=getOption("oceDebug"),
                               ...)
@@ -106,25 +106,24 @@ setMethod(f="plot",
                   oceDebug(debug, "which[", w, "]=", which[w], "\n")
                   if (which[w] == 1) {           # temperature timeseries
                       oce.plot.ts(x@data$time, x@data$temperature,
-                                  ylab=resizableLabel("T", "y"),
+                                  ylab=if (missing(ylab)) resizableLabel("T", "y") else ylab,
                                   type='l',
                                   xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
                                   ylim=if (missing(Tlim)) range(x@data$temperature, na.rm=TRUE) else Tlim,
                                   drawTimeRange=drawTimeRange,
-                                  main=main[w])
+                                  mgp=mgp, mar=mar, main=main[w], ...)
                       ##box()
                       ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange, abbreviateTimeRange=abbreviateTimeRange)
                       drawTimeRange <- FALSE    # only the first time panel gets the time indication
                       axis(2)
                   } else if (which[w] == 3) {    # pressure timeseries
                       oce.plot.ts(x@data$time, x@data$pressure,
-                                  ylab=resizableLabel("p", "y"),
+                                  ylab=if (missing(ylab)) resizableLabel("p", "y") else ylab,
                                   type='l',
                                   xlim=if (missing(tlim)) range(x@data$time, na.rm=TRUE) else tlim,
                                   ylim=if (missing(plim)) range(x@data$pressure, na.rm=TRUE) else plim,
-                                  main=main[w],
                                   drawTimeRange=drawTimeRange,
-                                  mgp=mgp, mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5))
+                                  mgp=mgp, mar=mar, main=main[w], ...)
                       ##box()
                       ##oce.axis.POSIXct(1, x=object@data$time, drawTimeRange=drawTimeRange)
                       drawTimeRange <- FALSE
