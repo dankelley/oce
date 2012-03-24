@@ -1,4 +1,5 @@
 0.8-7
+- rename 'dt' object and functions to 'tdr'
 - read.adp.rdi(): fix a bug in bottom-tracking
 - read.adp.rdi(): add soundSpeed vector
 - data(echosounder) added
