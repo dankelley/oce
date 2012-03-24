@@ -1,14 +1,14 @@
-\name{plot.pt}
+\name{plot.tdr}
 
-\alias{plot.pt}
-\alias{plot,pt,missing-method}
-\alias{plot,pt-method}
+\alias{plot.tdr}
+\alias{plot,tdr,missing-method}
+\alias{plot,tdr-method}
 
-\title{Plot pt (pressure-temperature) recorder data}
+\title{Plot tdr (temperature-depth recorder) data}
 
-\description{Plot pt temperature-depth recorder data}
+\description{Plot tdr (temperature-depth recorder) data}
 
-\usage{\S4method{plot}{pt}(x,
+\usage{\S4method{plot}{tdr}(x,
      which=1:4, title="", adorn=NULL,
      tlim, plim, Tlim, 
      xlab, ylab,
@@ -16,13 +16,13 @@
      abbreviateTimeRange=getOption("oceAbbreviateTimeRange"),
      useSmoothScatter=FALSE,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1],mgp[1]+1.5,1.5,1.5),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      main="",
      debug=getOption("oceDebug"),
      \dots)}
 
 \arguments{
-  \item{x}{\code{pt} object, typically result of \code{\link{read.pt}}.}
+  \item{x}{\code{tdr} object, typically result of \code{\link{read.tdr}}.}
   \item{which}{list of desired plot types.  These are graphed in
     panels running down from the top of the page.  See
     \dQuote{Details} for the meanings of various values of
@@ -79,12 +79,12 @@
 }
 
 \examples{
-data(pt)
-plot(pt, which=c(1,3), 
+data(tdr)
+plot(tdr, which=c(1,3), 
  adorn=expression({abline(v=as.POSIXct('2008-07-04 20:00:00',tz='UTC'))}))
 }
 
-\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
     PT objects, and also outlines the other functions dealing with them.}
 
 \author{Dan Kelley}

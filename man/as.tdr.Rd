@@ -1,12 +1,12 @@
-\name{as.pt}
+\name{as.tdr}
 
-\alias{as.pt}
+\alias{as.tdr}
 
-\title{Create an TDR temperature-depth recorder data file}
+\title{Create a TDR object}
 
-\description{Create an pt temperature-depth recorder file, producing an object of type \code{pt}.}
+\description{Create a TDR (temperature-depth recorder) object.}
 
-\usage{ as.pt(time, temperature, pressure,
+\usage{as.tdr(time, temperature, pressure,
       filename="", instrumentType="rbr", serialNumber="", model="", pressureAtmospheric=NA,
       processingLog, debug=getOption("oceDebug"))}
 
@@ -25,9 +25,9 @@
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{This is used by \code{\link{read.pt}} to create \code{pt} objects.}  
+\details{This is used by \code{\link{read.tdr}} to create \code{tdr} objects.}  
 
-\value{An object of \code{\link[base]{class}} \code{"pt"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
   list with elements detailed below.
   \item{data}{a data table containing the \code{time},
     \code{temperature}, and \code{pressure} data.}
@@ -47,8 +47,9 @@
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
-\seealso{The documentation for \code{\link{pt-class}} explains the structure of
-    PT objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
+    \code{tdr} objects, and also outlines the other functions dealing with
+    them.}
 
 \author{Dan Kelley}
 

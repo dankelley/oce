@@ -915,8 +915,8 @@ magic <- function(file, debug=getOption("oceDebug"))
         return("topo")
     }
     if ("RBR TDR" == substr(line, 1, 7))  {
-        oceDebug(debug, "this is pt\n")
-        return("pt")
+        oceDebug(debug, "this is tdr\n")
+        return("tdr")
     }
     if ("BOTTLE"  == substr(line, 1, 6))  {
         oceDebug(debug, "this is section\n")
@@ -961,8 +961,8 @@ read.oce <- function(file, ...)
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
         return(read.topo(file, processingLog=processingLog, ...))
-    if (type == "pt")
-        return(read.pt(file, processingLog=processingLog, ...))
+    if (type == "tdr")
+        return(read.tdr(file, processingLog=processingLog, ...))
     if (type == "RBR/rsk")
         return(read.pt(file, processingLog=processingLog, type='rsk'))
     if (type == "section")

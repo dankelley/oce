@@ -66,7 +66,7 @@ Information on the classes that derive from this base class are found at the fol
 \code{\link{ctd-class}},
 \code{\link{drifter-class}},
 \code{\link{lobo-class}},
-\code{\link{pt-class}},
+\code{\link{tdr-class}},
 \code{\link{sealevel-class}},
 \code{\link{section-class}},
 \code{\link{tidem-class}},

@@ -1,10 +1,10 @@
-\name{ptPatm}
-\alias{ptPatm}
-\title{Estimate atmospheric pressure in pt record}
-\description{Estimate atmospheric pressure in pt record}
-\usage{ptPatm(x, dp=0.5)}
+\name{tdrPatm}
+\alias{tdrPatm}
+\title{Estimate atmospheric pressure in tdr record}
+\description{Estimate atmospheric pressure in tdr record}
+\usage{tdrPatm(x, dp=0.5)}
 \arguments{
-  \item{x}{A \code{pt} object, or a list of pressures (in decibars).}
+  \item{x}{A \code{tdr} object, or a list of pressures (in decibars).}
   \item{dp}{Half-width of pressure window to be examined (in decibars).}
 }
 
@@ -19,13 +19,13 @@
 \value{A list of four estimates: \code{sap}, the median, the mean, and
   the weighted mean.}
 
-\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
     PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
 library(oce)
-data(pt)
-print(ptPatm(pt))
+data(tdr)
+print(tdrPatm(tdr))
 }
 
 \author{Dan Kelley}
