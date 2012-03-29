@@ -1406,6 +1406,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     }
  
     usr <- par('usr')                  # xmin xmax ymin ymax
+    oceDebug(debug, "usr=", usr, "at top of plotInset\n")
     if (is.character(xleft)) {
         if (xleft != "bottomleft")
             stop("only named position is \"bottomleft\"")
@@ -1476,6 +1477,7 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
         cat("\n\nAFTER expr, PAR IS RESET TO IC:\n");
         print(opar)
     }
+    par(opar)
     oceDebug(debug, "\b\b} # plotInset()\n")
     invisible()
 }
