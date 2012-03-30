@@ -621,6 +621,7 @@ setMethod(f="plot",
                              grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                              lwd.rho=lwd.rho, lty.rho=lty.rho,
                              useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, 
+                             inset=inset,
                              debug=debug-1, ...) # FIXME use inset here
                   } else if (which[w] == 4 || which[w] == "text") {
                       text.item <- function(item, label, cex=0.8) {
@@ -1632,7 +1633,7 @@ plotTS <- function (x,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
-                    add=FALSE,
+                    add=FALSE, inset=FALSE,
                     debug=getOption("oceDebug"),
                     ...)
 {
@@ -1670,9 +1671,11 @@ plotTS <- function (x,
         omar <- par("mar")
         omgp <- par("mgp")
         opar <- par(no.readonly = TRUE)
-        on.exit(par(mar=omar, mgp=omgp))
-        if (3 == length(mgp)) par(mgp=mgp)
-        if (4 == length(mar)) par(mar=mar)
+        if (!inset) {
+            on.exit(par(mar=omar, mgp=omgp))
+            if (3 == length(mgp)) par(mgp=mgp)
+            if (4 == length(mar)) par(mar=mar)
+        }
     }
     axis.name.loc <- mgp[1]
     if (missing(xlab))
