@@ -5,30 +5,34 @@ clipmin <- function(x, min=0)
     ifelse(x < min, min, x)
 }
 
-abbreviateTimeLabels <- function(tl)
+abbreviateTimeLabels <- function(t, ...)
 {
-    if (inherits(tl, "POSIXt"))
-        tl <- format(tl)
-    n <- length(tl)
+    if (!inherits(t, "POSIXt"))
+        return(t)                     # not a time, so just return the argument
+    dots <- list(...)
+    if (!is.na(dots$format))
+        return(format(t, dots$format)) # a format was specified, so just return the argument
+    t <- format(t, "%Y-%m-%d %H:%M:%S")
+    n <- length(t)
     if (n < 2)
-        return(tl)
-    year <- substr(tl, 1, 4)
+        return(t)
+    year <- substr(t, 1, 4)
     ## strip years, if all the same
-    for (i in 2:n) if (year[i] != year[1]) return(tl)
-    tl <- substr(tl, 6, nchar(tl))
+    for (i in 2:n) if (year[i] != year[1]) return(t)
+    t <- substr(t, 6, nchar(t))
     ## strip months, if all the same
-    month <- substr(tl, 1, 2)
-    for (i in 2:n) if (month[i] != month[1]) return(tl)
-    tl <- substr(tl, 4, nchar(tl))
+    month <- substr(t, 1, 2)
+    for (i in 2:n) if (month[i] != month[1]) return(t)
+    t <- substr(t, 4, nchar(t))
     ## strip seconds, if all the same
-    seconds <- substr(tl, nchar(tl)-2, nchar(tl))
-    for (i in 2:n) if (seconds[i] != seconds[1]) return(tl)
-    tl <- substr(tl, 1, nchar(tl)-3)
+    seconds <- substr(t, nchar(t)-2, nchar(t))
+    for (i in 2:n) if (seconds[i] != seconds[1]) return(t)
+    t <- substr(t, 1, nchar(t)-3)
     ## strip minutes, if all the same (this may be confusing)
-    minutes <- substr(tl, nchar(tl)-2, nchar(tl))
-    for (i in 2:n) if (minutes[i] != minutes[1]) return(tl)
-    tl <- substr(tl, 1, nchar(tl)-3)
-    return(tl)
+    minutes <- substr(t, nchar(t)-2, nchar(t))
+    for (i in 2:n) if (minutes[i] != minutes[1]) return(t)
+    t <- substr(t, 1, nchar(t)-3)
+    return(t)
 }
 
 paletteCalculations <- function(paletteSeparation=1/8, paletteWidth=1/4, label,
@@ -57,6 +61,8 @@ drawPalette <- function(zlim,
                         zlab="",
                         breaks,
                         col,
+                        labels=NULL,
+                        at=NULL,
                         mai=c(0, 1/8, 0, 3/8),
                         top=0, bottom=0,
                         drawContours=FALSE,
@@ -144,12 +150,12 @@ drawPalette <- function(zlim,
         if (drawContours)
             abline(h=contours)
         box()
-        if (zIsTime) {
+        if (zIsTime & is.null(at)) {
             at <- as.numeric(pretty(zlim))
-        } else {
-            at <- if (!is.null(contours)) contours else pretty(palette) # FIXME: wrong on contours
+        } else if (is.null(at)) {
+            at <- if (!is.null(contours) & is.null(at)) pretty(contours) else pretty(palette) # FIXME: wrong on contours
         }
-        labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at)) else format(at)
+        if (is.null(labels)) labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
         axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
@@ -175,10 +181,12 @@ imagep <- function(x, y, z,
                    flip.y=FALSE,
                    xlab="", ylab="", zlab="",
                    breaks, col,
+                   labels=NULL, at=NULL,
                    drawContours=FALSE,
                    drawTimeRange=getOption("oceDrawTimeRange"),
                    drawPalette=TRUE,
                    filledContour=FALSE,
+                   missingColor=NULL,
                    mgp=getOption("oceMgp"),
                    mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+if(nchar(ylab)>0) 1.5 else 1, mgp[2]+1/2, 1/2),
                    mai.palette=c(0, 1/8, 0, 3/8),
@@ -228,8 +236,8 @@ imagep <- function(x, y, z,
         stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
-
-    ## ensure that x and y increase (BUT, for now, no check on equal values, and also no xlim reversals FIXME)
+    ## ensure that x and y increase (BUT, for now, no check on equal values, 
+    ## and also no xlim reversals FIXME)
     ox <- order(x)
     if (any(diff(ox) < 0)) {
         warning("reordered some x values")
@@ -242,18 +250,16 @@ imagep <- function(x, y, z,
         y <- y[oy]
         z <- z[,oy]
     }
-
     omai <- par("mai")
     omar <- par("mar")
     ocex <- par("cex")
-    ## set overall graphical parameters (note: get opai after setting mar)
     par(mgp=mgp, mar=mar, cex=cex)
     breaksGiven <- !missing(breaks)
     if (!breaksGiven) {
         zrange <- range(z, na.rm=TRUE)
         if (missing(zlim)) {
             if (missing(col)) {
-                breaks <- pretty(zrange)
+                breaks <- pretty(zrange, n=10)
                 if (breaks[1] < zrange[1]) breaks[1] <- zrange[1]
                 if (breaks[length(breaks)] > zrange[2]) breaks[length(breaks)] <- zrange[2]
             } else {
@@ -274,6 +280,9 @@ imagep <- function(x, y, z,
         }
     } else {
         breaksOrig <- breaks
+        if (1 == length(breaks)) {
+            breaks <- pretty(z, n=breaks)
+        }
     }
     if (missing(col))
         col <- oceColorsPalette(n=length(breaks)-1)
@@ -284,7 +293,9 @@ imagep <- function(x, y, z,
         drawPalette()
     } else if (drawPalette) {
         zlim <- if(missing(zlim)) range(z,na.rm=TRUE) else zlim
-        drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, drawContours=drawContours,
+        drawPalette(zlim=zlim, zlab="", breaks=breaks, col=col, 
+                    labels=labels, at=at,
+                    drawContours=drawContours,
                     mai=mai.palette, debug=debug-1)
     }
 
@@ -330,6 +341,8 @@ imagep <- function(x, y, z,
             } else {
                 .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
             }
+            mtext(xlab, side=1, line=mgp[1])
+            mtext(ylab, side=2, line=mgp[1])
         } else {
             image(x=x, y=y, z=z, axes=FALSE, xlab=xlab, ylab=ylab, breaks=breaks, col=col,
                   xlim=xlim, ylim=ylim, ...)
@@ -339,6 +352,11 @@ imagep <- function(x, y, z,
             axis(1, cex.axis=cex, cex.lab=cex)
             axis(2, cex.axis=cex, cex.lab=cex)
         }
+    }
+    if (!is.null(missingColor)) {
+        ## FIXME: the negation on is.na is confusing, but it comes from col and breaks together
+        image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0,1/2,1), add=TRUE)
+        box()
     }
     if (main != "")
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))

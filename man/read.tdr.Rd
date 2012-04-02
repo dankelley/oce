@@ -1,14 +1,14 @@
-\name{read.pt}
+\name{read.tdr}
 
-\alias{read.pt}
+\alias{read.tdr}
 
 \title{Read an TDR temperature-depth recorder data file}
 
-\description{Read an pt temperature-depth recorder file, producing an object of type \code{pt}.}
+\description{Read an tdr temperature-depth recorder file, producing an object of type \code{tdr}.}
 
 \usage{
-read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
-        processingLog, debug=getOption("oceDebug"))}
+read.tdr(file, from=1, to, by=1, type, tz=getOption("oceTz"),
+         processingLog, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
@@ -35,7 +35,7 @@ read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
   \item{debug}{a flag that can be set to \code{TRUE} to turn on debugging.}
 }
 
-\details{Read an TDR (temperature-depth recorder) file.  At the moment, four
+\details{Read a TDR (temperature-depth recorder) file.  At the moment, four
     styles are understood: (1) text file with columns for temperature and
     pressure (with sampling times indicated in the header); (2) text file with
     four columns, in which the date the time of day are given in the first two
@@ -43,7 +43,7 @@ read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     columns, in which depth in the water column is given after the pressure;
     (4) a new (and possibly still changeable) SQLite-based database format.}
 
-\value{An object of \code{\link[base]{class}} \code{"pt"}, which is a
+\value{An object of \code{\link[base]{class}} \code{"tdr"}, which is a
   list with elements detailed below.
   \item{data}{a data table containing the \code{time},
     \code{temperature}, and \code{pressure} data.}
@@ -71,15 +71,8 @@ read.pt(file, from=1, to, by=1, type, tz=getOption("oceTz"),
     cases, the assumption may or may not be correct.  Still, the end time for
     subsampling (\code{metdata$subsample.end}) should be correct.}
 
-\seealso{The documentation for \code{\link{pt-class}} explains the structure of
+\seealso{The documentation for \code{\link{tdr-class}} explains the structure of
     PT objects, and also outlines the other functions dealing with them.}
-
-\examples{
-\dontrun{
-pt <- read.pt("sl08_011855.dat", by=600)
-save(pt, file="oce/data/pt.rda")
-}
-}
 
 \author{Dan Kelley}
 

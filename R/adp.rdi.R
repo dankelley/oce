@@ -101,11 +101,11 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     tpp.seconds <- readBin(FLD[24], "integer", n=1, size=1)
     tpp.hundredths <- readBin(FLD[25], "integer", n=1, size=1)
     bits <- substr(byteToBinary(FLD[26], endian="big"), 4, 5)
-    coordinateSystem <- "???"
-    if (bits == "00") coordinateSystem <- "beam"
-    else if (bits == "01") coordinateSystem <- "instrument"
-    else if (bits == "10") coordinateSystem <- "xyz"
-    else if (bits == "11") coordinateSystem <- "enu"
+    originalCoordinate <- "???"
+    if (bits == "00") originalCoordinate <- "beam"
+    else if (bits == "01") originalCoordinate <- "instrument"
+    else if (bits == "10") originalCoordinate <- "xyz"
+    else if (bits == "11") originalCoordinate <- "enu"
     headingAlignment <- 0.01 * readBin(FLD[27:28], "integer", n=1, size=2, endian="little") # WCODF p 130
     headingBias <- 0.01 * readBin(FLD[29:30], "integer", n=1, size=2, endian="little") # WCODF p 130
     oceDebug(debug, "headingAlignment=", headingAlignment, "; headingBias=", headingBias, "\n")
@@ -192,10 +192,13 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
               "minute=", RTC.minute, "second=", RTC.second, "hundreds=", RTC.hundredths, ")\n")
     ensembleNumberMSB <- readBin(VLD[12], "integer", n=1, size=1)
     bitResult <- readBin(VLD[13:14], "integer", n=1, size=2, endian="little")
-    speedOfSound  <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
-    oceDebug(debug, "speedOfSound = ", speedOfSound, "\n")
-    if (speedOfSound < 1400 || speedOfSound > 1600)
-        warning("speedOfSound is ", speedOfSound, ", which is outside the permitted range of 1400 m/s to 1600 m/s")
+    soundSpeed <- readBin(VLD[15:16], "integer", n=1, size=2, endian="little")
+    oceDebug(1+debug, "soundSpeed= ", soundSpeed, "\n") # FIXME
+    transducerDepth <- readBin(VLD[17:18], "integer", n=1, size=2, endian="little")
+    oceDebug(debug, "transducerDepth = ", transducerDepth, "\n")
+    if (soundSpeed < 1400 || soundSpeed > 1600)
+        warning("soundSpeed is ", soundSpeed, ", which is outside the permitted range of 1400 m/s to
+                1600 m/s.  Something went wrong in decoding the data.")
     list(instrumentType="adcp",
          instrumentSubtype=instrumentSubtype,
          programVersionMajor=programVersionMajor,
@@ -216,6 +219,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
          numberOfCells=numberOfCells,
          pingsPerEnsemble=pingsPerEnsemble,
          cellSize=cellSize,
+         transducerDepth=transducerDepth,
          profilingMode=profilingMode,
          dataOffset=dataOffset,
          lowCorrThresh=lowCorrThresh,
@@ -225,7 +229,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
          ##tpp.minutes=tpp.minutes,
          ##tpp.seconds=tpp.seconds,
          ##tpp.hundredths=tpp.hundredths,
-         coordinateSystem=coordinateSystem,
+         originalCoordinate=originalCoordinate,
          headingAlignment=headingAlignment,
          headingBias=headingBias,
          sensorSource=sensorSource,
@@ -244,7 +248,6 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
          ##time=time,
          ##ensembleNumberMSB=ensembleNumberMSB,
          ##bitResult=bitResult,
-         ##speedOfSound=speedOfSound,
          ##heading=heading,
          ##pitch=pitch,
          ##roll=roll,
@@ -450,18 +453,29 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                     ##oceDebug(debug-1, "next (", o+1, "th) byte is", buf[o+1], "(expect 01 for velo or 06 for bottom track)\n")
                     if (buf[o+1] == 0x06) {
                         ##oceDebug(debug-1, "bottom track (range and velocity) chunk at byte", o, "\n")
-                        if (!haveBottomTrack) { # FIXME: maybe only 'surveyor' has bottom track ... if so, recode this
+                        ## It seems that spurious bottom-track records might occur sometimes,
+                        ## and the following tries to prevent that by insisting that bottom
+                        ## track data occur in the first profile, if they occur later; otherwise
+                        ## this flag will be ignored.
+                        if (i == 1 && !haveBottomTrack) {
                             if (numberOfBeams != 4) {
                                 stop("expecting 4 beams, for this RDI adcp")
                             }
-                            bottomRange <- array(double(), dim=c(profilesToRead, numberOfBeams))
-                            bottomVelocity <- array(double(), dim=c(profilesToRead, numberOfBeams))
+                            br <- array(double(), dim=c(profilesToRead, numberOfBeams))
+                            bv <- array(double(), dim=c(profilesToRead, numberOfBeams))
                             haveBottomTrack <- TRUE
+                        } else {
+                            if (haveBottomTrack) {
+                                ## the bottom range is in 3 bytes, split into two chunks
+                                rangeLSB <- readBin(buf[o+c(16:23)], "integer",
+                                                    n=4, size=2, signed=FALSE, endian="little")
+                                rangeMSB <- readBin(buf[o+77:80], "integer",
+                                                    n=4, size=1, signed=FALSE, endian="little")
+                                br[i,] <- 0.01 * (65536 * rangeMSB + rangeLSB)
+                                bv[i,] <- 0.001 * readBin(buf[o+c(24:31)], "integer",
+                                                          n=4, size=2, signed=TRUE, endian="little")
+                            }
                         }
-                        range.lsb <- readBin(buf[o+c(16:24)], "integer", n=4, size=2, signed=FALSE, endian="little")
-                        range.msb <- readBin(buf[o+78:81], "integer", n=4, size=1, signed=FALSE, endian="little")
-                        bottomRange[i,] <- (65536 * range.msb + range.lsb) / 100 # centimetres
-                        bottomVelocity[i,] <- readBin(buf[o+c(25:32)], "integer", n=4, size=2, signed=TRUE, endian="little") / 1000
                     }
                     if (monitor) {
                         cat(".", ...)
@@ -488,6 +502,8 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 as.integer(buf[profileStart+8]),      # minute
                                 as.integer(buf[profileStart+9]),      # second
                                 tz=tz)
+
+
             if (length(badProfiles) > 0) { # remove NAs in time (not sure this is right, but it prevents other problems)
                 t0 <- time[match(1, !is.na(time))] # FIXME: should test if any
                 time <- fillGap(as.numeric(time) - as.numeric(t0)) + t0
@@ -500,7 +516,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 
             profileStart2 <- sort(c(profileStart, profileStart + 1)) # lets us index two-byte chunks
             profileStart4 <- sort(c(profileStart, profileStart + 1, profileStart + 2, profileStart + 3)) # lets us index four-byte chunks
-            speedOfSound <- 0.1 * readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
+            soundSpeed <- readBin(buf[profileStart2 + 14], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE)
             depth <- 0.1 * readBin(buf[profileStart2 + 16], "integer", n=profilesToRead, size=2, endian="little")
             ## Note that the headingBias needs to be removed
             heading <- 0.01 * readBin(buf[profileStart2 + 18], "integer", n=profilesToRead, size=2, endian="little", signed=FALSE) - header$headingBias
@@ -544,7 +560,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$bin1Distance <- bin1Distance
             metadata$xmitPulseLength <- xmitPulseLength
             metadata$oceBeamUnattenuated <- FALSE
-            metadata$oceCoordinate <- header$coordinateSystem
+            metadata$oceCoordinate <- header$originalCoordinate
             metadata$depth <- mean(depth, na.rm=TRUE)
             ## Transformation matrix
             ## FIXME Dal people use 'a' in last row of matrix, but both
@@ -591,27 +607,28 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             class(time) <- c("POSIXt", "POSIXct")
             attr(time, "tzone") <- getOption("oceTz")
             if (haveBottomTrack) {
-                bottomRange.na <- bottomRange == 0.0
-                bottomRange[bottomRange.na] <- NA
-                data <- list(v=v, a=a, q=q, 
-                             bottomRange=bottomRange, bottomVelocity=bottomVelocity,
+                br[br == 0.0] <- NA    # clean up (not sure if needed)
+                data <- list(v=v, q=q, a=a, g=g,
+                             br=br, bv=bv,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                              time=time,
                              pressure=pressure,
                              temperature=temperature,
                              salinity=salinity,
                              depth=depth,
+                             soundSpeed=soundSpeed,
                              heading=heading,
                              pitch=pitch,
                              roll=roll)
             } else {
-                data <- list(v=v, a=a, q=q, 
+                data <- list(v=v, q=q, a=a, g=g,
                              distance=seq(bin1Distance, by=cellSize, length.out=numberOfCells),
                              time=time,
                              pressure=pressure,
                              temperature=temperature,
                              salinity=salinity,
                              depth=depth,
+                             soundSpeed=soundSpeed,
                              heading=heading,
                              pitch=pitch,
                              roll=roll)

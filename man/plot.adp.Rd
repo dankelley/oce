@@ -18,6 +18,7 @@
      adorn=NULL,
      drawTimeRange=getOption("oceDrawTimeRange"),
      useSmoothScatter,
+     missingColor="gray",
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
      mai.palette=c(0, 1/8, 0, 3/8),
@@ -82,6 +83,8 @@
       \code{\link{smoothScatter}} in various plots, such as \code{which="uv"}.
       If not provided a default is used, with \code{\link{smoothScatter}} being
       used if there are more than 2000 points to plot.}
+  \item{missingColor}{colour used to indicate \code{NA} values in images (see
+      \code{\link{imagep}}); set to \code{NULL} to avoid this indication.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
@@ -118,9 +121,11 @@
   \item{grid.lwd}{line width of grid}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
-  \item{\dots}{optional arguments passed to plotting functions,
-    e.g. supplying \code{despike=TRUE} will cause time-series panels to
-    be de-spiked with \code{\link{despike}}.}
+  \item{\dots}{optional arguments passed to plotting functions.  For example,
+    supplying \code{despike=TRUE} will cause time-series panels to
+    be de-spiked with \code{\link{despike}}.  Another common action is
+    to set the colour for missing values on image plots, with the argument
+    \code{missingColor} (see \code{\link{imagep}}).}
 }
 
 \details{Creates a summary plot of data measured by an acoustic doppler
@@ -147,9 +152,18 @@
     
     \item \code{which=5:8} (or \code{which="a1"} to \code{"a4"}) yield
       distance-time images of backscatter intensity of the respective beams.
+      (For data derived from Teledyn-RDI instruments, this is the item
+      called ``echo intensity.'')
 
     \item \code{which=9:12} (or \code{which="q1"} to \code{"q4"}) yield
-      distance-time images of signal quality for the respective beams.
+    distance-time images of signal quality for the respective beams.  (For RDI
+    data derived from instruments, this is the item called ``correlation
+    magnitude.'')
+
+    \item \code{which=70:73} (or \code{which="g1"} to \code{"g4"}) yield
+    distance-time images of percent-good for the respective beams.  (For data
+    derived from Teledyne-RDI instruments, which are the only instruments that
+    yield this item, it is called ``percent good.'')
 
     \item \code{which=13} (or \code{which="salinity"}) yields a
       time-series plot of salinity.
@@ -229,8 +243,11 @@
     \item \code{which=51} to \code{54} (or \code{"bottom velocity1"} to
       \code{"bottom velocity4"}) for bottom velocity from beams 1 to 4.
 
-    \item \code{which=55} (or \code{"heaving"} for time-integrated,
-    depth-averaged, vertical velocity (i.e. heaving)
+    \item \code{which=55} (or \code{"heaving"}) for time-integrated,
+    depth-averaged, vertical velocity, i.e. a time series of heaving.
+
+    \item \code{which=100} (or \code{"soundSpeed"}) for a time series of sound
+    speed.
 
     }
     In addition to the above, there are some groupings defined:
@@ -273,11 +290,8 @@
 library(oce)
 data(adp)
 plot(adp, which=1:3)
-plot(adp, which=1:2,
-     adorn=expression({
-         abline(v=as.POSIXct('2008-06-26 06:00:00',tz='UTC'),col='green',lwd=3)
-         lines(time(x), pressure(x), lwd=3, col='blue')
-     }))
+plot(adp, which=5, missingColor='gray',
+     adorn=expression({ lines(x[["time"]], x[["pressure"]], lwd=3, col='blue') }))
 }
 
 \seealso{The documentation for \code{\link{adp-class}} explains the structure

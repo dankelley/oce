@@ -35,7 +35,7 @@ read.adv.sontek.adr(file, from=1, to, by=1, tz=getOption("oceTz"),
   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 
 read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
-  coordinateSystem="xyz",
+  originalCoordinate="xyz",
   transformationMatrix,
   latitude=NA, longitude=NA,
   debug=getOption("oceDebug"), monitor=FALSE, processingLog)
@@ -86,7 +86,7 @@ read.adv.sontek.text(basefile, from=1, to, by=1, tz=getOption("oceTz"),
 
   \item{deltat}{the time between samples. (This is mandatory if \code{header=FALSE}.)}
 
-  \item{coordinateSystem}{character string indicating coordinate system, one of \code{"beam"},
+  \item{originalCoordinate}{character string indicating coordinate system, one of \code{"beam"},
     \code{"xyz"}, \code{"enu"} or \code{"other"}.  (This is needed for the case of multiple files
     that were created by a data logger, because the header information is normally lost in such
     instances.)}

@@ -4,6 +4,8 @@
 \alias{oceColorsGebco}
 \alias{oceColorsTwo}
 \alias{oceColorsPalette}
+\alias{oceColors9A}
+\alias{oceColors9B}
 
 \title{Create a palette of colours}
 
@@ -17,13 +19,17 @@ oceColorsGebco(n=9, region=c("water", "land", "both"),
 
 oceColorsJet(n)
 
+oceColors9A(n)
+
+oceColors9B(n)
+
 oceColorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
 
 }
 
 \arguments{
 \item{n}{the number of colors (\eqn{\ge 1}{>=1}) to be in the palette.}
-\item{which}{an identifier for the palette, for \code{oceColorsPalette}.}
+\item{which}{an identifier for the palette  (see \dQuote{Details}).}
 \item{region}{the region characteristic, for \code{oceColorsGebco}.}
 \item{type}{the type of item drawn, for \code{oceColorsGebco}.}
 \item{low}{the hue, in [0,1], for the low end of a \code{oceColorsTwo}
@@ -40,6 +46,11 @@ oceColorsTwo(n, low=2/3, high=0, smax=1, alpha = 1)
   \code{which}=1 yields the ColorBrewer diverging red/blue scheme while
   \code{which}=2 yields the ColorBrewer diverging RYB scheme.  (Each is
   interpolated from the 11-class schemes provided on this site.)
+
+  A family of nine-color schemes is as follows: \code{which="jet"} (or
+  \code{which="9A"} or \code{which=9.01} for the Jet scheme; \code{which="9B"}
+  or \code{which=9.02} for a scheme similar to Jet but omitting the green, and
+  somewhat desaturating the yellow and cyane.
 
   \code{oceColorsGebco} provides palettes that mimic the GEBCO altas
   colours, with shades of blue for water and of brown for land.
@@ -61,6 +72,14 @@ image(x, col=oceColorsJet(200), main="oceColorsJet")
 image(x, col=oceColorsGebco(200), main="oceColorsGebco")
 image(x, col=oceColorsPalette(200), main="oceColorsPalette")
 par(opar)
+
+# real-world example, with acoustic-doppler profiler data
+data(adp)
+par(mfrow=c(3,1))
+plot(adp, which='u1')
+plot(adp, which='u1', col=oceColorsJet)
+plot(adp, which='u1', col=oceColors9B)
+
 }
 
 \references{

@@ -12,7 +12,7 @@
                           cex=1, pch=1, type='p', col,
                           adorn=NULL,
                           mgp=getOption("oceMgp"),
-                          mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+                          mar=c(mgp[1]+1, mgp[1]+1, 1.5, 1.5),
                           debug=getOption("oceDebug"), \dots)}
 
 \arguments{

@@ -19,6 +19,7 @@
      adorn=NULL,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1,mgp[1]+1,mgp[1]+1,mgp[1]+1),
+     atTop, labelsTop,
      debug=getOption("oceDebug"),
      \dots)
 }
@@ -54,6 +55,15 @@
   \item{col}{colorscale for image, a function}
 
   \item{lwd}{line width (ignored if \code{type="p"})}
+
+  \item{atTop}{optional vector of time values, for labels at the top of the
+      plot produced with \code{which=2}.  If \code{labelsTop} is provided, then
+      it will hold the labels.  If \code{labelsTop} is not provided, the labels
+      will be constructed with the \code{\link{format}} function, and these may
+      be customized by supplying a \code{format} in the \dots arguments.}
+
+  \item{labelsTop}{optional vector of character strings to be plotted above the
+      \code{atTop} times.  Ignored unless \code{atTop} was provided.}
 
   \item{despike}{remove vertical banding by using \code{\link{smooth}} to smooth
       across image columns, row by row.}
