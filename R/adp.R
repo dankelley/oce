@@ -35,7 +35,17 @@ setMethod(f="[[",
                       rval <- x@data$q
                   }
                   rval
-              } else {
+              } else if (i == "g") {
+                  if (!missing(j) && j == "numeric") {
+                      rval <- x@data$g
+                      dim <- dim(rval)
+                      rval <- as.numeric(rval)
+                      dim(rval) <- dim
+                  } else {
+                      rval <- x@data$g
+                  }
+                  rval
+               } else {
                   as(x, "oce")[[i, j, drop]]
               }
           })
@@ -299,11 +309,11 @@ summary.adp <- function(object, ...)
                 format(subsampleEnd),  attr(subsampleEnd, "tzone"),
                 1 / subsampleDeltat))
     cat(sprintf("* Cells:              %d, centered at %.3f m to %.3f m, spaced by %.3f m\n",
-                object@metadata$numberOfCells, object@data$distance[1],  object@data$distance[length(object@data$distance)], diff(object@data$distance[1:2])),  ...)
-    cat("* Coordinate system: ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
+                object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
+    cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
     cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnattenuated) & object@metadata$oceBeamUnattenuated) "beams (attenuated)" else "beams (not attenuated)",
-        "oriented", object@metadata$orientation, "with angle", object@metadata$beam.angle, "deg to axis\n", ...)
+        "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
     if (!is.null(object@metadata$transformationMatrix)) {
         digits <- 4
         cat("* Transformation matrix::\n\n")
@@ -329,7 +339,7 @@ summary.adp <- function(object, ...)
     res$beamConfig <- object@metadata$beamConfig
     res$transformationMatrix <- object@metadata$transformationMatrix
     res$orientation <- object@metadata$orientation
-    res$coordinateSystem <- object@metadata$coordinateSystem
+    res$originalCoordinate <- object@metadata$originalCoordinate
     res$oceCoordinate <- object@metadata$oceCoordinate
     res$processingLog <- object@processingLog
     dataNames <- names(object@data)
@@ -360,6 +370,7 @@ setMethod(f="plot",
                               adorn=NULL,
                               drawTimeRange=getOption("oceDrawTimeRange"),
                               useSmoothScatter,
+                              missingColor="gray",
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1.5,mgp[1]+1.5,1.5,1.5),
                               mai.palette=c(0, 1/8, 0, 3/8),
@@ -495,6 +506,10 @@ setMethod(f="plot",
                       else if (ww == "q2") which2[w] <- 10
                       else if (ww == "q3") which2[w] <- 11
                       else if (ww == "q4") which2[w] <- 12
+                      else if (ww == "g1") which2[w] <- 70
+                      else if (ww == "g2") which2[w] <- 71
+                      else if (ww == "g3") which2[w] <- 72
+                      else if (ww == "g4") which2[w] <- 73
                       else if (ww == "salinity") which2[w] <- 13
                       else if (ww == "temperature") which2[w] <- 14
                       else if (ww == "pressure") which2[w] <- 15
@@ -523,12 +538,13 @@ setMethod(f="plot",
                       else if (ww == "bottom velocity4") which2[w] <- 54 # beam4 (if there is one)
                       else if (ww == "heaving") which2[w] <- 55
                       else if (ww == "map") which2[w] <- 60
+                      else if (ww == "soundSpeed") which2[w] <- 100
                       else stop("unknown 'which':", ww)
                   }
               }
               which <- which2
-              images <- 1:12
-              timeseries <- c(13:22, 40:44, 50:54, 55)
+              images <- c(1:12, 70:73)
+              timeseries <- c(13:22, 40:44, 50:54, 55, 100)
               spatial <- 23:27
               speed <- 28
 
@@ -610,6 +626,15 @@ setMethod(f="plot",
                               zlim <- c(0, max(as.numeric(x@data$amp)))
                               zlab <- c(expression(amp[1]),expression(amp[2]),expression(amp[3]))[which[w]-8]
                           }
+                     } else if (which[w] %in% 70:(69+x@metadata$numberOfBeams)) { # correlation
+                          if ("g" %in% names(x@data)) {
+                              z <- as.numeric(x@data$g[,,which[w]-69])
+                              dim(z) <- dim(x@data$g)[1:2]
+                              zlim <- c(0, 100)
+                              zlab <- c(expression(g[1]),expression(g[2]),expression(g[3]))[which[w]-8]
+                          } else {
+                              warning("ADP object lacks a 'g' data item")
+                          }
                       } else {
                           skip <- TRUE
                       }
@@ -625,6 +650,7 @@ setMethod(f="plot",
                                      zlab=zlab,
                                      drawTimeRange=drawTimeRange,
                                      drawContours=FALSE,
+                                     missingColor=missingColor,
                                      adorn=adorn[w],
                                      mgp=mgp,
                                      mar=mar,
@@ -643,6 +669,7 @@ setMethod(f="plot",
                                      zlab=zlab,
                                      drawTimeRange=drawTimeRange,
                                      drawContours=FALSE,
+                                     missingColor=missingColor,
                                      adorn=adorn[w],
                                      mgp=mgp,
                                      mar=mar,
@@ -875,7 +902,26 @@ setMethod(f="plot",
                                   mai.palette=mai.palette,
                                   drawTimeRange=drawTimeRange,
                                   adorn=adorn[w], ...)
-                      drawTimeRange <- FALSE
+                          drawTimeRange <- FALSE
+                      }
+                      if (which[w] == 100) {
+                          oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
+                          if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
+                          oce.plot.ts(x[["time"]], x[["soundSpeed"]],
+                                      xlim=if(gave.xlim) xlim[w,] else tlim,
+                                      ylim=if(gave.ylim) ylim[w,],
+                                      xaxs="i",
+                                      col=col[w],
+                                      lwd=lwd[w],
+                                      cex=cex*(1 - min(nw / 8, 1/4)),
+                                      cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                      main=main[w],
+                                      ylab="Sound Speed [m/s]",
+                                      type=type,
+                                      mgp=mgp,
+                                      mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                      adorn=adorn[w],
+                                      debug=debug-1)
                       }
                       ## FIXME delete the next block, after testing.
                       if (marginsAsImage && useLayout)  { # FIXME: I think this should be deleted
@@ -1110,29 +1156,38 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
-beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oceDebug"))
+beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bbeamUnattenuateAdp(...) {\n")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
     if (x@metadata$oceBeamUnattenuated)
         stop("the beams are already unattenuated in this dataset")
-    res <- x
     numberOfProfiles <- dim(x@data$a)[1]
     oceDebug(debug, "numberOfProfiles=", numberOfProfiles, "\n")
     correction <- matrix(rep(20 * log10(x@data$distance), numberOfProfiles),
                          nrow=numberOfProfiles, byrow=TRUE)
-    for (beam in 1:x@metadata$numberOfBeams) {
-        oceDebug(debug, "beam=",beam,"\n")
-        tmp <- floor(count2db[beam] * as.numeric(x@data$a[,,beam]) + correction)
-        tmp[tmp < 0] <- 0
-        tmp[tmp > 255] <- 255
-        res@data$a[,,beam] <- as.raw(tmp)
+    if (asMatrix) {
+        res <- array(double(), dim=dim(x@data$a))
+        for (beam in 1:x@metadata$numberOfBeams) {
+            oceDebug(debug, "beam=",beam,"\n")
+            res[,,beam] <- count2db[beam] * as.numeric(x@data$a[,,beam]) + correction
+        }
+        res
+     } else {
+         res <- x
+         for (beam in 1:x@metadata$numberOfBeams) {
+            oceDebug(debug, "beam=",beam,"\n")
+            tmp <- floor(count2db[beam] * as.numeric(x@data$a[,,beam]) + correction)
+            tmp[tmp < 0] <- 0
+            tmp[tmp > 255] <- 255
+            res@data$a[,,beam] <- as.raw(tmp)
+        }
+        res@metadata$oceBeamUnattenuated <- TRUE
+        res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+        oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
+        res
     }
-    res@metadata$oceBeamUnattenuated <- TRUE
-    res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
-    res
 }
 
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))

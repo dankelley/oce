@@ -7,6 +7,7 @@
 \description{Draw a palette on the right-hand side of plot device}
 
 \usage{drawPalette(zlim, zlab="", breaks, col,
+            labels=NULL, at=NULL,
             mai=c(0, 1/8, 0, 3/8), top=0, bottom=0,
             drawContours=FALSE, debug=getOption("oceDebug"), \dots)}
 
@@ -20,6 +21,9 @@
     \item{col}{either a vector of colours corresponding to the breaks, of length
         1 plus the number of breaks, or a function specifying colours,
         e.g. \code{\link{oceColorsJet}} for a rainbow.}
+    \item{labels}{optional vector of labels for ticks on palette axis (must
+        correspond with \code{at})}
+    \item{at}{optional vector of positions for the \code{label}s}
     \item{mai}{margins for palette, as defined in the usual way; see
         \code{\link{par}}.}
     \item{top}{\strong{DEPRECATED (use mai instead)} ... extra space to
@@ -76,5 +80,5 @@ drawPalette(zlab="Image Scale")
 plot(1:10, 1:10, col=oceColorsPalette(10)[1:10],pch=20,cex=5,xlab='x', ylab='y', main='test 4')
 
 }
-\author{Dan Kelley}
+\author{Dan Kelley, with help from Clark Richards}
 \keyword{misc}

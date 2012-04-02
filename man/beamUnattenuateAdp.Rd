@@ -6,12 +6,16 @@
 
 \description{Unattenuate ADP beam signal strength}
 
-\usage{beamUnattenuateAdp(x, count2db=c(0.45, 0.45, 0.45, 0.45), debug=getOption("oceDebug"))}
+\usage{beamUnattenuateAdp(x, count2db=c(0.45, 0.45, 0.45, 0.45),
+asMatrix=FALSE, debug=getOption("oceDebug"))}
 
 \arguments{
     \item{x}{an object of class \code{"adp"}}
     \item{count2db}{a set of coefficients, one per beam, to convert from
         beam echo intensity to decibels.} 
+    \item{asMatrix}{a boolean that indicates whether to return a numeric matrix, as 
+        opposed to returning an updated object (in which the matrix is cast to
+        a raw value).}
     \item{debug}{a flag that turns on debugging.  Set to 1 to get a
         moderate amount of debugging information, or to 2 to get more.}
 }

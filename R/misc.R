@@ -27,6 +27,31 @@ filterSomething <- function(x, filter)
     res
 }
 
+formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
+{
+    type <- match.arg(type)
+    signs <- sign(latlon)
+    x <- abs(latlon)
+    degrees <- floor(x)
+    minutes <- floor(60 * (x - degrees))
+    seconds <- 3600 * (x - degrees - minutes / 60)
+    seconds <- round(seconds, 2)
+    hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
+    if (type == "list") {
+        rval <- list(degrees, minutes, seconds, hemispheres)
+    } else if (type == "string") {
+        rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
+    } else if (type == "expression") {
+        n <- length(degrees)
+        rval <- vector("expression", n)
+        for (i in 1:n) {
+            rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
+                                                list(d=degrees[i],m=minutes[i],s=seconds[i])))
+        }
+    }
+    rval
+}
+
 smoothSomething <- function(x, ...)
 {
     if (is.raw(x)) {
@@ -79,8 +104,8 @@ rescale <- function(x, xlow, xhigh, rlow=0, rhigh=1, clip=TRUE)
         xhigh <- max(x, na.rm=TRUE)
     rval <- rlow + (rhigh - rlow) * (x - xlow) / (xhigh - xlow)
     if (clip) {
-        rval <- ifelse(rval < rlow, rlow, rval)
-        rval <- ifelse(rval > rhigh, rhigh, rval)
+        rval <- ifelse(rval < min(rlow, rhigh), rlow, rval)
+        rval <- ifelse(rval > max(rlow, rhigh), rhigh, rval)
     }
     rval
 }
@@ -375,7 +400,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Temperature [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
     } else if (item == "sigmaTheta") {
-        full <- expression(paste("Potential density [", kg/m^3, "]"))
+        full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
         abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
     } else if (item == "theta") {
         full <- expression(paste("Potential Temperature [", degree, "C]"))

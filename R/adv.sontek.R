@@ -118,7 +118,7 @@ read.adv.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      subsampleEnd=time[length(time)], # FIXME: this seems wrong
                      subsampleDeltat=deltat,
                      ##velocityScale=velocityScale,
-                     coordinateSystem="xyz", # guess
+                     originalCoordinate="xyz", # guess
                      velocityResolution=velocityScale,
                      velocityMaximum=velocityScale * 2^15,
                      oceCoordinate="xyz",    # guess
@@ -345,11 +345,11 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
             metadata$velocityScale <- 2 * metadata$velocityScale # range 4 differs from ranges 1:3
         }
 
-        coordinateSystemCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
-        metadata$coordinateSystem <- c("beam", "xyz", "enu")[1+coordinateSystemCode]
-        metadata$oceCoordinate <- metadata$coordinateSystem
-        oceDebug(debug, "coordinateSystem=", metadata$coordinateSystem, "\n")
-        if (metadata$coordinateSystem == "beam")
+        originalCoordinateCode <- as.integer(deploymentParameters[22]) # 1 (0=beam 1=xyz 2=ENU)
+        metadata$originalCoordinate <- c("beam", "xyz", "enu")[1+originalCoordinateCode]
+        metadata$oceCoordinate <- metadata$originalCoordinate
+        oceDebug(debug, "originalCoordinate=", metadata$originalCoordinate, "\n")
+        if (metadata$originalCoordinate == "beam")
             stop("cannot handle beam coordinates")
 
         ## FIXME: bug: docs say samplingRate in units of 0.1Hz, but the SLEIWEX-2008-m3 data file is in 0.01Hz
@@ -598,7 +598,7 @@ read.adv.sontek.adr <- function(file, from=1, to, by=1, tz=getOption("oceTz"),  
 }
 
 read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz"),
-                                 coordinateSystem="xyz", transformationMatrix,
+                                 originalCoordinate="xyz", transformationMatrix,
                                  latitude=NA, longitude=NA,
                                  debug=getOption("oceDebug"), monitor=FALSE,
                                  processingLog)
@@ -738,8 +738,8 @@ read.adv.sontek.text <- function(basefile, from=1, to, by=1, tz=getOption("oceTz
                      orientation="upward", # FIXME: guessing on the orientation
                      deltat=as.numeric(difftime(tt[2], tt[1], units="secs")),
                      subsampleStart=data$t[1],
-                     oceCoordinate=coordinateSystem,
-                     coordinateSystem=coordinateSystem)
+                     oceCoordinate=originalCoordinate,
+                     originalCoordinate=originalCoordinate)
     warning("sensor orientation cannot be inferred without a header; \"", metadata$orientation, "\" was assumed.")
     res <- new("adv")
     res@data <- data

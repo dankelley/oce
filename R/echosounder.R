@@ -53,6 +53,7 @@ setMethod(f="plot",
                               adorn=NULL,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[1]+1, mgp[1]+1),
+                              atTop, labelsTop,
                               debug=getOption("oceDebug"),
                               ...)
           {
@@ -105,7 +106,7 @@ setMethod(f="plot",
                                  ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
                                  zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                                  col=col,
-                                 mgp=mgp, mar=mar, ...)
+                                 mgp=mgp, mar=mar, debug=debug-1, ...)
                           axisBottom <- par('usr')[3]
                           waterDepth <- c(axisBottom, -waterDepth, axisBottom)
                           time <-  x[["time"]]
@@ -124,13 +125,22 @@ setMethod(f="plot",
                                  ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
                                  zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                                  col=col,
-                                 mgp=mgp, mar=mar, ...)
+                                 mgp=mgp, mar=mar,
+                                 debug=debug-1,
+                                 ...)
                       }
                       if (newxGiven) {
-                          pretty <- pretty(time)
-                          labels <- format(pretty, format="%H:%M:%S")
-                          at <- approx(as.numeric(time), newx, as.numeric(pretty))$y
-                          axis(3, at=at, labels=labels, cex.axis=par('cex'))
+                          if (!missing(atTop)) {
+                              at <- approx(as.numeric(x[["time"]]), newx, as.numeric(atTop))$y
+                              if (missing(labelsTop))
+                                  labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
+                              axis(side=3, at=at, labels=labelsTop, cex.axis=par('cex'))
+                          } else {
+                              pretty <- pretty(time)
+                              labels <- format(pretty, format="%H:%M:%S")
+                              at <- approx(as.numeric(time), newx, as.numeric(pretty))$y
+                              axis(3, at=at, labels=labels, cex.axis=par('cex'))
+                          }
                       }
                   } else if (which[w] == 2 || which[w] == "zx image") {
                       latitude <- x[["latitude"]]
@@ -145,7 +155,7 @@ setMethod(f="plot",
                       deepestWater <- max(abs(depth))
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
-                              drawBottom <- "white"
+                              drawBottom <- "lightgray"
                           waterDepth <- findBottom(x, ignore=ignore)
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth$depth))
@@ -154,6 +164,8 @@ setMethod(f="plot",
                              xlab="Distance [km]", ylab="z [m]",
                              ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
                              zlim=if (missing(zlim)) c(0, max(z)) else zlim,
+                             mgp=mgp, mar=mar,
+                             debug=debug-1,
                              col=col)
                       if (!missing(drawBottom)) {
                           if (is.logical(drawBottom) && drawBottom)
@@ -163,6 +175,12 @@ setMethod(f="plot",
                           axisBottom <- par('usr')[3]
                           depth2 <- c(axisBottom, -depth[waterDepth$index], axisBottom)
                           polygon(distance2, depth2, col=drawBottom)
+                      }
+                      if (!missing(atTop)) {
+                          at <- approx(as.numeric(x[["time"]]), distance, as.numeric(atTop))$y
+                          if (missing(labelsTop))
+                              labelsTop <- format(atTop, format=if ("format" %in% dotsNames)  dots$format else "%H:%M:%S")
+                          axis(side=3, at=at, labels=labelsTop, cex.axis=par('cex'))
                       }
                   } else if (which[w] == 3 || which[w] == "map") {
                       lat <- x[["latitude"]]

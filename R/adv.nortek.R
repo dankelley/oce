@@ -81,8 +81,8 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      deploymentName=header$user$deploymentName,
                      cellSize=header$user$cellSize,
                      velocityScale=header$user$velocityScale,
-                     coordinateSystem=header$user$coordinateSystem,
-                     oceCoordinate=header$user$coordinateSystem,
+                     originalCoordinate=header$user$originalCoordinate,
+                     oceCoordinate=header$user$originalCoordinate,
                      oceBeamUnattenuated=FALSE,
                      comments=header$user$comments)
     if (missing(processingLog))

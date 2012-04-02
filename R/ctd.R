@@ -621,6 +621,7 @@ setMethod(f="plot",
                              grid=grid, col.grid=col.grid, lty.grid=lty.grid,
                              lwd.rho=lwd.rho, lty.rho=lty.rho,
                              useSmoothScatter=useSmoothScatter, pch=pch, cex=cex, 
+                             inset=inset,
                              debug=debug-1, ...) # FIXME use inset here
                   } else if (which[w] == 4 || which[w] == "text") {
                       text.item <- function(item, label, cex=0.8) {
@@ -1096,6 +1097,7 @@ read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, 
     res
 }
 
+
 parseLatLon <- function(line, debug=getOption("oceDebug"))
 {
     ## The following formats are understood (for, e.g. latitude)
@@ -1120,13 +1122,18 @@ parseLatLon <- function(line, debug=getOption("oceDebug"))
     oceDebug(debug, paste("4. [", x, "]\n", sep=""))
     x <- sub("[ \t]*$", "", ignore.case=TRUE, x)
     oceDebug(debug, paste("5. [", x, "]\n", sep=""))
-    x <- strsplit(x, " ")
-    if (length(x[[1]]) == 2) {
-        x <- as.double(x[[1]][1]) + as.double(x[[1]][2]) / 60
-        if (!positive)
-            x <- (-x)
+    if (0 == nchar(x)) {
+        x <- NA
     } else {
-        warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
+        x <- strsplit(x, " ")
+        if (length(x[[1]]) == 2) {
+            x <- as.double(x[[1]][1]) + as.double(x[[1]][2]) / 60
+            if (!positive)
+                x <- (-x)
+        } else {
+            if (debug > 0)
+                warning("cannot parse latitude or longitude in header since need 2 items but got ", length(x[[1]]), " items in '", line, "'\n")
+        }
     }
     oceDebug(debug, sprintf("6. x = %f\n", x))
     x
@@ -1178,7 +1185,8 @@ read.ctd.sbe <- function(file, columns=NULL, station=NULL, missing.value, monito
         ## BUG: discovery of column names is brittle to format changes
         if (0 < (r <- regexpr("# name ", lline))) {
             oceDebug(debug, "lline: '",lline,"'\n",sep="")
-            tokens <- strsplit(line, split=" ")
+            tokens <- strsplit(line, split=" ", useBytes=TRUE)
+            oceDebug(debug, "   successfully tokenized\n")
             name <- tokens[[1]][6]
             oceDebug(debug, "  name: '",name,"'\n",sep="")
             if (0 < regexpr("scan", lline)) {
@@ -1625,12 +1633,15 @@ plotTS <- function (x,
                     mgp=getOption("oceMgp"),
                     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
-                    add=FALSE,
+                    add=FALSE, inset=FALSE,
                     debug=getOption("oceDebug"),
                     ...)
 {
                                         # FIXME: should check for lobo ... or maybe make as.ctd() handle that...
-    oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho, ", ...) {\n", sep="")
+    oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
+             "mgp=c(", paste(mgp, collapse=","), "), ", 
+             "mar=c(", paste(mar, collapse=","), "), ", 
+             "...) {\n", sep="")
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
             salinity <- salinity(x) # FIXME: new accessors?
@@ -1660,9 +1671,11 @@ plotTS <- function (x,
         omar <- par("mar")
         omgp <- par("mgp")
         opar <- par(no.readonly = TRUE)
-        on.exit(par(mar=omar, mgp=omgp))
-        if (3 == length(mgp)) par(mgp=mgp)
-        if (4 == length(mar)) par(mgp=mgp)
+        if (!inset) {
+            on.exit(par(mar=omar, mgp=omgp))
+            if (3 == length(mgp)) par(mgp=mgp)
+            if (4 == length(mar)) par(mar=mar)
+        }
     }
     axis.name.loc <- mgp[1]
     if (missing(xlab))

@@ -73,6 +73,28 @@ setMethod(f="[[",
               }
           })
 
+setMethod(f="[[<-",
+          signature="adv",
+          definition=function(x, i, j, value) { # FIXME: use j for e.g. times
+              if (i %in% names(x@metadata)) {
+                  x@metadata[[i]] <- value
+              } else if (i %in% names(x@data)) {
+                 x@data[[i]] <- value
+              } else if (i == "heading") {
+                  x@data$headingSlow <- value
+              } else if (i == "pitch" || i == "pitchSlow") {
+                  x@data$pitchSlow <- value
+              } else if (i == "pitch" || i == "pitchSlow") {
+                  x@data$rollSlow <- value
+              } else {
+                  stop("there is no item named \"", i, "\" in this ", class(x), " object")
+              }
+              ## Not checking validity because user may want to shorten items one by one, and check validity later.
+              ## validObject(x)
+              invisible(x)
+          })
+
+
 read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      type=c("nortek", "sontek", "sontek.adr", "sontek.text"),
                      header=TRUE,
@@ -133,7 +155,7 @@ summary.adv <- function(object, ...)
         }
     }
     cat("* Number of samples:     ", object@metadata$numberOfSamples, "\n")
-    cat("* Coordinate system:     ", object@metadata$coordinateSystem, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
+    cat("* Coordinate system:     ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n")
     cat("* Orientation:           ", object@metadata$orientation, "\n")
     dataNames <- names(object@data)
     nrow <- length(dataNames) - length(grep("^time", dataNames))
@@ -711,6 +733,7 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
     oceDebug(debug, "\b\bbeamToXyzAdv() {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
+    browser()
     if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     if (is.null(x@metadata$transformationMatrix)) {

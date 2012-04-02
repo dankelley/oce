@@ -5,6 +5,7 @@ importFrom("graphics", plot)
 importFrom(utils, head, tail)
 exportMethods(plot)
 export("+.section",
+       abbreviateTimeLabels,
        beamName,
        addColumn,
        airRho,
@@ -15,7 +16,7 @@ export("+.section",
        as.drifter,
        as.echosounder,
        as.lobo,
-       as.pt,
+       as.tdr,
        as.sealevel,
        as.topo,
        as.windrose,
@@ -37,6 +38,7 @@ export("+.section",
        despike,
        detrend,
        distance,
+       drawDirectionField,
        drawIsopycnals,
        drawPalette,
        elevation,
@@ -48,6 +50,7 @@ export("+.section",
        findBottom,
        findInOrdered,
        formatCI,
+       formatPosition,
        fullFilename,
        geodDist,
        geodXy,
@@ -92,6 +95,8 @@ export("+.section",
        oceColorsPalette,
        oceColorsJet,
        oceColorsTwo,
+       oceColors9A,
+       oceColors9B,
        oceDebug,
        oceEdit,
        oceFilter,
@@ -124,8 +129,8 @@ export("+.section",
        plot.windrose,
        pressure,
        "pressure<-",
-       ptPatm,
-       ptTrim,
+       tdrPatm,
+       tdrTrim,
        pwelch,
        rangeLimit,
        read.adp,
@@ -151,7 +156,7 @@ export("+.section",
        read.met,
        read.topo,
        read.oce,
-       read.pt,
+       read.tdr,
        read.sealevel,
        read.section,
        rescale,
@@ -249,10 +254,10 @@ S3method(summary, lobo)
 S3method(summary, oce)
 ##S3method(summary, sealevel)
 S3method(summary, section)
-S3method(summary, pt)
+S3method(summary, tdr)
 S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
-exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, met, pt, sealevel, section, tidem, topo, windrose)
+exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, met, tdr, sealevel, section, tidem, topo, windrose)
 

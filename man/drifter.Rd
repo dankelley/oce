@@ -1,8 +1,8 @@
-\name{argo}
+\name{drifter}
 
 \docType{data}
 
-\alias{argo}
+\alias{drifter}
 
 \title{ARGO drifter dataset}
 
@@ -11,21 +11,21 @@
     available by the International Argo Program and the national programs that
     contribute to it.  Salinity, temperature and pressure are each matrices
     with first index corresponding to depth, e.g.
-    \code{argo[["temperature"]][1,]} is the surface temperature.}
+    \code{drifter[["temperature"]][1,]} is the surface temperature.}
 
 \examples{
 \dontrun{
 # How data were created
-argo <- read.drifter("/data/OAR/6900388_traj.nc")
+drifter <- read.drifter("/data/OAR/6900388_prof.nc")
 }
 library(oce)
-data(argo)
-summary(argo)
+data(drifter)
+summary(drifter)
 data(coastlineWorld)
-plot(argo, which="trajectory", coastline=coastlineWorld)
+plot(drifter, which="trajectory", coastline=coastlineWorld)
 }
 
-\usage{data(argo)}
+\usage{data(drifter)}
 
 \source{\url{http://www.usgodae.org/ftp/outgoing/argo/dac/bodc/6900388/6900388_prof.nc}}
 

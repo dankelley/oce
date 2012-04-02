@@ -117,6 +117,10 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{\code{a}}{A 3-D matrix of backscatter amplitude, corresponding to \code{v}.}
   \item{\code{q}}{A 3-D matrix of a measure of the quality of the data,
       corresponding to \code{v}.}
+  \item{\code{br}}{Depth to bottom in each of 4 beams (only for Teledyne-RDI
+      devices that have bottom tracking.}
+  \item{\code{bv}}{Bottom velocity in each of 4 beams (only for Teledyne-RDI
+      devices that have bottom tracking.}
   }
 
   In ADP data files, velocities are coded to signed 2-byte integers, with a

@@ -7,10 +7,12 @@
       flip.y=FALSE,
       xlab="", ylab="", zlab="",
       breaks, col,
+      labels=NULL, at=NULL,
       drawContours=FALSE,
       drawTimeRange=getOption("oceDrawTimeRange"),
       drawPalette=TRUE,
       filledContour=FALSE,
+      missingColor=NULL,
       mgp=getOption("oceMgp"),
       mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1,
             mgp[1]+if(nchar(ylab)>0) 1.5 else 1,
@@ -26,7 +28,6 @@
       \dots)
 }
 \arguments{
-
   \item{x,y}{locations of grid lines along which values of \code{z} are
       measured.   The values must be finite, non-missing, and distinct.  If
       they are out of order, they will be ordered (and the \code{z} data will
@@ -36,23 +37,24 @@
       \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
       mimic those of \code{\link{image}}, which explains the same description
       here.)}
-
   \item{z}{a matrix containing the values to be plotted (NAs are allowed). Note
       that x can be used instead of z for convenience. (NOTE: these arguments
       are meant to mimic those of \code{\link{image}}, which explains the same
       description here.)} 
-      
-
   \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
-
   \item{flip.y}{boolean, with \code{TRUE} indicating that the image
     should be flipped top to bottom (as to produce a profile image
     for a downward-looking acoustic-doppler profile).}
   \item{xlab,ylab,zlab}{names for x axis, y axis, and the image values.}
-  \item{breaks}{the z values for breaks in the colour scheme.}
+  \item{breaks}{the z values for breaks in the colour scheme.  If this is of
+      length 1, the value indicates the desired number of breaks, which is
+      supplied to \code{\link{pretty}}, in determining clean break points.}
   \item{col}{either a vector of colours corresponding to the breaks, of length
      1 plus the number of breaks, or a function specifying colours,
      e.g. \code{\link{oceColorsJet}} for a rainbow.}
+  \item{labels}{optional vector of labels for ticks on palette axis (must
+      correspond with \code{at})}
+  \item{at}{optional vector of positions for the \code{label}s}
   \item{drawContours}{boolean, \code{TRUE} to get contours on the
     image, and palette, at the colour breaks.  Images with a great deal
     of high-wavenumber variation look poor with contours.}
@@ -72,6 +74,8 @@
       the images.}
   \item{filledContour}{boolean value indicating whether to use filled
       contours to plot the image.}
+  \item{missingColor}{a color to be used to indicate missing data, or
+      \code{NULL} to avoid making the indication.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the
@@ -124,14 +128,27 @@
 }
 \examples{
 library(oce)
+
+## simplest use
+imagep(volcano)
+
+## something oceanographic (internal-wave speed)
 par(mfrow=c(1,1))
 h <- seq(0, 50, length.out=200)
 drho <- seq(1, 3, length.out=200)
-speed <- sqrt(9.8*outer(drho/1024, h, "*"))
+speed <- outer(drho, h, function(drho, h) sqrt(9.8 * drho * h / 1024))
 imagep(h, drho, speed, xlab="Equivalent depth [m]",
   ylab=expression(paste(Delta*rho, " [kg/m^3]")),
   zlab="Internal-wave speed [m/s]")
-imagep(volcano)
+
+## fancy labelling on atan() function
+x <- seq(0, 1, 0.01)
+y <- seq(0, 1, 0.01)
+angle <- outer(x,y,function(x,y) atan2(y,x))
+imagep(x, y, angle, filledContour=TRUE, breaks=c(0, pi/4, pi/2),
+  col=c("lightgray", "darkgray"),
+  at=c(0, pi/4, pi/2),
+  labels=c(0, expression(pi/4), expression(pi/2)))
 }
-\author{Dan Kelley}
+\author{Dan Kelley, with help from Clark Richards}
 \keyword{misc}

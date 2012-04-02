@@ -573,17 +573,17 @@ version.  (The problems involve phase, and the inference of satellite nodes.)
 \section{Temperature-Depth Recorder data}
 The commands
 <<fig=FALSE, eval=TRUE, echo=FALSE>>=
-png("pt.png", width=600, height=300, pointsize=13)
+png("tdr.png", width=600, height=300, pointsize=13)
 @
 <<>>=
 library(oce)
-data(ptr)
-plot(ptr, useSmoothScatter=TRUE)
+data(tdr)
+plot(tdr, useSmoothScatter=TRUE)
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
 @
-produce a plot (Figure~\ref{fig:pt}) of pressure-temperature recorder (pt)
+produce a plot (Figure~\ref{fig:pt}) of temperature-depth recorder (tdr)
 measurements made during St Lawrence Estuary Internal Wave Experiment, an
 CFCAS/NSERC-funded research program in which the \texttt{oce} author was a principal
 investigator.  The device was mounted on a mooring that tilted significantly
@@ -592,7 +592,7 @@ thus providing a rough indication of the temperature profile.  Note that this
 graph contains in-air as well as in-water data.
 \begin{figure}
 \begin{center}
-\includegraphics[width=\hsize]{pt}
+\includegraphics[width=\hsize]{tdr}
 \end{center}
 \caption{Measurements made with a pressure-temperature recorder in the
   St Lawrence Estuary.  Note that the record contains in-air
@@ -604,7 +604,7 @@ graph contains in-air as well as in-water data.
 \label{fig:pt}
 \end{figure}
 
-\workedexercise{7}{Trim the in-air measurements from this \texttt{pt} record, and
+\workedexercise{7}{Trim the in-air measurements from this \texttt{tdr} record, and
 then remove the atmospheric pressure from the signal.}
 
 
@@ -797,11 +797,11 @@ mtext("M2",at=1/12.42,side=3)
 @
 
 \workedanswer{7}{Pressure-temperature Recorder plot}
-\index{subset!using with pt data}
+\index{subset!using with tdr data}
 \index{data!tdr}
 
 The accuracy of automatic removal of the atmospheric component done
-with \verb@pt.trim()@ can be quite good if the instrument has recorded
+with \verb@tdr.trim()@ can be quite good if the instrument has recorded
 in the air at the start and end of the record.  Even so, it always
 makes sense to investigate the data by eye, in order to select a time
 window.  Manual selection of a time window is also important when a
