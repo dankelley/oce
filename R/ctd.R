@@ -1622,7 +1622,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    cex=par("cex"), col = par("col"), pch=par("pch"),
+                    cex=par("cex"), col = par("col"), pch=par("pch"), bg,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
                     rotateRhoLabels=FALSE,
@@ -1693,11 +1693,16 @@ plotTS <- function (x,
         if (add) {
             points(x@data$salinity, y, cex=cex, pch=pch, col=col)
         } else {
-            plot(x@data$salinity, y,
+            plot(Slim, Tlim,
                  xlab = xlab, ylab=ylab,
                  xaxs = if (min(x@data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
                  cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
-                 xlim=Slim, ylim=Tlim, ...)
+                 ...)
+            if (!missing(bg)) {
+                usr <- par('usr')
+                rect(usr[1], usr[3], usr[2], usr[4], col=bg)
+            }
+            points(x@data$salinity, y, cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"), ...)
         }
         if (connectPoints) {
             lwd <- list(...)["lwd"]

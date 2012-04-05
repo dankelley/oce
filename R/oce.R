@@ -1387,9 +1387,10 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC
 }
 
 plotInset <- function(xleft, ybottom, xright, ytop, expr,
-                      bg="white", fg="black", mar=c(2, 2, 1, 1),
+                      mar=c(2, 2, 1, 1),
                       debug=getOption("oceDebug"))
 {
+    omfg <- par('mfg')                 # original mfg
     xLog <- par('xlog')
     yLog <- par('ylog')
     x2in <- function(x) {
@@ -1406,7 +1407,6 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
     }
  
     usr <- par('usr')                  # xmin xmax ymin ymax
-    oceDebug(debug, "usr=", usr, "at top of plotInset\n")
     if (is.character(xleft)) {
         if (xleft != "bottomleft")
             stop("only named position is \"bottomleft\"")
@@ -1426,58 +1426,50 @@ plotInset <- function(xleft, ybottom, xright, ytop, expr,
         }
     } else {
         oceDebug(debug, "\bplotInset(xleft=", xleft, ", ybottom=", ybottom,
-                 ", xright=", xright, ", ytop=", ytop, ",  ...) {\n",
+                 ", xright=", xright, ", ytop=", ytop,
+                 ",  ...) {\n",
                  sep="")
     }
-    oceDebug(debug, "TOP: par('mfg')=", par('mfg'), "\n")
+    oceDebug(debug, "par('mfg')=", par('mfg'), "\n")
     opar <- par(no.readonly=TRUE)
-    rect(xleft, ybottom, xright, ytop, col=bg, border=fg)
     mai <- par('mai')                  # bottom left top right
     oceDebug(debug, "par('mai')=", par('mai'), '\n')
     oceDebug(debug, "par('usr')=", par('usr'), '\n')
-    ##din <- dev.size(units='in')        # width height
     fin <- par('fin') # figure width height
-    oceDebug(debug, "figure width and height=", fin, '\n')
+    oceDebug(debug, "par('fin')=", fin, "(figure width and height)\n")
     nmai <- c(y2in(ybottom), x2in(xleft), fin[2]-y2in(ytop), fin[1]-x2in(xright))
     oceDebug(debug, "nmai:", nmai, "\n")
     if (any(nmai < 0)) {
-        warning("part of inset is of the page")
+        warning("part of the inset is off the page")
     }
     nmai[nmai<0] <- 0
-    if (nmai[1] < 0) nmai[1] <- {cat("**1**\n");fin[1]}
-    if (nmai[2] < 0) nmai[2] <- {cat("**2**\n");fin[1]}
-    if (nmai[3] > fin[2] - 0.2) {cat("**3**\n");nmai[3] <- fin[2] - 0.2}
-    if (nmai[4] > fin[1] - 0.2) {cat("**4**\n");nmai[4] <- fin[1] - 0.2}
+    if (nmai[1] < 0) nmai[1] <- {fin[1]}
+    if (nmai[2] < 0) nmai[2] <- {fin[1]}
+    if (nmai[3] > fin[2] - 0.2) {nmai[3] <- fin[2] - 0.2}
+    if (nmai[4] > fin[1] - 0.2) {nmai[4] <- fin[1] - 0.2}
     oceDebug(debug, "nmai:", nmai, "(after trimming negatives)\n")
-    oceDebug(debug, "after setting margins, mfg=", par('mfg'), "(contrast orig", opar$mfg, ")\n")
     mfg2 <- par('mfg')
     par(new=TRUE, mai=nmai)
     thismar <- par('mar')
     par(mar=thismar+mar)
     if (debug > 1) {
         cat("\n\nBEFORE expr, PAR IS:\n");
-        print(par())
+        str(par())
     }
     mfg <- par('mfg')
     oceDebug(debug, "BEFORE expr, mfg=", mfg, "\n")
+    ## Draw the inset plot (or perform any action, actually)
     expr
-    ## adjust 'new' to permit the use of par(mfrow)
     if (mfg[1] == mfg[3] && mfg[2] == mfg[4]) {
-        ## finished filling in the plot region
-        oceDebug(debug, "setting new=FALSE; mfg=", mfg, "... ")
-        ## par(new=FALSE)
+        oceDebug(debug, "setting new=FALSE; mfg=", mfg, "\n")
+        par(new=FALSE)
     } else {
-        oceDebug(debug, "setting new=TRUE; mfg=", mfg, "... ")
-        ## par(new=FALSE)
+        oceDebug(debug, "setting new=TRUE; mfg=", mfg, "\n")
+        par(new=TRUE)
     }
-    ## reset some things that could have been set in the inset
-    par(mai=opar$mai, cex=opar$cex, lwd=opar$lwd, bg=opar$bg)
-    if (debug > 1) {
-        cat("par('mfg')=", par('mfg'), "opar$mfg=", opar$mfg, "; mfg2=", mfg2, "\n")
-        cat("\n\nAFTER expr, PAR IS RESET TO IC:\n");
-        print(opar)
-    }
-    par(opar)
+    ## Reset some things that could have been set in the inset, and
+    ## then adjust 'new' appropriately.
+    par(usr=opar$usr, mai=opar$mai, cex=opar$cex, lwd=opar$lwd, lty=opar$lty, bg=opar$bg)
     oceDebug(debug, "\b\b} # plotInset()\n")
     invisible()
 }

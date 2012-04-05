@@ -146,14 +146,17 @@ setMethod(f="plot",
                       yr[2] <- 90
                   oceDebug(debug, "after range trimming, xr=", xr, " yr=", yr, "\n")
                   ## Draw underlay, if desired
+                  plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
                   if (!missing(bg)) {
                       plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
                       usr <- par("usr")
-                      polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
+                      oceDebug(debug, "drawing background; usr=", par('usr'), "bg=", bg, "\n")
+                      ## polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
+                      rect(usr[1], usr[3], usr[2], usr[4], col=bg)
                       par(new=TRUE)
                   }
                   ## Ranges
-                  plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
+                  ##plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
                   usrTrimmed <- par('usr')
                   ## Construct axes "manually" because axis() does not know the physical range
                   if (axes) {
@@ -210,6 +213,7 @@ setMethod(f="plot",
                       }
                   }
               }
+              box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
               oceDebug(debug, "\b\b} # plot.coastline()\n")
               invisible()
