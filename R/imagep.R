@@ -310,11 +310,7 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             ## Filled contours became official in version 2.15.0 of R.
-            if (getRversion() >= "2.15.0") {
-                .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
-            } else {
-                .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
-            }
+            .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             if (!breaksGiven) {
@@ -336,11 +332,7 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             ## Filled contours became official in version 2.15.0 of R.
-            if (getRversion() >= "2.15.0") {
-                .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
-            } else {
-                .Internal(filledcontour(as.double(x), as.double(y), z, as.double(breaks), col=col))
-            }
+            .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
             mtext(xlab, side=1, line=mgp[1])
             mtext(ylab, side=2, line=mgp[1])
         } else {
