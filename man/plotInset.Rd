@@ -8,7 +8,7 @@
 
 
 \usage{plotInset(xleft, ybottom, xright, ytop, expr,
-    bg="white", fg="black", mar=c(2, 2, 1, 1),
+    mar=c(2, 2, 1, 1),
     debug=getOption("oceDebug"))}
 
 \arguments{
@@ -28,11 +28,6 @@
 
   \item{expr}{An expression that draws the inset plot.  This may be a single
       plot command, or a sequence of commands enclosed in curly braces.}
-
-  \item{bg}{colour of the background, to be painted under the inset.  (Try e.g.
-      \code{"yellow"} to debug the margins as set by \code{mar}.)}
-
-  \item{fg}{colour for the box enclosing the inset diagram}
 
   \item{mar}{margins, in line heights, to be used at the four sides of the
       inset diagram.  (This is often helpful to save space.)}
