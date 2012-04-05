@@ -82,10 +82,8 @@ setMethod(f="plot",
                       lines(longitude, latitude, ...)
                   }
               } else {
-                  gave.center <- !missing(clatitude) && !missing(clongitude)
-                  gave.span <- !missing(span)
-                  if (gave.center != gave.span) stop("must give all of 'clatitude', 'clongitude' and 'span', or none of them FIXME")
-                  if (gave.center) {
+                  gaveSpan <- !missing(span)
+                  if (!missing(clatitude) && !missing(clongitude)) {
                       if (!missing(asp))
                           warning("argument 'asp' being ignored, because argument 'center' was given")
                       asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
@@ -103,12 +101,17 @@ setMethod(f="plot",
                               asp <- 1 / cos(mean(yr0) * atan2(1, 1) / 45) # dy/dx
                       }
                       ## Expand
-                      if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
-                          xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
-                          yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
+                      if (missing(span)) {
+                          if (expand >= 0 && max(abs(xr0)) < 100 && max(abs(yr0) < 70)) { # don't expand if full map
+                              xr <- mean(xr0) + expand * diff(xr0) * c(-1/2, 1/2)
+                              yr <- mean(yr0) + expand * diff(yr0) * c(-1/2, 1/2)
+                          } else {
+                              xr <- xr0
+                              yr <- yr0
+                          }
                       } else {
-                          xr <- xr0
-                          yr <- yr0
+                          xr <- mean(xr0) + span * c(-1/2, 1/2) / 111.11 / asp
+                          yr <- mean(yr0)+ span * c(-1/2, 1/2) / 111.11
                       }
                       oceDebug(debug, "xr=", xr, " yr=", yr, "\n")
                   }
@@ -143,14 +146,17 @@ setMethod(f="plot",
                       yr[2] <- 90
                   oceDebug(debug, "after range trimming, xr=", xr, " yr=", yr, "\n")
                   ## Draw underlay, if desired
+                  plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
                   if (!missing(bg)) {
                       plot.window(xr, yr, asp=asp, xlab=xlab, ylab=ylab, xaxs="i", yaxs="i", log="", ...)
                       usr <- par("usr")
-                      polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
+                      oceDebug(debug, "drawing background; usr=", par('usr'), "bg=", bg, "\n")
+                      ## polygon(usr[c(1,2,2,1)], usr[c(3,3,4,4)], col=bg)
+                      rect(usr[1], usr[3], usr[2], usr[4], col=bg)
                       par(new=TRUE)
                   }
                   ## Ranges
-                  plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
+                  ##plot(xr, yr, asp=asp, xlab=xlab, ylab=ylab, type="n", xaxs="i", yaxs="i", axes=FALSE, ...)
                   usrTrimmed <- par('usr')
                   ## Construct axes "manually" because axis() does not know the physical range
                   if (axes) {
@@ -198,13 +204,16 @@ setMethod(f="plot",
                   } else {
                       if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                           polygon(longitude, latitude, col=fill, ...)
-                          rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
+                          if (axes)
+                              rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
                       } else {
                           lines(longitude, latitude, ...)
-                          rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
+                          if (axes)
+                              rect(usrTrimmed[1], usrTrimmed[3], usrTrimmed[2], usrTrimmed[4])
                       }
                   }
               }
+              box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
               oceDebug(debug, "\b\b} # plot.coastline()\n")
               invisible()

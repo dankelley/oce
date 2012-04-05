@@ -107,6 +107,14 @@ library(oce)
 data(coastlineWorld)
 plot(coastlineWorld)
 plot(coastlineWorld, clatitude=44.6, clongitude=-63.6, span=1000)
+# Test code, examplifying how a new option could yield geographical labels
+data(coastlineMaritimes)
+plot(coastlineMaritimes, axes=FALSE, span=300)
+x <- pretty(par('usr')[1:2], n=1.2*floor(par('fin')[1])) # the 1.2 bears some thinking; should cin be used?
+y <- pretty(par('usr')[3:4], n=1.2*floor(par('fin')[2]))
+box()
+axis(side=1,at=x,labels=formatPosition(x,type='expression'))
+axis(side=2,at=y,labels=formatPosition(y,type='expression'))
 }
 
 \author{Dan Kelley}

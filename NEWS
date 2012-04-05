@@ -1,4 +1,6 @@
 0.8-7
+- plotInset(): remove 'bg' and 'fg' arguments
+- plotTS(): add 'bg' argument
 - rename 'dt' object and functions to 'tdr'
 - plotTS(): add argument 'inset'
 - read.adp.rdi(): fix a bug in bottom-tracking; add soundSpeed vector

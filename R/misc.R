@@ -36,17 +36,37 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
     seconds <- round(seconds, 2)
+    noSeconds <- all(seconds == 0)
+    noMinutes <- noSeconds & all(minutes == 0)
     hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
+    oceDebug(0, "noSeconds=", noSeconds, "noMinutes=", noMinutes, "\n")
     if (type == "list") {
-        rval <- list(degrees, minutes, seconds, hemispheres)
+        if (noMinutes)
+            rval <- list(degrees, hemispheres)
+        else if (noSeconds)
+            rval <- list(degrees, minutes, hemispheres)
+        else
+            rval <- list(degrees, minutes, seconds, hemispheres)
     } else if (type == "string") {
-        rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
+        if (noMinutes)
+            rval <- sprintf("%02d %s", degrees, hemispheres)
+        else if (noSeconds)
+            rval <- sprintf("%02d %02d %s", degrees, minutes, hemispheres)
+        else
+            rval <- sprintf("%02d %02d %04.2f %s", degrees, minutes, seconds, hemispheres)
     } else if (type == "expression") {
         n <- length(degrees)
         rval <- vector("expression", n)
         for (i in 1:n) {
-            rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
-                                                list(d=degrees[i],m=minutes[i],s=seconds[i])))
+            if (noMinutes) 
+                rval[i] <- as.expression(substitute(d*degree,
+                                                    list(d=degrees[i])))
+            else if (noSeconds)
+                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute,
+                                                    list(d=degrees[i],m=minutes[i])))
+            else
+                rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
+                                                    list(d=degrees[i],m=minutes[i],s=seconds[i])))
         }
     }
     rval
