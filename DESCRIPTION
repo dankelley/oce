@@ -4,7 +4,7 @@ Date: 2012-04-05
 Title: Analysis of Oceanographic data
 Author: Dan Kelley <Dan.Kelley@Dal.Ca>
 Maintainer: Dan Kelley <Dan.Kelley@Dal.Ca>
-Depends: R (>= 2.10), utils, methods
+Depends: R (>= 2.15), utils, methods
 Suggests: ncdf, foreign
 BugReports: https://github.com/dankelley/oce/issues?sort=created&direction=desc&state=open
 Description: Supports the analysis of Oceanographic data,
