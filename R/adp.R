@@ -1161,8 +1161,10 @@ beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=F
     oceDebug(debug, "\b\bbeamUnattenuateAdp(...) {\n")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
-    if (x@metadata$oceBeamUnattenuated)
-        stop("the beams are already unattenuated in this dataset")
+    if (x@metadata$oceBeamUnattenuated) {
+        warning("the beams are already unattenuated in this dataset")
+        return(x)
+    }
     numberOfProfiles <- dim(x@data$a)[1]
     oceDebug(debug, "numberOfProfiles=", numberOfProfiles, "\n")
     correction <- matrix(rep(20 * log10(x@data$distance), numberOfProfiles),
@@ -1173,10 +1175,9 @@ beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=F
             oceDebug(debug, "beam=",beam,"\n")
             res[,,beam] <- count2db[beam] * as.numeric(x@data$a[,,beam]) + correction
         }
-        res
-     } else {
-         res <- x
-         for (beam in 1:x@metadata$numberOfBeams) {
+    } else {
+        res <- x
+        for (beam in 1:x@metadata$numberOfBeams) {
             oceDebug(debug, "beam=",beam,"\n")
             tmp <- floor(count2db[beam] * as.numeric(x@data$a[,,beam]) + correction)
             tmp[tmp < 0] <- 0
@@ -1185,9 +1186,9 @@ beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=F
         }
         res@metadata$oceBeamUnattenuated <- TRUE
         res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-        oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
-        res
     }
+    oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
+    res
 }
 
 beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
