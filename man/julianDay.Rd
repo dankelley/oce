@@ -31,17 +31,19 @@
 
 }
 
-\details{The time is represented in astronomical convention, and the
-    calculation is done with the method illustrated in the documentation for
-    \code{\link{julian}}.  The method is as described in Chapter 3 of Meeus
-    (1982), which provides the example given here.}
+\details{The method is taken from Chapter 3 of Meeus (1982).  It should be
+    noted that Meeus and other astronomical treatments use fractional days,
+    whereas the present code follows the R convention of specifying days in
+    whole numbers, with hours, minutes, and seconds also provided as necessary.
+    Conversion is simple, as illustrated in the example for 1977 April 26.4,
+    for which Meeus calculates julian day 2443259.9.}
 
-\value{A Julian-Day number.}
+\value{A Julian-Day number, in astronomical convention as explained in Meeus.}
 
 \examples{
 t <- ISOdatetime(1977, 4, 26, hour=0, min=0, sec=0, tz="ET")+0.4*86400
 jd <- julianDay(t)
-cat(format(t), ": Julian Day", format(jd, digits=14), "; Meeus [page 23, ch 3] gives 2443259.9\n")
+cat(format(t), "is Julian Day", format(jd, digits=14), "\n")
 }
 
 \author{Dan Kelley}
