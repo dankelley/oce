@@ -1,5 +1,11 @@
+## References used in this file:
+##
+## Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+## Willmann-Bell. Richmond VA, USA. 201 pages.
+
 julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
 {
+    ## Meeus (1982 ch 3)
     ## as.numeric(julian(t)+2440587.5)) is suggested in R doc on julian()
     if (!inherits(t, "POSIXt"))  {
         if (missing(month) || missing(day) || missing(hour)
@@ -20,3 +26,14 @@ julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
     jd <- ifelse(tt > ISOdatetime(1582, 10, 15, 0, 0, 0), jd + B, jd)
     jd
 }
+
+julianCenturyAnomaly <- function(jd)
+{
+    (jd - 2415020.0) / 36525.0         # Meeus 1982 (eq 15.1)
+}
+
+moonAngle <- function(t, lat, lon, useRefraction=TRUE)
+{
+
+}
+

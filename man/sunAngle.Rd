@@ -6,14 +6,14 @@
 
 \description{Solar angle as function of space and time.}
 
-\usage{sunAngle(t, lat, lon, use.refraction=TRUE)}
+\usage{sunAngle(t, lat, lon, useRefraction=TRUE)}
 
 \arguments{
     \item{t}{Time, a POSIXt object (must be in timezone UTC), or a numeric value that corresponds to
         such a time.}
     \item{lat}{latitude in degrees north}
     \item{lon}{longitude in degrees east}
-    \item{use.refraction}{boolean, set to \code{TRUE} to apply a correction for atmospheric
+    \item{useRefraction}{boolean, set to \code{TRUE} to apply a correction for atmospheric
         refraction}
 }
 

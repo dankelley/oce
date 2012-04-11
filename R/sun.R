@@ -1,4 +1,4 @@
-sunAngle <- function(t, lat, lon, use.refraction=TRUE)
+sunAngle <- function(t, lat, lon, useRefraction=TRUE)
 {
     if (missing(t))
         stop("must provide t")
@@ -98,7 +98,7 @@ sunAngle <- function(t, lat, lon, use.refraction=TRUE)
                   pi - az)
     el <- el / rpd
     az <- az / rpd
-    if (use.refraction) {
+    if (useRefraction) {
         refrac <- ifelse(el >= 19.225,
                          0.00452 * 3.51823 / tan(el * rpd),
                          ifelse (el > (-0.766) & el < 19.225,
