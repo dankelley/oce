@@ -112,5 +112,5 @@ sunAngle <- function(t, lat, lon, useRefraction=TRUE)
         stop("output argument el out of range")
     if (any(az < 0) || any(az > 360))
         stop("output argument az out of range")
-    data.frame(azimuth=az, elevation=el, solar.diameter=soldia, solar.distance=soldst)
+    list(azimuth=az, elevation=el, diameter=soldia, distance=soldst)
 }

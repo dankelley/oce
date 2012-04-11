@@ -23,8 +23,8 @@
 \value{A data frame containing
     \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
     \item{elevation}{elevation, in degrees from -90 to 90}
-    \item{solar.diameter}{solar diameter, in degrees}
-    \item{solar.distance}{distance to sun, in astronomical units}
+    \item{diameter}{solar diameter, in degrees}
+    \item{distance}{distance to sun, in astronomical units}
 }
 
 \examples{
