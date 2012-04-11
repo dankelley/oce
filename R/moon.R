@@ -56,16 +56,17 @@ moonAngle <- function(t, lat, lon, useRefraction=TRUE)
     D <-     350.737486 + 445267.1142 * T - 0.001436 * T2 + 0.0000019 * T3
     ## moon distance from ascending node
     F <-      11.250889 + 483202.0251 * T - 0.003211 * T2 - 0.0000003 * T3
-    omega <- 259.183275 -   1934.1420 * T + 0.002078 * T2 + 0.0000022 * T3
+    ## longitude of moon ascending node
+    Omega <- 259.183275 -   1934.1420 * T + 0.002078 * T2 + 0.0000022 * T3
     ## Step 2 (to bottom of p 148, chapter 30): add periodic variations ("additive terms")
     if (TRUE) {
-        cat(sprintf("Step 1: mean values\n\tLp %.4f (%.4f)\n\tM %.4f (%.4f)\n\tMp %.4f (%.4f)\n\tD %.4f (%.4f)\n\tF %.4f (%.4f)\n\tomega %.4f (%.4f)\n",
+        cat(sprintf("Step 1: mean values\n\tLp %.4f (%.4f)\n\tM %.4f (%.4f)\n\tMp %.4f (%.4f)\n\tD %.4f (%.4f)\n\tF %.4f (%.4f)\n\tOmega %.4f (%.4f)\n",
                     Lp, Lp %% 360,
                     M, M %% 360,
                     Mp, Mp %% 360,
                     D, D %% 360,
                     F, F %% 360, 
-                    omega, omega %% 360))
+                    Omega, Omega %% 360))
         stopifnot(all.equal(T, 0.7993018480))
     }
     ## note that 'tmp' is redefined every few lines
@@ -79,27 +80,71 @@ moonAngle <- function(t, lat, lon, useRefraction=TRUE)
     Mp <- Mp +  tmp
     D  <- D  +  tmp
     F  <- F  +  tmp
-    tmp <- sin(RPD * omega)
+    tmp <- sin(RPD * Omega)
     Lp <- Lp + 0.001964 * tmp
     Mp <- Mp + 0.002541 * tmp
     D  <- D  + 0.001964 * tmp
     F  <- F  - 0.024691 * tmp
-    F  <- F  - 0.004328 * sin(RPD * (omega + 275.05 - 2.30 * T))
+    F  <- F  - 0.004328 * sin(RPD * (Omega + 275.05 - 2.30 * T))
     ## Step 3: Meeus p 149
     e <- 1 - 0.002495 * T - 0.00000752 * T2
     e2 <- e * e
     if (TRUE) {
-        cat(sprintf("Step 2: after additive terms\n\tLp %.4f (%.4f)\n\tM %.4f (%.4f)\n\tMp %.4f (%.4f)\n\tD %.4f (%.4f)\n\tF %.4f (%.4f)\n\tomega %.4f (%.4f)\n\te %.10f\n",
+        cat(sprintf("Step 2: after additive terms\n\tLp %.4f (%.4f)\n\tM %.4f (%.4f)\n\tMp %.4f (%.4f)\n\tD %.4f (%.4f)\n\tF %.4f (%.4f)\n\tOmega %.4f (%.4f)\n\te %.10f\n",
                     Lp, Lp %% 360,
                     M, M %% 360,
                     Mp, Mp %% 360,
                     D, D %% 360,
                     F, F %% 360, 
-                    omega, omega %% 360,
+                    Omega, Omega %% 360,
                     e))
         stopifnot(all.equal(e, 0.998001, 0.000001))
     }
+    lambda <- Lp +
+    (     6.288750 * sin(RPD * (Mp            ))) +
+    (     1.274018 * sin(RPD * (2 * D - Mp    ))) +
+    (     0.658309 * sin(RPD * (2 * D         ))) +
+    (     0.213616 * sin(RPD * (2 * Mp        ))) +
+    (e * -0.185596 * sin(RPD * (M             ))) +
+    (    -0.114336 * sin(RPD * (2 * F         ))) +
+    (     0.058793 * sin(RPD * (2 * D - 2 * Mp))) +
+    (e *  0.057212 * sin(RPD * (2 * D - M - Mp))) +
+    (     0.053320 * sin(RPD * (2 * D + Mp    ))) +
+    (e *  0.045874 * sin(RPD * (2 * D - M     ))) +
+    (e *  0.041024 * sin(RPD * (Mp - M        ))) +
+    (    -0.034718 * sin(RPD * (D             ))) +
+    (    -0.030465 * sin(RPD * (M + Mp        ))) +
+    (     0.015326 * sin(RPD * (2 * D - 2 * F )))
+    warning("several terms in lambda ignored [and existing ones not checked]\n")
+    B <-  0 +
+    (     5.128189 * sin(RPD * (F             ))) +
+    (     0.280606 * sin(RPD * (Mp + F        ))) +
+    (     0.277693 * sin(RPD * (Mp - F        ))) +
+    (     0.173238 * sin(RPD * (2 * D - F     ))) +
+    (     0.055413 * sin(RPD * (2 * D + F - Mp))) +
+    (     0.046272 * sin(RPD * (2 * D - F - Mp))) +
+    (     0.032573 * sin(RPD * (2 * D + F     ))) +
+    (     0.017198 * sin(RPD * (2 * Mp + F    ))) +
+    (     0.009267 * sin(RPD * (2 * D + Mp - F)))
+    warning("several terms in B ignored [existing ones checked briefly]\n")
+    omega1 <- 0.0004664 * cos(RPD * Omega)
+    omega2 <- 0.0000756 * cos(RPD * (Omega + 275.05 - 2.30 * T))
+    beta <- B * (1 - omega1 - omega2)
+    if (TRUE) {
+        cat(sprintf("Step 3:\n\tlambda %.4f (%.4f)\n\tB %.4f (%.4f)\n\tbeta %.4f (%.4f)\n\tomega1 %.7f\n\tomega2 %.7f\n",
+                    lambda, lambda %% 360,
+                    B, B %% 360,
+                    beta, beta %% 360,
+                    omega1,
+                    omega2))
+        ##stopifnot(all.equal(omega1, -0.0004164, 0.001, scale=1e-4)) # obscure syntax
+        stopifnot(abs(omega1 - (-0.0004164)) < 0.0000002)
+        stopifnot(abs(omega2 - (+0.0000301)) < 0.0000002)
+    }
     #browser()
+    ## convert to other coords
+    ## Meuus eq 8.3-8.4 converts (lambda,beta) to (alpha, delta)
+    ## Meuus eq 8.5-8.6 converts (delta) [how just 1 value?] to (A, h)
     data.frame(azimuth=1:3, elevation=1:3, diameter=rep(0, 3), distance=rep(0, 3))
 }
 
