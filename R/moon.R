@@ -40,7 +40,8 @@ julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
             stop("must supply month, day, hour, min, sec, and tz")
         tt <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
     }
-    tt <- as.POSIXlt(t)
+    tt <- as.POSIXlt(t, tz=tz)
+    ##cat("julianDay has first 2 times:", format(t[1:2],"%y-%m-%d %H:%M:%S %Z"), "->", format(tt[1:2], "%y-%m-%d %H:%M:%S %Z"), "\n")
     year <- tt$year + 1900
     month <- tt$mon + 1
     day <- tt$mday + (tt$hour + tt$min / 60 + tt$sec / 3600) / 24 
@@ -187,36 +188,57 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
     ## Transform ecliptical to equatorial coordinates (Meuss eq 8.3 and 8.4) page 44
+    ## alpha = right ascension [in radians, here]
     alpha <- atan((sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon)) / cos(RPD * lambda))
+    print(alpha[1:3]/RPD)
+#    alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
+    print(alpha[1:3]/RPD)
+    ## FIXME: atan2 and atan are giving different results; is this a clue?
+    ## delta = declination [in radians, here] FIXME: can there be a cut-point issue here?
     delta <- asin(sin(RPD * beta) * cos(RPD * epsilon) + cos(RPD * beta) * sin(RPD * epsilon) * sin(RPD * lambda))
     ## sidereal time at Greenwhich at 0000UTC (in hours)
     theta0 <- siderealTime(t)
     H <- theta0 * 15 - longitude - alpha / RPD
     ## Transform to local horizontal coordinates (A=azimuth, h=altitude); Meuss eq 8.5 and 8.6 page 44
-    A <- atan(sin(RPD * H) / (cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude)))
+    A <- atan((sin(RPD * H)) / (cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude)))
+    A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude))
+    ## the atan2() form matches websites on azimuth at Halifax in April 2012
     ##A <- ifelse(A < 0, A + 180*RPD, A)
     h <- asin(sin(RPD * latitude) * sin(delta) + cos(RPD * latitude) * cos(delta) * cos(RPD * H))
-    rval <- data.frame(t=t, azimuth=A / RPD, altitude=h / RPD, diameter=pi, distance=6378.14 / pi,
+    rval <- data.frame(t=t, azimuth=A / RPD, altitude=h / RPD, diameter=pi, distance=6378.14 / sin(RPD * pi),
                        T=T, lambda=lambda %% 360, beta=beta, epsilon=epsilon, H=H, theta0=theta0)
     rval
 }
 
-
-## moonrise: Apr 12, 2012	1:48 AM 
+if (interactive()) {
+warning("FIXME: why do pink lines work, i.e. offset 3.6 hours??\n")
 par(mfrow=c(3,2))
+y <- 2012
+m <- 4
 days <- 1:3
-rises <- ISOdatetime(2012,4,days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 4 * 3600
-sets <- ISOdatetime(2012,4,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 4 * 3600
+rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600
+sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
+azrises <- c(69, 75, 82)
+azsets <- c(293, 288, 281)
 for (i in 1:3) {
-    t <- ISOdatetime(2012,4,days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
+    t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
     ma <- moonAngle(t, 44.65, -63.6) 
     oce.plot.ts(t, ma$altitude)
     abline(h=0)
     abline(v=rises[i], col='red')
+    abline(v=rises[i]+3.6*3600, col='red', lty='dotted') ## seems to be offset by 2.5h
     abline(v=sets[i], col='blue')
+    abline(v=3.6*3600+sets[i], col='blue', lty=2)
     oce.plot.ts(t, ma$azimuth)
     abline(h=0)
     abline(v=rises[i], col='red')
+    abline(v=rises[i]+3.6*3600, col='red', lty='dotted') ## seems to be offset by 2.5h
+    abline(v=3.6*3600+sets[i], col='blue', lty=2)
     abline(v=sets[i], col='blue')
+    abline(h=-180+azrises[i], col='red', lty=2)
+    abline(h=-180+azsets[i], col='blue', lty=2)
+}
 }
 ## http://www.timeanddate.com/worldclock/astronomy.html?n=286&month=4&year=2012&obj=moon&afl=-12&day=1
+## FIXME: why does adding 3.6 hours make a match to the pred of the above-named website?
+
