@@ -6,24 +6,38 @@
 
 \description{Lunar angle as function of space and time.}
 
-\usage{moonAngle(t, lat, lon, useRefraction=TRUE)}
+\usage{moonAngle(t, latitude, longitude, useRefraction=TRUE)}
 
 \arguments{
     \item{t}{time, a POSIXt object (must be in timezone UTC), or a numeric
         value that corresponds to such a time.}
-    \item{lat}{latitude in degrees north}
-    \item{lon}{longitude in degrees east}
+    \item{latitude}{observer latitude in degrees north}
+    \item{longitude}{observer longitude in degrees east}
     \item{useRefraction}{boolean, set to \code{TRUE} to apply a correction for atmospheric
-        refraction}
+        refraction.  (Ignored at present.)}
 }
 
-\details{Based on formulae provided by Meeus (1982 chapter 30).}
+\details{Based on formulae provided by Meeus (1982), chapters 6, 18, and 30.
+    The first step is to compute geocentric longitude, geocentric latitude, and
+    parallax, using formulae in Meuus (1982) chapter 30.  (Meuss denotes these
+    quantities \eqn{lambda}{lambda}, \eqn{beta}{beta}, and \eqn{pi}{pi},
+    respectively.) Note that some small terms are skipped in Meuss' formulae,
+    but the results match of the Meuss test case to 4 significant digits.  The
+    next step is to compute the obliquity of the ecliptic, denoted
+    \eqn{epsilon}{epsilon} in Meuss (1982) equation 18.4.  Then, Meuss (1982)
+    equations 8.3 and 8.4 are used to calculate equatorial coordinates.
+    Finally, the hour angle is computed using the un-numbered equation
+    preceeding Meuss (1982) equation 8.1, using the observer longitude and the
+    sideral Greenwich time calculated with Meuss (1982) equation 7.2.  Finally,
+    Meuss (1982) equations 8.5 and 8.6 are used to calculate the local azimuth
+    and altitude of the moon.}
 
 \value{A data frame containing
     \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
     \item{elevation}{elevation, in degrees from -90 to 90}
-    \item{diameter}{lunar diameter, in degrees (FIXME: not provided yet)}
-    \item{distance}{distance to moon, in astronomical units (FIXME: not provided yet)}
+    \item{diameter}{lunar diameter, in degrees.  (FIXME: using parallax here,
+        which is unlikely to be right!)}
+    \item{distance}{distance to moon, in kilometers)}
 }
 
 \examples{
