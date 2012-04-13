@@ -1,4 +1,6 @@
 library(oce)
+greenwich <- TRUE
+halifax <- !greenwich
 ## References used in this file:
 ##
 ## Meeus, Jean, 1982.  Astronomical formuae for Calculators.
@@ -192,7 +194,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## alpha = right ascension [in radians, here]
     alpha <- atan((sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon)) / cos(RPD * lambda))
     print(alpha[1:3]/RPD)
-#    alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
+                                        #    alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
     print(alpha[1:3]/RPD)
     ## FIXME: atan2 and atan are giving different results; is this a clue?
     ## delta = declination [in radians, here] FIXME: can there be a cut-point issue here?
@@ -213,20 +215,33 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
 }
 
 if (interactive()) {
-warning("FIXME: why do pink lines work, i.e. offset 3.6 hours??\n")
-par(mfrow=c(3,2))
-y <- 2012
-m <- 4
-days <- 1:3
-rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600
-sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
-azrises <- c(69, 75, 82)
-azsets <- c(293, 288, 281)
-offset <- 3.6*3600
-offset <- 4.2*3600 # longitude?
+    warning("FIXME: why do pink lines work, i.e. offset by several hours??\n")
+    par(mfrow=c(3,2))
+    y <- 2012
+    m <- 4
+    days <- 1:3
+    if (halifax) {
+        rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600
+        sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
+        azrises <- c(69, 75, 82)
+        azsets <- c(293, 288, 281)
+        latitude <- 44.65
+        longitude <- -63.6
+        offset <- 3.7*3600
+    }
+    if (greenwich) {
+        rises <- ISOdatetime(y, m, days,c(13,14,15), c(11, 24, 41),0,tz="UTC") + 1 * 3600
+        sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 10, 35),0,tz="UTC") + 1 * 3600
+        azrises <- c(65, 72, 80)
+        azsets <- c(298, 291, 284)
+        latitude <- 51.47829
+        longitude <- -0.01144
+        offset <- 0
+    }
+}
 for (i in 1:3) {
     t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
-    ma <- moonAngle(t, 44.65, -63.6) 
+    ma <- moonAngle(t, latitude, longitude)
     oce.plot.ts(t, ma$altitude)
     abline(h=0)
     abline(v=rises[i], col='red')
@@ -241,7 +256,6 @@ for (i in 1:3) {
     abline(v=sets[i], col='blue')
     abline(h=-180+azrises[i], col='red', lty=2)
     abline(h=-180+azsets[i], col='blue', lty=2)
-}
 }
 ## http://www.timeanddate.com/worldclock/astronomy.html?n=286&month=4&year=2012&obj=moon&afl=-12&day=1
 ## FIXME: why does adding 3.6 hours make a match to the pred of the above-named website?
