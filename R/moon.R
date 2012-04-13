@@ -260,3 +260,5 @@ for (i in 1:3) {
 ## http://www.timeanddate.com/worldclock/astronomy.html?n=286&month=4&year=2012&obj=moon&afl=-12&day=1
 ## FIXME: why does adding 3.6 hours make a match to the pred of the above-named website?
 
+## below may be a check on geocentric ecliptical coordinates
+## http://neoprogrammics.com/moon/meeus <- moon <- ephemeris/index.php
