@@ -36,7 +36,10 @@
     whereas the present code follows the R convention of specifying days in
     whole numbers, with hours, minutes, and seconds also provided as necessary.
     Conversion is simple, as illustrated in the example for 1977 April 26.4,
-    for which Meeus calculates julian day 2443259.9.}
+    for which Meeus calculates julian day 2443259.9.  Note that the R
+    documentation for \code{\link{julian}} suggests another formula, but the
+    point of the present function is to match the other Meeus formulae, so that
+    suggestion is ignored here.}
 
 \value{A Julian-Day number, in astronomical convention as explained in Meeus.}
 

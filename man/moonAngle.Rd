@@ -41,31 +41,30 @@
 }
 
 \examples{
-## Example 1: daily variation in moon's elevation
-dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60),
-                    location="Halifax, Nova Scotia", add=FALSE, ...)
-{
-    t0 <- as.POSIXct(paste(day, "00:00:00"), tz="UTC")
-    t <- seq(from=t0, to=t0+86400, by="15 min")
-    a <- moonAngle(t, lat, lon)
-    day <- a$elevation > 0
-    a$azimuth[!day] <- NA
-    if (add) {
-        points(a$azimuth, a$elevation, cex=0.5*par("cex"), ...)
-    } else {
-        plot(a$azimuth, a$elevation, type='p', xlab='Azimuth',
-             ylab='Elevation', ylim=c(0, 90), main=location,
-             cex=0.5*par("cex"), ...)
-    }
-    h <- which(trunc(t,"hours")==t)
-    points(a$azimuth[h], a$elevation[h], pch=16, ...)
-    hour <- as.POSIXlt(t[h])$hour
-    text(a$azimuth[h], a$elevation[h], paste(hour,"h",sep=""), pos=1,
-         offset=0.7, cex=0.7*par("cex"), ...)
+library(oce)
+par(mfrow=c(3,2))
+y <- 2012
+m <- 4
+days <- 1:3
+## Halifax
+rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
+sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
+azrises <- c(69, 75, 82)
+azsets <- c(293, 288, 281)
+latitude <- 44.65
+longitude <- -63.6
+library(oce)
+for (i in 1:3) {
+    t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
+    ma <- moonAngle(t, latitude, longitude)
+    oce.plot.ts(t, ma$altitude, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Altitude")
+    abline(h=0)
+    points(rises[i], 0, col='red', pch=3, lwd=2, cex=1.5)
+    points(sets[i], 0, col='blue', pch=3, lwd=2, cex=1.5)
+    oce.plot.ts(t, ma$azimuth, type='l', mar=c(2, 3, 1, 1), cex=1/2, ylab="Azimuth")
+    points(rises[i], -180+azrises[i], col='red', pch=3, lwd=2, cex=1.5)
+    points(sets[i], -180+azsets[i], col='blue', pch=3, lwd=2, cex=1.5)
 }
-dayplot("2009-06-22")
-dayplot("2009-12-22", add=TRUE)
-dayplot(trunc(Sys.time(),"days"), add=TRUE, col="red")
 }
 
 \references{Meeus, Jean, 1982.  Astronomical formuae for Calculators.

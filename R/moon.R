@@ -1,6 +1,5 @@
 greenwich <- TRUE
-halifax <- !TRUE
-ex45a <- !TRUE
+halifax <- !greenwich
 
 ## References used in this file:
 ##
@@ -9,17 +8,21 @@ ex45a <- !TRUE
 ## 2. Meeus, Jean, 1991.  Astronomical algorithms.
 ##    Willman-Bell, Richmond VA, USA. 429 pages.
 
-debugMoonAngle <- !TRUE
+eclipticalToEquatorial <- function(lambda, beta, epsilon)
+{
+    if (is.data.frame(lambda)) {
+        beta <- lambda$beta
+        epsilon <- lambda$epsilon
+        lambda <- lambda$lambda
+    }
+    RPD <- atan2(1, 1) / 45            # radians per degree
+    alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
+    delta <- asin(sin(RPD * beta) * cos(RPD * epsilon) + cos(RPD * beta) * sin(RPD * epsilon) * sin(RPD * lambda))
+    data.frame(rightAscension=alpha/RPD, declination=delta/RPD)
+}
 
-##
-## > siderealTime(ISOdatetime(1978,11,13,4,34,0,tz="UTC"))
-## [1] 8.029539657
-## cf  8.0295394 (Meeus 1982 page 40)
 siderealTime <- function(t)
 {                                   
-    ## Calculate siderial time at greenwich (Meuss 1982 equation 7.1, page 39).
-    ## NB. the correction he later discusses seems to be sub-second,
-    ## so we ignore it. 
     tt <- as.POSIXlt(t)
     n <- length(tt$hour)
     tt$hour <- rep(0, n)
@@ -32,14 +35,11 @@ siderealTime <- function(t)
     rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
     rval <- rval + 1.002737908 * hoursLeftOver
     rval <- rval %% 24
-    ##print(data.frame(t, tt, hoursLeftOver, rval))
     rval
 }
 
 julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
 {
-    ## Meeus (1982 ch 3)
-    ## as.numeric(julian(t)+2440587.5)) is suggested in R doc on julian()
     if (!inherits(t, "POSIXt"))  {
         if (missing(month) || missing(day) || missing(hour)
             || missing(min) || missing(sec) || missing(tz))
@@ -47,7 +47,6 @@ julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
         tt <- ISOdatetime(year, month, day, hour, min, sec, tz=tz)
     }
     tt <- as.POSIXlt(t, tz=tz)
-    ##cat("julianDay has first 2 times:", format(t[1:2],"%y-%m-%d %H:%M:%S %Z"), "->", format(tt[1:2], "%y-%m-%d %H:%M:%S %Z"), "\n")
     year <- tt$year + 1900
     month <- tt$mon + 1
     day <- tt$mday + (tt$hour + tt$min / 60 + tt$sec / 3600) / 24 
@@ -72,10 +71,6 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## In this cde, the symbol names follow Meeus chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
     ## Also, T2 and T3 are powers on T.
-    if (debugMoonAngle) {
-        t <- ISOdatetime(1979, 12, 7, 0, 0, 0, tz="ET")
-        cat(sprintf("t %s\n", format(t)))
-    }
     T <- julianCenturyAnomaly(julianDay(t))
     T2 <- T * T
     T3 <- T * T2
@@ -93,16 +88,6 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## longitude of moon ascending node
     Omega <- 259.183275 -   1934.1420 * T + 0.002078 * T2 + 0.0000022 * T3
     ## Step 2 (to bottom of p 148, chapter 30): add periodic variations ("additive terms")
-    if (debugMoonAngle) {
-        cat(sprintf("Step 1: mean values\n\tLp %.4f (%.4f)\n\tM %.4f (%.4f)\n\tMp %.4f (%.4f)\n\tD %.4f (%.4f)\n\tF %.4f (%.4f)\n\tOmega %.4f (%.4f)\n",
-                    Lp, Lp %% 360,
-                    M, M %% 360,
-                    Mp, Mp %% 360,
-                    D, D %% 360,
-                    F, F %% 360, 
-                    Omega, Omega %% 360))
-        stopifnot(all.equal(T, 0.7993018480))
-    }
     ## note that 'tmp' is redefined every few lines
     tmp <- sin(RPD * (51.2 + 20.2 * T))
     Lp <- Lp + 0.000233 * tmp
@@ -123,17 +108,6 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## Step 3: Meeus p 149
     e <- 1 - 0.002495 * T - 0.00000752 * T2
     e2 <- e * e
-    if (debugMoonAngle) {
-        cat(sprintf("Step 2: after additive terms\n\tLp %.4f (%.4f)\n\tM %.4f (%.4f)\n\tMp %.4f (%.4f)\n\tD %.4f (%.4f)\n\tF %.4f (%.4f)\n\tOmega %.4f (%.4f)\n\te %.10f\n",
-                    Lp, Lp %% 360,
-                    M, M %% 360,
-                    Mp, Mp %% 360,
-                    D, D %% 360,
-                    F, F %% 360, 
-                    Omega, Omega %% 360,
-                    e))
-        stopifnot(all.equal(e, 0.998001, 0.000001))
-    }
     lambda <- Lp +
     (     6.288750 * sin(RPD * (Mp            ))) +
     (     1.274018 * sin(RPD * (2 * D - Mp    ))) +
@@ -150,7 +124,6 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (    -0.030465 * sin(RPD * (M + Mp        ))) +
     (     0.015326 * sin(RPD * (2 * D - 2 * F )))
     lambda <- lambda %% 360
-    ##warning("several terms in lambda ignored\n")
     B <-  0 +
     (     5.128189 * sin(RPD * (F             ))) +
     (     0.280606 * sin(RPD * (Mp + F        ))) +
@@ -163,7 +136,6 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (     0.009267 * sin(RPD * (2 * D + Mp - F))) +
     (     0.008823 * sin(RPD * (2 * Mp - F    ))) +
     (     0.008247 * sin(RPD * (2 * D - M - F )))
-    ##warning("several terms in B ignored\n")
     omega1 <- 0.0004664 * cos(RPD * Omega)
     omega2 <- 0.0000754 * cos(RPD * (Omega + 275.05 - 2.30 * T))
     beta <- B * (1 - omega1 - omega2)
@@ -174,105 +146,25 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (     0.002824 * cos(RPD * (2 * Mp        ))) +
     (     0.000857 * cos(RPD * (2 * D + Mp    ))) +
     (e *  0.000533 * cos(RPD * (2 * D - M     )))
-    ##warning("several terms in pi ignored\n")
-    if (debugMoonAngle) {
-        cat(sprintf("Step 3:\n\tlambda %.4f (%.4f)\n\tB %.4f (%.4f)\n\tbeta %.4f (%.4f)\n\tomega1 %.7f\n\tomega2 %.7f\n\tpi %.7f\n",
-                    lambda, lambda %% 360,
-                    B, B %% 360,
-                    beta, beta %% 360,
-                    omega1,
-                    omega2, 
-                    pi))
-        ##stopifnot(all.equal(omega1, -0.0004164, 0.001, scale=1e-4)) # obscure syntax
-        stopifnot(abs(omega1 - (-0.0004164)) < 0.0000002)
-        stopifnot(abs(omega2 - (+0.0000301)) < 0.0000002)
-        stopifnot(all.equal(lambda, 113.6604, tol=0.01))
-        stopifnot(all.equal(beta, -3.163037, tol=0.001))
-        stopifnot(all.equal(pi, 0.930249, tol=0.001))
-    }
     ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
-    ## Transform ecliptical to equatorial coordinates; see [1] eq 8.3 and 8.4 or [2] eq 12.3 and 12.4.
-    ## alpha = right ascension [in radians, here, but returned as right ascension in deg]
-    ## alpha <- atan((sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon)) / cos(RPD * lambda))
-    ##cat("alpha", alpha[1:3]/RPD, "[deg]\n")
-    ## Note the use of atan2(); Meeus [1991] example 45.a underlines the need for that (see tests)
-    alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
-    ##cat("alpha", alpha[1:3]/RPD, "[deg]\n")
 
-    ## delta = declination [in radians, here, but returned as declination in degrees]
-    delta <- asin(sin(RPD * beta) * cos(RPD * epsilon) + cos(RPD * beta) * sin(RPD * epsilon) * sin(RPD * lambda))
+    ec <- eclipticalToEquatorial(lambda, beta, epsilon) # rightAscension and declination [deg]
+
     ## sidereal Greenwich time (in hours)
-    theta0 <- siderealTime(t) # SHOULD BE IN HOURS FOR UT=0???
-    ## "hour"
-    H <- theta0 * 15 - longitude - alpha / RPD
+    theta0 <- siderealTime(t)
+    H <- theta0 * 15 - longitude - ec$rightAscension
+    H <- theta0 * 15 + longitude - ec$rightAscension
     H <- H %% 360
     ## Local horizontal coordinates; see [1] eq 8.5 and 8.6 or [2] eq 12.5 and 12.6
-    ## A <- atan((sin(RPD * H)) / (cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude)))
-    A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude))
+    A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(RPD * ec$declination) * cos(RPD * latitude))
     ## the atan2() form matches websites on azimuth at Halifax in April 2012
-    ##A <- ifelse(A < 0, A + 180*RPD, A)
-    h <- asin(sin(RPD * latitude) * sin(delta) + cos(RPD * latitude) * cos(delta) * cos(RPD * H))
+    h <- asin(sin(RPD * latitude) * sin(RPD * ec$declination) + cos(RPD * latitude) * cos(RPD * ec$declination) * cos(RPD * H))
     rval <- data.frame(t=t, azimuth=A/RPD, altitude=h/RPD, diameter=pi, distance=6378.14 / sin(RPD * pi),
                        T=T, lambda=lambda %% 360, beta=beta, pi=pi, obliquity=epsilon,
-                       rightAscension=alpha/RPD, declination=delta/RPD, H=H, theta0=theta0, epsilon=epsilon)
+                       rightAscension=ec$rightAscension, declination=ec$declination,
+                       H=H, theta0=theta0, epsilon=epsilon)
     rval
 }
 
-if (interactive()) {
-    warning("FIXME: why do pink lines work, i.e. offset by several hours??\n")
-    par(mfrow=c(3,2))
-    y <- 2012
-    m <- 4
-    days <- 1:3
-    if (halifax) {
-        rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
-        sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
-        azrises <- c(69, 75, 82)
-        azsets <- c(293, 288, 281)
-        latitude <- 44.65
-        longitude <- -63.6
-        offset <- -9*3600
-    }
-    if (greenwich) {
-        rises <- ISOdatetime(y, m, days,c(13,14,15), c(11, 24, 41),0,tz="UTC") + 1 * 3600 # BST
-        sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 10, 35),0,tz="UTC") + 1 * 3600
-        azrises <- c(65, 72, 80)
-        azsets <- c(298, 291, 284)
-        latitude <- 51.47829
-        longitude <- -0.01144
-        offset <- -2*3600
-    }
-    if (halifax || greenwich) {
-        for (i in 1:3) {
-            t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
-            ma <- moonAngle(t, latitude, longitude)
-            oce.plot.ts(t, ma$altitude, type='p', mar=c(2, 2.5, 1, 0), cex=1/2)
-            abline(h=0)
-            abline(v=rises[i], col='red')
-            abline(v=rises[i]+offset, col='red', lty='dotted')
-            abline(v=sets[i], col='blue')
-            abline(v=sets[i]+offset, col='blue', lty=2)
-            oce.plot.ts(t, ma$azimuth, type='p', mar=c(2, 2.5, 1, 0), cex=1/2)
-            abline(h=0)
-            abline(v=rises[i], col='red')
-            abline(v=rises[i]+offset, col='red', lty='dotted')
-            abline(v=sets[i]+offset, col='blue', lty=2)
-            abline(v=sets[i], col='blue')
-            abline(h=-180+azrises[i], col='red', lty=2)
-            abline(h=-180+azsets[i], col='blue', lty=2)
-        }
-    }
-    if (ex45a) { # ex 45.a page 312 (Meeus 1991)
-        cat("** example 45.a, page 312 (Meeus 1991) **\n")
-        t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
-        ma <- moonAngle(t, 0, 0)
-        print(ma, digits=10)
-    }
-}
-## http://www.timeanddate.com/worldclock/astronomy.html?n=286&month=4&year=2012&obj=moon&afl=-12&day=1
-## FIXME: why does adding 3.6 hours make a match to the pred of the above-named website?
-
-## below may be a check on geocentric ecliptical coordinates
-## http://neoprogrammics.com/moon/meeus <- moon <- ephemeris/index.php

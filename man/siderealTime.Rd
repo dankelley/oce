@@ -15,9 +15,10 @@
         arguments are ignored.}
 }
 
-\details{The method is taken from Chapter 7 of Meeus (1982).}
+\details{The method is taken from Chapter 7 of Meeus (1982).  The small
+    correction that he discusses after his equation 7.1 is not applied here.}
 
-\value{A sidereal time.}
+\value{A sidereal time, in hours in the range from 0 to 24.}
 
 \examples{
 t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
