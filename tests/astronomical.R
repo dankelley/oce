@@ -21,3 +21,17 @@ t <- ISOdatetime(1978, 11, 13, 0, 0, 0, tz="UTC")
 stopifnot(all.equal(siderealTime(t), 3.4503696, 0.0000001))
 t <- ISOdatetime(1978, 11, 13, 4, 34, 0, tz="UTC")
 stopifnot(all.equal(siderealTime(t), 8.0295394, 0.0000001))
+
+## Example 45.a (pages 312-313) Meeus [1991]
+## Do not check too many digits, because the code does not have all terms
+## in formulae.
+t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+m <- moonAngle(t, 0, 0) # lat and lon arbitrary
+stopifnot(all.equal(m$lambda, 133.162659, 0.010000))
+stopifnot(all.equal(m$beta, -3.229127, 0.010000))
+stopifnot(all.equal(m$pi, 0.991990, 0.000100))
+stopifnot(all.equal(m$distance, 368405.6, 0.1)) # "Delta" on p 313
+stopifnot(all.equal(m$epsilon, 23.440636, 0.000100))
+stopifnot(all.equal(m$rightAscension, 134.388473, 0.010000))
+stopifnot(all.equal(m$declination, 13.768366, 0.001000))
+

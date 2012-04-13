@@ -1,10 +1,13 @@
-library(oce)
 greenwich <- TRUE
-halifax <- !greenwich
+halifax <- !TRUE
+ex45a <- !TRUE
+
 ## References used in this file:
 ##
-## Meeus, Jean, 1982.  Astronomical formuae for Calculators.
-## Willmann-Bell. Richmond VA, USA. 201 pages.
+## 1. Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+##    Willmann-Bell. Richmond VA, USA. 201 pages.
+## 2. Meeus, Jean, 1991.  Astronomical algorithms.
+##    Willman-Bell, Richmond VA, USA. 429 pages.
 
 debugMoonAngle <- !TRUE
 
@@ -16,9 +19,7 @@ siderealTime <- function(t)
 {                                   
     ## Calculate siderial time at greenwich (Meuss 1982 equation 7.1, page 39).
     ## NB. the correction he later discusses seems to be sub-second,
-    ## so we ignore it.  A test value, below, matches his text.
-    ## > format(theta0(julianCenturyAnomaly(2443825.5)),digits=10)
-    ## [1] "3.450369881"
+    ## so we ignore it. 
     tt <- as.POSIXlt(t)
     n <- length(tt$hour)
     tt$hour <- rep(0, n)
@@ -28,8 +29,10 @@ siderealTime <- function(t)
     jd0 <- julianDay(tt)
     T <- (jd0 - 2415020.0) / 36525      # Meeus 1982 (eq 7.1)
     hoursLeftOver <- 24 * (jd - jd0)
-    rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T + 1.002737908 * hoursLeftOver
+    rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
+    rval <- rval + 1.002737908 * hoursLeftOver
     rval <- rval %% 24
+    ##print(data.frame(t, tt, hoursLeftOver, rval))
     rval
 }
 
@@ -190,27 +193,30 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
-    ## Transform ecliptical to equatorial coordinates (Meuss eq 8.3 and 8.4) page 44
-    ## alpha = right ascension [in radians, here]
-    alpha <- atan((sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon)) / cos(RPD * lambda))
-    print(alpha[1:3]/RPD)
-                                        #    alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
-    print(alpha[1:3]/RPD)
-    ## FIXME: atan2 and atan are giving different results; is this a clue?
-    ## delta = declination [in radians, here] FIXME: can there be a cut-point issue here?
+    ## Transform ecliptical to equatorial coordinates; see [1] eq 8.3 and 8.4 or [2] eq 12.3 and 12.4.
+    ## alpha = right ascension [in radians, here, but returned as right ascension in deg]
+    ## alpha <- atan((sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon)) / cos(RPD * lambda))
+    ##cat("alpha", alpha[1:3]/RPD, "[deg]\n")
+    ## Note the use of atan2(); Meeus [1991] example 45.a underlines the need for that (see tests)
+    alpha <- atan2(sin(RPD * lambda) * cos(RPD * epsilon) - tan(RPD * beta) * sin(RPD * epsilon), cos(RPD * lambda))
+    ##cat("alpha", alpha[1:3]/RPD, "[deg]\n")
+
+    ## delta = declination [in radians, here, but returned as declination in degrees]
     delta <- asin(sin(RPD * beta) * cos(RPD * epsilon) + cos(RPD * beta) * sin(RPD * epsilon) * sin(RPD * lambda))
-    ## sidereal time at Greenwhich at 0000UTC (in hours)
-    theta0 <- siderealTime(t)
+    ## sidereal Greenwich time (in hours)
+    theta0 <- siderealTime(t) # SHOULD BE IN HOURS FOR UT=0???
+    ## "hour"
     H <- theta0 * 15 - longitude - alpha / RPD
     H <- H %% 360
-    ## Transform to local horizontal coordinates (A=azimuth, h=altitude); Meuss eq 8.5 and 8.6 page 44
-    A <- atan((sin(RPD * H)) / (cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude)))
+    ## Local horizontal coordinates; see [1] eq 8.5 and 8.6 or [2] eq 12.5 and 12.6
+    ## A <- atan((sin(RPD * H)) / (cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude)))
     A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude))
     ## the atan2() form matches websites on azimuth at Halifax in April 2012
     ##A <- ifelse(A < 0, A + 180*RPD, A)
     h <- asin(sin(RPD * latitude) * sin(delta) + cos(RPD * latitude) * cos(delta) * cos(RPD * H))
-    rval <- data.frame(t=t, azimuth=A / RPD, altitude=h / RPD, diameter=pi, distance=6378.14 / sin(RPD * pi),
-                       T=T, lambda=lambda %% 360, beta=beta, H=H, theta0=theta0)
+    rval <- data.frame(t=t, azimuth=A/RPD, altitude=h/RPD, diameter=pi, distance=6378.14 / sin(RPD * pi),
+                       T=T, lambda=lambda %% 360, beta=beta, pi=pi, obliquity=epsilon,
+                       rightAscension=alpha/RPD, declination=delta/RPD, H=H, theta0=theta0, epsilon=epsilon)
     rval
 }
 
@@ -221,41 +227,49 @@ if (interactive()) {
     m <- 4
     days <- 1:3
     if (halifax) {
-        rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600
+        rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
         sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
         azrises <- c(69, 75, 82)
         azsets <- c(293, 288, 281)
         latitude <- 44.65
         longitude <- -63.6
-        offset <- 3.7*3600
+        offset <- -9*3600
     }
     if (greenwich) {
-        rises <- ISOdatetime(y, m, days,c(13,14,15), c(11, 24, 41),0,tz="UTC") + 1 * 3600
+        rises <- ISOdatetime(y, m, days,c(13,14,15), c(11, 24, 41),0,tz="UTC") + 1 * 3600 # BST
         sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 10, 35),0,tz="UTC") + 1 * 3600
         azrises <- c(65, 72, 80)
         azsets <- c(298, 291, 284)
         latitude <- 51.47829
         longitude <- -0.01144
-        offset <- 0
+        offset <- -2*3600
     }
-}
-for (i in 1:3) {
-    t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
-    ma <- moonAngle(t, latitude, longitude)
-    oce.plot.ts(t, ma$altitude)
-    abline(h=0)
-    abline(v=rises[i], col='red')
-    abline(v=rises[i]+offset, col='red', lty='dotted')
-    abline(v=sets[i], col='blue')
-    abline(v=sets[i]+offset, col='blue', lty=2)
-    oce.plot.ts(t, ma$azimuth)
-    abline(h=0)
-    abline(v=rises[i], col='red')
-    abline(v=rises[i]+offset, col='red', lty='dotted')
-    abline(v=sets[i]+offset, col='blue', lty=2)
-    abline(v=sets[i], col='blue')
-    abline(h=-180+azrises[i], col='red', lty=2)
-    abline(h=-180+azsets[i], col='blue', lty=2)
+    if (halifax || greenwich) {
+        for (i in 1:3) {
+            t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
+            ma <- moonAngle(t, latitude, longitude)
+            oce.plot.ts(t, ma$altitude, type='p', mar=c(2, 2.5, 1, 0), cex=1/2)
+            abline(h=0)
+            abline(v=rises[i], col='red')
+            abline(v=rises[i]+offset, col='red', lty='dotted')
+            abline(v=sets[i], col='blue')
+            abline(v=sets[i]+offset, col='blue', lty=2)
+            oce.plot.ts(t, ma$azimuth, type='p', mar=c(2, 2.5, 1, 0), cex=1/2)
+            abline(h=0)
+            abline(v=rises[i], col='red')
+            abline(v=rises[i]+offset, col='red', lty='dotted')
+            abline(v=sets[i]+offset, col='blue', lty=2)
+            abline(v=sets[i], col='blue')
+            abline(h=-180+azrises[i], col='red', lty=2)
+            abline(h=-180+azsets[i], col='blue', lty=2)
+        }
+    }
+    if (ex45a) { # ex 45.a page 312 (Meeus 1991)
+        cat("** example 45.a, page 312 (Meeus 1991) **\n")
+        t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
+        ma <- moonAngle(t, 0, 0)
+        print(ma, digits=10)
+    }
 }
 ## http://www.timeanddate.com/worldclock/astronomy.html?n=286&month=4&year=2012&obj=moon&afl=-12&day=1
 ## FIXME: why does adding 3.6 hours make a match to the pred of the above-named website?
