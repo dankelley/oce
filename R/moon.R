@@ -1,3 +1,4 @@
+library(oce)
 ## References used in this file:
 ##
 ## Meeus, Jean, 1982.  Astronomical formuae for Calculators.
@@ -199,6 +200,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## sidereal time at Greenwhich at 0000UTC (in hours)
     theta0 <- siderealTime(t)
     H <- theta0 * 15 - longitude - alpha / RPD
+    H <- H %% 360
     ## Transform to local horizontal coordinates (A=azimuth, h=altitude); Meuss eq 8.5 and 8.6 page 44
     A <- atan((sin(RPD * H)) / (cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude)))
     A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(delta) * cos(RPD * latitude))
@@ -206,7 +208,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ##A <- ifelse(A < 0, A + 180*RPD, A)
     h <- asin(sin(RPD * latitude) * sin(delta) + cos(RPD * latitude) * cos(delta) * cos(RPD * H))
     rval <- data.frame(t=t, azimuth=A / RPD, altitude=h / RPD, diameter=pi, distance=6378.14 / sin(RPD * pi),
-                       T=T, lambda=lambda %% 360, beta=beta, epsilon=epsilon, H=H, theta0=theta0)
+                       T=T, lambda=lambda %% 360, beta=beta, H=H, theta0=theta0)
     rval
 }
 
@@ -220,20 +222,22 @@ rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 360
 sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
 azrises <- c(69, 75, 82)
 azsets <- c(293, 288, 281)
+offset <- 3.6*3600
+offset <- 4.2*3600 # longitude?
 for (i in 1:3) {
     t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
     ma <- moonAngle(t, 44.65, -63.6) 
     oce.plot.ts(t, ma$altitude)
     abline(h=0)
     abline(v=rises[i], col='red')
-    abline(v=rises[i]+3.6*3600, col='red', lty='dotted') ## seems to be offset by 2.5h
+    abline(v=rises[i]+offset, col='red', lty='dotted')
     abline(v=sets[i], col='blue')
-    abline(v=3.6*3600+sets[i], col='blue', lty=2)
+    abline(v=sets[i]+offset, col='blue', lty=2)
     oce.plot.ts(t, ma$azimuth)
     abline(h=0)
     abline(v=rises[i], col='red')
-    abline(v=rises[i]+3.6*3600, col='red', lty='dotted') ## seems to be offset by 2.5h
-    abline(v=3.6*3600+sets[i], col='blue', lty=2)
+    abline(v=rises[i]+offset, col='red', lty='dotted')
+    abline(v=sets[i]+offset, col='blue', lty=2)
     abline(v=sets[i], col='blue')
     abline(h=-180+azrises[i], col='red', lty=2)
     abline(h=-180+azsets[i], col='blue', lty=2)
