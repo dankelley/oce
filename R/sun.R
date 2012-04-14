@@ -1,11 +1,11 @@
-sunAngle <- function(t, lat, lon, use.refraction=TRUE)
+sunAngle <- function(t, latitude, longitude, useRefraction=TRUE)
 {
     if (missing(t))
         stop("must provide t")
-    if (missing(lat))
-        stop("must provide lat")
-    if (missing(lon))
-        stop("must provide lon")
+    if (missing(latitude))
+        stop("must provide latitude")
+    if (missing(longitude))
+        stop("must provide longitude")
     if (!inherits(t, "POSIXt")) {
         if (is.numeric(t)) {
             tref <- as.POSIXct("2000-01-01 00:00:00", tz="UTC") # arbitrary
@@ -15,16 +15,16 @@ sunAngle <- function(t, lat, lon, use.refraction=TRUE)
         }
     }
     nt <- length(t)
-    nlat <- length(lat)
-    nlon <- length(lon)
+    nlat <- length(latitude)
+    nlon <- length(longitude)
     if (nlon != nlat)
-        stop("lengths of lon and lat must match")
+        stop("lengths of longitude and latitude must match")
     if (nlon == 1) {
-        lon <- rep(lon, nt)             # often, give a time vector but just one location
-        lat <- rep(lat, nt)
+        longitude <- rep(longitude, nt) # often, give a time vector but just one location
+        latitude <- rep(latitude, nt)
     } else {
         if (nt != nlon)
-            stop("lengths of t, lat and lon must match, unless last two are of length 1")
+            stop("lengths of t, latitude and longitude must match, unless last two are of length 1")
     }
     ## the code below is derived from fortran code, downloaded 2009-11-1 from
     ## ftp://climate1.gsfc.nasa.gov/wiscombe/Solar_Rad/SunAngles/sunae.f
@@ -40,21 +40,21 @@ sunAngle <- function(t, lat, lon, use.refraction=TRUE)
     hour <- t$hour + t$min / 60 + t$sec / 3600
     if (any(hour < -13) || any(hour > 36))
         stop("hour outside range -13 to 36")
-    if (any(lat <  -90)) {
+    if (any(latitude <  -90)) {
         warning("latitude(s) trimmed to range -90 to 90")
-        lat[lat <  -90] <- -90
+        latitude[latitude <  -90] <- -90
     }
-    if (any(lat >   90)) {
+    if (any(latitude >   90)) {
         warning("latitude(s) trimmed to range -90 to 90")
-        lat[lat >   90] <-  90
+        latitude[latitude >   90] <-  90
     }
-    if (any(lon < -180)) {
+    if (any(longitude < -180)) {
         warning("longitude(s) trimmed to range -180 to 180")
-        lon[lon < -180] <- -180
+        longitude[longitude < -180] <- -180
     }
-    if (any(lon >  180)) {
+    if (any(longitude >  180)) {
         warning("longitude(s) trimmed to range -180 to 180")
-        lon[lon >  180] <-  180
+        longitude[longitude >  180] <-  180
     }
     delta <- year - 1949
     leap <- delta %/% 4
@@ -84,21 +84,21 @@ sunAngle <- function(t, lat, lon, use.refraction=TRUE)
     gmst <- 6.697375 + 0.0657098242 * time + hour
     gmst <- gmst %% 24
     gmst <- gmst + ifelse(gmst < 0, 24, 0)
-    lmst <- gmst + lon/15
+    lmst <- gmst + longitude/15
     lmst <- lmst %% 24
     lmst <- lmst + ifelse(lmst < 0, 24, 0)
     lmst <- lmst * 15 * rpd
     ha <- lmst - ra
     ha <- ha + ifelse (ha < (-pi), 2 * pi, 0)
     ha <- ha - ifelse (ha > pi, 2 * pi, 0)
-    el <- asin(sin(dec) * sin(lat * rpd) + cos(dec) * cos(lat*rpd)*cos(ha))
+    el <- asin(sin(dec) * sin(latitude * rpd) + cos(dec) * cos(latitude*rpd)*cos(ha))
     az <- asin(-cos(dec) * sin(ha) / cos(el))
-    az <-  ifelse(sin(dec) - sin(el) * sin(lat * rpd ) > 0,
+    az <-  ifelse(sin(dec) - sin(el) * sin(latitude * rpd ) > 0,
                   ifelse (sin(az) < 0, az + 2 * pi, az),
                   pi - az)
     el <- el / rpd
     az <- az / rpd
-    if (use.refraction) {
+    if (useRefraction) {
         refrac <- ifelse(el >= 19.225,
                          0.00452 * 3.51823 / tan(el * rpd),
                          ifelse (el > (-0.766) & el < 19.225,
@@ -112,5 +112,5 @@ sunAngle <- function(t, lat, lon, use.refraction=TRUE)
         stop("output argument el out of range")
     if (any(az < 0) || any(az > 360))
         stop("output argument az out of range")
-    data.frame(azimuth=az, elevation=el, solar.diameter=soldia, solar.distance=soldst)
+    list(azimuth=az, altitude=el, diameter=soldia, distance=soldst)
 }

@@ -48,7 +48,7 @@
 \value{A value of the independent variable that is within \code{eps} of a root.}
 
 \examples{
-hfxSunAngle <- function(t) sunAngle(t, lat=44+39/60, lon=-(63+36/60))$elevation
+hfxSunAngle <- function(t) sunAngle(t, lat=44+39/60, lon=-(63+36/60))$altitude
 sunrise <- oceBisect(hfxSunAngle, 
                       as.numeric(as.POSIXct("2011-07-01 05:00:00", tz="UTC")), 
                       as.numeric(as.POSIXct("2011-07-01 10:00:00", tz="UTC")))
