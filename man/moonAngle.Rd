@@ -17,20 +17,21 @@
         refraction.  (Ignored at present.)}
 }
 
-\details{Based on formulae provided by Meeus (1982), chapters 6, 18, and 30.
-    The first step is to compute geocentric longitude, geocentric latitude, and
-    parallax, using formulae in Meuus (1982) chapter 30.  (Meuss denotes these
-    quantities \eqn{lambda}{lambda}, \eqn{beta}{beta}, and \eqn{pi}{pi},
-    respectively.) Note that some small terms are skipped in Meuss' formulae,
-    but the results match of the Meuss test case to 4 significant digits.  The
-    next step is to compute the obliquity of the ecliptic, denoted
-    \eqn{epsilon}{epsilon} in Meuss (1982) equation 18.4.  Then, Meuss (1982)
-    equations 8.3 and 8.4 are used to calculate equatorial coordinates.
+\details{Based on formulae provided by Meeus [1982], chapters 6, 18, and 30.
+    (Similar formulae appear in Meeus [1991].) The first step is to compute
+    geocentric longitude, geocentric latitude, and parallax, using formulae in
+    Meeus [1982] chapter 30.  (Meeus denotes these quantities
+    \eqn{lambda}{lambda}, \eqn{beta}{beta}, and \eqn{pi}{pi}, respectively.)
+    Note that some small terms are skipped in the formulae provided by Meeus,
+    but the results match of a test case to 4 significant digits.  The next
+    step is to compute the obliquity of the ecliptic, denoted
+    \eqn{epsilon}{epsilon} in Meeus [1982] equation 18.4.  Then, equations 8.3
+    and 8.4 from Meeus [1982] are used to calculate equatorial coordinates.
     Finally, the hour angle is computed using the un-numbered equation
-    preceeding Meuss (1982) equation 8.1, using the observer longitude and the
-    sideral Greenwich time calculated with Meuss (1982) equation 7.2.  Finally,
-    Meuss (1982) equations 8.5 and 8.6 are used to calculate the local azimuth
-    and altitude of the moon.}
+    preceeding Meeus's [1982] equation 8.1, using the observer longitude and
+    the sideral Greenwich time calculated with Meeus [1982] equation 7.2.
+    Finally, Meeus [1982] equations 8.5 and 8.6 are used to calculate the local
+    azimuth and altitude of the moon.}
 
 \value{A data frame containing
     \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
@@ -46,7 +47,7 @@ par(mfrow=c(3,2))
 y <- 2012
 m <- 4
 days <- 1:3
-## Halifax
+## Halifax sunrise/sunset (see e.g. http://www.timeanddate.com/worldclock)
 rises <- ISOdatetime(y, m, days,c(13,15,16), c(55, 04, 16),0,tz="UTC") + 3 * 3600 # ADT
 sets <- ISOdatetime(y, m,days,c(3,4,4), c(42, 15, 45),0,tz="UTC") + 3 * 3600
 azrises <- c(69, 75, 82)
@@ -67,8 +68,10 @@ for (i in 1:3) {
 }
 }
 
-\references{Meeus, Jean, 1982.  Astronomical formuae for Calculators.
-    Willmann-Bell. Richmond VA, USA. 201 pages}
+\references{Meeus, Jean, 1982.  Astronomical formulae for calculators.
+    Willmann-Bell. Richmond VA, USA. 201 pages.
+
+Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA, USA. 429 pages.}
 
 \author{Dan Kelley (based directly on formulae provided by Meeus).}
 

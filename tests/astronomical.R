@@ -1,6 +1,6 @@
 ## References used in this file:
 ##
-## 1. Meeus, Jean, 1982. Astronomical formuae for Calculators. Willmann-Bell. Richmond VA, USA. 201 pages.
+## 1. Meeus, Jean, 1982. Astronomical formulae for calculators. Willmann-Bell. Richmond VA, USA. 201 pages.
 ## 2. Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA, USA. 429 pages.
 
 library(oce)
