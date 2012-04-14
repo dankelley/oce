@@ -1,6 +1,3 @@
-greenwich <- TRUE
-halifax <- !greenwich
-
 ## References used in this file:
 ##
 ## 1. Meeus, Jean, 1982.  Astronomical formuae for Calculators.
@@ -21,6 +18,19 @@ eclipticalToEquatorial <- function(lambda, beta, epsilon)
     data.frame(rightAscension=alpha/RPD, declination=delta/RPD)
 }
 
+equatorialToLocalHorizontal <- function(rightAscension, declination, t, latitude, longitude)
+{
+    RPD <- atan2(1, 1) / 45            # radians per degree
+    ## sidereal Greenwich time (in hours)
+    theta0 <- siderealTime(t)
+    H <- theta0 * 15 + longitude - rightAscension
+    ## Local horizontal coordinates; see [1] eq 8.5 and 8.6 or [2] eq 12.5 and 12.6
+    A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(RPD * declination) * cos(RPD * latitude))
+    ## the atan2() form matches websites on azimuth at Halifax in April 2012
+    h <- asin(sin(RPD * latitude) * sin(RPD * declination) + cos(RPD * latitude) * cos(RPD * declination) * cos(RPD * H))
+    rval <- data.frame(azimuth=A/RPD, altitude=h/RPD)
+}
+
 siderealTime <- function(t)
 {                                   
     tt <- as.POSIXlt(t)
@@ -30,7 +40,7 @@ siderealTime <- function(t)
     tt$sec <- rep(0, n)
     jd <- julianDay(t)
     jd0 <- julianDay(tt)
-    T <- (jd0 - 2415020.0) / 36525      # Meeus 1982 (eq 7.1)
+    T <- (jd0 - 2415020.0) / 36525      # [1] Meeus 1982 (eq 7.1)
     hoursLeftOver <- 24 * (jd - jd0)
     rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
     rval <- rval + 1.002737908 * hoursLeftOver
@@ -62,13 +72,13 @@ julianDay <- function(t, year, month, day, hour, min, sec, tz="UTC")
 
 julianCenturyAnomaly <- function(jd)
 {
-    (jd - 2415020.0) / 36525         # Meeus 1982 (eq 7.1 or 15.1)
+    (jd - 2415020.0) / 36525         # [1] Meeus 1982 (eq 7.1 or 15.1)
 }
 
 moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
 {
     RPD <- atan2(1, 1) / 45            # radians per degree
-    ## In this cde, the symbol names follow Meeus chapter 30, with e.g. "p"
+    ## In this cde, the symbol names follow [1] Meeus 1982 chapter 30, with e.g. "p"
     ## used to indicate primes, e.g. Lp stands for L' in Meeus' notation.
     ## Also, T2 and T3 are powers on T.
     T <- julianCenturyAnomaly(julianDay(t))
@@ -105,7 +115,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     D  <- D  + 0.001964 * tmp
     F  <- F  - 0.024691 * tmp
     F  <- F  - 0.004328 * sin(RPD * (Omega + 275.05 - 2.30 * T))
-    ## Step 3: Meeus p 149
+    ## Step 3: [1] Meeus p 149
     e <- 1 - 0.002495 * T - 0.00000752 * T2
     e2 <- e * e
     lambda <- Lp +
@@ -149,22 +159,21 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
-
-    ec <- eclipticalToEquatorial(lambda, beta, epsilon) # rightAscension and declination [deg]
-
-    ## sidereal Greenwich time (in hours)
-    theta0 <- siderealTime(t)
-    H <- theta0 * 15 - longitude - ec$rightAscension
-    H <- theta0 * 15 + longitude - ec$rightAscension
-    H <- H %% 360
-    ## Local horizontal coordinates; see [1] eq 8.5 and 8.6 or [2] eq 12.5 and 12.6
-    A <- atan2(sin(RPD * H), cos(RPD * H) * sin(RPD * latitude) - tan(RPD * ec$declination) * cos(RPD * latitude))
-    ## the atan2() form matches websites on azimuth at Halifax in April 2012
-    h <- asin(sin(RPD * latitude) * sin(RPD * ec$declination) + cos(RPD * latitude) * cos(RPD * ec$declination) * cos(RPD * H))
-    rval <- data.frame(t=t, azimuth=A/RPD, altitude=h/RPD, diameter=pi, distance=6378.14 / sin(RPD * pi),
-                       T=T, lambda=lambda %% 360, beta=beta, pi=pi, obliquity=epsilon,
+    ec <- eclipticalToEquatorial(lambda, beta, epsilon) # FIXME: maybe give "t" here instead of epsilon?
+    lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
+    ## Illuminated fraction, [1] chapter 31 (second, approximate, formula)
+    D <- D %% 360 # need this; could have done it earlier, actually
+    illfr <- 180 - D - 6.289 * sin(RPD * Mp) +
+    2.100 * sin(RPD * M) -
+    1.274 * sin(RPD * (2 * D - Mp)) -
+    0.658 * sin(RPD * 2 * D) -
+    0.2114 * sin(RPD * 2 * Mp) -
+    0.112 * sin(RPD * D)
+    illuminatedFraction <- (1 + cos(RPD * illfr)) / 2
+    rval <- data.frame(t=t, azimuth=lh$azimuth, altitude=lh$altitude, diameter=pi, distance=6378.14 / sin(RPD * pi),
                        rightAscension=ec$rightAscension, declination=ec$declination,
-                       H=H, theta0=theta0, epsilon=epsilon)
+                       lambda=lambda %% 360, beta=beta, pi=pi, obliquity=epsilon,
+                       illuminatedFraction=illuminatedFraction)
     rval
 }
 

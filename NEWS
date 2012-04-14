@@ -1,5 +1,5 @@
 0.8-8
-- add moonAngle() plus other astronomy-related functions, e.g. julianDay()
+- add moonAngle() plus several other astronomy-related functions, e.g. julianDay()
 
 0.8-7
 - plotInset(): remove 'bg' and 'fg' arguments

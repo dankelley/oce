@@ -33,12 +33,13 @@
     Finally, Meeus [1982] equations 8.5 and 8.6 are used to calculate the local
     azimuth and altitude of the moon.}
 
-\value{A data frame containing
+\value{A data frame containing the following quantities
     \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
-    \item{elevation}{elevation, in degrees from -90 to 90}
+    \item{altitude}{ialtitude, in degrees from -90 to 90}
     \item{diameter}{lunar diameter, in degrees.  (FIXME: using parallax here,
         which is unlikely to be right!)}
     \item{distance}{distance to moon, in kilometers)}
+    \item{illuminatedFraction}{fraction of moon that is illuminated}
 }
 
 \examples{
@@ -54,7 +55,6 @@ azrises <- c(69, 75, 82)
 azsets <- c(293, 288, 281)
 latitude <- 44.65
 longitude <- -63.6
-library(oce)
 for (i in 1:3) {
     t <- ISOdatetime(y, m, days[i],0,0,0,tz="UTC") + seq(0, 24*3600, 3600/4)
     ma <- moonAngle(t, latitude, longitude)
