@@ -28,7 +28,7 @@ stopifnot(all.equal(siderealTime(t), 8.0295394, 0.0000001))
 ## in formulae.  (Note: this also tests eclipticalToEquatorial)
 t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
 m <- moonAngle(t, 0, 0) # lat and lon arbitrary
-stopifnot(all.equal(m$lambda, 133.162659, 0.010000))
+stopifnot(all.equal(m$lambda, 133.162659, 0.000100))
 stopifnot(all.equal(m$beta, -3.229127, 0.010000))
 stopifnot(all.equal(m$pi, 0.991990, 0.000100))
 stopifnot(all.equal(m$distance, 368405.6, 0.1)) # "Delta" on p 313

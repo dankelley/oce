@@ -132,7 +132,43 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (e *  0.041024 * sin(RPD * (Mp - M        ))) +
     (    -0.034718 * sin(RPD * (D             ))) +
     (    -0.030465 * sin(RPD * (M + Mp        ))) +
-    (     0.015326 * sin(RPD * (2 * D - 2 * F )))
+    (     0.015326 * sin(RPD * (2 * D - 2 * F ))) +
+    (    -0.012528 * sin(RPD * (2 * F + Mp    ))) +
+    (    -0.010980 * sin(RPD * (2 * F - Mp    ))) +
+    (     0.010674 * sin(RPD * (4 * D - Mp    ))) +
+    (     0.010034 * sin(RPD * (3 * M         ))) +
+    (     0.008548 * sin(RPD * (4 * D - 2 * Mp))) +
+    (e * -0.007910 * sin(RPD * (M - Mp + 2 * D))) +
+    (e * -0.006783 * sin(RPD * (2 * D + M     ))) +
+    (     0.005162 * sin(RPD * (Mp - D        ))) +
+    (e *  0.005000 * sin(RPD * (M  + D        ))) +
+    (e *  0.004049 * sin(RPD * (Mp - M + 2 * D))) +
+    (     0.003996 * sin(RPD * (2 * Mp + 2 * D))) +
+    (     0.003862 * sin(RPD * (4 * D         ))) +
+    (     0.003665 * sin(RPD * (2 * D - 3 * Mp))) +
+    (e *  0.002696 * sin(RPD * (2 * Mp - M    ))) +
+    (     0.002602 * sin(RPD * (Mp - 2*F - 2*D))) +
+    (e *  0.002396 * sin(RPD * (2*D - M - 2*Mp))) +
+    (    -0.002349 * sin(RPD * (Mp + D        ))) +
+    (e2*  0.002249 * sin(RPD * (2 * D - 2 * M ))) +
+    (e * -0.002215 * sin(RPD * (2 * Mp + M    ))) +
+    (e2* -0.002079 * sin(RPD * (2 * M         ))) +
+    (e2*  0.002059 * sin(RPD * (2*D - Mp - 2*M))) +
+    (    -0.001773 * sin(RPD * (Mp + 2*D - 2*F))) +
+    (    -0.001595 * sin(RPD * (2 * F + 2 * D ))) +
+    (e *  0.001220 * sin(RPD * (4 * D - M - Mp))) +
+    (    -0.001110 * sin(RPD * (2 * Mp + 2 * F))) +
+    (     0.000892 * sin(RPD * (Mp - 3 * D    ))) +
+    (e * -0.000811 * sin(RPD * (M + Mp + 2 * D))) +
+    (e *  0.000761 * sin(RPD * (4*D - M - 2*Mp))) +
+    (e2*  0.000717 * sin(RPD * (Mp - 2 * M    ))) +
+    (e2*  0.000704 * sin(RPD * (Mp - 2*M - 2*D))) +
+    (e *  0.000693 * sin(RPD * (M - 2*Mp + 2*D))) +
+    (e *  0.000598 * sin(RPD * (2*D - M - 2*F ))) +
+    (     0.000550 * sin(RPD * (Mp + 4 * D    ))) +
+    (     0.000538 * sin(RPD * (4 * Mp        ))) +
+    (e *  0.000521 * sin(RPD * (4 * D - M     ))) +
+    (     0.000486 * sin(RPD * (2 * M - D     )))
     lambda <- lambda %% 360
     B <-  0 +
     (     5.128189 * sin(RPD * (F             ))) +
