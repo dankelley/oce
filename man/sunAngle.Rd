@@ -22,32 +22,32 @@
 
 \value{A data frame containing
     \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
-    \item{elevation}{elevation, in degrees from -90 to 90}
+    \item{altitude}{altitude, in degrees above the horizon, ranging from -90 to 90}
     \item{diameter}{solar diameter, in degrees}
     \item{distance}{distance to sun, in astronomical units}
 }
 
 \examples{
-## Example 1: daily variation in sun elevation
+## Example 1: daily variation in sun altitude
 dayplot <- function(day="2009-12-22", lat=44+39/60, lon=-(63+34/60),
                     location="Halifax, Nova Scotia", add=FALSE, ...)
 {
     t0 <- as.POSIXct(paste(day, "00:00:00"), tz="UTC")
     t <- seq(from=t0, to=t0+86400, by="15 min")
     a <- sunAngle(t, lat, lon)
-    day <- a$elevation > 0
+    day <- a$altitude > 0
     a$azimuth[!day] <- NA
     if (add) {
-        points(a$azimuth, a$elevation, cex=0.5*par("cex"), ...)
+        points(a$azimuth, a$altitude, cex=0.5*par("cex"), ...)
     } else {
-        plot(a$azimuth, a$elevation, type='p', xlab='Azimuth',
+        plot(a$azimuth, a$altitude, type='p', xlab='Azimuth',
              ylab='Elevation', ylim=c(0, 90), main=location,
              cex=0.5*par("cex"), ...)
     }
     h <- which(trunc(t,"hours")==t)
-    points(a$azimuth[h], a$elevation[h], pch=16, ...)
+    points(a$azimuth[h], a$altitude[h], pch=16, ...)
     hour <- as.POSIXlt(t[h])$hour
-    text(a$azimuth[h], a$elevation[h], paste(hour,"h",sep=""), pos=1,
+    text(a$azimuth[h], a$altitude[h], paste(hour,"h",sep=""), pos=1,
          offset=0.7, cex=0.7*par("cex"), ...)
 }
 dayplot("2009-06-22")
@@ -59,8 +59,8 @@ rise <- as.POSIXct("2011-03-03 06:49:00", tz="UTC") + 4*3600
 set <- as.POSIXct("2011-03-03 18:04:00", tz="UTC") + 4*3600
 mismatch <- function(latlon) 
 {
-    sunAngle(rise, latlon[1], latlon[2])$elevation^2 +
-    sunAngle(set, latlon[1], latlon[2])$elevation^2
+    sunAngle(rise, latlon[1], latlon[2])$altitude^2 +
+    sunAngle(set, latlon[1], latlon[2])$altitude^2
 }
 result <- optim(c(1,1), mismatch)
 lat.hfx <- 44.65
@@ -85,7 +85,7 @@ cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch
     1995 version the Almanac:
     \itemize{
         \item        p. A12: approximation to sunrise/set times;
-        \item        p. B61: solar elevation ("altitude") and azimuth;
+        \item        p. B61: solar altitude (AKA elevation) and azimuth;
         \item        p. B62: refraction correction;
         \item        p. C24: mean longitude, mean anomaly, ecliptic longitude,
         obliquity of ecliptic, right ascension, declination,

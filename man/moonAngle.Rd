@@ -34,8 +34,8 @@
     azimuth and altitude of the moon.}
 
 \value{A data frame containing the following quantities
-    \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
-    \item{altitude}{ialtitude, in degrees from -90 to 90}
+    \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360}
+    \item{altitude}{moon altitude, in degrees from -90 to 90}
     \item{diameter}{lunar diameter, in degrees.  (FIXME: using parallax here,
         which is unlikely to be right!)}
     \item{distance}{distance to moon, in kilometers)}
