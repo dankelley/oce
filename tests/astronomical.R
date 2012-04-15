@@ -31,7 +31,7 @@ m <- moonAngle(t, 0, 0) # lat and lon arbitrary
 stopifnot(abs(m$lambda - 133.162659) < 0.02)
 stopifnot(abs(m$beta - -3.229127) < 0.001)
 ##stopifnot(abs(m$obliquity - 23.440636) < 0.001)
-stopifnot(abs(m$rightAscension - 134.388473) < 0.3)
+stopifnot(abs(m$rightAscension - 134.688473) < 0.02)
 stopifnot(abs(m$declination - 13.768366) < 0.01)
 stopifnot(abs(m$diameter - 0.991990) < 0.0001)
 stopifnot(abs(m$distance - 368405.6) < 20)

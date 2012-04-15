@@ -229,10 +229,10 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (     0.007843 * cos(RPD * (2 * D             ))) +
     (     0.002824 * cos(RPD * (2 * Mp            ))) +
     (     0.000857 * cos(RPD * (2 * D + Mp        ))) +
-    (e *  0.000533 * cos(RPD * (2 * D - M         ))) + #
+    (e *  0.000533 * cos(RPD * (2 * D - M         ))) +
     (e *  0.000401 * cos(RPD * (2 * D - M - Mp    ))) +
     (e *  0.000320 * cos(RPD * (Mp - M            ))) +
-    (    -0.000271 * cos(RPD * (D                 ))) +
+    (    -0.000271 * cos(RPD * (D                 ))) + #OK above
     (e * -0.000264 * cos(RPD * (M + Mp            ))) +
     (    -0.000198 * cos(RPD * (2 * F - Mp        ))) +
     (     0.000173 * cos(RPD * (3 * Mp            ))) +
@@ -241,7 +241,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (     0.000103 * cos(RPD * (4 * D - 2 * Mp    ))) +
     (    -0.000084 * cos(RPD * (2 * Mp - 2 * D    ))) +
     (e * -0.000083 * cos(RPD * (2 * D + M         ))) +
-    (     0.000079 * cos(RPD * (2 * D + 2 * Mp    ))) +
+    (     0.000079 * cos(RPD * (2 * D + 2 * Mp    ))) + # ok above
     (     0.000072 * cos(RPD * (4 * D             ))) +
     (e *  0.000064 * cos(RPD * (2 * D - M + Mp    ))) +
     (e * -0.000063 * cos(RPD * (2 * D + M - Mp    ))) +
@@ -250,7 +250,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (    -0.000033 * cos(RPD * (3 * Mp - 2 * D    ))) +
     (    -0.000030 * cos(RPD * (Mp + D            ))) +
     (    -0.000029 * cos(RPD * (2 * F - 2 * D     ))) +
-    (e   -0.000029 * cos(RPD * (2 * Mp + M        ))) +
+    (e * -0.000029 * cos(RPD * (2 * Mp + M        ))) +
     (e2*  0.000026 * cos(RPD * (2 * D - 2 * M     ))) +
     (    -0.000023 * cos(RPD * (2 * F - 2 * D + Mp))) +
     (e *  0.000019 * cos(RPD * (4 * D - M - Mp    )))

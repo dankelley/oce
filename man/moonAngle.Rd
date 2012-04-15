@@ -41,7 +41,8 @@
     the changing formulations is best left to members of the astronomical
     community.  For the present purpose, it may be sufficient to note that
     \code{moonAngle}, based on Meeus [1982], reproduces the values provided in
-    example 45.a of Meeus [1991] to 4 significant digits.}
+    example 45.a of Meeus [1991] to 4 significant digits, e.g. with all angles
+    matching to under 2 minutes of arc.}
 
 \value{A data frame containing the following.
     \item{t}{time}
