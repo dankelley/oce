@@ -97,6 +97,8 @@ for (i in 1:3) {
 
 Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA, USA. 429 pages.}
 
+\seealso{The equivalent function for the sun is \code{\link{sunAngle}}.}
+
 \author{Dan Kelley, based on formulae in Meeus [1982].}
 
 \keyword{misc}

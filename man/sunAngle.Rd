@@ -106,6 +106,8 @@ cat(sprintf("Infer Halifax latitude \%.2f and longitude \%.2f; distance mismatch
     Dr. Warren Wiscombe (NASA Goddard Space Flight Center).
 }
 
+\seealso{The equivalent function for the moon is \code{\link{moonAngle}}.}
+
 \author{Dan Kelley}
 
 \keyword{misc}
