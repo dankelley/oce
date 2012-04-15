@@ -1,9 +1,13 @@
 ## References used in this file:
-##
 ## 1. Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 ##    Willmann-Bell. Richmond VA, USA. 201 pages.
 ## 2. Meeus, Jean, 1991.  Astronomical algorithms.
 ##    Willmann-Bell. Richmond VA, USA. 429 pages.
+## The code is based on [1]; see help(moonAngle,"oce") for comments on 
+## the differences in formulae found in [2].  Indeed, [2] is only cited
+## here in case readers want to check the ideas of the formulae; DK 
+## has found that [2] is available to him via his university library
+## inter-library loan system, whereas he owns a copy of [1].
 
 eclipticalToEquatorial <- function(lambda, beta, epsilon)
 {
@@ -131,7 +135,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (e *  0.045874 * sin(RPD * (2 * D - M          ))) +
     (e *  0.041024 * sin(RPD * (Mp - M             ))) +
     (    -0.034718 * sin(RPD * (D                  ))) +
-    (    -0.030465 * sin(RPD * (M + Mp             ))) +
+    (e * -0.030465 * sin(RPD * (M + Mp             ))) +
     (     0.015326 * sin(RPD * (2 * D - 2 * F      ))) +
     (    -0.012528 * sin(RPD * (2 * F + Mp         ))) +
     (    -0.010980 * sin(RPD * (2 * F - Mp         ))) +
@@ -151,7 +155,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     (e *  0.002396 * sin(RPD * (2 * D - M - 2 * Mp ))) +
     (    -0.002349 * sin(RPD * (Mp + D             ))) +
     (e2*  0.002249 * sin(RPD * (2 * D - 2 * M      ))) +
-    (e * -0.002215 * sin(RPD * (2 * Mp + M         ))) +
+    (e * -0.002125 * sin(RPD * (2 * Mp + M         ))) +
     (e2* -0.002079 * sin(RPD * (2 * M              ))) +
     (e2*  0.002059 * sin(RPD * (2 * D - Mp - 2 * M ))) +
     (    -0.001773 * sin(RPD * (Mp + 2 * D - 2 * F ))) +

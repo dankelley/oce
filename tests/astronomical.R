@@ -28,13 +28,13 @@ stopifnot(all.equal(siderealTime(t), 8.0295394, 0.0000001))
 ## in formulae.  (Note: this also tests eclipticalToEquatorial)
 t <- ISOdatetime(1992, 04, 12, 0, 0, 0, tz="UTC") 
 m <- moonAngle(t, 0, 0) # lat and lon arbitrary
-stopifnot(all.equal(m$lambda, 133.162659, 0.000100))
-stopifnot(all.equal(m$beta, -3.229127, 0.000100))
-stopifnot(all.equal(m$pi, 0.991990, 0.000100))
-stopifnot(all.equal(m$distance, 368405.6, 0.1)) # "Delta" on p 313
-##stopifnot(all.equal(m$epsilon, 23.440636, 0.000100))
-stopifnot(all.equal(m$rightAscension, 134.388473, 0.010000))
-stopifnot(all.equal(m$declination, 13.768366, 0.001000))
+stopifnot(abs(m$lambda - 133.162659) < 0.02)
+stopifnot(abs(m$beta - -3.229127) < 0.001)
+stopifnot(abs(m$pi - 0.991990) < 0.0001)
+stopifnot(abs(m$distance - 368405.6) < 20)
+stopifnot(abs(m$obliquity - 23.440636) < 0.001)
+stopifnot(abs(m$rightAscension - 134.388473) < 0.3)
+stopifnot(abs(m$declination - 13.768366) < 0.01)
 ## moon illuminated fraction [1] ex 31.b page 156
 illfrac <- (1 + cos(RPD * 105.8493)) / 2
 stopifnot(all.equal(moonAngle(ISOdatetime(1979, 12, 25, 0, 0, 0, tz="UTC"), 0, 0)$illuminatedFraction, illfrac, 0.001))
