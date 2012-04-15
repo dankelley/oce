@@ -44,7 +44,7 @@ siderealTime <- function(t)
     tt$sec <- rep(0, n)
     jd <- julianDay(t)
     jd0 <- julianDay(tt)
-    T <- (jd0 - 2415020.0) / 36525      # [1] eq 7.1; FIXME: why diff from [2] eq 11.1?
+    T <- (jd0 - 2415020.0) / 36525      # [1] eq 7.1 (different in [2])
     hoursLeftOver <- 24 * (jd - jd0)
     rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
     rval <- rval + 1.002737908 * hoursLeftOver
@@ -257,7 +257,7 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
-    ec <- eclipticalToEquatorial(lambda, beta, epsilon) # FIXME: maybe give "t" here instead of epsilon?
+    ec <- eclipticalToEquatorial(lambda, beta, epsilon)
     lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
     ## Illuminated fraction, [1] chapter 31 (second, approximate, formula)
     D <- D %% 360 # need this; could have done it earlier, actually
