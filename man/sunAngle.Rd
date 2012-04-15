@@ -20,11 +20,16 @@
 \details{Based on NASA-provided fortran program, in turn (according to
     comments in the code) based on "The Astronomical Almanac".}
 
-\value{A data frame containing
-    \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360}
-    \item{altitude}{altitude, in degrees above the horizon, ranging from -90 to 90}
+\value{A data frame containing the following .
+    \item{azimuth}{azimuth, in degrees eastward of north, from 0 to 360.  (See
+        diagram below.)}
+    \item{altitude}{altitude, in degrees above the horizon, ranging from -90 to
+        90.  (See diagram below.)}
     \item{diameter}{solar diameter, in degrees}
     \item{distance}{distance to sun, in astronomical units}
+
+    \if{html}{\figure{starCoords.png}{options: width=400px alt="Figure:
+            starCoords.png"}}
 }
 
 \examples{

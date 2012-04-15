@@ -30,7 +30,10 @@
     computed using the un-numbered equation preceeding Meeus's [1982] equation
     8.1.  Finally, Meeus [1982] equations 8.5 and 8.6 are used to calculate the
     local azimuth and altitude of the moon, using
-    \code{\link{equatorialToLocalHorizontal}}.}
+    \code{\link{equatorialToLocalHorizontal}}.
+
+
+}
 
 \section{Alternate formulations}{Formulae provide by Meeus [1982] are used for
     all calculations here.  Meeus [1991] provides formulae that are similar,
@@ -46,8 +49,10 @@
 
 \value{A data frame containing the following.
     \item{t}{time}
-    \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360}
-    \item{altitude}{moon altitude, in degrees from -90 to 90}
+    \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360.
+        (See diagram below.)}
+    \item{altitude}{moon altitude, in degrees from -90 to 90.  (See diagram
+        below.)}
     \item{rightAscension}{right ascension, in degrees}
     \item{declination}{declination, in degrees}
     \item{lambda}{geocentric longitude, in degrees}
@@ -56,6 +61,9 @@
     \item{distance}{earth-moon distance, in kilometers)}
     \item{illuminatedFraction}{fraction of moon's visible disk that is
         illuminated}
+
+    \if{html}{\figure{starCoords.png}{options: width=400px alt="Figure:
+            starCoords.png"}}
 }
 
 \examples{
