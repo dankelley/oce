@@ -6,11 +6,12 @@
 
 \title{Sea-level data set, from Halifax Harbour}
 
-\description{This sample sea-level dataset is the 2003 record from
-  Halifax Harbour in Nova Scotia, Canada. Note that Hurricane Juan hit
-  Halifax a half hour before midnight on September 28th of 2003, 
-  causing a strong storm surge; see example at \code{\link{plot.sealevel}}.
-}
+\description{This sample sea-level dataset is the 2003 record from Halifax
+    Harbour in Nova Scotia, Canada. Note that Hurricane Juan hit Halifax a half
+    hour before midnight on September 28th of 2003, causing a strong storm
+    surge; see example at \code{\link{plot.sealevel}}.  For reasons that are
+    not mentioned on the data archive website, the record ends on the 8th of
+    October.}
 
 \usage{data(sealevelHalifax)}
 
