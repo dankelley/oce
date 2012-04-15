@@ -1,9 +1,13 @@
 ## References used in this file:
-##
-## 1. Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+## 1. Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 ##    Willmann-Bell. Richmond VA, USA. 201 pages.
 ## 2. Meeus, Jean, 1991.  Astronomical algorithms.
-##    Willman-Bell, Richmond VA, USA. 429 pages.
+##    Willmann-Bell. Richmond VA, USA. 429 pages.
+## The code is based on [1]; see help(moonAngle,"oce") for comments on 
+## the differences in formulae found in [2].  Indeed, [2] is only cited
+## here in case readers want to check the ideas of the formulae; DK 
+## has found that [2] is available to him via his university library
+## inter-library loan system, whereas he owns a copy of [1].
 
 eclipticalToEquatorial <- function(lambda, beta, epsilon)
 {
@@ -40,7 +44,7 @@ siderealTime <- function(t)
     tt$sec <- rep(0, n)
     jd <- julianDay(t)
     jd0 <- julianDay(tt)
-    T <- (jd0 - 2415020.0) / 36525      # [1] Meeus 1982 (eq 7.1)
+    T <- (jd0 - 2415020.0) / 36525      # [1] eq 7.1 (different in [2])
     hoursLeftOver <- 24 * (jd - jd0)
     rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
     rval <- rval + 1.002737908 * hoursLeftOver
@@ -119,47 +123,141 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     e <- 1 - 0.002495 * T - 0.00000752 * T2
     e2 <- e * e
     lambda <- Lp +
-    (     6.288750 * sin(RPD * (Mp            ))) +
-    (     1.274018 * sin(RPD * (2 * D - Mp    ))) +
-    (     0.658309 * sin(RPD * (2 * D         ))) +
-    (     0.213616 * sin(RPD * (2 * Mp        ))) +
-    (e * -0.185596 * sin(RPD * (M             ))) +
-    (    -0.114336 * sin(RPD * (2 * F         ))) +
-    (     0.058793 * sin(RPD * (2 * D - 2 * Mp))) +
-    (e *  0.057212 * sin(RPD * (2 * D - M - Mp))) +
-    (     0.053320 * sin(RPD * (2 * D + Mp    ))) +
-    (e *  0.045874 * sin(RPD * (2 * D - M     ))) +
-    (e *  0.041024 * sin(RPD * (Mp - M        ))) +
-    (    -0.034718 * sin(RPD * (D             ))) +
-    (    -0.030465 * sin(RPD * (M + Mp        ))) +
-    (     0.015326 * sin(RPD * (2 * D - 2 * F )))
+    (     6.288750 * sin(RPD * (Mp                 ))) +
+    (     1.274018 * sin(RPD * (2 * D - Mp         ))) +
+    (     0.658309 * sin(RPD * (2 * D              ))) +
+    (     0.213616 * sin(RPD * (2 * Mp             ))) +
+    (e * -0.185596 * sin(RPD * (M                  ))) +
+    (    -0.114336 * sin(RPD * (2 * F              ))) +
+    (     0.058793 * sin(RPD * (2 * D - 2 * Mp     ))) +
+    (e *  0.057212 * sin(RPD * (2 * D - M - Mp     ))) +
+    (     0.053320 * sin(RPD * (2 * D + Mp         ))) +
+    (e *  0.045874 * sin(RPD * (2 * D - M          ))) +
+    (e *  0.041024 * sin(RPD * (Mp - M             ))) +
+    (    -0.034718 * sin(RPD * (D                  ))) +
+    (e * -0.030465 * sin(RPD * (M + Mp             ))) +
+    (     0.015326 * sin(RPD * (2 * D - 2 * F      ))) +
+    (    -0.012528 * sin(RPD * (2 * F + Mp         ))) +
+    (    -0.010980 * sin(RPD * (2 * F - Mp         ))) +
+    (     0.010674 * sin(RPD * (4 * D - Mp         ))) +
+    (     0.010034 * sin(RPD * (3 * M              ))) +
+    (     0.008548 * sin(RPD * (4 * D - 2 * Mp     ))) +
+    (e * -0.007910 * sin(RPD * (M - Mp + 2 * D     ))) +
+    (e * -0.006783 * sin(RPD * (2 * D + M          ))) +
+    (     0.005162 * sin(RPD * (Mp - D             ))) +
+    (e *  0.005000 * sin(RPD * (M  + D             ))) +
+    (e *  0.004049 * sin(RPD * (Mp - M + 2 * D     ))) +
+    (     0.003996 * sin(RPD * (2 * Mp + 2 * D     ))) +
+    (     0.003862 * sin(RPD * (4 * D              ))) +
+    (     0.003665 * sin(RPD * (2 * D - 3 * Mp     ))) +
+    (e *  0.002696 * sin(RPD * (2 * Mp - M         ))) +
+    (     0.002602 * sin(RPD * (Mp - 2 * F - 2 * D ))) +
+    (e *  0.002396 * sin(RPD * (2 * D - M - 2 * Mp ))) +
+    (    -0.002349 * sin(RPD * (Mp + D             ))) +
+    (e2*  0.002249 * sin(RPD * (2 * D - 2 * M      ))) +
+    (e * -0.002125 * sin(RPD * (2 * Mp + M         ))) +
+    (e2* -0.002079 * sin(RPD * (2 * M              ))) +
+    (e2*  0.002059 * sin(RPD * (2 * D - Mp - 2 * M ))) +
+    (    -0.001773 * sin(RPD * (Mp + 2 * D - 2 * F ))) +
+    (    -0.001595 * sin(RPD * (2 * F + 2 * D      ))) +
+    (e *  0.001220 * sin(RPD * (4 * D - M - Mp     ))) +
+    (    -0.001110 * sin(RPD * (2 * Mp + 2 * F     ))) +
+    (     0.000892 * sin(RPD * (Mp - 3 * D         ))) +
+    (e * -0.000811 * sin(RPD * (M + Mp + 2 * D     ))) +
+    (e *  0.000761 * sin(RPD * (4 * D - M - 2 * Mp ))) +
+    (e2*  0.000717 * sin(RPD * (Mp - 2 * M         ))) +
+    (e2*  0.000704 * sin(RPD * (Mp - 2 * M - 2 * D ))) +
+    (e *  0.000693 * sin(RPD * (M - 2 * Mp + 2 * D ))) +
+    (e *  0.000598 * sin(RPD * (2 * D - M - 2 * F  ))) +
+    (     0.000550 * sin(RPD * (Mp + 4 * D         ))) +
+    (     0.000538 * sin(RPD * (4 * Mp             ))) +
+    (e *  0.000521 * sin(RPD * (4 * D - M          ))) +
+    (     0.000486 * sin(RPD * (2 * M - D          )))
     lambda <- lambda %% 360
     B <-  0 +
-    (     5.128189 * sin(RPD * (F             ))) +
-    (     0.280606 * sin(RPD * (Mp + F        ))) +
-    (     0.277693 * sin(RPD * (Mp - F        ))) +
-    (     0.173238 * sin(RPD * (2 * D - F     ))) +
-    (     0.055413 * sin(RPD * (2 * D + F - Mp))) +
-    (     0.046272 * sin(RPD * (2 * D - F - Mp))) +
-    (     0.032573 * sin(RPD * (2 * D + F     ))) +
-    (     0.017198 * sin(RPD * (2 * Mp + F    ))) +
-    (     0.009267 * sin(RPD * (2 * D + Mp - F))) +
-    (     0.008823 * sin(RPD * (2 * Mp - F    ))) +
-    (     0.008247 * sin(RPD * (2 * D - M - F )))
+    (     5.128189 * sin(RPD * (F                  ))) +
+    (     0.280606 * sin(RPD * (Mp + F             ))) +
+    (     0.277693 * sin(RPD * (Mp - F             ))) +
+    (     0.173238 * sin(RPD * (2 * D - F          ))) +
+    (     0.055413 * sin(RPD * (2 * D + F - Mp     ))) +
+    (     0.046272 * sin(RPD * (2 * D - F - Mp     ))) +
+    (     0.032573 * sin(RPD * (2 * D + F          ))) +
+    (     0.017198 * sin(RPD * (2 * Mp + F         ))) +
+    (     0.009267 * sin(RPD * (2 * D + Mp - F     ))) +
+    (     0.008823 * sin(RPD * (2 * Mp - F         ))) +
+    (     0.008247 * sin(RPD * (2 * D - M - F      ))) +
+    (     0.004323 * sin(RPD * (2 * D - F - 2 * Mp ))) +
+    (     0.004200 * sin(RPD * (2 * D + F + Mp     ))) +
+    (e *  0.003372 * sin(RPD * (F - M - 2 * D      ))) +
+    (e *  0.002472 * sin(RPD * (2 * D + F - M - Mp ))) +
+    (e *  0.002222 * sin(RPD * (2 * D + F - M      ))) +
+    (e *  0.002072 * sin(RPD * (2 * D - F - M - Mp ))) +
+    (e *  0.001877 * sin(RPD * (F - M + Mp         ))) +
+    (     0.001828 * sin(RPD * (4 * D - F - Mp     ))) +
+    (e * -0.001803 * sin(RPD * (F + M              ))) +
+    (    -0.001750 * sin(RPD * (3 * F              ))) +
+    (e *  0.001570 * sin(RPD * (Mp - M - F         ))) +
+    (    -0.001487 * sin(RPD * (F + D              ))) +
+    (e * -0.001481 * sin(RPD * (F + M + Mp         ))) +
+    (e *  0.001417 * sin(RPD * (F - M - Mp         ))) +
+    (e *  0.001350 * sin(RPD * (F - M              ))) +
+    (     0.001330 * sin(RPD * (F - D              ))) +
+    (     0.001106 * sin(RPD * (F + 3 * Mp         ))) +
+    (     0.001020 * sin(RPD * (4 * D - F          ))) +
+    (     0.000833 * sin(RPD * (F + 4 * D - Mp     ))) +
+    (     0.000781 * sin(RPD * (Mp - 3 * F         ))) +
+    (     0.000670 * sin(RPD * (F + 4 * D - 2 * Mp ))) +
+    (     0.000606 * sin(RPD * (2 * D - 3 * F      ))) +
+    (     0.000597 * sin(RPD * (2 * D + 2 * Mp - F ))) +
+    (e *  0.000492 * sin(RPD * (2 * D + Mp - M - F ))) +
+    (     0.000450 * sin(RPD * (2 * Mp - F - 2 * D ))) +
+    (     0.000439 * sin(RPD * (3 * Mp - F         ))) +
+    (     0.000423 * sin(RPD * (F + 2 * D + 2 * Mp ))) +
+    (     0.000422 * sin(RPD * (2 * D - F - 3 * Mp ))) +
+    (e * -0.000367 * sin(RPD * (F + F + 2 * D - Mp ))) +
+    (e * -0.000353 * sin(RPD * (M + F + 2 * D      ))) +
+    (     0.000331 * sin(RPD * (F + 4 * D          ))) +
+    (e *  0.000317 * sin(RPD * (2 * D + F - M + Mp ))) +
+    (e2*  0.000306 * sin(RPD * (2 * D - 2 * M - F  ))) +
+    (    -0.000283 * sin(RPD * (Mp + 3 * F         )))
     omega1 <- 0.0004664 * cos(RPD * Omega)
     omega2 <- 0.0000754 * cos(RPD * (Omega + 275.05 - 2.30 * T))
     beta <- B * (1 - omega1 - omega2)
     pi <- 0.950724 +
-    (     0.051818 * cos(RPD * (Mp            ))) +
-    (     0.009531 * cos(RPD * (2 * D - Mp    ))) +
-    (     0.007843 * cos(RPD * (2 * D         ))) +
-    (     0.002824 * cos(RPD * (2 * Mp        ))) +
-    (     0.000857 * cos(RPD * (2 * D + Mp    ))) +
-    (e *  0.000533 * cos(RPD * (2 * D - M     )))
+    (     0.051818 * cos(RPD * (Mp                ))) +
+    (     0.009531 * cos(RPD * (2 * D - Mp        ))) +
+    (     0.007843 * cos(RPD * (2 * D             ))) +
+    (     0.002824 * cos(RPD * (2 * Mp            ))) +
+    (     0.000857 * cos(RPD * (2 * D + Mp        ))) +
+    (e *  0.000533 * cos(RPD * (2 * D - M         ))) +
+    (e *  0.000401 * cos(RPD * (2 * D - M - Mp    ))) +
+    (e *  0.000320 * cos(RPD * (Mp - M            ))) +
+    (    -0.000271 * cos(RPD * (D                 ))) + #OK above
+    (e * -0.000264 * cos(RPD * (M + Mp            ))) +
+    (    -0.000198 * cos(RPD * (2 * F - Mp        ))) +
+    (     0.000173 * cos(RPD * (3 * Mp            ))) +
+    (     0.000167 * cos(RPD * (4 * D - Mp        ))) +
+    (e * -0.000111 * cos(RPD * (M                 ))) +
+    (     0.000103 * cos(RPD * (4 * D - 2 * Mp    ))) +
+    (    -0.000084 * cos(RPD * (2 * Mp - 2 * D    ))) +
+    (e * -0.000083 * cos(RPD * (2 * D + M         ))) +
+    (     0.000079 * cos(RPD * (2 * D + 2 * Mp    ))) + # ok above
+    (     0.000072 * cos(RPD * (4 * D             ))) +
+    (e *  0.000064 * cos(RPD * (2 * D - M + Mp    ))) +
+    (e * -0.000063 * cos(RPD * (2 * D + M - Mp    ))) +
+    (e *  0.000041 * cos(RPD * (M + D             ))) +
+    (e *  0.000035 * cos(RPD * (2 * Mp - M        ))) +
+    (    -0.000033 * cos(RPD * (3 * Mp - 2 * D    ))) +
+    (    -0.000030 * cos(RPD * (Mp + D            ))) +
+    (    -0.000029 * cos(RPD * (2 * F - 2 * D     ))) +
+    (e * -0.000029 * cos(RPD * (2 * Mp + M        ))) +
+    (e2*  0.000026 * cos(RPD * (2 * D - 2 * M     ))) +
+    (    -0.000023 * cos(RPD * (2 * F - 2 * D + Mp))) +
+    (e *  0.000019 * cos(RPD * (4 * D - M - Mp    )))
     ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
-    ec <- eclipticalToEquatorial(lambda, beta, epsilon) # FIXME: maybe give "t" here instead of epsilon?
+    ec <- eclipticalToEquatorial(lambda, beta, epsilon)
     lh <- equatorialToLocalHorizontal(ec$rightAscension, ec$declination, t, latitude, longitude)
     ## Illuminated fraction, [1] chapter 31 (second, approximate, formula)
     D <- D %% 360 # need this; could have done it earlier, actually
@@ -170,9 +268,11 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     0.2114 * sin(RPD * 2 * Mp) -
     0.112 * sin(RPD * D)
     illuminatedFraction <- (1 + cos(RPD * illfr)) / 2
-    rval <- data.frame(t=t, azimuth=lh$azimuth, altitude=lh$altitude, diameter=pi, distance=6378.14 / sin(RPD * pi),
+    rval <- data.frame(t=t,
+                       azimuth=lh$azimuth, altitude=lh$altitude,
                        rightAscension=ec$rightAscension, declination=ec$declination,
-                       lambda=lambda %% 360, beta=beta, pi=pi, obliquity=epsilon,
+                       lambda=lambda %% 360, beta=beta,
+                       diameter=pi, distance=6378.14 / sin(RPD * pi),
                        illuminatedFraction=illuminatedFraction)
     rval
 }
