@@ -21,37 +21,40 @@
     time as formulated in Meeus [1982] chapter 7, which in turn uses Julian day
     computed according to as formulae in Meeus [1982] chapter 3.  Using these
     quantities, formulae in Meeus [1982] chapter 30 are then used to compute
-    geocentric longitude (\eqn{lambda}{lambda}, in the Meeus' notation),
-    geocentric latitude (\eqn{beta}{beta}), and parallax (\eqn{pi}{pi}.  Then
-    the obliquity of the ecliptic (\eqn{epsilon}{epsilon}) is computed with
-    Meeus [1982] equation 18.4.  Equatorial coordinates (right ascension and
-    declination) are computed with equations 8.3 and 8.4 from Meeus [1982],
-    using \code{\link{eclipticalToEquatorial}}.  The hour angle (\eqn{H}{H}) is
+    geocentric longitude (\eqn{lambda}{lambda}, in the Meeus notation),
+    geocentric latitude (\eqn{beta}{beta}), and parallax.  Then the
+    \code{obliquity} of the ecliptic is computed with Meeus [1982] equation
+    18.4.  Equatorial coordinates (right ascension and declination) are
+    computed with equations 8.3 and 8.4 from Meeus [1982], using
+    \code{\link{eclipticalToEquatorial}}.  The hour angle (\eqn{H}{H}) is
     computed using the un-numbered equation preceeding Meeus's [1982] equation
     8.1.  Finally, Meeus [1982] equations 8.5 and 8.6 are used to calculate the
     local azimuth and altitude of the moon, using
     \code{\link{equatorialToLocalHorizontal}}.}
 
-\section{Note regarding alternate formulations}{Formulae provide by Meeus
-    [1982] are used for all calculations.  Similar formulae appear in Meeus
-    [1991], although there are differences in the 5th or 6th digit in most of
-    the coefficients in the formulae involved.  For example, the formula for
+\section{Alternate formulations}{Formulae provide by Meeus [1982] are used for
+    all calculations here.  Meeus [1991] provides formulae that are similar,
+    but that differ in the 5th or 6th digits.  For example, the formula for
     ephermeris time in Meeus [1991] differs from that in Meeus [1992] at the
     5th digit, and almost all of the approximately 200 coefficients in the
     revelevant formulae also differ in the 5th and 6th digits.  Discussion of
     the changing formulations is best left to members of the astronomical
-    community.  For the present purpose, it may be sufficient to note that the
-    Meeus [1982] provides several sample calculalations, and that the present
-    code matches his results to 4 digits or more (see the test suite, in the
-    source code).}
+    community.  For the present purpose, it may be sufficient to note that
+    \code{moonAngle}, based on Meeus [1982], reproduces the values provided in
+    example 45.a of Meeus [1991] to 4 significant digits.}
 
-\value{A data frame containing the following quantities
+\value{A data frame containing the following.
+    \item{t}{time}
     \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360}
     \item{altitude}{moon altitude, in degrees from -90 to 90}
-    \item{diameter}{lunar diameter, in degrees.  (FIXME: using parallax here,
-        which is unlikely to be right!)}
-    \item{distance}{distance to moon, in kilometers)}
-    \item{illuminatedFraction}{fraction of moon that is illuminated}
+    \item{rightAscension}{right ascension, in degrees}
+    \item{declination}{declination, in degrees}
+    \item{lambda}{geocentric longitude, in degrees}
+    \item{beta}{geocentric latitude, in degrees}
+    \item{diameter}{lunar diameter, in degrees.}
+    \item{distance}{earth-moon distance, in kilometers)}
+    \item{illuminatedFraction}{fraction of moon's visible disk that is
+        illuminated}
 }
 
 \examples{

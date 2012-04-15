@@ -224,13 +224,36 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     omega2 <- 0.0000754 * cos(RPD * (Omega + 275.05 - 2.30 * T))
     beta <- B * (1 - omega1 - omega2)
     pi <- 0.950724 +
-    (     0.051818 * cos(RPD * (Mp            ))) +
-    (     0.009531 * cos(RPD * (2 * D - Mp    ))) +
-    (     0.007843 * cos(RPD * (2 * D         ))) +
-    (     0.002824 * cos(RPD * (2 * Mp        ))) +
-    (     0.000857 * cos(RPD * (2 * D + Mp    ))) +
-    (e *  0.000533 * cos(RPD * (2 * D - M     )))
-    ## FIXME: add more terms to pi
+    (     0.051818 * cos(RPD * (Mp                ))) +
+    (     0.009531 * cos(RPD * (2 * D - Mp        ))) +
+    (     0.007843 * cos(RPD * (2 * D             ))) +
+    (     0.002824 * cos(RPD * (2 * Mp            ))) +
+    (     0.000857 * cos(RPD * (2 * D + Mp        ))) +
+    (e *  0.000533 * cos(RPD * (2 * D - M         ))) + #
+    (e *  0.000401 * cos(RPD * (2 * D - M - Mp    ))) +
+    (e *  0.000320 * cos(RPD * (Mp - M            ))) +
+    (    -0.000271 * cos(RPD * (D                 ))) +
+    (e * -0.000264 * cos(RPD * (M + Mp            ))) +
+    (    -0.000198 * cos(RPD * (2 * F - Mp        ))) +
+    (     0.000173 * cos(RPD * (3 * Mp            ))) +
+    (     0.000167 * cos(RPD * (4 * D - Mp        ))) +
+    (e * -0.000111 * cos(RPD * (M                 ))) +
+    (     0.000103 * cos(RPD * (4 * D - 2 * Mp    ))) +
+    (    -0.000084 * cos(RPD * (2 * Mp - 2 * D    ))) +
+    (e * -0.000083 * cos(RPD * (2 * D + M         ))) +
+    (     0.000079 * cos(RPD * (2 * D + 2 * Mp    ))) +
+    (     0.000072 * cos(RPD * (4 * D             ))) +
+    (e *  0.000064 * cos(RPD * (2 * D - M + Mp    ))) +
+    (e * -0.000063 * cos(RPD * (2 * D + M - Mp    ))) +
+    (e *  0.000041 * cos(RPD * (M + D             ))) +
+    (e *  0.000035 * cos(RPD * (2 * Mp - M        ))) +
+    (    -0.000033 * cos(RPD * (3 * Mp - 2 * D    ))) +
+    (    -0.000030 * cos(RPD * (Mp + D            ))) +
+    (    -0.000029 * cos(RPD * (2 * F - 2 * D     ))) +
+    (e   -0.000029 * cos(RPD * (2 * Mp + M        ))) +
+    (e2*  0.000026 * cos(RPD * (2 * D - 2 * M     ))) +
+    (    -0.000023 * cos(RPD * (2 * F - 2 * D + Mp))) +
+    (e *  0.000019 * cos(RPD * (4 * D - M - Mp    )))
     ## For coordinate conversions, need epsilon (obliquity of the ecliptic) 
     ## as defined in Meuus eq 18.4, page 81.
     epsilon <- 23.452294 - 0.0130125 * T - 0.00000164 * T2 + 0.000000503 * T3
@@ -245,9 +268,11 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     0.2114 * sin(RPD * 2 * Mp) -
     0.112 * sin(RPD * D)
     illuminatedFraction <- (1 + cos(RPD * illfr)) / 2
-    rval <- data.frame(t=t, azimuth=lh$azimuth, altitude=lh$altitude, diameter=pi, distance=6378.14 / sin(RPD * pi),
+    rval <- data.frame(t=t,
+                       azimuth=lh$azimuth, altitude=lh$altitude,
                        rightAscension=ec$rightAscension, declination=ec$declination,
-                       lambda=lambda %% 360, beta=beta, pi=pi, obliquity=epsilon,
+                       lambda=lambda %% 360, beta=beta,
+                       diameter=pi, distance=6378.14 / sin(RPD * pi),
                        illuminatedFraction=illuminatedFraction)
     rval
 }
