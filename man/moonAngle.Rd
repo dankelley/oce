@@ -13,25 +13,37 @@
         value that corresponds to such a time.}
     \item{latitude}{observer latitude in degrees north}
     \item{longitude}{observer longitude in degrees east}
-    \item{useRefraction}{boolean, set to \code{TRUE} to apply a correction for atmospheric
-        refraction.  (Ignored at present.)}
-}
+    \item{useRefraction}{boolean, set to \code{TRUE} to apply a correction for
+        atmospheric refraction.  (Ignored at present.)} }
 
-\details{Based on formulae provided by Meeus [1982], chapters 6, 18, and 30.
-    (Similar formulae appear in Meeus [1991].) The first step is to compute
-    geocentric longitude, geocentric latitude, and parallax, using formulae in
-    Meeus [1982] chapter 30.  (Meeus denotes these quantities
-    \eqn{lambda}{lambda}, \eqn{beta}{beta}, and \eqn{pi}{pi}, respectively.)
-    Note that some small terms are skipped in the formulae provided by Meeus,
-    but the results match of a test case to 4 significant digits.  The next
-    step is to compute the obliquity of the ecliptic, denoted
-    \eqn{epsilon}{epsilon} in Meeus [1982] equation 18.4.  Then, equations 8.3
-    and 8.4 from Meeus [1982] are used to calculate equatorial coordinates.
-    Finally, the hour angle is computed using the un-numbered equation
-    preceeding Meeus's [1982] equation 8.1, using the observer longitude and
-    the sideral Greenwich time calculated with Meeus [1982] equation 7.2.
-    Finally, Meeus [1982] equations 8.5 and 8.6 are used to calculate the local
-    azimuth and altitude of the moon.}
+\details{The calculations are based on formulae provided by Meeus [1982],
+    primarily in chapters 6, 18, and 30.  The first step is to compute sidereal
+    time as formulated in Meeus [1982] chapter 7, which in turn uses Julian day
+    computed according to as formulae in Meeus [1982] chapter 3.  Using these
+    quantities, formulae in Meeus [1982] chapter 30 are then used to compute
+    geocentric longitude (\eqn{lambda}{lambda}, in the Meeus' notation),
+    geocentric latitude (\eqn{beta}{beta}), and parallax (\eqn{pi}{pi}.  Then
+    the obliquity of the ecliptic (\eqn{epsilon}{epsilon}) is computed with
+    Meeus [1982] equation 18.4.  Equatorial coordinates (right ascension and
+    declination) are computed with equations 8.3 and 8.4 from Meeus [1982],
+    using \code{\link{eclipticalToEquatorial}}.  The hour angle (\eqn{H}{H}) is
+    computed using the un-numbered equation preceeding Meeus's [1982] equation
+    8.1.  Finally, Meeus [1982] equations 8.5 and 8.6 are used to calculate the
+    local azimuth and altitude of the moon, using
+    \code{\link{equatorialToLocalHorizontal}}.}
+
+\section{Note regarding alternate formulations}{Formulae provide by Meeus
+    [1982] are used for all calculations.  Similar formulae appear in Meeus
+    [1991], although there are differences in the 5th or 6th digit in most of
+    the coefficients in the formulae involved.  For example, the formula for
+    ephermeris time in Meeus [1991] differs from that in Meeus [1992] at the
+    5th digit, and almost all of the approximately 200 coefficients in the
+    revelevant formulae also differ in the 5th and 6th digits.  Discussion of
+    the changing formulations is best left to members of the astronomical
+    community.  For the present purpose, it may be sufficient to note that the
+    Meeus [1982] provides several sample calculalations, and that the present
+    code matches his results to 4 digits or more (see the test suite, in the
+    source code).}
 
 \value{A data frame containing the following quantities
     \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360}
@@ -73,6 +85,6 @@ for (i in 1:3) {
 
 Meeus, Jean, 1991. Astronomical algorithms.  Willmann-Bell, Richmond VA, USA. 429 pages.}
 
-\author{Dan Kelley (based directly on formulae provided by Meeus).}
+\author{Dan Kelley, based on formulae in Meeus [1982].}
 
 \keyword{misc}

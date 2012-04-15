@@ -1,9 +1,9 @@
 ## References used in this file:
 ##
-## 1. Meeus, Jean, 1982.  Astronomical formuae for Calculators.
+## 1. Meeus, Jean, 1982.  Astronomical formulae for Calculators.
 ##    Willmann-Bell. Richmond VA, USA. 201 pages.
 ## 2. Meeus, Jean, 1991.  Astronomical algorithms.
-##    Willman-Bell, Richmond VA, USA. 429 pages.
+##    Willmann-Bell. Richmond VA, USA. 429 pages.
 
 eclipticalToEquatorial <- function(lambda, beta, epsilon)
 {
@@ -40,7 +40,7 @@ siderealTime <- function(t)
     tt$sec <- rep(0, n)
     jd <- julianDay(t)
     jd0 <- julianDay(tt)
-    T <- (jd0 - 2415020.0) / 36525      # [1] Meeus 1982 (eq 7.1)
+    T <- (jd0 - 2415020.0) / 36525      # [1] eq 7.1; FIXME: why diff from [2] eq 11.1?
     hoursLeftOver <- 24 * (jd - jd0)
     rval <- 6.6460656 + 2400.051262 * T + 0.00002581 * T * T
     rval <- rval + 1.002737908 * hoursLeftOver
