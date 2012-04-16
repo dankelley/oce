@@ -268,12 +268,14 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     0.2114 * sin(RPD * 2 * Mp) -
     0.112 * sin(RPD * D)
     illuminatedFraction <- (1 + cos(RPD * illfr)) / 2
+    phase <- T * 1236.85               # Meeus [1982] eq 32.3 page 160
     rval <- data.frame(t=t,
                        azimuth=lh$azimuth, altitude=lh$altitude,
                        rightAscension=ec$rightAscension, declination=ec$declination,
                        lambda=lambda %% 360, beta=beta,
                        diameter=pi, distance=6378.14 / sin(RPD * pi),
-                       illuminatedFraction=illuminatedFraction)
+                       illuminatedFraction=illuminatedFraction,
+                       phase=phase)
     rval
 }
 

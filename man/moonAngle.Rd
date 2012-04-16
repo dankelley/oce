@@ -61,7 +61,9 @@
     \item{distance}{earth-moon distance, in kilometers)}
     \item{illuminatedFraction}{fraction of moon's visible disk that is
         illuminated}
-
+    \item{phase}{phase of the moon, defined in equation 32.3 of Meeus [1982].
+        The fractional part of which is 0 for new moon, 1/4 for first quarter,
+        1/2 for full moon, and 3/4 for last quarter.}
     \if{html}{\figure{starCoords.png}{options: width=400px alt="Figure:
             starCoords.png"}}
 }
