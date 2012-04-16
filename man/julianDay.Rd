@@ -2,9 +2,9 @@
 
 \alias{julianDay}
 
-\title{Convert a POSIXt time to a Julian-Day number}
+\title{Convert a POSIXt time to a Julian day}
 
-\description{Convert a POSIXt time to a Julian-Day number}
+\description{Convert a POSIXt time to a Julian day}
 
 \usage{julianDay(t, year, month, day, hour, min, sec, tz="UTC")}
 
