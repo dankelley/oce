@@ -1,4 +1,5 @@
 0.8-8
+- add teos() as an interface to the TEOS-10 library
 - add moonAngle() plus several other astronomy-related functions, e.g. julianDay()
 
 0.8-7
