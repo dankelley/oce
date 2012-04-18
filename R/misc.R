@@ -407,6 +407,7 @@ matchBytes <- function(input, b1, ...)
 }
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
+                                  "conservative temperature", "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
                                   "spice",
                                   "p", "z", "distance", "heading", "pitch", "roll",
@@ -419,6 +420,9 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     if (item == "T") {
         full <- expression(paste("Temperature [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
+    } else if (item == "conservative temperature") {
+        full <- expression(paste("Conservative Temperature [", degree, "C]"))
+        abbreviated <- expression(paste(Theta, "[", degree, "C]"))
     } else if (item == "sigmaTheta") {
         full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
         abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
@@ -449,6 +453,9 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "S") {
         full <- "Salinity [PSU]"
         abbreviated <- "S [PSU]"
+    } else if (item == "absolute salinity") {
+        full <- expression(paste("Absolute Salinity [g/kg]"))
+        abbreviated <- expression(paste(S[A], " [g/kg]"))
     } else if (item == "p") {
         full <- "Pressure [dbar]"
         abbreviated <- "P [dbar]"
@@ -491,14 +498,14 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     }
     spaceNeeded <- strwidth(full, "inches")
     whichAxis <- if (axis == "x") 1 else 2
-    spaceAvailable <- abs(par("pin")[whichAxis])
+    spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
     ##cat("pin=", par('pin'), "\n")
     ##cat("spaceNeeded: in inches:", spaceNeeded, "\n")
     ##cat("whichAxis=", whichAxis, "\n")
     ##cat("spaceAvailable=", spaceAvailable, "\n")
     ##cat("fraction=", fraction, "\n")
-    if (fraction < 1.5) full else abbreviated
+    if (fraction < 1) full else abbreviated
 }
 
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))

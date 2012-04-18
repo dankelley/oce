@@ -14,6 +14,7 @@
      col.grid="lightgray",
      lty.grid="dotted",
      rho1000=FALSE,
+     teos=FALSE,
      cex=par("cex"), col=par("col"), pch=par("pch"), bg,
      col.rho="darkgray",
      cex.rho=3/4*par("cex"),
@@ -25,7 +26,7 @@
      Slim,
      Tlim,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
      lwd.rho=par("lwd"), lty.rho=par("lty"),
      add=FALSE, inset=FALSE,
      debug=getOption("oceDebug"),
@@ -37,7 +38,9 @@
       \code{cdt} object or \code{section} object.}
   \item{inSitu}{A boolean indicating whether to use in-situ temperature or (the
       default) potential temperature, calculated with reference pressure given
-      by \code{referencePressure}.}
+      by \code{referencePressure}.  This is ignored if \code{teos=TRUE}, because
+      in that case the y axis is necessarily the conservative formulation of
+      temperature.}
   \item{referencePressure}{reference pressure, to be used in calculating
       potential temperature, if \code{inSitu} is \code{FALSE}.}
   \item{rhoLevels}{Either a list of density levels for which to draw isopycnal
@@ -47,6 +50,10 @@
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}
   \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
+  \item{teos}{if TRUE, use the TEOS-10 system, with absolute salinity instead
+      of practical salinity, and conservative temperature instead of potential
+      temperature.  This will produce errors unless the TEOS library is
+      installed; see \code{\link{teos}}.}
   \item{cex}{character-expansion factor for symbols, as in \code{\link{par}("cex")}.}
   \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
   \item{bg}{optional colour to be painted under plotting area, before plotting.

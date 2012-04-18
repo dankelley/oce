@@ -1622,6 +1622,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
+                    teos=FALSE,
                     cex=par("cex"), col = par("col"), pch=par("pch"), bg,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
@@ -1631,13 +1632,12 @@ plotTS <- function (x,
                     xlab, ylab,
                     Slim, Tlim,
                     mgp=getOption("oceMgp"),
-                    mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
+                    mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
                     add=FALSE, inset=FALSE,
                     debug=getOption("oceDebug"),
                     ...)
 {
-                                        # FIXME: should check for lobo ... or maybe make as.ctd() handle that...
     oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
              "mgp=c(", paste(mgp, collapse=","), "), ", 
              "mar=c(", paste(mar, collapse=","), "), ", 
@@ -1661,11 +1661,23 @@ plotTS <- function (x,
             }
         }
     }
-    y <- if (inSitu) x@data$temperature else swTheta(x@data$salinity,
-                                                     x@data$temperature,
-                                                     x@data$pressure,
-                                                     referencePressure=referencePressure)
-    if (missing(Slim)) Slim <- range(x@data$salinity, na.rm=TRUE)
+    if (teos) {
+        Sp <- x[["salinity"]]
+        p <- x[["pressure"]]
+        t <- x[["temperature"]]
+        n <- length(Sp)
+        lon <- rep(x[["longitude"]], n) # FIXME: what if negative; what if NA or NULL?
+        lat <- rep(x[["latitude"]], n)
+        y <- teos("gsw_ct_from_t", Sp, t, p)
+        salinity <- teos("gsw_sa_from_sp", Sp, p, lon, lat)
+    } else {
+        y <- if (inSitu) x@data$temperature else swTheta(x@data$salinity,
+                                                         x@data$temperature,
+                                                         x@data$pressure,
+                                                         referencePressure=referencePressure)
+        salinity <- x[["salinity"]]
+    }
+    if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
     if (missing(Tlim)) Tlim <- range(y, na.rm=TRUE)
     if (!add) {
         omar <- par("mar")
@@ -1678,43 +1690,53 @@ plotTS <- function (x,
         }
     }
     axis.name.loc <- mgp[1]
-    if (missing(xlab))
-        xlab <- resizableLabel("S","x")
-    if (missing(ylab))
-        ylab <- if (inSitu) resizableLabel("T","y") else resizableLabel("theta", "y")
+    if (missing(xlab)) {
+        if (teos)
+            xlab <- resizableLabel("absolute salinity", "x")
+        else
+            xlab <- resizableLabel("S","x")
+    }
+    if (missing(ylab)) {
+        if (teos)
+            ylab <- resizableLabel("conservative temperature", "y")
+        else
+            ylab <- if (inSitu) resizableLabel("T","y") else resizableLabel("theta", "y")
+    }
     if (useSmoothScatter) {
-        smoothScatter(x@data$salinity, y,
+        smoothScatter(salinity, y,
                       xlab = xlab, ylab=ylab,
-                      xaxs = if (min(x@data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
+                      xaxs = if (min(salinity, na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
                                         #cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
                       xlim=Slim, ylim=Tlim,
                       ...)
     } else {
         if (add) {
-            points(x@data$salinity, y, cex=cex, pch=pch, col=col)
+            points(salinity, y, cex=cex, pch=pch, col=col)
         } else {
             plot(Slim, Tlim,
                  xlab = xlab, ylab=ylab,
-                 xaxs = if (min(x@data$salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
+                 xaxs = if (min(salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
                  cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
                  ...)
             if (!missing(bg)) {
                 usr <- par('usr')
                 rect(usr[1], usr[3], usr[2], usr[4], col=bg)
             }
-            points(x@data$salinity, y, cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"), ...)
+            points(salinity, y, cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"), ...)
         }
         if (connectPoints) {
             lwd <- list(...)["lwd"]
             if (!is.null(lwd))
-                lines(x@data$salinity, y, col=col, lwd=lwd)
+                lines(salinity, y, col=col, lwd=lwd)
             else
-                lines(x@data$salinity, y, col=col)
+                lines(salinity, y, col=col)
         }
     }
     ## grid, isopycnals, then freezing-point line
     if (grid)
         grid(col=col.grid, lty=lty.grid)
+    if (teos)
+        warning("isopycnals are wrong")
     drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000,
                    cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
