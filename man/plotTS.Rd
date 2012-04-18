@@ -26,7 +26,7 @@
      Slim,
      Tlim,
      mgp=getOption("oceMgp"),
-     mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
+     mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
      lwd.rho=par("lwd"), lty.rho=par("lty"),
      add=FALSE, inset=FALSE,
      debug=getOption("oceDebug"),

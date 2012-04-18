@@ -1632,7 +1632,7 @@ plotTS <- function (x,
                     xlab, ylab,
                     Slim, Tlim,
                     mgp=getOption("oceMgp"),
-                    mar=c(mgp[1]+1,mgp[1]+1,mgp[1],mgp[1]),
+                    mar=c(mgp[1]+1.5,mgp[1]+1.5,mgp[1],mgp[1]),
                     lwd.rho=par("lwd"), lty.rho=par("lty"),
                     add=FALSE, inset=FALSE,
                     debug=getOption("oceDebug"),
@@ -1692,13 +1692,13 @@ plotTS <- function (x,
     axis.name.loc <- mgp[1]
     if (missing(xlab)) {
         if (teos)
-            xlab <- "Absolute Salinity [g/kg]"
+            xlab <- resizableLabel("absolute salinity", "x")
         else
             xlab <- resizableLabel("S","x")
     }
     if (missing(ylab)) {
         if (teos)
-            ylab <- expression(paste("Conservative temperature [", degree, "C]"))
+            ylab <- resizableLabel("conservative temperature", "y")
         else
             ylab <- if (inSitu) resizableLabel("T","y") else resizableLabel("theta", "y")
     }
