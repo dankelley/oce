@@ -15,6 +15,7 @@
                   oceAbbreviateTimeRange = TRUE,
                   oceTimeFormat = "%Y-%m-%d %H:%M:%S",
                   ##oceFlag1 = 1,
+                  teos=FALSE,
                   oceDebug = 0)
     toset <- !(names(opOce) %in% names(op))
     if (any(toset))

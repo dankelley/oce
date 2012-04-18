@@ -1622,7 +1622,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    teos=FALSE,
+                    teos=getOption("teos"),
                     cex=par("cex"), col = par("col"), pch=par("pch"), bg,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
@@ -1717,6 +1717,7 @@ plotTS <- function (x,
                  xlab = xlab, ylab=ylab,
                  xaxs = if (min(salinity,na.rm=TRUE)==0) "i" else "r", # avoid plotting S<0
                  cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"),
+                 type="n",
                  ...)
             if (!missing(bg)) {
                 usr <- par('usr')
@@ -1735,26 +1736,32 @@ plotTS <- function (x,
     ## grid, isopycnals, then freezing-point line
     if (grid)
         grid(col=col.grid, lty=lty.grid)
-    if (teos)
-        warning("isopycnals are wrong")
     drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000,
-                   cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
+                   teos=teos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, swTFreeze(salinity=Sr, pressure=0), col="darkblue")
     oceDebug(debug, "\b} # plotTS(...)\n", sep="")
 }
 
-drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
+drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teos=getOption("teos"), cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     usr <- par("usr")
     SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
     SAxisMax <- usr[2]
     TAxisMin <- usr[3]
     TAxisMax <- usr[4]
-    rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
-                          c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
-                          rep(0, 4))
+    if (teos) {
+        rhoCorners <- teos("gsw_pot_rho_t_exact",
+                           c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
+                           c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
+                           rep(0, 4))
+        warning("using gsw_pot_rho_t_exact() ... FIXME: check that this is right\n")
+    } else {
+        rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
+                              c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
+                              rep(0, 4))
+    }
     rhoMin <- min(rhoCorners, na.rm=TRUE)
     rhoMax <- max(rhoCorners, na.rm=TRUE)
     if (length(rhoLevels) == 1) {
@@ -1770,7 +1777,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, cex
     cex.par <- par("cex")               # need to scale text() differently than mtext()
     for (rho in rhoList) {
         rhoLabel <- if (rho1000) 1000+rho else rho
-        Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn))
+        Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), teos=teos) # FIXME: use teos here
         ok <- !is.na(Sline) # crazy T can give crazy S
         Sok <- Sline[ok]
         Tok <- Tline[ok]

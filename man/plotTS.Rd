@@ -14,7 +14,7 @@
      col.grid="lightgray",
      lty.grid="dotted",
      rho1000=FALSE,
-     teos=FALSE,
+     teos=getOption("teos"),
      cex=par("cex"), col=par("col"), pch=par("pch"), bg,
      col.rho="darkgray",
      cex.rho=3/4*par("cex"),
@@ -52,8 +52,8 @@
   \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
   \item{teos}{if TRUE, use the TEOS-10 system, with absolute salinity instead
       of practical salinity, and conservative temperature instead of potential
-      temperature.  This will produce errors unless the TEOS library is
-      installed; see \code{\link{teos}}.}
+      temperature.  This will produce errors unless the TEOS library has
+      been installed; see \code{\link{teos}}.}
   \item{cex}{character-expansion factor for symbols, as in \code{\link{par}("cex")}.}
   \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
   \item{bg}{optional colour to be painted under plotting area, before plotting.
