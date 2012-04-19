@@ -9,7 +9,11 @@
 \usage{teos(name, a1, a2, a3, a4, a5, a6, lib='/usr/local/lib/libgswteos-10.so')}
 
 \arguments{
-  \item{name}{the name of a TEOS-10 function}
+  \item{name}{the name of a TEOS-10 function.  Note that the function names in
+      the TEOS-10 documentation are in mixed case, but those in the actual
+      TEOS-10 library are \emph{lower case}.  Thus, for example, the function
+      to computer absolute salinity must be named as \code{"gsw_sa_from_sp"},
+      not \code{"gsw_SA_from_SP"}, as the documentation specifies.}
   \item{a1}{the first argument to the TEOS-10 function}
   \item{a2}{the second argument to the TEOS-10 function}
   \item{a3}{the third argument to the TEOS-10 function}

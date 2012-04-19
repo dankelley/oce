@@ -1,6 +1,6 @@
 teos <- function(name, a1, a2, a3, a4, a5, a6, lib='/usr/local/lib/libgswteos-10.so') # FIXME: what's max arg?
 {
-    if (missing(name)) stop("must give function name, e.g. \"gsw_sa_from_sp\" to calculate absolute salinity from practical salinity")
+    if (missing(name)) stop("a function name must be given, and it must be in lower case letters, e.g. \"gsw_sa_from_sp\"")
     if (missing(a1)) stop("must provide a1")
     ## FIXME: later, can count when the missing list starts, and use that to figure out which C function to call
     if (missing(a2)) stop("must provide a2")
