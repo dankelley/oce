@@ -48,6 +48,7 @@ swSCTp <- function(conductivity, temperature, pressure)
 
 swSTrho <- function(temperature, density, pressure, teos=getOption("teos")) # FIXME: should be vectorized for speed
 {
+    cat("swSTrho(...teos=", teos, ")\n")
     dim <- dim(temperature)
     nt <- length(temperature)
     nrho <- length(density)

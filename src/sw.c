@@ -251,30 +251,41 @@ void sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
    Pierre Flament.
 */
 static double sig_0, p_ref, S, T;
-void sw_strho(double *pT, double *prho, double *pp, double *res, int *teos)
+void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
 {
+  Rprintf("%s:%d\n",__FILE__,__LINE__);
   T = *pT;
   sig_0 = *prho;			/* target density */
   p_ref = *pp;				/* target pressure */
   *res = NA_REAL;
   if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
     return;
-  strho_bisection_search(&S, 0.0001, 200.0, 0.00001, 0.00001, *teos);
+  Rprintf("%s:%d about to call strho_bisection_search()...\n",__FILE__,__LINE__);
+  strho_bisection_search(&S, 0.0001, 50.0, 0.00001, 0.00001, *teos);
+  Rprintf("%s:%d ... done with call to strho_bisection_search()\n",__FILE__,__LINE__);
   Rprintf("sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d)\n", *pT, *prho, *pp, S, *teos);
   *res = S;
 }
 
 double strho_f(double x, int teos)
 {
+  Rprintf("%s:%d  strho_f(x=%f, teos=%d) ... NB: S=%f T=%f p_ref=%f\n",
+      __FILE__, __LINE__, x, teos,&S,&T,&p_ref);
   extern double p_ref, sig_0;
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
   double this_rho;
   int n=1;
-  if (teos)
-    error("no teos yet");
-  else
+  if (teos) {
+    //Rprintf("%s:%d\n",__FILE__, __LINE__);
+    char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
+    char *fcn = "gsw_pot_rho_t_exact";
+    gsw3a(&lib, &fcn, &n, &S, &T, &p_ref, &this_rho);
+    Rprintf("%s:%d gsw3a returned %f\n",__FILE__, __LINE__,this_rho);
+  } else {
     sw_rho(&n, &x, &T, &p_ref, &this_rho);
+  }
   /* printf(" f returning %f\n", this_rho-1000.0-sig_0); */
+  Rprintf(" %s:%d returning %f\n", __FILE__, __LINE__, this_rho - 1000.0 - sig_0);
   return (this_rho - 1000.0 - sig_0);
 }
 
@@ -299,7 +310,9 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
     return 0;
   }
   /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
+  Rprintf("%s:%d about to loop\n",__FILE__,__LINE__);
   while (fabs(g = strho_f (*x = (x1 + x2) / 2.0, teos=teos)) > ftol || fabs (x1 - x2) > xresolution) {
+    Rprintf("%s:%d in loop; *x=%f\n",__FILE__,__LINE__,*x);
     /* printf("in bis loop x=%f   g=%f   g1=%f\n",*x,g,g1); */
     if (g1 * g < 0) { /* root is nearer x1 so move x2 to x */
       x2 = *x;
