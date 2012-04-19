@@ -17,6 +17,19 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
+              } else if (i == "absolute salinity") {
+                  Sp <- x@data$salinity
+                  t <- x@data$temperature
+                  p <- x@data$pressure
+                  n <- length(Sp)
+                  lon <- rep(x@metadata$longitude, n) # FIXME: what if negative; what if NA or NULL?
+                  lat <- rep(x@metadata$latitude, n)
+                  teos("gsw_sa_from_sp", Sp, p, lon, lat)
+              } else if (i == "conservative temperature") {
+                  Sp <- x@data$salinity
+                  t <- x@data$temperature
+                  p <- x@data$pressure
+                  teos("gsw_ct_from_t", Sp, t, p)
               } else {
                   ## I use 'as' because I could not figure out callNextMethod() etc
                   as(x, "oce")[[i, j, drop]]
@@ -1662,14 +1675,8 @@ plotTS <- function (x,
         }
     }
     if (teos) {
-        Sp <- x[["salinity"]]
-        p <- x[["pressure"]]
-        t <- x[["temperature"]]
-        n <- length(Sp)
-        lon <- rep(x[["longitude"]], n) # FIXME: what if negative; what if NA or NULL?
-        lat <- rep(x[["latitude"]], n)
-        y <- teos("gsw_ct_from_t", Sp, t, p)
-        salinity <- teos("gsw_sa_from_sp", Sp, p, lon, lat)
+        salinity <- x[["absolute salinity"]]
+        y <- x[["conservative temperature"]]
     } else {
         y <- if (inSitu) x@data$temperature else swTheta(x@data$salinity,
                                                          x@data$temperature,
@@ -1755,7 +1762,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teo
         rhoCorners <- teos("gsw_pot_rho_t_exact",
                            c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                            c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
-                           rep(0, 4))
+                           rep(0, 4)) - 1000
         warning("using gsw_pot_rho_t_exact() ... FIXME: check that this is right\n")
     } else {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
@@ -1800,6 +1807,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teo
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "sigmaTheta"),
+                         teos=getOption("teos"),
                          col.salinity = "darkgreen",
                          col.temperature = "red",
                          col.rho = "blue",
@@ -1824,6 +1832,7 @@ plotProfile <- function (x,
                          ...)
 {
     oceDebug(debug, "\bplotProfile(x, xtype=\"", xtype, "\", ...) {\n", sep="")
+    if (teos) warning("plotProfile not using teos, even though set to TRUE\n")
     plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, keepNA=FALSE)
     {
         if (!keepNA) {

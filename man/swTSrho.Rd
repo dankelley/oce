@@ -6,12 +6,17 @@
 
 \description{Compute \emph{in-situ} temperature, given salinity, density, and pressure.}
 
-\usage{swTSrho(salinity, density, pressure)}
+\usage{swTSrho(salinity, density, pressure, teos=getOption("teos"))}
 
 \arguments{
   \item{salinity}{\emph{in-situ} salinity [PSU]}
   \item{density}{\emph{in-situ} density or sigma value [kg/m\eqn{^3}{^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
+  \item{teos}{if TRUE, use the TEOS-10 system, with \code{salinity} being taken
+      as absolute salinity instead of practical salinity, and TEOS-10 based
+      density being used instead of UNESCO based density.  This will produce
+      errors unless the TEOS library has been installed; see
+      \code{\link{teos}}.}
 }
 
 \details{Finds the temperature that yields the given density, with the

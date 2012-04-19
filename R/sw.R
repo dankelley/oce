@@ -64,6 +64,7 @@ swSTrho <- function(temperature, density, pressure, teos=getOption("teos")) # FI
                      as.double(temperature[i]),
                      as.double(sigma),
                      as.double(pressure[i]),
+                     as.integer(teos),
                      S = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$S
     	if (i == 1) rval <- this.S else rval <- c(rval, this.S)
@@ -72,7 +73,7 @@ swSTrho <- function(temperature, density, pressure, teos=getOption("teos")) # FI
     rval
 }
 
-swTSrho <- function(salinity, density, pressure) # FIXME: should be vectorized
+swTSrho <- function(salinity, density, pressure, teos=getOption("teos")) # FIXME: should be vectorized
 {
     if (missing(salinity))
         stop("must provide salinity")
@@ -95,6 +96,7 @@ swTSrho <- function(salinity, density, pressure) # FIXME: should be vectorized
                      as.double(salinity[i]),
                      as.double(sig),
                      as.double(pressure[i]),
+                     as.integer(teos),
                      temperature = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$t
     	if (i == 1) rval <- this.T else rval <- c(rval, this.T)
