@@ -275,12 +275,13 @@ double strho_f(double x, int teos)
   if (teos) {
     //Rprintf("%s:%d\n",__FILE__, __LINE__);
     char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
-    //char *fcn = "gsw_pot_rho_t_exact";
-    char *fcn = "gsw_rho_t_exact";
+    //char *fcn = "gsw_pot_rho_t_exact"; Wrong.
+    //char *fcn = "gsw_rho_t_exact"; slow
+    char *fcn = "gsw_rho"; // stated to be used for TS diagrams on p2 of "Getting_Started.pdf"
     gsw3a(&lib, &fcn, &n, &x, &T, &p_ref, &this_rho);
     //Rprintf("       S %f    T %f    p_ref %f    this_rho %f\n", x, T, p_ref, this_rho);
   } else {
-    sw_rho(&n, &x, &T, &p_ref, &this_rho);
+    sw_rho(&n, &x, &T, &p_ref, &this_rho); // is this right? (is T theta?, and so is p_ref zero?)
   }
   //Rprintf("      strho_f(%f, teos=%d) this_rho %.4f so returning %f\n", x, teos, this_rho, this_rho - 1000.0 - sig_0);
   return (this_rho - 1000.0 - sig_0);

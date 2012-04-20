@@ -1759,11 +1759,10 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teo
     TAxisMin <- usr[3]
     TAxisMax <- usr[4]
     if (teos) {
-        rhoCorners <- teos("gsw_pot_rho_t_exact",
+        rhoCorners <- teos("gsw_rho",
                            c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                            c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
                            rep(0, 4)) - 1000
-        warning("using gsw_pot_rho_t_exact() ... FIXME: check that this is right\n")
     } else {
         rhoCorners <- swSigma(c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                               c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
