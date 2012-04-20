@@ -310,10 +310,11 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-swRho <- function(salinity, temperature=NULL, pressure=NULL)
+swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"), longitude, latitude)
 {
     if (missing(salinity))
         stop("must provide salinity")
+    eos <- match.arg(eos)
     if (inherits(salinity, "ctd")) {
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
@@ -336,13 +337,26 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL)
     }
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    rval <- .C("sw_rho",
-               as.integer(nS),
-               as.double(salinity),
-               as.double(temperature),
-               as.double(pressure),
-               value = double(nS),
-               NAOK=TRUE, PACKAGE = "oce")$value
+    if (eos == "unesco") {
+        rval <- .C("sw_rho",
+                   as.integer(nS),
+                   as.double(salinity),
+                   as.double(temperature),
+                   as.double(pressure),
+                   value = double(nS),
+                   NAOK=TRUE, PACKAGE = "oce")$value
+    } else {
+        if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
+        if (missing(longitude)) longitude <- rep(320, np)
+        sa <- teos("gsw_sa_from_sp", salinity, pressure, longitude, latitude)
+        cat("sa=", sa, "(lat=", latitude, ", lon=", longitude, ")\n")
+        ct <- teos("gsw_ct_from_t", salinity, temperature, pressure)
+        cat("ct=", ct, "\n")
+        rval <- teos("gsw_rho_t_exact", sa, temperature, pressure)
+        cat('rval=', rval, '\n')
+        rval <- teos("gsw_rho", sa, ct, pressure)
+        cat('rval=', rval, '\n')
+    }
     dim(rval) <- dim
     rval
 }
@@ -528,7 +542,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                    PACKAGE = "oce")$value
     } else {
         if (method == "unesco") {
-                                        # sometimes have just a single value
+            ## sometimes have just a single value
             npref <- length(referencePressure)
             if (npref == 1)
                 referencePressure <- rep(referencePressure[1], nS)

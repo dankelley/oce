@@ -253,25 +253,22 @@ void sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
 static double sig_0, p_ref, S, T;
 void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
 {
-  Rprintf("%s:%d\n",__FILE__,__LINE__);
   T = *pT;
   sig_0 = *prho;			/* target density */
   p_ref = *pp;				/* target pressure */
   *res = NA_REAL;
   if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
     return;
-  Rprintf("%s:%d about to call strho_bisection_search()...\n",__FILE__,__LINE__);
+  Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
   strho_bisection_search(&S, 0.0001, 50.0, 0.00001, 0.00001, *teos);
-  Rprintf("%s:%d ... done with call to strho_bisection_search()\n",__FILE__,__LINE__);
-  Rprintf("sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d)\n", *pT, *prho, *pp, S, *teos);
+  Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
   *res = S;
 }
 
 double strho_f(double x, int teos)
 {
-  Rprintf("%s:%d  strho_f(x=%f, teos=%d) ... NB: S=%f T=%f p_ref=%f\n",
-      __FILE__, __LINE__, x, teos,&S,&T,&p_ref);
   extern double p_ref, sig_0;
+  //Rprintf("%s:%d  strho_f(x=%f, teos=%d) ... NB: S=%f T=%f p_ref=%f\n", __FILE__, __LINE__, x, teos,S,T,p_ref);
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
   double this_rho;
   int n=1;
@@ -279,13 +276,13 @@ double strho_f(double x, int teos)
     //Rprintf("%s:%d\n",__FILE__, __LINE__);
     char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
     char *fcn = "gsw_pot_rho_t_exact";
-    gsw3a(&lib, &fcn, &n, &S, &T, &p_ref, &this_rho);
-    Rprintf("%s:%d gsw3a returned %f\n",__FILE__, __LINE__,this_rho);
+    gsw3a(&lib, &fcn, &n, &x, &T, &p_ref, &this_rho);
+    Rprintf("       S %f    T %f    p_ref %f    this_rho %f\n", x, T, p_ref, this_rho);
   } else {
     sw_rho(&n, &x, &T, &p_ref, &this_rho);
   }
   /* printf(" f returning %f\n", this_rho-1000.0-sig_0); */
-  Rprintf(" %s:%d returning %f\n", __FILE__, __LINE__, this_rho - 1000.0 - sig_0);
+  Rprintf("      strho_f(%f, teos=%d) this_rho %.4f so returning %f\n", x, teos, this_rho, this_rho - 1000.0 - sig_0);
   return (this_rho - 1000.0 - sig_0);
 }
 
@@ -300,20 +297,20 @@ double strho_f(double x, int teos)
 */
 int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos)
 {
-  Rprintf("  in bisection_search(x=%.3f,  x1=%.3f,  x2=%.3f, teos=%d) ...",*x,x1,x2,teos);
+  Rprintf("  in strho_bisection_search(x=%.3f,  x1=%.3f,  x2=%.3f, teos=%d)\n",*x,x1,x2,teos);
   extern double strho_f(double x, int teos);
   double g1, g2, g;
   g1 = strho_f(x1, teos);
   g2 = strho_f(x2, teos);
   if (g1 * g2 > 0.0) {
     *x = NA_REAL;
+    Rprintf("  strho_bisection_search() returning NA early because no root is bracketed; x1=%f   g1=%f    x2=%f  g2=%f\n", x1,g1,x2,g2);
     return 0;
   }
   /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
-  Rprintf("%s:%d about to loop\n",__FILE__,__LINE__);
-  while (fabs(g = strho_f (*x = (x1 + x2) / 2.0, teos=teos)) > ftol || fabs (x1 - x2) > xresolution) {
-    Rprintf("%s:%d in loop; *x=%f\n",__FILE__,__LINE__,*x);
-    /* printf("in bis loop x=%f   g=%f   g1=%f\n",*x,g,g1); */
+  while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos=teos)) > ftol || fabs (x1 - x2) > xresolution) {
+    //Rprintf("%s:%d in loop; *x=%f\n",__FILE__,__LINE__,*x);
+    Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f\n",*x, g, g1);
     if (g1 * g < 0) { /* root is nearer x1 so move x2 to x */
       x2 = *x;
       g2 = g;
@@ -325,10 +322,11 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
     } else {	/* not bracketed BUG */
       /* printf("bs CASE 3 (not bracketed)  x1=%f  x2=%f  g1=%f  g2=%f\n",x1,x2,g1,g2);*/
       *x = NA_REAL;
+      Rprintf("  strho_bisection_search() NON BRACKET bug\n");
       return (1); /* exact solution */
     }
   }
-  Rprintf("  returning %.4f\n",*x);
+  Rprintf("  strho_bisection_search() returning %.4f\n",*x);
   return (0); 		/* converged by default */
 }
 
