@@ -1636,7 +1636,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    teos=getOption("teos"),
+                    eos=c("unesco", "teos"),
                     cex=par("cex"), col = par("col"), pch=par("pch"), bg,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
@@ -1651,10 +1651,13 @@ plotTS <- function (x,
                     debug=getOption("oceDebug"),
                     ...)
 {
+    eos <- match.arg(eos)
     oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
+             "eos=\"", eos, "\", ",
              "mgp=c(", paste(mgp, collapse=","), "), ", 
              "mar=c(", paste(mar, collapse=","), "), ", 
              "...) {\n", sep="")
+    teos <- eos == "teos"
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
             salinity <- salinity(x) # FIXME: new accessors?

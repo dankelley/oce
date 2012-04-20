@@ -15,7 +15,7 @@
      col.grid="lightgray",
      lty.grid="dotted",
      rho1000=FALSE,
-     teos=getOption("teos"),
+     eos=c("unesco", "teos"),
      cex=par("cex"), col=par("col"), pch=par("pch"), bg,
      col.rho="darkgray",
      cex.rho=3/4*par("cex"),
@@ -38,7 +38,7 @@
       \code{cdt} object or \code{section} object.}
   \item{inSitu}{A boolean indicating whether to use in-situ temperature or (the
       default) potential temperature, calculated with reference pressure given
-      by \code{referencePressure}.  This is ignored if \code{teos=TRUE}, because
+      by \code{referencePressure}.  This is ignored if \code{eos="teos"}, because
       in that case the y axis is necessarily the conservative formulation of
       temperature.}
   \item{type}{type of plot, e.g. \code{"p"} for points}
@@ -51,10 +51,11 @@
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}
   \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
-  \item{teos}{if TRUE, use the TEOS-10 system, with absolute salinity instead
-      of practical salinity, and conservative temperature instead of potential
-      temperature.  This will produce errors unless the TEOS library has
-      been installed; see \code{\link{teos}}.}
+  \item{eos}{flag to select either the UNESCO-80 equation of state or the
+      TEOS-10 equation of state.  If \code{"teos"}, then practical salinity and
+      conservative temperature are used instead of potential temperature.  This
+      will produce errors unless the TEOS library has been installed; see
+      \code{\link{teos}}.}
   \item{cex}{character-expansion factor for symbols, as in \code{\link{par}("cex")}.}
   \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
   \item{bg}{optional colour to be painted under plotting area, before plotting.
