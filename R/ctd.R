@@ -1629,6 +1629,7 @@ summary.ctd <- function(object, ...)
 
 plotTS <- function (x,
                     inSitu=FALSE,
+                    type='p',
                     referencePressure=0,
                     rhoLevels=6,
                     grid=TRUE,
@@ -1640,7 +1641,6 @@ plotTS <- function (x,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
                     rotateRhoLabels=FALSE,
-                    connectPoints=FALSE,
                     useSmoothScatter=FALSE,
                     xlab, ylab,
                     Slim, Tlim,
@@ -1718,7 +1718,10 @@ plotTS <- function (x,
                       ...)
     } else {
         if (add) {
-            points(salinity, y, cex=cex, pch=pch, col=col)
+            if (type == 'p')
+                points(salinity, y, cex=cex, pch=pch, col=col)
+            else
+                lines(salinity, y, col=col, ...)
         } else {
             plot(Slim, Tlim,
                  xlab = xlab, ylab=ylab,
@@ -1730,14 +1733,10 @@ plotTS <- function (x,
                 usr <- par('usr')
                 rect(usr[1], usr[3], usr[2], usr[4], col=bg)
             }
-            points(salinity, y, cex=cex, pch=pch, col=col, cex.axis=par("cex.axis"), ...)
-        }
-        if (connectPoints) {
-            lwd <- list(...)["lwd"]
-            if (!is.null(lwd))
-                lines(salinity, y, col=col, lwd=lwd)
+            if (type == 'p')
+                points(salinity, y, cex=cex, pch=pch, col=col, ...)
             else
-                lines(salinity, y, col=col)
+                lines(salinity, y, col=col, ...)
         }
     }
     ## grid, isopycnals, then freezing-point line

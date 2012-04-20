@@ -8,6 +8,7 @@
 
 \usage{plotTS(x,
      inSitu=FALSE,
+     type="p",
      referencePressure=0,
      rhoLevels=6,
      grid=TRUE,
@@ -19,7 +20,6 @@
      col.rho="darkgray",
      cex.rho=3/4*par("cex"),
      rotateRhoLabels=FALSE,
-     connectPoints=FALSE,
      useSmoothScatter=FALSE,
      xlab,
      ylab,
@@ -41,6 +41,7 @@
       by \code{referencePressure}.  This is ignored if \code{teos=TRUE}, because
       in that case the y axis is necessarily the conservative formulation of
       temperature.}
+  \item{type}{type of plot, e.g. \code{"p"} for points}
   \item{referencePressure}{reference pressure, to be used in calculating
       potential temperature, if \code{inSitu} is \code{FALSE}.}
   \item{rhoLevels}{Either a list of density levels for which to draw isopycnal
@@ -62,7 +63,6 @@
   \item{col.rho}{colour for isopycnal lines.}
   \item{cex.rho}{size of isopycnal labels.}
   \item{rotateRhoLabels}{if TRUE, labels in right-hand margin are written vertically}
-  \item{connectPoints}{if TRUE, the points are connected with line segments, in sequence}
   \item{useSmoothScatter}{if TRUE, use \code{\link{smoothScatter}} to plot the points.}
   \item{xlab}{optional label for the x axis, with default "Salinity [PSU]".}
   \item{ylab}{optional label for the y axis, with default "Temperature [C]".}
@@ -73,11 +73,8 @@
     tighter than the R default, in order to use more space for the data
     and less for the axes.}
   \item{mar}{value to be used with \code{\link{par}("mar")}.}
-  \item{lwd.rho}{line width for density lines.  If \code{connectPoints=TRUE},
-      then the line connecting points may be controlled by including a
-      \code{lwd} value in the optional arguments.}
-  \item{lty.rho}{line type for density lines.  (See the note about
-      \code{connectPoints} for \code{lwd.rho}.)},
+  \item{lwd.rho}{line width for density lines.}
+  \item{lty.rho}{line type for density lines.}
   \item{add}{a flag that controls whether to add to an existing plot.  (It
       makes sense to use \code{add=TRUE} in the \code{panel} argument of a
       \code{\link{coplot}}, for example.)}

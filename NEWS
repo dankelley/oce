@@ -1,6 +1,5 @@
 0.8-8
-- plotTS(): add argument teos
-- add teos() as an interface to the TEOS-10 library
+- support the TEOS-10 library, via teos() and argument 'eos' to various functions
 - add moonAngle() plus several other astronomy-related functions, e.g. julianDay()
 
 0.8-7
