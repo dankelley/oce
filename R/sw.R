@@ -48,7 +48,7 @@ swSCTp <- function(conductivity, temperature, pressure)
 
 swSTrho <- function(temperature, density, pressure, teos=getOption("teos")) # FIXME: should be vectorized for speed
 {
-    cat("swSTrho(...teos=", teos, ")\n")
+    ##cat("swSTrho(...teos=", teos, ")\n")
     dim <- dim(temperature)
     nt <- length(temperature)
     nrho <- length(density)
@@ -349,13 +349,13 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "te
         if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
         if (missing(longitude)) longitude <- rep(320, np)
         sa <- teos("gsw_sa_from_sp", salinity, pressure, longitude, latitude)
-        cat("sa=", sa, "(lat=", latitude, ", lon=", longitude, ")\n")
+        ##cat("sa=", sa, "(lat=", latitude, ", lon=", longitude, ")\n")
         ct <- teos("gsw_ct_from_t", salinity, temperature, pressure)
-        cat("ct=", ct, "\n")
+        ##cat("ct=", ct, "\n")
         rval <- teos("gsw_rho_t_exact", sa, temperature, pressure)
-        cat('rval=', rval, '\n')
+        ##cat('rval=', rval, '\n')
         rval <- teos("gsw_rho", sa, ct, pressure)
-        cat('rval=', rval, '\n')
+        ##cat('rval=', rval, '\n')
     }
     dim(rval) <- dim
     rval

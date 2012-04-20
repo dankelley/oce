@@ -6,10 +6,10 @@
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"), latitude, longitude}
+\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"), longitude, latitude)}
 
 \arguments{
-  \item{salinity}{either salinity [PSU] (in which case
+  \item{salinity}{either salinity (in which case
     \code{temperature} and \code{pressure} must be provided) \strong{or}
     a \code{ctd} object (in which case \code{salinity},
     \code{temperature} and \code{pressure} are determined from the
@@ -18,8 +18,8 @@
   \item{pressure}{pressure [dbar]}
   \item{eos}{equation of state to use, either \code{unesco} for the UNESCO
       formulation [1,2], or \code{teos} for the TEOS-10 formulation [3].}
-  \item{latitude}{latitude of observation (only used if \code{eos="teos"}).}
   \item{longitude}{longitude of observation (only used if \code{eos="teos"}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="teos"}).}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,

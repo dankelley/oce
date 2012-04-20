@@ -23,7 +23,7 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
         //Rprintf("%s:%d in loop i=%d, a1[i]=%f, a2[i]=%f a3[i]=%f\n",__FILE__,__LINE__,i,a1[i],a2[i],a3[i]);
         rval[i] = (*f3)(a1[i], a2[i], a3[i]);
     }
-    Rprintf("      gsw3a(lib, '%s', n=%d, a1=%f a2=%f a3=%f  RETURNING %f\n", *name, *n, *a1, *a2, *a3, rval[0]);
+    //Rprintf("      gsw3a(lib, '%s', n=%d, a1=%f a2=%f a3=%f  RETURNING %f\n", *name, *n, *a1, *a2, *a3, rval[0]);
     dlclose(handle);
 }
 
