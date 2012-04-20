@@ -275,7 +275,8 @@ double strho_f(double x, int teos)
   if (teos) {
     //Rprintf("%s:%d\n",__FILE__, __LINE__);
     char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
-    char *fcn = "gsw_pot_rho_t_exact";
+    //char *fcn = "gsw_pot_rho_t_exact";
+    char *fcn = "gsw_rho_t_exact";
     gsw3a(&lib, &fcn, &n, &x, &T, &p_ref, &this_rho);
     //Rprintf("       S %f    T %f    p_ref %f    this_rho %f\n", x, T, p_ref, this_rho);
   } else {

@@ -57,12 +57,10 @@ swSTrho <- function(temperature, density, pressure, teos=getOption("teos")) # FI
         stop("lengths of temperature and density must agree, but they are ", nt, " and ", nrho, ", respectively")
     if (nt != np)
         stop("lengths of temperature and p arrays must agree, but they are ", nt, " and ", np, ", respectively")
-    if (teos)
-        warning("swSTrho() should use TEOS-10, but it is not (yet) doing so\n")
     for (i in 1:nt) {                   # FIXME: avoid loops
         sigma <- ifelse(density > 500, density - 1000, density)
     	this.S <- .C("sw_strho",
-                     as.double(temperature[i]),
+                     as.double(temperature[i]), # FIXME: confusion on "p" here; and is temp theta??
                      as.double(sigma),
                      as.double(pressure[i]),
                      as.integer(teos),
