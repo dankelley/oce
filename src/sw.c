@@ -260,7 +260,12 @@ void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
   if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
     return;
   //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
-  strho_bisection_search(&S, 0.0001, 50.0, 0.00001, 0.00001, *teos);
+  // Note regarding next two lines: every bisection reduces the x
+  // range by a factor of two, so it's not too expensive to ask for
+  // tight resolution.
+  double xresolution = 1e-3; // 3 fractional digits in salinity, for < 1% of typical axis axis interval
+  double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
+  strho_bisection_search(&S, 0.01, 50.0, xresolution, ftol, *teos);
   //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
   *res = S;
 }
@@ -278,6 +283,11 @@ double strho_f(double x, int teos)
     //char *fcn = "gsw_pot_rho_t_exact"; Wrong.
     //char *fcn = "gsw_rho_t_exact"; slow
     char *fcn = "gsw_rho"; // stated to be used for TS diagrams on p2 of "Getting_Started.pdf"
+    // FIXME: if this proves to be too slow, perhaps should do the
+    // dlopen() here, not in gsw3a.  Actually, perhaps should do the
+    // dlopen() just once, and store the handle globally across all C
+    // code, closing it when R quits ... if there's a way to know
+    // that and if the system really needs it.
     gsw3a(&lib, &fcn, &n, &x, &T, &p_ref, &this_rho);
     //Rprintf("       S %f    T %f    p_ref %f    this_rho %f\n", x, T, p_ref, this_rho);
   } else {
@@ -287,14 +297,13 @@ double strho_f(double x, int teos)
   return (this_rho - 1000.0 - sig_0);
 }
 
-/* bisection rootsolver
-   SYNTAX
-   int bis(double *x,double x1,double x2,double eps,double eta);
-   DESCRIPTION: Searches for a root of f(x) over the interval [x1,x2].
-   ftol = maximum allowed error in f(x)
-   xresolution = maximum size of final interval bracketing  root
-   RETURN VALUE
-   0 if root found to within tolerance; 1 otherwise
+/* find roots of f(x)
+ * ARGS: *x
+ *        x1 and x2 bracket the root
+ *        xresolution = error allowed in x
+ *        ftol = tolerance in f(x)
+ * DESCRIPTION: Searches for a root of f(x) over the interval [x1,x2].
+ * RETURN VALUE 0 if root found to within tolerance; 1 otherwise
 */
 int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos)
 {
@@ -531,7 +540,7 @@ double tsrho_f(double x, int teos)
 */
 int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos)
 {
-  Rprintf("in bisection_search(x=%f,  x1=%f,  x2=%f, xresolution=%f, ftol=%f, teos=%d)\n",*x,x1,x2,xresolution,ftol,teos);
+  //Rprintf("in bisection_search(x=%f,  x1=%f,  x2=%f, xresolution=%f, ftol=%f, teos=%d)\n",*x,x1,x2,xresolution,ftol,teos);
   double tsrho_f(double x, int teos);
   double g1, g2, g;
   g1 = tsrho_f(x1, teos);

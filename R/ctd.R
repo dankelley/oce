@@ -1778,7 +1778,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teo
     } else {
         rhoList <- rhoLevels
     }
-    Tn <- 300
+    Tn <- 100
     Tline <- seq(TAxisMin, TAxisMax, length.out=Tn)
     cex.par <- par("cex")               # need to scale text() differently than mtext()
     for (rho in rhoList) {
@@ -1802,8 +1802,6 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teo
                         mtext(rhoLabel, side=3, at=Sline[Tn], line=0.1, cex=cex, col=col)
                 }
             }
-        } else {
-            cat("the isopycnal ", rho, " is not on the graph\n")
         }
     }
 }
