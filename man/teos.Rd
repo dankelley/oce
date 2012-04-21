@@ -92,6 +92,11 @@ teos("gsw_rho", 35.7, 20, 300)
     [3] A programming interface to the matlab version of the TEOS library is
     provided at \url{http://www.teos-10.org/pubs/gsw/html/gsw_contents.html}.}
 
+\seealso{\code{\link{swAbsoluteSalinity}} may be used to compute absolute
+    salinity, and \code{\link{swConservativeTemperature}} may be used to
+    compute conservative temperature.  These values are used by
+    \code{\link{plotTS}} if the \code{eos} argument is set to \code{"teos"}.}
+
 \author{Dan Kelley}
 
 \keyword{misc}
