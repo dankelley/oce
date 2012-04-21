@@ -1,17 +1,37 @@
 // R CMD SHLIB dlsym2.c
 // R --no-save < dlsym.R
+#include <string.h>
 #include <dlfcn.h>
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
 static int first_teos_call = 1;
 static void *teos_handle = NULL;
+
+char *libteosp;
+// system("R CMD SHLIB sw.c")
+// .C("set_libteos", "dan")
+void set_libteos(char **lib)
+{
+  //Rprintf("set_libteos()\n");
+  //Rprintf("lib='%s' (length %d)\n", *lib, strlen(*lib));
+  libteosp = (char *)malloc(sizeof(char)*strlen(*lib));
+  strcpy(libteosp, *lib);
+  //Rprintf(" assigned '%s'\n",libteosp);
+}
+char *get_libteos()
+{
+    return(libteosp);
+}
+
+
 void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *rval)
 {
     if (first_teos_call) {
         teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
         first_teos_call = 0;
     }
+    //Rprintf("FYI libteos '%s'\n", libteosp);
     if (!teos_handle)
         error("cannot open TEOS library %s; error is: %s", *lib, dlerror());
     //Rprintf("%s:%d about to do try to find dlsym(handle, \"%s\"\n", __FILE__, __LINE__, *name);

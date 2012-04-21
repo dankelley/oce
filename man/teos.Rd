@@ -6,7 +6,7 @@
 
 \description{Interface to TEOS-10 library}
 
-\usage{teos(name, a1, a2, a3, a4, a5, a6, lib='/usr/local/lib/libgswteos-10.so')}
+\usage{teos(name, a1, a2, a3, a4, a5, a6, lib=getOption("libteos"))}
 
 \arguments{
   \item{name}{the name of a TEOS-10 function.  Note that the function names in
@@ -38,6 +38,12 @@ unzip gsw_c_v3_0.zip
 cd gsw-3.0
 make library
 sudo mv libgswteos-10.so /usr/local/lib
+}
+    If the library is installed elsewhere ("/opt/lib/libgswteos-10.so", to take
+    an example), it will be necessary to note that fact, by performing two actions:
+\preformatted{
+option(libteos="/opt/lib/libgswteos10.so")
+.C("set_libteos", "/opt/lib/libgswteos10.so")
 }
 }
 

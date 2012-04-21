@@ -2,6 +2,10 @@
 #include <R.h>
 #include <Rdefines.h>
 int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
+double strho_f(double x, int teos);
+void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *rval); // in teos.c
+int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
+char *get_libteos(); // in toes.c
 
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
@@ -273,27 +277,18 @@ void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
 double strho_f(double x, int teos)
 {
   extern double p_ref, sig_0;
-  //Rprintf("%s:%d  strho_f(x=%f, teos=%d) ... NB: S=%f T=%f p_ref=%f\n", __FILE__, __LINE__, x, teos,S,T,p_ref);
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
   double this_rho;
+  //Rprintf("libteos='%s'\n", get_libteos());
   int n=1;
   if (teos) {
-    //Rprintf("%s:%d\n",__FILE__, __LINE__);
-    char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
-    //char *fcn = "gsw_pot_rho_t_exact"; Wrong.
-    //char *fcn = "gsw_rho_t_exact"; slow
+    //char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
     char *fcn = "gsw_rho"; // stated to be used for TS diagrams on p2 of "Getting_Started.pdf"
-    // FIXME: if this proves to be too slow, perhaps should do the
-    // dlopen() here, not in gsw3a.  Actually, perhaps should do the
-    // dlopen() just once, and store the handle globally across all C
-    // code, closing it when R quits ... if there's a way to know
-    // that and if the system really needs it.
-    gsw3a(&lib, &fcn, &n, &x, &T, &p_ref, &this_rho);
-    //Rprintf("       S %f    T %f    p_ref %f    this_rho %f\n", x, T, p_ref, this_rho);
+    extern char* libteosp;
+    gsw3a(&libteosp, &fcn, &n, &x, &T, &p_ref, &this_rho);
   } else {
     sw_rho(&n, &x, &T, &p_ref, &this_rho); // is this right? (is T theta?, and so is p_ref zero?)
   }
-  //Rprintf("      strho_f(%f, teos=%d) this_rho %.4f so returning %f\n", x, teos, this_rho, this_rho - 1000.0 - sig_0);
   return (this_rho - 1000.0 - sig_0);
 }
 
