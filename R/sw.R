@@ -586,7 +586,7 @@ swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
 {
     if (inherits(salinity, "ctd")) {
         pressure <- salinity@data$pressure
-        n <- length(temperature)
+        n <- length(pressure)
         longitude <- rep(salinity@metadata$longitude, n)
         latitude <- rep(salinity@metadata$latitude, n)
         salinity <- salinity@data$salinity # NOTE: this destroys the salinity object

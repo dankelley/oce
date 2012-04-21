@@ -9,6 +9,7 @@
 \description{Plot CTD data}
 
 \usage{\S4method{plot}{ctd}(x, which=1:4, 
+     eos=getOption("eos"),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE, col.grid="lightgray", lty.grid="dotted",
      coastline="coastlineWorld",
@@ -32,7 +33,7 @@
   \item{x}{A \code{ctd} object, e.g. as read by \code{\link{read.ctd}}, or a
       list containing items named \code{salinity} and \code{temperature}.}
   \item{which}{list of desired plot types.  
-    \itemize{
+      \itemize{
       \item \code{which=1} or \code{which="salinity+temperature"} gives
       a combined profile of temperature and salinity
       \item \code{which=2} or \code{which="density+N2"} gives a combined
@@ -63,6 +64,14 @@
       \item \code{which=14} or \code{which="tritium"} gives a tritium profile
     }
   }
+  \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
+      computer must have the TEOS library installed; see \code{\link{teos}}.
+      The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
+      axis and ``conservative temperature'' on the y axis.  Typically, the
+      temperature values will be very similar to those with \code{unesco}, but
+      the salinities will be increased by 0.1 to 0.2 units.  The isopycnals
+      will still run through the same points as for the \code{unesco} style.
+      See \code{\link{teos}} for more information.}
   \item{ref.lat}{Latitude of reference point for distance calculation}
   \item{ref.lon}{Longitude of reference point for distance calculation}
   \item{grid}{Set \code{TRUE} to get a grid on all plots.}
