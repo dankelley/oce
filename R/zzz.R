@@ -22,6 +22,6 @@
     toset <- !(names(opOce) %in% names(op))
     if (any(toset)) {
         options(opOce[toset])
-        .C("set_libteos", libteos) # FIXME: how to make this happen if user moves the library?
+        .C("set_libteos", libteos)
     }
 }

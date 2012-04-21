@@ -1,3 +1,9 @@
+teosSetLibrary <- function(path)
+{
+    options(eos, path)
+    .C("set_libteos", path)
+}
+
 teos <- function(name, a1, a2, a3, a4, a5, a6, lib=getOption("libteos")) # FIXME: what's max arg?
 {
     if (missing(name)) stop("a function name must be given, and it must be in lower case letters, e.g. \"gsw_sa_from_sp\"")
