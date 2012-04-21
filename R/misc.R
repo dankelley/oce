@@ -421,7 +421,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Temperature [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
     } else if (item == "conservative temperature") {
-        full <- expression(paste("Conservative Temperature [", degree, "C]"))
+        full <- expression(paste("Conservative Temperature, ", Theta, " [", degree, "C]"))
         abbreviated <- expression(paste(Theta, "[", degree, "C]"))
     } else if (item == "sigmaTheta") {
         full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
@@ -454,7 +454,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- "Salinity [PSU]"
         abbreviated <- "S [PSU]"
     } else if (item == "absolute salinity") {
-        full <- expression(paste("Absolute Salinity [g/kg]"))
+        full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
         abbreviated <- expression(paste(S[A], " [g/kg]"))
     } else if (item == "p") {
         full <- "Pressure [dbar]"

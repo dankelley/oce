@@ -1,5 +1,5 @@
 0.8-8
-- support the TEOS-10 library, via teos() and argument 'eos' to various functions
+- add (preliminary) support for the TEOS-10 library, which must be installed separately
 - add moonAngle() plus several other astronomy-related functions, e.g. julianDay()
 
 0.8-7

@@ -15,6 +15,7 @@ teos <- function(name, a1, a2, a3, a4, a5, a6, lib='/usr/local/lib/libgswteos-10
     if (length(a2) != n) stop("length(a2) must match length(a1)")
     if (length(a3) != n) stop("length(a3) must match length(a1)")
     a3 <- as.vector(a3)
+    ## FIXME: teos should filter on NA so the gsw routines don't return odd "missing" values
     if (args == 3) {
         rval <- .C("gsw3a", as.character(lib), as.character(name),
                    as.integer(n), as.double(a1), as.double(a2), as.double(a3), rval=double(n))$rval

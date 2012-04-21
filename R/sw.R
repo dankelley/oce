@@ -571,3 +571,30 @@ swViscosity <- function(salinity, temperature=NULL)
            temperature * (1.716685e-06 + temperature * (-3.479273e-08
            + temperature * (+3.566255e-10))))
 }
+
+swConservativeTemperature <- function(salinity, temperature, pressure)
+{
+    if (inherits(salinity, "ctd")) {
+        temperature <-  salinity@data$temperature
+        pressure <-  salinity@data$pressure
+        salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
+    }
+    teos("gsw_ct_from_t", salinity, temperature, pressure)
+}
+
+swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
+{
+    if (inherits(salinity, "ctd")) {
+        pressure <- salinity@data$pressure
+        n <- length(temperature)
+        longitude <- rep(salinity@metadata$longitude, n)
+        latitude <- rep(salinity@metadata$latitude, n)
+        salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
+    } else {
+        ## FIXME: perhaps should default lon and lat
+        if (missing(longitude)) stop("must provide longitude to compute absolute salinity")
+        if (missing(latitude)) stop("must provide latitude to compute absolute salinity")
+    }
+    longitude <- ifelse(longitude < 0, longitude + 360, longitude)
+    teos("gsw_sa_from_sp", salinity, pressure, longitude, latitude)
+}

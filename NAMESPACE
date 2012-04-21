@@ -187,10 +187,12 @@ export("+.section",
        summary.met,
        summary.sealevel,
        sunAngle,
+       swAbsoluteSalinity, # TEOS-10b
        swAlpha,
        swAlphaOverBeta,
        swBeta,
        swConductivity,
+       swConservativeTemperature, # TEOS-10
        swDepth,
        swZ,
        swDynamicHeight,
