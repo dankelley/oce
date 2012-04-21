@@ -9,7 +9,7 @@
 \usage{plotProfile(x,
              xtype="salinity+temperature", 
              ytype=c("pressure", "z", "sigmaTheta"),
-             teos=getOption("teos"),
+             eos=getOption("eos"),
              col.salinity="darkgreen",
              col.temperature="red",
              col.rho="blue",
@@ -63,10 +63,9 @@
     }
   }
   \item{ytype}{variable to use on y axis.}
-  \item{teos}{if TRUE, use the TEOS-10 system, with absolute salinity instead
-      of practical salinity, and conservative temperature instead of potential
-      temperature.  This will produce errors unless the TEOS library has
-      been installed; see \code{\link{teos}}.}
+  \item{eos}{name of equation of state to be used, either \code{"unesco"} or
+      \code{"teos"}.  If the latter, then the computer must have the TEOS
+      library installed; see \code{\link{teos}}.}
   \item{col.salinity}{Color for salinity profile.}
   \item{col.temperature}{Color for temperature.}
   \item{col.rho}{Color for density.}

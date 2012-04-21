@@ -46,9 +46,10 @@ swSCTp <- function(conductivity, temperature, pressure)
     rval
 }
 
-swSTrho <- function(temperature, density, pressure, teos=getOption("teos")) # FIXME: should be vectorized for speed
+swSTrho <- function(temperature, density, pressure, eos=getOption("eos")) # FIXME: should be vectorized for speed
 {
-    ##cat("swSTrho(...teos=", teos, ")\n")
+    eos <- match.arg(eos, c("unesco","teos"))
+    teos <- eos == "teos"
     dim <- dim(temperature)
     nt <- length(temperature)
     nrho <- length(density)
@@ -72,10 +73,12 @@ swSTrho <- function(temperature, density, pressure, teos=getOption("teos")) # FI
     rval
 }
 
-swTSrho <- function(salinity, density, pressure, teos=getOption("teos")) # FIXME: should be vectorized
+swTSrho <- function(salinity, density, pressure, eos=getOption("eos")) # FIXME: should be vectorized
 {
     if (missing(salinity))
         stop("must provide salinity")
+    eos <- match.arg(eos, c("unesco", "teos"))
+    teos <- eos == "teos"
     dim <- dim(salinity)
     nS <- length(salinity)
     nrho <- length(density)

@@ -15,7 +15,7 @@
      col.grid="lightgray",
      lty.grid="dotted",
      rho1000=FALSE,
-     eos=c("unesco", "teos"),
+     eos=getOption("eos"),
      cex=par("cex"), col=par("col"), pch=par("pch"), bg,
      col.rho="darkgray",
      cex.rho=3/4*par("cex"),
@@ -51,11 +51,14 @@
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}
   \item{rho1000}{if TRUE, label isopycnals as e.g. 1024; if FALSE, label as e.g. 24}
-  \item{eos}{flag to select either the UNESCO-80 equation of state or the
-      TEOS-10 equation of state.  If \code{"teos"}, then practical salinity and
-      conservative temperature are used instead of potential temperature.  This
-      will produce errors unless the TEOS library has been installed; see
-      \code{\link{teos}}.}
+  \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
+      computer must have the TEOS library installed; see \code{\link{teos}}.
+      The effect of using \code{"teos"} is to us ``absolute salinity'' on the x
+      axis and ``conservative temperature'' on the y axis.  Typically, the
+      temperature values will be very similar to those with \code{unesco}, but
+      the salinities will be increased by 0.1 to 0.2 units.  The isopycnals
+      will still run through the same points as for the \code{unesco} style.
+      See \code{\link{teos}} for more information.}
   \item{cex}{character-expansion factor for symbols, as in \code{\link{par}("cex")}.}
   \item{pch}{symbol type, as in \code{\link{par}("pch")}.}
   \item{bg}{optional colour to be painted under plotting area, before plotting.

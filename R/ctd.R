@@ -1636,7 +1636,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    eos=c("unesco", "teos"),
+                    eos=getOption("eos"),
                     cex=par("cex"), col = par("col"), pch=par("pch"), bg,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
@@ -1651,13 +1651,12 @@ plotTS <- function (x,
                     debug=getOption("oceDebug"),
                     ...)
 {
-    eos <- match.arg(eos)
     oceDebug(debug, "\bplotTS(..., lwd.rho=", lwd.rho, ", lty.rho=", lty.rho,
              "eos=\"", eos, "\", ",
              "mgp=c(", paste(mgp, collapse=","), "), ", 
              "mar=c(", paste(mar, collapse=","), "), ", 
              "...) {\n", sep="")
-    teos <- eos == "teos"
+    eos <- match.arg(eos, c("unesco", "teos"))
     if (!inherits(x, "ctd")) {
         if (inherits(x, "section")) { 
             salinity <- salinity(x) # FIXME: new accessors?
@@ -1677,7 +1676,7 @@ plotTS <- function (x,
             }
         }
     }
-    if (teos) {
+    if (eos == "teos") {
         salinity <- x[["absolute salinity"]]
         y <- x[["conservative temperature"]]
     } else {
@@ -1701,13 +1700,13 @@ plotTS <- function (x,
     }
     axis.name.loc <- mgp[1]
     if (missing(xlab)) {
-        if (teos)
+        if (eos == "teos")
             xlab <- resizableLabel("absolute salinity", "x")
         else
             xlab <- resizableLabel("S","x")
     }
     if (missing(ylab)) {
-        if (teos)
+        if (eos == "teos")
             ylab <- resizableLabel("conservative temperature", "y")
         else
             ylab <- if (inSitu) resizableLabel("T","y") else resizableLabel("theta", "y")
@@ -1746,21 +1745,22 @@ plotTS <- function (x,
     if (grid)
         grid(col=col.grid, lty=lty.grid)
     drawIsopycnals(rhoLevels=rhoLevels, rotateRhoLabels=rotateRhoLabels, rho1000=rho1000,
-                   teos=teos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
+                   eos=eos, cex=cex.rho, col=col.rho, lwd=lwd.rho, lty=lty.rho)
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, swTFreeze(salinity=Sr, pressure=0), col="darkblue")
     oceDebug(debug, "\b} # plotTS(...)\n", sep="")
 }
 
-drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teos=getOption("teos"), cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
+drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, eos=getOption("eos"), cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
+    eos <- match.arg(eos, c("unesco","teos"))
     usr <- par("usr")
     SAxisMin <- max(0.1, usr[1])       # avoid NaN, which UNESCO density gives for freshwater
     SAxisMax <- usr[2]
     TAxisMin <- usr[3]
     TAxisMax <- usr[4]
-    if (teos) {
+    if (eos == "teos") {
         rhoCorners <- teos("gsw_rho",
                            c(SAxisMin, SAxisMax, SAxisMin, SAxisMax),
                            c(TAxisMin, TAxisMin, TAxisMax, TAxisMax),
@@ -1785,7 +1785,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teo
     cex.par <- par("cex")               # need to scale text() differently than mtext()
     for (rho in rhoList) {
         rhoLabel <- if (rho1000) 1000+rho else rho
-        Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), teos=teos)
+        Sline <- swSTrho(Tline, rep(rho, Tn), rep(0, Tn), eos=eos)
         #browser()
         ok <- !is.na(Sline) # crazy T can give crazy S
         if (sum(ok) > 2) {
@@ -1811,7 +1811,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, teo
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "sigmaTheta"),
-                         teos=getOption("teos"),
+                         eos=getOption("eos"),
                          col.salinity = "darkgreen",
                          col.temperature = "red",
                          col.rho = "blue",
@@ -1836,7 +1836,8 @@ plotProfile <- function (x,
                          ...)
 {
     oceDebug(debug, "\bplotProfile(x, xtype=\"", xtype, "\", ...) {\n", sep="")
-    if (teos) warning("plotProfile not using teos, even though set to TRUE\n")
+    eos <- match.arg(eos, c("unesco", "teos"))
+    if (eos == "teos") warning("FIXME: plotProfile not using teos yet\n")
     plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, keepNA=FALSE)
     {
         if (!keepNA) {
