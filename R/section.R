@@ -183,6 +183,7 @@ setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
                               which=c("salinity", "temperature", "sigmaTheta", "map"),
+                              eos=getOption("eos"),
                               at=NULL,
                               labels=TRUE,
                               grid = FALSE,
@@ -203,8 +204,9 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 2) 2 else floor(0.5 + debug)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), ...) {\n")
+              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n")
               plotSubsection <- function(variable="temperature", title="Temperature",
+                                         eos=getOption("eos"),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
@@ -213,7 +215,7 @@ setMethod(f="plot",
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
+                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ...) {\n")
                   if (variable == "map") {
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
@@ -340,6 +342,7 @@ setMethod(f="plot",
                                           / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
                               zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
                           } else if (variable != "data") {
+                              warning("section.R:345 FIXME: should check eos if 'variable' is T or S\n")
                               zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
                           }
                           if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
@@ -557,9 +560,9 @@ setMethod(f="plot",
                   oceDebug(debug, "w=", w, "\n")
                   if (!missing(contourLevels)) {
                       if (which[w] == 1)
-                          plotSubsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("temperature", "T", eos=eos, nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 2)
-                          plotSubsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("salinity",    "S", eos=eos, ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] > 2 && which[w] < 3)
                           plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 3)
@@ -576,9 +579,9 @@ setMethod(f="plot",
                           plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   } else {
                       if (which[w] == 1)
-                          plotSubsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("temperature", "T", eos=eos, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 2)
-                          plotSubsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("salinity",    "S", eos=eos, ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] > 2 && which[w] < 3)
                           plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 3)
