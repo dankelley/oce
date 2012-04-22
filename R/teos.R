@@ -1,6 +1,6 @@
 teosSetLibrary <- function(path)
 {
-    options(eos, path)
+    options(eos=path)
     .C("set_libteos", path)
 }
 
