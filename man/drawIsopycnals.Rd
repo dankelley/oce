@@ -4,7 +4,8 @@
 \description{Draw isopycnal curves on an existing temperature-salinity plot}
 
 \usage{
-drawIsopycnals(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, eos=getOption("eos"),
+drawIsopycnals(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
+               eos=getOption("eos", default="unesco"),
                cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
 }
 

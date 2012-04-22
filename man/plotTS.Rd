@@ -15,7 +15,7 @@
      col.grid="lightgray",
      lty.grid="dotted",
      rho1000=FALSE,
-     eos=getOption("eos"),
+     eos=getOption("eos", default='unesco'),
      cex=par("cex"), col=par("col"), pch=par("pch"), bg,
      col.rho="darkgray",
      cex.rho=3/4*par("cex"),

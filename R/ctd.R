@@ -455,7 +455,7 @@ write.ctd <- function(object, file=stop("'file' must be specified"))
 setMethod(f="plot",
           signature=signature("ctd"),
           definition=function(x, which = 1:4,
-                              eos=getOption("eos"),
+                              eos=getOption("eos", default='unesco'),
                               ref.lat = NaN, ref.lon = NaN,
                               grid = TRUE, col.grid="lightgray", lty.grid="dotted",
                               coastline="coastlineWorld",
@@ -1649,7 +1649,7 @@ plotTS <- function (x,
                     col.grid="lightgray",
                     lty.grid="dotted",
                     rho1000=FALSE,
-                    eos=getOption("eos"),
+                    eos=getOption("eos", default='unesco'),
                     cex=par("cex"), col = par("col"), pch=par("pch"), bg,
                     col.rho="darkgray",
                     cex.rho=3/4*par("cex"),
@@ -1765,7 +1765,9 @@ plotTS <- function (x,
     oceDebug(debug, "\b} # plotTS(...)\n", sep="")
 }
 
-drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, eos=getOption("eos"), cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
+drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
+                           eos=getOption("eos", default='unesco'),
+                           cex=1, col="darkgray", lwd=par("lwd"), lty=par("lty"))
 {
     eos <- match.arg(eos, c("unesco","teos"))
     usr <- par("usr")
@@ -1824,7 +1826,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE, eos
 plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "sigmaTheta"),
-                         eos=getOption("eos"),
+                         eos=getOption("eos", default='unesco'),
                          col.salinity = "darkgreen",
                          col.temperature = "red",
                          col.rho = "blue",

@@ -6,7 +6,7 @@
 
 \description{Compute \emph{in-situ} temperature, given salinity, density, and pressure.}
 
-\usage{swTSrho(salinity, density, pressure, eos=getOption("eos"))}
+\usage{swTSrho(salinity, density, pressure, eos=getOption("eos", default='unesco'))}
 
 \arguments{
   \item{salinity}{\emph{in-situ} salinity [PSU]}

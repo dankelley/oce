@@ -10,7 +10,7 @@
 
 \usage{\S4method{plot}{section}(x,
      which=c("salinity", "temperature", "sigmaTheta", "map"),
-     eos=getOption("eos"),
+     eos=getOption("eos", default='unesco'),
      at=NULL,
      labels=TRUE,
      grid=FALSE,

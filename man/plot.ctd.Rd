@@ -9,7 +9,7 @@
 \description{Plot CTD data}
 
 \usage{\S4method{plot}{ctd}(x, which=1:4, 
-     eos=getOption("eos"),
+     eos=getOption("eos", default='unesco'),
      ref.lat=NaN, ref.lon=NaN, 
      grid=TRUE, col.grid="lightgray", lty.grid="dotted",
      coastline="coastlineWorld",
