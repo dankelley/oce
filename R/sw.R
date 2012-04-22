@@ -579,7 +579,12 @@ swConservativeTemperature <- function(salinity, temperature, pressure)
         pressure <-  salinity@data$pressure
         salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
     }
-    teos("gsw_ct_from_t", salinity, temperature, pressure)
+    n <- length(salinity)
+    bad <- is.na(salinity) | is.na(temperature) | is.na(pressure)
+    good <- teos("gsw_ct_from_t", salinity[!bad], temperature[!bad], pressure[!bad])
+    rval <- rep(NA, n)
+    rval[!bad] <- good
+    rval
 }
 
 swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
@@ -596,5 +601,10 @@ swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
         if (missing(latitude)) stop("must provide latitude to compute absolute salinity")
     }
     longitude <- ifelse(longitude < 0, longitude + 360, longitude)
-    teos("gsw_sa_from_sp", salinity, pressure, longitude, latitude)
+    bad <- is.na(salinity) | is.na(pressure) | is.na(longitude) | is.na(latitude)
+    good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
+    rval <- rep(NA, n)
+    rval[!bad] <- good
+    ##print(data.frame(salinity, pressure, longitude, latitude, rval))
+    rval
 }
