@@ -239,6 +239,21 @@ imagep <- function(x, y, z,
         stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
+
+    ## Adjust x and y, to match what image() does; save orig for filled contours
+    xorig <- x
+    yorig <- y
+    if (length(x) > 1 && length(x) == nrow(z)) {
+        dx <- 0.5 * diff(x)
+        x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + 
+            dx[length(x) - 1])
+    }
+    if (length(y) > 1 && length(y) == ncol(z)) {
+        dy <- 0.5 * diff(y)
+        y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + 
+            dy[length(y) - 1])
+    }
+
     ## ensure that x and y increase (BUT, for now, no check on equal values, 
     ## and also no xlim reversals FIXME)
     ox <- order(x)
@@ -313,7 +328,9 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
+            cat("about to test...\n")
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
+            cat("ok?\n")
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             if (!breaksGiven) {
@@ -335,7 +352,7 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             ## Filled contours became official in version 2.15.0 of R.
-            .filled.contour(as.double(x), as.double(y), z, as.double(breaks), col=col)
+            .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
             mtext(xlab, side=1, line=mgp[1])
             mtext(ylab, side=2, line=mgp[1])
         } else {
