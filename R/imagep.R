@@ -239,23 +239,9 @@ imagep <- function(x, y, z,
         stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
     if (ncol(z) != length(y) && (1+ncol(z)) != length(y))
         stop("image height (", nrow(z), ") does not match length of y (", length(y), ")")
-
-    ## Adjust x and y, to match what image() does; save orig for filled contours
-    xorig <- x
-    yorig <- y
-    if (length(x) > 1 && length(x) == nrow(z)) {
-        dx <- 0.5 * diff(x)
-        x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + 
-            dx[length(x) - 1])
-    }
-    if (length(y) > 1 && length(y) == ncol(z)) {
-        dy <- 0.5 * diff(y)
-        y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + 
-            dy[length(y) - 1])
-    }
-
-    ## ensure that x and y increase (BUT, for now, no check on equal values, 
-    ## and also no xlim reversals FIXME)
+    
+    ## Ensure that x and y increase
+    ## FIXME: should check on equal values
     ox <- order(x)
     if (any(diff(ox) < 0)) {
         warning("reordered some x values")
@@ -268,6 +254,19 @@ imagep <- function(x, y, z,
         y <- y[oy]
         z <- z[,oy]
     }
+
+    ## Adjust x and y, to match what image() does; save orig for filled contours
+    xorig <- x
+    yorig <- y
+    if (length(x) > 1 && length(x) == nrow(z)) {
+        dx <- 0.5 * diff(x)
+        x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + dx[length(x) - 1])
+    }
+    if (length(y) > 1 && length(y) == ncol(z)) {
+        dy <- 0.5 * diff(y)
+        y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + dy[length(y) - 1])
+    }
+
     omai <- par("mai")
     omar <- par("mar")
     ocex <- par("cex")
