@@ -217,8 +217,11 @@ imagep <- function(x, y, z,
         y <- x$y
         z <- x$z
         x <- x$x
-    } else if (!missing(x) && is.matrix(x)) {
+    } else if (!missing(x) && is.array(x)) {
+        if (length(dim(x)) > 2)
+            stop("x must be a matrix, not an array with dim(x) = c(", paste(dim(x), collapse=","), ")\n")
         z <- x
+        z <- if (length(dim(x)) > 2) z <- x[,,1] else x
         y <- seq(0, 1, length.out=ncol(x))
         x <- seq(0, 1, length.out=nrow(x))
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
@@ -350,7 +353,7 @@ imagep <- function(x, y, z,
         image(x, y, !is.na(z), col=c(missingColor, "transparent"), breaks=c(0,1/2,1), add=TRUE)
         box()
     }
-    if (main != "")
+    if (!(is.character(main) && main == ""))
         mtext(main, at=mean(range(x), na.rm=TRUE), side=3, line=1/8, cex=par("cex"))
     if (drawContours)
         contour(x=x, y=y, z=z, levels=breaks, drawlabels=FALSE, add=TRUE, col="black")
