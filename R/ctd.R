@@ -1690,8 +1690,8 @@ plotTS <- function (x,
         }
     }
     if (eos == "teos") {
-        salinity <- x[["absolute salinity"]]
-        y <- x[["conservative temperature"]]
+        salinity <- x[["SA"]]
+        y <- x[["CT"]]
     } else {
         y <- if (inSitu) x@data$temperature else swTheta(x@data$salinity,
                                                          x@data$temperature,
