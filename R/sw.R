@@ -596,7 +596,6 @@ swConservativeTemperature <- function(salinity, temperature, pressure)
 
 swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
 {
-    cat("ENTER\n")
     if (inherits(salinity, "ctd")) {
         pressure <- salinity@data$pressure
         longitude <- rep(salinity@metadata$longitude, n)
