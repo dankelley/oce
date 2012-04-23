@@ -24,8 +24,9 @@
     found with \code{"filename"}.
 
     The TEOS-10 defined quantities called ``absolute salinity'' and
-    ``conservative temperature'' can be retrieved with \code{ctd[["absolute
-        salinity"]]} and \code{ctd[["conservative temperature"]]},
+    ``conservative temperature'' can be retrieved with
+    \code{ctd[["absoluteSalinity"]]} (or \code{ctd[["SA"]]}) and
+    \code{ctd[["conservativeTemperature"]]} (or \code{ctd[["CT"]]}),
     respectively.  Note that these are \emph{not} saved in the data object, but
     are calculated as needed.
 

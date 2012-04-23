@@ -29,7 +29,9 @@
 \value{Absolute salinity in \eqn{g/kg}{g/kg}.}
 
 \seealso{The related TEOS-10 quantity ``conservative temperature'' may be
-    computed with \code{\link{swConservativeTemperature}}.} 
+    computed with \code{\link{swConservativeTemperature}}.  For a ctd object,
+    absolute salinity may also be recovered by indexing as e.g.
+    \code{ctd[["absoluteSalinity"]]} or \code{ctd[["SA"]]}.}
 
 \examples{
 \dontrun{

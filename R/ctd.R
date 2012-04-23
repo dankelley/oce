@@ -17,7 +17,7 @@ setMethod(f="[[",
           definition=function(x, i, j, drop) {
               if (i == "N2") {
                   swN2(x)
-              } else if (i == "absolute salinity") {
+              } else if (i == "absoluteSalinity" || i == "SA") {
                   Sp <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure
@@ -25,7 +25,7 @@ setMethod(f="[[",
                   lon <- rep(x@metadata$longitude, n) # FIXME: what if negative; what if NA or NULL?
                   lat <- rep(x@metadata$latitude, n)
                   teos("gsw_sa_from_sp", Sp, p, lon, lat)
-              } else if (i == "conservative temperature") {
+              } else if (i == "conservativeTemperature" || i == "CT") {
                   Sp <- x@data$salinity
                   t <- x@data$temperature
                   p <- x@data$pressure

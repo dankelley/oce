@@ -26,7 +26,9 @@
 \value{Conservative temperature in degrees Celcius.}
 
 \seealso{The related TEOS-10 quantity ``absolute salinity'' may be computed
-    with \code{\link{swAbsoluteSalinity}}.} 
+    with \code{\link{swAbsoluteSalinity}}.  For a ctd object, conservative
+    temperature may also be recovered by indexing as e.g.
+    \code{ctd[["conservativeTemperature"]]} or \code{ctd[["CT"]]}.}
 
 \examples{
 \dontrun{
