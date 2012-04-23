@@ -620,7 +620,5 @@ swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
     good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
     rval <- rep(NA, n)
     rval[!bad] <- good
-    cat("number bad=", length(bad), "\n")
-    print(data.frame(salinity, pressure, longitude, latitude, rval))
     rval
 }
