@@ -580,9 +580,14 @@ swConservativeTemperature <- function(salinity, temperature, pressure)
         temperature <-  salinity@data$temperature
         pressure <-  salinity@data$pressure
         salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
+    } else {
+        if (missing(temperature)) stop("must provide temperature")
+        if (missing(pressure)) stop("must provide temperature")
     }
     n <- length(salinity)
-    bad <- is.na(salinity) | is.na(temperature) | is.na(pressure)
+    if (n != length(temperature)) stop("lengths of salinity and temperature must match") 
+    if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
+    bad <- is.na(salinity) | is.na(temperature) | is.na(pressure) | is.na(longitude) | is.na(latitude)
     good <- teos("gsw_ct_from_t", salinity[!bad], temperature[!bad], pressure[!bad])
     rval <- rep(NA, n)
     rval[!bad] <- good
@@ -591,22 +596,31 @@ swConservativeTemperature <- function(salinity, temperature, pressure)
 
 swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
 {
+    cat("ENTER\n")
     if (inherits(salinity, "ctd")) {
         pressure <- salinity@data$pressure
-        n <- length(pressure)
         longitude <- rep(salinity@metadata$longitude, n)
         latitude <- rep(salinity@metadata$latitude, n)
         salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
     } else {
         ## FIXME: perhaps should default lon and lat
+        if (missing(pressure)) stop("must provide temperature")
         if (missing(longitude)) stop("must provide longitude to compute absolute salinity")
         if (missing(latitude)) stop("must provide latitude to compute absolute salinity")
     }
+    n <- length(salinity)
+    if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
+    if (n != length(longitude)) {
+        cat("n=", n, "length(longitude)=", length(longitude), "\n")
+        longitude <- rep(longitude, length.out=n)
+    }
+    if (n != length(latitude)) latitude <- rep(latitude, length.out=n)
     longitude <- ifelse(longitude < 0, longitude + 360, longitude)
     bad <- is.na(salinity) | is.na(pressure) | is.na(longitude) | is.na(latitude)
     good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
     rval <- rep(NA, n)
     rval[!bad] <- good
-    ##print(data.frame(salinity, pressure, longitude, latitude, rval))
+    cat("number bad=", length(bad), "\n")
+    print(data.frame(salinity, pressure, longitude, latitude, rval))
     rval
 }
