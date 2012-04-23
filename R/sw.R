@@ -587,7 +587,7 @@ swConservativeTemperature <- function(salinity, temperature, pressure)
     n <- length(salinity)
     if (n != length(temperature)) stop("lengths of salinity and temperature must match") 
     if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
-    bad <- is.na(salinity) | is.na(temperature) | is.na(pressure) | is.na(longitude) | is.na(latitude)
+    bad <- is.na(salinity) | is.na(temperature) | is.na(pressure)
     good <- teos("gsw_ct_from_t", salinity[!bad], temperature[!bad], pressure[!bad])
     rval <- rep(NA, n)
     rval[!bad] <- good
@@ -598,22 +598,20 @@ swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
 {
     if (inherits(salinity, "ctd")) {
         pressure <- salinity@data$pressure
+        n <- length(pressure)
         longitude <- rep(salinity@metadata$longitude, n)
         latitude <- rep(salinity@metadata$latitude, n)
         salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
     } else {
         ## FIXME: perhaps should default lon and lat
+        n <- length(salinity)
         if (missing(pressure)) stop("must provide temperature")
         if (missing(longitude)) stop("must provide longitude to compute absolute salinity")
         if (missing(latitude)) stop("must provide latitude to compute absolute salinity")
     }
-    n <- length(salinity)
     if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
-    if (n != length(longitude)) {
-        cat("n=", n, "length(longitude)=", length(longitude), "\n")
-        longitude <- rep(longitude, length.out=n)
-    }
-    if (n != length(latitude)) latitude <- rep(latitude, length.out=n)
+    if (n != length(longitude)) stop("lengths of salinity and longitude must match")  
+    if (n != length(latitude))  stop("lengths of salinity and latitude must match") 
     longitude <- ifelse(longitude < 0, longitude + 360, longitude)
     bad <- is.na(salinity) | is.na(pressure) | is.na(longitude) | is.na(latitude)
     good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
