@@ -22,8 +22,13 @@ setMethod(f="[[",
                   t <- x@data$temperature
                   p <- x@data$pressure
                   n <- length(Sp)
-                  lon <- rep(x@metadata$longitude, n) # FIXME: what if negative; what if NA or NULL?
-                  lat <- rep(x@metadata$latitude, n)
+                  lon <- x@metadata$longitude
+                  if (n != length(lon))
+                      lon <- rep(x@metadata$longitude, length.out=n)
+                  lon <- ifelse(lon < 0, lon + 360, lon)
+                  lat <- x@metadata$latitude
+                  if (n != length(lat))
+                      lat <- rep(x@metadata$latitude, length.out=n)
                   teos("gsw_sa_from_sp", Sp, p, lon, lat)
               } else if (i == "conservativeTemperature" || i == "CT") {
                   Sp <- x@data$salinity
