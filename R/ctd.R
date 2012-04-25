@@ -1832,6 +1832,7 @@ plotProfile <- function (x,
                          xtype="salinity+temperature",
                          ytype=c("pressure", "z", "sigmaTheta"),
                          eos=getOption("eos", default='unesco'),
+                         xlab=NULL, ylab=NULL,
                          col.salinity = "darkgreen",
                          col.temperature = "red",
                          col.rho = "blue",
@@ -1850,7 +1851,7 @@ plotProfile <- function (x,
                          keepNA=FALSE,
                          type='l',
                          mgp=getOption("oceMgp"),
-                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
+                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 2),
                          inset=FALSE,
                          debug=getOption("oceDebug"),
                          ...)
@@ -1913,9 +1914,27 @@ plotProfile <- function (x,
 
     par(mar=mar, mgp=mgp)
 
-    if (xtype == "index") {
+    if (is.numeric(xtype)) {
+       if (length(xtype) != length(y))
+           stop("length(xtype) must match number of levels in the CTD object")
+        plot(xtype, y, xlab="", ylab=yname, type=type, axes=FALSE, xaxs=xaxs, yaxs=yaxs, ylim=ylim, ...)
+        axis(3)
+        mtext(xlab, side = 3, line = axis.name.loc, cex=par("cex"))
+        axis(2)
+        box()
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+            at <- par("xaxp")
+            abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
+    } else if (xtype == "index") {
         index <- 1:length(x@data$pressure)
         plot(index, x@data$pressure, ylim=ylim, xlab = "index", ylab = yname, type='l', xaxs=xaxs, yaxs=yaxs)
+        if (grid) {
+            at <- par("yaxp")
+            abline(h=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
+        }
     } else if (xtype == "density+time") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # why recalculate?
         if (missing(densitylim))
@@ -2076,7 +2095,7 @@ plotProfile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            plotJustProfile(temperature, y, col = col.temperature, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
+            plotJustProfile(temperature, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
     } else if (xtype == "density") {
         st <- swSigmaTheta(x@data$salinity, x@data$temperature, x@data$pressure) # FIXME: why not use existing column?
