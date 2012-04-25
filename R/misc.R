@@ -418,7 +418,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
-        full <- expression(paste("Temperature [", degree, "C]"))
+        full <- expression(paste("Temperature, T [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
     } else if (item == "conservative temperature") {
         full <- expression(paste("Conservative Temperature, ", Theta, " [", degree, "C]"))
