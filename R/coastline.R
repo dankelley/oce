@@ -196,6 +196,7 @@ setMethod(f="plot",
                       oceDebug(debug, "putting bottom y axis at", usrTrimmed[3], "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
                       oceDebug(debug, "putting left x axis at", usrTrimmed[1], "\n")
+                      axis(3, at=xr.pretty, labels=rep("", length.out=length(xr.pretty)), pos=usrTrimmed[4], cex.axis=cex.axis)
                       ##axis(3, at=xr.pretty, pos=usrTrimmed[4], labels=FALSE)
                       ##oceDebug(debug, "putting top x axis at", usrTrimmed[4], "\n")
                       axis(4, at=yr.pretty, pos=usrTrimmed[2], labels=FALSE, cex.axis=cex.axis)
@@ -225,8 +226,7 @@ setMethod(f="plot",
                       }
                   }
               }
-#              browser()
-#              box()
+              ##box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
               oceDebug(debug, "\b\b} # plot.coastline()\n")
               invisible()
