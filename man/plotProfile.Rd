@@ -28,7 +28,7 @@
 	     keepNA=FALSE,
              type='l',
              mgp=getOption("oceMgp"),
-             mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 2),
+             mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+2, mgp[1] + 2, 2),
              inset=FALSE,
              debug=getOption("oceDebug"),
              \dots)
@@ -72,12 +72,12 @@
       library installed; see \code{\link{teos}}.}
   \item{xlab}{optional label for x axis}
   \item{ylab}{optional label for y axis}
-  \item{col.salinity}{Color for salinity profile.}
-  \item{col.temperature}{Color for temperature.}
-  \item{col.rho}{Color for density.}
-  \item{col.N2}{Color for square of buoyancy frequency.}
-  \item{col.dpdt}{Color for dP/dt.}
-  \item{col.time}{Color for delta-time.}
+  \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
+  \item{col.temperature}{color for temperature (see \dQuote{Details}).}
+  \item{col.rho}{color for density (see \dQuote{Details}).}
+  \item{col.N2}{color for square of buoyancy frequency (see \dQuote{Details}).}
+  \item{col.dpdt}{color for dP/dt.}
+  \item{col.time}{color for delta-time.}
   \item{grid}{logical, set to \code{TRUE} to get a grid.}
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}
@@ -111,6 +111,9 @@
   \item{\dots}{Optional arguments passed to other functions.  A common example is
     to set \code{df}, for use in \link{swN2} calculations.} 
 }
+
+\details{The colours (\code{col.salinity}, etc.) are ony used if two profiles
+    appear on a plot.}
 
 \value{None.}
 

@@ -451,17 +451,17 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Spice [", kg/m^3, "]"))
         abbreviated <- full
     } else if (item == "S") {
-        full <- "Salinity [PSU]"
-        abbreviated <- "S [PSU]"
+        full <- expression(paste("Practical Salinity, ", S))
+        abbreviated <- expression(S)
     } else if (item == "absolute salinity") {
         full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
         abbreviated <- expression(paste(S[A], " [g/kg]"))
     } else if (item == "p") {
-        full <- "Pressure [dbar]"
-        abbreviated <- "P [dbar]"
+        full <- expression(paste("Pressure, ", P, " [dbar]"))
+        abbreviated <- expression(paste(P, " [dbar]"))
     } else if (item == "z") {
-        full <- "z [ m ]"
-        abbreviated <- "z [m]"
+        full <- expression(z, " [ m ]")
+        abbreviated <- expression(z, " [m]")
     } else if (item == "distance") {
         full <- "Distance [m]"
         abbreviated <- "Dist. [m]"

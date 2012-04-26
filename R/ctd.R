@@ -1851,7 +1851,7 @@ plotProfile <- function (x,
                          keepNA=FALSE,
                          type='l',
                          mgp=getOption("oceMgp"),
-                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 2),
+                         mar=c(1 + if (length(grep('\\+', xtype))) mgp[1] else 0, mgp[1]+2, mgp[1] + 2, 2),
                          inset=FALSE,
                          debug=getOption("oceDebug"),
                          ...)
@@ -2026,7 +2026,7 @@ plotProfile <- function (x,
                 at <- par("xaxp")
                 abline(v=seq(at[1], at[2], length.out=at[3]+1), col=col.grid, lty=lty.grid)
             }
-            plotJustProfile(salinity, y, col = col.salinity, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
+            plotJustProfile(salinity, y, type=type, lwd=lwd, cex=cex, pch=pch, keepNA=keepNA)
         }
     } else if (xtype %in% c("oxygen", "nitrate", "nitrite", "phosphate", "silicate", "tritium")) {
         if (!(xtype %in% names(x@data)))
