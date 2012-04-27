@@ -24,6 +24,8 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
     double dx;
     if (nx == 1) {
         dx = *xp;
+        if (dx <= 0.0)
+            dx = 1.0;
     }
     int *typep = INTEGER(type);
     SEXP res;
