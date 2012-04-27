@@ -9,10 +9,11 @@
 \usage{integrateTrapezoid(x, y, type=c("A", "dA", "cA"))}
 
 \arguments{
-  \item{x}{x values, or a single value, \eqn{dx}{dx}, indicating the difference
-      between x values.  If \code{x} is not given, \eqn{dx}{dx} will be taken
-      to equal 1.}
-  \item{y}{y values, with length (\code{n}, say) that must match that of \code{x}}
+  \item{x}{x values, or a single value that is taken as the (constant)
+      difference between x values.}
+  \item{y}{y values, with length (\code{n}, say) that must match that of
+      \code{x}.  If \code{y} is not given, the integration is done with the
+      \code{x} values taken to be y, and \eqn{dx}{dx} taken to be 1.}
   \item{type}{Flag indicating the desired return value (see \dQuote{Value}).}
 }
 
@@ -34,7 +35,7 @@ print(A)
 print(sum(dA))
 print(tail(cA, 1))
 print(integrateTrapezoid(diff(x[1:2]), y))
-print(integrateTrapezoid(y=y))
+print(integrateTrapezoid(y))
 }
 
 \section{Bugs}{There is no handling of \code{NA} values.}

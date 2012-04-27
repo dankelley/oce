@@ -22,11 +22,8 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
         error("lengths of x (%d) and y (%d) must match", nx, ny);
     double *xp = REAL(x), *yp = REAL(y);
     double dx;
-    if (nx == 1) {
+    if (nx == 1)
         dx = *xp;
-        if (dx <= 0.0)
-            dx = 1.0;
-    }
     int *typep = INTEGER(type);
     SEXP res;
     double *resp;
