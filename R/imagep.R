@@ -258,6 +258,7 @@ imagep <- function(x, y, z,
     ## Adjust x and y, to match what image() does; save orig for filled contours
     xorig <- x
     yorig <- y
+    tz <- attr(x[1],"tzone")
     if (length(x) > 1 && length(x) == nrow(z)) {
         dx <- 0.5 * diff(x)
         x <- c(x[1L] - dx[1L], x[-length(x)] + dx, x[length(x)] + dx[length(x) - 1])
@@ -266,7 +267,7 @@ imagep <- function(x, y, z,
         dy <- 0.5 * diff(y)
         y <- c(y[1L] - dy[1L], y[-length(y)] + dy, y[length(y)] + dy[length(y) - 1])
     }
-
+    attr(x,'tzone')<-tz
     omai <- par("mai")
     omar <- par("mar")
     ocex <- par("cex")
