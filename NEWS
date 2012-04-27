@@ -1,5 +1,11 @@
 0.8-8
+<<<<<<< HEAD
 - add (preliminary) support for the TEOS-10 library, which must be installed separately
+=======
+- integrateTrapezoid() added
+- plotTS(): add argument teos
+- add teos() as an interface to the TEOS-10 library
+>>>>>>> develop
 - add moonAngle() plus several other astronomy-related functions, e.g. julianDay()
 
 0.8-7
