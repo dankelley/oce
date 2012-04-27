@@ -1495,3 +1495,8 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
     }
 }
 
+integrateTrapezoid <- function(x, y, cumulative=FALSE)
+{
+    .Call("trap", x, y, cumulative)
+}
+
