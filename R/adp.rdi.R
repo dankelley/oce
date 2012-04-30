@@ -36,8 +36,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     programVersion <- paste(programVersionMajor, programVersionMinor, sep=".")
     programVersionNumeric <- as.numeric(programVersion)
     oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersionNumeric,")\n")
-    if (programVersion < 16.28)
-        warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
+    ##if (programVersion < 16.28) warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
     if (!haveActualData)
         return(list(instrumentType="adcp",
