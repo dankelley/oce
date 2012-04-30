@@ -297,7 +297,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          as.integer(buf[profileStart[middle]+6]), # day
                          as.integer(buf[profileStart[middle]+7]), # hour
                          as.integer(buf[profileStart[middle]+8]), # min
-                         as.integer(buf[profileStart[middle]+9]), # sec FIXME: should use sec100 too
+                         as.integer(buf[profileStart[middle]+9])+0.01*as.integer(buf[profileStart[middle]+10]), # decimal second
                          tz=tz)
         oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", profileStart[middle], "\n")
         return(list(index=middle, time=t))
@@ -500,7 +500,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 as.integer(buf[profileStart+6]),      # day
                                 as.integer(buf[profileStart+7]),      # hour
                                 as.integer(buf[profileStart+8]),      # minute
-                                as.integer(buf[profileStart+9]),      # second
+                                as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
                                 tz=tz)
 
 
