@@ -915,16 +915,27 @@ setMethod(f="plot",
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           n <- prod(dim(x@data$v)[1:2])
                           if ("br" %in% names(x@data)) {
-                              if (which[w] == 40)
-                                  oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE), ylab="Range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br, na.rm=TRUE))
-                              else if (which[w] == 41)
-                                  oce.plot.ts(x@data$time, x@data$br[,1], ylab="Beam 1 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,1], na.rm=TRUE))
-                              else if (which[w] == 42)
-                                  oce.plot.ts(x@data$time, x@data$br[,2], ylab="Beam 2 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,2], na.rm=TRUE))
-                              else if (which[w] == 43)
-                                  oce.plot.ts(x@data$time, x@data$br[,3], ylab="Beam 3 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,3], na.rm=TRUE))
-                              else if (which[w] == 44)
-                                  oce.plot.ts(x@data$time, x@data$br[,4], ylab="Beam 4 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,4], na.rm=TRUE))
+                              if (which[w] == 40) {
+                                  oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE), ylab="Range [m]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$br, na.rm=TRUE))
+                              } else if (which[w] == 41) {
+                                  oce.plot.ts(x@data$time, x@data$br[,1], ylab="Beam 1 range [m]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,1], na.rm=TRUE))
+                              } else if (which[w] == 42) {
+                                  oce.plot.ts(x@data$time, x@data$br[,2], ylab="Beam 2 range [m]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,2], na.rm=TRUE))
+                              } else if (which[w] == 43) {
+                                  oce.plot.ts(x@data$time, x@data$br[,3], ylab="Beam 3 range [m]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,3], na.rm=TRUE))
+                              } else if (which[w] == 44) {
+                                  oce.plot.ts(x@data$time, x@data$br[,4], ylab="Beam 4 range [m]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,4], na.rm=TRUE))
+                              }
                           } else {
                               warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
                           }
@@ -932,16 +943,27 @@ setMethod(f="plot",
                           par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
                           n <- prod(dim(x@data$v)[1:2])
                           if ("bv" %in% names(x@data)) {
-                              if (which[w] == 50)
-                                  oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE), ylab="Range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv, na.rm=TRUE))
-                              else if (which[w] == 51)
-                                  oce.plot.ts(x@data$time, x@data$bv[,1], ylab="Beam 1 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE))
-                              else if (which[w] == 52)
-                                  oce.plot.ts(x@data$time, x@data$bv[,2], ylab="Beam 2 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,2], na.rm=TRUE))
-                              else if (which[w] == 53)
-                                  oce.plot.ts(x@data$time, x@data$bv[,3], ylab="Beam 3 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,3], na.rm=TRUE))
-                              else if (which[w] == 54)
-                                  oce.plot.ts(x@data$time, x@data$bv[,4], ylab="Beam 4 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,4], na.rm=TRUE))
+                              if (which[w] == 50) {
+                                  oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE), ylab="Range [m]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$bv, na.rm=TRUE))
+                              } else if (which[w] == 51) {
+                                  oce.plot.ts(x@data$time, x@data$bv[,1], ylab="Beam 1 velocity [m/s]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE))
+                              } else if (which[w] == 52) {
+                                  oce.plot.ts(x@data$time, x@data$bv[,2], ylab="Beam 2 velocity [m/s]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,2], na.rm=TRUE))
+                              } else if (which[w] == 53) {
+                                  oce.plot.ts(x@data$time, x@data$bv[,3], ylab="Beam 3 velocity [m/s]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,3], na.rm=TRUE))
+                              } else if (which[w] == 54) {
+                                  oce.plot.ts(x@data$time, x@data$bv[,4], ylab="Beam 4 velocity [m/s]",
+                                              type=type,
+                                              ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,4], na.rm=TRUE))
+                              }
                           } else {
                               warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
                           }
@@ -1041,8 +1063,7 @@ setMethod(f="plot",
                       }
                       if (main[w] != "")
                           mtext(main[w], adj=1)
-                      if (which[w] >= 29 && which[2] < 40) {
-                          cat("bottom-1 FIXME DAN\n")
+                      if (which[w] >= 29 && which[w] < 40) {
                           ok <- !is.na(u) & !is.na(v)
                           e <- eigen(cov(data.frame(u[ok],v[ok])))
                           major <- sqrt(e$values[1])  # major
@@ -1416,3 +1437,20 @@ display.bytes <- function(b, label="", ...)
     cat("\n", label, " (", n, "bytes)\n", sep="", ...)
     print(b, ...)
 }
+
+subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "\b\bsubtractBottomVelocity(x) {\n")
+    if (x@metadata$oceCoordinate != "beam") stop("input must be in beam coordinates")
+    if (!("bv" %in% names(x@data))) stop("there is no bottom velocity in this object")
+    rval <- x
+    numberOfBeams <- dim(x@data$v)[3] # could also get from metadata but this is less brittle
+    for (beam in 1:numberOfBeams) {
+        oceDebug(debug, "beam #", beam, "\n")
+        rval@data$v[,,beam] <- x@data$v[,,beam] - x@data$bv[,beam] 
+    }
+    oceDebug(debug, "\b\b\b} # subtractBottomVelocity()\n")
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval
+}
+
