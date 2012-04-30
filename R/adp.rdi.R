@@ -302,10 +302,11 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", profileStart[middle], "\n")
         return(list(index=middle, time=t))
     }
-    oceDebug(debug, "read.adp.rdi(...,from=",format(from),",to=",format(to), "...)\n")
-    oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
-    from.keep <- from
-    to.keep <- to
+    gaveFromTo <- !missing(from) && !missing(to)
+    if (gaveFromTo) {
+        oceDebug(debug, "read.adp.rdi(...,from=",format(from),",to=",format(to), "...)\n")
+        oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
+    }
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -340,6 +341,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
         oceDebug(debug, "profilesInFile=", profilesInFile, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
+        if (!gaveFromTo) {             # read whole file if 'from' and 'to' not given
+            from <- 1
+            to <- profilesInFile
+        }
         if (profilesInFile > 0)  {
             measurementStart <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[1]+4])),
                                             as.integer(buf[profileStart[1]+5]), # month
