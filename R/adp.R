@@ -433,10 +433,10 @@ setMethod(f="plot",
               if (gave.ylim) {
                   if (is.matrix(ylim)) {
                       if (dim(ylim)[2] != nw) {
-                          ylim2 <- matrix(ylim, ncol=2, nrow=nw) # FIXME: is this what I want?
+                          ylim2 <- matrix(ylim, ncol=2, nrow=nw, byrow=TRUE) # FIXME: is this what I want?
                       }
                   } else {
-                      ylim2 <- matrix(ylim, ncol=2, nrow=nw) # FIXME: is this what I want?
+                      ylim2 <- matrix(ylim, ncol=2, nrow=nw, byrow=TRUE) # FIXME: is this what I want?
                   }
                   class(ylim2) <- class(ylim)
                   ylim <- ylim2
@@ -704,8 +704,7 @@ setMethod(f="plot",
                                       mgp=mgp,
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
-                      }
-                      if (which[w] == 14) {
+                      } else if (which[w] == 14) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$temperature,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -722,8 +721,7 @@ setMethod(f="plot",
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       adorn=adorn[w],
                                       debug=debug-1)
-                      }
-                      if (which[w] == 15) {
+                      } else if (which[w] == 15) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$pressure,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -739,8 +737,7 @@ setMethod(f="plot",
                                       mgp=mgp,
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
-                      }
-                      if (which[w] == 16) {
+                      } else if (which[w] == 16) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$heading,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -756,8 +753,7 @@ setMethod(f="plot",
                                       mgp=mgp,
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
-                      }
-                      if (which[w] == 17) {
+                      } else if (which[w] == 17) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$pitch,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -773,8 +769,7 @@ setMethod(f="plot",
                                       mgp=mgp,
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
-                      }
-                      if (which[w] == 18) {
+                      } else if (which[w] == 18) {
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x@data$time, x@data$roll,
                                       xlim=if(gave.xlim) xlim[w,] else tlim,
@@ -790,8 +785,7 @@ setMethod(f="plot",
                                       mgp=mgp,
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       drawTimeRange=drawTimeRange, adorn=adorn[w])
-                      }
-                      if (which[w] == 19) {
+                      } else if (which[w] == 19) {
                           if (x@metadata$numberOfBeams > 0) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,1], 1, mean, na.rm=TRUE),
@@ -813,8 +807,7 @@ setMethod(f="plot",
                           } else {
                                   warning("cannot plot beam/velo 1 because the device no beams")
                           }
-                      }
-                      if (which[w] == 20) {
+                      } else if (which[w] == 20) {
                           if (x@metadata$numberOfBeams > 1) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,2], 1, mean, na.rm=TRUE),
@@ -836,8 +829,7 @@ setMethod(f="plot",
                           } else {
                               warning("cannot plot beam/velo 2 because the device has only ", x@metadata$numberOfBeams, " beams")
                           }
-                      }
-                      if (which[w] == 21) {
+                      } else if (which[w] == 21) {
                           if (x@metadata$numberOfBeams > 2) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,3], 1, mean, na.rm=TRUE),
@@ -859,8 +851,7 @@ setMethod(f="plot",
                           } else {
                                   warning("cannot plot beam/velo 3 because the device has only", x@metadata$numberOfBeams, "beams")
                           }
-                      }
-                      if (which[w] == 22) {
+                      } else if (which[w] == 22) {
                           if (x@metadata$numberOfBeams > 3) {
                               if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                               oce.plot.ts(x@data$time, apply(x@data$v[,,4], 1, mean, na.rm=TRUE),
@@ -882,8 +873,7 @@ setMethod(f="plot",
                           } else {
                               warning("cannot plot beam/velo 4 because the device has only", x@metadata$numberOfBeams, "beams")
                           }
-                      }
-                      if (which[w] %in% 55) { # heaving
+                      } else  if (which[w] == 55) { # heaving
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           dt <- as.numeric(x@data$time[2]) - as.numeric(x@data$time[1])
                           oce.plot.ts(x@data$time, dt * cumsum(apply(x@data$v[,,3], 1, mean)),
@@ -903,8 +893,7 @@ setMethod(f="plot",
                                   drawTimeRange=drawTimeRange,
                                   adorn=adorn[w], ...)
                           drawTimeRange <- FALSE
-                      }
-                      if (which[w] == 100) {
+                      } else if (which[w] == 100) {
                           oceDebug(debug, "draw(ctd, ...) of type 'soundSpeed'\n")
                           if (haveTimeImages) drawPalette(debug=debug-1, mai=mai.palette)
                           oce.plot.ts(x[["time"]], x[["soundSpeed"]],
@@ -922,7 +911,42 @@ setMethod(f="plot",
                                       mar=if(haveTimeImages) par('mar') else c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                       adorn=adorn[w],
                                       debug=debug-1)
+                      } else if (which[w] %in% 40:44) { # bottomRange
+                          par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+                          n <- prod(dim(x@data$v)[1:2])
+                          if ("br" %in% names(x@data)) {
+                              if (which[w] == 40)
+                                  oce.plot.ts(x@data$time, apply(x@data$br, 1, mean, na.rm=TRUE), ylab="Range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br, na.rm=TRUE))
+                              else if (which[w] == 41)
+                                  oce.plot.ts(x@data$time, x@data$br[,1], ylab="Beam 1 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,1], na.rm=TRUE))
+                              else if (which[w] == 42)
+                                  oce.plot.ts(x@data$time, x@data$br[,2], ylab="Beam 2 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,2], na.rm=TRUE))
+                              else if (which[w] == 43)
+                                  oce.plot.ts(x@data$time, x@data$br[,3], ylab="Beam 3 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,3], na.rm=TRUE))
+                              else if (which[w] == 44)
+                                  oce.plot.ts(x@data$time, x@data$br[,4], ylab="Beam 4 range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$br[,4], na.rm=TRUE))
+                          } else {
+                              warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
+                          }
+                      } else if (which[w] %in% 50:54) { # bottom velocity
+                          par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
+                          n <- prod(dim(x@data$v)[1:2])
+                          if ("bv" %in% names(x@data)) {
+                              if (which[w] == 50)
+                                  oce.plot.ts(x@data$time, apply(x@data$bv, 1, mean, na.rm=TRUE), ylab="Range [m]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv, na.rm=TRUE))
+                              else if (which[w] == 51)
+                                  oce.plot.ts(x@data$time, x@data$bv[,1], ylab="Beam 1 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,1], na.rm=TRUE))
+                              else if (which[w] == 52)
+                                  oce.plot.ts(x@data$time, x@data$bv[,2], ylab="Beam 2 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,2], na.rm=TRUE))
+                              else if (which[w] == 53)
+                                  oce.plot.ts(x@data$time, x@data$bv[,3], ylab="Beam 3 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,3], na.rm=TRUE))
+                              else if (which[w] == 54)
+                                  oce.plot.ts(x@data$time, x@data$bv[,4], ylab="Beam 4 velocity [m/s]", ylim=if(gave.ylim) ylim[w,] else range(x@data$bv[,4], na.rm=TRUE))
+                          } else {
+                              warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
+                          }
                       }
+ 
                       ## FIXME delete the next block, after testing.
                       if (marginsAsImage && useLayout)  { # FIXME: I think this should be deleted
                           ## blank plot, to get axis length same as for images
@@ -1017,7 +1041,8 @@ setMethod(f="plot",
                       }
                       if (main[w] != "")
                           mtext(main[w], adj=1)
-                      if (which[w] >= 29) {
+                      if (which[w] >= 29 && which[2] < 40) {
+                          cat("bottom-1 FIXME DAN\n")
                           ok <- !is.na(u) & !is.na(v)
                           e <- eigen(cov(data.frame(u[ok],v[ok])))
                           major <- sqrt(e$values[1])  # major
@@ -1055,41 +1080,7 @@ setMethod(f="plot",
                               arrows(0, 0, umean, vmean, lwd=2, length=1/10, col=col)
                           }
                       }
-                  } else if (which[w] %in% 40:44) { # bottomRange
-                      par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                      n <- prod(dim(x@data$v)[1:2])
-                      if ("bottomRange" %in% names(x@data)) {
-                          if (which[w] == 40)
-                              oce.plot.ts(x@data$time, apply(x@data$bottomRange, 1, mean, na.rm=TRUE), ylab="Range [m]")
-                          else if (which[w] == 41)
-                              oce.plot.ts(x@data$time, x@data$bottomRange[,1], ylab="Beam 1 range [m]")
-                          else if (which[w] == 42)
-                              oce.plot.ts(x@data$time, x@data$bottomRange[,2], ylab="Beam 1 range [m]")
-                          else if (which[w] == 43)
-                              oce.plot.ts(x@data$time, x@data$bottomRange[,3], ylab="Beam 1 range [m]")
-                          else if (which[w] == 44)
-                              oce.plot.ts(x@data$time, x@data$bottomRange[,4], ylab="Beam 1 range [m]")
-                      } else {
-                          warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
-                      }
-                  } else if (which[w] %in% 50:54) { # bottom velocity
-                      par(mar=c(mgp[1]+1,mgp[1]+1,1,1))
-                      n <- prod(dim(x@data$v)[1:2])
-                      if ("bottom velocity" %in% names(x@data)) {
-                          if (which[w] == 50)
-                              oce.plot.ts(x@data$time, apply(x@data$bottomVelocity, 1, mean, na.rm=TRUE), ylab="Range [m]")
-                          else if (which[w] == 51)
-                              oce.plot.ts(x@data$time, x@data$bottomVelocity[,1], ylab="Beam 1 velocity [m/s]")
-                          else if (which[w] == 52)
-                              oce.plot.ts(x@data$time, x@data$bottomVelocity[,2], ylab="Beam 2 velocity [m/s]")
-                          else if (which[w] == 53)
-                              oce.plot.ts(x@data$time, x@data$bottomVelocity[,3], ylab="Beam 3 velocity [m/s]")
-                          else if (which[w] == 54)
-                              oce.plot.ts(x@data$time, x@data$bottomVelocity[,4], ylab="Beam 4 velocity [m/s]")
-                      } else {
-                          warning("cannot handle which= ", which[w], " because this instrument lacked bottom tracking")
-                      }
-                  } else if (which[w] == 60) {
+                 } else if (which[w] == 60) {
                       oceDebug(debug, "draw(ctd, ...) of type MAP\n")
                       ## get coastline file
                       if (is.character(coastline)) {
