@@ -6,16 +6,20 @@
 
 \description{Compute, \eqn{\rho}{rho}, the \emph{in-situ} density of seawater.}
 
-\usage{swRho(salinity, temperature=NULL, pressure=NULL)}
+\usage{swRho(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"), longitude, latitude)}
 
 \arguments{
-  \item{salinity}{either salinity [PSU] (in which case
+  \item{salinity}{either salinity (in which case
     \code{temperature} and \code{pressure} must be provided) \strong{or}
     a \code{ctd} object (in which case \code{salinity},
     \code{temperature} and \code{pressure} are determined from the
     object, and must not be provided in the argument list).}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
+  \item{eos}{equation of state to use, either \code{unesco} for the UNESCO
+      formulation [1,2], or \code{teos} for the TEOS-10 formulation [3].}
+  \item{longitude}{longitude of observation (only used if \code{eos="teos"}).}
+  \item{latitude}{latitude of observation (only used if \code{eos="teos"}).}
 }
 
 \details{If the first argument is a \code{ctd} object, then salinity,
@@ -35,14 +39,20 @@
 \code{\link{swSigmaTheta}}. 
 }
 
-\examples{ rho <- swRho(35, 13, 1000) # 1030.818}
+\examples{rho <- swRho(35, 13, 1000) # 1030.818}
 
-\references{Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
- computation of fundamental properties of seawater. \emph{Unesco
- Technical Papers in Marine Science}, \bold{44}, 53 pp
+\references{[1] Fofonoff, P. and R. C. Millard Jr, 1983. Algorithms for
+    computation of fundamental properties of seawater. \emph{Unesco Technical
+        Papers in Marine Science}, \bold{44}, 53 pp
 
- Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
- York, 662 pp.}
+    [2] Gill, A.E., 1982. \emph{Atmosphere-ocean Dynamics}, Academic Press, New
+    York, 662 pp.
+
+[3] McDougall, T.J. and P.M. Barker, 2011: Getting started with TEOS-10 and the
+Gibbs Seawater (GSW) Oceanographic Toolbox, 28pp., SCOR/IAPSO WG127, ISBN
+978-0-646-55621-5.
+
+}
 
 \author{Dan Kelley}
 

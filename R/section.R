@@ -178,11 +178,11 @@ makeSection <- function(item, ...)
     res
 }
 
-##setMethod(f="plot", signature=signature("section"), definition=function(x,
 setMethod(f="plot",
           signature=signature("section"),
           definition=function(x,
                               which=c("salinity", "temperature", "sigmaTheta", "map"),
+                              eos=getOption("eos", default='unesco'),
                               at=NULL,
                               labels=TRUE,
                               grid = FALSE,
@@ -203,8 +203,9 @@ setMethod(f="plot",
                               ...)
           {
               debug <- if (debug > 2) 2 else floor(0.5 + debug)
-              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), ...) {\n")
-              plotSubsection <- function(variable="temperature", title="Temperature",
+              oceDebug(debug, "\bplot.section(..., which=c(", paste(which, collapse=","), "), eos=\"", eos, "\", ...) {\n")
+              plotSubsection <- function(variable="temperature", vtitle="T",
+                                         eos=getOption("eos", default='unesco'),
                                          indicate.stations=TRUE, contourLevels=NULL, contourLabels=NULL,
                                          xlim=NULL,
                                          ylim=NULL,
@@ -213,7 +214,7 @@ setMethod(f="plot",
                                          col=par("col"),
                                          ...)
               {
-                  oceDebug(debug, "\bplotSubsection(variable=", variable, ",...) {\n")
+                  oceDebug(debug, "\bplotSubsection(variable=", variable, ", eos=\"", eos, "\", ...) {\n")
                   if (variable == "map") {
                       lat <- array(NA, numStations)
                       lon <- array(NA, numStations)
@@ -340,7 +341,17 @@ setMethod(f="plot",
                                           / diff(x@data$station[[stationIndices[i]]]@data[["pressure"]]))
                               zz[i,] <- -c(dSdp[1], dSdp) # repeat first, to make up length
                           } else if (variable != "data") {
-                              zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                              if (eos == "teos") {
+                                  if (variable == "salinity") {
+                                      zz[i,] <- rev(swAbsoluteSalinity(x@data$station[[stationIndices[i]]]))
+                                  } else if (variable == "temperature") {
+                                      zz[i,] <- rev(swConservativeTemperature(x@data$station[[stationIndices[i]]]))
+                                  } else {
+                                      zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                                  }
+                              } else {
+                                  zz[i,] <- rev(x@data$station[[stationIndices[i]]]@data[[variable]])
+                              }
                           }
                           if (grid) points(rep(xx[i], length(yy)), yy, col="gray", pch=20, cex=1/3)
                           temp <- x@data$station[[stationIndices[i]]]@data$temperature
@@ -448,7 +459,7 @@ setMethod(f="plot",
                       axis(1)
                       ##lines(xx, -waterDepth[ox], col='red')
                       if (legend)
-                          legend(legend.loc, title, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
+                          legend(legend.loc, legend=vtitle, bg="white", x.intersp=0, y.intersp=0.5,cex=1)
                   }
                   oceDebug(debug, "\b} # plotSubsection()\n")
               }                                   # plotSubsection
@@ -557,9 +568,9 @@ setMethod(f="plot",
                   oceDebug(debug, "w=", w, "\n")
                   if (!missing(contourLevels)) {
                       if (which[w] == 1)
-                          plotSubsection("temperature", "T", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 2)
-                          plotSubsection("salinity",    "S", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] > 2 && which[w] < 3)
                           plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 3)
@@ -576,9 +587,9 @@ setMethod(f="plot",
                           plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   } else {
                       if (which[w] == 1)
-                          plotSubsection("temperature", "T", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 2)
-                          plotSubsection("salinity",    "S", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] > 2 && which[w] < 3)
                           plotSubsection("salinity gradient","dS/dz", ylab="", xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 3)

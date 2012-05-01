@@ -9,6 +9,8 @@
 \usage{plotProfile(x,
              xtype="salinity+temperature", 
              ytype=c("pressure", "z", "sigmaTheta"),
+             eos=getOption("eos", default='unesco'),
+             xlab=NULL, ylab=NULL,
              col.salinity="darkgreen",
              col.temperature="red",
              col.rho="blue",
@@ -26,7 +28,7 @@
 	     keepNA=FALSE,
              type='l',
              mgp=getOption("oceMgp"),
-             mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+1, mgp[1] + 2, 1),
+             mar=c(1 + if (length(grep('\\\\+', xtype))) mgp[1] else 0, mgp[1]+2, mgp[1] + 2, 2),
              inset=FALSE,
              debug=getOption("oceDebug"),
              \dots)
@@ -36,20 +38,20 @@
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{xtype}{Item(s) plotted on the x axis, from the list below.
     \describe{
-      \item{\code{salinity}}{Profile of salinity.}
-      \item{\code{temperature}}{Profile of \emph{in-situ} temperature.}
-      \item{\code{density}}{Profile of density (expressed as
+      \item{\code{"salinity"}}{Profile of salinity.}
+      \item{\code{"temperature"}}{Profile of \emph{in-situ} temperature.}
+      \item{\code{"density"}}{Profile of density (expressed as
 	\eqn{\sigma_\theta}{sigma_theta}).}
-      \item{\code{index}}{Index of sample (very useful for working with
+      \item{\code{"index"}}{Index of sample (very useful for working with
 	\code{\link{ctdTrim}}).}
-      \item{\code{S+T}}{Profile of salinity and temperature within a
+      \item{\code{"S+T"}}{Profile of salinity and temperature within a
 	single axis frame.}
-      \item{\code{N2}}{Profile of square of buoyancy frequency \eqn{N^2}{N^2},
+      \item{\code{"N2"}}{Profile of square of buoyancy frequency \eqn{N^2}{N^2},
           calculated with \code{\link{swN2}} with an optional argument setting
           of \code{df=length(x[["pressure"]])/4} to do some smoothing.}
-      \item{\code{density+N2}}{Profile of sigma-theta and the square of buoyancy
+      \item{\code{"density+N2"}}{Profile of sigma-theta and the square of buoyancy
 	frequency within a single axis frame.}
-      \item{\code{density+dpdt}}{Profile of sigma-theta and dP/dt for
+      \item{\code{"density+dpdt"}}{Profile of sigma-theta and dP/dt for
 	the sensor.  The latter is useful in indicating problems with
 	the deployment.  It is calculated by first differencing pressure
 	and then using a smoothing spline on the result (to avoid
@@ -58,16 +60,24 @@
 	off by a scale factor; this should not be a problem if there is
 	a \code{time} column in the \code{data} slot, or a \code{sample.rate}
         in the \code{metadata} slot. }
-      \item{\code{spice}}{Profile of spice}
+      \item{\code{"spice"}}{Profile of spice}
+      \item{an expression}{an expression to be evaluated, in the calling
+          environment, for some quantity; in this case, it makes sense to
+          specify also \code{xlab}.}
     }
   }
   \item{ytype}{variable to use on y axis.}
-  \item{col.salinity}{Color for salinity profile.}
-  \item{col.temperature}{Color for temperature.}
-  \item{col.rho}{Color for density.}
-  \item{col.N2}{Color for square of buoyancy frequency.}
-  \item{col.dpdt}{Color for dP/dt.}
-  \item{col.time}{Color for delta-time.}
+  \item{eos}{name of equation of state to be used, either \code{"unesco"} or
+      \code{"teos"}.  If the latter, then the computer must have the TEOS
+      library installed; see \code{\link{teos}}.}
+  \item{xlab}{optional label for x axis}
+  \item{ylab}{optional label for y axis}
+  \item{col.salinity}{color for salinity profile (see \dQuote{Details}).}
+  \item{col.temperature}{color for temperature (see \dQuote{Details}).}
+  \item{col.rho}{color for density (see \dQuote{Details}).}
+  \item{col.N2}{color for square of buoyancy frequency (see \dQuote{Details}).}
+  \item{col.dpdt}{color for dP/dt.}
+  \item{col.time}{color for delta-time.}
   \item{grid}{logical, set to \code{TRUE} to get a grid.}
   \item{col.grid}{colour for grid.}
   \item{lty.grid}{line type for grid.}
@@ -101,6 +111,9 @@
   \item{\dots}{Optional arguments passed to other functions.  A common example is
     to set \code{df}, for use in \link{swN2} calculations.} 
 }
+
+\details{The colours (\code{col.salinity}, etc.) are ony used if two profiles
+    appear on a plot.}
 
 \value{None.}
 
