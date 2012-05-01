@@ -178,7 +178,7 @@ drawPalette <- function(zlim,
 
 imagep <- function(x, y, z,
                    xlim, ylim, zlim,
-                   flip.y=FALSE,
+                   flipy=FALSE,
                    xlab="", ylab="", zlab="",
                    breaks, col,
                    labels=NULL, at=NULL,
@@ -198,7 +198,7 @@ imagep <- function(x, y, z,
                    debug=getOption("oceDebug"),
                    ...)
 {
-    oceDebug(debug, "\b\bimagep() {\n")
+    oceDebug(debug, "\b\bimagep(..., flipy=", flipy, ", ...) {\n", sep="")
     oceDebug(debug, " xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep="")
     oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
     oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
@@ -321,6 +321,11 @@ imagep <- function(x, y, z,
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
+    if (flipy) {
+        ## nc <- ncol(z)
+        ## z[, seq.int(nc, 1L)] <- z[, seq.int(1L, nc)]
+        ylim <- rev(ylim)
+    }
     if (x.is.time) {
         if (filledContour) {
             if (!is.double(z))
@@ -328,9 +333,7 @@ imagep <- function(x, y, z,
             plot.new()
             plot.window(xlim=xlim, ylim=ylim, xaxs=xaxs, yaxs=yaxs)
             ## Filled contours became official in version 2.15.0 of R.
-            cat("about to test...\n")
             .filled.contour(as.double(xorig), as.double(yorig), z, as.double(breaks), col=col)
-            cat("ok?\n")
             mtext(ylab, side=2, line=par('mgp')[1])
         } else {
             if (!breaksGiven) {

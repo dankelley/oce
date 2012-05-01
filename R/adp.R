@@ -149,19 +149,6 @@ tail.adp <- function(x, n = 6L, ...)
     rval 
 }
 
-removeShipMotion <- function(x)
-{
-    rval <- x
-    if (!("bottomRange" %in% names(x@data)))
-        return(rval)
-    numberOfBeams <- dim(x@data$v)[3] # could also get from metadata but this is less brittle
-    for (beam in 1:numberOfBeams) {
-        rval@data$v[,,beam] <- rval@data$v[,,beam] - rval@data$bottomVelocity[,beam]
-    }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
-}
-
 coordinate <- function(x)
 {
     if (inherits(x, "adp") || inherits(x, "adv"))
@@ -588,7 +575,7 @@ setMethod(f="plot",
                       oceDebug(debug, "calling par(mfrow=c(", nw, ", 1)\n")
                   }
               }
-              flip.y <- ytype == "profile" && x@metadata$orientation == "downward"
+              flipy <- ytype == "profile" && x@metadata$orientation == "downward"
               haveTimeImages <- any(which %in% images)
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               for (w in 1:nw) {
@@ -601,7 +588,7 @@ setMethod(f="plot",
                           y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
                           zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                           zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                          oceDebug(debug, 'flip.y=', flip.y, '\n')
+                          oceDebug(debug, 'flipy=', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) { # amplitude
                           z <- as.numeric(x@data$a[,,which[w]-4])
                           dim(z) <- dim(x@data$a)[1:2]
@@ -644,7 +631,7 @@ setMethod(f="plot",
                               imagep(x=tt, y=x@data$distance, z=z,
                                      xlim=xlim[w,],
                                      zlim=zlim,
-                                     flip.y=flip.y,
+                                     flipy=flipy,
                                      col=if (gave.col) col else oceColorsPalette(128, 1),
                                      ylab=resizableLabel("distance"),
                                      xlab="Time",
@@ -663,7 +650,7 @@ setMethod(f="plot",
                           } else {
                               imagep(x=tt, y=x@data$distance, z=z,
                                      zlim=zlim,
-                                     flip.y=flip.y,
+                                     flipy=flipy,
                                      col=if (gave.col) col else oceColorsPalette(128, 1),
                                      ylab=resizableLabel("distance"),
                                      xlab="Time",
@@ -1442,8 +1429,12 @@ display.bytes <- function(b, label="", ...)
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bsubtractBottomVelocity(x) {\n")
-    if (x@metadata$oceCoordinate != "beam") stop("input must be in beam coordinates")
-    if (!("bv" %in% names(x@data))) stop("there is no bottom velocity in this object")
+    if (x@metadata$oceCoordinate != "beam")
+        stop("input must be in beam coordinates (this rule will be dropped when the various coordinate changes alter bottom velo as well as velo)\n")
+    if (!("bv" %in% names(x@data))) {
+        warning("there is no bottom velocity in this object")
+        return(x)
+    }
     rval <- x
     numberOfBeams <- dim(x@data$v)[3] # could also get from metadata but this is less brittle
     for (beam in 1:numberOfBeams) {
