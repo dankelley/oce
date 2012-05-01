@@ -149,19 +149,6 @@ tail.adp <- function(x, n = 6L, ...)
     rval 
 }
 
-removeShipMotion <- function(x)
-{
-    rval <- x
-    if (!("bottomRange" %in% names(x@data)))
-        return(rval)
-    numberOfBeams <- dim(x@data$v)[3] # could also get from metadata but this is less brittle
-    for (beam in 1:numberOfBeams) {
-        rval@data$v[,,beam] <- rval@data$v[,,beam] - rval@data$bottomVelocity[,beam]
-    }
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
-}
-
 coordinate <- function(x)
 {
     if (inherits(x, "adp") || inherits(x, "adv"))
@@ -1442,8 +1429,12 @@ display.bytes <- function(b, label="", ...)
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bsubtractBottomVelocity(x) {\n")
-    if (x@metadata$oceCoordinate != "beam") stop("input must be in beam coordinates")
-    if (!("bv" %in% names(x@data))) stop("there is no bottom velocity in this object")
+    if (x@metadata$oceCoordinate != "beam")
+        stop("input must be in beam coordinates (this rule will be dropped when the various coordinate changes alter bottom velo as well as velo)\n")
+    if (!("bv" %in% names(x@data))) {
+        warning("there is no bottom velocity in this object")
+        return(x)
+    }
     rval <- x
     numberOfBeams <- dim(x@data$v)[3] # could also get from metadata but this is less brittle
     for (beam in 1:numberOfBeams) {
