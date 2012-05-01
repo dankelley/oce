@@ -575,7 +575,7 @@ setMethod(f="plot",
                       oceDebug(debug, "calling par(mfrow=c(", nw, ", 1)\n")
                   }
               }
-              flip.y <- ytype == "profile" && x@metadata$orientation == "downward"
+              flipy <- ytype == "profile" && x@metadata$orientation == "downward"
               haveTimeImages <- any(which %in% images)
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               for (w in 1:nw) {
@@ -588,7 +588,7 @@ setMethod(f="plot",
                           y.look <- if (gave.ylim) ylim.given[1] <= x@data$distance & x@data$distance <= ylim.given[2] else rep(TRUE, length(x@data$distance))
                           zlim <- if (gave.zlim) zlim.given[w,] else max(abs(x@data$v[,y.look,which[w]]), na.rm=TRUE) * c(-1,1)
                           zlab <- if (missing(titles)) beamName(x, which[w]) else titles[w]
-                          oceDebug(debug, 'flip.y=', flip.y, '\n')
+                          oceDebug(debug, 'flipy=', flipy, '\n')
                       } else if (which[w] %in% 5:(4+x@metadata$numberOfBeams)) { # amplitude
                           z <- as.numeric(x@data$a[,,which[w]-4])
                           dim(z) <- dim(x@data$a)[1:2]
@@ -631,7 +631,7 @@ setMethod(f="plot",
                               imagep(x=tt, y=x@data$distance, z=z,
                                      xlim=xlim[w,],
                                      zlim=zlim,
-                                     flip.y=flip.y,
+                                     flipy=flipy,
                                      col=if (gave.col) col else oceColorsPalette(128, 1),
                                      ylab=resizableLabel("distance"),
                                      xlab="Time",
@@ -650,7 +650,7 @@ setMethod(f="plot",
                           } else {
                               imagep(x=tt, y=x@data$distance, z=z,
                                      zlim=zlim,
-                                     flip.y=flip.y,
+                                     flipy=flipy,
                                      col=if (gave.col) col else oceColorsPalette(128, 1),
                                      ylab=resizableLabel("distance"),
                                      xlab="Time",
