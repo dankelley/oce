@@ -1141,7 +1141,7 @@ setMethod(f="plot",
 
 toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\badp.2enu() {\n")
+    oceDebug(debug, "\b\btoEnuAdp() {\n")
     coord <- x@metadata$oceCoordinate
     if (coord == "beam") {
         x <- xyzToEnuAdp(beamToXyzAdp(x, debug=debug-1), declination=declination, debug=debug-1)
@@ -1150,9 +1150,9 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     } else if (coord == "enu") {
         ;
     } else {
-        warning("adp.2enu cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
+        warning("toEnuAdp cannot convert from coordinate system ", coord, " to ENU, so returning argument as-is")
     }
-    oceDebug(debug, "\b\b} # adp.2enu()\n")
+    oceDebug(debug, "\b\b} # toEnuAdp()\n")
     x
 }
 
@@ -1218,6 +1218,13 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3] + tm[2,4] * V[,,4]
         res@data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3] + tm[3,4] * V[,,4]
         res@data$v[,,4] <- tm[4,1] * V[,,1] + tm[4,2] * V[,,2] + tm[4,3] * V[,,3] + tm[4,4] * V[,,4]
+        if ("bv" %in% names(x@data)) { # bottom velocity
+            V <- x@data$bv
+            res@data$bv[,1] <- tm[1,1] * V[,1] + tm[1,2] * V[,2] + tm[1,3] * V[,3] + tm[1,4] * V[,4]
+            res@data$bv[,2] <- tm[2,1] * V[,1] + tm[2,2] * V[,2] + tm[2,3] * V[,3] + tm[2,4] * V[,4]
+            res@data$bv[,3] <- tm[3,1] * V[,1] + tm[3,2] * V[,2] + tm[3,3] * V[,3] + tm[3,4] * V[,4]
+            res@data$bv[,4] <- tm[4,1] * V[,1] + tm[4,2] * V[,2] + tm[4,3] * V[,3] + tm[4,4] * V[,4]
+        }
     } else if (length(grep(".*nortek.*", x@metadata$manufacturer))) {
         if (x@metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from nortek")
@@ -1234,6 +1241,12 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@data$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
         res@data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
         res@data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
+        if ("bv" %in% names(x@data)) { # bottom velocity
+            V <- x@data$bv
+            res@data$bv[,1] <- tm[1,1] * V[,1] + tm[1,2] * V[,2] + tm[1,3] * V[,3]
+            res@data$bv[,2] <- tm[2,1] * V[,1] + tm[2,2] * V[,2] + tm[2,3] * V[,3]
+            res@data$bv[,3] <- tm[3,1] * V[,1] + tm[3,2] * V[,2] + tm[3,3] * V[,3]
+        }
     } else if (length(grep(".*sontek.*", x@metadata$manufacturer))) {
         if (x@metadata$numberOfBeams != 3)
             stop("can only handle 3-beam ADP units from sontek")
@@ -1250,6 +1263,12 @@ beamToXyzAdp <- function(x, debug=getOption("oceDebug"))
         res@data$v[,,1] <- tm[1,1] * V[,,1] + tm[1,2] * V[,,2] + tm[1,3] * V[,,3]
         res@data$v[,,2] <- tm[2,1] * V[,,1] + tm[2,2] * V[,,2] + tm[2,3] * V[,,3]
         res@data$v[,,3] <- tm[3,1] * V[,,1] + tm[3,2] * V[,,2] + tm[3,3] * V[,,3]
+        if ("bv" %in% names(x@data)) { # bottom velocity
+            V <- x@data$bv
+            res@data$bv[,1] <- tm[1,1] * V[,1] + tm[1,2] * V[,2] + tm[1,3] * V[,3]
+            res@data$bv[,2] <- tm[2,1] * V[,1] + tm[2,2] * V[,2] + tm[2,3] * V[,3]
+            res@data$bv[,3] <- tm[3,1] * V[,1] + tm[3,2] * V[,2] + tm[3,3] * V[,3]
+        }
     } else {
         stop("adp type must be either \"rdi\" or \"nortek\" or \"sontek\"")
     }
@@ -1275,6 +1294,7 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     ## Case-by-case alteration of heading, pitch and roll, so we can use one formula for all.
     ## There are three instrumentType values, ("teledyn rdi", "nortek", and "sontek"), and
     ## three orientation values ("upward", "downward", and "sideward").
+    haveBv <- "bv" %in% names(x@data)
     if (1 == length(agrep("rdi", x@metadata$manufacturer, ignore.case=TRUE))) { # "teledyn rdi"
         ## h/p/r and s/f/m from Clark Richards pers. comm. 2011-03-14, revised 2011-03-15
         if (res@metadata$orientation == "upward") {
@@ -1284,6 +1304,11 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- -res@data$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res@data$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- -res@data$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            if (haveBv) {              # bottom velocity
+                starboardBv <- -res@data$bv[,1]
+                forwardBv <- res@data$bv[,2]
+                mastBv <- -res@data$bv[,3]
+            }
         } else if (res@metadata$orientation == "downward") {
             oceDebug(debug, "Case 2: RDI ADCP with downward-pointing sensor.\n")
             oceDebug(debug, "        Using roll=-roll, S=X, F=Y, and M=Z.\n")
@@ -1291,6 +1316,11 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[,,1] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             forward <- res@data$v[,,2] # p11 "RDI Coordinate Transformation Manual" (July 1998)
             mast <- res@data$v[,,3] # p11 "RDI Coordinate Transformation Manual" (July 1998)
+            if (haveBv) {              # bottom velocity
+                starboardBv <- res@data$bv[,1]
+                forwardBv <- res@data$bv[,2]
+                mastBv <- res@data$bv[,3]
+            }
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x@metadata$orientation,"'")
         }
@@ -1306,6 +1336,11 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[,,1]
             forward <- res@data$v[,,2]
             mast <- res@data$v[,,3]
+            if (haveBv) {              # bottom velocity
+                starboardBv <- res@data$bv[,1]
+                forwardBv <- res@data$bv[,2]
+                mastBv <- res@data$bv[,3]
+            }
         } else if (res@metadata$orientation == "downward") {
             oceDebug(debug, "Case 4: Nortek ADP with downward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=roll, roll=-pitch, S=X, F=-Y, and M=-Z.\n")
@@ -1316,6 +1351,11 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[,,1]
             forward <- -res@data$v[,,2]
             mast <- -res@data$v[,,3]
+            if (haveBv) {              # bottom velocity
+                starboardBv <- res@data$bv[,1]
+                forwardBv <- -res@data$bv[,2]
+                mastBv <- res@data$bv[,3]
+            }
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x@metadata$orientation,"'")
         }
@@ -1329,6 +1369,11 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[,,1]
             forward <- res@data$v[,,2]
             mast <- res@data$v[,,3]
+            if (haveBv) {              # bottom velocity
+                starboardBv <- res@data$bv[,1]
+                forwardBv <- res@data$bv[,2]
+                mastBv <- res@data$bv[,3]
+            }
         } else if (res@metadata$orientation == "downward") {
             oceDebug(debug, "Case 6: Sontek ADP with downward-pointing sensor.\n")
             oceDebug(debug, "        Using heading=heading-90, pitch=-pitch, roll=-roll, S=X, F=Y, and M=Z.\n")
@@ -1338,6 +1383,11 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
             starboard <- res@data$v[,,1]
             forward <- res@data$v[,,2]
             mast <- res@data$v[,,3]
+            if (haveBv) {              # bottom velocity
+                starboardBv <- res@data$bv[,1]
+                forwardBv <- res@data$bv[,2]
+                mastBv <- res@data$bv[,3]
+            }
         } else {
             stop("need metadata$orientation='upward' or 'downward', not '",x@metadata$orientation,"'")
         }
@@ -1369,6 +1419,25 @@ xyzToEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
         res@data$v[,c,1] <- enu$east
         res@data$v[,c,2] <- enu$north
         res@data$v[,c,3] <- enu$up
+    }
+    if (haveBv) {
+        enu <- .C("sfm_enu",
+                  as.integer(length(x@data$heading)), # need not equal np
+                  as.double(heading + declination),
+                  as.double(pitch),
+                  as.double(roll),
+                  as.integer(np),
+                  as.double(starboardBv),
+                  as.double(forwardBv),
+                  as.double(mastBv),
+                  east = double(np),
+                  north = double(np),
+                  up = double(np),
+                  NAOK=TRUE,
+                  PACKAGE="oce")
+        res@data$bv[,1] <- enu$east
+        res@data$bv[,2] <- enu$north
+        res@data$bv[,3] <- enu$up
     }
     res@metadata$oceCoordinate <- "enu"
     res@processingLog <- processingLog(res@processingLog,
@@ -1405,6 +1474,25 @@ enuToOtherAdp <- function(x, heading=0, pitch=0, roll=0)
         res@data$v[,c,2] <- other$v2new
         res@data$v[,c,3] <- other$v3new
     }
+    if ("bv" %in% names(x@data)) {
+        other <- .C("sfm_enu",
+                    as.integer(length(heading)),
+                    as.double(heading),
+                    as.double(pitch),
+                    as.double(roll),
+                    as.integer(np),
+                    as.double(x@data$bv[,1]),
+                    as.double(x@data$bv[,2]),
+                    as.double(x@data$bv[,3]),
+                    v1new = double(np),
+                    v2new = double(np),
+                    v3new = double(np),
+                    NAOK=TRUE,
+                    PACKAGE="oce")
+        res@data$bv[,1] <- other$v1new
+        res@data$bv[,2] <- other$v2new
+        res@data$bv[,3] <- other$v3new
+    }
     res@metadata$oceCoordinate <- "other"
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
@@ -1429,8 +1517,6 @@ display.bytes <- function(b, label="", ...)
 subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\b\bsubtractBottomVelocity(x) {\n")
-    if (x@metadata$oceCoordinate != "beam")
-        stop("input must be in beam coordinates (this rule will be dropped when the various coordinate changes alter bottom velo as well as velo)\n")
     if (!("bv" %in% names(x@data))) {
         warning("there is no bottom velocity in this object")
         return(x)
