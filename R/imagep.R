@@ -217,7 +217,7 @@ imagep <- function(x, y, z,
         y <- x$y
         z <- x$z
         x <- x$x
-    } else if (!missing(x) && is.array(x)) {
+    } else if (!missing(x) && is.array(x) && missing(z)) {
         if (length(dim(x)) > 2)
             stop("x must be a matrix, not an array with dim(x) = c(", paste(dim(x), collapse=","), ")\n")
         z <- x
@@ -234,6 +234,8 @@ imagep <- function(x, y, z,
         if (missing(z))
             stop("must supply z")
     }
+    x <- as.vector(x)
+    y <- as.vector(y)
     dim <- dim(z)
     if (nrow(z) != length(x) && (1+nrow(z)) != length(x))
         stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
