@@ -29,25 +29,26 @@ filterSomething <- function(x, filter)
 
 prettyPosition <- function(x)
 {
+    debug <- FALSE
     r <- diff(range(x, na.rm=TRUE))
-    ##cat('range(x)=', range(x), 'r=', r, '\n')
+    if (debug) cat('range(x)=', range(x), 'r=', r, '\n')
     if (r > 5) {                       # D only
         rval <- pretty(x)
     } else if (r > 1) {                # round to 30 minutes
         rval <- (1 / 2) * pretty(2 * x)
-        ##cat("case: 1 < r; rval=", rval, "\n")
-    } else if (r > 30/60) {            # round to 1 minute
+        if (debug) cat("case 1: rval=", rval, "\n")
+    } else if (r > 30/60) {            # round to 1 minute, with extras
         rval <- (1 / 60) * pretty(60 * x, n=6)
-        ##cat("case: 30/60 < r < 1; rval=", rval, "\n")
-    } else if (r > 10/60) {            # round to 1 minute
+        if (debug) cat("case 2: rval=", rval, "\n")
+    } else if (r > 5/60) {             # round to 1 minute
         rval <- (1 / 60) * pretty(60 * x)
-        ##cat("case: 10/60 < r < 1; rval=", rval, "\n")
+        if (debug) cat("case 3: rval=", rval, "\n")
     } else if (r > 10/3600) {          # round to 10 sec
         rval <- (1 / 360) * pretty(360 * x)
-        ##cat("case: 10/3600 < r < 10/60; rval=", rval, "\n")
+        if (debug) cat("case 4: rval=", rval, "\n")
     } else {                           # round to seconds
         rval <- (1 / 3600) * pretty(3600 * x)
-        ##cat("case: r < 10/3600; rval=", rval, "\n")
+        if (debug) cat("case 5: rval=", rval, "\n")
     }
     rval
 }
