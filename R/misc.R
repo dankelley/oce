@@ -27,6 +27,22 @@ filterSomething <- function(x, filter)
     res
 }
 
+roundPosition <- function(x)
+{
+    r <- diff(range(x, na.rm=TRUE))
+    if (r > 5) {                       # D only
+        round(pretty(x))
+    } else if (r > 1) {                # round to 30 minutes
+        (1 / 2) * round(pretty(2 * x))
+    } else if (r > 0.1) {              # round to 1 minute
+        (1 / 60) * round(pretty(60 * x))
+    } else if (r > 0.1) {              # round to 10 sec
+        (1 / 360) * round(pretty(360 * x))
+    } else {                           # round to 10 seconds
+        (1 / 3600) * round(pretty(3600 * x))
+    }
+}
+
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
 {
     type <- match.arg(type)
@@ -36,6 +52,16 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
     seconds <- round(seconds, 2)
+
+    ## prevent rounding errors from giving e.g. seconds=60
+    ##print(data.frame(degrees,minutes,seconds))
+    secondsOverflow <- seconds == 60
+    seconds <- ifelse(secondsOverflow, 0, seconds)
+    minutes <- ifelse(secondsOverflow, minutes+1, minutes)
+    minutesOverflow <- minutes == 60
+    degrees <- ifelse(minutesOverflow, degrees+1, degrees)
+    ##print(data.frame(degrees,minutes,seconds))
+
     noSeconds <- all(seconds == 0)
     noMinutes <- noSeconds & all(minutes == 0)
     hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
