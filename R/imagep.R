@@ -239,8 +239,10 @@ imagep <- function(x, y, z,
         if (missing(z))
             stop("must supply z")
     }
-    x <- as.vector(x)
-    y <- as.vector(y)
+    if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
+        x <- as.vector(x)
+    if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
+        y <- as.vector(y)
     dim <- dim(z)
     if (nrow(z) != length(x) && (1+nrow(z)) != length(x))
         stop("image width (", ncol(z), ") does not match length of x (", length(x), ")")
