@@ -19,7 +19,7 @@
      fill='lightgray',
      axes=TRUE, cex.axis=par('cex.axis'),
      add=FALSE, inset=FALSE,
-     geographical=FALSE,
+     geographical=0,
      debug=getOption("oceDebug"),
      \dots)}
 
@@ -77,8 +77,13 @@
       effect is to prevent the present function from adjusting margins, which
       is necessary because margin adjustment is the basis for the method
       used by \code{\link{plotInset}}.}
-  \item{geographical}{set to \code{TRUE} to get latitude and longitude labels
-      that are always positive.}
+  \item{geographical}{flag indicating the style of axes.  If
+      \code{geographical=0}, the axes are conventional, with decimal degrees as
+      the unit, and negative signs indicating the southern and western
+      hemispheres.  If \code{geographical=1}, the signs are dropped, with axis
+      values being in decreasing order within the southern and western
+      hemispheres.  If \code{geographical=2}, the signs are dropped and the
+      axes are labelled with degrees, minutes and seconds, as appropriate.}
   \item{debug}{set to \code{TRUE} to get debugging information during
     processing.}
   \item{\dots}{optional arguments passed to plotting functions.  For

@@ -42,7 +42,7 @@ setMethod(f="plot",
                                fill='lightgray',
                                axes=TRUE, cex.axis=par('cex.axis'),
                                add=FALSE, inset=FALSE,
-                               geographical=FALSE,
+                               geographical=0,
                                debug=getOption("oceDebug"),
                                ...)
           {
@@ -50,10 +50,14 @@ setMethod(f="plot",
                        ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", span=", if(missing(span)) "(missing)" else span,
+                       ", geographical=", geographical,
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="")
               ##cat("top of plot(ctd, which=", which, "...)   mai=", par('mai'), "\n") # FIXME
+              geographical <- round(geographical)
+              if (geographical < 0 || geographical > 2)
+                  stop("argument geographical must be 0, 1, or 2")
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
                       stop("list must contain item named 'longitude'")
@@ -188,9 +192,16 @@ setMethod(f="plot",
                       oceDebug(debug, "usrTrimmed", usrTrimmed, "\n")
                       xlabels <- format(xr.pretty)
                       ylabels <- format(yr.pretty)
-                      if (geographical) {
+                      if (geographical >= 1) {
                           xlabels <- sub("-", "", xlabels)
                           ylabels <- sub("-", "", ylabels)
+                      }
+                      if (geographical == 2) {
+                          ## FIXME: should be using a specialized pretty() for DMS
+                          xr.pretty <- roundPosition(xr.pretty)
+                          yr.pretty <- roundPosition(yr.pretty)
+                          xlabels <- formatPosition(xr.pretty, type='expression')
+                          ylabels <- formatPosition(yr.pretty, type='expression')
                       }
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom y axis at", usrTrimmed[3], "\n")
