@@ -27,20 +27,29 @@ filterSomething <- function(x, filter)
     res
 }
 
-roundPosition <- function(x)
+prettyPosition <- function(x)
 {
     r <- diff(range(x, na.rm=TRUE))
+    ##cat('range(x)=', range(x), 'r=', r, '\n')
     if (r > 5) {                       # D only
-        round(pretty(x))
+        rval <- pretty(x)
     } else if (r > 1) {                # round to 30 minutes
-        (1 / 2) * round(pretty(2 * x))
-    } else if (r > 0.1) {              # round to 1 minute
-        (1 / 60) * round(pretty(60 * x))
-    } else if (r > 0.1) {              # round to 10 sec
-        (1 / 360) * round(pretty(360 * x))
-    } else {                           # round to 10 seconds
-        (1 / 3600) * round(pretty(3600 * x))
+        rval <- (1 / 2) * pretty(2 * x)
+        ##cat("case: 1 < r; rval=", rval, "\n")
+    } else if (r > 30/60) {            # round to 1 minute
+        rval <- (1 / 60) * pretty(60 * x, n=6)
+        ##cat("case: 30/60 < r < 1; rval=", rval, "\n")
+    } else if (r > 10/60) {            # round to 1 minute
+        rval <- (1 / 60) * pretty(60 * x)
+        ##cat("case: 10/60 < r < 1; rval=", rval, "\n")
+    } else if (r > 10/3600) {          # round to 10 sec
+        rval <- (1 / 360) * pretty(360 * x)
+        ##cat("case: 10/3600 < r < 10/60; rval=", rval, "\n")
+    } else {                           # round to seconds
+        rval <- (1 / 3600) * pretty(3600 * x)
+        ##cat("case: r < 10/3600; rval=", rval, "\n")
     }
+    rval
 }
 
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
@@ -84,15 +93,19 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
         n <- length(degrees)
         rval <- vector("expression", n)
         for (i in 1:n) {
-            if (noMinutes) 
+            if (noMinutes) {
                 rval[i] <- as.expression(substitute(d*degree,
                                                     list(d=degrees[i])))
-            else if (noSeconds)
+            } else if (noSeconds) {
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute,
-                                                    list(d=degrees[i],m=minutes[i])))
-            else
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]))))
+            } else {
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
-                                                    list(d=degrees[i],m=minutes[i],s=seconds[i])))
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]),
+                                                         s=sprintf("%02d", seconds[i]))))
+            }
         }
     }
     rval

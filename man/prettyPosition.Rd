@@ -1,12 +1,12 @@
-\name{roundPosition}
+\name{prettyPosition}
 
-\alias{roundPosition}
+\alias{prettyPosition}
 
 \title{Round a geographical positions in degrees, minutes, and seconds}
 
 \description{Round a geographical positions in degrees, minutes, and seconds}
 
-\usage{roundPosition(x)}
+\usage{prettyPosition(x)}
 
 \arguments{
   \item{x}{a series of one or more values of a latitude or longitude, in
@@ -21,7 +21,7 @@
 
 \examples{
 library(oce)
-formatPosition(roundPosition(10+1:10/60+2.8/3600))
+formatPosition(prettyPosition(10+1:10/60+2.8/3600))
 }
 
 \author{Dan Kelley}

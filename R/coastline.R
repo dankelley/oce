@@ -197,9 +197,8 @@ setMethod(f="plot",
                           ylabels <- sub("-", "", ylabels)
                       }
                       if (geographical == 2) {
-                          ## FIXME: should be using a specialized pretty() for DMS
-                          xr.pretty <- roundPosition(xr.pretty)
-                          yr.pretty <- roundPosition(yr.pretty)
+                          xr.pretty <- prettyPosition(xr.pretty)
+                          yr.pretty <- prettyPosition(yr.pretty)
                           xlabels <- formatPosition(xr.pretty, type='expression')
                           ylabels <- formatPosition(yr.pretty, type='expression')
                       }
