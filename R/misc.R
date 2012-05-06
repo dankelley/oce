@@ -1504,7 +1504,7 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
     }
 }
 
-gradient <- function(h, x, y)
+grad <- function(h, x, y)
 {
     if (missing(h)) stop("must give h")
     if (missing(x)) stop("must give x")

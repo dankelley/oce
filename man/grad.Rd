@@ -1,12 +1,12 @@
-\name{gradient}
+\name{grad}
 
-\alias{gradient}
+\alias{grad}
 
 \title{Gradient of a matrix}
 
-\description{Calculate the gradient of a matrix by first differences}
+\description{Calculate the grad of a matrix by first differences}
 
-\usage{gradient(h, x, y)}
+\usage{grad(h, x, y)}
 
 \arguments{
     \item{h}{a matrix}
@@ -15,7 +15,7 @@
 }
 
 \details{In the interior of the matrix, centred second-order differences are
-    used to infer the components of the gradient.  Along the edges, first-order
+    used to infer the components of the grad.  Along the edges, first-order
     differences are used.}
     
 \value{A list containing \code{gx} and \code{gy}, matrices of the same
@@ -30,7 +30,7 @@ x <- seq(-200e3, 200e3, dx)
 y <- seq(-200e3, 200e3, dy)
 R <- 100e3
 h <- outer(x, y, function(x, y) 500*exp(-(x^2+y^2)/R^2))
-grad <- gradient(h, x, y)
+grad <- grad(h, x, y)
 par(mfrow=c(2,2), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
 contour(x,y,h,asp=1, main=expression(h))
 f <- 1e-4
