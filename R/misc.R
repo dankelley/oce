@@ -1504,3 +1504,12 @@ integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
     }
 }
 
+gradient <- function(h, x, y)
+{
+    if (missing(h)) stop("must give h")
+    if (missing(x)) stop("must give x")
+    if (missing(y)) stop("must give y")
+    if (length(x) != nrow(h)) stop("length of x (%d) must equal number of rows in h (%d)", length(x), nrow(h))
+    if (length(y) != ncol(h)) stop("length of y (%d) must equal number of cols in h (%d)", length(y), ncol(h))
+    .Call("gradient", h, as.double(x), as.double(y))
+}
