@@ -170,9 +170,8 @@ read.cm.s4 <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     rval <- new('cm')
     rval@metadata <- metadata
     rval@data <- data
-    if (missing(processingLog))
-        processingLog <- processingLogItem(paste(deparse(match.call()), sep="", collapse=""))
-    rval@processingLog<- processingLog
+    if (missing(processingLog)) processingLog <- paste(deparse(match.call()), sep="", collapse="")
+    rval@processingLog <- processingLog(rval@processingLog, processingLog)
     oceDebug(debug, "\b\b} # read.cm()\n")
     rval
 }

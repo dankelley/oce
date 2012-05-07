@@ -24,11 +24,9 @@
     dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
-cl <- read.coastline("7404.dat")
-plot(cl)
-}
+data(coastlineWorld)
+plot(coastlineWorld)
 }
 
 \references{http://www.ngdc.noaa.gov/mgg/shorelines/shorelines.html}

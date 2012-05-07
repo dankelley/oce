@@ -68,12 +68,10 @@
     with them.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.drifter("/data/OAR/6900388_prof.nc")
+data(drifter)
 data(coastlineWorld)
-plot(d, which="trajectory", coastline=coastlineWorld)
-}
+plot(drifter, which="trajectory", coastline=coastlineWorld)
 }
 
 \references{\url{http://www.argo.ucsd.edu/}}
