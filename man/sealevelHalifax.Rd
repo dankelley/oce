@@ -15,7 +15,12 @@
 
 \usage{data(sealevelHalifax)}
 
-\source{The data were downloaded from MEDS.}
+\source{The data were downloaded from MEDS, and treated as follows.
+   \preformatted{
+sealevelHalifax <- read.oce("490-01-jan-2003_slev.csv")
+sealevelHalifax[["longitude"]] <- -sealevelHalifax[["longitude"]]
+save(sealevelHalifax, file="data/sealevelHalifax.rda")
+   }}
 
 \references{The MEDS archive is at
   \url{http://www.meds-sdmm.dfo-mpo.gc.ca/meds/Databases/TWL/TWL_inventory_e.htm}.
@@ -23,12 +28,6 @@
   \url{http://www.atl.ec.gc.ca/weather/hurricane/juan/}.}
 
 \examples{
-\dontrun{
-## How the dataset was created
-sealevelHalifax <- read.oce("490-01-jan-2003_slev.csv")
-sealevelHalifax[["longitude"]] <- -sealevelHalifax[["longitude"]]
-save(sealevelHalifax, file="data/sealevelHalifax.rda")
-}
 data(sealevelHalifax)
 plot(sealevelHalifax)
 plot(sealevelHalifax, which=1, xlim=as.POSIXct(c("2003-01-01","2003-02-01")))
