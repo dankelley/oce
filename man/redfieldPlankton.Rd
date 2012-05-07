@@ -21,6 +21,7 @@ boxplot(Nitrogen)
 abline(h=16.7, col='gray')
 boxplot(Phosphorus)
 abline(h=1.85, col='gray')
+detach(redfieldPlankton)
 }
 
 \source{Data entered verbatim (sans italics for species name) by Dan Kelley
