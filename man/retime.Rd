@@ -44,12 +44,10 @@ extended time range, so that, after this is called,
 \value{A new object, with time and other data adjusted.}
 
 \examples{
-\dontrun{
-load("/data/archive/sleiwex/2008/moorings/m08/adv/sontek_g157/r/m08_sontek_xyz.rda")
-d <- subset.oce(m08.adv.xyz, as.POSIXct("2008-06-27 00:00:00",tz="UTC") <= time 
-        & time <= as.POSIXct("2008-06-27 10:00:00",tz="UTC"))
-dd <- retime(d, 0, 1e-4, as.POSIXct("2008-07-01 00:00:00", tz="UTC"))
-}
+library(oce)
+data(adv)
+adv2 <- retime(adv, 0, 1e-4, as.POSIXct("2008-07-01 00:00:00", tz="UTC"))
+plot(adv[["time"]], adv2[["time"]]-adv[["time"]], type='l')
 }
 
 \author{Dan Kelley}
