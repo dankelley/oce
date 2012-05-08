@@ -9,7 +9,7 @@
 \description{Contents of Redfield's (1934) Table II, containing columns for
     sampled species, carbon content by weight (normalized to 100), Nitrogen
     content by weight, and Phosphorus content by weight. This dataset is used in
-    Chapter 3 of Kelley (2011).}
+    Chapter 3 of Kelley (2012).}
 
 \usage{data(redfieldPlankton)}
 

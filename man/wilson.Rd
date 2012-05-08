@@ -6,7 +6,7 @@
 
 \title{Wilson's (1963) table of seafloor spreading}
 
-\description{Wilson's (1963) table of seafloor spreading.  This dataset is used in Chapter 3 of Kelley (2011).}
+\description{Wilson's (1963) table of seafloor spreading.  This dataset is used in Chapter 3 of Kelley (2012).}
 
 
 \usage{data(wilson)}

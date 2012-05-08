@@ -7,7 +7,7 @@
 \title{Munk's (1966) temperature profile}
 
 \description{Temperature profile digitized from the left-hand panel of Munk's
-    Figure 1.  This dataset is used in Chapter 3 of Kelley (2011).}
+    Figure 1.  This dataset is used in Chapter 3 of Kelley (2012).}
 
 \usage{data(munk)}
 
