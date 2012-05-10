@@ -567,34 +567,39 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 2 || which[w] == "density+N2") {
                       plotProfile(x, xtype="density+N2",
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 6 || which[w] == "density+dpdt") {
                       plotProfile(x, xtype="density+dpdt",
                                   ylim=plim, densitylim=densitylim, dpdtlim=dpdtlim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 7 || which[w] == "density+time") {
                       plotProfile(x, xtype="density+time",
                                   ylim=plim, densitylim=densitylim, timelim=timelim,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 8 || which[w] == "index") {
                       plotProfile(x, xtype="index",
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 9 || which[w] == "salinity") {
                       plotProfile(x, xtype="salinity",
                                   ylim=plim,
@@ -602,7 +607,8 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 10 || which[w] == "temperature") {
                       plotProfile(x, xtype="temperature",
                                   ylim=plim,
@@ -610,7 +616,8 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 11 || which[w] == "density") {
                       plotProfile(x, xtype="density",
                                   ylim=plim,
@@ -619,7 +626,8 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 12 || which[w] == "N2") {
                       plotProfile(x, xtype="N2",
                                   ylim=plim,
@@ -628,21 +636,24 @@ setMethod(f="plot",
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 13 || which[w] == "spice") {
                       plotProfile(x, xtype="spice",
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 13 || which[w] == "tritium") {
                       plotProfile(x, xtype="tritium",
                                   ylim=plim,
                                   eos=eos,
                                   useSmoothScatter=useSmoothScatter,
                                   grid=grid, col.grid=col.grid, lty.grid=lty.grid,
-                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset)
+                                  cex=cex[w], pch=pch[w], type=type[w], keepNA=keepNA, inset=inset,
+                                  ...)
                   } else if (which[w] == 3 || which[w] == "TS") {
                       ##par(mar=c(3.5,3,2,2))
                       lwd.rho <- if ("lwd.rho" %in% names(dots)) dots$lwd.rho else par('lwd')
