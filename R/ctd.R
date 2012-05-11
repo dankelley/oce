@@ -827,9 +827,6 @@ setMethod(f="plot",
 
 plotScan <- function(x,
                      name = "scan",
-                     Scol = "darkgreen",
-                     Tcol = "darkred",
-                     pcol = "black",
                      adorn=NULL,
                      mgp=getOption("oceMgp"),
                      ...)
@@ -861,7 +858,7 @@ plotScan <- function(x,
     }
     plot(x@data[[name]], x@data$pressure,
          xlab=name, ylab=resizableLabel("p", "y"),
-         type="l", col=pcol)
+         type="l")
     mtext(paste("Station", x@metadata$station), side=3, adj=1, cex=par('cex'))
     mtext(latlonFormat(x@metadata$latitude, x@metadata$longitude, digits=5), side=3, adj=0, cex=par('cex'))
     if (1 <= adorn.length) {
@@ -876,7 +873,7 @@ plotScan <- function(x,
     if (Slen != Tlen)
         stop(paste("length mismatch.  'salinity' has length ", Slen, " but 'temperature' has length ", Tlen, sep=""))
     plot(x@data[[name]], x@data$temperature, xlab="scan", ylab=resizableLabel("T", "y"),
-         type="l", col = Tcol)
+         type="l")
     grid()
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
@@ -884,7 +881,7 @@ plotScan <- function(x,
             warning("cannot evaluate adorn[", 2, "]\n")
     }
     plot(x@data[[name]], x@data$salinity, xlab="scan", ylab=resizableLabel("S", "y"),
-         type="l", col = Tcol)
+         type="l")
     grid()
     if (2 <= adorn.length) {
         t <- try(eval(adorn[2]), silent=TRUE)
