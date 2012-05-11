@@ -81,7 +81,8 @@ setMethod(f="plot",
               if (add) {
                   if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                       polygon(longitude, latitude, col=fill, ...)
-                      box()                      # clean up edges
+                      if (axes)
+                          box()                      # clean up edges
                   } else {
                       lines(longitude, latitude, ...)
                   }
