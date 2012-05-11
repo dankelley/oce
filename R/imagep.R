@@ -97,9 +97,9 @@ drawPalette <- function(zlim,
     oceDebug(debug, if (breaksGiven) "gave breaks\n" else "did not give breaks\n")
     oceDebug(debug, "zIsTime=", zIsTime, "\n")
     omai <- par("mai")
-    oceDebug(debug, "original mai: omai=c(", paste(omai, sep=","), ")\n")
+    oceDebug(debug, "original mai: omai=c(", paste(format(omai, digits=3), collapse=","), ")\n")
     omar <- par("mar")
-    oceDebug(debug, "original mar: omar=c(", paste(omar, sep=","), ")\n")
+    oceDebug(debug, "original mar: omar=c(", paste(format(omar, digits=3), collapse=","), ")\n")
 
     pc <- paletteCalculations(mai=mai)
 
@@ -169,8 +169,8 @@ drawPalette <- function(zlim,
                 pc$maiLHS,
                 pc$omai[3],
                 pc$paletteSeparation + pc$paletteWidth + pc$maiRHS)
-    oceDebug(debug, "original par(mai)=", format(omai, digits=2), "\n")
-    oceDebug(debug, "setting  par(mai)=", format(theMai, digits=2), "\n")
+    oceDebug(debug, "original par(mai)=c(", paste(format(omai, digits=3), collapse=","), ")\n")
+    oceDebug(debug, "setting  par(mai)=c(", paste(format(theMai, digits=3), collapse=","), ")\n")
     oceDebug(debug, "drawPalette orig mar=",par('mar'),"\n")
     if (zlimGiven)
         par(new=TRUE, mai=theMai)
@@ -203,10 +203,13 @@ imagep <- function(x, y, z,
                    debug=getOption("oceDebug"),
                    ...)
 {
-    oceDebug(debug, "\b\bimagep(..., flipy=", flipy, ", ...) {\n", sep="")
-    oceDebug(debug, " xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab, "'\n", sep="")
-    oceDebug(debug, "par(mar)=", paste(par('mar'), collapse=" "), "\n")
-    oceDebug(debug, "par(mai)=", paste(par('mai'), collapse=" "), "\n")
+    oceDebug(debug, "\b\bimagep(..., cex=", cex, ", flipy=", flipy,
+             " xlab='", xlab, "'; ylab='", ylab, "'; zlab='", zlab,
+             " filledContour='", filledContour,
+             " missingColor='", missingColor,
+             ", ...) {\n", sep="")
+    oceDebug(debug, "par(mar)=", paste(format(par('mar'), digits=3), collapse=" "), "\n")
+    oceDebug(debug, "par(mai)=", paste(format(par('mai'), digits=3), collapse=" "), "\n")
     if (!missing(x) && is.list(x)) {
         names <- names(x)
         if (!missing(y))
@@ -239,6 +242,7 @@ imagep <- function(x, y, z,
         if (missing(z))
             stop("must supply z")
     }
+    x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     if (!inherits(x, "POSIXct") && !inherits(x, "POSIXct"))
         x <- as.vector(x)
     if (!inherits(y, "POSIXct") && !inherits(y, "POSIXct"))
@@ -326,7 +330,6 @@ imagep <- function(x, y, z,
                     mai=mai.palette, debug=debug-1)
     }
 
-    x.is.time <- inherits(x, "POSIXt") || inherits(x, "POSIXct") || inherits(x, "POSIXlt")
     xlim <- if (missing(xlim)) range(x,na.rm=TRUE) else xlim
     ylim <- if (missing(ylim)) range(y,na.rm=TRUE) else ylim
     zlim <- if (missing(zlim)) range(z,na.rm=TRUE) else zlim
@@ -355,8 +358,10 @@ imagep <- function(x, y, z,
         }
         box()
         if (axes) {
-            oce.axis.POSIXct(side=1, x=x, cex=cex, cex.axis=cex, cex.lab=cex, drawTimeRange=drawTimeRange, mar=mar, mgp=mgp)
-            axis(2, cex.axis=cex, cex.lab=cex)
+            oce.axis.POSIXct(side=1, x=x, #cex=cex, cex.axis=cex, cex.lab=cex,
+                             drawTimeRange=drawTimeRange,
+                             mar=mar, mgp=mgp, debug=debug-1)
+            axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     } else {                           # x is not a POSIXt
         if (filledContour) {
@@ -373,8 +378,8 @@ imagep <- function(x, y, z,
         }
         box()
         if (axes) {
-            axis(1, cex.axis=cex, cex.lab=cex)
-            axis(2, cex.axis=cex, cex.lab=cex)
+            axis(1)#, cex.axis=cex, cex.lab=cex)
+            axis(2)#, cex.axis=cex, cex.lab=cex)
         }
     }
     if (!is.null(missingColor)) {
