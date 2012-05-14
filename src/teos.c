@@ -24,6 +24,25 @@ char *get_libteos()
     return(libteosp);
 }
 
+void gsw2a(char **lib, char **name, int *n, double *a1, double *a2, double *rval)
+{
+    if (first_teos_call) {
+        teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
+        first_teos_call = 0;
+    }
+    //Rprintf("FYI libteos '%s'\n", libteosp);
+    if (!teos_handle)
+        error("cannot open TEOS library %s; error is: %s", *lib, dlerror());
+    //Rprintf("%s:%d about to do try to find dlsym(handle, \"%s\"\n", __FILE__, __LINE__, *name);
+    double (*f2)(double, double) = dlsym(teos_handle, *name);
+    if (!f2) 
+        error("cannot find \"%s\" in TEOS library %s; error is: %s", *name, *lib, dlerror());
+    //Rprintf("%s:%d about to do the loop calling f2 (\"%s\")\n", __FILE__, __LINE__, *name);
+    for (int i = 0; i < *n; i++) {
+        //Rprintf("%s:%d in loop i=%d, a1[i]=%f, a2[i]=%f\n",__FILE__,__LINE__,i,a1[i],a2[i]);
+        rval[i] = (*f2)(a1[i], a2[i]);
+    }
+}
 
 void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *rval)
 {
