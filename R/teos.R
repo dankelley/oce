@@ -55,6 +55,7 @@ teos <- function(name, a1, a2, a3, a4, a5, a6, lib=getOption("libteos")) # FIXME
         rval <- .C("gsw4a", as.character(lib), as.character(name),
                    as.integer(n), as.double(a1), as.double(a2), as.double(a3), as.double(a4), rval=double(n))$rval
     }
+    rval[rval == 9e15] <- NA
     dim(rval) <- dim
     rval
 }

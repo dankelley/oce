@@ -48,7 +48,9 @@ option(libteos="/opt/lib/libgswteos10.so")
 }
 
 \value{Whatever the TEOS-10 function returns, with dimensions matching those of
-    \code{a1}.}
+    \code{a1}.  TEOS-10 functions use the value 9e15 to indicate invalid
+    conditions (e.g. latitude exceeding 90 degrees), and these are converted
+    by \code{teos()} to \code{NA}.}
 
 \examples{
 \dontrun{
