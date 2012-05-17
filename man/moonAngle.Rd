@@ -50,7 +50,8 @@
 \value{A data frame containing the following.
     \item{t}{time}
     \item{azimuth}{moon azimuth, in degrees eastward of north, from 0 to 360.
-        (See diagram below.)}
+        Note: this is not the convention used by Meeus, who uses degrees
+        westward of South.  (See diagram below.)}
     \item{altitude}{moon altitude, in degrees from -90 to 90.  (See diagram
         below.)}
     \item{rightAscension}{right ascension, in degrees}

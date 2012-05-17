@@ -269,8 +269,12 @@ moonAngle <- function(t, latitude, longitude, useRefraction=TRUE)
     0.112 * sin(RPD * D)
     illuminatedFraction <- (1 + cos(RPD * illfr)) / 2
     phase <- T * 1236.85               # Meeus [1982] eq 32.3 page 160
+
+    ## The 180 in azimuth converts from astron convention with azimuth=westward
+    ## angle from South, to eastward from North.
     rval <- data.frame(t=t,
-                       azimuth=lh$azimuth, altitude=lh$altitude,
+                       azimuth=lh$azimuth + 180,
+                       altitude=lh$altitude,
                        rightAscension=ec$rightAscension, declination=ec$declination,
                        lambda=lambda %% 360, beta=beta,
                        diameter=pi, distance=6378.14 / sin(RPD * pi),
