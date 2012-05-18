@@ -1,4 +1,4 @@
-sunAngle <- function(t, latitude, longitude, useRefraction=TRUE)
+sunAngle <- function(t, latitude, longitude, useRefraction=FALSE)
 {
     if (missing(t))
         stop("must provide t")

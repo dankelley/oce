@@ -6,7 +6,7 @@
 
 \description{Solar angle as function of space and time.}
 
-\usage{sunAngle(t, latitude, longitude, useRefraction=TRUE)}
+\usage{sunAngle(t, latitude, longitude, useRefraction=FALSE)}
 
 \arguments{
     \item{t}{Time, a POSIXt object (must be in timezone UTC), or a numeric value that corresponds to
