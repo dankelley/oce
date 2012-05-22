@@ -60,8 +60,8 @@
   then the (optional) rest of the elements of \code{constituents} are
   examined, in order.  Each of these constituents is based on the name
   of a tidal constituent in the Foreman (1977) notation.  (To get the
-  list, execute \code{data(tide.constituents)} and then
-  execute \code{cat(tide.constituents$name)}.)  Each named constituent is
+  list, execute \code{data(tideData)} and then
+  execute \code{cat(tideData$name)}.)  Each named constituent is
   added to the existing list, if it is not already there.  But, if the
   constituent is preceeded by a minus sign, then it is removed from the
   list (if it is already there).  Thus, for example,
