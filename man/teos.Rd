@@ -26,7 +26,7 @@
 \details{This is a provisional support function, whose name and interface
     characteristics may change.  In particular, the present version of
     \code{teos} only permits 3 or 4 arguments to be provided.
-    
+#ifdef unix    
     For \code{teos} to work, the user must download the C version of TEOS-10
     from the website listed in the references, then type \code{make install} at
     the command line, and finally copy the resultant \code{libgswteos-10.so}
@@ -45,6 +45,16 @@ sudo mv libgswteos-10.so /usr/local/lib
 option(libteos="/opt/lib/libgswteos10.so")
 .C("set_libteos", "/opt/lib/libgswteos10.so")
 }
+#endif
+#ifdef windows
+For \code{teos} to work, the user must have installed the TEOS-10 library,
+and then provided the location of that library to R by e.g.
+\preformatted{
+option(libteos="LOC")
+.C("set_libteos", "LOC")
+}
+where \code{LOC} is the path name to the library.
+#endif
 }
 
 \value{Whatever the TEOS-10 function returns, with dimensions matching those of

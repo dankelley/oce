@@ -1,7 +1,7 @@
 .onLoad <- function(libname, pkgname)
 {
     op <- options()
-    libteos <- "/usr/local/lib/libgswteos-10.so"
+    libteos <- if ("unix" == .Platform$OS.type) "/usr/local/lib/libgswteos-10.so" else ""
     opOce <- list(oceTz = "UTC",
                   ##oceMgp = c(2.5,1,0),
                   oceMgp=c(2.0, 0.7, 0),
