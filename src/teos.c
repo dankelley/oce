@@ -15,7 +15,7 @@
 static void *teos_handle = NULL;
 #endif
 
-#define DEBUG
+//#define DEBUG
 
 static int first_teos_call = 1;
 
