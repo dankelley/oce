@@ -13,7 +13,6 @@
 
 SEXP trap(SEXP x, SEXP y, SEXP type)
 {
-    int i;
     PROTECT(x = AS_NUMERIC(x));
     PROTECT(y = AS_NUMERIC(y));
     PROTECT(type = AS_INTEGER(type));
@@ -59,9 +58,11 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
             }
             break;
         default:
+            PROTECT(res = NEW_NUMERIC(1)); // prevent compiler warning
+            resp[0] = 0.0; // prevent compiler warning
             error("unknown type %d; must be 0, 1, or 2\n", *typep);
     }
-    UNPROTECT(4);
+    UNPROTECT(5);
     return(res);
 }
 

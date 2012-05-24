@@ -91,7 +91,7 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
                 break;
             }
             /* in left half */
-            if (px[left] <= this_find & this_find < px[middle]) {
+            if (px[left] <= this_find & (this_find < px[middle])) {
 #ifdef debug
                 Rprintf("L %d %d\n", left, middle);
 #endif
@@ -109,7 +109,7 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
                 }
             }
             /* in right half */
-            if (px[middle] < this_find & this_find <= px[right]) {
+            if (px[middle] < this_find & (this_find <= px[right])) {
 #ifdef debug
                 Rprintf("R %d %d %f %f\n", middle, right, px[middle], px[right]);
 #endif
