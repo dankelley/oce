@@ -6,7 +6,7 @@
 
 \description{Interface to TEOS-10 library}
 
-\usage{teos(name, a1, a2, a3, a4, a5, a6, lib=getOption("libteos"))}
+\usage{teos(name, a1, a2, a3, a4, lib=getOption("libteos"))}
 
 \arguments{
   \item{name}{the name of a TEOS-10 function.  Note that the function names in
@@ -18,20 +18,18 @@
   \item{a2}{the second argument to the TEOS-10 function}
   \item{a3}{the third argument to the TEOS-10 function}
   \item{a4}{the fourth argument to the TEOS-10 function}
-  \item{a5}{the fifth argument to the TEOS-10 function, if there is one}
-  \item{a6}{the sixth argument to the TEOS-10 function, if there is one}
   \item{lib}{the name of the shared library that provides TEOS-10.}
 }
 
-\details{This is a provisional support function, whose name and interface
-    characteristics may change.  In particular, the present version of
-    \code{teos} only permits 3 or 4 arguments to be provided.
+\details{
 #ifdef unix    
-    For \code{teos} to work, the user must download the C version of TEOS-10
-    from the website listed in the references, then type \code{make install} at
-    the command line, and finally copy the resultant \code{libgswteos-10.so}
-    file to the directory \code{/usr/local/lib}.   For example, the steps
-    listed below were used on the author's (OSX-based) machine.
+    This is a provisional support function, whose name and interface
+    characteristics may change.  For \code{teos} to work, the user must
+    download the C version of TEOS-10 from the website listed in the
+    references, then type \code{make install} at the command line, and finally
+    copy the resultant \code{libgswteos-10.so} file to the directory
+    \code{/usr/local/lib}.   For example, the steps listed below were used on
+    the author's (OSX-based) machine.
 \preformatted{
 curl -OL http://www.teos-10.org/software/gsw_c_v3_0.zip
 unzip gsw_c_v3_0.zip 
@@ -47,13 +45,17 @@ option(libteos="/opt/lib/libgswteos10.so")
 }
 #endif
 #ifdef windows
-For \code{teos} to work, the user must have installed the TEOS-10 library,
-and then provided the location of that library to R by e.g.
+
+    This is a provisional support function, whose name and interface
+    characteristics may change.  For \code{teos} to work, the user must
+    download TEOS-10 library from the website listed in the references and
+    install it appropriately; it will also prove necessary to indicate where
+    the library has been stored, by performing two actions:
 \preformatted{
-option(libteos="LOC")
-.C("set_libteos", "LOC")
+option(libteos="NAME")
+.C("set_libteos", "NAME")
 }
-where \code{LOC} is the path name to the library.
+   where \code{PATH} indicates the full path name to the library.
 #endif
 }
 

@@ -4,7 +4,7 @@ teosSetLibrary <- function(path)
     .C("set_libteos", path)
 }
 
-teos <- function(name, a1, a2, a3, a4, a5, a6, lib=getOption("libteos")) # FIXME: what's max arg?
+teos <- function(name, a1, a2, a3, a4, lib=getOption("libteos")) # FIXME: what's max arg?
 {
     if (missing(name))
         stop("a function name must be given, and it must be in lower case letters, e.g. \"gsw_sa_from_sp\"")
@@ -20,11 +20,7 @@ teos <- function(name, a1, a2, a3, a4, a5, a6, lib=getOption("libteos")) # FIXME
             args <- 3 
         } else {
             args <- 4
-            if (!missing(a5))
-                stop("cannot have 5 args yet")
-            if (!missing(a6))
-                stop("cannot have 6 args yet")
-        }
+        }                              # FIXME: this check on the number args is inelegant
     }
     dim <- dim(a1)
     a1 <- as.vector(a1)
