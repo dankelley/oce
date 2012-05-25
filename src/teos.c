@@ -19,11 +19,10 @@
 #include <Rinternals.h>
 #ifdef WIN32
 #  include <windows.h>
-static void *teos_handle = NULL;
 #else
 # include <dlfcn.h>
-static void *teos_handle = NULL;
 #endif
+static void *teos_handle = NULL;
 
 //#define DEBUG
 
@@ -62,7 +61,7 @@ void gsw2a(char **lib, char **name, int *n, double *a1, double *a2, double *rval
     first_teos_call = 0;
   }
 #ifdef WIN32
-  double (*f2)(double, double) = GetProcAddress((HMODULE)teos_handle, *name);
+  double (*f2)(double, double) = GetProcAddress(teos_handle, *name);
 #else
   double (*f2)(double, double) = dlsym(teos_handle, *name);
 #endif
@@ -89,7 +88,7 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
     first_teos_call = 0;
   }
 #ifdef WIN32
-  double (*f3)(double, double, double) = GetProcAddress((HMODULE)teos_handle, *name);
+  double (*f3)(double, double, double) = GetProcAddress(teos_handle, *name);
 #else
   double (*f3)(double, double, double) = dlsym(teos_handle, *name);
 #endif
@@ -116,7 +115,7 @@ void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
     first_teos_call = 0;
   }
 #ifdef WIN32
-  double (*f4)(double, double, double, double) = GetProcAddress((HMODULE)teos_handle, *name);
+  double (*f4)(double, double, double, double) = GetProcAddress(teos_handle, *name);
 #else
   double (*f4)(double, double, double, double) = dlsym(teos_handle, *name);
 #endif
