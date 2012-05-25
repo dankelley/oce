@@ -23,13 +23,11 @@
 
 \details{
 #ifdef unix    
-    This is a provisional support function, whose name and interface
-    characteristics may change.  For \code{teos} to work, the user must
-    download the C version of TEOS-10 from the website listed in the
-    references, then type \code{make install} at the command line, and finally
-    copy the resultant \code{libgswteos-10.so} file to the directory
-    \code{/usr/local/lib}.   For example, the steps listed below were used on
-    the author's (OSX-based) machine.
+    For \code{teos} to work, the user must download the C version of TEOS-10
+    from the website listed in the references, then type \code{make install} at
+    the command line, and finally copy the resultant \code{libgswteos-10.so}
+    file to the directory \code{/usr/local/lib}.   For example, the steps
+    listed below were used on the author's (OSX-based) machine.
 \preformatted{
 curl -OL http://www.teos-10.org/software/gsw_c_v3_0.zip
 unzip gsw_c_v3_0.zip 
@@ -45,17 +43,16 @@ option(libteos="/opt/lib/libgswteos10.so")
 }
 #endif
 #ifdef windows
-
-    This is a provisional support function, whose name and interface
-    characteristics may change.  For \code{teos} to work, the user must
-    download TEOS-10 library from the website listed in the references and
-    install it appropriately; it will also prove necessary to indicate where
-    the library has been stored, by performing two actions:
+    For \code{teos} to work, the user must download the C source code for the
+    TEOS-10 library and build it into a Windows DLL file.   (At some time,
+    perhaps the TEOS-10 team will supply DLL files, which would simplify
+    matters for users.) Once that is done, it will be necessary to indicate to
+    the the name and path of the library, e.g.  (filling in \code{NAME}
+    appropriately):
 \preformatted{
 option(libteos="NAME")
 .C("set_libteos", "NAME")
 }
-   where \code{PATH} indicates the full path name to the library.
 #endif
 }
 
