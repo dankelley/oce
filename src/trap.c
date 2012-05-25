@@ -62,7 +62,7 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
             resp[0] = 0.0; // prevent compiler warning
             error("unknown type %d; must be 0, 1, or 2\n", *typep);
     }
-    UNPROTECT(5);
+    UNPROTECT(4);
     return(res);
 }
 
