@@ -20,7 +20,7 @@ SEXP trap(SEXP x, SEXP y, SEXP type)
     if ((nx > 1) && nx != ny)
         error("lengths of x (%d) and y (%d) must match", nx, ny);
     double *xp = REAL(x), *yp = REAL(y);
-    double dx;
+    double dx = 1.0;
     if (nx == 1)
         dx = *xp;
     int *typep = INTEGER(type);
