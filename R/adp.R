@@ -154,7 +154,7 @@ coordinate <- function(x)
     if (inherits(x, "adp") || inherits(x, "adv"))
         x@metadata$oceCoordinate
     else {
-        warning("unknown file type; the object must inherit from either \"adv\" or \"adp\"")
+        warning("unknown object type; it must inherit from either \"adv\" or \"adp\"")
         NULL
     }
 }
@@ -1529,6 +1529,47 @@ subtractBottomVelocity <- function(x, debug=getOption("oceDebug"))
     }
     oceDebug(debug, "\b\b\b} # subtractBottomVelocity()\n")
     rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval
+}
+
+binmapAdp <- function(x, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "\b\bbinmap(x, debug) {\n")
+    if (!inherits(x, "adp"))
+       stop("x must be an \"adp\" object")
+    v <- x[["v"]]
+    if (4 != dim(v)[3])
+        stop("binmap() only works for 4-beam instruments")
+    distance <- x[["distance"]]
+    roll <- x[["roll"]]
+    pitch <- x[["pitch"]]
+    vbm <- array(dim=dim(v))
+    nprofile <- dim(v)[1]
+    theta <- x[['beamAngle']]           # FIXME: check that not missing or weird
+    rval <- x
+    for (profile in 1:nprofile) {
+        r <- roll[profile]
+        p <- pitch[profile]
+        cr <- cos(r * pi / 180)
+        sr <- sin(r * pi / 180)
+        cp <- cos(p * pi / 180)
+        sp <- sin(p * pi / 180)
+        tt <- tan(theta * pi / 180)
+        z1 <- distance * (cr - tt * sr) * cp
+        z2 <- distance * (cr + tt * sr) * cp
+        z3 <- distance * (cp + tt * sp) * cr
+        z4 <- distance * (cp - tt * sp) * cr
+        U1 <- approx(z1, v[profile,,1], distance)$y
+        U2 <- approx(z2, v[profile,,2], distance)$y
+        U3 <- approx(z3, v[profile,,3], distance)$y
+        U4 <- approx(z4, v[profile,,4], distance)$y
+        vbm[profile, , 1] <- U1
+        vbm[profile, , 2] <- U2
+        vbm[profile, , 3] <- U3
+        vbm[profile, , 4] <- U4
+    }
+    rval@data$v <- vbm
+    warning("binmap should also work with backscatter and other fields")
     rval
 }
 

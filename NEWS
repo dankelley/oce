@@ -1,3 +1,6 @@
+0.8-10
+- binmap() added
+
 0.8-9
 - make the newly-added TEOS-10 functions compile on Windows
 
