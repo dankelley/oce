@@ -2,11 +2,12 @@
 
 \alias{binmapAdp}
 
-\title{Bin-map ADP object}
+\title{Bin-map an ADP object}
 
-\description{Bin-map a 4-beam ADP object, by interpolating velocities to
-    uniform depth bins, compensating for the pitch and roll of the instrument.
-    This only makes sense for ADP objects that are in beam coordinates.}
+\description{Bin-map an ADP object, by interpolating velocities, backscatter
+    amplitudes, etc., to uniform depth bins, thus compensating for the pitch
+    and roll of the instrument.  This only makes sense for ADP objects that are
+    in beam coordinates.}
 
 \usage{binmapAdp(x, debug=getOption("oceDebug"))}
 
@@ -21,6 +22,8 @@
     processing, either by vectorizing in R or by doing some of the calculation
     in C.}
 
+\section{Bugs}{This only works for 4-beam RDI ADP objects.}
+
 \value{An object of \code{\link[base]{class}} \code{"adp"}.}
 
 \examples{
@@ -33,6 +36,8 @@ beam <- read.oce("/data/archive/sleiwex/2008/moorings/m09/adp/rdi_2615/raw/adp_r
 beam2 <- binmapAdp(beam)
 plot(enuToOther(toEnu(beam), heading=-31.5))
 plot(enuToOther(toEnu(beam2), heading=-31.5))
+plot(beam, which=5:8) # backscatter amplitude
+plot(beam2, which=5:8)
 }
 }
 

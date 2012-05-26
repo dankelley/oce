@@ -1538,14 +1538,24 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
     if (!inherits(x, "adp"))
        stop("x must be an \"adp\" object")
     v <- x[["v"]]
+    a <- x[["a"]] ## FIXME: should ensure that this exist
+    q <- x[["q"]]
+    g <- x[["g"]]
     if (4 != dim(v)[3])
         stop("binmap() only works for 4-beam instruments")
+    theta <- x[['beamAngle']]           # FIXME: check that not missing or weird
     distance <- x[["distance"]]
     roll <- x[["roll"]]
     pitch <- x[["pitch"]]
+    ## Below, we loop through the profiles.  I tried an experiment in
+    ## vectorizing across the loop, by combining into a single vector
+    ## for (distance, cr, ...), but it was no faster, and the code was
+    ## more complicated to read.
     vbm <- array(dim=dim(v))
+    abm <- array(raw(), dim=dim(v))
+    qbm <- array(raw(), dim=dim(v))
+    gbm <- array(raw(), dim=dim(v))
     nprofile <- dim(v)[1]
-    theta <- x[['beamAngle']]           # FIXME: check that not missing or weird
     rval <- x
     for (profile in 1:nprofile) {
         r <- roll[profile]
@@ -1559,17 +1569,43 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
         z2 <- distance * (cr + tt * sr) * cp
         z3 <- distance * (cp + tt * sp) * cr
         z4 <- distance * (cp - tt * sp) * cr
-        U1 <- approx(z1, v[profile,,1], distance)$y
-        U2 <- approx(z2, v[profile,,2], distance)$y
-        U3 <- approx(z3, v[profile,,3], distance)$y
-        U4 <- approx(z4, v[profile,,4], distance)$y
-        vbm[profile, , 1] <- U1
-        vbm[profile, , 2] <- U2
-        vbm[profile, , 3] <- U3
-        vbm[profile, , 4] <- U4
+        ## FIXME: check on whether we can speed things up by using e.g. x[["v"]] instead of v,
+        ## which would lower the memory requirements.
+        ## v=velocity
+        vbm[profile,,1] <- approx(z1, v[profile,,1], distance)$y
+        vbm[profile,,2] <- approx(z2, v[profile,,2], distance)$y
+        vbm[profile,,3] <- approx(z3, v[profile,,3], distance)$y
+        vbm[profile,,4] <- approx(z4, v[profile,,4], distance)$y
+        ## a= raw
+        makeraw <- function(r) {       # prevent warnings from out-of-range with as.raw()
+            na <- is.na(r)
+            r[na] <- 0                 # FIXME: what to do here?
+            r <- ifelse(r < 0, 0, r)
+            r <- ifelse(r > 255, 255, r)
+            r <- as.raw(r)
+            r
+        }
+        rule <- 2                      # FIXME: is is OK to extend data to edges?
+        abm[profile,,1] <- makeraw(approx(z1, as.numeric(a[profile,,1], rule=rule), distance)$y)
+        abm[profile,,2] <- makeraw(approx(z2, as.numeric(a[profile,,2], rule=rule), distance)$y)
+        abm[profile,,3] <- makeraw(approx(z3, as.numeric(a[profile,,3], rule=rule), distance)$y)
+        abm[profile,,4] <- makeraw(approx(z4, as.numeric(a[profile,,4], rule=rule), distance)$y)
+        ## q= raw
+        qbm[profile,,1] <- makeraw(approx(z1, as.numeric(q[profile,,1], rule=rule), distance)$y)
+        qbm[profile,,2] <- makeraw(approx(z2, as.numeric(q[profile,,2], rule=rule), distance)$y)
+        qbm[profile,,3] <- makeraw(approx(z3, as.numeric(q[profile,,3], rule=rule), distance)$y)
+        qbm[profile,,4] <- makeraw(approx(z4, as.numeric(q[profile,,4], rule=rule), distance)$y)
+        ## g= raw
+        gbm[profile,,1] <- makeraw(approx(z1, as.numeric(g[profile,,1], rule=rule), distance)$y)
+        gbm[profile,,2] <- makeraw(approx(z2, as.numeric(g[profile,,2], rule=rule), distance)$y)
+        gbm[profile,,3] <- makeraw(approx(z3, as.numeric(g[profile,,3], rule=rule), distance)$y)
+        gbm[profile,,4] <- makeraw(approx(z4, as.numeric(g[profile,,4], rule=rule), distance)$y)
+
     }
     rval@data$v <- vbm
-    warning("binmap should also work with backscatter and other fields")
+    rval@data$a <- abm
+    rval@data$q <- qbm
+    rval@data$g <- gbm
     rval
 }
 
