@@ -1,4 +1,5 @@
 0.8-10
+- oce.as.raw() added
 - binmap() added
 
 0.8-9

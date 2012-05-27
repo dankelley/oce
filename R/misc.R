@@ -1553,3 +1553,14 @@ grad <- function(h, x, y)
     if (length(y) != ncol(h)) stop("length of y (%d) must equal number of cols in h (%d)", length(y), ncol(h))
     .Call("gradient", h, as.double(x), as.double(y))
 }
+
+oce.as.raw <- function(x)
+{       # prevent warnings from out-of-range with as.raw()
+    na <- is.na(x)
+    x[na] <- 0                 # FIXME: what to do here?
+    x <- ifelse(x < 0, 0, x)
+    x <- ifelse(x > 255, 255, x)
+    x <- as.raw(x)
+    x
+}
+
