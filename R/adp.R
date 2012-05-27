@@ -1566,10 +1566,15 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
         sp <- sin(p * pi / 180)
         tt <- tan(theta * pi / 180)
         z1 <- distance * (cr - tt * sr) * cp
+
+        ##if (profile == 1) {
+        ##    cat('R : r', r, 'p', p, 'cr', cr, 'sr', sr, 'cp', cp, 'sp', sp, 'tt', tt, '\n') 
+        ##    cat("R : z1      ", format(z1[1:8], width=11, digits=7), '\n')
+        ##}
+ 
         z2 <- distance * (cr + tt * sr) * cp
         z3 <- distance * (cp + tt * sp) * cr
         z4 <- distance * (cp - tt * sp) * cr
-
         ## FIXME: check on whether we can speed things up by using e.g. x[["v"]]
         ## instead of v, which would lower the memory requirements.
 
@@ -1596,6 +1601,8 @@ binmapAdp <- function(x, debug=getOption("oceDebug"))
         gbm[profile,,4] <- oce.as.raw(approx(z4, as.numeric(g[profile,,4], rule=rule), distance)$y)
     }
     rval@data$v <- vbm
+    ##cat("R : v1      ", format(v[1,1:8,1], width=11, digits=7), '\n')
+    ##cat("R : V1      ", format(vbm[1,1:8,1], width=11, digits=7), '\n')
     rval@data$a <- abm
     rval@data$q <- qbm
     rval@data$g <- gbm
