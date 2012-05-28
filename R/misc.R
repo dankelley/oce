@@ -55,22 +55,25 @@ plotTaylor <- function(x, y, scale, pch, col)
         lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
     for (rr in seq(-1, 1, 0.2))
         lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)))
-    axis(1, pos=0, at=c(-sdPretty, sdPretty))
+    labels <- format(sdPretty)
+    labels[1] <- paste(0)
+    axis(1, pos=0, at=sdPretty, labels=labels)
     ## temporarily permit labels outside the platting zone
     xpdOld <- par('xpd')
     par(xpd=NA)
-    text(max(sdPretty), 0, "R=1", pos=4)
-    text(0, max(sdPretty), "R=0", pos=3)
-    text(-max(sdPretty), 0, "R=-1", pos=2)
+    m <- max(sdPretty)
+    text(m, 0, "R=1", pos=4)
+    text(0, m, "R=0", pos=3)
+    text(-m, 0, "R=-1", pos=2)
     par(xpd=xpdOld)
     points(xSD, 0, pch=20, cex=1.5)
     for (column in 1:ncol(y)) {
         ySD <- sd(y[,column], na.rm=TRUE)
-        R2 <- cor(x, y[,column])^2
+        R <- cor(x, y[,column])^2
         ##cat("ySD=", ySD, "R2=", R2, "col=", col[column], "pch=", pch[column], "\n")
         ## FIXME: the angle is wrong
-        points(ySD * cos((1 - R2) * pi / 2),
-               ySD * sin((1 - R2) * pi / 2), pch=pch[column],
+        points(ySD * cos((1 - R) * pi / 2),
+               ySD * sin((1 - R) * pi / 2), pch=pch[column],
                lwd=2,
                col=col[column], cex=2)
         ##cat("x=", ySD * cos(pi/2+R2 * pi / 180/2), "\n")
