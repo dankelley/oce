@@ -91,7 +91,7 @@ read.lisst <- function(file, year, tz="UTC")
 
 summary.lisst <- function(object, ...)
 {
-    cat("LISST Summary\n-----------\n\n")
+    cat("LISST Summary\n-------------\n\n")
     showMetadataItem(object, "filename", "File source:        ")
     start <- object@data$time[1]
     dt <- as.numeric(object@data$time[2]) - as.numeric(object@data$time[1])

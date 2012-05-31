@@ -1611,17 +1611,8 @@ read.ctd.odf <- function(file, columns=NULL, station=NULL, missing.value=-999, m
     res
 }
 
-##setMethod(f="summary", "ctd", function(object) {
 summary.ctd <- function(object, ...)
 {
-                                        #    metadataNames <- names(object@metadata)
-                                        #    showMetadataItem <- function(name, label, postlabel="", isdate=FALSE) {
-                                        #        if (name %in% metadataNames)
-                                        #            cat(paste("* ", label,
-                                        #                      if (isdate) format(object@metadata[[name]]) else object@metadata[[name]],
-                                        #                      postlabel,
-                                        #                      "\n", sep=""))
-                                        #    }
     cat("CTD Summary\n-----------\n\n")
     showMetadataItem(object, "type", "Instrument")
     showMetadataItem(object, "model", "Instrument model:  ")
