@@ -20,7 +20,7 @@
 
 \details{This function provides a straightforward convolution, which may be
     useful to those who prefer not to use \code{\link{convolve}} and
-    \code{\link{stats:filter}}.}
+    \code{filter} in the \code{stats} package.}
     
 \value{A vector of the convolution output.}
 
@@ -36,10 +36,6 @@ observation <- oceConvolve(signal, filter)
 plot(t, signal, type='l')
 lines(t, observation, lty='dotted')
 }
-
-\references{R.F. Reiniger and C.K. Ross, 1968.  A method of
-interpolation with application to oceanographic data.  \emph{Deep Sea
-Research}, \bold{15}, 185-193.}
 
 \author{Dan Kelley}
 

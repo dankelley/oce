@@ -129,6 +129,7 @@ export("+.section",
        plot.cm,
        ##plot.coastline,
        ##plot.ctd,
+       ##plot.lisst,
        plotScan,
        ##plot.pt,
        plot.topo,
@@ -163,6 +164,7 @@ export("+.section",
        read.ctd.odf,
        read.drifter,
        read.echosounder,
+       read.lisst,
        read.lobo,
        read.met,
        read.topo,
@@ -255,6 +257,7 @@ S3method(plot, cm)
 ##S3method(plot, coastline)
 ##S3method(plot, ctd)
 ##S3method(plot, drifter)
+##S3method(plot, lisst)
 S3method(plot, lobo)
 ##S3method(plot, met)
 S3method(plot, sealevel)
@@ -268,6 +271,7 @@ S3method(summary, cm)
 S3method(summary, coastline)
 ##S3method(summary, ctd)
 S3method(summary, drifter)
+##S3method(summary, lisst)
 S3method(summary, lobo)
 S3method(summary, oce)
 ##S3method(summary, sealevel)
@@ -277,5 +281,5 @@ S3method(summary, tidem)
 S3method(summary, topo)
 S3method(summary, windrose)
 
-exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lobo, met, tdr, sealevel, section, tidem, topo, windrose)
+exportClasses(oce, adv, adp, cm, coastline, ctd, drifter, lisst, lobo, met, tdr, sealevel, section, tidem, topo, windrose)
 

@@ -1,4 +1,5 @@
 0.8-10
+- lisst class added
 - plotTaylor() added
 - oce.as.raw() added
 - binmap() added
