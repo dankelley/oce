@@ -105,7 +105,6 @@ summary.lisst <- function(object, ...)
     threes <- matrix(nrow=ndata-1, ncol=3)
     names <- names(object@data)
     for (i in 1:ndata) {
-        print(names[i])
         if (names[i] != "time") {
             threes[i,] <- threenum(object@data[[i]])
         }
