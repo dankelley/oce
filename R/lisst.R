@@ -56,7 +56,7 @@ read.lisst <- function(file, year, tz="UTC")
         on.exit(close(file))
     }
     data <- read.table(file, header=FALSE)
-    ncols <- ncols(data)
+    ncols <- ncol(data)
     if (ncols < 42)
         stop("data file must hold at least 42 space-separated columns")
     if (ncols > 42) {
@@ -102,13 +102,15 @@ summary.lisst <- function(object, ...)
                 1 / dt))
     cat("* Statistics of subsample::\n")
     ndata <- length(object@data)
-    threes <- matrix(nrow=ndata, ncol=3)
+    threes <- matrix(nrow=ndata-1, ncol=3)
+    names <- names(object@data)
     for (i in 1:ndata) {
-        if (names(object@data)[i] != "time") {
+        print(names[i])
+        if (names[i] != "time") {
             threes[i,] <- threenum(object@data[[i]])
         }
     }
-    rownames(threes) <- paste("   ", names(object@data))
+    rownames(threes) <- paste("   ", names[seq.int(1, -1 + length(names))])
     colnames(threes) <- c("Min.", "Mean", "Max.")
     print(threes, indent='  ')
     processingLogShow(object)
