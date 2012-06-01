@@ -8,7 +8,7 @@
 
 \description{Plot \code{LISST} data}
 
-\usage{\S4method{plot}{lisst}(x, which=c(1, 37, 38), debug=getOption("oceDebug"), \dots)}
+\usage{\S4method{plot}{lisst}(x, which=c(16, 37, 38), debug=getOption("oceDebug"), \dots)}
 
 \arguments{
     \item{x}{a \code{lisst} object, e.g. as read by \code{\link{read.lisst}}.}
@@ -26,7 +26,7 @@
     \itemize{ 
 
         \item \code{which=1} to \code{32}, or \code{which="C1"} to \code{"C32"}
-        for a time-series graph of the named column (a size class).
+        for a time-series graph of the named column (a size class). 
 
         \item \code{which=37} or \code{which="pressure"} for a time-series plot
         of pressure.

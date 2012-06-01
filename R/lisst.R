@@ -1,45 +1,92 @@
 setMethod(f="initialize",
           signature="lisst",
-          definition=function(.Object, filename="") {
+          definition=function(.Object, filename="", latitude=NA, longitude=NA) {
               .Object@metadata$filename <- filename
+              .Object@metadata$latitude <- latitude
+              .Object@metadata$longitude <- longitude
               .Object@processingLog$time <- as.POSIXct(Sys.time())
-              .Object@processingLog$value <- "create 'lisst' object"
+              .Object@processingLog$value <- paste("create 'lisst' object with", 
+                                                   " filename=\"", filename, "\"", 
+                                                   ", latitude=", latitude,
+                                                   ", longitude=", longitude, sep="")
               return(.Object)
           })
 
 setMethod(f="plot",
           signature="lisst",
-          definition=function(x, which = c(1, 37, 38), debug=getOption("oceDebug"), ...) {
+          definition=function(x, which = c(16, 37, 38), debug=getOption("oceDebug"), ...) {
               oceDebug(debug, "\b\bplot.lisst(..., which=c(", paste(which, collapse=","), "),...) {\n", sep="")
               nw <- length(which)
               which2 <- vector("numeric", nw)
+              oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n", sep="")
               for (w in 1:nw) {
                   ww <- which[w]
                   if (is.numeric(which[w])) {
                       which2[w] <- which[w]
-                  } else if (length(grep("^c[123]", which[w]))) {
+                  } else if (length(grep("^C[123]", which[w]))) {
                       which2[w] <- as.numeric(substr(which[1], 2, 4))
+                  } else if (ww == "voltage") {
+                      which2[w] <- 34
                   } else if (ww == "pressure") {
                       which2[w] <- 37
                   } else if (ww == "temperature") {
                       which2[w] <- 38
                   }
               }
+              oceDebug(debug, "which2=c(", paste(which2, collapse=","), ")\n", sep="")
               par(mfrow=c(nw, 1))
               time <- x[["time"]]
               for (w in 1:nw) {
                   ww <- which2[w]
                   if (ww <= 32) {
-                      oce.plot.ts(time, x@data[[which2[w]]], ylab=paste("C", ww, sep=""))
+                      oce.plot.ts(time, x@data[[which2[w]]], ylab=paste("Size Class #", ww, sep=""), ...)
+                  } else if (ww == 34) {
+                      oce.plot.ts(time, x[["voltage"]], ylab="Voltage", ...)
                   } else if (ww == 37) {
-                      oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p"))
+                      oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p"), ...)
                   } else if (ww == 38) {
-                      oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T"))
+                      oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T"), ...)
                   }
               }
           })
 
-read.lisst <- function(file, year, tz="UTC")
+as.lisst <- function(data, filename="", year=0, tz="UTC", latitude=NA, longitude=NA)
+{
+    rval <- new("lisst", filename=filename, latitude=latitude, longitude=longitude)
+    ncols <- ncol(data)
+    if (ncols < 42)
+        stop("data file must hold at least 42 space-separated columns")
+    if (ncols > 42) {
+        warning("data file has more than 42 columns; only first 42 are used")
+        data <- data[,1:42]
+    }
+    data <- data.frame(data)
+    names <- rep("", length.out=42)
+    names[1:32] <-  paste("C", 1:32, sep="")
+    names[33] <- "lts"                  # laserTransmissionSensor
+    names[34] <- "voltage"
+    names[35] <- "aux"
+    names[36] <- "lrs"                  # laserReferenceSensor
+    names[37] <- "pressure"
+    names[38] <- "temperature"
+    names[39] <- "dayhour"
+    names[40] <- "minutesecond"
+    names[41] <- "transmission"
+    names[42] <- "beam"
+    names(data) <- names
+    day <- floor(data$dayhour/100)
+    hour <- data$dayhour - 100 * day
+    minute <- floor(data$minutesecond/100)
+    second <- data$minutesecond - 100 * minute
+    decimalday <- day + hour / 24 + minute / 60 / 24 + second / 24 / 60 / 60
+    t0 <- as.POSIXct(paste(year, "-01-01 00:00:00", sep=""), tz=tz)
+    data$time <- t0 + 86400 * decimalday / 365.25
+    rval@data <- data
+    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
+    rval
+}
+
+read.lisst <- function(file, year=0, tz="UTC", latitude=NA, longitude=NA)
 {
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
 
@@ -56,37 +103,7 @@ read.lisst <- function(file, year, tz="UTC")
         on.exit(close(file))
     }
     data <- read.table(file, header=FALSE)
-    ncols <- ncol(data)
-    if (ncols < 42)
-        stop("data file must hold at least 42 space-separated columns")
-    if (ncols > 42) {
-        warning("data file has more than 42 columns; only first 42 are used")
-        data <- data[,1:42]
-    }
-    names(data)[1:32] <-  paste("C", 1:32, sep="")
-    names(data)[33] <- "lts"                  # laserTransmissionSensor
-    names(data)[34] <- "voltage"
-    names(data)[35] <- "aux"
-    names(data)[36] <- "lrs"                  # laserReferenceSensor
-    names(data)[37]<-"pressure"
-    names(data)[38]<-"temperature"
-    names(data)[39] <- "dayhour"
-    names(data)[40] <- "minutesecond"
-    names(data)[41] <- "transmission"
-    names(data)[42] <- "beam"
-    day <- floor(data$dayhour/100)
-    hour <- data$dayhour - 100 * day
-    minute <- floor(data$minutesecond/100)
-    second <- data$minutesecond - 100 * minute
-    decimalday <- day + hour / 24 + minute / 60 / 24 + second / 24 / 60 / 60
-    if (missing(year)) 
-        year <- strtrim(Sys.Date(),4) # a somewhat whacky default
-    t0 <- as.POSIXct(paste(year, "-01-01 00:00:00", sep=""), tz=tz)
-    data$time <- t0 + 86400 * decimalday / 365.25
-    rval <- new('lisst', filename)
-    rval@data <- data
-    rval@processingLog <- processingLog(rval@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    rval
+    as.lisst(data, filename, year, tz, latitude, longitude)
 }
 
 summary.lisst <- function(object, ...)

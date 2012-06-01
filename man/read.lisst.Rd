@@ -6,13 +6,15 @@
 
 \description{Read a LISST data file, producing an object of type \code{lisst}.}
 
-\usage{read.lisst(file, year, tz)}
+\usage{read.lisst(file, year=0, tz="UTC", latitude=NA, longitude=NA)}
 
 \arguments{
   \item{file}{a connection or a character string giving the name of the
     file to load.}
   \item{year}{year in which the measurement of the series was made.}
   \item{tz}{time zone.}
+  \item{latitude}{latitude of observation (stored in metadata)}
+  \item{longitude}{longitude of observation (stored in metadata)}
 }
 
 \details{The file should contain 42 columns, with no header.  If there are
@@ -21,7 +23,7 @@
 
 \value{An object of \code{\link[base]{class}} \code{"lisst"}, which is a
   list with slots as detailed below. 
-  \item{data}{a data frame containing columns name \code{C1} to \code{C32}, 
+  \item{data}{a data frame containing columns named \code{C1} to \code{C32}, 
       which are volume concentrations (in microliters per liter) for size
       classes 1 through 32, along with
       \code{lts} (laser transmission sensor, column 33),
@@ -40,18 +42,17 @@
           or the present year, if the year was not given, and using timezone
           \code{tz}.}
   }
-  \item{metadata}{a list containing the following items
-      \describe{
-          \item{filename}{file name holding the data}
-      }
-  }
+  \item{metadata}{a list containing the following items \code{filename}, the
+      name of the file holding the data, \code{latitude}, the latitude of the
+      observations, and \code{longitude}, the longitude of the observations.}
   \item{processingLog}{a processingLog of processing, in the standard \code{oce} format.}
 }
 
 
 \seealso{The documentation for \code{\link{lisst-class}} explains the structure
     of \code{lisst} objects, and also outlines the other functions dealing with
-    them.}
+    them.  In particular, \code{read.lisst} uses \code{\link{as.lisst}} to
+    create the LISST object that is returned.}
 
 \references{The LIST-100 users guide (version 4.65), which provided the
     information for this function, was downloaded in late May 2012, from

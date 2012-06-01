@@ -12,7 +12,11 @@
 \description{Class to store LISST data.}
 
 \section{Methods}{
-    The sections below assume a LISST object named \code{d}.
+
+    The sections below assume a LISST object named \code{d}.  Generally, these
+    are created by \code{\link{as.lisst}} or by \code{\link{read.lisst}}, and
+    the documentation for the latter should be consulted for information on the
+    object contents.
 
     \subsection{Extracting values}{The time-series data may be accessed as e.g.
         \code{d[["c1"]]} for size-class numbrer 1.  There are 32 size classes.

@@ -546,6 +546,18 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         } else {
             stop("must supply either 'subset' or 'indices'")
         }
+    } else if (inherits(x, "lisst")) {
+        if (length(grep("time", subsetString))) {
+            keep <- eval(substitute(subset), x@data, parent.frame())
+            rval <- x
+            n <- length(names(rval@data))
+            browser()
+            for (i in 1:n) {
+                rval@data[[i]] <- rval@data[[i]][keep]
+            }
+        } else {
+            stop("can only subset LISST objects by time")
+        }
     } else if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
             n <- length(indices)
@@ -1102,7 +1114,15 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 60 * 3) {                       # under 3 min
+    if (d < 60) {                       # under a min
+        t.start <- rr[1]
+        t.end <- rr[2]
+        z <- seq(t.start, t.end, length.out=10)
+        oceDebug(debug, "time range is under a minute\n")
+        oceDebug(debug, vectorShow(z, "z"))
+        if (missing(format))
+            format <- "%S"
+    } else if (d < 60 * 3) {                       # under 3 min
         t.start <- trunc(rr[1]-60, "mins")
         t.end <- trunc(rr[2]+60, "mins")
         z <- seq(t.start, t.end, by="10 sec")
@@ -1312,7 +1332,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
     oceDebug(debug, "\b\b} # oce.axis.ts()\n")
     zzz <- as.numeric(z)
-    par(xaxp=c(min(zzz), max(zzz), -1+length(zzz)))
+    par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
     invisible()
 }
 
