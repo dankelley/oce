@@ -54,6 +54,12 @@
     }
 }
 
+\examples{
+library(oce)
+data(lisst)
+plot(lisst)
+}
+
 \seealso{The documentation for \code{\link{lisst-class}} explains the structure
     of lisst objects, and also outlines the other functions dealing with them.}
 

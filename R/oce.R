@@ -551,10 +551,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             keep <- eval(substitute(subset), x@data, parent.frame())
             rval <- x
             n <- length(names(rval@data))
-            browser()
-            for (i in 1:n) {
+            for (i in 1:n)
                 rval@data[[i]] <- rval@data[[i]][keep]
-            }
         } else {
             stop("can only subset LISST objects by time")
         }
