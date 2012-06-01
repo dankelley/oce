@@ -28,11 +28,29 @@
         \item \code{which=1} to \code{32}, or \code{which="C1"} to \code{"C32"}
         for a time-series graph of the named column (a size class). 
 
+        \item \code{which=33} or \code{which="lts"} for a time-series plot
+        of laser transmission sensor.
+
+        \item \code{which=34} or \code{which="voltage"} for a time-series plot
+        of instrument voltage.
+
+        \item \code{which=35} or \code{which="aux"} for a time-series plot
+        of the external auxiliary input.
+
+        \item \code{which=36} or \code{which="lrs"} for a time-series plot
+        of the laser reference sensor.
+
         \item \code{which=37} or \code{which="pressure"} for a time-series plot
         of pressure.
 
         \item \code{which=38} or \code{which="temperature"} for a time-series plot
         of temperature.
+
+        \item \code{which=41} or \code{which="transmission"} for a time-series plot
+        of transmission, in percent.
+
+        \item \code{which=42} or \code{which="beam"} for a time-series plot
+        of beam-C, in 1/metre.
     }
 }
 

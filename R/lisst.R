@@ -21,32 +21,32 @@ setMethod(f="plot",
               oceDebug(debug, "which=c(", paste(which, collapse=","), ")\n", sep="")
               for (w in 1:nw) {
                   ww <- which[w]
-                  if (is.numeric(which[w])) {
-                      which2[w] <- which[w]
-                  } else if (length(grep("^C[123]", which[w]))) {
-                      which2[w] <- as.numeric(substr(which[1], 2, 4))
-                  } else if (ww == "voltage") {
-                      which2[w] <- 34
-                  } else if (ww == "pressure") {
-                      which2[w] <- 37
-                  } else if (ww == "temperature") {
-                      which2[w] <- 38
-                  }
+                  if (is.numeric(which[w])) which2[w] <- which[w]
+                  else if (length(grep("^C[123]", which[w]))) which2[w] <- as.numeric(substr(which[1], 2, 4))
+                  else if (ww == "lts")  which2[w] <- 33
+                  else if (ww == "voltage")  which2[w] <- 34
+                  else if (ww == "aux") which2[w] <- 35
+                  else if (ww == "lrs") which2[w] <- 36
+                  else if (ww == "pressure") which2[w] <- 37
+                  else if (ww == "temperature") which2[w] <- 38
+                  else if (ww == "transmission") which2[w] <- 41
+                  else if (ww == "beam") which2[w] <- 42
+                  else stop("cannot handle which value \"", which[w], "\"")
               }
               oceDebug(debug, "which2=c(", paste(which2, collapse=","), ")\n", sep="")
               par(mfrow=c(nw, 1))
               time <- x[["time"]]
               for (w in 1:nw) {
                   ww <- which2[w]
-                  if (ww <= 32) {
-                      oce.plot.ts(time, x@data[[which2[w]]], ylab=paste("Size Class #", ww, sep=""), ...)
-                  } else if (ww == 34) {
-                      oce.plot.ts(time, x[["voltage"]], ylab="Voltage", ...)
-                  } else if (ww == 37) {
-                      oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p"), ...)
-                  } else if (ww == 38) {
-                      oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T"), ...)
-                  }
+                  if      (ww <= 32) oce.plot.ts(time, x@data[[which2[w]]], ylab=paste("Size Class #", ww, sep=""), ...)
+                  else if (ww == 33) oce.plot.ts(time, x[["lts"]], ylab="Laser Trans. Sensor", ...)
+                  else if (ww == 34) oce.plot.ts(time, x[["voltage"]], ylab="Voltage", ...)
+                  else if (ww == 35) oce.plot.ts(time, x[["aux"]], ylab="Ext. Aux. Input", ...)
+                  else if (ww == 36) oce.plot.ts(time, x[["lrs"]], ylab="Laser Ref. Sensor", ...)
+                  else if (ww == 37) oce.plot.ts(time, x[["pressure"]], ylab=resizableLabel("p"), ...)
+                  else if (ww == 38) oce.plot.ts(time, x[["temperature"]], ylab=resizableLabel("T"), ...)
+                  else if (ww == 41) oce.plot.ts(time, x[["transmission"]], ylab="Transmission [%]", ...)
+                  else if (ww == 42) oce.plot.ts(time, x[["beam"]], ylab="Beam-C [1/m]", ...)
               }
           })
 
