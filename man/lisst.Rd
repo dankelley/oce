@@ -15,7 +15,7 @@ data(lisst)
 plot(lisst)
 }
 
-\usage{data(list)}
+\usage{data(lisst)}
 
 \source{This was constructed artifically, to roughly match the sort of values
     that might be measured in the field.}

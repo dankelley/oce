@@ -19,7 +19,11 @@
 
 \details{The file should contain 42 columns, with no header.  If there are
     fewer than 42 columns, an error results.  If there are more, only the first
-    42 are used.}
+    42 are used.  Note that \code{\link{read.oce}} can recognize LISST files by
+    their having a name ending in \code{".asc"} and by having 42 elements on
+    the first line.  Even so, it is preferred to use the present function,
+    because it gives the opportunity to specify the year and timezone, so that
+    times can be calculated properly.}
 
 \value{An object of \code{\link[base]{class}} \code{"lisst"}, which is a
   list with slots as detailed below. 

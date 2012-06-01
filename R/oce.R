@@ -801,7 +801,11 @@ magic <- function(file, debug=getOption("oceDebug"))
     filename <- file
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
-        if (length(grep(".adr$", filename))) {
+        if (length(grep(".asc$", filename))) {
+            someLines <- readLines(file, encoding="UTF-8", n=1)
+            if (42 == length(strsplit(someLines[1], ' ')[[1]]))
+                return("lisst")
+        } else if (length(grep(".adr$", filename))) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
         } else if (length(grep(".rsk$", filename))) {
@@ -969,6 +973,8 @@ read.oce <- function(file, ...)
         return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
     if (type == "drifter/argo")
         return(read.drifter(file))
+    if (type == "lisst")
+        return(read.lisst(file))
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
