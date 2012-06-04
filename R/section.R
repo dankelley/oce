@@ -26,16 +26,25 @@ setMethod(f="[[",
                   rval <- NULL
                   for (stn in seq_along(x@data$station))
                       rval <- c(rval, x@data$station[[stn]]@data[[i]])
-                  return(rval)
               } else if ("station" == i) {
-                  if (missing(j))
-                      stop("must give station number")
-                  return(x@data$station[[j]])
+                  if (missing(j)) {
+                      rval <- x@data$station
+                  } else {
+                      nj <- length(j)
+                      if (nj == 1) {
+                          rval <- x@data$station[[j]]
+                      } else {
+                          rval <- vector("list", nj)
+                          for (jj in j)
+                              rval[[jj]] <- x@data$station[[jj]]
+                      }
+                  }
               } else if ("dynamic height" == i) {
-                  return(swDynamicHeight(x)) # FIXME: should emulate elsewhere
+                  rval <- swDynamicHeight(x)
               } else {
                   stop("cannot access item named \"", i, "\" in this section object")
               }
+              rval
           })
 
 setMethod(f="show",

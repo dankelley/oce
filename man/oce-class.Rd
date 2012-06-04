@@ -12,7 +12,7 @@
 \title{base class of oce package}
 
 \description{This is class from which all objects in the \code{oce} package
-    inherit.  Users should not deal with this class directly.}
+    inherit.}
 
 \section{Slots}{
     \describe{
@@ -65,6 +65,7 @@ Information on the classes that derive from this base class are found at the fol
 \code{\link{coastline-class}},
 \code{\link{ctd-class}},
 \code{\link{drifter-class}},
+\code{\link{lisst-class}},
 \code{\link{lobo-class}},
 \code{\link{tdr-class}},
 \code{\link{sealevel-class}},
