@@ -1548,3 +1548,27 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     }
     oceDebug(debug, "\b\b} # drawDirectionField\n")
 }
+
+oceContour <- function(x, y, z, ...)
+{
+    dots <- list(...)
+    dotsNames <- names(dots)
+    ox <- order(x)
+    oy <- order(y)
+    xo <- x[ox]
+    yo <- y[oy]
+    zo <- z[ox, oy]
+    if ("add" %in% dotsNames) {
+        contour(xo, yo, zo, ...)
+    } else {
+        if (!("axes" %in% dotsNames)) {
+            contour(xo, yo, zo, axes=FALSE, ...)
+            ## see src/library/graphics/R/contour.R 
+            Axis(x, side=1)#, at=xo, labels=x) FIXME: reorder, without at/labels
+            Axis(y, side=2)#, at=yo, labels=y)
+            box()
+        } else {
+            contour(xo, yo, zo, ...)
+        }
+    }
+}
