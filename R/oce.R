@@ -1549,26 +1549,50 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
     oceDebug(debug, "\b\b} # drawDirectionField\n")
 }
 
-oceContour <- function(x, y, z, ...)
+oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, ...)
 {
     dots <- list(...)
     dotsNames <- names(dots)
-    ox <- order(x)
-    oy <- order(y)
-    xo <- x[ox]
-    yo <- y[oy]
-    zo <- z[ox, oy]
     if ("add" %in% dotsNames) {
-        contour(xo, yo, zo, ...)
+        contour(x, y, z, ...)
     } else {
+        if (missing(z)) {
+            if (!missing(x)) {
+                if (is.list(x)) {
+                    z <- x$z; y <- x$y; x <- x$x
+                } else {
+                    z <- x
+                    x <- seq.int(0, 1, length.out = nrow(z))
+                }
+            } else stop("no 'z' matrix specified")
+        } else if (is.list(x)) {
+            y <- x$y
+            x <- x$x
+        }
+        zdim <- dim(z)
+        if (revx) {
+            x <- rev(x)
+##            z <- z[seq.int(zdim[1], 1), ]
+        }
+        if (revy) {
+            y <- rev(y)
+ ##           z <- z[, seq.int(zdim[2], 1)]
+        }
         if (!("axes" %in% dotsNames)) {
-            contour(xo, yo, zo, axes=FALSE, ...)
+            contour(x, y, z, axes=FALSE, ...)
             ## see src/library/graphics/R/contour.R 
-            Axis(x, side=1)#, at=xo, labels=x) FIXME: reorder, without at/labels
-            Axis(y, side=2)#, at=yo, labels=y)
+            xaxp <- par('xaxp')
+            xat <- seq(xaxp[1], xaxp[2], length.out=-1+xaxp[3])
+            xlabels <- format(xat)
+            yaxp <- par('yaxp')
+            yat <- seq(yaxp[1], yaxp[2], length.out=-1+yaxp[3])
+            ylabels <- format(yat)
+            ##print(data.frame(yat, ylabels))
+            if (revx) Axis(x, side=1, at=xat, labels=rev(xlabels)) else Axis(x, side=1)
+            if (revy) Axis(y, side=2, at=yat, labels=rev(ylabels)) else Axis(y, side=2)
             box()
         } else {
-            contour(xo, yo, zo, ...)
+            contour(x, y, z, ...)
         }
     }
 }
