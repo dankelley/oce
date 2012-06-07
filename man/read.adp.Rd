@@ -160,8 +160,8 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     with files created with a Dalhousie aquadopHR.)}
 }
 
-\seealso{The documentation for \code{\link{adv-class}} explains the structure
-    of ADV objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{
@@ -187,13 +187,15 @@ two-byte short integer.  \code{read.adp.rdi()} uses
 these sequences to interpret data files.)
 
 2. Information on Nortek profiler is available at
-\url{http://www.nortekusa.com/}.  (One must join the site to see the
-manuals.)
+\url{http://www.nortekusa.com/}.  (One must join the site to see the manuals.)
 
 3. Information about Sontek profilers is available at
 \url{http://www.sontek.com}.
 
-4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center}
+4. The Nortek Knowledge Center
+\url{http://www.nortekusa.com/en/knowledge-center} may be of help if problems
+arise in dealing with data from Nortek instruments.
+
 }
 
 \author{Dan Kelley}
