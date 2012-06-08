@@ -216,7 +216,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler"),
-                            distance,
+                            orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"),
                             ...)
@@ -278,7 +278,6 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         on.exit(close(file))
     }
     type <- match.arg(type)
-    print(type)
     seek(file, 0, "start")
     seek(file, 0, "start")
     ## go to the end, so the next seek (to get to the data) reveals file length
@@ -432,6 +431,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  heading=heading,
                  pitch=pitch,
                  roll=roll)
+    if (missing(orientation)) {
+        orientation <- header$head$tiltSensorOrientation
+    } else {
+        orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
+    }
     metadata <- list(manufacturer="nortek",
                      instrumentType="aquadopp-hr",
                      filename=filename,
@@ -462,7 +466,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      configTiltSensor=header$head$configTiltSensor,
                      beamAngle=25,     # FIXME: may change with new devices
                      tiltSensorOrientation=header$head$tiltSensorOrientation,
-                     orientation=header$head$tiltSensorOrientation,
+                     orientation=orientation,
                      frequency=header$head$frequency,
                      headSerialNumber=header$head$headSerialNumber,
                      bin1Distance=header$user$blankingDistance, # FIXME: is this right?

@@ -888,7 +888,6 @@ magic <- function(file, debug=getOption("oceDebug"))
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x21)  {
             oceDebug(debug, "this is adp/nortek/aqudoppProfiler\n")
-            warning("what is an aquadoppprofiler and how is it different from an aquadopp?  See p33 and p37 of SIG.  Note that magic() works on this, but not read.oce()\n")
             return("adp/nortek/aquadoppProfiler") # p37 SIG
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {

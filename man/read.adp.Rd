@@ -25,7 +25,7 @@ read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("aquadoppHR", "aquadoppProfiler"),
-  distance,
+  orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
@@ -66,12 +66,17 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     by the general function \code{read.adp} to select a subsidiary 
    function to use, such as \code{read.adp.nortek}.}
   \item{type}{a character string indicating the type of instrument.}
-  \item{distance}{a list of distances of bin centres from the sensor.  This
-      argument is ignored except for Nortek profilers, and need not be given if
-      the function determines the distances correctly from the data.  The
-      problem is that the distance is poorly documented in the Nortek System
-      Integrator Guide (2008 edition, page 31), so the function must rely on
-      word-of-mouth formulae that do not work in all cases.}
+  \item{orientation}{optional character string specifying the orientation of
+      the sensor.  It can only be supplied for nortek devices, and is provided
+      for those cases (not uncommon) in which it cannot be inferred from the
+      data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
+      \code{"sideward"}.}
+  \item{distance}{optional vector holding the distances of bin centres from the
+      sensor.  This argument is ignored except for Nortek profilers, and need
+      not be given if the function determines the distances correctly from the
+      data.  The problem is that the distance is poorly documented in the
+      Nortek System Integrator Guide (2008 edition, page 31), so the function
+      must rely on word-of-mouth formulae that do not work in all cases.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{latitude}{optional signed number indicating the latitude in 
     degrees North.}
