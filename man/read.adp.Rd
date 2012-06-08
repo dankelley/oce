@@ -67,10 +67,9 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
    function to use, such as \code{read.adp.nortek}.}
   \item{type}{a character string indicating the type of instrument.}
   \item{orientation}{optional character string specifying the orientation of
-      the sensor.  It can only be supplied for nortek devices, and is provided
-      for those cases (not uncommon) in which it cannot be inferred from the
-      data file.  The valid choices are \code{"upward"}, \code{"downward"}, and
-      \code{"sideward"}.}
+      the sensor, provided for those cases in which it cannot be inferred from
+      the data file.  The valid choices are \code{"upward"}, \code{"downward"},
+      and \code{"sideward"}.}
   \item{distance}{optional vector holding the distances of bin centres from the
       sensor.  This argument is ignored except for Nortek profilers, and need
       not be given if the function determines the distances correctly from the
@@ -85,9 +84,6 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{beamAngle}{angle between instrument axis and beams, in degrees.}
-  \item{orientation}{optional string, which over-rides the value inferred from
-      the data file.  Possible values are \code{"upward"} and
-      \code{"downward"}.  This is only used for \code{read.adp.sontek.serial}.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     (with numbers and dots) of every profile read.}
   \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
