@@ -204,7 +204,8 @@ beamName <- function(x, which)
 read.adp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      latitude=NA, longitude=NA,
                      manufacturer=c("rdi", "nortek", "sontek"),
-                     debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+                     monitor=FALSE, despike=FALSE, processingLog,
+                     debug=getOption("oceDebug"),
                      ...)
 {
     oceDebug(debug, "read.adp(...,from=",from,",to=",if (missing(to)) "(missing)" else to,",by=",by,"type=",type,",...)\n")
@@ -330,15 +331,15 @@ summary.adp <- function(object, ...)
     res$oceCoordinate <- object@metadata$oceCoordinate
     res$processingLog <- object@processingLog
     dataNames <- names(object@data)
-    threes <- matrix(nrow=(-1+length(dataNames)), ncol=3)
+    threes <- matrix(nrow=(-2+length(dataNames)), ncol=3)
     ii <- 1
     for (i in 1:length(dataNames)) {
-        if (names(object@data)[i] != "time") {
+        if (dataNames[i] != "time" && dataNames[i] != "distance") {
             threes[ii,] <- threenum(object@data[[dataNames[i]]])
             ii <- ii + 1
         }
     }
-    rownames(threes) <- c(dataNames[dataNames != "time"])
+    rownames(threes) <- c(dataNames[dataNames != "time" & dataNames != "distance"])
     colnames(threes) <- c("Min.", "Mean", "Max.")
     cat("* Statistics of subsample::\n\n")
     print(threes)

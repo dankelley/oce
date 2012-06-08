@@ -13,29 +13,34 @@
 read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
-  type=c("aquadopp high resolution"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  type=c("aquadoppHR", "aquadoppProfiler"),
+  distance,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
-                      latitude=NA, longitude=NA,
-                      type=c("adp", "pcadp"),
-                      beamAngle=25, orientation,
-                      monitor=FALSE, processingLog,
-                      debug=getOption("oceDebug")) 
+  latitude=NA, longitude=NA,
+  type=c("adp", "pcadp"),
+  beamAngle=25, orientation,
+  monitor=FALSE, processingLog,
+  debug=getOption("oceDebug")) 
 }
 
 \arguments{
@@ -61,6 +66,12 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     by the general function \code{read.adp} to select a subsidiary 
    function to use, such as \code{read.adp.nortek}.}
   \item{type}{a character string indicating the type of instrument.}
+  \item{distance}{a list of distances of bin centres from the sensor.  This
+      argument is ignored except for Nortek profilers, and need not be given if
+      the function determines the distances correctly from the data.  The
+      problem is that the distance is poorly documented in the Nortek System
+      Integrator Guide (2008 edition, page 31), so the function must rely on
+      word-of-mouth formulae that do not work in all cases.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{latitude}{optional signed number indicating the latitude in 
     degrees North.}
@@ -147,18 +158,16 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     For example, the serial number is not recognized properly for
     version 16.28.
     
-    \item \strong{Nortek Aquadopp-HR files.} Page 38 of the Nortek
-    System Integrator Guide says to offset 53 bytes in profile records
-    to get the first velocity, but experiments on files drived from a
-    Dalhousie University profiler require an offset of 54 to recover
-    data that match the manufacturer's (*.v1, *.v2, *.v3) files.  Also,
-    the beam angle is hard-wired at 25 degrees in the code, since it
-    is not documented as being part of the headers.  (Actually,
-    the beam angle is in the header, in bytes 23 to 30 of the
-    beam-header, but it is not documented, and sample code that Nortek
-    provided to me in 2009 gives the scale incorrectly, as compared
-    with files created with a Dalhousie aquadopHR.)}
-}
+    \item \strong{Nortek Aquadopp-HR files.} Page 38 of the Nortek System
+    Integrator Guide (2008) says to offset 53 bytes in profile records to get
+    the first velocity, but experiments on files drived from a Dalhousie
+    University profiler require an offset of 54 to recover data that match the
+    manufacturer's (*.v1, *.v2, *.v3) files.  Also, the beam angle is
+    hard-wired at 25 degrees in the code, since it is not documented as being
+    part of the headers.  (Actually, the beam angle is in the header, in bytes
+    23 to 30 of the beam-header, but it is not documented, and sample code that
+    Nortek provided to me in 2009 gives the scale incorrectly, as compared with
+    files created with a Dalhousie aquadopHR.)} }
 
 \seealso{The documentation for \code{\link{adp-class}} explains the structure
     of ADP objects, and also outlines the other functions dealing with them.}
@@ -186,7 +195,8 @@ sequence number of the profile, represented as a little-endian
 two-byte short integer.  \code{read.adp.rdi()} uses
 these sequences to interpret data files.)
 
-2. Information on Nortek profiler is available at
+2. Information on Nortek profilers (including the System Integrator Guide,
+which explains the data format byte-by-byte) is available at
 \url{http://www.nortekusa.com/}.  (One must join the site to see the manuals.)
 
 3. Information about Sontek profilers is available at

@@ -2,7 +2,7 @@
 ## hardware [a5 05 X1 X2]  48 bytes, 2*(short word made from X1 and X2)
 ## head     [a5 04 X1 X2] 224 bytes, 2*(short word made from X1 and X2)
 ## user     [a5 00 X1 X2] 512 bytes, 2*(short word made from X1 and X2)
-## profiles, each starting with a5 2a [aquadoppHR] or ?? [other]
+## profiles, each starting with a5 2a [aquadoppHR] or a5 21 [aquadoopp profiler] [other]
 ## DOCUMENTATION BUGS
 ## 1. p38 System Integrator Guide says to offset 53 bytes for velocity, but I have to offset 54 to recover data
 #     that match the manufacturer's (*.v1, *.v2, *.v3) files.
@@ -154,7 +154,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$numberOfCells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$numberOfCells: ", user$numberOfCells, "\n")
             user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$hBinLength: ", user$hBinLength, "\n")
+            oceDebug(debug, "user$hBinLength: ", user$hBinLength, " (p31 of System Integrator Guide) FIXME: seems wrong in test cases\n")
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
                 ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
                 user$cellSize <- cos(25*pi/180) * user$hBinLength * 0.000052734375
@@ -215,9 +215,11 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
-                            type=c("aquadopp high resolution"),
-                            debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE,
-                            processingLog, ...)
+                            type=c("aquadoppHR", "aquadoppProfiler"),
+                            distance,
+                            monitor=FALSE, despike=FALSE, processingLog,
+                            debug=getOption("oceDebug"),
+                            ...)
 {
     bisectAdpNortek <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
@@ -276,6 +278,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         on.exit(close(file))
     }
     type <- match.arg(type)
+    print(type)
     seek(file, 0, "start")
     seek(file, 0, "start")
     ## go to the end, so the next seek (to get to the data) reveals file length
@@ -396,8 +399,10 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     a <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # echo amplitude
     q <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # correlation
     velocityScale <- 1e-3              # FIXME: why not use the value in user$velocityScale?
+    ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
+    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30)
     for (i in 1:profilesToRead) {
-        o <- profileStart[i] + 54 ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
+        o <- profileStart[i] + oShift
         ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
         v[i,,] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)],
                                                  "integer", n=items, size=2, endian="little", signed=TRUE),
@@ -413,8 +418,14 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
 
+    if (missing(distance)) {
+        distance <- seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells)
+    } else {
+        if (length(distance) != dim(v)[2])
+            stop("the argument distance is of length ", length(distance), ", which does not match the second dimension of the velocity matrix, ", dim(v)[2])
+    }
     data <- list(v=v, a=a, q=q,
-                 distance=seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells),
+                 distance=distance,
                  time=time,
                  pressure=pressure,
                  temperature=temperature,

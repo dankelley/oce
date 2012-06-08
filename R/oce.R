@@ -887,9 +887,9 @@ magic <- function(file, debug=getOption("oceDebug"))
             return("adp/nortek/aquadopp") # p33 SIG
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x21)  {
-            oceDebug(debug, "this is adp/nortek/aqudoppprofiler\n")
+            oceDebug(debug, "this is adp/nortek/aqudoppProfiler\n")
             warning("what is an aquadoppprofiler and how is it different from an aquadopp?  See p33 and p37 of SIG.  Note that magic() works on this, but not read.oce()\n")
-            return("adp/nortek/aquadopp-profiler") # p37 SIG
+            return("adp/nortek/aquadoppProfiler") # p37 SIG
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
             oceDebug(debug, "this is adp/nortek/aqudoppHR\n")
@@ -958,11 +958,11 @@ read.oce <- function(file, ...)
     if (type == "adp/sontek")
         return(read.adp.sontek(file, processingLog=processingLog, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
-        stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
-    if (type == "adp/nortek/aquadopp-profiler")
-        stop("cannot read adp/nortek/aquadopp-profiler files (aquadoppHR is OK, though)")
+        stop("cannot read \"adp/nortek/aquadopp\" files")
+    if (type == "adp/nortek/aquadoppProfiler")
+        return(read.adp.nortek(file, type="aquadoppProfiler", processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, processingLog=processingLog, ...))
+        return(read.adp.nortek(file, type="aquadoppHR", processingLog=processingLog, ...))
     if (type == "adv/nortek/vector")
         return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")
