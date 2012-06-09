@@ -462,7 +462,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
 
     if (missing(distance)) {
-        distance <- seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells)
+        distance <- seq(header$user$blankingDistance+header$user$cellSize, by=header$user$cellSize, length.out=header$user$numberOfCells)
     } else {
         if (length(distance) != dim(v)[2])
             stop("the argument distance is of length ", length(distance), ", which does not match the second dimension of the velocity matrix, ", dim(v)[2])
