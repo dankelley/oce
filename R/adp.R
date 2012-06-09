@@ -237,6 +237,7 @@ summary.adp <- function(object, ...)
     cat(paste("* Instrument:         ", object@metadata$instrumentType, "\n", sep=""), ...)
     cat("* Manufacturer:      ", object@metadata$manufacturer, "\n")
     cat(paste("* Serial number:      ", object@metadata$serialNumber, "\n", sep=""), ...)
+    cat(paste("* Firmware version:   ", object@metadata$firmwareVersion, "\n", sep=""), ...)
     cat(paste("* Source filename:    ``", object@metadata$filename, "``\n", sep=""), ...)
     if ("latitude" %in% names(object@metadata)) {
         cat(paste("* Location:           ",

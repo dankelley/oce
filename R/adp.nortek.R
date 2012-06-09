@@ -19,8 +19,9 @@
 ## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
-decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
+decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), debug=getOption("oceDebug"), ...)
 {
+    type <- match.arg(type)
     oceDebug(debug, "decodeHeaderNortek() entry; buf[1:20]=",buf[1:20],"\n")
     degToRad <- atan2(1, 1) / 45
     syncCode <- as.raw(0xa5)
@@ -155,16 +156,52 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             oceDebug(debug, "user$numberOfCells: ", user$numberOfCells, "\n")
             user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$hBinLength: ", user$hBinLength, " (p31 of System Integrator Guide)\n")
-            if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                user$cellSize <- cos(25*pi/180) * user$hBinLength * 0.000052734375
-            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
-                user$cellSize <- cos(25*pi/180) * user$hBinLength *0.0000263671875
+            ## The cell size is computed with different formulae for different devices, and 
+            ## different frequencies.  See
+            ##   http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717
+            ## for the details (and note that there are some typos from the Nortek advisor, which
+            ## get corrected later on that webpage).
+            if (type == "aquadoppHR") {
+                ## (NOTE: 1674 is hBinLength)
+                ## CS = (1674/256)*0.00675*cos(25) = 0.04 m, for a 2 MHz instrument
+                ## For a 1 MHz instrument you must multiply by twice the sampling distance, i.e. 0.0135 m
+                if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                } else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.01350 * cos(25 * degToRad)
+                } else {
+                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size\n")
+                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                }
+            } else if (type == "aquadoppProfiler") {
+                if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.0239 * cos(25 * degToRad)
+                } else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
+                } else if (isTRUE(all.equal.numeric(head$frequency, 600))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.0797 * cos(25 * degToRad)
+                } else if (isTRUE(all.equal.numeric(head$frequency, 400))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
+                } else {
+                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size\n")
+                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                }
             } else {
-                user$cellSize <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
+                warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
+                user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
             }
+
+            ##if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+            ##    user$cellSize <- cos(25*pi/180) * user$hBinLength * 0.000052734375
+            ##} else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+            ##    user$cellSize <- cos(25*pi/180) * user$hBinLength *0.0000263671875
+            ##} else {
+            ##    user$cellSize <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
+            ##}
             ## Next line is from nortek-supplied 'Sample.cpp', which is said to read aquadoppHR.
             ## printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*0.186767*conf.hBinLength/head.hFrequency);
-            user$cellSize2 <- cos(25.0*pi/180) * 0.186767 * user$hBinLength / head$frequency
+            #user$cellSize2 <- cos(25.0*pi/180) * 0.186767 * user$hBinLength / head$frequency
+
             oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: using formula from unknown source)\n")
             oceDebug(debug, "cellSize2=", user$cellSize2, "m (FIXME: using Nortek-supplied formula for aquadoppHR)\n")
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
@@ -223,6 +260,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             debug=getOption("oceDebug"),
                             ...)
 {
+    degToRad <- atan2(1, 1) / 45
     bisectAdpNortek <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profileStart)
@@ -287,7 +325,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
-    header <- decodeHeaderNortek(buf, debug=debug-1)
+    header <- decodeHeaderNortek(buf, type=type, debug=debug-1)
     averagingInterval <- header$user$averagingInterval
     numberOfBeams <- header$numberOfBeams
     numberOfCells <- header$numberOfCells
