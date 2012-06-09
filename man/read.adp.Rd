@@ -145,30 +145,25 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 \section{Implementation notes}{
   \itemize{
-    \item \strong{Teledyne-RDI files.} If a heading bias had been set
-    with the \code{EB} command during the setup for the deployment, then
-    a heading bias will have been stored in the file's header.  This
-    value is stored in the object's metadata as
-    \code{metadata$heading.bias}.  \strong{Importantly}, this value is
-    subtracted from the headings stored in the file, and the result of
-    this subtraction is stored in the objects heading value (in
-    \code{data$heading}).
-    
-    It should be noted that \code{read.adp.rdi()} was tested for
-    firmware version 16.30.  For other versions, there may be problems.
-    For example, the serial number is not recognized properly for
+    \item \strong{Teledyne-RDI files.} If a heading bias had been set with the
+    \code{EB} command during the setup for the deployment, then a heading bias
+    will have been stored in the file's header.  This value is stored in the
+    object's metadata as \code{metadata$heading.bias}.  \strong{Importantly},
+    this value is subtracted from the headings stored in the file, and the
+    result of this subtraction is stored in the objects heading value (in
+    \code{data$heading}).  It should be noted that \code{read.adp.rdi()} was
+    tested for firmware version 16.30.  For other versions, there may be
+    problems.  For example, the serial number is not recognized properly for
     version 16.28.
-    
-    \item \strong{Nortek Aquadopp-HR files.} Page 38 of the Nortek System
-    Integrator Guide (2008) says to offset 53 bytes in profile records to get
-    the first velocity, but experiments on files drived from a Dalhousie
-    University profiler require an offset of 54 to recover data that match the
-    manufacturer's (*.v1, *.v2, *.v3) files.  Also, the beam angle is
-    hard-wired at 25 degrees in the code, since it is not documented as being
-    part of the headers.  (Actually, the beam angle is in the header, in bytes
-    23 to 30 of the beam-header, but it is not documented, and sample code that
-    Nortek provided to me in 2009 gives the scale incorrectly, as compared with
-    files created with a Dalhousie aquadopHR.)} }
+    \item \strong{Nortek Aquadopp files.} The R code is based on information in
+    the Nortek System Integrator Guide (2008) and on postings on the Nortek
+    ``knowledge center'' discussion board.  One might assume that the latter is
+    less authorative than the former.  For example, the inference of cell size
+    follows advice found at
+    \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+    (downloaded June 2012)), which contains a typo in an early posting that is
+    corrected later on.}
+}
 
 \seealso{The documentation for \code{\link{adp-class}} explains the structure
     of ADP objects, and also outlines the other functions dealing with them.}
