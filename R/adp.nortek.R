@@ -34,7 +34,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
     o <- 0                              # offset
     for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
         oceDebug(debug, "\n")
-        oceDebug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
+        ##oceDebug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
         if (buf[o+1] != syncCode)
             stop("expecting syncCode 0x", syncCode, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
         if (buf[o+2] == idHardwareConfiguration) {         # see page 29 of System Integrator Guide
@@ -115,7 +115,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             oceDebug(debug, "user$blankingDistance=", user$blankingDistance, "in counts\n")
 
             user$receiveLength <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$receiveLength=", user$receiveLength, "in counts\n")
+            oceDebug(debug, "user$receiveLength=T3=", user$receiveLength, "counts (Q: does this relate to cellSize?)\n")
             
             user$timeBetweenPings <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
@@ -154,40 +154,42 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$numberOfCells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$numberOfCells: ", user$numberOfCells, "\n")
             user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$hBinLength: ", user$hBinLength, " (p31 of System Integrator Guide) FIXME: seems wrong in test cases\n")
+            oceDebug(debug, "user$hBinLength: ", user$hBinLength, " (p31 of System Integrator Guide)\n")
             if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
                 user$cellSize <- cos(25*pi/180) * user$hBinLength * 0.000052734375
-            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) { # FIXME: use head$frequency or hardware$frequency?
-                ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
+            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
                 user$cellSize <- cos(25*pi/180) * user$hBinLength *0.0000263671875
             } else {
                 user$cellSize <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
             }
-            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: no docs on this; guessing from secondhand info/guesses)\n")
+            ## Next line is from nortek-supplied 'Sample.cpp', which is said to read aquadoppHR.
+            ## printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*0.186767*conf.hBinLength/head.hFrequency);
+            user$cellSize2 <- cos(25.0*pi/180) * 0.186767 * user$hBinLength / head$frequency
+            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: using formula from unknown source)\n")
+            oceDebug(debug, "cellSize2=", user$cellSize2, "m (FIXME: using Nortek-supplied formula for aquadoppHR)\n")
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "measurementInterval=", user$measurementInterval, "\n")
 
             if (debug > 0) { # tests for issue146
-                cat("TEMPORARY debugging for branch 'issue145': attempt to infer from USER header whether we have extra analog data...\n")
+                ##cat("TEMPORARY debugging for branch 'issue145': attempt to infer from USER header whether we have extra analog data...\n")
                 modeBinaryTmp <- byteToBinary(buf[o+59], endian="big")
-                cat("TEST 1: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
-                for (iii in (-3):3) {
-                    tmp <- buf[o+59+iii]
-                    tmpb <- byteToBinary(buf[o+59+iii], endian="big")
-                    cat("buf[o+59+", iii, "]", tmp, "x  ", tmpb, "\n")
-                }
-                cat("docs say (I *think* about byte buf[o+59], but this could be out by a byte or two)
-  bit 0: use user specified sound speed (0=no, 1=yes)
-  bit 1: diagnostics/wave mode 0=disable, 1=enable)
-  bit 2: analog output mode (0=disable, 1=enable)
-  bit 3: output format (0=Vector, 1=ADV)
-  bit 4: scaling (0=1 mm, 1=0.1 mm)
-  bit 5: serial output (0=disable, 1=enable)
-  bit 6: reserved EasyQ
-  bit 7: stage (0=disable, 1=enable)
-  bit 8: output power for analog input (0=disable, 1=enable)
-\n")                    
+                ##cat("TEST 1: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
+                ##for (iii in (-3):3) {
+                ##    tmp <- buf[o+59+iii]
+                ##    tmpb <- byteToBinary(buf[o+59+iii], endian="big")
+                ##    cat("buf[o+59+", iii, "]", tmp, "x  ", tmpb, "\n")
+                ##}
+##                cat("docs say (I *think* about byte buf[o+59], but this could be out by a byte or two)
+##  bit 0: use user specified sound speed (0=no, 1=yes)
+##  bit 1: diagnostics/wave mode 0=disable, 1=enable)
+##  bit 2: analog output mode (0=disable, 1=enable)
+##  bit 3: output format (0=Vector, 1=ADV)
+##  bit 4: scaling (0=1 mm, 1=0.1 mm)
+##  bit 5: serial output (0=disable, 1=enable)
+##  bit 6: reserved EasyQ
+##  bit 7: stage (0=disable, 1=enable)
+##  bit 8: output power for analog input (0=disable, 1=enable)
+##\n")                    
             }
 
             ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
