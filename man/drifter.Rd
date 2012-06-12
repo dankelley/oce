@@ -14,10 +14,6 @@
     \code{drifter[["temperature"]][1,]} is the surface temperature.}
 
 \examples{
-\dontrun{
-# How data were created
-drifter <- read.drifter("/data/OAR/6900388_prof.nc")
-}
 library(oce)
 data(drifter)
 summary(drifter)

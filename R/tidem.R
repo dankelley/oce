@@ -584,7 +584,6 @@ predict.tidem <- function(object, newdata, ...)
             x <- array(dim=c(nt, 2 * nc))
             x[,1] <- rep(1, nt)
             hour2pi <- 2 * pi * (as.numeric(tt) - as.numeric(object[["tRef"]])) / 3600
-            browser()
             for (i in 1:nc) {
                 omega.t <- freq[i] * hour2pi
                 x[,2*i-1] <- sin(omega.t)

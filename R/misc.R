@@ -27,6 +27,86 @@ filterSomething <- function(x, filter)
     res
 }
 
+plotTaylor <- function(x, y, scale, pch, col)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (is.vector(y))
+        y <- matrix(y)
+    ncol <- ncol(y)
+    if (missing(pch))
+        pch <- 1:ncol
+    if (missing(col))
+        col <- 1:ncol
+    xSD <- sd(x, na.rm=TRUE)
+    ySD <- sd(as.vector(y), na.rm=TRUE)
+    if (missing(y)) stop("must supply 'y'")
+    halfArc <- seq(0, pi, length.out=200)
+    ## FIXME: use figure geometry, to avoid axis cutoff
+    if (missing(scale))
+        scale <- max(1.1 * pretty(c(xSD, ySD)))
+    plot.new()
+    plot.window(c(-1.04, 1.04) * scale, c(0, 1.04) * scale, asp=1)
+    sdPretty <- pretty(c(0, scale))
+    for (radius in sdPretty)
+        lines(radius * cos(halfArc), radius * sin(halfArc))
+    ## spokes
+    for (rr in seq(-1, 1, 0.1))
+        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
+    for (rr in seq(-1, 1, 0.2))
+        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)))
+    labels <- format(sdPretty)
+    labels[1] <- paste(0)
+    axis(1, pos=0, at=sdPretty, labels=labels)
+    ## temporarily permit labels outside the platting zone
+    xpdOld <- par('xpd')
+    par(xpd=NA)
+    m <- max(sdPretty)
+    text(m, 0, "R=1", pos=4)
+    text(0, m, "R=0", pos=3)
+    text(-m, 0, "R=-1", pos=2)
+    par(xpd=xpdOld)
+    points(xSD, 0, pch=20, cex=1.5)
+    for (column in 1:ncol(y)) {
+        ySD <- sd(y[,column], na.rm=TRUE)
+        R <- cor(x, y[,column])^2
+        ##cat("ySD=", ySD, "R2=", R2, "col=", col[column], "pch=", pch[column], "\n")
+        ## FIXME: the angle is wrong
+        points(ySD * cos((1 - R) * pi / 2),
+               ySD * sin((1 - R) * pi / 2), pch=pch[column],
+               lwd=2,
+               col=col[column], cex=2)
+        ##cat("x=", ySD * cos(pi/2+R2 * pi / 180/2), "\n")
+        ##cat("y=", ySD * sin(pi/2+R2 * pi / 180/2), "\n")
+    }
+}
+
+prettyPosition <- function(x)
+{
+    debug <- FALSE
+    r <- diff(range(x, na.rm=TRUE))
+    if (debug) cat('range(x)=', range(x), 'r=', r, '\n')
+    if (r > 5) {                       # D only
+        rval <- pretty(x)
+    } else if (r > 1) {                # round to 30 minutes
+        rval <- (1 / 2) * pretty(2 * x)
+        if (debug) cat("case 1: rval=", rval, "\n")
+    } else if (r > 30/60) {            # round to 1 minute, with extras
+        rval <- (1 / 60) * pretty(60 * x, n=6)
+        if (debug) cat("case 2: rval=", rval, "\n")
+    } else if (r > 5/60) {             # round to 1 minute
+        rval <- (1 / 60) * pretty(60 * x)
+        if (debug) cat("case 3: rval=", rval, "\n")
+    } else if (r > 10/3600) {          # round to 10 sec
+        rval <- (1 / 360) * pretty(360 * x)
+        if (debug) cat("case 4: rval=", rval, "\n")
+    } else {                           # round to seconds
+        rval <- (1 / 3600) * pretty(3600 * x)
+        if (debug) cat("case 5: rval=", rval, "\n")
+    }
+    rval
+}
+
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
 {
     type <- match.arg(type)
@@ -36,6 +116,16 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
     seconds <- round(seconds, 2)
+
+    ## prevent rounding errors from giving e.g. seconds=60
+    ##print(data.frame(degrees,minutes,seconds))
+    secondsOverflow <- seconds == 60
+    seconds <- ifelse(secondsOverflow, 0, seconds)
+    minutes <- ifelse(secondsOverflow, minutes+1, minutes)
+    minutesOverflow <- minutes == 60
+    degrees <- ifelse(minutesOverflow, degrees+1, degrees)
+    ##print(data.frame(degrees,minutes,seconds))
+
     noSeconds <- all(seconds == 0)
     noMinutes <- noSeconds & all(minutes == 0)
     hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
@@ -58,15 +148,19 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
         n <- length(degrees)
         rval <- vector("expression", n)
         for (i in 1:n) {
-            if (noMinutes) 
+            if (noMinutes) {
                 rval[i] <- as.expression(substitute(d*degree,
                                                     list(d=degrees[i])))
-            else if (noSeconds)
+            } else if (noSeconds) {
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute,
-                                                    list(d=degrees[i],m=minutes[i])))
-            else
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]))))
+            } else {
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
-                                                    list(d=degrees[i],m=minutes[i],s=seconds[i])))
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]),
+                                                         s=sprintf("%02d", seconds[i]))))
+            }
         }
     }
     rval
@@ -407,6 +501,7 @@ matchBytes <- function(input, b1, ...)
 }
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
+                                  "conservative temperature", "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
                                   "spice",
                                   "p", "z", "distance", "heading", "pitch", "roll",
@@ -417,8 +512,11 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
-        full <- expression(paste("Temperature [", degree, "C]"))
+        full <- expression(paste("Temperature, T [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
+    } else if (item == "conservative temperature") {
+        full <- expression(paste("Conservative Temperature, ", Theta, " [", degree, "C]"))
+        abbreviated <- expression(paste(Theta, "[", degree, "C]"))
     } else if (item == "sigmaTheta") {
         full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
         abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
@@ -447,14 +545,17 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Spice [", kg/m^3, "]"))
         abbreviated <- full
     } else if (item == "S") {
-        full <- "Salinity [PSU]"
-        abbreviated <- "S [PSU]"
+        full <- expression(paste("Practical Salinity, ", S))
+        abbreviated <- expression(S)
+    } else if (item == "absolute salinity") {
+        full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
+        abbreviated <- expression(paste(S[A], " [g/kg]"))
     } else if (item == "p") {
-        full <- "Pressure [dbar]"
-        abbreviated <- "P [dbar]"
+        full <- expression(paste("Pressure, ", P, " [dbar]"))
+        abbreviated <- expression(paste(P, " [dbar]"))
     } else if (item == "z") {
-        full <- "z [ m ]"
-        abbreviated <- "z [m]"
+        full <- expression(z, " [ m ]")
+        abbreviated <- expression(z, " [m]")
     } else if (item == "distance") {
         full <- "Distance [m]"
         abbreviated <- "Dist. [m]"
@@ -491,14 +592,14 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     }
     spaceNeeded <- strwidth(full, "inches")
     whichAxis <- if (axis == "x") 1 else 2
-    spaceAvailable <- abs(par("pin")[whichAxis])
+    spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
     ##cat("pin=", par('pin'), "\n")
     ##cat("spaceNeeded: in inches:", spaceNeeded, "\n")
     ##cat("whichAxis=", whichAxis, "\n")
     ##cat("spaceAvailable=", spaceAvailable, "\n")
     ##cat("fraction=", fraction, "\n")
-    if (fraction < 1.5) full else abbreviated
+    if (fraction < 1) full else abbreviated
 }
 
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
@@ -1486,5 +1587,39 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
         if (quote) item <- paste('"', item, '"', sep="")
         cat(paste("* ", label, item, postlabel, "\n", sep=""))
     }
+}
+
+integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
+{
+    if (missing(y)) {
+        rval <- .Call("trap", 1, x, switch(match.arg(type), A=0, dA=1, cA=2))
+    } else {
+        rval <- .Call("trap", x, y, switch(match.arg(type), A=0, dA=1, cA=2))
+    }
+}
+
+grad <- function(h, x, y)
+{
+    if (missing(h)) stop("must give h")
+    if (missing(x)) stop("must give x")
+    if (missing(y)) stop("must give y")
+    if (length(x) != nrow(h)) stop("length of x (%d) must equal number of rows in h (%d)", length(x), nrow(h))
+    if (length(y) != ncol(h)) stop("length of y (%d) must equal number of cols in h (%d)", length(y), ncol(h))
+    .Call("gradient", h, as.double(x), as.double(y))
+}
+
+oce.as.raw <- function(x)
+{       # prevent warnings from out-of-range with as.raw()
+    na <- is.na(x)
+    x[na] <- 0                 # FIXME: what to do here?
+    x <- ifelse(x < 0, 0, x)
+    x <- ifelse(x > 255, 255, x)
+    x <- as.raw(x)
+    x
+}
+
+oceConvolve <- function(x, f, end=2)
+{
+    .Call("oce_convolve", x, f, end)
 }
 

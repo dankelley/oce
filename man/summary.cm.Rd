@@ -25,12 +25,9 @@
     CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
 data(cm)
-cm <- read.oce("cm_interocean_0811786.s4a.tab")
 summary(cm)
-}
 }
 
 \author{Dan Kelley}

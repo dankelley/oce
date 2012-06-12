@@ -139,9 +139,20 @@ plot.topo <- function(x,
     oceDebug(debug, "xr:", xr, "(after trimming)\n")
     oceDebug(debug, "yr:", yr, "(after trimming)\n")
 
+    X <- x[["longitude"]]
+    Y <- x[["latitude"]]
+    Z <- x[["z"]]
+    ## check for prime meridian
+    if (sign(prod(xr)) < 0) {
+        Z <- rbind(Z, Z)
+        X <- c(X - 360, X)
+    }
+
     ## Data may not extend across plot region
-    lon.range <- range(x[["longitude"]], na.rm=TRUE)
-    lat.range <- range(x[["latitude"]], na.rm=TRUE)
+    ##lon.range <- range(x[["longitude"]], na.rm=TRUE)
+    ##lat.range <- range(x[["latitude"]], na.rm=TRUE)
+    lon.range <- range(X, na.rm=TRUE)
+    lat.range <- range(Y, na.rm=TRUE)
     if (xr[1] < lon.range[1]) xr[1] <- lon.range[1]
     if (xr[2] > lon.range[2]) xr[2] <- lon.range[2]
     if (yr[1] < lat.range[1]) yr[1] <- lat.range[1]
@@ -195,8 +206,8 @@ plot.topo <- function(x,
     oceDebug(debug, "par(pin)",par("pin"),"\n")
 
     ## need to clip because contour() does not do so
-    xx <- x[["longitude"]]
-    yy <- x[["latitude"]]
+    xx <- X                            # x[["longitude"]]
+    yy <- Y                            # x[["latitude"]]
     xclip <- xx < xr[1] | xr[2] < xx
     yclip <- yy < yr[1] | yr[2] < yy
     xx <- xx[!xclip]
@@ -205,7 +216,8 @@ plot.topo <- function(x,
     yy <- yy[!yclip]
     if (length(yy) < 1)
         stop("there are no topographic data within the latitudes of the plot region.")
-    zz <- x[["z"]][!xclip, !yclip]
+    ##zz <- x[["z"]][!xclip, !yclip]
+    zz <- Z[!xclip, !yclip]
     zr <- range(zz)
 
     contour(xx, yy, zz,

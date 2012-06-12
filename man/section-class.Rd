@@ -13,24 +13,29 @@
     \code{metadata}, \code{data} and \code{processingLog}.}
 
 \section{Methods}{
+    The examples given below use \code{s} to represent the name of a section.
 
-    \subsection{Extracting values}{Individual stations may be accessed as e.g.
-        \code{section[["station", 1]]} for the first station (which returns a
-        \code{\link{ctd-class}} object; see the example).  Aggregated values of
-        the quantities measured at each level of the CTD profiles contained
-        within the section may be accessed as e.g.
+    \subsection{Extracting values}{A \code{\link{list}} of stations is
+        retrieved by \code{s[["section"]]}.  Individual stations are retrieved
+        by providing a station number as a second argument in the index, e.g.
+        the first station is \code{s[["section", 1]]} (which is a 
+        \code{\link{ctd-class}} object).  
+        
+        Aggregated values of the quantities measured at each level of the CTD
+        profiles contained within the section may be accessed as e.g.
         \code{section[["salinity"]]}.  This works for any quantity whose name
-        is present in the constituent profiles.    Since it is often useful to
-        pair such quantities with locations, \code{section[["latitude"]]} and
-        \code{section[["longitude"]]} return vectors with values repeated for
-        each level in each CTD (see the \code{pairs()} call in the example
-        section).  If just one latitude or longitude is desired per station,
-        e.g. \code{section[["latitude", "bystation"]]} may be used.  Station-by-station
-        values of dynamic height are provided by e.g. \code{section[["dynamic height"]]}.}
+        is present in the constituent profiles.   
 
-    \subsection{Assigning values}{FIXME: fill this in when the interface has
-        decided upon}
+        Since it is often useful to pair such quantities with locations,
+        \code{section[["latitude"]]} and \code{section[["longitude"]]} return
+        vectors with values repeated for each level in each CTD (see the
+        \code{pairs()} call in the example section).  If just one latitude or
+        longitude is desired per station, e.g. \code{section[["latitude",
+            "bystation"]]} may be used.  Station-by-station values of dynamic
+        height are provided by e.g.  \code{section[["dynamic height"]]}.}
 
+    \subsection{Assigning values}{(This feature has yet to be added.)}
+    
     \subsection{Overview of contents}{The \code{show} method (e.g.
         \code{show(section)}) displays information about the object.}
 }
@@ -56,6 +61,12 @@ library(oce)
 data(a03)
 plot(a03[['station', 1]])
 pairs(cbind(z=-a03[["pressure"]],T=a03[["temperature"]],S=a03[["salinity"]]))
+## T profiles for first few stations in a03, at common scale
+par(mfrow=c(3,3))
+Tlim <- range(a03[["temperature"]])
+ylim <- rev(range(a03[["pressure"]]))
+for (stn in a03[["station",1:9]])
+    plotProfile(stn, xtype='temperature', ylim=ylim, Tlim=Tlim)
 }
 
 \author{Dan Kelley}

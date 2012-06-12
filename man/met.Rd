@@ -12,13 +12,15 @@
 \usage{data(met)}
 
 \examples{
-\dontrun{
 library(oce)
-met<-read.met("http://climate.weatheroffice.gc.ca/climateData/bulkdata_e.html?timeframe=1&Prov=XX&StationID=6358&Year=2011&Month=7&Day=15&format=csv")
-}
+data(met)
+plot(met)
 }
 
-\source{Environment Canada website (downloaded 2011-11-17)}
+\source{Environment Canada website (downloaded 2011-11-17)
+\preformatted{met<-read.met("http://climate.weatheroffice.gc.ca/climateData/bulkdata_e.html?timeframe=1&Prov=XX&StationID=6358&Year=2011&Month=7&Day=15&format=csv")}
+}
+
 
 \seealso{The documentation for \code{\link{met-class}} explains the structure
     of \code{met} objects, and also outlines the other functions dealing with them.}

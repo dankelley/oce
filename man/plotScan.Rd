@@ -7,17 +7,11 @@
 \description{Plot CTD data as time-series against scan number, to help
   with trimming extraneous data from a CTD cast.}
 
-\usage{plotScan(x, name = "scan", 
- Scol = "darkgreen", Tcol= "darkred", pcol = "black",
- adorn=NULL, mgp=getOption("oceMgp"), \dots)
-}
+\usage{plotScan(x, name = "scan", adorn=NULL, mgp=getOption("oceMgp"), \dots)}
 
 \arguments{
   \item{x}{A \code{cdt} object, e.g. as read by \code{\link{read.ctd}}.}
   \item{name}{name of variable for x axis}
-  \item{Scol}{colour for salinity}
-  \item{Tcol}{colour for temperature}
-  \item{pcol}{colour for pressure}
   \item{adorn}{list of character strings containing commands to be
     executed for the panels.  If the number matches the number of
     panels, then the strings are applied to the appropriate panels, as

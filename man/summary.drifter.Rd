@@ -26,11 +26,9 @@
     with them.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.drifter("/data/OAR/6900388_prof.nc")
-summary(d)
-}
+data(drifter)
+summary(drifter)
 }
 
 \references{\url{http://www.argo.ucsd.edu/}}

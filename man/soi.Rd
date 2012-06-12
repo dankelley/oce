@@ -7,7 +7,7 @@
 \title{Southern Oscillation Index}
 
 \description{This is the Southern Oscillation Index, downloaded in June 2011,
-    and processed as in This dataset is used in Chapter 5 of Kelley (2011).}
+    used in Chapter 5 of Kelley (2012).}
 
 \examples{
 library(oce)

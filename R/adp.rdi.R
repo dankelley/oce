@@ -36,8 +36,7 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
     programVersion <- paste(programVersionMajor, programVersionMinor, sep=".")
     programVersionNumeric <- as.numeric(programVersion)
     oceDebug(debug, "programVersion=", programVersion, "(numerically, it is", programVersionNumeric,")\n")
-    if (programVersion < 16.28)
-        warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
+    ##if (programVersion < 16.28) warning("programVersion ", programVersion, " is less than 16.28, and so read.adp.rdi() may not work properly")
 
     if (!haveActualData)
         return(list(instrumentType="adcp",
@@ -260,8 +259,9 @@ decodeHeaderRDI <- function(buf, debug=getOption("oceDebug"), tz=getOption("oceT
 read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          latitude=NA, longitude=NA,
                          type=c("workhorse"),
-                         debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE,
-                         processingLog, ...)
+                         monitor=FALSE, despike=FALSE, processingLog,
+                         debug=getOption("oceDebug"),
+                         ...)
 {
     bisectAdpRdi <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpRdi(t.find=", format(t.find), ", add=", add, "\n")
@@ -297,15 +297,16 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                          as.integer(buf[profileStart[middle]+6]), # day
                          as.integer(buf[profileStart[middle]+7]), # hour
                          as.integer(buf[profileStart[middle]+8]), # min
-                         as.integer(buf[profileStart[middle]+9]), # sec FIXME: should use sec100 too
+                         as.integer(buf[profileStart[middle]+9])+0.01*as.integer(buf[profileStart[middle]+10]), # decimal second
                          tz=tz)
         oceDebug(debug, "result: t=", format(t), " at vsdStart[", middle, "]=", profileStart[middle], "\n")
         return(list(index=middle, time=t))
     }
-    oceDebug(debug, "read.adp.rdi(...,from=",format(from),",to=",format(to), "...)\n")
-    oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
-    from.keep <- from
-    to.keep <- to
+    gaveFromTo <- !missing(from) && !missing(to)
+    if (gaveFromTo) {
+        oceDebug(debug, "read.adp.rdi(...,from=",format(from),",to=",format(to), "...)\n")
+        oceDebug(debug, "class(from)=", class(from), "; class(to)=", class(to), "\n")
+    }
     if (is.character(file)) {
         filename <- fullFilename(file)
         file <- file(file, "rb")
@@ -340,6 +341,10 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, vectorShow(profileStart, "profileStart before trimming:"))
         profilesInFile <- length(profileStart)
         oceDebug(debug, "profilesInFile=", profilesInFile, "(as inferred by a byte-check on the sequence 0x80, 0x00)\n")
+        if (!gaveFromTo) {             # read whole file if 'from' and 'to' not given
+            from <- 1
+            to <- profilesInFile
+        }
         if (profilesInFile > 0)  {
             measurementStart <- ISOdatetime(unabbreviateYear(as.integer(buf[profileStart[1]+4])),
                                             as.integer(buf[profileStart[1]+5]), # month
@@ -500,7 +505,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                                 as.integer(buf[profileStart+6]),      # day
                                 as.integer(buf[profileStart+7]),      # hour
                                 as.integer(buf[profileStart+8]),      # minute
-                                as.integer(buf[profileStart+9]),      # second
+                                as.integer(buf[profileStart+9])+0.01*as.integer(buf[profileStart+10]), # decimal second
                                 tz=tz)
 
 

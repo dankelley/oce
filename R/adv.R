@@ -733,7 +733,6 @@ beamToXyzAdv <- function(x, debug=getOption("oceDebug"))
     oceDebug(debug, "\b\bbeamToXyzAdv() {\n")
     if (!inherits(x, "adv"))
         stop("method is only for objects of class \"adv\"")
-    browser()
     if (x@metadata$oceCoordinate != "beam")
         stop("input must be in beam coordinates, but it is in ", x@metadata$oceCoordinate, " coordinates")
     if (is.null(x@metadata$transformationMatrix)) {

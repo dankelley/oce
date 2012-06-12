@@ -13,29 +13,34 @@
 read.adp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   manufacturer=c("rdi", "nortek", "sontek"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("workhorse"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
-  type=c("aquadopp high resolution"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  type=c("aquadoppHR", "aquadoppProfiler"),
+  orientation, distance,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
-  debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE, processingLog,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
   \dots)
 read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
-                      latitude=NA, longitude=NA,
-                      type=c("adp", "pcadp"),
-                      beamAngle=25, orientation,
-                      monitor=FALSE, processingLog,
-                      debug=getOption("oceDebug")) 
+  latitude=NA, longitude=NA,
+  type=c("adp", "pcadp"),
+  beamAngle=25, orientation,
+  monitor=FALSE, processingLog,
+  debug=getOption("oceDebug")) 
 }
 
 \arguments{
@@ -61,6 +66,16 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
     by the general function \code{read.adp} to select a subsidiary 
    function to use, such as \code{read.adp.nortek}.}
   \item{type}{a character string indicating the type of instrument.}
+  \item{orientation}{optional character string specifying the orientation of
+      the sensor, provided for those cases in which it cannot be inferred from
+      the data file.  The valid choices are \code{"upward"}, \code{"downward"},
+      and \code{"sideward"}.}
+  \item{distance}{optional vector holding the distances of bin centres from the
+      sensor.  This argument is ignored except for Nortek profilers, and need
+      not be given if the function determines the distances correctly from the
+      data.  The problem is that the distance is poorly documented in the
+      Nortek System Integrator Guide (2008 edition, page 31), so the function
+      must rely on word-of-mouth formulae that do not work in all cases.}
   \item{tz}{character string indicating time zone to be assumed in the data.}
   \item{latitude}{optional signed number indicating the latitude in 
     degrees North.}
@@ -69,9 +84,6 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{beamAngle}{angle between instrument axis and beams, in degrees.}
-  \item{orientation}{optional string, which over-rides the value inferred from
-      the data file.  Possible values are \code{"upward"} and
-      \code{"downward"}.  This is only used for \code{read.adp.sontek.serial}.}
   \item{monitor}{boolean, set to \code{TRUE} to provide an indication
     (with numbers and dots) of every profile read.}
   \item{despike}{if \code{TRUE}, \code{\link{despike}} will be used
@@ -133,35 +145,28 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
 
 \section{Implementation notes}{
   \itemize{
-    \item \strong{Teledyne-RDI files.} If a heading bias had been set
-    with the \code{EB} command during the setup for the deployment, then
-    a heading bias will have been stored in the file's header.  This
-    value is stored in the object's metadata as
-    \code{metadata$heading.bias}.  \strong{Importantly}, this value is
-    subtracted from the headings stored in the file, and the result of
-    this subtraction is stored in the objects heading value (in
-    \code{data$heading}).
-    
-    It should be noted that \code{read.adp.rdi()} was tested for
-    firmware version 16.30.  For other versions, there may be problems.
-    For example, the serial number is not recognized properly for
+    \item \strong{Teledyne-RDI files.} If a heading bias had been set with the
+    \code{EB} command during the setup for the deployment, then a heading bias
+    will have been stored in the file's header.  This value is stored in the
+    object's metadata as \code{metadata$heading.bias}.  \strong{Importantly},
+    this value is subtracted from the headings stored in the file, and the
+    result of this subtraction is stored in the objects heading value (in
+    \code{data$heading}).  It should be noted that \code{read.adp.rdi()} was
+    tested for firmware version 16.30.  For other versions, there may be
+    problems.  For example, the serial number is not recognized properly for
     version 16.28.
-    
-    \item \strong{Nortek Aquadopp-HR files.} Page 38 of the Nortek
-    System Integrator Guide says to offset 53 bytes in profile records
-    to get the first velocity, but experiments on files drived from a
-    Dalhousie University profiler require an offset of 54 to recover
-    data that match the manufacturer's (*.v1, *.v2, *.v3) files.  Also,
-    the beam angle is hard-wired at 25 degrees in the code, since it
-    is not documented as being part of the headers.  (Actually,
-    the beam angle is in the header, in bytes 23 to 30 of the
-    beam-header, but it is not documented, and sample code that Nortek
-    provided to me in 2009 gives the scale incorrectly, as compared
-    with files created with a Dalhousie aquadopHR.)}
+    \item \strong{Nortek Aquadopp files.} The R code is based on information in
+    the Nortek System Integrator Guide (2008) and on postings on the Nortek
+    ``knowledge center'' discussion board.  One might assume that the latter is
+    less authorative than the former.  For example, the inference of cell size
+    follows advice found at
+    \url{http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717}
+    (downloaded June 2012)), which contains a typo in an early posting that is
+    corrected later on.}
 }
 
-\seealso{The documentation for \code{\link{adv-class}} explains the structure
-    of ADV objects, and also outlines the other functions dealing with them.}
+\seealso{The documentation for \code{\link{adp-class}} explains the structure
+    of ADP objects, and also outlines the other functions dealing with them.}
 
 \examples{
 \dontrun{
@@ -186,14 +191,17 @@ sequence number of the profile, represented as a little-endian
 two-byte short integer.  \code{read.adp.rdi()} uses
 these sequences to interpret data files.)
 
-2. Information on Nortek profiler is available at
-\url{http://www.nortekusa.com/}.  (One must join the site to see the
-manuals.)
+2. Information on Nortek profilers (including the System Integrator Guide,
+which explains the data format byte-by-byte) is available at
+\url{http://www.nortekusa.com/}.  (One must join the site to see the manuals.)
 
 3. Information about Sontek profilers is available at
 \url{http://www.sontek.com}.
 
-4. Nortek Knowledge Center \url{http://www.nortekusa.com/en/knowledge-center}
+4. The Nortek Knowledge Center
+\url{http://www.nortekusa.com/en/knowledge-center} may be of help if problems
+arise in dealing with data from Nortek instruments.
+
 }
 
 \author{Dan Kelley}

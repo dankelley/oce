@@ -44,6 +44,7 @@ static double phi_z(int i0, double z0, double *z, double *phi, int len) /* Reini
     return (fabs(phiR - phiP1) * phiP2 + fabs(phiR - phiP2) * phiP1) / (fabs(phiR - phiP1) + fabs(phiR - phiP2));
   } else {
     error("phi_z given bad i0=%d (not in range 1 to %d)", i0, len-1);
+    return (0.0); // never reached
   }
 }
 static double phi_R(int i0, double z0, double *z, double *phi, int len) /* Reiniger & Ross (1968, eqn 3a) */
@@ -54,50 +55,58 @@ static double phi_R(int i0, double z0, double *z, double *phi, int len) /* Reini
     double phi23 = phi_ij(i0  , i0+1, z0, z, phi, len);
     double phi34 = phi_ij(i0+1, i0+2, z0, z, phi, len);
     //Rprintf("phi_R denom=%f\n", (SQR(phi23 - phi34) + SQR(phi12 - phi23)));
-    return 0.5 * (phi23 + 
-                  (SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34) 
-                  /
-                  (SQR(phi23 - phi34) + SQR(phi12 - phi23)));
-  } else
+    return (0.5 * (phi23 + 
+	  (SQR(phi23 - phi34) * phi12 + SQR(phi12 - phi23) * phi34)
+	  /
+	  (SQR(phi23 - phi34) + SQR(phi12 - phi23))));
+  } else {
     error("phi_R given bad i0=%d (note that len=%d)", i0, len);
+    return (0.0); // never reached
+  }
 }
 
 
 static double phi_P1(int i0, double z0, double *z, double *phi, int len) /* Reiniger & Ross (1968, eqn 3b.1) */
 {
-  if (0 < i0 && i0 < (len - 1))
-    return 
-      gamma_ijk(i0-1, i0  , i0+1, z0, z, len) * phi[i0-1] + 
-      gamma_ijk(i0  , i0+1, i0-1, z0, z, len) * phi[i0  ] +
-      gamma_ijk(i0+1, i0-1, i0  , z0, z, len) * phi[i0+1];
-  else
+  if (0 < i0 && i0 < (len - 1)) {
+    return (gamma_ijk(i0-1, i0  , i0+1, z0, z, len) * phi[i0-1] + 
+	gamma_ijk(i0  , i0+1, i0-1, z0, z, len) * phi[i0  ] +
+	gamma_ijk(i0+1, i0-1, i0  , z0, z, len) * phi[i0+1]);
+  } else {
     error("phi_P1 given bad i0=%d", i0);
+    return (0.0); // never reached
+  }
 }
 static double phi_P2(int i0, double z0, double *z, double *phi, int len) /* Reiniger & Ross (1968, eqn 3b.2) */
 {
-  if (0 < i0 && i0 < (len - 2))
-    return 
-      gamma_ijk(i0  , i0+1, i0+2, z0, z, len) * phi[i0  ] +
-      gamma_ijk(i0+1, i0+2, i0  , z0, z, len) * phi[i0+1] +
-      gamma_ijk(i0+2, i0  , i0+1, z0, z, len) * phi[i0+2];
-  else
+  if (0 < i0 && i0 < (len - 2)) {
+    return (gamma_ijk(i0  , i0+1, i0+2, z0, z, len) * phi[i0  ] +
+	gamma_ijk(i0+1, i0+2, i0  , z0, z, len) * phi[i0+1] +
+	gamma_ijk(i0+2, i0  , i0+1, z0, z, len) * phi[i0+2]);
+  } else {
     error("phi_P2 given bad i0=%d", i0);
+    return (0.0); // never reached
+  }
 }
 static double gamma_ijk(int i, int j, int k, double z0, double *z, int len) /* Reiniger & Ross (1968, eqn 3c) */
 {
   if (-1 < i && -1 < j && -1 < k && i < len && j < len && k < len) {
     //Rprintf("gamma_ijk denom=%f\n", ((z[i] - z[j]) * (z[i] - z[k])));
     return ((z0 - z[j]) * (z0 - z[k])) / ((z[i] - z[j]) * (z[i] - z[k]));
-  } else
+  } else {
     error("gamma_ijk given bad i=%d or bad j=%d or bad k=%d (with len=%d)", i, j, k, len);
+    return (0.0); // never reached
+  }
 }
 static double phi_ij(int i, int j, double z0, double *z, double *phi, int len) /* Reiniger & Ross (1968, eqn 3d) */
 {
   if (-1 < i && i < len && -1 < j && j < len) {
     //Rprintf("phi_ij denom=%f\n", (z[i] - z[j]));
     return (phi[i] * (z0 - z[j]) - phi[j] * (z0 - z[i])) / (z[i] - z[j]);
-  } else
+  } else {
     error("phi_ij given bad i=%d or bad j=%d (with len=%d)", i, j, len);
+    return (0.0); // never reached
+  }
 }
 SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
 {
@@ -122,7 +131,7 @@ SEXP oce_approx(SEXP x, SEXP y, SEXP xout, SEXP n, SEXP m)
 #endif
   for (int i = 0; i < xout_len; i++) {
     //Rprintf("xout[%d] = %f\n",i,*(xoutp+i));
-    double val;
+    double val = 0.0; // value always altered; this is to prevent compiler warning
     int found;
     found = 0;
     for (int j = 0; j < x_len - 1; j++) {

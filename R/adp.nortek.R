@@ -2,7 +2,7 @@
 ## hardware [a5 05 X1 X2]  48 bytes, 2*(short word made from X1 and X2)
 ## head     [a5 04 X1 X2] 224 bytes, 2*(short word made from X1 and X2)
 ## user     [a5 00 X1 X2] 512 bytes, 2*(short word made from X1 and X2)
-## profiles, each starting with a5 2a [aquadoppHR] or ?? [other]
+## profiles, each starting with a5 2a [aquadoppHR] or a5 21 [aquadoopp profiler] [other]
 ## DOCUMENTATION BUGS
 ## 1. p38 System Integrator Guide says to offset 53 bytes for velocity, but I have to offset 54 to recover data
 #     that match the manufacturer's (*.v1, *.v2, *.v3) files.
@@ -19,8 +19,9 @@
 ## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
-decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
+decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), debug=getOption("oceDebug"), ...)
 {
+    type <- match.arg(type)
     oceDebug(debug, "decodeHeaderNortek() entry; buf[1:20]=",buf[1:20],"\n")
     degToRad <- atan2(1, 1) / 45
     syncCode <- as.raw(0xa5)
@@ -34,7 +35,7 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
     o <- 0                              # offset
     for (header in 1:3) { # FIXME: code is needlessly written as if headers could be in different order
         oceDebug(debug, "\n")
-        oceDebug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
+        ##oceDebug(debug, "examining buf[o+2]=", buf[o+2], "to see what type of header block is next...\n")
         if (buf[o+1] != syncCode)
             stop("expecting syncCode 0x", syncCode, " but got 0x", buf[o+1], " instead (while reading header #", header, ")")
         if (buf[o+2] == idHardwareConfiguration) {         # see page 29 of System Integrator Guide
@@ -111,11 +112,11 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$transmitPulseLength <- readBin(buf[o+5:6], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$transmitPulseLength=", user$transmitPulseLength, "\n")
 
-            user$blankingDistance <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$blankingDistance=", user$blankingDistance, "in counts\n")
+            user$T2 <- readBin(buf[o+7:8], "integer", n=1, size=2, endian="little", signed=FALSE)
+            oceDebug(debug, "user$T2=", user$T2, "(blanking distance, in counts)\n")
 
             user$receiveLength <- readBin(buf[o+9:10], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$receiveLength=", user$receiveLength, "in counts\n")
+            oceDebug(debug, "user$receiveLength=T3=", user$receiveLength, "counts (Q: does this relate to cellSize?)\n")
             
             user$timeBetweenPings <- readBin(buf[o+11:12], "integer", n=1, size=2, endian="little", signed=FALSE)
             oceDebug(debug, "user$timeBetweenPings=", user$timeBetweenPings, "in counts\n")
@@ -154,53 +155,95 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
             user$numberOfCells <- readBin(buf[o+35:36], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "user$numberOfCells: ", user$numberOfCells, "\n")
             user$hBinLength <- readBin(buf[o+37:38], "integer", n=1, size=2, endian="little", signed=FALSE)
-            oceDebug(debug, "user$hBinLength: ", user$hBinLength, "\n")
-            if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                ##  printf("\nCell size (m) ------------ %.2f", cos(DEGTORAD(25.0))*conf.hBinLength*0.000052734375);
-                user$cellSize <- cos(25*pi/180) * user$hBinLength * 0.000052734375
-            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) { # FIXME: use head$frequency or hardware$frequency?
-                ##  printf("\nCell size (m) ------------ %.2f",     cos(DEGTORAD(25.0))*conf.hBinLength*0.0000263671875);
-                user$cellSize <- cos(25*pi/180) * user$hBinLength *0.0000263671875
+            oceDebug(debug, "user$hBinLength: ", user$hBinLength, " (p31 of System Integrator Guide)\n")
+            ## The cell size is computed with different formulae for different devices, and 
+            ## different frequencies.  See
+            ##   http://www.nortekusa.com/en/knowledge-center/forum/hr-profilers/736804717
+            ## for the details (and note that there are some typos from the Nortek advisor, which
+            ## get corrected later on that webpage).
+            if (type == "aquadoppHR") {
+                ## (NOTE: 1674 is hBinLength)
+                ## CS = (1674/256)*0.00675*cos(25) = 0.04 m, for a 2 MHz instrument
+                ## For a 1 MHz instrument you must multiply by twice the sampling distance, i.e. 0.0135 m
+                if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                    user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
+                } else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.01350 * cos(25 * degToRad)
+                    user$blankingDistance <- user$T2 * 0.01350 * cos(25 * degToRad) - user$cellSize
+                } else {
+                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 2Mhz formula to calculate cell size\n")
+                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                    user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
+                }
+            } else if (type == "aquadoppProfiler") {
+                if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.0239 * cos(25 * degToRad)
+                } else if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.0478 * cos(25 * degToRad)
+                } else if (isTRUE(all.equal.numeric(head$frequency, 600))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.0797 * cos(25 * degToRad)
+                } else if (isTRUE(all.equal.numeric(head$frequency, 400))) {
+                    user$cellSize <- user$hBinLength / 256 * 0.1195 * cos(25 * degToRad)
+                } else {
+                    warning("unknown frequency", head$frequency, "(only understand 1MHz and 2MHz); using 1Mhz formula to calculate cell size\n")
+                    user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                }
+                user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
             } else {
-                user$cellSize <- NA    # FIXME what should we do here?  Probably an ADV, so no concern
+                warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
+                user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
             }
-            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: no docs on this; guessing from secondhand info/guesses)\n")
+            ## FIXME: eventually, incorporate the AWAC and Continental devices, using 
+            ## the above formulae, with coefficients as below (from the nortek forum)
+            ##
+            ## For the AWAC the table for cell size looks like this:
+            ## 0.0478 for 1 MHz
+            ## 0.0797 for 600 kHz
+            ## 
+            ## And for the Continental:
+            ## 0.0945 for 470 kHz
+            ## 0.2221 for 190 kHz
+
+            oceDebug(debug, "cellSize=", user$cellSize, "m (FIXME: using formula from unknown source)\n")
             user$measurementInterval <- readBin(buf[o+39:40], "integer", n=1, size=2, endian="little")
             oceDebug(debug, "measurementInterval=", user$measurementInterval, "\n")
 
-            if (debug > 0) { # tests for issue146
-                cat("TEMPORARY debugging for branch 'issue145': attempt to infer from USER header whether we have extra analog data...\n")
-                modeBinaryTmp <- byteToBinary(buf[o+59], endian="big")
-                cat("TEST 1: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
-                for (iii in (-3):3) {
-                    tmp <- buf[o+59+iii]
-                    tmpb <- byteToBinary(buf[o+59+iii], endian="big")
-                    cat("buf[o+59+", iii, "]", tmp, "x  ", tmpb, "\n")
-                }
-                cat("docs say (I *think* about byte buf[o+59], but this could be out by a byte or two)
-  bit 0: use user specified sound speed (0=no, 1=yes)
-  bit 1: diagnostics/wave mode 0=disable, 1=enable)
-  bit 2: analog output mode (0=disable, 1=enable)
-  bit 3: output format (0=Vector, 1=ADV)
-  bit 4: scaling (0=1 mm, 1=0.1 mm)
-  bit 5: serial output (0=disable, 1=enable)
-  bit 6: reserved EasyQ
-  bit 7: stage (0=disable, 1=enable)
-  bit 8: output power for analog input (0=disable, 1=enable)
-\n")                    
-            }
+            ## if (debug > 0) { # tests for issue146
+            ##    cat("TEMPORARY debugging for branch 'issue145': attempt to infer from USER header whether we have extra analog data...\n")
+            ##    modeBinaryTmp <- byteToBinary(buf[o+59], endian="big")
+            ##    cat("TEST 1: modeBinaryTmp=", modeBinaryTmp, '(p34 of SIG 2011; should have info on analog in bit #3, measured from left or right though?)\n')
+            ##for (iii in (-3):3) {
+            ##    tmp <- buf[o+59+iii]
+            ##    tmpb <- byteToBinary(buf[o+59+iii], endian="big")
+            ##    cat("buf[o+59+", iii, "]", tmp, "x  ", tmpb, "\n")
+            ##}
+            ##                cat("docs say (I *think* about byte buf[o+59], but this could be out by a byte or two)
+            ##  bit 0: use user specified sound speed (0=no, 1=yes)
+            ##  bit 1: diagnostics/wave mode 0=disable, 1=enable)
+            ##  bit 2: analog output mode (0=disable, 1=enable)
+            ##  bit 3: output format (0=Vector, 1=ADV)
+            ##  bit 4: scaling (0=1 mm, 1=0.1 mm)
+            ##  bit 5: serial output (0=disable, 1=enable)
+            ##  bit 6: reserved EasyQ
+            ##  bit 7: stage (0=disable, 1=enable)
+            ##  bit 8: output power for analog input (0=disable, 1=enable)
+            ##\n")                    
+            ##}
 
-            ## FIXME: Sample.cpp has 0.022888 for the factor on user$T2
-            if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
-                ##user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
-                user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
-            } else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
-                ##user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
-                user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
-            } else {
-                user$blankingDistance <- 0
-            }
-            oceDebug(debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
+            #### FIXME: Sample.cpp has 0.022888 for the factor on user$T2
+            ##if (isTRUE(all.equal.numeric(head$frequency, 1000))) {
+            ##    ##user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$T2 - 12 * user$T1 / head$frequency)
+            ##    user$blankingDistance <- cos(25*degToRad) * (0.0135 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
+            ##} else if (isTRUE(all.equal.numeric(head$frequency, 2000))) {
+            ##    ##user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$T2 - 12 * user$T1 / head$frequency)
+            ##    user$blankingDistance <- cos(25*degToRad) * (0.00675 * user$blankingDistance - 12 * user$transmitPulseLength / head$frequency)
+            ##} else {
+            ##    user$blankingDistance <- 0
+            ##}
+            ##cat("adp.nortek.R:245 user$blankingDistance", user$blankingDistance, "\n")
+            oceDebug(1+debug, "blankingDistance=", user$blankingDistance, "; user$T1=", user$T1, "and user$T2=", user$T2, "\n")
             user$swVersion <- readBin(buf[o+73:74], "integer", n=1, size=2, endian="little") / 10000
             oceDebug(debug, "swVersion=", user$swVersion,"\n")
             user$salinity <- readBin(buf[o+75:76], "integer", n=1, size=2, endian="little") * 0.1
@@ -215,10 +258,13 @@ decodeHeaderNortek <- function(buf, debug=getOption("oceDebug"), ...)
 
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
-                            type=c("aquadopp high resolution"),
-                            debug=getOption("oceDebug"), monitor=FALSE, despike=FALSE,
-                            processingLog, ...)
+                            type=c("aquadoppHR", "aquadoppProfiler"),
+                            orientation, distance,
+                            monitor=FALSE, despike=FALSE, processingLog,
+                            debug=getOption("oceDebug"),
+                            ...)
 {
+    degToRad <- atan2(1, 1) / 45
     bisectAdpNortek <- function(t.find, add=0, debug=0) {
         oceDebug(debug, "bisectAdpNortek(t.find=", format(t.find), ", add=", add, "\n")
         len <- length(profileStart)
@@ -283,7 +329,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     fileSize <- seek(file, where=0)
     oceDebug(debug, "fileSize=", fileSize, "\n")
     buf <- readBin(file, what="raw", n=fileSize, size=1)
-    header <- decodeHeaderNortek(buf, debug=debug-1)
+    header <- decodeHeaderNortek(buf, type=type, debug=debug-1)
     averagingInterval <- header$user$averagingInterval
     numberOfBeams <- header$numberOfBeams
     numberOfCells <- header$numberOfCells
@@ -396,8 +442,10 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     a <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # echo amplitude
     q <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # correlation
     velocityScale <- 1e-3              # FIXME: why not use the value in user$velocityScale?
+    ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
+    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30)
     for (i in 1:profilesToRead) {
-        o <- profileStart[i] + 54 ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
+        o <- profileStart[i] + oShift
         ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
         v[i,,] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)],
                                                  "integer", n=items, size=2, endian="little", signed=TRUE),
@@ -413,14 +461,25 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     }
     if (monitor) cat("\nRead", profilesToRead,  "of the", profilesInFile, "profiles in", filename, "\n", ...)
 
+    if (missing(distance)) {
+        distance <- seq(header$user$blankingDistance+header$user$cellSize, by=header$user$cellSize, length.out=header$user$numberOfCells)
+    } else {
+        if (length(distance) != dim(v)[2])
+            stop("the argument distance is of length ", length(distance), ", which does not match the second dimension of the velocity matrix, ", dim(v)[2])
+    }
     data <- list(v=v, a=a, q=q,
-                 distance=seq(header$user$blankingDistance, by=header$user$cellSize, length.out=header$user$numberOfCells),
+                 distance=distance,
                  time=time,
                  pressure=pressure,
                  temperature=temperature,
                  heading=heading,
                  pitch=pitch,
                  roll=roll)
+    if (missing(orientation)) {
+        orientation <- header$head$tiltSensorOrientation
+    } else {
+        orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
+    }
     metadata <- list(manufacturer="nortek",
                      instrumentType="aquadopp-hr",
                      filename=filename,
@@ -451,7 +510,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      configTiltSensor=header$head$configTiltSensor,
                      beamAngle=25,     # FIXME: may change with new devices
                      tiltSensorOrientation=header$head$tiltSensorOrientation,
-                     orientation=header$head$tiltSensorOrientation,
+                     orientation=orientation,
                      frequency=header$head$frequency,
                      headSerialNumber=header$head$headSerialNumber,
                      bin1Distance=header$user$blankingDistance, # FIXME: is this right?

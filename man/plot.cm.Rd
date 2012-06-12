@@ -82,12 +82,10 @@
     CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
-cm <- read.oce("cm_interocean_0811786.s4a.tab")
+data(cm)
 summary(cm)
 plot(cm)
-}
 }
 
 \author{Dan Kelley}

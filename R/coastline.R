@@ -42,7 +42,7 @@ setMethod(f="plot",
                                fill='lightgray',
                                axes=TRUE, cex.axis=par('cex.axis'),
                                add=FALSE, inset=FALSE,
-                               geographical=FALSE,
+                               geographical=0,
                                debug=getOption("oceDebug"),
                                ...)
           {
@@ -50,10 +50,14 @@ setMethod(f="plot",
                        ", clatitude=", if(missing(clatitude)) "(missing)" else clatitude, 
                        ", clongitude=", if(missing(clongitude)) "(missing)" else clongitude,
                        ", span=", if(missing(span)) "(missing)" else span,
+                       ", geographical=", geographical,
                        ", cex.axis=", cex.axis, 
                        ", inset=", inset, 
                        ", ...) {\n", sep="")
               ##cat("top of plot(ctd, which=", which, "...)   mai=", par('mai'), "\n") # FIXME
+              geographical <- round(geographical)
+              if (geographical < 0 || geographical > 2)
+                  stop("argument geographical must be 0, 1, or 2")
               if (is.list(x) && "latitude" %in% names(x)) {
                   if (!("longitude" %in% names(x)))
                       stop("list must contain item named 'longitude'")
@@ -77,7 +81,8 @@ setMethod(f="plot",
               if (add) {
                   if (!is.null(fill) && !is.null(x@metadata$fillable) && x@metadata$fillable) {
                       polygon(longitude, latitude, col=fill, ...)
-                      box()                      # clean up edges
+                      if (axes)
+                          box()                      # clean up edges
                   } else {
                       lines(longitude, latitude, ...)
                   }
@@ -89,6 +94,8 @@ setMethod(f="plot",
                       asp <- 1 / cos(clatitude * atan2(1, 1) / 45) #  ignore any provided asp, because lat from center over-rides it
                       xr <- clongitude + span * c(-1/2, 1/2) / 111.11 / asp
                       yr <- clatitude + span * c(-1/2, 1/2) / 111.11
+                      xr0 <- xr
+                      yr0 <- yr
                       oceDebug(debug, "xr=", xr," yr=", yr, " asp=", asp, "\n")
                   } else {
                       xr0 <- range(longitude, na.rm=TRUE)
@@ -160,12 +167,22 @@ setMethod(f="plot",
                   usrTrimmed <- par('usr')
                   ## Construct axes "manually" because axis() does not know the physical range
                   if (axes) {
-                      xr.pretty <- pretty(xr)
-                      yr.pretty <- pretty(yr)
-                      if (!(min(yr.pretty) > -80 && max(yr.pretty) < 80))
-                          yr.pretty <- seq(-90, 90, 45)
-                      if (!(min(xr.pretty) > -150 && max(xr.pretty) < 150))
-                          xr.pretty <- seq(-180, 180, 45)
+                      prettyLat <- function(yr)
+                      {
+                          res <- pretty(yr)
+                          if (diff(yr) > 100)
+                              res <- seq(-90, 90, 45)
+                          res
+                      }
+                      prettyLon <- function(xr)
+                      {
+                          res <- pretty(xr)
+                          if (diff(xr) > 100)
+                              res <- seq(-180, 180, 45)
+                          res
+                      }
+                      xr.pretty <- prettyLon(xr0)
+                      yr.pretty <- prettyLat(yr0)
                       oceDebug(debug, "xr.pretty=", xr.pretty, "\n")
                       oceDebug(debug, "yr.pretty=", yr.pretty, "\n")
                       usrTrimmed[1] <- max(-180, usrTrimmed[1])
@@ -176,14 +193,21 @@ setMethod(f="plot",
                       oceDebug(debug, "usrTrimmed", usrTrimmed, "\n")
                       xlabels <- format(xr.pretty)
                       ylabels <- format(yr.pretty)
-                      if (geographical) {
+                      if (geographical >= 1) {
                           xlabels <- sub("-", "", xlabels)
                           ylabels <- sub("-", "", ylabels)
+                      }
+                      if (geographical == 2) {
+                          xr.pretty <- prettyPosition(xr.pretty)
+                          yr.pretty <- prettyPosition(yr.pretty)
+                          xlabels <- formatPosition(xr.pretty, type='expression')
+                          ylabels <- formatPosition(yr.pretty, type='expression')
                       }
                       axis(1, at=xr.pretty, labels=xlabels, pos=usrTrimmed[3], cex.axis=cex.axis)
                       oceDebug(debug, "putting bottom y axis at", usrTrimmed[3], "\n")
                       axis(2, at=yr.pretty, labels=ylabels, pos=usrTrimmed[1], cex.axis=cex.axis, cex=cex.axis)
                       oceDebug(debug, "putting left x axis at", usrTrimmed[1], "\n")
+                      axis(3, at=xr.pretty, labels=rep("", length.out=length(xr.pretty)), pos=usrTrimmed[4], cex.axis=cex.axis)
                       ##axis(3, at=xr.pretty, pos=usrTrimmed[4], labels=FALSE)
                       ##oceDebug(debug, "putting top x axis at", usrTrimmed[4], "\n")
                       axis(4, at=yr.pretty, pos=usrTrimmed[2], labels=FALSE, cex.axis=cex.axis)
@@ -213,7 +237,7 @@ setMethod(f="plot",
                       }
                   }
               }
-              box()
+              ##box()
               oceDebug(debug, "par('usr')=", par('usr'), "\n")
               oceDebug(debug, "\b\b} # plot.coastline()\n")
               invisible()

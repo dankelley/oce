@@ -7,8 +7,7 @@
 \description{Read a current-meter data file, producing an object of type
   \code{cm}.}
 
-\usage{
-read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
+\usage{read.cm(file, from=1, to, by=1, tz=getOption("oceTz"),
         type=c("s4"),
         latitude=NA, longitude=NA,
         debug=getOption("oceDebug"), monitor=FALSE, processingLog, \dots)

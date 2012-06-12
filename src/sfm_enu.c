@@ -1,3 +1,4 @@
+#include <math.h>
 #include <R.h>
 #include <Rdefines.h>
 #include <Rinternals.h>
@@ -5,11 +6,11 @@
 /* 
  * sfm_enu: convert starboard-forward-mast velocity components into east-nort-up components
  */
-#define PI_OVER_180 0.0174532925199433
 void sfm_enu(int *nhpr, double *heading, double *pitch, double *roll, 
         int *nsfm, double *starboard, double *forward, double *mast,
         double *east, double *north, double *up)
 {
+    const double PI_OVER_180 = atan2(1.0, 1.0) / 45.0;
     //Rprintf("sfm_enu(nhpr=%d, heading=%f, pitch=%f, roll=%f, nsfm=%d, ...)\n",
     //        *nhpr, heading[0], pitch[0], roll[0], *nsfm);
     /* nhpr = length of heading, pitch, and roll
@@ -90,4 +91,3 @@ void sfm_enu(int *nhpr, double *heading, double *pitch, double *roll,
     }
 }
 
-#undef PI_OVER_180

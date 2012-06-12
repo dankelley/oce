@@ -113,12 +113,10 @@
     dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
+data(echosounder)
 data(coastlineSLE)
-plot(d, which=c(1,3), coastline=coastlineSLE, radius=2, drawBottom=TRUE)
-}
+plot(echosounder, which=c(1,3), coastline=coastlineSLE, radius=2, drawBottom=TRUE)
 }
 
 \author{Dan Kelley, with extensive help from Clark Richards}

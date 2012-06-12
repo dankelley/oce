@@ -7,12 +7,14 @@
 \description{Compute \emph{in-situ} salinity, given temperature,
   density, and pressure.}
 
-\usage{swSTrho(temperature, density, pressure)}
+\usage{swSTrho(temperature, density, pressure, eos=getOption("eos", default="unesco"))}
 
 \arguments{
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{density}{\emph{in-situ} density or sigma value [\eqn{kg/m^3}{kg/m^3}]}
   \item{pressure}{\emph{in-situ} pressure [dbar]}
+  \item{eos}{either \code{"unesco"} or \code{"teos"}.  If the latter, then the
+      computer must have the TEOS library installed; see \code{\link{teos}}.}
 }
 
 \details{Finds the salinity that yields the given density, with the

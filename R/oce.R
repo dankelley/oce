@@ -546,6 +546,16 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
         } else {
             stop("must supply either 'subset' or 'indices'")
         }
+    } else if (inherits(x, "lisst")) {
+        if (length(grep("time", subsetString))) {
+            keep <- eval(substitute(subset), x@data, parent.frame())
+            rval <- x
+            n <- length(names(rval@data))
+            for (i in 1:n)
+                rval@data[[i]] <- rval@data[[i]][keep]
+        } else {
+            stop("can only subset LISST objects by time")
+        }
     } else if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
             n <- length(indices)
@@ -789,7 +799,11 @@ magic <- function(file, debug=getOption("oceDebug"))
     filename <- file
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
-        if (length(grep(".adr$", filename))) {
+        if (length(grep(".asc$", filename))) {
+            someLines <- readLines(file, encoding="UTF-8", n=1)
+            if (42 == length(strsplit(someLines[1], ' ')[[1]]))
+                return("lisst")
+        } else if (length(grep(".adr$", filename))) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
         } else if (length(grep(".rsk$", filename))) {
@@ -872,11 +886,15 @@ magic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "this is adp/nortek/aqudopp\n")
             return("adp/nortek/aquadopp") # p33 SIG
         }
+        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x21)  {
+            oceDebug(debug, "this is adp/nortek/aqudoppProfiler\n")
+            return("adp/nortek/aquadoppProfiler") # p37 SIG
+        }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
             oceDebug(debug, "this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
-        } else
-            stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
+        }
+        stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
         ##} else if (as.integer(bytes[1]) == 81) {
         ##    warning("possibly this file is a sontek ADV (first byte is 81)")
         ##} else if (as.integer(bytes[1]) == 83) {
@@ -939,9 +957,11 @@ read.oce <- function(file, ...)
     if (type == "adp/sontek")
         return(read.adp.sontek(file, processingLog=processingLog, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
-        stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
+        stop("cannot read \"adp/nortek/aquadopp\" files")
+    if (type == "adp/nortek/aquadoppProfiler")
+        return(read.adp.nortek(file, type="aquadoppProfiler", processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, processingLog=processingLog, ...))
+        return(read.adp.nortek(file, type="aquadoppHR", processingLog=processingLog, ...))
     if (type == "adv/nortek/vector")
         return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")
@@ -957,6 +977,8 @@ read.oce <- function(file, ...)
         return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
     if (type == "drifter/argo")
         return(read.drifter(file))
+    if (type == "lisst")
+        return(read.lisst(file))
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
@@ -1102,7 +1124,15 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 60 * 3) {                       # under 3 min
+    if (d < 60) {                       # under a min
+        t.start <- rr[1]
+        t.end <- rr[2]
+        z <- seq(t.start, t.end, length.out=10)
+        oceDebug(debug, "time range is under a minute\n")
+        oceDebug(debug, vectorShow(z, "z"))
+        if (missing(format))
+            format <- "%S"
+    } else if (d < 60 * 3) {                       # under 3 min
         t.start <- trunc(rr[1]-60, "mins")
         t.end <- trunc(rr[2]+60, "mins")
         z <- seq(t.start, t.end, by="10 sec")
@@ -1312,7 +1342,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
     oceDebug(debug, "\b\b} # oce.axis.ts()\n")
     zzz <- as.numeric(z)
-    par(xaxp=c(min(zzz), max(zzz), -1+length(zzz)))
+    par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
     invisible()
 }
 
@@ -1523,4 +1553,52 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
         stop("unknown value of type ", type)
     }
     oceDebug(debug, "\b\b} # drawDirectionField\n")
+}
+
+oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, ...)
+{
+    dots <- list(...)
+    dotsNames <- names(dots)
+    if ("add" %in% dotsNames) {
+        contour(x, y, z, ...)
+    } else {
+        if (missing(z)) {
+            if (!missing(x)) {
+                if (is.list(x)) {
+                    z <- x$z; y <- x$y; x <- x$x
+                } else {
+                    z <- x
+                    x <- seq.int(0, 1, length.out = nrow(z))
+                }
+            } else stop("no 'z' matrix specified")
+        } else if (is.list(x)) {
+            y <- x$y
+            x <- x$x
+        }
+        zdim <- dim(z)
+        if (revx) {
+            x <- rev(x)
+##            z <- z[seq.int(zdim[1], 1), ]
+        }
+        if (revy) {
+            y <- rev(y)
+ ##           z <- z[, seq.int(zdim[2], 1)]
+        }
+        if (!("axes" %in% dotsNames)) {
+            contour(x, y, z, axes=FALSE, ...)
+            ## see src/library/graphics/R/contour.R 
+            xaxp <- par('xaxp')
+            xat <- seq(xaxp[1], xaxp[2], length.out=-1+xaxp[3])
+            xlabels <- format(xat)
+            yaxp <- par('yaxp')
+            yat <- seq(yaxp[1], yaxp[2], length.out=-1+yaxp[3])
+            ylabels <- format(yat)
+            ##print(data.frame(yat, ylabels))
+            if (revx) Axis(x, side=1, at=xat, labels=rev(xlabels)) else Axis(x, side=1)
+            if (revy) Axis(y, side=2, at=yat, labels=rev(ylabels)) else Axis(y, side=2)
+            box()
+        } else {
+            contour(x, y, z, ...)
+        }
+    }
 }

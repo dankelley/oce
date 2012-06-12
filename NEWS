@@ -1,3 +1,26 @@
+0.8-10
+- plot.topo(): automatic cut-point shift
+- add support for Nortek aquadopp-profiler instruments
+- oceContour() added
+- lisst class added
+- plotTaylor() added
+- oce.as.raw() added
+- binmap() added
+
+0.8-9
+- make the newly-added TEOS-10 functions compile on Windows
+
+0.8-8
+- data(cm) added
+- plot.coastline(): improve argument 'geographical'
+- add prettyPosition()
+- add grad()
+- add (preliminary) support for the TEOS-10 library, which must be installed separately
+- add integrateTrapezoid()
+- plotTS(): add argument teos
+- add teos() as an interface to the TEOS-10 library
+- add moonAngle() plus several other astronomy-related functions, e.g. julianDay()
+
 0.8-7
 - plotInset(): remove 'bg' and 'fg' arguments
 - plotTS(): add 'bg' argument

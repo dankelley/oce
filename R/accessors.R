@@ -27,16 +27,15 @@ extract <- function(x, names)
                     rval[[name]] = x@metadata[[name]]
                 }
             } else if (name %in% stationDataNames) {
-                cat("in station data, for name=", name, "\n")
+                ##cat("in station data, for name=", name, "\n")
                 item <- NULL
                 for (i in 1:length(x@data$station)) {
-                    cat("in station", i, "\n")
+                    ##cat("in station", i, "\n")
                     stn <- x@data$station[[i]]
                     item <- c(item, x@data$station[[i]]@data[[name]])
                 }
                 rval[[name]] <- item
             } else {
-                cat("--B\n")
                 stop("'", name, "' not in object's metadata or data$station[[1]]@data")
             }
         }
