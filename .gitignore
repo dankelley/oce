@@ -12,4 +12,4 @@ issue*dat
 issue*png
 man/figures/*pdf
 man/figures/*png
-
+!man/figures/starCoords.png
