@@ -1,4 +1,5 @@
 0.8-10
+- plot.topo(): automatic cut-point shift
 - add support for Nortek aquadopp-profiler instruments
 - oceContour() added
 - lisst class added
