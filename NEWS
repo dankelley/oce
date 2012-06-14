@@ -1,3 +1,6 @@
+0.8-11
+- numberAsPOSIXct(): add a leap second for July 2012
+
 0.8-10
 - plot.topo(): automatic cut-point shift
 - add support for Nortek aquadopp-profiler instruments
