@@ -291,10 +291,14 @@ plot.topo <- function(x,
                     drawlabels=FALSE, add=TRUE, ...)
         }
     }
-    if (!is.null(location)) {
+    if (is.logical(location)) {
+        if (location) {
+            o <- rev(order(legend))
+            legend("topright", lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
+        }
+    } else {
         o <- rev(order(legend))
-        legend(location, lwd=lwd[o], lty=lty[o],
-               bg="white", legend=legend[o], col=col[o])
+        legend(location, lwd=lwd[o], lty=lty[o], bg="white", legend=legend[o], col=col[o])
     }
     oceDebug(debug, "\b\b} # plot.topo()\n")
     invisible()
