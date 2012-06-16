@@ -334,9 +334,9 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "te
     if (nS != nt)
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     ## sometimes give just a single p value (e.g. for a TS diagram)
-    if (np == 1) {
+    if (np == 1 && nS > np) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
