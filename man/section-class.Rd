@@ -31,7 +31,7 @@
         vectors with values repeated for each level in each CTD (see the
         \code{pairs()} call in the example section).  If just one latitude or
         longitude is desired per station, e.g. \code{section[["latitude",
-            "bystation"]]} may be used.  Station-by-station values of dynamic
+            "byStation"]]} may be used.  Station-by-station values of dynamic
         height are provided by e.g.  \code{section[["dynamic height"]]}.}
 
     \subsection{Assigning values}{(This feature has yet to be added.)}
