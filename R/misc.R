@@ -1,5 +1,52 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
+{
+    if (missing(x))
+        stop("must supply x")
+    if (missing(y))
+        stop("must supply y")
+    if (missing(xe) && missing(ye))
+        stop("must give either xe or ye")
+    n <- length(x)
+    if (1 == length(xe))
+        xe <- rep(xe, n)
+    if (1 == length(ye))
+        ye <- rep(ye, n)
+    if (n != length(y))
+        stop("x and y must be of same length\n")
+    if (!missing(xe)) {
+        if (n != length(xe))
+            stop("x and xe must be of same length\n")
+        if (percent)
+            xe <- xe * x / 100
+        if (style == 0) {
+            segments(x, y, x+xe, y, ...)
+            segments(x, y, x-xe, y, ...)
+        } else if (style == 1) {
+            arrows(x, y, x + xe, y, angle=90, length=length, ...)
+            arrows(x, y, x - xe, y, angle=90, length=length, ...)
+        } else {
+            stop("unknown value ", style, " of style; must be 0 or 1\n")
+        }
+    }
+    if (!missing(ye)) {
+        if (n != length(ye))
+            stop("y and ye must be of same length\n")
+        if (percent)
+            ye <- ye * y / 100
+        if (style == 0) {
+            segments(x, y, x, y+ye, ...)
+            segments(x, y, x, y-ye, ...)
+        } else if (style == 1) {
+            arrows(x, y, x, y + ye, angle=90, length=length, ...)
+            arrows(x, y, x, y - ye, angle=90, length=length, ...)
+        } else {
+            stop("unknown value ", style, " of style; must be 0 or 1\n")
+        }
+    }
+}
+
 findInOrdered <- function(x, f)
 {
     if (missing(x))
