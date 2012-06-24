@@ -159,7 +159,7 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta =
                                         # sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (!isTheta)
         t = swTheta(salinity, temperature, pressure)
@@ -424,7 +424,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
                                         # sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
@@ -497,7 +497,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
     ## sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
@@ -534,7 +534,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     np <- length(pressure)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     method <- match.arg(method)
     if (method == "bryden") {
