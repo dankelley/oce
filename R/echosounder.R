@@ -44,7 +44,8 @@ findBottom <- function(x, ignore=5, clean=despike)
 setMethod(f="plot",
           signature=signature("echosounder"),
           definition=function(x, which = 1, # 1=z-t section 2=dist-t section 3=map
-                              newx, xlab="",
+                              newx,
+                              xlab, ylab,
                               xlim, ylim, zlim,
                               type="l", col=oceColorsJet, lwd=2,
                               despike=FALSE,
@@ -101,7 +102,8 @@ setMethod(f="plot",
                           axisBottom <- par('usr')[3]
                           deepestWater <- max(abs(waterDepth))
                           imagep(xInImage, y=-x[["depth"]], z=z,
-                                 xlab=xlab, ylab="z [m]",
+                                 xlab=if (missing(xlab)) "" else xlab, # time
+                                 ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
                                  zlim=if (missing(zlim)) c(0, max(z)) else zlim,
@@ -120,7 +122,8 @@ setMethod(f="plot",
                           }
                       } else {
                           imagep(xInImage, y=-x[["depth"]], z=z,
-                                 xlab=xlab, ylab="z [m]",
+                                 xlab=if (missing(xlab)) "" else xlab, # time
+                                 ylab=if (missing(ylab)) "z [m]" else ylab, # depth
                                  xlim=xlim,
                                  ylim=if (missing(ylim)) c(-max(abs(x[["depth"]])), 0) else ylim,
                                  zlim=if (missing(zlim)) c(0, max(z)) else zlim,
@@ -161,7 +164,8 @@ setMethod(f="plot",
                           deepestWater <- max(abs(waterDepth$depth))
                       }
                       imagep(distance, -depth, z,
-                             xlab="Distance [km]", ylab="z [m]",
+                             xlab=if (missing(xlab)) "Distance [km]" else xlab,
+                             ylab=if (missing(ylab)) "z [m]" else ylab,
                              ylim=if (missing(ylim)) c(-deepestWater,0) else ylim,
                              zlim=if (missing(zlim)) c(0, max(z)) else zlim,
                              mgp=mgp, mar=mar,
@@ -196,7 +200,9 @@ setMethod(f="plot",
                       km_per_lon_deg <- geodDist(latm, lonm, latm, lonm+1) 
                       lonr <- lonm + radius / km_per_lon_deg * c(-2, 2)
                       latr <- latm + radius / km_per_lat_deg * c(-2, 2)
-                      plot(lonr, latr, asp=asp, type='n', xlab="Longitude", ylab="Latitude")
+                      plot(lonr, latr, asp=asp, type='n',
+                           xlab=if (missing(xlab)) "Longitude" else xlab,
+                           ylab=if (missing(ylab)) "Latitude" else ylab)
                       if (!missing(coastline)) {
                           coastline <- coastline
                           if (!is.null(coastline@metadata$fillable) && coastline@metadata$fillable) {
@@ -210,7 +216,8 @@ setMethod(f="plot",
                       }
                       lines(lon, lat, col=if(!is.function(col)) col else "black", lwd=lwd)
                   } else {
-                      stop("unknown value of which=", which, " (must be 1, 2, or 3)")
+                      stop("in plot.echosounder(), which=", which, " but only 1, 2, and 3 are allowed",
+                           call.=FALSE)
                   }
                   if (w <= adorn.length && nchar(adorn[w]) > 0) {
                       t <- try(eval(adorn[w]), silent=TRUE)

@@ -10,7 +10,8 @@
 
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
-     newx, xlab="",
+     newx,
+     xlab, ylab,
      xlim, ylim, zlim,
      type="l", col=oceColorsJet, lwd=2,
      despike=FALSE,
@@ -41,7 +42,8 @@
       time vector, because the image is remapped from time to \code{newx} using
       \code{\link{approx}}.}
 
-  \item{xlab}{label for horizontal axis.}
+  \item{xlab, ylab}{optional labels for the horizontal and vertical axes; if
+      not provided, the labels depend on the value of \code{which}.}
 
   \item{xlim}{optional range for x axis.}
 
