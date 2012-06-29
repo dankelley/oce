@@ -798,7 +798,7 @@ summary.oce <- function(object, ...)
     return(invisible(object))
 }
 
-magic <- function(file, debug=getOption("oceDebug"))
+oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
     if (is.character(file)) {
@@ -840,11 +840,11 @@ magic <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
-    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
@@ -950,7 +950,7 @@ magic <- function(file, debug=getOption("oceDebug"))
 
 read.oce <- function(file, ...)
 {
-    type <- magic(file)
+    type <- oceMagic(file)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         return(read.coastline.shapefile(file, ...))

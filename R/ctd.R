@@ -919,7 +919,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
         else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
         else stop("type must be SBE19 or WOCE, not ", type)
-    }                                   # FIXME: should just use magic() here
+    }                                   # FIXME: should just use oceMagic() here
     switch(type,
            SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
                                 debug=debug, processingLog=processingLog, ...),
@@ -2279,7 +2279,7 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         if (!is.na(pmatch(type, "SBE19")))            type <- "SBE19"
         else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
         else stop("type must be SBE19 or WOCE, not ", type)
-    }                                   # FIXME: should just use magic() here
+    }                                   # FIXME: should just use oceMagic() here
     switch(type,
            SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
                                 debug=debug, processingLog=processingLog, ...),

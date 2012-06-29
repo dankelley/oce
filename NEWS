@@ -1,4 +1,5 @@
 0.8-11
+- oceMagic(): new name for magic()
 - errorBars(): added
 - numberAsPOSIXct(): add a leap second for July 2012
 
