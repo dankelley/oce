@@ -522,12 +522,20 @@ fullFilename <- function(filename)
         return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
-matrixSmooth <- function(m)
+
+matrixSmooth <- function(m, passes=1)
 {
     if (missing(m))
         stop("must provide matrix 'm'")
     storage.mode(m) <- "double"
-    .Call("matrix_smooth", m)
+    if (passes > 0) {
+        for (pass in seq.int(1, passes, 1)) {
+            m <- .Call("matrix_smooth", m)
+        }
+    } else {
+        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
+    }
+    m
 }
 
 matchBytes <- function(input, b1, ...)
