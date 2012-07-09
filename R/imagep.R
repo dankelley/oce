@@ -1,8 +1,8 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-prettyLocal <- function(x, digits=10)
+prettyLocal <- function(x, n, digits=10)
 {
-    round(pretty(x), digits)
+    round(pretty(x, n), digits)
 }
 
 clipmin <- function(x, min=0)
@@ -158,9 +158,12 @@ drawPalette <- function(zlim,
         if (zIsTime & is.null(at)) {
             at <- as.numeric(pretty(zlim))
         } else if (is.null(at)) {
-            at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours) else prettyLocal(palette) # FIXME: wrong on contours
+            ## NB. in next line, the '10' matches a call to pretty() in imagep().
+            at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 10) else prettyLocal(palette, 10) # FIXME: wrong on contours
         }
         if (is.null(labels)) labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
+        labels <- sub("^[ ]*", "", labels)
+        labels <- sub("[ ]*$", "", labels)
         axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
