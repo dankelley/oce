@@ -1,8 +1,9 @@
 0.8-11
-- plotPolar(): added
-- oceMagic(): new name for magic()
-- errorBars(): added
-- numberAsPOSIXct(): add a leap second for July 2012
+- data(topo2) added
+- plotPolar() added
+- oceMagic() new name for magic()
+- errorBars() added
+- numberAsPOSIXct() add a leap second for July 2012
 
 0.8-10
 - plot.topo(): automatic cut-point shift
