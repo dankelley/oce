@@ -8,7 +8,7 @@
 
 \description{World topograph data, on a 2-degree grid.}
 
-\usage{data2(topo)}
+\usage{data(topo2)}
 
 \examples{
 library(oce)

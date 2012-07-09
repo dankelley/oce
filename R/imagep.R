@@ -233,11 +233,15 @@ imagep <- function(x, y, z,
             stop("x must be a matrix, not an array with dim(x) = c(", paste(dim(x), collapse=","), ")\n")
         z <- x
         z <- if (length(dim(x)) > 2) z <- x[,,1] else x
-        y <- seq(0, 1, length.out=ncol(x))
-        x <- seq(0, 1, length.out=nrow(x))
+        ##y <- seq(0, 1, length.out=ncol(x))
+        ##x <- seq(0, 1, length.out=nrow(x))
+        y <- seq.int(1L, ncol(x))
+        x <- seq.int(1L, nrow(x))
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
-        x <- seq(0, 1, length.out=nrow(z))
-        y <- seq(0, 1, length.out=ncol(z))
+        ##x <- seq(0, 1, length.out=nrow(z))
+        ##y <- seq(0, 1, length.out=ncol(z))
+        x <- seq.int(1L, nrow(z))
+        y <- seq.int(1L, ncol(z))
         z <- z
     } else {
         if (missing(y))
