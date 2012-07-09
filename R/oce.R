@@ -121,6 +121,31 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     res
 }
 
+plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
+{
+
+    oceDebug(debug, "\b\bplotPolar(...)\n")
+    if (missing(r)) stop("must supply 'r'")
+    if (missing(theta)) stop("must supply 'theta'")
+    thetaRad <- theta * atan2(1, 1) / 45
+    x <- r * cos(thetaRad)
+    y <- r * sin(thetaRad)
+    R <- 1.2 * max(r, na.rm=TRUE)
+    Rpretty <- pretty(c(0, R))
+    plot.new()
+    plot.window(c(-R, R), c(-R, R), asp=1)
+    points(x, y, ...)
+    xa <- axis(1, pos=0)
+    abline(v=0)
+    th <- seq(0, 2 * atan2(1, 1) * 4, length.out=100)
+    for (radius in xa[xa>0]) {
+        lines(radius * cos(th), radius * sin(th))
+    }
+    abline(h=0)
+    abline(v=0)
+    oceDebug(debug, "\b\b} # plotPolar()\n")
+}
+
 oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
 {
     method <- match.arg(method)
@@ -444,6 +469,7 @@ oce.write.table <- function (x, file="", ...)
     else
         write.table(x@data, file, ...)
 }
+
 
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
 {
