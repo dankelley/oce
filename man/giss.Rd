@@ -6,12 +6,10 @@
 
 \title{Time series of NASA/GISS land-ocean temperature index}
 
-\description{This contains the NASA/GISS time series of monthly values of the
-    global mean of surface temperature, in the form of a list containing
-    \code{y}, the fractional year, and \code{Ta}, the temperature anomaly.
-    Hansen et al. (2010) suggest that \code{Ta} can be converted to actual
-    temperature by adding 14C, with uncertainty of ``several tenths of a degree
-    Celcius.''}
+\description{This contains the Goddard Institute for Space Studies (GISS) time
+    series of surface temperature anomaly.  The details of the original data
+    processing are provided in [2] and [3].  Here, \code{giss} is a list
+    containing \code{y}, time in years, and \code{Ta}, temperature anomaly.}
     
 \usage{data(giss)}
 
