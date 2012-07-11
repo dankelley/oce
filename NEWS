@@ -1,4 +1,5 @@
 0.8-11
+- data(giss) added
 - data(topo2) added
 - plotPolar() added
 - oceMagic() new name for magic()
