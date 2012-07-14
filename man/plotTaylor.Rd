@@ -7,7 +7,7 @@
 \description{Plot a model-data comparison diagram as described by Taylor
     (2001).}
 
-\usage{plotTaylor(x, y, scale, pch, col)}
+\usage{plotTaylor(x, y, scale, pch, col, labels, pos, \dots)}
 
 \arguments{
     \item{x}{a vector of reference values of some quantity, e.g. measured over
@@ -21,6 +21,11 @@
         \code{y}.}
     \item{col}{list of colours for points on the plot, one for each column of
         \code{y}.}
+    \item{labels}{optional vector of strings to use for labelling the points.}
+    \item{pos}{optional vector of positions for labelling strings.  If not
+        provided, labels will be to the left of the symbols.}
+    \item{\dots}{optional arguments passed by \code{plotTaylor} to more 
+        child functions.}
 }
 
 \details{Creates a diagram as described by Taylor (2001).  The graph is in the
@@ -48,10 +53,10 @@
 \examples{
 library(oce)
 data(sealevelHalifax)
-x <- sealevelHalifax[["elevation"]]
-yM2 <- predict(tidem(sealevelHalifax, constituents="M2"))
-yS2 <- predict(tidem(sealevelHalifax, constituents="S2"))
-plotTaylor(x, cbind(yM2, yS2))
+x <- elevation(sealevelHalifax)
+M2 <- predict(tidem(sealevelHalifax, constituents="M2"))
+S2 <- predict(tidem(sealevelHalifax, constituents=c("S2")))
+plotTaylor(x, cbind(M2, S2))
 }
 
 \author{Dan Kelley}

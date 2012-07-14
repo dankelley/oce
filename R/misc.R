@@ -74,7 +74,7 @@ filterSomething <- function(x, filter)
     res
 }
 
-plotTaylor <- function(x, y, scale, pch, col)
+plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -84,27 +84,32 @@ plotTaylor <- function(x, y, scale, pch, col)
     if (missing(pch))
         pch <- 1:ncol
     if (missing(col))
-        col <- 1:ncol
+        col <- rep("black", ncol)
+    haveLabels <- !missing(labels)
+    if (missing(pos))
+        pos <- rep(2, ncol)
+    if (length(pos) < ncol)
+        pos <- rep(pos[1], ncol)
     xSD <- sd(x, na.rm=TRUE)
     ySD <- sd(as.vector(y), na.rm=TRUE)
     if (missing(y)) stop("must supply 'y'")
     halfArc <- seq(0, pi, length.out=200)
     ## FIXME: use figure geometry, to avoid axis cutoff
     if (missing(scale))
-        scale <- max(1.1 * pretty(c(xSD, ySD)))
+        scale <- max(pretty(c(xSD, ySD)))
     plot.new()
-    plot.window(c(-1.04, 1.04) * scale, c(0, 1.04) * scale, asp=1)
+    plot.window(c(-1.2, 1.2) * scale, c(0, 1.2) * scale, asp=1)
+    ##plot.window(c(-1.1, 1.1), c(0.1, 1.2), asp=1)
     sdPretty <- pretty(c(0, scale))
     for (radius in sdPretty)
-        lines(radius * cos(halfArc), radius * sin(halfArc))
+        lines(radius * cos(halfArc), radius * sin(halfArc), col='gray')
     ## spokes
-    for (rr in seq(-1, 1, 0.1))
-        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
     for (rr in seq(-1, 1, 0.2))
-        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)))
-    labels <- format(sdPretty)
-    labels[1] <- paste(0)
-    axis(1, pos=0, at=sdPretty, labels=labels)
+        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)),
+              c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
+    axisLabels <- format(sdPretty)
+    axisLabels[1] <- paste(0)
+    axis(1, pos=0, at=sdPretty, labels=axisLabels)
     ## temporarily permit labels outside the platting zone
     xpdOld <- par('xpd')
     par(xpd=NA)
@@ -117,14 +122,14 @@ plotTaylor <- function(x, y, scale, pch, col)
     for (column in 1:ncol(y)) {
         ySD <- sd(y[,column], na.rm=TRUE)
         R <- cor(x, y[,column])^2
-        ##cat("ySD=", ySD, "R2=", R2, "col=", col[column], "pch=", pch[column], "\n")
-        ## FIXME: the angle is wrong
-        points(ySD * cos((1 - R) * pi / 2),
-               ySD * sin((1 - R) * pi / 2), pch=pch[column],
-               lwd=2,
-               col=col[column], cex=2)
-        ##cat("x=", ySD * cos(pi/2+R2 * pi / 180/2), "\n")
-        ##cat("y=", ySD * sin(pi/2+R2 * pi / 180/2), "\n")
+        ##cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
+        xx <- ySD * cos((1 - R) * pi / 2)
+        yy <- ySD * sin((1 - R) * pi / 2)
+        points(xx, yy, pch=pch[column], lwd=2, col=col[column], cex=2)
+        if (haveLabels) {
+            ##cat(labels[column], "at", pos[column], "\n")
+            text(xx, yy, labels[column], pos=pos[column], ...)
+        }
     }
 }
 
