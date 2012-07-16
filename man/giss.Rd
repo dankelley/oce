@@ -9,7 +9,7 @@
 \description{This contains the Goddard Institute for Space Studies (GISS) time
     series of surface temperature anomaly.  The details of the original data
     processing are provided in [2] and [3].  Here, \code{giss} is a list
-    containing \code{y}, time in years, and \code{Ta}, temperature anomaly.}
+    containing \code{year}, time in years, and \code{Ta}, temperature anomaly.}
     
 \usage{data(giss)}
 
@@ -17,7 +17,7 @@
 library(oce)
 data(giss)
 ## Compare the graph with Fig3 of Hansen et al. (2010)
-plot(giss$y, giss$Ta, type='l', xlab="Year", ylab="Temperature Anomaly")
+plot(giss$year, giss$Ta, type='l', xlab="Year", ylab="Temperature Anomaly")
 }
 
 \source{The data were downloaded in summer 2012 from [1] and trimmed to just
