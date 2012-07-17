@@ -1,10 +1,14 @@
 \name{plot.windrose}
+
 \alias{plot.windrose}
+\alias{plot,windrose,missing-method}
+\alias{plot,windrose-method}
+
 \title{Plot a wind rose diagram}
+
 \description{Plot a wind-rose diagram}
 
-\usage{
-\method{plot}{windrose}(x, type=c("count","mean","median","fivenum"),
+\usage{\S4method{plot}{windrose}(x, type=c("count","mean","median","fivenum"),
               convention=c("meteorological", "oceanographic"),
               mgp=getOption("oceMgp"), 
               mar=c(mgp[1], mgp[1], 1+mgp[1], mgp[1]), col, \dots)}

@@ -41,8 +41,6 @@ setValidity("sealevel",
                     return(TRUE)
             })
 
-
-
 as.sealevel <- function(elevation,
                         time,
                         header=NULL,
@@ -99,177 +97,179 @@ as.sealevel <- function(elevation,
     rval
 }
 
-plot.sealevel <- function(x, which=1:3,
-                          adorn=NULL,
-                          drawTimeRange=getOption("oceDrawTimeRange"),
-                          mgp=getOption("oceMgp"),
-                          mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
-                          marginsAsImage=FALSE,
-                          debug=getOption("oceDebug"),
-                          ...)
-{
-    oceDebug(debug, "\bplot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
-    dots <- list(...)
-    titlePlot <- function(x)
-    {
-        title <- ""
-        if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region))
-            title <- paste(title, "Station ",
-                           if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
-                           " ",
-                           if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
-                           " ",
-                           if (!is.null(x@metadata$region)) x@metadata$region else "",
-                           sep="")
-        if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude))
-            title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep="")
-        if (nchar(title) > 0)
-            mtext(side=3, title, adj=1, cex=2/3)
-    }
-    drawConstituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
-    {
-        abline(v=frequency, col=col)
-        mtext(label, side=side, at=frequency, col=col, cex=3/4*par("cex"))
-    }
-    drawConstituents <- function()
-    {
-        drawConstituent(0.0387306544, "O1", side=1)
-        ##draw.constituent(0.0416666721, "S1", side=3)
-        drawConstituent(0.0417807462, "K1", side=3)
-        drawConstituent(0.0789992488, "N2", side=1)
-        drawConstituent(0.0805114007, "M2", side=3)
-        drawConstituent(0.0833333333, "S2", side=1)
-    }
+setMethod(f="plot",
+          signature=signature("sealevel"),
+          definition=function(x, which=1:3,
+                              adorn=NULL,
+                              drawTimeRange=getOption("oceDrawTimeRange"),
+                              mgp=getOption("oceMgp"),
+                              mar=c(mgp[1]+0.5, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
+                              marginsAsImage=FALSE,
+                              debug=getOption("oceDebug"),
+                              ...)
+          {
+              oceDebug(debug, "\bplot.sealevel(..., mar=c(", paste(mar, collapse=", "), "), ...) {\n",sep="")
+              dots <- list(...)
+              titlePlot <- function(x)
+              {
+                  title <- ""
+                  if (!is.null(x@metadata$stationNumber) || !is.null(x@metadata$stationName) || !is.null(x@metadata$region))
+                      title <- paste(title, "Station ",
+                                     if (!is.na(x@metadata$stationNumber)) x@metadata$stationNumber else "",
+                                     " ",
+                                     if (!is.null(x@metadata$stationName)) x@metadata$stationName else "",
+                                     " ",
+                                     if (!is.null(x@metadata$region)) x@metadata$region else "",
+                                     sep="")
+                  if (!is.na(x@metadata$latitude) && !is.na(x@metadata$longitude))
+                      title <- paste(title, latlonFormat(x@metadata$latitude, x@metadata$longitude), sep="")
+                  if (nchar(title) > 0)
+                      mtext(side=3, title, adj=1, cex=2/3)
+              }
+              drawConstituent <- function(frequency=0.0805114007,label="M2",col="darkred",side=1)
+              {
+                  abline(v=frequency, col=col)
+                  mtext(label, side=side, at=frequency, col=col, cex=3/4*par("cex"))
+              }
+              drawConstituents <- function()
+              {
+                  drawConstituent(0.0387306544, "O1", side=1)
+                  ##draw.constituent(0.0416666721, "S1", side=3)
+                  drawConstituent(0.0417807462, "K1", side=3)
+                  drawConstituent(0.0789992488, "N2", side=1)
+                  drawConstituent(0.0805114007, "M2", side=3)
+                  drawConstituent(0.0833333333, "S2", side=1)
+              }
 
-    if (!inherits(x, "sealevel"))
-        stop("method is only for sealevel objects")
-    opar <- par(no.readonly = TRUE)
-    par(mgp=mgp, mar=mar)
-    lw <- length(which)
-    if (marginsAsImage) {
-        scale <- 0.7
-        w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
-        lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
-    } else {
-        if (lw > 1)
-            lay <- layout(cbind(1:lw))
-    }
-    if (lw > 1) on.exit(par(opar))
+              if (!inherits(x, "sealevel"))
+                  stop("method is only for sealevel objects")
+              opar <- par(no.readonly = TRUE)
+              par(mgp=mgp, mar=mar)
+              lw <- length(which)
+              if (marginsAsImage) {
+                  scale <- 0.7
+                  w <- (1.5 + par("mgp")[2]) * par("csi") * scale * 2.54 + 0.5
+                  lay <- layout(matrix(1:(2*lw), nrow=lw, byrow=TRUE), widths=rep(c(1, lcm(w)), lw))
+              } else {
+                  if (lw > 1)
+                      lay <- layout(cbind(1:lw))
+              }
+              if (lw > 1) on.exit(par(opar))
 
-    ## tidal constituents (in cpd):
-    ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
-    adornLength <- length(adorn)
-    if (adornLength == 1) {
-        adorn <- rep(adorn, 4)
-        adornLength <- 4
-    }
-    num.NA <- sum(is.na(x@data$elevation))
+              ## tidal constituents (in cpd):
+              ## http://www.soest.hawaii.edu/oceanography/dluther/HOME/Tables/Kaw.htm
+              adornLength <- length(adorn)
+              if (adornLength == 1) {
+                  adorn <- rep(adorn, 4)
+                  adornLength <- 4
+              }
+              num.NA <- sum(is.na(x@data$elevation))
 
-    par(mgp=mgp)
-    ##par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
-    par(mar=mar)
-    MSL <- mean(x@data$elevation, na.rm=TRUE)
-    if ("xlim" %in% names(dots)) {
-        xtmp <- subset(x@data$elevation, dots$xlim[1] <= x@data$time & x@data$time <= dots$xlim[2])
-        tmp <- max(abs(range(xtmp-MSL,na.rm=TRUE)))
-    } else {
-        tmp <- max(abs(range(x@data$elevation-MSL,na.rm=TRUE)))
-    }
-    ylim <- c(-tmp,tmp)
-    oceDebug(debug, "ylim=", ylim, "\n")
-    n <- length(x@data$elevation) # do not trust value in metadata
-    for (w in 1:length(which)) {
-        if (which[w] == 1) {
-            plot(x@data$time, x@data$elevation-MSL,
-                 xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
-                 lwd=0.5, axes=FALSE, ...)
-            tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
-            box()
-            titlePlot(x)
-            yax <- axis(2)
-            abline(h=yax, col="darkgray", lty="dotted")
-            abline(v=tics, col="darkgray", lty="dotted")
-            abline(h=0,col="darkgreen")
-            mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-        } else if (which[w] == 2) {     # sample days
-            from <- trunc(x@data$time[1], "day")
-            to <- from + 28 * 86400 # 28 days
-            look <- from <= x@data$time & x@data$time <= to
-            xx <- x
-            for(i in seq_along(x@data)) {
-                xx@data[[i]] <- x@data[[i]][look]
-            }
-            atWeek <- seq(from=from, to=to, by="week")
-            atDay  <- seq(from=from, to=to, by="day")
-            tmp <- (pretty(max(xx@data$elevation-MSL,na.rm=TRUE) -
-                           min(xx@data$elevation-MSL,na.rm=TRUE))/2)[2]
-            ylim <- c(-tmp,tmp)
-            plot(xx@data$time, xx@data$elevation - MSL,
-                 xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
-                 axes=FALSE)
-            oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
-            yax <- axis(2)
-            abline(h=yax, col="lightgray", lty="dotted")
-            box()
-            abline(v=atWeek, col="darkgray", lty="dotted")
-            abline(v=atDay, col="lightgray", lty="dotted")
-            abline(h=0,col="darkgreen")
-            mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
-        } else if (which[w] == 3) {
-            if (num.NA == 0) {
-                Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
-                #s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
-                s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
-                par(mar=c(mgp[1]+1.25,mgp[1]+1.5,mgp[2]+0.25,mgp[2]+3/4))
-                xlim <- c(0, 0.1) # FIXME: should be able to set this
-                ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
-                plot(s$freq,s$spec,xlim=xlim, ylim=ylim,
-                     xlab="Frequency [cph]", ylab="Spectral density [m^2/cph]",
-                     type='l',log="y")
-                grid()
-                drawConstituents()
-            } else {
-                warning("cannot draw sealevel spectum, because the series contains missing values")
-            }
-        } else if (which[w] == 4) {
-            if (num.NA == 0) {
-                n <- length(x@data$elevation)
-                nCumSpec <- length(s$spec)
-                cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
-                e <- x@data$elevation - mean(x@data$elevation)
-                par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
-                plot(s$freq, cumSpec,
-                     xlab="Frequency [ cph ]",
-                     ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
-                     type='l',xlim=c(0,0.1))
-                if (adornLength > 3) {
-                    t <- try(eval(adorn[4]), silent=TRUE)
-                    if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
-                }
-                grid()
-                drawConstituents()
-            } else {
-                warning("cannot draw sealevel spectum, because the series contains missing values")
-            }
-        } else {
-            stop("unrecognized value of which", which[w])
-        }
-        if (marginsAsImage)  {
-            ## blank plot, to get axis length same as for images
-            omar <- par("mar")
-            par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
-            plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
-            par(mar=omar)
-        }
-        if (adornLength > 1) {
-            t <- try(eval(adorn[w]), silent=TRUE)
-            if (class(t) == "try-error")
-                warning("cannot evaluate adorn[", w, "]\n")
-        }
-    }
-    oceDebug(debug, "\b\b} # plot.sealevel()\n")
-    invisible()
-}
+              par(mgp=mgp)
+              ##par(mar=c(mgp[1],mgp[1]+2.5,mgp[2]+0.5,mgp[2]+1))
+              par(mar=mar)
+              MSL <- mean(x@data$elevation, na.rm=TRUE)
+              if ("xlim" %in% names(dots)) {
+                  xtmp <- subset(x@data$elevation, dots$xlim[1] <= x@data$time & x@data$time <= dots$xlim[2])
+                  tmp <- max(abs(range(xtmp-MSL,na.rm=TRUE)))
+              } else {
+                  tmp <- max(abs(range(x@data$elevation-MSL,na.rm=TRUE)))
+              }
+              ylim <- c(-tmp,tmp)
+              oceDebug(debug, "ylim=", ylim, "\n")
+              n <- length(x@data$elevation) # do not trust value in metadata
+              for (w in 1:length(which)) {
+                  if (which[w] == 1) {
+                      plot(x@data$time, x@data$elevation-MSL,
+                           xlab="",ylab="Elevation [m]", type='l', ylim=ylim, xaxs="i",
+                           lwd=0.5, axes=FALSE, ...)
+                      tics <- oce.axis.POSIXct(1, x@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
+                      box()
+                      titlePlot(x)
+                      yax <- axis(2)
+                      abline(h=yax, col="darkgray", lty="dotted")
+                      abline(v=tics, col="darkgray", lty="dotted")
+                      abline(h=0,col="darkgreen")
+                      mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
+                  } else if (which[w] == 2) {     # sample days
+                      from <- trunc(x@data$time[1], "day")
+                      to <- from + 28 * 86400 # 28 days
+                      look <- from <= x@data$time & x@data$time <= to
+                      xx <- x
+                      for(i in seq_along(x@data)) {
+                          xx@data[[i]] <- x@data[[i]][look]
+                      }
+                      atWeek <- seq(from=from, to=to, by="week")
+                      atDay  <- seq(from=from, to=to, by="day")
+                      tmp <- (pretty(max(xx@data$elevation-MSL,na.rm=TRUE) -
+                                     min(xx@data$elevation-MSL,na.rm=TRUE))/2)[2]
+                      ylim <- c(-tmp,tmp)
+                      plot(xx@data$time, xx@data$elevation - MSL,
+                           xlab="",ylab="Elevation [m]", type='l',ylim=ylim, xaxs="i",
+                           axes=FALSE)
+                      oce.axis.POSIXct(1, xx@data$time, drawTimeRange=drawTimeRange, cex.axis=1, debug=debug-1)
+                      yax <- axis(2)
+                      abline(h=yax, col="lightgray", lty="dotted")
+                      box()
+                      abline(v=atWeek, col="darkgray", lty="dotted")
+                      abline(v=atDay, col="lightgray", lty="dotted")
+                      abline(h=0,col="darkgreen")
+                      mtext(side=4,text=sprintf("%.2f m",MSL),col="darkgreen", cex=2/3)
+                  } else if (which[w] == 3) {
+                      if (num.NA == 0) {
+                          Elevation <- ts(x@data$elevation, start=1, deltat=x@metadata$deltat)
+                                        #s <- spectrum(Elevation-mean(Elevation),spans=c(5,3),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
+                          s <- spectrum(Elevation-mean(Elevation),plot=FALSE,log="y",demean=TRUE,detrend=TRUE)
+                          par(mar=c(mgp[1]+1.25,mgp[1]+1.5,mgp[2]+0.25,mgp[2]+3/4))
+                          xlim <- c(0, 0.1) # FIXME: should be able to set this
+                          ylim <- range(subset(s$spec, xlim[1] <= s$freq & s$freq <= xlim[2]))
+                          plot(s$freq,s$spec,xlim=xlim, ylim=ylim,
+                               xlab="Frequency [cph]", ylab="Spectral density [m^2/cph]",
+                               type='l',log="y")
+                          grid()
+                          drawConstituents()
+                      } else {
+                          warning("cannot draw sealevel spectum, because the series contains missing values")
+                      }
+                  } else if (which[w] == 4) {
+                      if (num.NA == 0) {
+                          n <- length(x@data$elevation)
+                          nCumSpec <- length(s$spec)
+                          cumSpec <- sqrt(cumsum(s$spec) / nCumSpec)
+                          e <- x@data$elevation - mean(x@data$elevation)
+                          par(mar=c(mgp[1]+1.25,mgp[1]+2.5,mgp[2]+0.25,mgp[2]+0.25))
+                          plot(s$freq, cumSpec,
+                               xlab="Frequency [ cph ]",
+                               ylab=expression(paste(integral(Gamma,0,f)," df [m]")),
+                               type='l',xlim=c(0,0.1))
+                          if (adornLength > 3) {
+                              t <- try(eval(adorn[4]), silent=TRUE)
+                              if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+                          }
+                          grid()
+                          drawConstituents()
+                      } else {
+                          warning("cannot draw sealevel spectum, because the series contains missing values")
+                      }
+                  } else {
+                      stop("unrecognized value of which", which[w])
+                  }
+                  if (marginsAsImage)  {
+                      ## blank plot, to get axis length same as for images
+                      omar <- par("mar")
+                      par(mar=c(mar[1], 1/4, mgp[2]+1/2, mgp[2]+1))
+                      plot(1:2, 1:2, type='n', axes=FALSE, xlab="", ylab="")
+                      par(mar=omar)
+                  }
+                  if (adornLength > 1) {
+                      t <- try(eval(adorn[w]), silent=TRUE)
+                      if (class(t) == "try-error")
+                          warning("cannot evaluate adorn[", w, "]\n")
+                  }
+              }
+              oceDebug(debug, "\b\b} # plot.sealevel()\n")
+              invisible()
+          })
 
 
 read.sealevel <- function(file, tz=getOption("oceTz"), processingLog, debug=getOption("oceDebug"))

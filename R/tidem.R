@@ -18,69 +18,71 @@ setMethod(f="[[",
                   as(x, "oce")[[i, j, drop]]
               }
           })
-#
-plot.tidem <- function(x,
-                       which=1,
-                       label.if=NULL,
-                       log="",
-                       mgp=getOption("oceMgp"),
-                       mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
-                       ...)
-{
-    draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
-    {
-        abline(v=frequency, col=col, lty="dotted")
-        if (frequency <= par('usr')[2]) {
-            if (is.null(adj))
-                mtext(name, side=side, at=frequency, col=col, cex=0.8)
-            else
-                mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
-        }
-    }
-    draw.constituents <- function(type="standard", label.if=NULL, col="blue")
-    {
-        if (type == "standard") {
-            draw.constituent("SA", 0.0001140741, side=3)
-            draw.constituent("O1", 0.0387306544, side=3, adj=1)
-            draw.constituent("K1", 0.0417807462, side=1, adj=0)
-            draw.constituent("M2", 0.0805114007, side=3, adj=1)
-            draw.constituent("S2", 0.0833333333, side=1, adj=0)
-            draw.constituent("M4", 0.1610228013, side=3)
-        } else {
-            if (is.null(label.if)) label.if <- amplitude[order(amplitude, decreasing=TRUE)[3]]
-            for (i in 1:nc) {
-                if (amplitude[i] >= label.if) {
-                    abline(v=frequency[i], col=col, lty="dotted")
-                    mtext(name[i], side=3, at=frequency[i], col=col)
-                }
-            }
-        }
-    }
-    if (!inherits(x, "tidem"))
-        stop("method is only for tidal analysis objects")
-    opar <- par(no.readonly = TRUE)
-    lw <- length(which)
-    if (lw > 1) on.exit(par(opar))
-    par(mgp=mgp, mar=mar)
-    frequency <- x@data$freq[-1] # trim z0
-    amplitude <- x@data$amplitude[-1]
-    name      <- x@data$name[-1]
-    nc <- length(frequency)
-    for (w in 1:lw) {
-        if (which[w] == 2) {
-            plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
-            segments(frequency, 0, frequency, amplitude)
-            draw.constituents()
-        } else if (which[w] == 1) {
-            plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
-            draw.constituents()
-        } else {
-            stop("unknown value of which ", which, "; should be 1 or 2")
-        }
-    }
-    ##mtext(x$call, side=4, adj=1, cex=2/3)
-    if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
-}
+
+setMethod(f="plot",
+          signature=signature("tidem"),
+          definition=function(x,
+                              which=1,
+                              label.if=NULL,
+                              log="",
+                              mgp=getOption("oceMgp"),
+                              mar=c(mgp[1]+1,mgp[1]+1,mgp[2]+0.25,mgp[2]+1),
+                              ...)
+          {
+              draw.constituent <- function(name="M2",frequency,col="blue",side=1, adj=NULL)
+              {
+                  abline(v=frequency, col=col, lty="dotted")
+                  if (frequency <= par('usr')[2]) {
+                      if (is.null(adj))
+                          mtext(name, side=side, at=frequency, col=col, cex=0.8)
+                      else
+                          mtext(name, side=side, at=frequency, col=col, cex=0.8, adj=adj)
+                  }
+              }
+              draw.constituents <- function(type="standard", label.if=NULL, col="blue")
+              {
+                  if (type == "standard") {
+                      draw.constituent("SA", 0.0001140741, side=3)
+                      draw.constituent("O1", 0.0387306544, side=3, adj=1)
+                      draw.constituent("K1", 0.0417807462, side=1, adj=0)
+                      draw.constituent("M2", 0.0805114007, side=3, adj=1)
+                      draw.constituent("S2", 0.0833333333, side=1, adj=0)
+                      draw.constituent("M4", 0.1610228013, side=3)
+                  } else {
+                      if (is.null(label.if)) label.if <- amplitude[order(amplitude, decreasing=TRUE)[3]]
+                      for (i in 1:nc) {
+                          if (amplitude[i] >= label.if) {
+                              abline(v=frequency[i], col=col, lty="dotted")
+                              mtext(name[i], side=3, at=frequency[i], col=col)
+                          }
+                      }
+                  }
+              }
+              if (!inherits(x, "tidem"))
+                  stop("method is only for tidal analysis objects")
+              opar <- par(no.readonly = TRUE)
+              lw <- length(which)
+              if (lw > 1) on.exit(par(opar))
+              par(mgp=mgp, mar=mar)
+              frequency <- x@data$freq[-1] # trim z0
+              amplitude <- x@data$amplitude[-1]
+              name      <- x@data$name[-1]
+              nc <- length(frequency)
+              for (w in 1:lw) {
+                  if (which[w] == 2) {
+                      plot(frequency, amplitude, col="white", xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log)
+                      segments(frequency, 0, frequency, amplitude)
+                      draw.constituents()
+                  } else if (which[w] == 1) {
+                      plot(frequency, cumsum(amplitude), xlab="Frequency [ cph ]", ylab="Amplitude [ m ]", log=log, type='s')
+                      draw.constituents()
+                  } else {
+                      stop("unknown value of which ", which, "; should be 1 or 2")
+                  }
+              }
+              ##mtext(x$call, side=4, adj=1, cex=2/3)
+              if (!all(is.na(pmatch(names(list(...)), "main")))) title(...)
+          })
 
 
 tidemVuf <- function(t, j, lat=NULL)

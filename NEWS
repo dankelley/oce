@@ -1,4 +1,5 @@
-0.8-11
+0.9-1
+- use S4 style for all plot() methods
 - data(giss) added
 - data(topo2) added
 - plotPolar() added

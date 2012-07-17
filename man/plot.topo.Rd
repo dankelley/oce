@@ -1,12 +1,14 @@
 \name{plot.topo}
 
 \alias{plot.topo}
+\alias{plot,topo,missing-method}
+\alias{plot,topo-method}
 
 \title{Plot topography data}
 
 \description{Plot contours of topographic data.}
 
-\usage{\method{plot}{topo}(x, 
+\usage{\S4method{plot}{topo}(x, 
      xlab="", ylab="",
      asp,
      clatitude, clongitude, span,
