@@ -63,7 +63,7 @@ u <- airHalifax$u
 v <- airHalifax$v
 temperature <- airHalifax$temperature
 oce.plot.ts(t, temperature, type='l', ylim=c(0,25), ylab=resizableLabel("T"))
-plotSticks(t, rep(5, length(u)), u, v, yscale=2, add=TRUE)
+plotSticks(t, 5, u, v, yscale=2, add=TRUE)
 legend("bottomright", legend="Velocity scale: 2 m/s per degC", bg="white")
 }
 
