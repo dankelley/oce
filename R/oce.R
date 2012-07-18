@@ -171,17 +171,20 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     .Call("oce_approx", x=x[o], y=y[o], xout=xout)
 }
 
-oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
-                            mgp=getOption("oceMgp"),
-                            mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
-                            ...)
+plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
+                       mgp=getOption("oceMgp"),
+                       mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
+                       ...)
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
     if (missing(x))
         stop("must supply x")
+    nx <- length(x)
     if (missing(y))
-        stop("must supply y")
+        y <- rep(0, nx)
+    if (length(y) < nx)
+        y <- rep(y[1], nx)
     if (missing(u))
         stop("must supply u")
     if (missing(v))

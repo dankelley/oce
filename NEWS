@@ -1,4 +1,5 @@
 0.9-1
+- rename oce.plot.sticks() as plotSticks(); delete stickplot()
 - use S4 style for all plot() methods
 - data(giss) added
 - data(topo2) added
