@@ -324,7 +324,8 @@ tidemAstron <- function(t)
     data.frame(astro=astro, ader=ader)
 }
 
-tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceDebug"))
+tidem <- function(x, t, constituents, latitude=NULL, rc=1, regress=lm,
+                  debug=getOption("oceDebug"))
 {
     oceDebug(debug, "\btidem(x, t, constituents,",
              "latitude=", if(is.null(latitude)) "NULL" else latitude, ", rc, debug) {\n", sep="")
@@ -477,11 +478,15 @@ tidem <- function(x, t, constituents, latitude=NULL, rc=1, debug=getOption("oceD
     name2 <- matrix(rbind(paste(name,"_S",sep=""), paste(name,"_C",sep="")), nrow=(length(name)), ncol=2)
     dim(name2) <- c(2 * length(name), 1)
     colnames(x) <- name2
-    model <- lm(elevation ~ x, na.action=na.exclude)
+    #model <- lm(elevation ~ x, na.action=na.exclude)
+    model <- regress(elevation ~ x, na.action=na.exclude)
     if (debug > 0)
         print(summary(model))
     coef  <- model$coefficients
-    p.all <- summary(model)$coefficients[,4]
+    if (4 == dim(summary(model)$coefficients)[2])
+        p.all <- summary(model)$coefficients[,4]
+    else
+        p.all <- rep(NA, length=1+nc)
     amplitude <- phase <- p <- vector("numeric", length=1+nc)
     ## FIXME: should do offset/trend removal explicitly
     amplitude[1] <- coef[1]
@@ -540,6 +545,7 @@ summary.tidem <- function(object, p, constituent, ...)
 {
     n <- length(object[["p"]])
     ok <- if (!missing(p)) object@data$p <= p else seq(1, n)
+    haveP <- any(!is.na(object@data$p))
     if (missing(constituent)) {
         fit <- data.frame(Const=object@data$const[ok],
                           Name=object@data$name[ok],
@@ -566,10 +572,15 @@ summary.tidem <- function(object, p, constituent, ...)
     f <- fit[3:6]
     rownames(f) <- as.character(fit[,2])
     digits <- 3
-    printCoefmat(f, digits=digits,
-                 signif.stars=getOption("show.signif.stars"),
-                 signif.legend=TRUE,
-                 P.values=TRUE, has.Pvalue=TRUE, ...)
+    if (haveP) {
+        printCoefmat(f, digits=digits,
+                     signif.stars=getOption("show.signif.stars"),
+                     signif.legend=TRUE,
+                     P.values=TRUE, has.Pvalue=TRUE, ...)
+    } else {
+        printCoefmat(f[,-4], digits=digits)
+    }
+
     processingLogShow(object)
 }
 
