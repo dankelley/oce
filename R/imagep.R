@@ -237,6 +237,13 @@ imagep <- function(x, y, z,
         ##x <- seq(0, 1, length.out=nrow(x))
         y <- seq.int(1L, ncol(x))
         x <- seq.int(1L, nrow(x))
+    } else if (!missing(x) && inherits(x, "topo")) {
+        ## NB. rewrites x, so put that last
+        y <- x[["latitude"]]
+        z <- x[["z"]]
+        x <- x[["longitude"]]
+        if (missing(xlab)) xlab <- "Longitude"
+        if (missing(ylab)) ylab <- "Latitude"
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
         ##x <- seq(0, 1, length.out=nrow(z))
         ##y <- seq(0, 1, length.out=ncol(z))
