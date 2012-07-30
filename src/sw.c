@@ -91,6 +91,7 @@ void sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
     double p = *pp++;
     double rho_w, Kw, Aw, Bw, p1, S12, ro, xkst;
     if (ISNA(S) || ISNA(T) || ISNA(p)) {
+      //Rprintf("i=%d; S=%f T=%f p=%f BAD\n", i, S, T, p);
       *value++ = NA_REAL;
     } else {
       rho_w = 999.842594 +

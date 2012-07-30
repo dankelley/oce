@@ -1,12 +1,14 @@
 \name{plot.sealevel}
 
 \alias{plot.sealevel}
+\alias{plot,sealevel,missing-method}
+\alias{plot,sealevel-method}
 
 \title{Plot sealevel data}
 
 \description{Plot a summary diagram for sealevel data.}
 
-\usage{\method{plot}{sealevel}(x, which=1:3, adorn=NULL,
+\usage{\S4method{plot}{sealevel}(x, which=1:3, adorn=NULL,
      drawTimeRange=getOption("oceDrawTimeRange"),
      mgp=getOption("oceMgp"), 
      mar=c(mgp[1]+0.5,mgp[1]+1.5,mgp[2]+1,mgp[2]+3/4),

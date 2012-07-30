@@ -1,6 +1,6 @@
 library(oce)
 data(coastlineMaritimes)
-plot(coastlineMaritimes, col="darkred")
+plot(coastlineMaritimes)
 hfxLat <-  44+39/60
 hfxLon <- -(63+34/60)
 dx <- 0.175

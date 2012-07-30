@@ -1,5 +1,52 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
+{
+    if (missing(x))
+        stop("must supply x")
+    if (missing(y))
+        stop("must supply y")
+    if (missing(xe) && missing(ye))
+        stop("must give either xe or ye")
+    n <- length(x)
+    if (1 == length(xe))
+        xe <- rep(xe, n)
+    if (1 == length(ye))
+        ye <- rep(ye, n)
+    if (n != length(y))
+        stop("x and y must be of same length\n")
+    if (!missing(xe)) {
+        if (n != length(xe))
+            stop("x and xe must be of same length\n")
+        if (percent)
+            xe <- xe * x / 100
+        if (style == 0) {
+            segments(x, y, x+xe, y, ...)
+            segments(x, y, x-xe, y, ...)
+        } else if (style == 1) {
+            arrows(x, y, x + xe, y, angle=90, length=length, ...)
+            arrows(x, y, x - xe, y, angle=90, length=length, ...)
+        } else {
+            stop("unknown value ", style, " of style; must be 0 or 1\n")
+        }
+    }
+    if (!missing(ye)) {
+        if (n != length(ye))
+            stop("y and ye must be of same length\n")
+        if (percent)
+            ye <- ye * y / 100
+        if (style == 0) {
+            segments(x, y, x, y+ye, ...)
+            segments(x, y, x, y-ye, ...)
+        } else if (style == 1) {
+            arrows(x, y, x, y + ye, angle=90, length=length, ...)
+            arrows(x, y, x, y - ye, angle=90, length=length, ...)
+        } else {
+            stop("unknown value ", style, " of style; must be 0 or 1\n")
+        }
+    }
+}
+
 findInOrdered <- function(x, f)
 {
     if (missing(x))
@@ -27,7 +74,7 @@ filterSomething <- function(x, filter)
     res
 }
 
-plotTaylor <- function(x, y, scale, pch, col)
+plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
 {
     if (missing(x)) stop("must supply 'x'")
     if (missing(y)) stop("must supply 'y'")
@@ -37,27 +84,32 @@ plotTaylor <- function(x, y, scale, pch, col)
     if (missing(pch))
         pch <- 1:ncol
     if (missing(col))
-        col <- 1:ncol
+        col <- rep("black", ncol)
+    haveLabels <- !missing(labels)
+    if (missing(pos))
+        pos <- rep(2, ncol)
+    if (length(pos) < ncol)
+        pos <- rep(pos[1], ncol)
     xSD <- sd(x, na.rm=TRUE)
     ySD <- sd(as.vector(y), na.rm=TRUE)
     if (missing(y)) stop("must supply 'y'")
     halfArc <- seq(0, pi, length.out=200)
     ## FIXME: use figure geometry, to avoid axis cutoff
     if (missing(scale))
-        scale <- max(1.1 * pretty(c(xSD, ySD)))
+        scale <- max(pretty(c(xSD, ySD)))
     plot.new()
-    plot.window(c(-1.04, 1.04) * scale, c(0, 1.04) * scale, asp=1)
+    plot.window(c(-1.2, 1.2) * scale, c(0, 1.2) * scale, asp=1)
+    ##plot.window(c(-1.1, 1.1), c(0.1, 1.2), asp=1)
     sdPretty <- pretty(c(0, scale))
     for (radius in sdPretty)
-        lines(radius * cos(halfArc), radius * sin(halfArc))
+        lines(radius * cos(halfArc), radius * sin(halfArc), col='gray')
     ## spokes
-    for (rr in seq(-1, 1, 0.1))
-        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
     for (rr in seq(-1, 1, 0.2))
-        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)), c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)))
-    labels <- format(sdPretty)
-    labels[1] <- paste(0)
-    axis(1, pos=0, at=sdPretty, labels=labels)
+        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)),
+              c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
+    axisLabels <- format(sdPretty)
+    axisLabels[1] <- paste(0)
+    axis(1, pos=0, at=sdPretty, labels=axisLabels)
     ## temporarily permit labels outside the platting zone
     xpdOld <- par('xpd')
     par(xpd=NA)
@@ -70,14 +122,14 @@ plotTaylor <- function(x, y, scale, pch, col)
     for (column in 1:ncol(y)) {
         ySD <- sd(y[,column], na.rm=TRUE)
         R <- cor(x, y[,column])^2
-        ##cat("ySD=", ySD, "R2=", R2, "col=", col[column], "pch=", pch[column], "\n")
-        ## FIXME: the angle is wrong
-        points(ySD * cos((1 - R) * pi / 2),
-               ySD * sin((1 - R) * pi / 2), pch=pch[column],
-               lwd=2,
-               col=col[column], cex=2)
-        ##cat("x=", ySD * cos(pi/2+R2 * pi / 180/2), "\n")
-        ##cat("y=", ySD * sin(pi/2+R2 * pi / 180/2), "\n")
+        ##cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
+        xx <- ySD * cos((1 - R) * pi / 2)
+        yy <- ySD * sin((1 - R) * pi / 2)
+        points(xx, yy, pch=pch[column], lwd=2, col=col[column], cex=2)
+        if (haveLabels) {
+            ##cat(labels[column], "at", pos[column], "\n")
+            text(xx, yy, labels[column], pos=pos[column], ...)
+        }
     }
 }
 
@@ -475,12 +527,20 @@ fullFilename <- function(filename)
         return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
-matrixSmooth <- function(m)
+
+matrixSmooth <- function(m, passes=1)
 {
     if (missing(m))
         stop("must provide matrix 'm'")
     storage.mode(m) <- "double"
-    .Call("matrix_smooth", m)
+    if (passes > 0) {
+        for (pass in seq.int(1, passes, 1)) {
+            m <- .Call("matrix_smooth", m)
+        }
+    } else {
+        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
+    }
+    m
 }
 
 matchBytes <- function(input, b1, ...)
@@ -1286,34 +1346,6 @@ oceSmooth <- function(x, ...)
     }
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res
-}
-
-stickplot <- function(t, x, y, ...)
-{
-    ylim <- max(y, na.rm=TRUE) * c(-1, 1)
-    plot(range(t), ylim, type="n")
-    tstart <- t[1]
-    t.isPOSIXlt <- inherits(t, "POSIXlt")
-    t.isPOSIXct <- inherits(t, "POSIXct")
-    if (t.isPOSIXct) t <- unclass(t)
-    if (t.isPOSIXlt) t <- unclass(as.POSIXct(t))
-    usr <- par("usr")
-    pin <- par("pin")
-    tx.scale <- (usr[2]-usr[1]) / (usr[4]-usr[3]) * pin[2] / pin[1]
-    n <- length(x)
-    xx <- array(dim = 3 * n)
-    yy <- array(dim = 3 * n)
-    ones <- seq(1, 3*n, 3)
-    twos <- seq(2, 3*n, 3)
-    threes <- seq(3, 3*n, 3)
-    xx[ones] <- t
-    yy[ones] <- 0
-    xx[twos] <- t + x * tx.scale
-    yy[twos] <- y
-    xx[threes] <- NA
-    yy[threes] <- NA
-    lines(xx, yy, type='l', ...)
-    ##points(xx[ones],yy[ones],col="red")
 }
 
 bcdToInteger <- function(x, endian=c("little", "big"))

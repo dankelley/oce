@@ -7,9 +7,8 @@
     range in the top-left margin}
 
 \usage{
-oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="", 
+oce.plot.ts(x, y, type="l", xlim, ylim, xlab, ylab,
             drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
-            xaxs="i", yaxs="i",
             cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
             mgp=getOption("oceMgp"),
             mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -35,12 +34,8 @@ oce.plot.ts(x, y, type="l", xlim, ylim, xlab="", ylab="",
   an example.)}
 \item{fill}{boolean, set \code{TRUE} to fill the curve to zero (which it
   does incorrectly if there are missing values in \code{y}).}
-\item{xlab}{names for x axis.}
-\item{ylab}{names for y axis.}
-\item{xaxs}{character indicating whether image should extend to edge
-  of x axis (with value \code{"i"}) or not; see
-  \code{\link[graphics]{par}}("xaxs").}
-\item{yaxs}{as \code{xaxs} but for y axis.}
+\item{xlab}{name for x axis; defaults to \code{""}.}
+\item{ylab}{name for y axis; defaults to the plotted item.}
 \item{cex}{size of labels on axes; see \code{\link[graphics]{par}}("cex").}
 \item{cex.axis}{see \code{\link[graphics]{par}}("cex.axis").}
 \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}

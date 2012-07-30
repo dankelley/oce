@@ -1,8 +1,8 @@
 ## vim: tw=120 shiftwidth=4 softtabstop=4 expandtab:
 
-prettyLocal <- function(x, digits=10)
+prettyLocal <- function(x, n, digits=10)
 {
-    round(pretty(x), digits)
+    round(pretty(x, n), digits)
 }
 
 clipmin <- function(x, min=0)
@@ -158,9 +158,12 @@ drawPalette <- function(zlim,
         if (zIsTime & is.null(at)) {
             at <- as.numeric(pretty(zlim))
         } else if (is.null(at)) {
-            at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours) else prettyLocal(palette) # FIXME: wrong on contours
+            ## NB. in next line, the '10' matches a call to pretty() in imagep().
+            at <- if (!is.null(contours) & is.null(at)) prettyLocal(contours, 10) else prettyLocal(palette, 10) # FIXME: wrong on contours
         }
         if (is.null(labels)) labels <- if (zIsTime) abbreviateTimeLabels(numberAsPOSIXct(at), ...) else format(at)
+        labels <- sub("^[ ]*", "", labels)
+        labels <- sub("[ ]*$", "", labels)
         axis(side=4, at=at, labels=labels, mgp=c(2.5,0.7,0))
         if (nchar(zlab) > 0)
             mtext(zlab, side=4, line=2.0, cex=par('cex'))
@@ -230,11 +233,22 @@ imagep <- function(x, y, z,
             stop("x must be a matrix, not an array with dim(x) = c(", paste(dim(x), collapse=","), ")\n")
         z <- x
         z <- if (length(dim(x)) > 2) z <- x[,,1] else x
-        y <- seq(0, 1, length.out=ncol(x))
-        x <- seq(0, 1, length.out=nrow(x))
+        ##y <- seq(0, 1, length.out=ncol(x))
+        ##x <- seq(0, 1, length.out=nrow(x))
+        y <- seq.int(1L, ncol(x))
+        x <- seq.int(1L, nrow(x))
+    } else if (!missing(x) && inherits(x, "topo")) {
+        ## NB. rewrites x, so put that last
+        y <- x[["latitude"]]
+        z <- x[["z"]]
+        x <- x[["longitude"]]
+        if (missing(xlab)) xlab <- "Longitude"
+        if (missing(ylab)) ylab <- "Latitude"
     } else if (!missing(z) && is.matrix(z) && missing(x) && missing(y)) {
-        x <- seq(0, 1, length.out=nrow(z))
-        y <- seq(0, 1, length.out=ncol(z))
+        ##x <- seq(0, 1, length.out=nrow(z))
+        ##y <- seq(0, 1, length.out=ncol(z))
+        x <- seq.int(1L, nrow(z))
+        y <- seq.int(1L, ncol(z))
         z <- z
     } else {
         if (missing(y))

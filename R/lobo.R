@@ -90,54 +90,56 @@ plot.lobo.TS <- function(lobo, ...)
     plotTS(as.ctd(lobo@data$salinity, lobo@data$temperature, 0), ...)
 }
 
-plot.lobo <- function(x,
-                      adorn=NULL,
-                      mgp=getOption("oceMgp"),
-                      mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
-                      ...)
-{
-    if (!inherits(x, "lobo"))
-        stop("method is only for lobo objects")
-    opar <- par(no.readonly = TRUE)
-    on.exit(par(opar))
-    par(mgp=mgp, mar=mar)
-    adorn.length <- length(adorn)
-    if (adorn.length == 1) {
-        adorn <- rep(adorn, 4)
-        adorn.length <- 4
-    }
-    par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-    layout(rbind(c(1,2),
-                 c(3,4)))
-    plot.lobo.timeseries.TS(x, ...)
-    if (adorn.length > 0) {
-        t <- try(eval(adorn[1]), silent=TRUE)
-        if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
-    }
+setMethod(f="plot",
+          signature=signature("lobo"),
+          definition=function(x,
+                              adorn=NULL,
+                              mgp=getOption("oceMgp"),
+                              mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
+                              ...)
+          {
+              if (!inherits(x, "lobo"))
+                  stop("method is only for lobo objects")
+              opar <- par(no.readonly = TRUE)
+              on.exit(par(opar))
+              par(mgp=mgp, mar=mar)
+              adorn.length <- length(adorn)
+              if (adorn.length == 1) {
+                  adorn <- rep(adorn, 4)
+                  adorn.length <- 4
+              }
+              par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+              layout(rbind(c(1,2),
+                           c(3,4)))
+              plot.lobo.timeseries.TS(x, ...)
+              if (adorn.length > 0) {
+                  t <- try(eval(adorn[1]), silent=TRUE)
+                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 1, "]\n")
+              }
 
-    if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
-        par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-        plot.lobo.timeseries.uv(x, ...)
-        if (adorn.length > 0) {
-            t <- try(eval(adorn[2]), silent=TRUE)
-            if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
-        }
-    }
+              if (any(!is.na(x@data$u) & !is.na(x@data$v))) {
+                  par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+                  plot.lobo.timeseries.uv(x, ...)
+                  if (adorn.length > 0) {
+                      t <- try(eval(adorn[2]), silent=TRUE)
+                      if (class(t) == "try-error") warning("cannot evaluate adorn[", 2, "]\n")
+                  }
+              }
 
-    par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-    plot.lobo.timeseries.biology(x, ...)
-    if (adorn.length > 0) {
-        t <- try(eval(adorn[3]), silent=TRUE)
-        if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
-    }
+              par(mar=c(mgp[2]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+              plot.lobo.timeseries.biology(x, ...)
+              if (adorn.length > 0) {
+                  t <- try(eval(adorn[3]), silent=TRUE)
+                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 3, "]\n")
+              }
 
-    par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
-    plot.lobo.TS(x, ...)
-    if (adorn.length > 0) {
-        t <- try(eval(adorn[4]), silent=TRUE)
-        if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
-    }
-}
+              par(mar=c(mgp[1]+1, mgp[1]+1, 1.25, mgp[1]+1.25))
+              plot.lobo.TS(x, ...)
+              if (adorn.length > 0) {
+                  t <- try(eval(adorn[4]), silent=TRUE)
+                  if (class(t) == "try-error") warning("cannot evaluate adorn[", 4, "]\n")
+              }
+          })
 
 
 read.lobo <- function(file, cols=7, processingLog)

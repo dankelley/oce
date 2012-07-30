@@ -21,22 +21,18 @@
   \item{\dots}{optional arguments passed to plotting functions.}
 }
 
-\details{It is common in oceanography to plot depth below the surface on the y
-    axis, but also to need to put surface data at the top of the graph, and
-    setting \code{revy=TRUE} accomplishes this.}
+\details{Setting \code{revy=TRUE} can be helpful if the \code{y} data represent
+    pressure or depth below the surface.}
 
 \examples{
 library(oce)
-data(adp)
-U <- adp[["v"]][,,1]
-t <- adp[["time"]]
-distance <- adp[["distance"]]
-z <- distance - max(distance) 
-depth <- abs(z)
-par(mfrow=c(3,1), mar=c(3, 3, 1, 1), mgp=c(2, 0.7, 0))
-contour(t,distance,U,levels=0, ylab="Distance")
-oceContour(t,z,U,levels=0, ylab="z")
-oceContour(t,depth,U,levels=0,revy=TRUE, ylab="depth")
+data(topoWorld)
+## coastline now, and in last glacial maximum
+lon <- topoWorld[["longitude"]]
+lat <- topoWorld[["latitude"]]
+z <- topoWorld[["z"]]
+oceContour(lon, lat, z, levels=0, drawlabels=FALSE)
+oceContour(lon, lat, z, levels=-130, drawlabels=FALSE, col='blue', add=TRUE)
 }
 
 \author{Dan Kelley}

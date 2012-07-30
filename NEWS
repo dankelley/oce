@@ -1,3 +1,18 @@
+0.9-2
+- remove unwanted files during build process
+
+0.9-1
+- pwelch(): fix bug in frequency
+- tidem(): add argument 'regress'
+- rename oce.plot.sticks() as plotSticks(); delete stickplot()
+- use S4 style for all plot() methods
+- data(giss) added
+- data(topo2) added
+- plotPolar() added
+- oceMagic() new name for magic()
+- errorBars() added
+- numberAsPOSIXct() add a leap second for July 2012
+
 0.8-10
 - plot.topo(): automatic cut-point shift
 - add support for Nortek aquadopp-profiler instruments

@@ -121,6 +121,31 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     res
 }
 
+plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
+{
+
+    oceDebug(debug, "\b\bplotPolar(...)\n")
+    if (missing(r)) stop("must supply 'r'")
+    if (missing(theta)) stop("must supply 'theta'")
+    thetaRad <- theta * atan2(1, 1) / 45
+    x <- r * cos(thetaRad)
+    y <- r * sin(thetaRad)
+    R <- 1.2 * max(r, na.rm=TRUE)
+    Rpretty <- pretty(c(0, R))
+    plot.new()
+    plot.window(c(-R, R), c(-R, R), asp=1)
+    points(x, y, ...)
+    xa <- axis(1, pos=0)
+    abline(v=0)
+    th <- seq(0, 2 * atan2(1, 1) * 4, length.out=100)
+    for (radius in xa[xa>0]) {
+        lines(radius * cos(th), radius * sin(th))
+    }
+    abline(h=0)
+    abline(v=0)
+    oceDebug(debug, "\b\b} # plotPolar()\n")
+}
+
 oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
 {
     method <- match.arg(method)
@@ -146,17 +171,20 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     .Call("oce_approx", x=x[o], y=y[o], xout=xout)
 }
 
-oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
-                            mgp=getOption("oceMgp"),
-                            mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
-                            ...)
+plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
+                       mgp=getOption("oceMgp"),
+                       mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
+                       ...)
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
     if (missing(x))
         stop("must supply x")
+    nx <- length(x)
     if (missing(y))
-        stop("must supply y")
+        y <- rep(0, nx)
+    if (length(y) < nx)
+        y <- rep(y[1], nx)
     if (missing(u))
         stop("must supply u")
     if (missing(v))
@@ -185,9 +213,9 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 }
 
 
-oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
-                        xaxs="i", yaxs="i",
+                        #xaxs="i", yaxs="i",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -200,6 +228,10 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
                         debug=getOption("oceDebug"),
                         ...)
 {
+    if (missing(xlab))
+        xlab <- ""
+    if (missing(ylab))
+        ylab  <- deparse(substitute(y))
     ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
@@ -243,14 +275,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
+        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
-             ylab=ylab,
+             xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs,
+        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
              xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
              xlab=xlab, ylab=ylab,
@@ -440,6 +472,7 @@ oce.write.table <- function (x, file="", ...)
     else
         write.table(x@data, file, ...)
 }
+
 
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
 {
@@ -794,7 +827,7 @@ summary.oce <- function(object, ...)
     return(invisible(object))
 }
 
-magic <- function(file, debug=getOption("oceDebug"))
+oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
     if (is.character(file)) {
@@ -836,11 +869,11 @@ magic <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
-    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
@@ -946,7 +979,7 @@ magic <- function(file, debug=getOption("oceDebug"))
 
 read.oce <- function(file, ...)
 {
-    type <- magic(file)
+    type <- oceMagic(file)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         return(read.coastline.shapefile(file, ...))
@@ -1404,7 +1437,8 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC
         ## http://en.wikipedia.org/wiki/Leap_second
         leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
                                        "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
-                                       "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01"),
+                                       "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01",
+                                       "2012-07-01"),
                                      format="%Y-%m-%d", tz="UTC"))
         t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
         for (l in 1:length(leaps)) {

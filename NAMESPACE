@@ -49,6 +49,7 @@ export("+.section",
        enuToOtherAdp,
        enuToOtherAdv,
        equatorialToLocalHorizontal,
+       errorbars,
        extract,
        fillGap,
        findBottom,
@@ -66,6 +67,7 @@ export("+.section",
        "heading<-",
        julianDay,
        julianCenturyAnomaly,
+       plotPolar,
        plotTaylor,
        processingLog,
        "processingLog<-",
@@ -84,7 +86,7 @@ export("+.section",
        lonFormat,
        longitude,
        "longitude<-",
-       magic,
+       oceMagic,
        magneticDeclination,
        makeFilter,
        makeSection,
@@ -113,7 +115,6 @@ export("+.section",
        oceEdit,
        oceFilter,
        oce.plot.ts,
-       oce.plot.sticks,
        oceSmooth,
        oceSpectrum,
        oce.write.table,
@@ -124,22 +125,11 @@ export("+.section",
        "phosphate<-",
        pitch,
        "pitch<-",
-       ##plot.adp,
-       ##plot.adv,
        plotInset,
+       plotSticks,
        plotTS,
-       plot.cm,
-       ##plot.coastline,
-       ##plot.ctd,
-       ##plot.lisst,
        plotScan,
-       ##plot.pt,
-       plot.topo,
        plotProfile,
-       plot.sealevel,
-       #plot.section,
-       plot.tidem,
-       plot.windrose,
        pressure,
        "pressure<-",
        tdrPatm,
@@ -190,7 +180,6 @@ export("+.section",
        sigmaTheta,
        silicate,
        "silicate<-",
-       stickplot,
        subset.oce,
        summary.ctd,
        summary.echosounder,
@@ -256,17 +245,6 @@ S3method(head, adp)
 S3method(tail, adp)
 
 ## Note: comment out items as they are made into S4, and remove the block when done
-S3method(plot, cm)
-##S3method(plot, coastline)
-##S3method(plot, ctd)
-##S3method(plot, drifter)
-##S3method(plot, lisst)
-S3method(plot, lobo)
-##S3method(plot, met)
-S3method(plot, sealevel)
-S3method(plot, tidem)
-S3method(plot, topo)
-S3method(plot, windrose)
 S3method(predict, tidem)
 S3method(summary, adp)
 S3method(summary, adv)

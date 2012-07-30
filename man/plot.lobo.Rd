@@ -1,12 +1,14 @@
 \name{plot.lobo}
 
 \alias{plot.lobo}
+\alias{plot,lobo,missing-method}
+\alias{plot,lobo-method}
 
 \title{Plot lobo data}
 
 \description{Plot a summary diagram for lobo data.}
 
-\usage{\method{plot}{lobo}(x, 
+\usage{\S4method{plot}{lobo}(x, 
      adorn=NULL,
      mgp=getOption("oceMgp"), 
      mar=c(mgp[2]+1, mgp[1]+1, 1, mgp[1]+1.25),
