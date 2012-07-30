@@ -473,7 +473,7 @@ dev.off()
 \begin{center}
 \includegraphics[width=0.9\hsize]{topo}
 \end{center}
-\caption{Topography of eastern Canada, centred on Les \^{i}les de la Madeleine.}
+\caption{Topography of eastern Canada, centred on Prince Edward Island.}
 \label{fig:topo}
 \end{figure}
 
