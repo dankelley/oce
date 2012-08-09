@@ -44,7 +44,7 @@
 	\eqn{\sigma_\theta}{sigma_theta}).}
       \item{\code{"index"}}{Index of sample (very useful for working with
 	\code{\link{ctdTrim}}).}
-      \item{\code{"S+T"}}{Profile of salinity and temperature within a
+      \item{\code{"salinity+temperature"}}{Profile of salinity and temperature within a
 	single axis frame.}
       \item{\code{"N2"}}{Profile of square of buoyancy frequency \eqn{N^2}{N^2},
           calculated with \code{\link{swN2}} with an optional argument setting
