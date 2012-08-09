@@ -26,9 +26,24 @@ setMethod(f="[[",
                   if (n != length(lon))
                       lon <- rep(x@metadata$longitude, length.out=n)
                   lon <- ifelse(lon < 0, lon + 360, lon)
+                  haveLatLon <- TRUE
+                  if (!any(is.finite(lon))) {
+                      lon <- rep(300, n)
+                      haveLatLon <- FALSE
+                  }
                   lat <- x@metadata$latitude
                   if (n != length(lat))
                       lat <- rep(x@metadata$latitude, length.out=n)
+                  if (!any(is.finite(lat))) {
+                      lat <- rep(0, n)
+                      haveLatLon <- FALSE
+                  }
+                  if (!haveLatLon)
+                      warning("TEOS-10 calculation assuming lat=0 lon=300, because location is unknown")
+                  Sp[is.nan(Sp)] <- NA
+                  p[is.nan(p)] <- NA
+                  lat[is.nan(lat)] <- NA
+                  lon[is.nan(lon)] <- NA
                   teos("gsw_sa_from_sp", Sp, p, lon, lat)
               } else if (i == "conservativeTemperature" || i == "CT") {
                   Sp <- x@data$salinity
@@ -44,6 +59,7 @@ setMethod(f="[[",
 
 
 as.ctd <- function(salinity, temperature, pressure,
+                   SA, CT,
                    oxygen, nitrate, nitrite, phosphate, silicate,
                    scan,
                    other,
@@ -56,20 +72,37 @@ as.ctd <- function(salinity, temperature, pressure,
                    sampleInterval=NA,
                    src="")
 {
-    if (class(salinity) == "data.frame") {
+    if (!missing(salinity) && class(salinity) == "data.frame") {
         df <- salinity
         names <- names(df)
         if ("temperature" %in% names && "salinity" %in% names && "pressure" %in% names) {
+            ## FIXME: extract SA and CT if they exist
             salinity <- df$salinity
             temperature <- df$temperature
             pressure <- df$pressure
             ## FIXME: extract nitrate etc
         } else stop("data frame must contain columns 'temperature', 'salinity', and 'pressure'")
     } else {
-        if (missing(temperature))
-            stop("must give temperature")
+        if (missing(temperature) && missing(CT))
+            stop("must give temperature or CT")
         if (missing(pressure))
             stop("must give pressure")
+    }
+    haveSA <- !missing(SA)
+    haveCT <- !missing(CT)
+    if (haveSA != haveCT)
+        stop("SA and CT must both be supplied, if either is")
+    if (!missing(SA)) {
+        n <- length(SA)
+        if (length(CT) != n)
+            stop("lengths of SA and CT must match")
+        if (missing(longitude)) {
+            longitude <- rep(300, n)
+            latitude <- rep(0, n)
+            warning("longitude and latitude set to default values, since none given")
+        }
+        salinity <- teos("gsw_sp_from_sa", SA, pressure, longitude, latitude)
+        temperature <- teos("gsw_t_from_ct", SA, CT, pressure)
     }
     depths <- max(length(salinity), length(temperature), length(pressure))
     if (length(pressure) < depths)
@@ -87,7 +120,6 @@ as.ctd <- function(salinity, temperature, pressure,
     salinity <- as.vector(salinity)
     temperature <- as.vector(temperature)
     scan <- as.vector(scan)
-    rval <- new('ctd')
     nSalinity <- length(salinity)
     data <- data.frame(salinity=salinity,
                        temperature=temperature,

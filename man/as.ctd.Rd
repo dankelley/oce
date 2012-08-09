@@ -3,16 +3,16 @@
 \title{Coerce data into ctd dataset}
 \description{Coerces a dataset into a ctd dataset.}
 
-\usage{
-as.ctd(salinity, temperature, pressure,
-   oxygen, nitrate, nitrite, phosphate, silicate,
-   scan, other,
-   missingValue,
-   quality, 
-   ship="", scientist="", institute="", address="", cruise="", station="", 
-   date="", startTime="", recovery="",
-   latitude=NA, longitude=NA, 
-   waterDepth=NA, sampleInterval=NA, src="")
+\usage{as.ctd(salinity, temperature, pressure,
+       SA, CT,
+       oxygen, nitrate, nitrite, phosphate, silicate,
+       scan, other,
+       missingValue,
+       quality, 
+       ship="", scientist="", institute="", address="", cruise="", station="", 
+       date="", startTime="", recovery="",
+       latitude=NA, longitude=NA, 
+       waterDepth=NA, sampleInterval=NA, src="")
 }
 \arguments{
   \item{salinity}{Salinity through the water column, or a data frame
@@ -24,6 +24,11 @@ as.ctd(salinity, temperature, pressure,
      if it is not one already.}
   \item{pressure}{pressure through the water column. (If just a single value 
      is given, then it is repeated to match the length of the temperature and salinity.}
+  \item{SA}{absolute salinity (as in TEOS-10).  If given, the supplied absolute
+      salinity is converted internally to UNESCO-defined practical salinity.}
+  \item{CT}{conservative temperature (as in TEOS-10).  If given, the supplied
+      conservative temperature is converted internally to UNESCO-defined
+      in-situ temperature.}
   \item{oxygen}{optional oxygen concentration}
   \item{nitrate}{optional nitrate concentration [micromole/kg]}
   \item{nitrite}{optional nitrite concentration [micromole/kg]}
