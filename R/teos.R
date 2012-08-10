@@ -30,26 +30,30 @@ teos <- function(name, a1, a2, a3, a4, lib=getOption("libteos")) # FIXME: what's
     ## e.g. consider pref)
     if (length(a2) != n)
         stop("length(a2) must match length(a1)")
+    good <- is.finite(a1) & is.finite(a2)
     if (args > 2) {
         if (length(a3) != n)
             stop("length(a3) must match length(a1)")
         a3 <- as.vector(a3)
+        good <- good & is.finite(a3)
     }
     if (args > 3) {
         if (length(a4) != n)
             stop("length(a4) must match length(a1)")
         a4 <- as.vector(a4)
+        good <- good & is.finite(a4)
     }
-     ## FIXME: teos should filter on NA so the gsw routines don't return odd "missing" values
+    rval <- rep(NA, n)
+    ngood <- sum(good)
     if (args == 2) {
-        rval <- .C("gsw2a", as.character(lib), as.character(name),
-                   as.integer(n), as.double(a1), as.double(a2), rval=double(n))$rval
+        rval[good] <- .C("gsw2a", as.character(lib), as.character(name),
+                         as.integer(ngood), as.double(a1[good]), as.double(a2[good]), rval=double(ngood))$rval
     } else if (args == 3) {
-        rval <- .C("gsw3a", as.character(lib), as.character(name),
-                   as.integer(n), as.double(a1), as.double(a2), as.double(a3), rval=double(n))$rval
+        rval[good] <- .C("gsw3a", as.character(lib), as.character(name),
+                         as.integer(ngood), as.double(a1[good]), as.double(a2[good]), as.double(a3[good]), rval=double(ngood))$rval
     } else if (args == 4) {
-        rval <- .C("gsw4a", as.character(lib), as.character(name),
-                   as.integer(n), as.double(a1), as.double(a2), as.double(a3), as.double(a4), rval=double(n))$rval
+        rval[good] <- .C("gsw4a", as.character(lib), as.character(name),
+                         as.integer(ngood), as.double(a1[good]), as.double(a2[good]), as.double(a3[good]), as.double(a4[good]), rval=double(ngood))$rval
     }
     rval[rval == 9e15] <- NA
     dim(rval) <- dim

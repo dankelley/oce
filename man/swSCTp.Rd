@@ -6,23 +6,25 @@
 
 \description{Compute salinity, given conductivity ratio, temperature, and pressure.}
 
-\usage{swSCTp(conductivity, temperature, pressure)}
+\usage{swSCTp(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))}
 
 \arguments{
   \item{conductivity}{conductivity ratio [unitless]}
   \item{temperature}{\emph{in-situ} temperature [\eqn{^\circ}{deg}C]}
   \item{pressure}{pressure [dbar]}
+  \item{conductivityUnit}{string indicating the unit used for conductivity;
+      \code{ratio} means actual conductivity divided by 4.2914 S/m.}
 }
 
-\details{Calculate salinity from what is actually measured by the CTD,
-  \emph{i.e.} the conductivity ratio, the \emph{in-situ} temperature and
-  pressure.  Often this is done by the CTD processing software, but
-  sometimes it is helpful to do this directly, \emph{e.g.}  when there
-  is a concern about mismatches in sensor response times.  Salinity is
-  calculated using the UNESCO algorithm described by Fofonoff and
-  Millard (1983).}
 
-\value{Salinity [PSU].}
+\details{Calculate salinity from what is actually measured by the CTD,
+    \emph{i.e.} conductivity, the \emph{in-situ} temperature and pressure.
+    Often this is done by the CTD processing software, but sometimes it is
+    helpful to do this directly, \emph{e.g.}  when there is a concern about
+    mismatches in sensor response times.  Salinity is calculated using the
+    UNESCO algorithm described by Fofonoff and Millard (1983).}
+
+\value{Practical salinity [PSU].}
 
 \seealso{\code{\link{swConductivity}}}
 

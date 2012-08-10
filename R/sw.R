@@ -23,8 +23,15 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...) # BUG: think more about
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
 }
 
-swSCTp <- function(conductivity, temperature, pressure)
+swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))
 {
+     if (missing(conductivity) || missing(temperature))
+        stop("must supply conductivity, temperature and pressure")
+    conductivityUnit <- match.arg(conductivityUnit)
+    if (conductivityUnit == "mS/cm")
+        conductivity <- conductivity / 42.914
+    else if (conductivityUnit == "S/m")
+        conductivity <- conductivity / 4.2914
     dim <- dim(conductivity)
     nC <- length(conductivity)
     nT <- length(temperature)
