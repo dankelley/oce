@@ -6,7 +6,7 @@
 
 \description{Round a geographical positions in degrees, minutes, and seconds}
 
-\usage{prettyPosition(x, debug=getOption("oceDebug")}
+\usage{prettyPosition(x, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{a series of one or more values of a latitude or longitude, in
