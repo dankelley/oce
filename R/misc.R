@@ -133,29 +133,30 @@ plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
     }
 }
 
-prettyPosition <- function(x)
+prettyPosition <- function(x, debug=getOption("oceDebug"))
 {
-    debug <- FALSE
+    oceDebug(debug, "\bprettyPosition(...) {\n", sep="")
     r <- diff(range(x, na.rm=TRUE))
-    if (debug) cat('range(x)=', range(x), 'r=', r, '\n')
+    oceDebug(debug, 'range(x)=', range(x), 'r=', r, '\n')
     if (r > 5) {                       # D only
         rval <- pretty(x)
     } else if (r > 1) {                # round to 30 minutes
         rval <- (1 / 2) * pretty(2 * x)
-        if (debug) cat("case 1: rval=", rval, "\n")
+        oceDebug(debug, "case 1: rval=", rval, "\n")
     } else if (r > 30/60) {            # round to 1 minute, with extras
         rval <- (1 / 60) * pretty(60 * x, n=6)
-        if (debug) cat("case 2: rval=", rval, "\n")
+        oceDebug("case 2: rval=", rval, "\n")
     } else if (r > 5/60) {             # round to 1 minute
-        rval <- (1 / 60) * pretty(60 * x)
-        if (debug) cat("case 3: rval=", rval, "\n")
+        rval <- (1 / 60) * pretty(60 * x, 4)
+        oceDebug(debug, "case 3: rval=", rval, "\n")
     } else if (r > 10/3600) {          # round to 10 sec
         rval <- (1 / 360) * pretty(360 * x)
-        if (debug) cat("case 4: rval=", rval, "\n")
+        oceDebug(debug, "case 4: rval=", rval, "\n")
     } else {                           # round to seconds
         rval <- (1 / 3600) * pretty(3600 * x)
         if (debug) cat("case 5: rval=", rval, "\n")
     }
+    oceDebug(debug, "\b\b} # prettyPosition\n")
     rval
 }
 
