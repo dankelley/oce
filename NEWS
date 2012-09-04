@@ -1,5 +1,7 @@
-0.9-2
+0.9-3
 - example(riley): remove error in R-devel
+
+0.9-2
 - plot.ctd(..., which=7) improvement
 - swSCTp(): accept conductivity in mS/cm and S/m
 - as.ctd(): accept TEOS-10 values SA and CT
