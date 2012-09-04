@@ -50,9 +50,9 @@
 \examples{
 hfxSunAngle <- function(t) sunAngle(t, lat=44+39/60, lon=-(63+36/60))$altitude
 sunrise <- oceBisect(hfxSunAngle, 
-                      as.numeric(as.POSIXct("2011-07-01 05:00:00", tz="UTC")), 
-                      as.numeric(as.POSIXct("2011-07-01 10:00:00", tz="UTC")))
-cat("Sunrise on Canada Day, 2011 is at", format(numberAsPOSIXct(sunrise)), "UTC \n")
+                      as.numeric(as.POSIXct("2012-07-01 05:00:00", tz="UTC")), 
+                      as.numeric(as.POSIXct("2012-07-01 10:00:00", tz="UTC")))
+cat("Sunrise on Canada Day, 2012 is at", format(numberAsPOSIXct(sunrise)), "UTC \n")
 }
 
 \author{Dan Kelley}
