@@ -107,9 +107,9 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     if (!("detrend" %in% names.args))
         args$detrend <- TRUE
     while (TRUE) {
-        oceDebug(debug, "  subspectrum at indices ", start, "to", end, "\n")
+        oceDebug(debug, "  calculating subspectrum at indices ", start, "to", end, "\n")
         xx <- ts(window * detrend(x[start:end]), frequency=fs)
-        args$x <- as.vector(xx)
+        args$x <- xx                   # before issue 242, wrapped RHS in as.vector()
         s <- do.call(spectrum, args=args)
         if (nrow == 0)
             freq <- s$freq
@@ -122,7 +122,7 @@ pwelch <- function(x, window, noverlap, nfft, fs, spectrumtype, esttype,
     }
     nrow <- max(1, nrow)
     psd <- matrix(psd, nrow=nrow, byrow=TRUE) / normalization
-    oceDebug(debug, "calculating spectrum across matrix of dimension", dim(psd), "\n")
+    oceDebug(debug, "resultant spectrum is average across matrix of dimension", dim(psd), "\n")
     oceDebug(debug, "\b\b} # pwelch()\n")
     rval <- list(freq=freq, spec=apply(psd, 2, mean), 
                  method="Welch", series=deparse(substitute(x)),

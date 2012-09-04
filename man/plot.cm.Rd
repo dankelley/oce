@@ -1,12 +1,14 @@
 \name{plot.cm}
 
 \alias{plot.cm}
+\alias{plot,cm,missing-method}
+\alias{plot,cm-method}
 
 \title{Plot cm (current meter) data}
 
 \description{Plot \code{cm} (current meter) data}
 
-\usage{\method{plot}{cm}(x,
+\usage{\S4method{plot}{cm}(x,
      which=c(1, 2, 7, 9),
      type="l",
      adorn=NULL,
@@ -82,12 +84,10 @@
     CM objects, and also outlines the other functions dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
-cm <- read.oce("cm_interocean_0811786.s4a.tab")
+data(cm)
 summary(cm)
 plot(cm)
-}
 }
 
 \author{Dan Kelley}

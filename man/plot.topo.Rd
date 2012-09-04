@@ -1,12 +1,14 @@
 \name{plot.topo}
 
 \alias{plot.topo}
+\alias{plot,topo,missing-method}
+\alias{plot,topo-method}
 
 \title{Plot topography data}
 
 \description{Plot contours of topographic data.}
 
-\usage{\method{plot}{topo}(x, 
+\usage{\S4method{plot}{topo}(x, 
      xlab="", ylab="",
      asp,
      clatitude, clongitude, span,
@@ -70,7 +72,7 @@
   \item{lwd.land}{line width(s) for land contours}
   \item{geographical}{set to \code{TRUE} to get latitudes and longitudes
       without minus signs.}
-  \item{location}{location for a legend (or FALSE, for no legend).}
+  \item{location}{location for a legend (or \code{"none"}, for no legend).}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data

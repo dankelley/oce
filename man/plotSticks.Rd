@@ -1,20 +1,21 @@
-\name{oce.plot.sticks}
-\alias{oce.plot.sticks}
+\name{plotSticks}
+\alias{plotSticks}
 
 \title{Draw a stick-plot diagram}
 
 \description{Draw a stick-plot diagram}
 
-\usage{
-oce.plot.sticks(x, y, u, v, yscale=1, add=FALSE, length=1/20,
-                mgp=getOption("oceMgp"),
-                mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
-                \dots)}
+\usage{plotSticks(x, y, u, v, yscale=1, add=FALSE, length=1/20,
+           mgp=getOption("oceMgp"),
+           mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
+           \dots)}
 \arguments{
 \item{x}{x coordinates of stick origins.}
-\item{y}{y coordinates of stick origins.}
-\item{u}{x coordinates of stick lengths.}
-\item{v}{y coordinates of stick lengths.}
+\item{y}{y coordinates of stick origins.  If not supplied, 0 will be used; if
+    length is less than that of x, the first number is repeated and the rest
+    are ignored.}
+\item{u}{x component of stick length.}
+\item{v}{y component of stick length.}
 \item{yscale}{scale from u and v to y (see \dQuote{Details}).}
 \item{add}{boolean, set \code{TRUE} to add to an existing plot.}
 \item{length}{value to be provided to \code{\link{arrows}}; here, we set
@@ -36,7 +37,7 @@ oce.plot.sticks(x, y, u, v, yscale=1, add=FALSE, length=1/20,
   according to the value of \code{yscale}, which has the unit of
   \code{v} divided by the unit of \code{y}.
 
-  The interpretation of diagrams produced by \code{oce.plot.sticks} can
+  The interpretation of diagrams produced by \code{plotSticks} can
   be difficult, owing to overlap in the arrows.  For this reason, it It
   is often a good idea to smooth \code{u} and \code{v} before using this
   function.
@@ -52,16 +53,18 @@ y <- rep(0, n)
 theta <- seq(0, 2*pi, length.out=n)
 u <- sin(theta)
 v <- cos(theta)
-oce.plot.sticks(x, y, u, v, xlim=c(-2, 2), ylim=c(-2, 2))
+plotSticks(x, y, u, v, xlim=c(-2, 2), ylim=c(-2, 2))
 rm(n, x, y, theta, u, v)
 
 # Oceanographic example
 data(airHalifax)
-attach(airHalifax)
+t <- airHalifax$t
+u <- airHalifax$u
+v <- airHalifax$v
+temperature <- airHalifax$temperature
 oce.plot.ts(t, temperature, type='l', ylim=c(0,25), ylab=resizableLabel("T"))
-oce.plot.sticks(t, rep(5, length(u)), u, v, yscale=2, add=TRUE)
+plotSticks(t, 5, u, v, yscale=2, add=TRUE)
 legend("bottomright", legend="Velocity scale: 2 m/s per degC", bg="white")
-detach(airHalifax)
 }
 
 \author{Dan Kelley}

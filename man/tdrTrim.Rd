@@ -47,14 +47,10 @@
     PT objects, and also outlines the other functions dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.oce(
- "/data/archive/sleiwex/2008/moorings/m08/pt/rbr_011855/manufacturer/pt_rbr_011855.dat",
- by=600)
-dTrimmed <- tdrTrim(d)
-plot(dTrimmed)
-}
+data(tdr)
+tdrTrimmed <- tdrTrim(tdr)
+plot(tdrTrimmed)
 }
 
 \author{Dan Kelley}

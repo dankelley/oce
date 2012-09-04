@@ -1,6 +1,11 @@
 /* vim: set noexpandtab shiftwidth=2 softtabstop=2 tw=70: */
 #include <R.h>
 #include <Rdefines.h>
+int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
+double strho_f(double x, int teos);
+void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, double *rval); // in teos.c
+int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos);
+char *get_libteos(); // in toes.c
 
 void sw_alpha_over_beta(int *n, double *pS, double *ptheta, double *pp, double *value)
 {
@@ -86,6 +91,7 @@ void sw_rho(int *n, double *pS, double *pT, double *pp, double *value)
     double p = *pp++;
     double rho_w, Kw, Aw, Bw, p1, S12, ro, xkst;
     if (ISNA(S) || ISNA(T) || ISNA(p)) {
+      //Rprintf("i=%d; S=%f T=%f p=%f BAD\n", i, S, T, p);
       *value++ = NA_REAL;
     } else {
       rho_w = 999.842594 +
@@ -250,53 +256,66 @@ void sw_spice(int *n, double *pS, double *pT, double *pp, double *value)
    Pierre Flament.
 */
 static double sig_0, p_ref, S, T;
-void sw_strho(double *pT, double *prho, double *pp, double *res)
+void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
 {
-  int strho_bisection_search (double *x, double x1, double x2, double eps, double eta);
   T = *pT;
-  sig_0 = *prho;				/* target density */
+  sig_0 = *prho;			/* target density */
   p_ref = *pp;				/* target pressure */
   *res = NA_REAL;
   if (ISNA(*pT) || ISNA(*prho) || ISNA(*pp))
     return;
-  strho_bisection_search(&S, 0.0001, 200.0, 0.00001, 0.00001);
+  //Rprintf("  sw_strho(pT=%f, prho=%f, pp=%f, res=%f, teos=%d) about to do bisection\n", *pT, *prho, *pp, S, *teos);
+  // Note regarding next two lines: every bisection reduces the x
+  // range by a factor of two, so it's not too expensive to ask for
+  // tight resolution.
+  double xresolution = 1e-3; // 3 fractional digits in salinity, for < 1% of typical axis axis interval
+  double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
+  strho_bisection_search(&S, 0.01, 50.0, xresolution, ftol, *teos);
+  //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);
   *res = S;
 }
 
-double strho_f(double x)
+double strho_f(double x, int teos)
 {
   extern double p_ref, sig_0;
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
   double this_rho;
+  //Rprintf("libteos='%s'\n", get_libteos());
   int n=1;
-  sw_rho(&n, &x, &T, &p_ref, &this_rho);
-  /* printf(" f returning %f\n", this_rho-1000.0-sig_0); */
+  if (teos) {
+    //char *lib = "/usr/local/lib/libgswteos-10.so"; // FIXME bad to hard-wire
+    char *fcn = "gsw_rho"; // stated to be used for TS diagrams on p2 of "Getting_Started.pdf"
+    extern char* libteosp;
+    gsw3a(&libteosp, &fcn, &n, &x, &T, &p_ref, &this_rho);
+  } else {
+    sw_rho(&n, &x, &T, &p_ref, &this_rho); // is this right? (is T theta?, and so is p_ref zero?)
+  }
   return (this_rho - 1000.0 - sig_0);
 }
 
-/* bisection rootsolver
-   SYNTAX
-   int bis(double *x,double x1,double x2,double eps,double eta);
-   DESCRIPTION: Searches for a root of f(x) over the interval [x1,x2].
-   ftol = maximum allowed error in f(x)
-   xresolution = maximum size of final interval bracketing  root
-   RETURN VALUE
-   0 if root found to within tolerance; 1 otherwise
+/* find roots of f(x)
+ * ARGS: *x
+ *        x1 and x2 bracket the root
+ *        xresolution = error allowed in x
+ *        ftol = tolerance in f(x)
+ * DESCRIPTION: Searches for a root of f(x) over the interval [x1,x2].
+ * RETURN VALUE 0 if root found to within tolerance; 1 otherwise
 */
-int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol)
+int strho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos)
 {
-  /* printf("in bisection_search(x=%f,  x1=%f,  x2=%f)\n",*x,x1,x2); */
-  extern double strho_f(double x);
+  //Rprintf("  in strho_bisection_search(x=%.3f,  x1=%.3f,  x2=%.3f, teos=%d)\n",*x,x1,x2,teos);
+  extern double strho_f(double x, int teos);
   double g1, g2, g;
-  g1 = strho_f(x1);
-  g2 = strho_f(x2);
+  g1 = strho_f(x1, teos);
+  g2 = strho_f(x2, teos);
   if (g1 * g2 > 0.0) {
     *x = NA_REAL;
+    //Rprintf("  strho_bisection_search() returning NA early because no root is bracketed; x1=%f   g1=%f    x2=%f  g2=%f\n", x1,g1,x2,g2);
     return 0;
   }
   /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
-  while (fabs (g = strho_f (*x = (x1 + x2) / 2.0)) > ftol || fabs (x1 - x2) > xresolution) {
-    /* printf("in bis loop x=%f   g=%f   g1=%f\n",*x,g,g1); */
+  while (fabs(g = strho_f(*x = (x1 + x2) / 2.0, teos=teos)) > ftol || fabs (x1 - x2) > xresolution) {
+    //Rprintf("    strho_bisection_search() in loop x=%f   g=%f   g1=%f\n",*x, g, g1);
     if (g1 * g < 0) { /* root is nearer x1 so move x2 to x */
       x2 = *x;
       g2 = g;
@@ -308,9 +327,11 @@ int strho_bisection_search(double *x, double x1, double x2, double xresolution, 
     } else {	/* not bracketed BUG */
       /* printf("bs CASE 3 (not bracketed)  x1=%f  x2=%f  g1=%f  g2=%f\n",x1,x2,g1,g2);*/
       *x = NA_REAL;
+      //Rprintf("  strho_bisection_search() NON BRACKET bug\n");
       return (1); /* exact solution */
     }
   }
+  //Rprintf("  strho_bisection_search() returning %.4f\n",*x);
   return (0); 		/* converged by default */
 }
 
@@ -476,9 +497,8 @@ void theta_UNESCO_1983(int *n, double *pS, double *pT, double *pp, double *ppref
 }
 
 /*static double sig_0, p_ref, S, T;*/
-void sw_tsrho(double *pS, double *prho, double *pp, double *res)
+void sw_tsrho(double *pS, double *prho, double *pp, int *teos, double *res)
 {
-  int tsrho_bisection_search (double *x, double x1, double x2, double eps, double eta);
   S = *pS;
   sig_0 = *prho;		/* target density */
   p_ref = *pp;		/* target pressure */
@@ -490,18 +510,18 @@ void sw_tsrho(double *pS, double *prho, double *pp, double *res)
    * bisection from working.  I found this out by using a TLOW
    * value of -50.  The range below should be OK for oceanographic use.
    */
-  tsrho_bisection_search(&T, -3.0, 40.0, 0.0001, 0.0001);
+  tsrho_bisection_search(&T, -3.0, 40.0, 0.0001, 0.0001, *teos);
   *res = T;
 }
 
-double tsrho_f(double x)
+double tsrho_f(double x, int teos)
 {
   extern double p_ref, sig_0;
   void sw_rho(int *n, double *pS, double *pT, double *pp, double *res);
   double this_rho;
   int n=1;
-  sw_rho(&n, &S, &x, &p_ref, &this_rho);
-  /* printf(" f returning %f\n", this_rho-1000.0-sig_0); */
+  sw_rho(&n, &S, &x, &p_ref, &this_rho); // FIXME: should be using TEOS if needed
+  Rprintf("tsrho_f(%f, %d) returning %f\n", x, teos, this_rho-1000.0-sig_0);
   return (this_rho - 1000.0 - sig_0);
 }
 
@@ -514,19 +534,19 @@ double tsrho_f(double x)
    RETURN VALUE
    0 if root found to within tolerance; 1 otherwise
 */
-int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol)
+int tsrho_bisection_search(double *x, double x1, double x2, double xresolution, double ftol, int teos)
 {
-  /* printf("in bisection_search(x=%f,  x1=%f,  x2=%f)\n",*x,x1,x2); */
-  double tsrho_f(double x);
+  //Rprintf("in bisection_search(x=%f,  x1=%f,  x2=%f, xresolution=%f, ftol=%f, teos=%d)\n",*x,x1,x2,xresolution,ftol,teos);
+  double tsrho_f(double x, int teos);
   double g1, g2, g;
-  g1 = tsrho_f(x1);
-  g2 = tsrho_f(x2);
+  g1 = tsrho_f(x1, teos);
+  g2 = tsrho_f(x2, teos);
   if (g1 * g2 > 0.0) {
     *x = NA_REAL;
     return 0;
   }
   /* printf("TOP of bs.  g1=%f   g2=%f\n",g1,g2); */
-  while (fabs (g = tsrho_f (*x = (x1 + x2) / 2.0)) > ftol || fabs (x1 - x2) > xresolution) {
+  while (fabs (g = tsrho_f(*x = (x1 + x2) / 2.0, teos)) > ftol || fabs (x1 - x2) > xresolution) {
     /* printf("in bis loop x=%f   g=%f   g1=%f\n",*x,g,g1); */
     if (g1 * g < 0) { /* root is nearer x1 so move x2 to x */
       x2 = *x;

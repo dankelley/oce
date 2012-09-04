@@ -14,7 +14,7 @@
   \item{type}{a string indicating the type of return value (see below)}
 }
 
-\details{THE \code{type="expression"} method does NOT WORK YET.}
+\details{This function is in an early stage of development.}
 
 \value{A list containing \code{degrees}, \code{minutes}, \code{seconds}, and
     \code{hemispheres}, or a vector of strings or (broken) a vector of

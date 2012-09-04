@@ -1,12 +1,14 @@
 \name{plot.tidem}
 
 \alias{plot.tidem}
+\alias{plot,tidem,missing-method}
+\alias{plot,tidem-method}
 
 \title{Plot a tidal fit}
 
 \description{Plot a summary diagram for a tidal fit.}
 
-\usage{\method{plot}{tidem}(x, 
+\usage{\S4method{plot}{tidem}(x, 
      which=1,
      label.if=NULL, 
      log="",

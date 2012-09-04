@@ -1,5 +1,52 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
+errorbars <- function(x, y, xe, ye, percent=FALSE, style=0, length=0.025, ...)
+{
+    if (missing(x))
+        stop("must supply x")
+    if (missing(y))
+        stop("must supply y")
+    if (missing(xe) && missing(ye))
+        stop("must give either xe or ye")
+    n <- length(x)
+    if (1 == length(xe))
+        xe <- rep(xe, n)
+    if (1 == length(ye))
+        ye <- rep(ye, n)
+    if (n != length(y))
+        stop("x and y must be of same length\n")
+    if (!missing(xe)) {
+        if (n != length(xe))
+            stop("x and xe must be of same length\n")
+        if (percent)
+            xe <- xe * x / 100
+        if (style == 0) {
+            segments(x, y, x+xe, y, ...)
+            segments(x, y, x-xe, y, ...)
+        } else if (style == 1) {
+            arrows(x, y, x + xe, y, angle=90, length=length, ...)
+            arrows(x, y, x - xe, y, angle=90, length=length, ...)
+        } else {
+            stop("unknown value ", style, " of style; must be 0 or 1\n")
+        }
+    }
+    if (!missing(ye)) {
+        if (n != length(ye))
+            stop("y and ye must be of same length\n")
+        if (percent)
+            ye <- ye * y / 100
+        if (style == 0) {
+            segments(x, y, x, y+ye, ...)
+            segments(x, y, x, y-ye, ...)
+        } else if (style == 1) {
+            arrows(x, y, x, y + ye, angle=90, length=length, ...)
+            arrows(x, y, x, y - ye, angle=90, length=length, ...)
+        } else {
+            stop("unknown value ", style, " of style; must be 0 or 1\n")
+        }
+    }
+}
+
 findInOrdered <- function(x, f)
 {
     if (missing(x))
@@ -27,6 +74,92 @@ filterSomething <- function(x, filter)
     res
 }
 
+plotTaylor <- function(x, y, scale, pch, col, labels, pos, ...)
+{
+    if (missing(x)) stop("must supply 'x'")
+    if (missing(y)) stop("must supply 'y'")
+    if (is.vector(y))
+        y <- matrix(y)
+    ncol <- ncol(y)
+    if (missing(pch))
+        pch <- 1:ncol
+    if (missing(col))
+        col <- rep("black", ncol)
+    haveLabels <- !missing(labels)
+    if (missing(pos))
+        pos <- rep(2, ncol)
+    if (length(pos) < ncol)
+        pos <- rep(pos[1], ncol)
+    xSD <- sd(x, na.rm=TRUE)
+    ySD <- sd(as.vector(y), na.rm=TRUE)
+    if (missing(y)) stop("must supply 'y'")
+    halfArc <- seq(0, pi, length.out=200)
+    ## FIXME: use figure geometry, to avoid axis cutoff
+    if (missing(scale))
+        scale <- max(pretty(c(xSD, ySD)))
+    plot.new()
+    plot.window(c(-1.2, 1.2) * scale, c(0, 1.2) * scale, asp=1)
+    ##plot.window(c(-1.1, 1.1), c(0.1, 1.2), asp=1)
+    sdPretty <- pretty(c(0, scale))
+    for (radius in sdPretty)
+        lines(radius * cos(halfArc), radius * sin(halfArc), col='gray')
+    ## spokes
+    for (rr in seq(-1, 1, 0.2))
+        lines(c(0, max(sdPretty)*cos(pi/2 + rr * pi / 2)),
+              c(0, max(sdPretty)*sin(pi/2 + rr * pi / 2)), col='gray')
+    axisLabels <- format(sdPretty)
+    axisLabels[1] <- paste(0)
+    axis(1, pos=0, at=sdPretty, labels=axisLabels)
+    ## temporarily permit labels outside the platting zone
+    xpdOld <- par('xpd')
+    par(xpd=NA)
+    m <- max(sdPretty)
+    text(m, 0, "R=1", pos=4)
+    text(0, m, "R=0", pos=3)
+    text(-m, 0, "R=-1", pos=2)
+    par(xpd=xpdOld)
+    points(xSD, 0, pch=20, cex=1.5)
+    for (column in 1:ncol(y)) {
+        ySD <- sd(y[,column], na.rm=TRUE)
+        R <- cor(x, y[,column])^2
+        ##cat("column=", column, "ySD=", ySD, "R=", R, "col=", col[column], "pch=", pch[column], "\n")
+        xx <- ySD * cos((1 - R) * pi / 2)
+        yy <- ySD * sin((1 - R) * pi / 2)
+        points(xx, yy, pch=pch[column], lwd=2, col=col[column], cex=2)
+        if (haveLabels) {
+            ##cat(labels[column], "at", pos[column], "\n")
+            text(xx, yy, labels[column], pos=pos[column], ...)
+        }
+    }
+}
+
+prettyPosition <- function(x, debug=getOption("oceDebug"))
+{
+    oceDebug(debug, "\bprettyPosition(...) {\n", sep="")
+    r <- diff(range(x, na.rm=TRUE))
+    oceDebug(debug, 'range(x)=', range(x), 'r=', r, '\n')
+    if (r > 5) {                       # D only
+        rval <- pretty(x)
+    } else if (r > 1) {                # round to 30 minutes
+        rval <- (1 / 2) * pretty(2 * x)
+        oceDebug(debug, "case 1: rval=", rval, "\n")
+    } else if (r > 30/60) {            # round to 1 minute, with extras
+        rval <- (1 / 60) * pretty(60 * x, n=6)
+        oceDebug("case 2: rval=", rval, "\n")
+    } else if (r > 5/60) {             # round to 1 minute
+        rval <- (1 / 60) * pretty(60 * x, 4)
+        oceDebug(debug, "case 3: rval=", rval, "\n")
+    } else if (r > 10/3600) {          # round to 10 sec
+        rval <- (1 / 360) * pretty(360 * x)
+        oceDebug(debug, "case 4: rval=", rval, "\n")
+    } else {                           # round to seconds
+        rval <- (1 / 3600) * pretty(3600 * x)
+        if (debug) cat("case 5: rval=", rval, "\n")
+    }
+    oceDebug(debug, "\b\b} # prettyPosition\n")
+    rval
+}
+
 formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "expression"))
 {
     type <- match.arg(type)
@@ -36,6 +169,16 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
     minutes <- floor(60 * (x - degrees))
     seconds <- 3600 * (x - degrees - minutes / 60)
     seconds <- round(seconds, 2)
+
+    ## prevent rounding errors from giving e.g. seconds=60
+    ##print(data.frame(degrees,minutes,seconds))
+    secondsOverflow <- seconds == 60
+    seconds <- ifelse(secondsOverflow, 0, seconds)
+    minutes <- ifelse(secondsOverflow, minutes+1, minutes)
+    minutesOverflow <- minutes == 60
+    degrees <- ifelse(minutesOverflow, degrees+1, degrees)
+    ##print(data.frame(degrees,minutes,seconds))
+
     noSeconds <- all(seconds == 0)
     noMinutes <- noSeconds & all(minutes == 0)
     hemispheres <- if (isLat) ifelse(signs, "N", "S") else ifelse(signs, "E", "W")
@@ -58,15 +201,19 @@ formatPosition <- function(latlon, isLat=TRUE, type=c("list", "string", "express
         n <- length(degrees)
         rval <- vector("expression", n)
         for (i in 1:n) {
-            if (noMinutes) 
+            if (noMinutes) {
                 rval[i] <- as.expression(substitute(d*degree,
                                                     list(d=degrees[i])))
-            else if (noSeconds)
+            } else if (noSeconds) {
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute,
-                                                    list(d=degrees[i],m=minutes[i])))
-            else
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]))))
+            } else {
                 rval[i] <- as.expression(substitute(d*degree*phantom(.)*m*minute*phantom(.)*s*second,
-                                                    list(d=degrees[i],m=minutes[i],s=seconds[i])))
+                                                    list(d=degrees[i],
+                                                         m=sprintf("%02d", minutes[i]),
+                                                         s=sprintf("%02d", seconds[i]))))
+            }
         }
     }
     rval
@@ -381,12 +528,20 @@ fullFilename <- function(filename)
         return(filename)
     return(paste(getwd(), filename, sep="/"))
 }
-matrixSmooth <- function(m)
+
+matrixSmooth <- function(m, passes=1)
 {
     if (missing(m))
         stop("must provide matrix 'm'")
     storage.mode(m) <- "double"
-    .Call("matrix_smooth", m)
+    if (passes > 0) {
+        for (pass in seq.int(1, passes, 1)) {
+            m <- .Call("matrix_smooth", m)
+        }
+    } else {
+        warning("matrixSmooth given passes<=0, so returning matrix unmodified\n")
+    }
+    m
 }
 
 matchBytes <- function(input, b1, ...)
@@ -407,6 +562,7 @@ matchBytes <- function(input, b1, ...)
 }
 
 resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
+                                  "conservative temperature", "absolute salinity",
                                   "nitrate", "nitrite", "oxygen", "phosphate", "silicate", "tritium",
                                   "spice",
                                   "p", "z", "distance", "heading", "pitch", "roll",
@@ -417,8 +573,11 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     item <- match.arg(item)
     axis <- match.arg(axis)
     if (item == "T") {
-        full <- expression(paste("Temperature [", degree, "C]"))
+        full <- expression(paste("Temperature, T [", degree, "C]"))
         abbreviated <- expression(paste("T [", degree, "C]"))
+    } else if (item == "conservative temperature") {
+        full <- expression(paste("Conservative Temperature, ", Theta, " [", degree, "C]"))
+        abbreviated <- expression(paste(Theta, "[", degree, "C]"))
     } else if (item == "sigmaTheta") {
         full <- expression(paste("Potential density anomaly [", kg/m^3, "]"))
         abbreviated <- expression(paste(sigma[theta], " [", kg/m^3, "]"))
@@ -447,14 +606,17 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Spice [", kg/m^3, "]"))
         abbreviated <- full
     } else if (item == "S") {
-        full <- "Salinity [PSU]"
-        abbreviated <- "S [PSU]"
+        full <- expression(paste("Practical Salinity, ", S))
+        abbreviated <- expression(S)
+    } else if (item == "absolute salinity") {
+        full <- expression(paste("Absolute Salinity, ", S[A], " [g/kg]"))
+        abbreviated <- expression(paste(S[A], " [g/kg]"))
     } else if (item == "p") {
-        full <- "Pressure [dbar]"
-        abbreviated <- "P [dbar]"
+        full <- expression(paste("Pressure, ", P, " [dbar]"))
+        abbreviated <- expression(paste(P, " [dbar]"))
     } else if (item == "z") {
-        full <- "z [ m ]"
-        abbreviated <- "z [m]"
+        full <- expression(z, " [ m ]")
+        abbreviated <- expression(z, " [m]")
     } else if (item == "distance") {
         full <- "Distance [m]"
         abbreviated <- "Dist. [m]"
@@ -491,14 +653,14 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     }
     spaceNeeded <- strwidth(full, "inches")
     whichAxis <- if (axis == "x") 1 else 2
-    spaceAvailable <- abs(par("pin")[whichAxis])
+    spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
     ##cat("pin=", par('pin'), "\n")
     ##cat("spaceNeeded: in inches:", spaceNeeded, "\n")
     ##cat("whichAxis=", whichAxis, "\n")
     ##cat("spaceAvailable=", spaceAvailable, "\n")
     ##cat("fraction=", fraction, "\n")
-    if (fraction < 1.5) full else abbreviated
+    if (fraction < 1) full else abbreviated
 }
 
 latlonFormat <- function(lat, lon, digits=max(6, getOption("digits") - 1))
@@ -1187,34 +1349,6 @@ oceSmooth <- function(x, ...)
     res
 }
 
-stickplot <- function(t, x, y, ...)
-{
-    ylim <- max(y, na.rm=TRUE) * c(-1, 1)
-    plot(range(t), ylim, type="n")
-    tstart <- t[1]
-    t.isPOSIXlt <- inherits(t, "POSIXlt")
-    t.isPOSIXct <- inherits(t, "POSIXct")
-    if (t.isPOSIXct) t <- unclass(t)
-    if (t.isPOSIXlt) t <- unclass(as.POSIXct(t))
-    usr <- par("usr")
-    pin <- par("pin")
-    tx.scale <- (usr[2]-usr[1]) / (usr[4]-usr[3]) * pin[2] / pin[1]
-    n <- length(x)
-    xx <- array(dim = 3 * n)
-    yy <- array(dim = 3 * n)
-    ones <- seq(1, 3*n, 3)
-    twos <- seq(2, 3*n, 3)
-    threes <- seq(3, 3*n, 3)
-    xx[ones] <- t
-    yy[ones] <- 0
-    xx[twos] <- t + x * tx.scale
-    yy[twos] <- y
-    xx[threes] <- NA
-    yy[threes] <- NA
-    lines(xx, yy, type='l', ...)
-    ##points(xx[ones],yy[ones],col="red")
-}
-
 bcdToInteger <- function(x, endian=c("little", "big"))
 {
     endian <- match.arg(endian)
@@ -1486,5 +1620,39 @@ showMetadataItem <- function(object, name, label="", postlabel="", isdate=FALSE,
         if (quote) item <- paste('"', item, '"', sep="")
         cat(paste("* ", label, item, postlabel, "\n", sep=""))
     }
+}
+
+integrateTrapezoid <- function(x, y, type=c("A", "dA", "cA"))
+{
+    if (missing(y)) {
+        rval <- .Call("trap", 1, x, switch(match.arg(type), A=0, dA=1, cA=2))
+    } else {
+        rval <- .Call("trap", x, y, switch(match.arg(type), A=0, dA=1, cA=2))
+    }
+}
+
+grad <- function(h, x, y)
+{
+    if (missing(h)) stop("must give h")
+    if (missing(x)) stop("must give x")
+    if (missing(y)) stop("must give y")
+    if (length(x) != nrow(h)) stop("length of x (%d) must equal number of rows in h (%d)", length(x), nrow(h))
+    if (length(y) != ncol(h)) stop("length of y (%d) must equal number of cols in h (%d)", length(y), ncol(h))
+    .Call("gradient", h, as.double(x), as.double(y))
+}
+
+oce.as.raw <- function(x)
+{       # prevent warnings from out-of-range with as.raw()
+    na <- is.na(x)
+    x[na] <- 0                 # FIXME: what to do here?
+    x <- ifelse(x < 0, 0, x)
+    x <- ifelse(x > 255, 255, x)
+    x <- as.raw(x)
+    x
+}
+
+oceConvolve <- function(x, f, end=2)
+{
+    .Call("oce_convolve", x, f, end)
 }
 

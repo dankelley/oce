@@ -4,7 +4,7 @@
 \description{Plot an image with a colour palette}
 \usage{imagep(x, y, z, 
       xlim, ylim, zlim, 
-      flip.y=FALSE,
+      flipy=FALSE,
       xlab="", ylab="", zlab="",
       breaks, col,
       labels=NULL, at=NULL,
@@ -28,22 +28,23 @@
       \dots)
 }
 \arguments{
-  \item{x,y}{locations of grid lines along which values of \code{z} are
-      measured.   The values must be finite, non-missing, and distinct.  If
-      they are out of order, they will be ordered (and the \code{z} data will
-      be similarly ordered).  By default, equally spaced values from 0 to 1 are
-      used. If \code{x} is a list, its components \code{x$x} and \code{x$y} are
-      used for \code{x} and \code{y}, respectively. If the list has component
-      \code{z} this is used for \code{z}. (NOTE: these arguments are meant to
-      mimic those of \code{\link{image}}, which explains the same description
-      here.)}
+  \item{x,y}{optional locations of grid lines along which values of \code{z}
+      are measured.   The values must be finite and distinct.  If they are out
+      of order, they will be ordered (and the \code{z} data will be ordered in
+      a matching way).  If \code{x} and \code{y} are not provided, they are
+      constructed to indicate the indices of the matrix, in contrast to the
+      range of 0 to 1, as is the case for \code{\link{image}}.  If \code{x} is
+      a list, its components \code{x$x} and \code{x$y} are used for \code{x}
+      and \code{y}, respectively. If the list has component \code{z} this is
+      used for \code{z}. (NOTE: these arguments are meant to mimic those of
+      \code{\link{image}}, which explains the same description here.)}
   \item{z}{a matrix containing the values to be plotted (NAs are allowed). Note
       that x can be used instead of z for convenience. (NOTE: these arguments
       are meant to mimic those of \code{\link{image}}, which explains the same
       description here.)} 
   \item{xlim,ylim,zlim}{limits on x axis, y axis, and the image values.}
-  \item{flip.y}{boolean, with \code{TRUE} indicating that the image
-    should be flipped top to bottom (as to produce a profile image
+  \item{flipy}{boolean, with \code{TRUE} indicating that the image
+    should be flipped top to bottom (e.g. to produce a profile image
     for a downward-looking acoustic-doppler profile).}
   \item{xlab,ylab,zlab}{names for x axis, y axis, and the image values.}
   \item{breaks}{the z values for breaks in the colour scheme.  If this is of
@@ -133,10 +134,9 @@ library(oce)
 imagep(volcano)
 
 ## something oceanographic (internal-wave speed)
-par(mfrow=c(1,1))
-h <- seq(0, 50, length.out=200)
+h <- seq(0, 50, length.out=100)
 drho <- seq(1, 3, length.out=200)
-speed <- outer(drho, h, function(drho, h) sqrt(9.8 * drho * h / 1024))
+speed <- outer(h, drho, function(drho, h) sqrt(9.8 * drho * h / 1024))
 imagep(h, drho, speed, xlab="Equivalent depth [m]",
   ylab=expression(paste(Delta*rho, " [kg/m^3]")),
   zlab="Internal-wave speed [m/s]")

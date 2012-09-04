@@ -8,10 +8,10 @@
 
 \description{Wind drag coefficients for wind-profile and eddy-covariance
     methods, summarized in Figure 3 of Garratt (1977).  The data are stored in
-    a data frame with variables named \code{U} for wind speed in m/s, \code{Cd}
-    for (neutral) drag coefficient i\eqn{C_D}{CD}, \code{method} for a factor
-    with two levels: \code{profile} and \code{eddy}, for the two methods, and
-    \code{n}, the number of data in the velocity bin.}
+    a data frame with four columns: \code{U} is wind speed in m/s; \code{Cd} is
+    for (neutral) drag coefficient; \code{n} is the number of data measurements
+    represented by the value; and \code{method} is a factor with two levels:
+    \code{profile} and \code{eddy}, for two methods of inferring \code{Cd}.}
 
 \usage{data(drag)}
 

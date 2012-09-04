@@ -7,8 +7,8 @@
 \title{Redfield's (1934) NO3 and total CO2 data}
 
 \description{Data digitized from Redfield's (1934) Figure 3, showing NO$_3$
-    dependence on total CO$_2$.  This dataset is used in Chapter 3 of Kelley
-    (2011).}
+    dependence on total CO$_2$.  This dataset is used in Chapter 4 of Kelley
+    (2012).}
 
 \usage{data(redfieldNC)}
 
@@ -19,6 +19,7 @@ plot(CO2, NO3, xlab=expression(CO[2]), ylab=expression(NO[3]))
 slope <- 1/7
 abline(-275.5, slope, lwd=3)
 abline(-288.5, slope, lwd=3)
+detach(redfieldNC)
 }
 
 \source{Data digitized by Dan Kelley from a scanned copy of Redfield (1934).}

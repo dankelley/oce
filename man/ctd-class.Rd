@@ -14,6 +14,8 @@
 
 \section{Methods}{
 
+    Consider a CTD object named \code{ctd}.
+
     \emph{Accessing values.} Data may be accessed as e.g.
     \code{ctd[["salinity"]]}, where the string could also be e.g.
     \code{"temperature"} or \code{"pressure"} for column data, or
@@ -21,11 +23,19 @@
     columns are displayed with \code{show().} The name of the source file is
     found with \code{"filename"}.
 
-    Derived data are also available: \code{"N2"} calls \code{\link{swN2}} to
-    compute the square of buoyancy frequency.
+    The TEOS-10 defined quantities called ``absolute salinity'' and
+    ``conservative temperature'' can be retrieved with
+    \code{ctd[["absoluteSalinity"]]} (or \code{ctd[["SA"]]}) and
+    \code{ctd[["conservativeTemperature"]]} (or \code{ctd[["CT"]]}),
+    respectively.  Note that these are \emph{not} saved in the data object, but
+    are calculated as needed.
 
-    \emph{Assigning values.} Everything that may be accessed may also be
-    assigned, e.g.  \code{ctd[["salinity"]] <- rep(35,10)}.
+    Another important derived quantity is buoyancy frequency \eqn{N}{N}, and
+    e.g.  \code{ctd[["N2"]]} calls \code{\link{swN2}} to compute its square.
+
+    \emph{Assigning values.} Items stored in the object may be altered with
+    e.g.  \code{ctd[["salinity"]] <- rep(35,10)}.  Note that this does not
+    apply to derived quantities such as conservative temperature, etc.
 
     \emph{Overview of contents.} The \code{show} method (e.g.
     \code{show(ctd)}) displays information about the object.

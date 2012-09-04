@@ -31,12 +31,13 @@
     are defined differently for RDI and Sontek profilers.
 
     The code handles every case individually, based on the table given below.
-    The table comes from Clark Richards, a PhD student at Dalhousie University
-    [2], who developed it based on instrument documentation, discussion on user
-    groups, and analysis of measurements acquired with RDI and Sontek
-    acoustic current profilers in the SLEIWEX experiment [3].  In the table,
-    (X, Y, Z) denote instrument-coordinate velocities, (S, F, M) denote
-    ship-coordinate velocities, and (H, P, R) denote heading, pitch, and roll.
+    The table comes from Clark Richards, a former PhD student at Dalhousie
+    University [2], who developed it based on instrument documentation,
+    discussion on user groups, and analysis of measurements acquired with RDI
+    and Sontek acoustic current profilers in the SLEIWEX experiment [3].  In
+    the table, (X, Y, Z) denote instrument-coordinate velocities, (S, F, M)
+    denote ship-coordinate velocities, and (H, P, R) denote heading, pitch, and
+    roll.
 
     
 \tabular{rrrrrrrrrrrr}{
@@ -82,7 +83,7 @@ rbind(c( CH*CR + SH*SP*SR,   SH*CP,    CH*SR - SH*SP*CR),
         \item RD Instruments, 1998.
         \emph{ADCP Coordinate Transformation, formulas and calculations.}
         P/N 951-6079-00 (July 1998).
-        \item Clark Richards, 2011, PhD Dalhousie University Department of Oceanography.
+        \item Clark Richards, 2012, PhD Dalhousie University Department of Oceanography.
         \item The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
     }
 }

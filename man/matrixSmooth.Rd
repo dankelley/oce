@@ -6,14 +6,16 @@
 
 \description{Smooth a matrix.}
 
-\usage{matrixSmooth(m)}
+\usage{matrixSmooth(m, passes=1)}
 
 \arguments{
-\item{m}{a matrix to be smoothed.}
+    \item{m}{a matrix to be smoothed.}
+    \item{passes}{an integer specifying the number of times the smoothing is to
+        be applied.}
 }
 
 \details{The values on the edge of the matrix are unaltered.  For interior points, the result is defined in terms in terms of the original as follows.
-\eqn{r_{i,j} = (2 m_{i,j} + m_{i-1,j} + m_{i+1,j} + m_{i,j-1} + m_{i,j+1})/6}{r_[i,j] = (2 m_[i,j] + m_[i-1,j] + m_[i+1,j] + m_[i,j-1] + m_[i,j+1])/6}.}
+\eqn{r_{i,j} = (2 m_{i,j} + m_{i-1,j} + m_{i+1,j} + m_{i,j-1} + m_{i,j+1})/6}{r_[i,j] = (2 m_[i,j] + m_[i-1,j] + m_[i+1,j] + m_[i,j-1] + m_[i,j+1])/6}.  Note that missing values propagate to neighbours.}
 
 \value{A smoothed matrix.}
 

@@ -69,3 +69,26 @@ stopifnot(all.equal.numeric(sp, 1.131195, 0.0000015))
 depth <- swDepth(10000, 30)
 stopifnot(all.equal.numeric(depth, 9712.653, 0.001))
 
+## TEOS-10
+## check value from the TEOS-10 supplied program 'gsw_check_functions.c'
+## CAUTION: It seems likely that the tests will fail, if TEOS-10 is altered
+## or replaced; in such a case, the test values used below will be kept as it is 
+## (since the committee has recommended use of TEOS-10) but the tests will be
+## relaxed.
+if (FALSE) {
+    sp <- 35.5                         # practical salinity
+    t <- 15                            # in-situ temperature
+    p <- 300                           # pressure
+    lon <- 260                         # longitude
+    lat <- 16                          # latitude
+    sa <- teos("gsw_sa_from_sp", sp, p, lon, lat)
+    stopifnot(abs(35.671358392019094 - sa) < 00.000000000000010)
+    ct <- teos("gsw_ct_from_t", 35.7, t, p)
+    stopifnot(abs(14.930280459895560 - ct) < 00.000000000000010)
+    rho <- teos("gsw_rho", 35.7, 20, p)
+    stopifnot(abs(1026.4562376198473 - rho) < 0000.0000000000010)
+    sa <- 35.7
+    stopifnot(abs(1512.205394 - teos("gsw_sound_speed_t_exact", sa, t, p)) < 0000.00001)
+    stopifnot(abs(212.3016682 - teos("gsw_entropy_t_exact", sa, t, p))     < 0000.00001)
+    stopifnot(abs(3982.783256 - teos("gsw_cp_t_exact", sa, t, p))          < 0000.00001)
+}

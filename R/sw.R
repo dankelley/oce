@@ -23,8 +23,15 @@ swN2 <- function(pressure, sigmaTheta=NULL, derivs, ...) # BUG: think more about
     ifelse(ok, 9.8 * 9.8 * 1e-4 * sigmaThetaDeriv, NA)
 }
 
-swSCTp <- function(conductivity, temperature, pressure)
+swSCTp <- function(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))
 {
+     if (missing(conductivity) || missing(temperature))
+        stop("must supply conductivity, temperature and pressure")
+    conductivityUnit <- match.arg(conductivityUnit)
+    if (conductivityUnit == "mS/cm")
+        conductivity <- conductivity / 42.914
+    else if (conductivityUnit == "S/m")
+        conductivity <- conductivity / 4.2914
     dim <- dim(conductivity)
     nC <- length(conductivity)
     nT <- length(temperature)
@@ -46,8 +53,11 @@ swSCTp <- function(conductivity, temperature, pressure)
     rval
 }
 
-swSTrho <- function(temperature, density, pressure) # FIXME: should be vectorized for speed
+## FIXME: should be vectorized for speed
+swSTrho <- function(temperature, density, pressure, eos=getOption("eos", default="unesco"))
 {
+    eos <- match.arg(eos, c("unesco","teos"))
+    teos <- eos == "teos"
     dim <- dim(temperature)
     nt <- length(temperature)
     nrho <- length(density)
@@ -59,9 +69,10 @@ swSTrho <- function(temperature, density, pressure) # FIXME: should be vectorize
     for (i in 1:nt) {                   # FIXME: avoid loops
         sigma <- ifelse(density > 500, density - 1000, density)
     	this.S <- .C("sw_strho",
-                     as.double(temperature[i]),
+                     as.double(temperature[i]), # FIXME: confusion on "p" here; and is temp theta??
                      as.double(sigma),
                      as.double(pressure[i]),
+                     as.integer(teos),
                      S = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$S
     	if (i == 1) rval <- this.S else rval <- c(rval, this.S)
@@ -70,10 +81,13 @@ swSTrho <- function(temperature, density, pressure) # FIXME: should be vectorize
     rval
 }
 
-swTSrho <- function(salinity, density, pressure) # FIXME: should be vectorized
+## FIXME: should be vectorized
+swTSrho <- function(salinity, density, pressure, eos=getOption("eos", default="unesco"))
 {
     if (missing(salinity))
         stop("must provide salinity")
+    eos <- match.arg(eos, c("unesco", "teos"))
+    teos <- eos == "teos"
     dim <- dim(salinity)
     nS <- length(salinity)
     nrho <- length(density)
@@ -93,6 +107,7 @@ swTSrho <- function(salinity, density, pressure) # FIXME: should be vectorized
                      as.double(salinity[i]),
                      as.double(sig),
                      as.double(pressure[i]),
+                     as.integer(teos),
                      temperature = double(1),
                      NAOK=TRUE, PACKAGE = "oce")$t
     	if (i == 1) rval <- this.T else rval <- c(rval, this.T)
@@ -151,7 +166,7 @@ swAlphaOverBeta <- function(salinity, temperature=NULL, pressure=NULL, isTheta =
                                         # sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (!isTheta)
         t = swTheta(salinity, temperature, pressure)
@@ -305,10 +320,11 @@ swLapseRate <- function(salinity, temperature=NULL, pressure=NULL)
     rval
 }
 
-swRho <- function(salinity, temperature=NULL, pressure=NULL)
+swRho <- function(salinity, temperature=NULL, pressure=NULL, eos=c("unesco", "teos"), longitude, latitude)
 {
     if (missing(salinity))
         stop("must provide salinity")
+    eos <- match.arg(eos)
     if (inherits(salinity, "ctd")) {
         temperature <- salinity@data$temperature
         pressure <- salinity@data$pressure
@@ -325,19 +341,32 @@ swRho <- function(salinity, temperature=NULL, pressure=NULL)
     if (nS != nt)
         stop("lengths of salinity and temperature must agree, but they are ", nS, " and ", nt, ", respectively")
     ## sometimes give just a single p value (e.g. for a TS diagram)
-    if (np == 1) {
+    if (np == 1 && nS > np) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
-    rval <- .C("sw_rho",
-               as.integer(nS),
-               as.double(salinity),
-               as.double(temperature),
-               as.double(pressure),
-               value = double(nS),
-               NAOK=TRUE, PACKAGE = "oce")$value
+    if (eos == "unesco") {
+        rval <- .C("sw_rho",
+                   as.integer(nS),
+                   as.double(salinity),
+                   as.double(temperature),
+                   as.double(pressure),
+                   value = double(nS),
+                   NAOK=TRUE, PACKAGE = "oce")$value
+    } else {
+        if (missing(latitude)) latitude <- rep(30, np) # arbitrary spot in mid atlantic
+        if (missing(longitude)) longitude <- rep(320, np)
+        sa <- teos("gsw_sa_from_sp", salinity, pressure, longitude, latitude)
+        ##cat("sa=", sa, "(lat=", latitude, ", lon=", longitude, ")\n")
+        ct <- teos("gsw_ct_from_t", salinity, temperature, pressure)
+        ##cat("ct=", ct, "\n")
+        rval <- teos("gsw_rho_t_exact", sa, temperature, pressure)
+        ##cat('rval=', rval, '\n')
+        rval <- teos("gsw_rho", sa, ct, pressure)
+        ##cat('rval=', rval, '\n')
+    }
     dim(rval) <- dim
     rval
 }
@@ -402,7 +431,7 @@ swSoundSpeed <- function(salinity, temperature=NULL, pressure=NULL)
                                         # sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
@@ -475,7 +504,7 @@ swSpice <- function(salinity, temperature=NULL, pressure=NULL)
     ## sometimes give just a single p value (e.g. for a TS diagram)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     if (nS != np)
         stop("lengths of salinity and pressure must agree, but they are ", nS, " and ", np, ", respectively")
@@ -512,7 +541,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
     np <- length(pressure)
     if (np == 1) {
         np <- nS
-        p <- rep(pressure[1], np)
+        pressure <- rep(pressure[1], np)
     }
     method <- match.arg(method)
     if (method == "bryden") {
@@ -523,7 +552,7 @@ swTheta <- function(salinity, temperature=NULL, pressure=NULL, referencePressure
                    PACKAGE = "oce")$value
     } else {
         if (method == "unesco") {
-                                        # sometimes have just a single value
+            ## sometimes have just a single value
             npref <- length(referencePressure)
             if (npref == 1)
                 referencePressure <- rep(referencePressure[1], nS)
@@ -550,4 +579,50 @@ swViscosity <- function(salinity, temperature=NULL)
            (5.32178e-11))) + temperature * (-6.293088e-05 +
            temperature * (1.716685e-06 + temperature * (-3.479273e-08
            + temperature * (+3.566255e-10))))
+}
+
+swConservativeTemperature <- function(salinity, temperature, pressure)
+{
+    if (inherits(salinity, "ctd")) {
+        temperature <-  salinity@data$temperature
+        pressure <-  salinity@data$pressure
+        salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
+    } else {
+        if (missing(temperature)) stop("must provide temperature")
+        if (missing(pressure)) stop("must provide temperature")
+    }
+    n <- length(salinity)
+    if (n != length(temperature)) stop("lengths of salinity and temperature must match") 
+    if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
+    bad <- is.na(salinity) | is.na(temperature) | is.na(pressure)
+    good <- teos("gsw_ct_from_t", salinity[!bad], temperature[!bad], pressure[!bad])
+    rval <- rep(NA, n)
+    rval[!bad] <- good
+    rval
+}
+
+swAbsoluteSalinity <- function(salinity, pressure, longitude, latitude)
+{
+    if (inherits(salinity, "ctd")) {
+        pressure <- salinity@data$pressure
+        n <- length(pressure)
+        longitude <- rep(salinity@metadata$longitude, n)
+        latitude <- rep(salinity@metadata$latitude, n)
+        salinity <- salinity@data$salinity # NOTE: this destroys the salinity object
+    } else {
+        ## FIXME: perhaps should default lon and lat
+        n <- length(salinity)
+        if (missing(pressure)) stop("must provide temperature")
+        if (missing(longitude)) stop("must provide longitude to compute absolute salinity")
+        if (missing(latitude)) stop("must provide latitude to compute absolute salinity")
+    }
+    if (n != length(pressure)) stop("lengths of salinity and pressure must match") 
+    if (n != length(longitude)) stop("lengths of salinity and longitude must match")  
+    if (n != length(latitude))  stop("lengths of salinity and latitude must match") 
+    longitude <- ifelse(longitude < 0, longitude + 360, longitude)
+    bad <- is.na(salinity) | is.na(pressure) | is.na(longitude) | is.na(latitude)
+    good <- teos("gsw_sa_from_sp", salinity[!bad], pressure[!bad], longitude[!bad], latitude[!bad])
+    rval <- rep(NA, n)
+    rval[!bad] <- good
+    rval
 }

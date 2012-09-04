@@ -121,6 +121,31 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
     res
 }
 
+plotPolar <- function(r, theta, debug=getOption("oceDebug"), ...)
+{
+
+    oceDebug(debug, "\b\bplotPolar(...)\n")
+    if (missing(r)) stop("must supply 'r'")
+    if (missing(theta)) stop("must supply 'theta'")
+    thetaRad <- theta * atan2(1, 1) / 45
+    x <- r * cos(thetaRad)
+    y <- r * sin(thetaRad)
+    R <- 1.2 * max(r, na.rm=TRUE)
+    Rpretty <- pretty(c(0, R))
+    plot.new()
+    plot.window(c(-R, R), c(-R, R), asp=1)
+    points(x, y, ...)
+    xa <- axis(1, pos=0)
+    abline(v=0)
+    th <- seq(0, 2 * atan2(1, 1) * 4, length.out=100)
+    for (radius in xa[xa>0]) {
+        lines(radius * cos(th), radius * sin(th))
+    }
+    abline(h=0)
+    abline(v=0)
+    oceDebug(debug, "\b\b} # plotPolar()\n")
+}
+
 oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
 {
     method <- match.arg(method)
@@ -146,17 +171,20 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     .Call("oce_approx", x=x[o], y=y[o], xout=xout)
 }
 
-oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
-                            mgp=getOption("oceMgp"),
-                            mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
-                            ...)
+plotSticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
+                       mgp=getOption("oceMgp"),
+                       mar=c(mgp[1]+1,mgp[1]+1,1,1+par("cex")),
+                       ...)
 {
     pin <- par("pin")
     page.ratio <- pin[2]/pin[1]
     if (missing(x))
         stop("must supply x")
+    nx <- length(x)
     if (missing(y))
-        stop("must supply y")
+        y <- rep(0, nx)
+    if (length(y) < nx)
+        y <- rep(y[1], nx)
     if (missing(u))
         stop("must supply u")
     if (missing(v))
@@ -185,9 +213,9 @@ oce.plot.sticks <- function(x, y, u, v, yscale=1, add=FALSE, length=1/20,
 }
 
 
-oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
+oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         drawTimeRange=TRUE, adorn=NULL, fill=FALSE,
-                        xaxs="i", yaxs="i",
+                        #xaxs="i", yaxs="i",
                         cex=par("cex"), cex.axis=par("cex.axis"), cex.main=par("cex.main"),
                         mgp=getOption("oceMgp"),
                         mar=c(mgp[1]+if(nchar(xlab)>0) 1.5 else 1, mgp[1]+1.5, mgp[2]+1, mgp[2]+3/4),
@@ -200,6 +228,10 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
                         debug=getOption("oceDebug"),
                         ...)
 {
+    if (missing(xlab))
+        xlab <- ""
+    if (missing(ylab))
+        ylab  <- deparse(substitute(y))
     ocex <- par("cex")
     #par(cex=cex)
     debug <- min(debug, 4)
@@ -243,14 +275,14 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab="", ylab="",
     if (fill) {
         xx <- c(x[1], x, x[length(x)])
         yy <- c(0, y, 0)
-        plot(x, y, axes=FALSE, xaxs=xaxs, xlab=xlab,
+        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
              xlim=if (xlimGiven) xlim else range(x, na.rm=TRUE),
-             ylab=ylab,
+             xlab=xlab, ylab=ylab,
              type=type, cex=cex, ...)
         fillcol <- if ("col" %in% names(args)) args$col else "lightgray" # FIXME: should be a formal argument
         do.call(polygon, list(x=xx, y=yy, col=fillcol))
     } else {
-        plot(x, y, axes=FALSE, xaxs=xaxs,
+        plot(x, y, axes=FALSE, #xaxs=xaxs, yaxs=yaxs,
              xlim=if (missing(xlim)) NULL else xlim,
              ylim=if (missing(ylim)) NULL else ylim,
              xlab=xlab, ylab=ylab,
@@ -441,6 +473,7 @@ oce.write.table <- function (x, file="", ...)
         write.table(x@data, file, ...)
 }
 
+
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
 {
     debug <- max(0, min(debug, 1))
@@ -545,6 +578,16 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
             }
         } else {
             stop("must supply either 'subset' or 'indices'")
+        }
+    } else if (inherits(x, "lisst")) {
+        if (length(grep("time", subsetString))) {
+            keep <- eval(substitute(subset), x@data, parent.frame())
+            rval <- x
+            n <- length(names(rval@data))
+            for (i in 1:n)
+                rval@data[[i]] <- rval@data[[i]][keep]
+        } else {
+            stop("can only subset LISST objects by time")
         }
     } else if (inherits(x, "section")) {
         if (!is.null(indices)) {        # select a portion of the stations
@@ -784,12 +827,16 @@ summary.oce <- function(object, ...)
     return(invisible(object))
 }
 
-magic <- function(file, debug=getOption("oceDebug"))
+oceMagic <- function(file, debug=getOption("oceDebug"))
 {
     filename <- file
     if (is.character(file)) {
         oceDebug(debug, "checking filename to see if it matches known patterns\n")
-        if (length(grep(".adr$", filename))) {
+        if (length(grep(".asc$", filename))) {
+            someLines <- readLines(file, encoding="UTF-8", n=1)
+            if (42 == length(strsplit(someLines[1], ' ')[[1]]))
+                return("lisst")
+        } else if (length(grep(".adr$", filename))) {
             oceDebug(debug, "file names ends in .adr, so this is an adv/sontek/adr file.\n")
             return("adv/sontek/adr")
         } else if (length(grep(".rsk$", filename))) {
@@ -822,11 +869,11 @@ magic <- function(file, debug=getOption("oceDebug"))
         open(file, "r")
     ## grab a single line of text, then some raw bytes (the latter may be followed by yet more bytes)
     line <- scan(file, what='char', sep="\n", n=1, quiet=TRUE)
-    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found first line of file to be as follows:\n", line, "\n", sep=""))
     close(file)
     file <- file(filename, "rb")
     bytes <- readBin(file, what="raw", n=4)
-    oceDebug(debug, paste("magic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
+    oceDebug(debug, paste("oceMagic(file=\"", filename, "\", debug=",debug,") found two bytes in file: 0x", bytes[1], " and 0x", bytes[2], "\n", sep=""))
     on.exit(close(file))
     if (bytes[1] == 0x00 && bytes[2] == 0x00 && bytes[3] == 0x27 && bytes[4] == 0x0a) {
         oceDebug(debug, "this is a shapefile; see e.g. http://en.wikipedia.org/wiki/Shapefile\n")
@@ -872,11 +919,15 @@ magic <- function(file, debug=getOption("oceDebug"))
             oceDebug(debug, "this is adp/nortek/aqudopp\n")
             return("adp/nortek/aquadopp") # p33 SIG
         }
+        if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x21)  {
+            oceDebug(debug, "this is adp/nortek/aqudoppProfiler\n")
+            return("adp/nortek/aquadoppProfiler") # p37 SIG
+        }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
             oceDebug(debug, "this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
-        } else
-            stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
+        }
+        stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
         ##} else if (as.integer(bytes[1]) == 81) {
         ##    warning("possibly this file is a sontek ADV (first byte is 81)")
         ##} else if (as.integer(bytes[1]) == 83) {
@@ -928,7 +979,7 @@ magic <- function(file, debug=getOption("oceDebug"))
 
 read.oce <- function(file, ...)
 {
-    type <- magic(file)
+    type <- oceMagic(file)
     processingLog <- paste(deparse(match.call()), sep="", collapse="")
     if (type == "shapefile")
         return(read.coastline.shapefile(file, ...))
@@ -939,9 +990,11 @@ read.oce <- function(file, ...)
     if (type == "adp/sontek")
         return(read.adp.sontek(file, processingLog=processingLog, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
-        stop("cannot read adp/nortek/aquadopp files (aquadoppHR is OK, though)")
+        stop("cannot read \"adp/nortek/aquadopp\" files")
+    if (type == "adp/nortek/aquadoppProfiler")
+        return(read.adp.nortek(file, type="aquadoppProfiler", processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, processingLog=processingLog, ...))
+        return(read.adp.nortek(file, type="aquadoppHR", processingLog=processingLog, ...))
     if (type == "adv/nortek/vector")
         return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")
@@ -957,6 +1010,8 @@ read.oce <- function(file, ...)
         return(read.coastline(file, type="mapgen", processingLog=processingLog, ...))
     if (type == "drifter/argo")
         return(read.drifter(file))
+    if (type == "lisst")
+        return(read.lisst(file))
     if (type == "sealevel")
         return(read.sealevel(file, processingLog=processingLog, ...))
     if (type == "topo")
@@ -1102,7 +1157,15 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
               "UTC\n")
     z.sub <- NULL # unlabelled tics may be set in some time ranges, e.g. hours, for few-day plots
     oceDebug(debug, "d=", d, " (time range)\n")
-    if (d < 60 * 3) {                       # under 3 min
+    if (d < 60) {                       # under a min
+        t.start <- rr[1]
+        t.end <- rr[2]
+        z <- seq(t.start, t.end, length.out=10)
+        oceDebug(debug, "time range is under a minute\n")
+        oceDebug(debug, vectorShow(z, "z"))
+        if (missing(format))
+            format <- "%S"
+    } else if (d < 60 * 3) {                       # under 3 min
         t.start <- trunc(rr[1]-60, "mins")
         t.end <- trunc(rr[2]+60, "mins")
         z <- seq(t.start, t.end, by="10 sec")
@@ -1312,7 +1375,7 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
     par(cex.axis=ocex.axis, cex.main=cex.main, mgp=omgp)
     oceDebug(debug, "\b\b} # oce.axis.ts()\n")
     zzz <- as.numeric(z)
-    par(xaxp=c(min(zzz), max(zzz), -1+length(zzz)))
+    par(xaxp=c(min(zzz, na.rm=TRUE), max(zzz, na.rm=TRUE), -1+length(zzz)))
     invisible()
 }
 
@@ -1374,7 +1437,8 @@ numberAsPOSIXct <- function(t, type=c("unix", "matlab", "gps", "argos"), tz="UTC
         ## http://en.wikipedia.org/wiki/Leap_second
         leaps <- as.POSIXct(strptime(c("1981-07-01", "1982-07-01", "1983-07-01", "1985-07-01", "1987-01-01",
                                        "1989-01-01", "1990-01-01", "1992-07-01", "1993-07-01", "1994-07-01",
-                                       "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01"),
+                                       "1995-01-01", "1997-07-01", "1998-01-01", "2005-01-01", "2008-01-01",
+                                       "2012-07-01"),
                                      format="%Y-%m-%d", tz="UTC"))
         t <- as.POSIXct("1999-08-22 00:00:00",tz="UTC") + 86400*7*t[,1] + t[,2]
         for (l in 1:length(leaps)) {
@@ -1523,4 +1587,52 @@ drawDirectionField <- function(x, y, u, v, scalex, scaley, add=FALSE,
         stop("unknown value of type ", type)
     }
     oceDebug(debug, "\b\b} # drawDirectionField\n")
+}
+
+oceContour <- function(x, y, z, revx=FALSE, revy=FALSE, ...)
+{
+    dots <- list(...)
+    dotsNames <- names(dots)
+    if ("add" %in% dotsNames) {
+        contour(x, y, z, ...)
+    } else {
+        if (missing(z)) {
+            if (!missing(x)) {
+                if (is.list(x)) {
+                    z <- x$z; y <- x$y; x <- x$x
+                } else {
+                    z <- x
+                    x <- seq.int(0, 1, length.out = nrow(z))
+                }
+            } else stop("no 'z' matrix specified")
+        } else if (is.list(x)) {
+            y <- x$y
+            x <- x$x
+        }
+        zdim <- dim(z)
+        if (revx) {
+            x <- rev(x)
+##            z <- z[seq.int(zdim[1], 1), ]
+        }
+        if (revy) {
+            y <- rev(y)
+ ##           z <- z[, seq.int(zdim[2], 1)]
+        }
+        if (!("axes" %in% dotsNames)) {
+            contour(x, y, z, axes=FALSE, ...)
+            ## see src/library/graphics/R/contour.R 
+            xaxp <- par('xaxp')
+            xat <- seq(xaxp[1], xaxp[2], length.out=-1+xaxp[3])
+            xlabels <- format(xat)
+            yaxp <- par('yaxp')
+            yat <- seq(yaxp[1], yaxp[2], length.out=-1+yaxp[3])
+            ylabels <- format(yat)
+            ##print(data.frame(yat, ylabels))
+            if (revx) Axis(x, side=1, at=xat, labels=rev(xlabels)) else Axis(x, side=1)
+            if (revy) Axis(y, side=2, at=yat, labels=rev(ylabels)) else Axis(y, side=2)
+            box()
+        } else {
+            contour(x, y, z, ...)
+        }
+    }
 }

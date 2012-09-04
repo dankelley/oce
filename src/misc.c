@@ -91,7 +91,7 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
                 break;
             }
             /* in left half */
-            if (px[left] <= this_find & this_find < px[middle]) {
+            if ((px[left] <= this_find) & (this_find < px[middle])) {
 #ifdef debug
                 Rprintf("L %d %d\n", left, middle);
 #endif
@@ -109,7 +109,7 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
                 }
             }
             /* in right half */
-            if (px[middle] < this_find & this_find <= px[right]) {
+            if ((px[middle] < this_find) & (this_find <= px[right])) {
 #ifdef debug
                 Rprintf("R %d %d %f %f\n", middle, right, px[middle], px[right]);
 #endif
@@ -132,48 +132,6 @@ SEXP bisect_d(SEXP x, SEXP find, SEXP side)
         }
     }
     UNPROTECT(4);
-    return(res);
-}
-
-SEXP matrix_smooth(SEXP mat)
-{
-    /* Note: the 2d data are stored in column order */
-    SEXP res;
-    int nrow = INTEGER(GET_DIM(mat))[0];
-    int ncol = INTEGER(GET_DIM(mat))[1];
-    int i, j;
-    double *matp, *resp;
-    if (!isMatrix(mat))
-        error("'mat' must be a matrix");
-    //if (isInteger(mat)) warning("'mat' is integer, but should be real");
-    if (!isReal(mat))
-        error("'mat' must be numeric, not integer");
-    matp = REAL(mat);
-    if (length(mat) != nrow * ncol)
-        error("'nrow'*'ncol' must equal number of elements in 'mat'");
-    PROTECT(res = allocMatrix(REALSXP, nrow, ncol));
-    resp = REAL(res);
-    // copy edges (change this, if filter size changes)
-    for (j = 0; j < ncol; j++) {
-        *(resp + j                    ) = *(matp + j                    );
-        *(resp + j + ncol * (nrow - 1)) = *(matp + j + ncol * (nrow - 1));
-    }
-    for (i = 0; i < nrow; i++) {
-        *(resp +      0     + ncol * i) = *(matp +      0     + ncol * i);
-        *(resp + (nrow - 1) + ncol * i) = *(matp + (nrow - 1) + ncol * i);
-    }
-    // smooth middle 
-    for (i = 1; i < nrow - 1; i++) {
-        for (j = 1; j < ncol - 1; j++) {
-            *(resp + j + ncol * i) = 
-                (2*(*(matp + j     + ncol *    i    )) +
-                 (  *(matp + j - 1 + ncol *    i    )) +
-                 (  *(matp + j + 1 + ncol *    i    )) +
-                 (  *(matp + j     + ncol * (i - 1) )) +
-                 (  *(matp + j     + ncol * (i + 1) ))) / 6.0;
-        }
-    }
-    UNPROTECT(1);
     return(res);
 }
 

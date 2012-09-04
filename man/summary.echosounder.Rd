@@ -29,10 +29,8 @@
 
 \examples{
 library(oce)
-\dontrun{
-e <- read.echosounder("myfile")
-summary(e)
-}
+data(echosounder)
+summary(echosounder)
 }
 
 \author{Dan Kelley}

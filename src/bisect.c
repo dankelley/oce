@@ -54,7 +54,7 @@ SEXP bisect(SEXP x, SEXP X)
       } else if (xp[nx-1] <= Xp[iX]) {
 	resp[iX] = nx;
       } else {
-	unsigned int lower = 0, upper = nx-1, middle;
+	unsigned int lower = 0, upper = nx-1, middle = nx / 2;
 	int npass = floor(5.0 + log2(0.0 + nx)); // for safety, add 5; should never get close
 	for (unsigned int pass = 0; pass < npass; pass++) {
 	  middle = (int)floor((upper + lower) / 2.0);

@@ -6,7 +6,8 @@
 
 \description{Fit a tidal model to a timeseries.}
 
-\usage{tidem(x, t, constituents, latitude=NULL, rc=1, debug =getOption("oceDebug"))}
+\usage{tidem(x, t, constituents, latitude=NULL, rc=1, regress=lm,
+      debug =getOption("oceDebug"))}
 
 \arguments{
 
@@ -29,6 +30,9 @@
     try to infer this from \code{sl}.}
 
   \item{rc}{the value of the coefficient in the Rayleigh criterion.}
+
+  \item{regress}{function to be used for regression, by default \code{\link{lm}}, but could be for
+    example \code{rlm} from the \code{MASS} package.}
 
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a moderate amount of debugging
     information, or to 2 to get more.} 
@@ -60,8 +64,8 @@
   then the (optional) rest of the elements of \code{constituents} are
   examined, in order.  Each of these constituents is based on the name
   of a tidal constituent in the Foreman (1977) notation.  (To get the
-  list, execute \code{data(tide.constituents)} and then
-  execute \code{cat(tide.constituents$name)}.)  Each named constituent is
+  list, execute \code{data(tideData)} and then
+  execute \code{cat(tideData$name)}.)  Each named constituent is
   added to the existing list, if it is not already there.  But, if the
   constituent is preceeded by a minus sign, then it is removed from the
   list (if it is already there).  Thus, for example,
@@ -144,6 +148,9 @@ data(sealevelTuktoyaktuk)
 tide <- tidem(sealevelTuktoyaktuk)
 summary(tide)
 
+# AIC analysis
+extractAIC(tide[["model"]])
+
 # Fake data at M2
 t <- seq(0, 10*86400, 3600)
 eta <- sin(0.080511401 * t * 2 * pi / 3600)
@@ -162,6 +169,10 @@ summary(m)
   Foreman, M. G. G., Neufeld, E. T., 1991.
   Harmonic tidal analyses of long time series.
   International Hydrographic Review, 68 (1), 95-108.
+
+  Leffler, K. E. and D. A. Jay, 2009.
+  Enhancing tidal harmonic analysis: Robust (hybrid) solutions.
+  Continental Shelf Research, 29(1):78-88.
   
   Pawlowicz, Rich, Bob Beardsley, and Steve Lentz, 2002.
   Classical tidal harmonic analysis including error estimates in MATLAB using \code{T_TIDE}.

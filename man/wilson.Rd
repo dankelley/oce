@@ -6,7 +6,7 @@
 
 \title{Wilson's (1963) table of seafloor spreading}
 
-\description{Wilson's (1963) table of seafloor spreading.  This dataset is used in Chapter 3 of Kelley (2011).}
+\description{Wilson's (1963) table of seafloor spreading.  This dataset is used in Chapter 4 of Kelley (2012).}
 
 
 \usage{data(wilson)}
@@ -22,6 +22,7 @@ m <- lm(Distance~Age-1, data=wilson)
 spreadingRate <- as.numeric(coef(m)) / 10 
 print(spreadingRate)
 abline(m, col='red')
+detach(wilson)
 }
 
 \source{Data transcribed from Wilson's (1963) Table 1, taking only the

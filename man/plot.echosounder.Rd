@@ -10,7 +10,8 @@
 
 \usage{\S4method{plot}{echosounder}(x,
      which=1, 
-     newx, xlab="",
+     newx,
+     xlab, ylab,
      xlim, ylim, zlim,
      type="l", col=oceColorsJet, lwd=2,
      despike=FALSE,
@@ -41,7 +42,8 @@
       time vector, because the image is remapped from time to \code{newx} using
       \code{\link{approx}}.}
 
-  \item{xlab}{label for horizontal axis.}
+  \item{xlab, ylab}{optional labels for the horizontal and vertical axes; if
+      not provided, the labels depend on the value of \code{which}.}
 
   \item{xlim}{optional range for x axis.}
 
@@ -113,12 +115,10 @@
     dealing with them.}
 
 \examples{
-\dontrun{
 library(oce)
-d <- read.oce("/data/archive/sleiwex/2008/fielddata/2008-07-01/Merlu/Biosonics/20080701_163942.dt4")
+data(echosounder)
 data(coastlineSLE)
-plot(d, which=c(1,3), coastline=coastlineSLE, radius=2, drawBottom=TRUE)
-}
+plot(echosounder, which=c(1,3), coastline=coastlineSLE, radius=2, drawBottom=TRUE)
 }
 
 \author{Dan Kelley, with extensive help from Clark Richards}
