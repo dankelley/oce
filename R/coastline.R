@@ -167,22 +167,23 @@ setMethod(f="plot",
                   usrTrimmed <- par('usr')
                   ## Construct axes "manually" because axis() does not know the physical range
                   if (axes) {
-                      prettyLat <- function(yr)
+                      prettyLat <- function(yr, ...)
                       {
-                          res <- pretty(yr)
+                          res <- pretty(yr, ...)
                           if (diff(yr) > 100)
                               res <- seq(-90, 90, 45)
                           res
                       }
-                      prettyLon <- function(xr)
+                      prettyLon <- function(xr, ...)
                       {
-                          res <- pretty(xr)
+                          res <- pretty(xr, ...)
                           if (diff(xr) > 100)
                               res <- seq(-180, 180, 45)
                           res
                       }
-                      xr.pretty <- prettyLon(xr0)
-                      yr.pretty <- prettyLat(yr0)
+                      oceDebug(debug, "xr:", xr, ", yr:", yr, ", xr0:", xr0, ", yr0:", yr0, "\n")
+                      xr.pretty <- prettyLon(xr, n=if (geographical)3 else 5, high.u.bias=20)
+                      yr.pretty <- prettyLat(yr, n=if (geographical)3 else 5, high.u.bias=20)
                       oceDebug(debug, "xr.pretty=", xr.pretty, "\n")
                       oceDebug(debug, "yr.pretty=", yr.pretty, "\n")
                       usrTrimmed[1] <- max(-180, usrTrimmed[1])
@@ -198,8 +199,8 @@ setMethod(f="plot",
                           ylabels <- sub("-", "", ylabels)
                       }
                       if (geographical == 2) {
-                          xr.pretty <- prettyPosition(xr.pretty)
-                          yr.pretty <- prettyPosition(yr.pretty)
+                          xr.pretty <- prettyPosition(xr.pretty, debug=debug-1)
+                          yr.pretty <- prettyPosition(yr.pretty, debug=debug-1)
                           xlabels <- formatPosition(xr.pretty, type='expression')
                           ylabels <- formatPosition(yr.pretty, type='expression')
                       }

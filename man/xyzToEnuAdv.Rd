@@ -62,10 +62,10 @@
   if needed.
 
   The code handles every case individually, based on the table given below.
-  The table comes from Clark Richards, a PhD student at Dalhousie University
-  [2], who developed it based on instrument documentation, discussion on user
-  groups, and analysis of measurements acquired with Nortek and Sontek
-  velocimeters in the SLEIWEX experiment [3].
+  The table comes from Clark Richards, a former PhD student at Dalhousie
+  University [2], who developed it based on instrument documentation,
+  discussion on user groups, and analysis of measurements acquired with Nortek
+  and Sontek velocimeters in the SLEIWEX experiment [3].
 
   The column labelled ``Cabled'' indicates whether the sensor and the pressure
   case are connected with a flexible cable, and the column labelled ``H.case''
@@ -101,7 +101,7 @@
 \references{
     \enumerate{
 \item \url{http://www.nortek-as.com/lib/forum-attachments/coordinate-transformation}
-\item Clark Richards, 2011, PhD Dalhousie University Department of Oceanography.
+\item Clark Richards, 2012, PhD Dalhousie University Department of Oceanography.
 \item The SLEIWEX experiment (\url{http://myweb.dal.ca/kelley/SLEIWEX/index.php}).
     }
 }
