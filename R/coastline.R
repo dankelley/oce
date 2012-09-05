@@ -447,8 +447,8 @@ read.coastline.shapefile <- function(file, lonlim=c(-180,180), latlim=c(-90,90),
             }
         }
         o <- o + 53 + 4 * numberParts + 2 * numberPoints * 8 - 1
-        if (record == 1) browser()
-        if (record > 1) break
+        ##if (record == 1) browser()
+        ##if (record > 1) break
     }
     res@data$latitude <- latitude
     res@data$longitude <- longitude
