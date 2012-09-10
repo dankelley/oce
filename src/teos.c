@@ -20,7 +20,7 @@
 #ifdef WIN32
 #  include <windows.h>
 #else
-# include <dlfcn.h>
+#  include <dlfcn.h>
 #endif
 static void *teos_handle = NULL;
 
@@ -34,7 +34,7 @@ char *libteosp;
 void set_libteos(char **lib)
 {
 #ifdef DEBUG
-  Rprintf("set_libteos(%s)\n", *lib);
+  Rprintf("set_libteos(\"%s\")\n", *lib);
 #endif
   libteosp = (char *)malloc(sizeof(char)*strlen(*lib));
   strcpy(libteosp, *lib);
@@ -56,8 +56,10 @@ void gsw2a(char **lib, char **name, int *n, double *a1, double *a2, double *rval
 #else
     teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
 #endif
-    if (!teos_handle)
+    if (!teos_handle) {
+      Rprintf(dlerror());
       error("cannot open TEOS library %s", *lib);
+    }
     first_teos_call = 0;
   }
 #ifdef WIN32
@@ -65,8 +67,10 @@ void gsw2a(char **lib, char **name, int *n, double *a1, double *a2, double *rval
 #else
   double (*f2)(double, double) = dlsym(teos_handle, *name);
 #endif
-  if (!f2) 
+  if (!f2) {
+    Rprintf(dlerror());
     error("cannot find \"%s\" in TEOS library %s", *name, *lib);
+  }
   for (int i = 0; i < *n; i++) {
     rval[i] = (*f2)(a1[i], a2[i]);
   }
@@ -83,8 +87,10 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
 #else
     teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
 #endif
-    if (!teos_handle)
+    if (!teos_handle) {
+      Rprintf(dlerror());
       error("cannot open TEOS library %s", *lib);
+    }
     first_teos_call = 0;
   }
 #ifdef WIN32
@@ -92,8 +98,10 @@ void gsw3a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
 #else
   double (*f3)(double, double, double) = dlsym(teos_handle, *name);
 #endif
-  if (!f3) 
+  if (!f3) {
+    Rprintf(dlerror());
     error("cannot find \"%s\" in TEOS library %s", *name, *lib);
+  }
   for (int i = 0; i < *n; i++) {
     rval[i] = (*f3)(a1[i], a2[i], a3[i]);
   }
@@ -110,8 +118,10 @@ void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
 #else
     teos_handle = dlopen(*lib, RTLD_LOCAL|RTLD_LAZY);
 #endif
-    if (!teos_handle)
+    if (!teos_handle) {
+      Rprintf(dlerror());
       error("cannot open TEOS library %s", *lib);
+    }
     first_teos_call = 0;
   }
 #ifdef WIN32
@@ -119,8 +129,10 @@ void gsw4a(char **lib, char **name, int *n, double *a1, double *a2, double *a3, 
 #else
   double (*f4)(double, double, double, double) = dlsym(teos_handle, *name);
 #endif
-  if (!f4)
+  if (!f4) {
+    Rprintf(dlerror());
     error("cannot find \"%s\" in TEOS library %s", *name, *lib);
+  }
   for (int i = 0; i < *n; i++) {
     rval[i] = (*f4)(a1[i], a2[i], a3[i], a4[i]);
   }
