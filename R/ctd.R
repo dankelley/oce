@@ -2112,12 +2112,12 @@ plotProfile <- function (x,
             look <- if (keepNA) 1:length(y) else !is.na(x@data$temperature) & !is.na(y)
             plot(temperature[look], y[look],
                  xlim=Tlim, ylim=ylim,
-                 type = "n", xlab = "", ylab = yname, axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
-            if (debug) cat("IN plot.ctd() mar=", par('mar'), "\n")
+                 type = "n", xlab = "", ylab = "", axes = FALSE, xaxs=xaxs, yaxs=yaxs, ...)
             if (eos == "teos")
                 mtext(resizableLabel("conservative temperature", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
             else
                 mtext(resizableLabel("T", "x"), side = 3, line = axis.name.loc, cex=par("cex"))
+            mtext(yname, side = 2, line = axis.name.loc, cex=par("cex"))
             axis(2)
             axis(3)
             box()

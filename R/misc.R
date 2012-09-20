@@ -617,6 +617,8 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "z") {
         full <- expression(z, " [ m ]")
         abbreviated <- expression(z, " [m]")
+        abbreviated <- expression(paste(z, " [m]"))
+        full <- expression(paste(z, " [m]"))
     } else if (item == "distance") {
         full <- "Distance [m]"
         abbreviated <- "Dist. [m]"
@@ -651,7 +653,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- "Speed [m/s]"
         abbreviated <- "Speed [m/s]"
     }
-    spaceNeeded <- strwidth(full, "inches")
+    spaceNeeded <- strwidth(paste(full, collapse=""), "inches")
     whichAxis <- if (axis == "x") 1 else 2
     spaceAvailable <- abs(par("fin")[whichAxis])
     fraction <- spaceNeeded / spaceAvailable
