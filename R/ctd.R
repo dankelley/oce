@@ -1729,10 +1729,7 @@ plotTS <- function (x,
         salinity <- x[["SA"]]
         y <- x[["CT"]]
     } else {
-        y <- if (inSitu) x@data$temperature else swTheta(x@data$salinity,
-                                                         x@data$temperature,
-                                                         x@data$pressure,
-                                                         referencePressure=referencePressure)
+        y <- if (inSitu) x[["temperature"]] else swTheta(x, referencePressure=referencePressure)
         salinity <- x[["salinity"]]
     }
     if (missing(Slim)) Slim <- range(salinity, na.rm=TRUE)
@@ -1786,7 +1783,7 @@ plotTS <- function (x,
             }
             if (type == 'p')
                 points(salinity, y, cex=cex, pch=pch, col=col, ...)
-            else
+            else if (type == 'l')
                 lines(salinity, y, col=col, ...)
         }
     }
