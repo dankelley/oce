@@ -615,8 +615,6 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
         full <- expression(paste("Pressure, ", P, " [dbar]"))
         abbreviated <- expression(paste(P, " [dbar]"))
     } else if (item == "z") {
-        full <- expression(z, " [ m ]")
-        abbreviated <- expression(z, " [m]")
         abbreviated <- expression(paste(z, " [m]"))
         full <- expression(paste(z, " [m]"))
     } else if (item == "distance") {
