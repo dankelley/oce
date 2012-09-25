@@ -1,5 +1,5 @@
 0.9-4
-- plotTS(): permit type='n'
+- plotTS() and plotProfile(): permit type='n'
 - plotProfile(ytype='z'): fix bug in y label
 - improve error message if TEOS-10 is missing
 

@@ -1888,6 +1888,7 @@ plotProfile <- function (x,
     eos <- match.arg(eos, c("unesco", "teos"))
     plotJustProfile <- function(x, y, col="black", type="l", lwd=par("lwd"), cex=1, pch=1, keepNA=FALSE)
     {
+        oceDebug(debug, "\b    plotJustProfile(type=\"", type, "\") {\n", sep="")
         if (!keepNA) {
             keep <- !is.na(x) & !is.na(y)
             x <- x[keep]
@@ -1902,9 +1903,12 @@ plotProfile <- function (x,
         } else if (type == 'b') {
             lines(x, y, col = col, lwd=lwd)
             points(x, y, col = col, cex=cex, pch=pch)
+        } else if (type == 'n') {
+            ; # skip it
         } else {
             lines(x, y, col = col, lwd=lwd)
         }
+        oceDebug(debug, "} # plotJustProfile\n")
     }
     ##if (!inherits(x, "ctd")) stop("method is only for ctd objects")
     ylimGiven <- !missing(ylim)
