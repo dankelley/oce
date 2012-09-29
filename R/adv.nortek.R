@@ -83,7 +83,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      velocityScale=header$user$velocityScale,
                      originalCoordinate=header$user$originalCoordinate,
                      oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnattenuated=FALSE,
+                     oceBeamUnspreaded=FALSE,
                      comments=header$user$comments)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")

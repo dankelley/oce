@@ -1,12 +1,12 @@
-\name{beamUnattenuateAdp}
+\name{beamUnspreadAdp}
 
-\alias{beamUnattenuateAdp}
+\alias{beamUnspreadAdp}
 
-\title{Unattenuate ADP beam signal strength}
+\title{Compensate ADP signal strength for spherical spreading}
 
-\description{Unattenuate ADP beam signal strength}
+\description{Compensate ADP signal strength for spherical spreading}
 
-\usage{beamUnattenuateAdp(x, count2db=c(0.45, 0.45, 0.45, 0.45),
+\usage{beamUnspreadAdp(x, count2db=c(0.45, 0.45, 0.45, 0.45),
 asMatrix=FALSE, debug=getOption("oceDebug"))}
 
 \arguments{
@@ -20,13 +20,12 @@ asMatrix=FALSE, debug=getOption("oceDebug"))}
         moderate amount of debugging information, or to 2 to get more.}
 }
 
-\details{Beam echo intensity is first converted from counts to decibels,
-    by multiplying by \code{count2db}.  Then the signals are range
-    corrected by adding the term \eqn{20\log10(r)}{20*log10(r)}, where
-    \eqn{r}{r} is the distance from the sensor head to the water from
-    which scattering is occuring.  \eqn{r}{r} is given by
-    \code{x[["distance"]]}.
-}
+\details{ First, beam echo intensity is converted from counts to decibels, by
+    multiplying by \code{count2db}.  Then, the signal decrease owing to
+    spherical spreading is compensated for by adding the term
+    \eqn{20\log10(r)}{20*log10(r)}, where \eqn{r}{r} is the distance from the
+    sensor head to the water from which scattering is occuring.  \eqn{r}{r} is
+    given by \code{x[["distance"]]}.}
 
 \value{An object of \code{\link[base]{class}} \code{"adp"}.}
 
@@ -34,7 +33,7 @@ asMatrix=FALSE, debug=getOption("oceDebug"))}
 library(oce)
 data(adp)
 plot(adp, which=5) # beam 1 echo intensity
-adp.att <- beamUnattenuateAdp(adp)
+adp.att <- beamUnspreadAdp(adp)
 plot(adp.att, which=5) # beam 1 echo intensity
 ## Profiles
 par(mar=c(4, 4, 1, 1))

@@ -523,7 +523,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      velocityMaximum=velocityScale * 2^15,
                      originalCoordinate=header$user$originalCoordinate,
                      oceCoordinate=header$user$originalCoordinate,
-                     oceBeamUnattenuated=FALSE
+                     oceBeamUnspreaded=FALSE
                      )
     res <- new("adp")
     res@data <- data

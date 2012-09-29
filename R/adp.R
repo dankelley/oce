@@ -274,7 +274,7 @@ summary.adp <- function(object, ...)
                             pingsPerEnsemble=object@metadata$pingsPerEnsemble,
                             bin1Distance=object@metadata$bin1Distance,
                             xmitPulseLength=object@metadata$xmitPulseLength,
-                            oceBeamUnattenuated=object@metadata$oceBeamUnattenuated,
+                            oceBeamSpreaded=object@metadata$oceBeamSpreaded,
                             beamConfig=object@metadata$beamConfig)
     } else if (1 == length(agrep("sontek", object@metadata$manufacturer, ignore.case=TRUE))) {
         resSpecific <- list(cpuSoftwareVerNum=object@metadata$cpuSoftwareVerNum,
@@ -301,7 +301,8 @@ summary.adp <- function(object, ...)
                 object@metadata$numberOfCells, object@data$distance[1],  tail(object@data$distance, 1), diff(object@data$distance[1:2])),  ...)
     cat("* Coordinate system: ", object@metadata$originalCoordinate, "[originally],", object@metadata$oceCoordinate, "[presently]\n", ...)
     cat("* Frequency:         ", object@metadata$frequency, "kHz\n", ...)
-    cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnattenuated) & object@metadata$oceBeamUnattenuated) "beams (attenuated)" else "beams (not attenuated)",
+    cat("* Beams:             ", object@metadata$numberOfBeams, if (!is.null(object@metadata$oceBeamUnspreaded) &
+                                                                    object@metadata$oceBeamUnspreaded) "beams (attenuated)" else "beams (not attenuated)",
         "oriented", object@metadata$orientation, "with angle", object@metadata$beamAngle, "deg to axis\n", ...)
     if (!is.null(object@metadata$transformationMatrix)) {
         digits <- 4
@@ -323,7 +324,7 @@ summary.adp <- function(object, ...)
     res$numberOfDataTypes <- object@metadata$numberOfDataType
     res$bin1Distance <- object@metadata$bin1Distance
     res$xmitPulseLength <- object@metadata$xmitPulseLength
-    res$oceBeamUnattenuated <- object@metadata$oceBeamUnattenuated
+    res$oceBeamUnspreaded <- object@metadata$oceBeamUnspreaded
     res$beamAngle <- object@metadata$beamAngle
     res$beamConfig <- object@metadata$beamConfig
     res$transformationMatrix <- object@metadata$transformationMatrix
@@ -1158,13 +1159,18 @@ toEnuAdp <- function(x, declination=0, debug=getOption("oceDebug"))
     x
 }
 
-beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
+beamUnspreadAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=FALSE, debug=getOption("oceDebug"))
 {
-    oceDebug(debug, "\b\bbeamUnattenuateAdp(...) {\n")
+    oceDebug(debug, "\b\bbeamUnspreadAdp(...) {\n")
     if (!inherits(x, "adp"))
         stop("method is only for adp objects")
-    if (x@metadata$oceBeamUnattenuated) {
-        warning("the beams are already unattenuated in this dataset")
+    ## make compatible with old function name (will remove in Jan 2013)
+    if (!is.null(x@metadata$oceBeamUnattenuated) && x@metadata$oceBeamUnattenuated) {
+        warning("the beams are already unspreaded in this dataset.")
+        return(x)
+    }
+    if (!is.null(x@metadata$oceBeamUnspreaded) && x@metadata$oceBeamUnspreaded) {
+        warning("the beams are already unspreaded in this dataset")
         return(x)
     }
     numberOfProfiles <- dim(x@data$a)[1]
@@ -1186,10 +1192,10 @@ beamUnattenuateAdp <- function(x, count2db=c(0.45, 0.45, 0.45, 0.45), asMatrix=F
             tmp[tmp > 255] <- 255
             res@data$a[,,beam] <- as.raw(tmp)
         }
-        res@metadata$oceBeamUnattenuated <- TRUE
+        res@metadata$oceBeamUnspreaded <- TRUE
         res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     }
-    oceDebug(debug, "\b\b} # beamUnattenuateAdp()\n")
+    oceDebug(debug, "\b\b} # beamUnspreadAdp()\n")
     res
 }
 

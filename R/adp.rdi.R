@@ -564,7 +564,7 @@ read.adp.rdi <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
             metadata$measurementDeltat <- measurementDeltat
             metadata$bin1Distance <- bin1Distance
             metadata$xmitPulseLength <- xmitPulseLength
-            metadata$oceBeamUnattenuated <- FALSE
+            metadata$oceBeamUnspreaded <- FALSE
             metadata$oceCoordinate <- header$originalCoordinate
             metadata$depth <- mean(depth, na.rm=TRUE)
             ## Transformation matrix

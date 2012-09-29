@@ -332,7 +332,7 @@ read.adp.sontek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      originalCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
                      oceCoordinate=c("beam", "xyz", "enu", "other")[originalCoordinate+1],
                      beamAngle=beamAngle,
-                     oceBeamUnattenuated=FALSE,
+                     oceBeamUnspreaded=FALSE,
                      orientation=if(orientation==1) "upward" else "downward")
     if (numberOfBeams == 3) {
         if (metadata$orientation == "upward") {
@@ -632,7 +632,7 @@ read.adp.sontek.serial <- function(file, from=1, to, by=1, tz=getOption("oceTz")
                      originalCoordinate=originalCoordinate,
                      oceCoordinate=originalCoordinate,
                      beamAngle=beamAngle,
-                     oceBeamUnattenuated=FALSE,
+                     oceBeamUnspreaded=FALSE,
                      orientation=orientation)
     data <- list(v=v, a=a, q=q,
                  distance=distance,
