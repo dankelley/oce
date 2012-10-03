@@ -1,4 +1,5 @@
 0.9-4
+- read.adp.nortek(): handle missing 'to' argument as documented
 - beamUnattenuateAdp() renamed beamUnspreadAdp()
 - plotTS() and plotProfile(): permit type='n'
 - plotProfile(ytype='z'): fix bug in y label

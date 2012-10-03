@@ -305,6 +305,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         oceDebug(debug, "result: t=", format(t), " at vsd.start[", middle, "]=", profileStart[middle], "\n")
         return(list(index=middle, time=t))
     }
+    if (missing(to))
+        to <- NA                       # will catch this later
     oceDebug(debug, "read.adp.nortek(...,from=",format(from),",to=",format(to), "...)\n")
     fromKeep <- from
     toKeep <- to
@@ -340,6 +342,8 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
     profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
     profilesInFile <- length(profileStart)
+    if (is.na(to))
+        to <- profilesInFile
     oceDebug(debug, "profilesInFile=", profilesInFile, "\n")
     measurementStart <- ISOdatetime(2000+bcdToInteger(buf[profileStart[1]+8]), # year FIXME: have to check if before 1990
                                     bcdToInteger(buf[profileStart[1]+9]), # month
