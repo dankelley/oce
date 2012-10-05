@@ -1,4 +1,5 @@
 0.9-4
+- teos10: update test values (with help from PB)
 - read.adp.nortek(): handle missing 'to' argument as documented
 - beamUnattenuateAdp() renamed beamUnspreadAdp()
 - plotTS() and plotProfile(): permit type='n'
