@@ -1795,6 +1795,7 @@ plotTS <- function (x,
     usr <- par("usr")
     Sr <- c(max(0, usr[1]), usr[2])
     lines(Sr, swTFreeze(salinity=Sr, pressure=0), col="darkblue")
+    box()                              # redraw box (otherwise overdrawn with isopycnals)
     oceDebug(debug, "\b} # plotTS(...)\n", sep="")
 }
 
