@@ -164,7 +164,7 @@ oceApprox <- function(x, y, xout, method=c("reiniger-ross"))
     y <- y[ok]
     o <- order(x)
     if (missing(xout))
-        xout <- seq(min(x), max(x), length.out=lx)
+        xout <- seq(min(x, na.rm=TRUE), max(x, na.rm=TRUE), length.out=lx)
     else
         if (any(is.na(xout)))
             stop("must not have any NA values in xout")
@@ -476,7 +476,7 @@ oce.write.table <- function (x, file="", ...)
 
 subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ...)
 {
-    debug <- max(0, min(debug, 1))
+    debug <- max(0, min(debug, 1), na.rm=TRUE)
     oceDebug(debug, "\b\bsubset.oce(..., debug=", debug, ", ...) {\n")
     if (!inherits(x, "oce"))
         stop("method is only for oce objects")
@@ -1320,9 +1320,9 @@ oce.axis.POSIXct <- function (side, x, at, format, labels = TRUE,
         class(time.range) <- c("POSIXt", "POSIXct")
         attr(time.range, "tzone") <- attr(x, "tzone")[1]
         time.range <-  as.POSIXlt(time.range)
-        time.range.data <- range(x, na.rm=TRUE)
-        time.range[1] <- max(time.range[1], time.range.data[1])
-        time.range[2] <- min(time.range[2], time.range.data[2])
+        ## time.range.data <- range(x, na.rm=TRUE)
+        ## what was this for?# time.range[1] <- max(time.range[1], time.range.data[1], na.rm=TRUE)
+        ## what was this for?# time.range[2] <- min(time.range[2], time.range.data[2], na.rm=TRUE)
         tr1 <- format(time.range[1], getOption("oceTimeFormat"))
         tr2 <- format(time.range[2], getOption("oceTimeFormat"))
         if (abbreviateTimeRange) {
