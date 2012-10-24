@@ -354,7 +354,7 @@ for (i in 1:length(files)) {
     if (i == 1) {
         plotTS(x, xlim=c(31, 35.5), ylim=c(-1, 10), type='l', col="red")
     } else {
-        lines(x@data$salinity, x@data$temperature, col="red")
+        lines(x[["salinity"]], x[["temperature"]], col="red")
     }
 }
 @
@@ -366,8 +366,8 @@ problems. The graph that is produced by this code has several spurious lines
 oriented horizontally (indicating spurious salinity) and vertically (indicating
 spurious temperature). One way to find such values is to put the lines
 <<rangeg,eval=false>>=
-print(range(x@data$temperature))
-print(range(x@data$salinity))
+print(range(x[["temperature"]]))
+print(range(x[["salinity"]]))
 @
 after the \verb@read.ctd()@ command. One thing you'll find is that station 987
 has a minimum salinity range of 0.0009 to 987. These values are clearly in
@@ -617,8 +617,7 @@ png("adp.png", width=800, height=400, pointsize=20)
 <<label=adpplot>>=
 library(oce)
 data(adp)
-plot(adp, which=1,
-  adorn=expression({lines(x@data$time, x@data$pressure, col='green', lwd=2)}))
+plot(adp, which=1, adorn=expression({lines(x[["time"]], x[["pressure"]])}))
 @
 <<fig=FALSE, eval=TRUE, echo=FALSE, results=hide>>=
 dev.off()
