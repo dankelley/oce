@@ -377,7 +377,7 @@
 0.1.71
 - fix bug in makeSection (ignored the list, if a list provided)
    http://code.google.com/p/r-oce/issues/detail?id=18&q=label:Type-Defect
-- add oce.edit()
+- add oce.edit(), later renamed oceEdit()
 - add topoMaritimes dataset
 - add read.topo(), plot.topo(), and summary.topo()
 - add gebcoColors() ... renamed oceColorsGebco() in version 0.1.77
