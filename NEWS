@@ -1,4 +1,5 @@
 0.9-4
+- imagep(..., axes=FALSE): no longer plots axis box [issue 249]
 - oce.plot.ts(): alter time auto-ranging method
 - oceBisect(): increase generality of function whose root is sought
 - plotTS(): clean axes after isopycnals drawn
