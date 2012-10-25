@@ -1,13 +1,13 @@
 setMethod(f="initialize",
           signature="lobo",
-          definition=function(.Object,time,u,v,salinity,temperature,pressure,nitrate,fluorescence,filename) {
+          definition=function(.Object,time,u,v,salinity,temperature,airtemperature,pressure,nitrate,fluorescence,filename) {
               if (!missing(time)) .Object@data$time <- time
               if (!missing(u)) .Object@data$u <- u
               if (!missing(v)) .Object@data$v <- v
               if (!missing(salinity)) .Object@data$salinity <- salinity
               if (!missing(temperature)) .Object@data$temperature <- temperature
+              if (!missing(airtemperature)) .Object@data$airtemperature <- airtemperature
               if (!missing(nitrate)) .Object@data$nitrate <- nitrate
-              if (!missing(fluorescence)) .Object@data$fluorescence <- fluorescence
               if (!missing(fluorescence)) .Object@data$fluorescence <- fluorescence
               .Object@metadata$filename <- if (missing(filename)) "" else filename
               .Object@processingLog$time <- as.POSIXct(Sys.time())
@@ -159,7 +159,7 @@ read.lobo <- function(file, cols=7, processingLog)
             on.exit(close(file))
         }
     }
-     d <- read.table(file, sep='\t', header=TRUE)
+    d <- read.table(file, sep='\t', header=TRUE)
     names <- names(d)
     tCol            <- grep("date", names)
     uCol            <- grep("current across", names)
@@ -167,7 +167,8 @@ read.lobo <- function(file, cols=7, processingLog)
     nitrateCol      <- grep("nitrate", names)
     fluorescenceCol <- grep("fluorescence", names)
     SCol            <- grep("salinity", names)
-    TCol            <- grep("temperature", names)
+    TCol            <- grep("^temperature", names, ignore.case=TRUE)
+    TaCol           <- grep("^Air.*temperature", names, ignore.case=TRUE)
     pressureCol     <- grep("pressure", names)
     if (length(tCol))
         time <- as.POSIXlt(d[,tCol])
@@ -178,15 +179,16 @@ read.lobo <- function(file, cols=7, processingLog)
     v <- if (length(vCol)) as.numeric(d[, vCol]) else rep(NA, n)
     salinity <- if (length(SCol)) as.numeric(d[, SCol]) else rep(NA, n)
     temperature <- if (length(TCol)) as.numeric(d[, TCol]) else rep(NA, n)
+    airtemperature <- if (length(TaCol)) as.numeric(d[, TaCol]) else rep(NA, n)
     nitrate <- if (length(nitrateCol)) as.numeric(d[, nitrateCol]) else rep(NA, n)
     fluorescence <- if (length(fluorescenceCol)) as.numeric(d[, fluorescenceCol]) else rep(NA, n)
     pressure <- if (length(pressureCol)) as.numeric(d[, pressureCol]) else rep(NA, n)
-    data <- data.frame(time=time,u=u,v=v,salinity=salinity,temperature=temperature,pressure=pressure,nitrate=nitrate,fluorescence=fluorescence)
     metadata <- list(filename=file)
     if (missing(processingLog))
         processingLog <- paste(deparse(match.call()), sep="", collapse="")
     hitem <- processingLogItem(processingLog)
-    res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature, pressure=pressure,
+    res <- new("lobo", time=time, u=u, v=v, salinity=salinity, temperature=temperature,
+               airtemperature=airtemperature, pressure=pressure,
                nitrate=nitrate, fluorescence=fluorescence, filename=filename)
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
     res

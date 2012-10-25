@@ -51,17 +51,16 @@
 
 \note{The \code{oce} author was unable to find a description of the data format, and so
 \code{read.lobo} makes some restrictive assumptions about the data format, e.g.
-requiring that there be exactly 7 columns, whose names in the header are 
+trying to find columns whose names contain the following strings
 \code{"date"}, 
 \code{"current across"}, 
 \code{"current along"},
 \code{"nitrate"},
 \code{"fluorescence"},
 \code{"salinity"},
-and \code{"temperature"}.  If these are not found,
-\code{read.lobo} is likely to fail in some way.  Luckily, the code is written in a simple way, so
-that users should be able to alter it easily if, for example, the names of the current components
-change to "current to the east", etc.
+\code{"temperature"}
+and \code{"Air temperature"}.  The \code{data} slot in the return value will be filled in with these
+data, or with vectors with \code{NA} values, for unfound columns.
 }
 
 \seealso{The documentation for \code{\link{lobo-class}} explains the structure
