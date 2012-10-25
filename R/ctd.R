@@ -1739,7 +1739,7 @@ plotTS <- function (x,
         omgp <- par("mgp")
         opar <- par(no.readonly = TRUE)
         if (!inset) {
-            on.exit(par(mar=omar, mgp=omgp))
+            ## on.exit(par(mar=omar, mgp=omgp))
             if (3 == length(mgp)) par(mgp=mgp)
             if (4 == length(mar)) par(mar=mar)
         }
