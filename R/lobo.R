@@ -101,7 +101,7 @@ setMethod(f="plot",
               if (!inherits(x, "lobo"))
                   stop("method is only for lobo objects")
               opar <- par(no.readonly = TRUE)
-              on.exit(par(opar))
+              ##on.exit(par(opar))
               par(mgp=mgp, mar=mar)
               adorn.length <- length(adorn)
               if (adorn.length == 1) {

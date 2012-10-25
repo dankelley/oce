@@ -30,9 +30,9 @@
   equivalent to \code{read.lobo}, because the file format has no
   recognizable header.  }
 
-\value{An object of \code{\link[base]{class}} \code{"lobo"}, which is a
-  \code{\link[base]{list}} containing
-  \item{data}{a \code{\link{data.frame}} containing the following vectors:
+\value{An object of \code{\link[base]{class}} \code{"lobo"}, which has the
+    following slots:
+  \item{data}{a \code{\link{list}} containing the following vectors:
     \describe{
       \item{\code{time}}{the times of observation}
       \item{\code{u}}{one horizontal component of velocity (necessarily
