@@ -568,7 +568,7 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
                                   "p", "z", "distance", "heading", "pitch", "roll",
                                   "u", "v", "w", "speed", "direction",
                                   "eastward", "northward",
-                                  "elevation"), axis=c("x", "y"))
+                                  "depth", "elevation"), axis=c("x", "y"))
 {
     item <- match.arg(item)
     axis <- match.arg(axis)
@@ -644,9 +644,12 @@ resizableLabel <- function(item=c("S", "T", "theta", "sigmaTheta",
     } else if (item == "northward") {
         full <- "Northward wind [m/s]"
         abbreviated <- "v [m/s]"
+    } else if (item == "depth") {
+        full <- "Depth [m]"
+        abbreviated <- "Depth [m]"
     } else if (item == "elevation") {
         full <- "Elevation [m]"
-        abbreviated <- "Elevation [m/s]"
+        abbreviated <- "Elevation [m]"
     } else if (item ==  "speed") {
         full <- "Speed [m/s]"
         abbreviated <- "Speed [m/s]"

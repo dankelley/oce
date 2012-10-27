@@ -40,7 +40,12 @@ for (i in 2:dim(papa$sigmaTheta)[2])
 legend("topleft", title="z [m]", lwd=2, legend=papa$z, col=1:length(papa$z), bg="white")
 }
 
-\source{\url{http://www.pmel.noaa.gov/stnP/data/daily/t50n145w_dy.ascii}}
+\source{Salinity is from
+    \url{http://www.pmel.noaa.gov/stnP/data/daily/s50n145w_dy.ascii} and
+    temperature is from
+    \url{http://www.pmel.noaa.gov/stnP/data/daily/t50n145w_dy.ascii}.  Although
+    there is a data file for \eqn{\sigma_\theta}{sigma-theta} on the NOAA
+    website, here it was calculated with \code{\link{swSigmaTheta}}.}
 
 \references{The larger data set is described at
     \url{http://www.pmel.noaa.gov/stnP/}, and related datasets can be found at
