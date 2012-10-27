@@ -1,4 +1,6 @@
 0.9-4
+- data(papa) added
+- fillGap() works on matrices as well as vectors
 - read.lobo() is more flexible on column names
 - imagep(..., axes=FALSE): no longer plots axis box [issue 249]
 - oce.plot.ts(): alter time auto-ranging method

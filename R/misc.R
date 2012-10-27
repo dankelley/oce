@@ -1084,12 +1084,19 @@ fillGap <- function(x, method=c("linear"), rule=1)
 {
     if (!is.numeric(x))
         stop("only works for numeric 'x'")
-    if (!is.vector(x))
-        stop("only works for vector 'x'")
     method <- match.arg(method)
     class <- class(x)
-    x <- as.numeric(x)
-    res <- .Call("fillgap", x, rule)
+    if (is.vector(x)) {
+        res <- .Call("fillgap1d", as.numeric(x), rule)
+    } else if (is.matrix(x))  {
+        res <- x
+        for (col in 1:ncol(x))
+            res[,col] <- .Call("fillgap1d", as.numeric(x[,col]), rule)
+        for (row in 1:nrow(x))
+            res[row,] <- .Call("fillgap1d", as.numeric(x[row,]), rule)
+    } else {
+        stop("only works if 'x' is a vector or a matrix")
+    }
     class(res) <-  class
     res
 }

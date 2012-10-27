@@ -271,13 +271,13 @@ imagep <- function(x, y, z,
     ## FIXME: should check on equal values
     ox <- order(x)
     if (any(diff(ox) < 0)) {
-        warning("reordered some x values")
+        ##warning("reordered some x values")
         x <- x[ox]
         z <- z[ox, ]
     }
     oy <- order(y)
     if (any(diff(oy) < 0)) {
-        warning("reordered some x values")
+        ##warning("reordered some y values")
         y <- y[oy]
         z <- z[,oy]
     }
