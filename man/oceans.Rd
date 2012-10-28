@@ -20,5 +20,8 @@ data(oceans)
 \source{Data were downloaded from the NOAA website
     \url{http://ngdc.noaa.gov/mgg/global/etopo1_ocean_volumes.html} in October
     2012.}
+\references{Amante, C. and B. W. Eakins, ETOPO1 1 Arc-Minute Global Relief
+    Model: Procedures, Data Sources and Analysis. NOAA Technical Memorandum
+    NESDIS NGDC-24, 19 pp, March 2009.}
 
 \keyword{datasets}
