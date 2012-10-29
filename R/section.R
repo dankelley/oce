@@ -431,16 +431,14 @@ setMethod(f="plot",
                               oceDebug(debug, "user-supplied contourLevels: ", contourLevels, "\n")
                               if (!("labcex" %in% dots$labcex)) {
                                   contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE, labcex=0.8,
-                                          levels=contourLevels,
-                                          labels=contourLabels,
-                                          add=TRUE,
+                                          axes=FALSE, add=TRUE, labcex=0.8,
+                                          levels=contourLevels, labels=contourLabels,
                                           xaxs="i", yaxs="i",
                                           ...)
                               } else {
                                   contour(x=xx[xx.unique], y=yy[yy.unique], z=zz[xx.unique,yy.unique],
-                                          axes=FALSE,
-                                          add=TRUE,
+                                          axes=FALSE, add=TRUE,
+                                          levels=contourLevels, labels=contourLabels,
                                           xaxs="i", yaxs="i",
                                           ...)
                               }
@@ -576,24 +574,26 @@ setMethod(f="plot",
               for (w in 1:length(which)) {
                   oceDebug(debug, "w=", w, "\n")
                   if (!missing(contourLevels)) {
+                      if (missing(contourLabels))
+                          contourLabels <- format(contourLevels)
                       if (which[w] == 1)
-                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 2)
-                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("salinity",    if (eos == "unesco") "S" else expression(S[A]), eos=eos, ylab="", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] > 2 && which[w] < 3)
-                          plotSubsection("salinity gradient","dS/dz", ylab="", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("salinity gradient","dS/dz", ylab="", levels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 3)
-                          plotSubsection("sigmaTheta",  expression(sigma[theta]), nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("sigmaTheta",  expression(sigma[theta]), levels=contourLevels, labels=contourLabels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 4)
-                          plotSubsection("nitrate",     "nitrate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("nitrate",     "nitrate", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 5)
-                          plotSubsection("nitrite",     "nitrite", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("nitrite",     "nitrite", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 6)
-                          plotSubsection("oxygen",      "oxygen", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("oxygen",      "oxygen", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 7)
-                          plotSubsection("phosphate",   "phosphate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("phosphate",   "phosphate", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
                       if (which[w] == 8)
-                          plotSubsection("silicate",    "silicate", nlevels=contourLevels, xlim=xlim, ylim=ylim, debug=debug-1, ...)
+                          plotSubsection("silicate",    "silicate", levels=contourLevels, labels=contourLabels,  xlim=xlim, ylim=ylim, debug=debug-1, ...)
                   } else {
                       if (which[w] == 1)
                           plotSubsection("temperature", if (eos == "unesco") "T" else expression(Theta), eos=eos, xlim=xlim, ylim=ylim, debug=debug-1, ...)

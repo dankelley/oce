@@ -156,6 +156,9 @@ plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60))
 # Illustate adornment
 plot(GSg, coastline=coastlineWorld, map.xlim=c(-80,-60),
      adorn=expression({abline(v=200,col='blue')}))
+plot(GSg, which='sigmaTheta', ylim=c(1000,0),
+     contourLevel=seq(24, 29, 0.5),
+     contourLabel=c("24", "", "25","","26","","27","","28","","29"))
 }
 
 \author{Dan Kelley}
