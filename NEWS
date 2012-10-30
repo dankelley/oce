@@ -1,4 +1,5 @@
 0.9-4
+- plot.section() contouring improved
 - data(oceans) added
 - data(papa) added
 - fillGap() works on matrices as well as vectors
