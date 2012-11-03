@@ -1,4 +1,5 @@
 0.9-4
+- plotTS(): extend isopycnal range [issue 252]
 - plot.section() contouring improved
 - data(oceans) added
 - data(papa) added
