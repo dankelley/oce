@@ -1,6 +1,7 @@
 read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             header=TRUE,
                             latitude=NA, longitude=NA,
+                            type=c("vector", "aquadopp"),
                             haveAnalog1=FALSE,
                             haveAnalog2=FALSE,
                             debug=getOption("oceDebug"), monitor=FALSE, 
@@ -12,7 +13,7 @@ read.adv.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     ##   vsd=velocity system data [p36 SIG], containing times, temperatures, angles, etc
     ## NOTE: we interpolate from vsd to vvd, to get the final data$time, etc.
 
-    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
+    oceDebug(debug, "\b\bread.adv.nortek(file=\"", file, "\", from=", format(from), ", to=", format(to), ", by=", by, ", tz=\"", tz, "\", header=", header, ", latitude=", latitude, ", longitude=", longitude, ", type=\"", type, "\", debug=", debug, ", monitor=", monitor, ", processingLog=(not shown)) {\n", sep="")
     if (is.numeric(by) && by < 1)
         stop("cannot handle negative 'by' values")
     if (by != 1)
