@@ -1,5 +1,6 @@
 \name{read.adp}
 \alias{read.adp}
+\alias{read.adp.aquadopp}
 \alias{read.adp.nortek}
 \alias{read.adp.sontek}
 \alias{read.adp.sontek.serial}
@@ -22,13 +23,34 @@ read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
-read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
+
+read.adp.aquadopp(file, from=1, to, by=1, tz=getOption("oceTz"),
+  latitude=NA, longitude=NA,
+  orientation, distance,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
+  \dots)
+read.adp.aquadoppHR(file, from=1, to, by=1, tz=getOption("oceTz"),
+  latitude=NA, longitude=NA,
+  orientation, distance,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
+  \dots)
+read.adp.aquadoppProfiler(file, from=1, to, by=1, tz=getOption("oceTz"),
+  latitude=NA, longitude=NA,
+  orientation, distance,
+  monitor=FALSE, despike=FALSE, processingLog,
+  debug=getOption("oceDebug"),
+  \dots)
+
+read.adp.nortek(file, from=0, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("aquadoppHR", "aquadoppProfiler"),
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
+
 read.adp.sontek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   type=c("adp","pcadp"),
@@ -94,10 +116,12 @@ read.adp.sontek.serial(file, from=1, to, by=1, tz=getOption("oceTz"),
   \item{\dots}{additional arguments, passed to called routines.}
 }
 
-\details{Reads a binary-format ADP file.  Three types can be handled at
-  the moment: the Teledyne-RDI Workhorse instrument using firmware
-  version 16.30 (and, to some extent, also firmware 16.28 and 16.21),
-  the NorTek Aquadopp High Resolution profiler, and SonTek PCADP.}
+\details{Reads a binary-format ADP file.  Several file types can be handled.
+    Some of these functions are wrappers that map to device names, e.g.
+    \code{read.aquadoppProfiler} does its work by calling
+    \code{read.adp.nortek}; in this context, it is worth noting that the
+    ``aquadopp'' instrument is a one-cell profiler that might just as well have
+    been documented under the heading \code{\link{read.adv}}.}
 
 \value{An object of \code{\link[base]{class}} \code{"adp"}, which
   contains measurements made with an ADP device.  The value of
