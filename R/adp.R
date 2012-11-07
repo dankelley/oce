@@ -630,45 +630,66 @@ setMethod(f="plot",
                           skip <- TRUE
                       }
                       if (!skip) {
-                          if (gave.xlim) {
-                              imagep(x=tt, y=x@data$distance, z=z,
-                                     xlim=xlim[w,],
-                                     zlim=zlim,
-                                     flipy=flipy,
-                                     col=if (gave.col) col else oceColorsPalette(128, 1),
-                                     ylab=resizableLabel("distance"),
-                                     xlab="Time",
-                                     zlab=zlab,
-                                     drawTimeRange=drawTimeRange,
-                                     drawContours=FALSE,
-                                     missingColor=missingColor,
-                                     adorn=adorn[w],
-                                     mgp=mgp,
-                                     mar=mar,
-                                     mai.palette=mai.palette,
-                                     cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
-                                     main=main[w],
-                                     debug=debug-1,
-                                     ...)
+                          if (is.matrix(z)) {
+                              if (gave.xlim) {
+                                  imagep(x=tt, y=x@data$distance, z=z,
+                                         xlim=xlim[w,],
+                                         zlim=zlim,
+                                         flipy=flipy,
+                                         col=if (gave.col) col else oceColorsPalette(128, 1),
+                                         ylab=resizableLabel("distance"),
+                                         xlab="Time",
+                                         zlab=zlab,
+                                         drawTimeRange=drawTimeRange,
+                                         drawContours=FALSE,
+                                         missingColor=missingColor,
+                                         adorn=adorn[w],
+                                         mgp=mgp,
+                                         mar=mar,
+                                         mai.palette=mai.palette,
+                                         cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                         main=main[w],
+                                         debug=debug-1,
+                                         ...)
+                              } else {
+                                  imagep(x=tt, y=x@data$distance, z=z,
+                                         zlim=zlim,
+                                         flipy=flipy,
+                                         col=if (gave.col) col else oceColorsPalette(128, 1),
+                                         ylab=resizableLabel("distance"),
+                                         xlab="Time",
+                                         zlab=zlab,
+                                         drawTimeRange=drawTimeRange,
+                                         drawContours=FALSE,
+                                         missingColor=missingColor,
+                                         adorn=adorn[w],
+                                         mgp=mgp,
+                                         mar=mar,
+                                         mai.palette=mai.palette,
+                                         cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
+                                         main=main[w],
+                                         debug=debug-1,
+                                         ...)
+                              }
+                          } else if (is.vector(z)) {
+                              col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
+                              tlim <- range(x@data$time)
+                              oce.plot.ts(x@data$time, z, ylab=zlab,
+                                          xlim=if(gave.xlim) xlim[w,] else tlim,
+                                          ylim=if(gave.ylim) ylim[w,],
+                                          xaxs="i",
+                                          col=col[w],
+                                          lwd=lwd[w],
+                                          cex=cex*(1 - min(nw / 8, 1/4)),
+                                          cex.axis=cex*(1 - min(nw / 8, 1/4)),
+                                          main=main[w],
+                                          type=type,
+                                          mgp=mgp,
+                                          mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
+                                          adorn=adorn[w],
+                                          debug=debug-1)
                           } else {
-                              imagep(x=tt, y=x@data$distance, z=z,
-                                     zlim=zlim,
-                                     flipy=flipy,
-                                     col=if (gave.col) col else oceColorsPalette(128, 1),
-                                     ylab=resizableLabel("distance"),
-                                     xlab="Time",
-                                     zlab=zlab,
-                                     drawTimeRange=drawTimeRange,
-                                     drawContours=FALSE,
-                                     missingColor=missingColor,
-                                     adorn=adorn[w],
-                                     mgp=mgp,
-                                     mar=mar,
-                                     mai.palette=mai.palette,
-                                     cex=cex*(1 - min(nw / 8, 1/4)), # FIXME: should emulate par(mfrow)
-                                     main=main[w],
-                                     debug=debug-1,
-                                     ...)
+                              stop("z should be either a matrix or a vector")
                           }
                       }
                       if (showBottom)
