@@ -579,7 +579,8 @@ setMethod(f="plot",
                   }
               }
               flipy <- ytype == "profile" && x@metadata$orientation == "downward"
-              haveTimeImages <- any(which %in% images)
+              numberOfCells <- x[["numberOfCells"]]
+              haveTimeImages <- any(which %in% images) && 1 < numberOfCells
               oceDebug(debug, 'haveTimeImages=', haveTimeImages, '(if TRUE, it means any timeseries graphs get padding on RHS)\n')
               for (w in 1:nw) {
                   oceDebug(debug, "which[", w, "]=", which[w], "; drawTimeRange=", drawTimeRange, "\n")
@@ -630,7 +631,7 @@ setMethod(f="plot",
                           skip <- TRUE
                       }
                       if (!skip) {
-                          if (is.matrix(z)) {
+                          if (numberOfCells > 1) {
                               if (gave.xlim) {
                                   imagep(x=tt, y=x@data$distance, z=z,
                                          xlim=xlim[w,],
@@ -671,7 +672,9 @@ setMethod(f="plot",
                                          debug=debug-1,
                                          ...)
                               }
-                          } else if (is.vector(z)) {
+                              if (showBottom)
+                                  lines(x@data$time, bottom)
+                          } else {
                               col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
                               tlim <- range(x@data$time)
                               oce.plot.ts(x@data$time, z, ylab=zlab,
@@ -688,12 +691,8 @@ setMethod(f="plot",
                                           mar=c(mgp[1], mgp[1]+1.5, 1.5, 1.5),
                                           adorn=adorn[w],
                                           debug=debug-1)
-                          } else {
-                              stop("z should be either a matrix or a vector")
                           }
                       }
-                      if (showBottom)
-                          lines(x@data$time, bottom)
                       drawTimeRange <- FALSE
                   } else if (which[w] %in% timeseries) { # time-series types
                       col <- if (gave.col) rep(col, length.out=nw) else rep("black", length.out=nw)
