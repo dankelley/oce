@@ -538,7 +538,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
     metadata <- list(manufacturer="nortek",
-                     instrumentType="aquadopp-hr",
+                     instrumentType=type, #"aquadopp-hr",
                      filename=filename,
                      manufacturer="nortek",
                      latitude=latitude,
