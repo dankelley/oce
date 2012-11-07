@@ -308,9 +308,6 @@ read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
 }
 
 
-
-
-
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
                             type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),

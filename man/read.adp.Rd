@@ -1,10 +1,12 @@
 \name{read.adp}
 \alias{read.adp}
-\alias{read.adp.aquadopp}
 \alias{read.adp.nortek}
 \alias{read.adp.sontek}
 \alias{read.adp.sontek.serial}
 \alias{read.adp.rdi}
+\alias{read.aquadopp}
+\alias{read.aquadoppProfiler}
+\alias{read.aquadoppHR}
 
 \title{Read an ADP data file}
 
@@ -24,28 +26,28 @@ read.adp.rdi(file, from=1, to, by=1, tz=getOption("oceTz"),
   debug=getOption("oceDebug"),
   \dots)
 
-read.adp.aquadopp(file, from=1, to, by=1, tz=getOption("oceTz"),
+read.aquadopp(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
-read.adp.aquadoppHR(file, from=1, to, by=1, tz=getOption("oceTz"),
+read.aquadoppHR(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
-read.adp.aquadoppProfiler(file, from=1, to, by=1, tz=getOption("oceTz"),
+read.aquadoppProfiler(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
   \dots)
 
-read.adp.nortek(file, from=0, to, by=1, tz=getOption("oceTz"),
+read.adp.nortek(file, from=1, to, by=1, tz=getOption("oceTz"),
   latitude=NA, longitude=NA,
-  type=c("aquadoppHR", "aquadoppProfiler"),
+  type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
   orientation, distance,
   monitor=FALSE, despike=FALSE, processingLog,
   debug=getOption("oceDebug"),
