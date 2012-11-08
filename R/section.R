@@ -39,6 +39,10 @@ setMethod(f="[[",
                               rval[[jj]] <- x@data$station[[jj]]
                       }
                   }
+              } else if ("station ID" == i) {
+                  rval <- NULL
+                  for (stn in x[['station']])
+                      rval <- c(rval, stn[['station']])
               } else if ("dynamic height" == i) {
                   rval <- swDynamicHeight(x)
               } else {
@@ -205,6 +209,7 @@ setMethod(f="plot",
                               ytype="depth",
                               legend.loc="bottomright",
                               adorn=NULL,
+                              showStations=FALSE,
                               mgp=getOption("oceMgp"),
                               mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2]+0.5),
                               col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -285,6 +290,11 @@ setMethod(f="plot",
                       col <- if("col" %in% names(list(...))) list(...)$col else "black"
                       points(lon, lat, col=col, pch=3, lwd=1/2)
                       points(lon - 360, lat, col=col, pch=3, lwd=1/2)
+                      if (showStations) {
+                          stationId <- x[['station ID']]
+                          text(lon, lat, stationId, pos=2)
+                          text(lon-360, lat, stationId, pos=2)
+                      }
                       if (xtype == "distance") {
                           points(lon[1], lat[1], col=col, pch=22, cex=3*par("cex"), lwd=1/2)
                           points(lon[1] - 360, col=col, lat[1], pch=22, cex=3*par("cex"), lwd=1/2)
@@ -968,6 +978,6 @@ summary.section <- function(object, ...)
     } else {
         cat("* No stations\n")
     }
-    processingLogShow(object)
+    ##processingLogShow(object)
 }
 

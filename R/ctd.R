@@ -952,14 +952,20 @@ read.ctd <- function(file, type=NULL, columns=NULL, station=NULL, monitor=FALSE,
         else if (!is.na(pmatch(type, "WOCE")))        type <- "WOCE"
         else stop("type must be SBE19 or WOCE, not ", type)
     }                                   # FIXME: should just use oceMagic() here
-    switch(type,
-           SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
-                                debug=debug, processingLog=processingLog, ...),
-           WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
-                                 debug=debug, processingLog=processingLog, ...),
-           ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
-                              debug=debug, processingLog=processingLog, ...)
-           )
+    rval <- switch(type,
+                   SBE19 = read.ctd.sbe(file, columns=columns, station=station, monitor=monitor,
+                                        debug=debug, processingLog=processingLog, ...),
+                   WOCE  = read.ctd.woce(file, columns=columns, station=station, missing.value=-999, monitor=monitor,
+                                         debug=debug, processingLog=processingLog, ...),
+                   ODF = read.ctd.odf(file, columns=columns, station=station, monitor=monitor,
+                                      debug=debug, processingLog=processingLog, ...)
+                   )
+    ## water depth is sometimes zero, which is a hassle in section plots, so make a guess
+    if (!"waterDepth" %in% names(ctd@metadata)) # may be entirely missing
+        rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
+    if (ctd@metadata$waterDepth < 1)   # may be silly
+        rval@metadata$waterDepth <- max(rval@data$pressure, na.rm=TRUE)
+    rval
 }
 
 read.ctd.woce <- function(file, columns=NULL, station=NULL, missing.value=-999, monitor=FALSE,
@@ -1829,7 +1835,7 @@ drawIsopycnals <- function(rhoLevels=6, rotateRhoLabels=TRUE, rho1000=FALSE,
     } else {
         rhoList <- rhoLevels
     }
-    Tn <- 100
+    Tn <- 200
     Tline <- seq(TAxisMin, TAxisMax, length.out=Tn)
     cex.par <- par("cex")               # need to scale text() differently than mtext()
     for (rho in rhoList) {

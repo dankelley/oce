@@ -268,7 +268,7 @@ void sw_strho(double *pT, double *prho, double *pp, int *teos, double *res)
   // Note regarding next two lines: every bisection reduces the x
   // range by a factor of two, so it's not too expensive to ask for
   // tight resolution.
-  double xresolution = 1e-3; // 3 fractional digits in salinity, for < 1% of typical axis axis interval
+  double xresolution = 1e-4; // 4 fractional digits in salinity, for < 1% of typical axis axis interval
   double ftol = 1e-3; // 3 fractional digits in isopycnal, for <1% of typical contour interval
   strho_bisection_search(&S, 0, 500.0, xresolution, ftol, *teos);
   //Rprintf("  ... after bisection, sw_strho() returning %f\n", S);

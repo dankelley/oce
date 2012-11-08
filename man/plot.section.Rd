@@ -26,6 +26,7 @@
      ytype="depth",
      legend.loc="bottomright",
      adorn=NULL,
+     showStations=FALSE,
      mgp=getOption("oceMgp"),
      mar=c(mgp[1]+1, mgp[1]+1, mgp[2], mgp[2] + 0.5),
      col=par("col"), cex=par("cex"), pch=par("pch"),
@@ -92,6 +93,8 @@
     they are drawn from top-left to bottom-right.   If only a single
     expression is provided, it is used for all panels.  (See
     \dQuote{Examples}.)}
+  \item{showStations}{logical indicating whether to draw station numbers
+      on maps.}
   \item{mgp}{3-element numerical vector to use for \code{par(mgp)}, and
     also for \code{par(mar)}, computed from this.  The default is
     tighter than the R default, in order to use more space for the data
