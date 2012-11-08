@@ -19,7 +19,7 @@
 ## 7. the C code suggests the velocityScale is in the second bit of conf.hMode
 ##    but the docs suggest the fifth bit (page 31)
 
-decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), debug=getOption("oceDebug"), ...)
+decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"), debug=getOption("oceDebug"), ...)
 {
     type <- match.arg(type)
     oceDebug(debug, "decodeHeaderNortek() entry; buf[1:20]=",buf[1:20],"\n")
@@ -190,6 +190,9 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), de
                     user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
                 }
                 user$blankingDistance <- user$T2 * 0.0229 * cos(25 * degToRad) - user$cellSize
+            } else if (type == "aquadopp") {
+                user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
+                user$blankingDistance <- user$T2 * 0.00675 * cos(25 * degToRad) - user$cellSize
             } else {
                 warning("unknown instrument type \"", type, "\", so calculating cell size as though it is a 2MHz AquadoppHR\n")
                 user$cellSize <- user$hBinLength / 256 * 0.00675 * cos(25 * degToRad)
@@ -256,9 +259,52 @@ decodeHeaderNortek <- function(buf, type=c("aquadoppHR", "aquadoppProfiler"), de
     list(hardware=hardware, head=head, user=user, offset=o+1)
 }
 
+read.aquadopp <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                          latitude=NA, longitude=NA,
+                          orientation, distance,
+                          monitor=FALSE, despike=FALSE, processingLog,
+                          debug=getOption("oceDebug"), ...)
+{
+    return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
+                           latitude=latitude, longitude=longitude,
+                           type="aquadopp",
+                           orientation=orientation, distance=distance,
+                           monitor=monitor, despike=despike, processingLog=processingLog,
+                           debug=debug, ...))
+}
+
+read.aquadoppHR <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                            latitude=NA, longitude=NA,
+                            orientation=orientation, distance,
+                            monitor=FALSE, despike=FALSE, processingLog,
+                            debug=getOption("oceDebug"), ...)
+{
+    return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
+                           latitude=latitude, longitude=longitude,
+                           type="aquadoppHR",
+                           orientation=orientation, distance=distance,
+                           monitor=monitor, despike=despike, processingLog=processingLog,
+                           debug=debug, ...))
+}
+
+read.aquadoppProfiler <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
+                                  latitude=NA, longitude=NA,
+                                  orientation, distance,
+                                  monitor=FALSE, despike=FALSE, processingLog,
+                                  debug=getOption("oceDebug"), ...)
+{
+    return(read.adp.nortek(file, from=from, to=to, by=by, tz=tz,
+                           latitude=latitude, longitude=longitude,
+                           type="aquadoppProfiler",
+                           orientation=orientation, distance=distance,
+                           monitor=monitor, despike=despike, processingLog=processingLog,
+                           debug=getOption("oceDebug"), ...))
+}
+
+
 read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                             latitude=NA, longitude=NA,
-                            type=c("aquadoppHR", "aquadoppProfiler"),
+                            type=c("aquadoppHR", "aquadoppProfiler", "aquadopp"),
                             orientation, distance,
                             monitor=FALSE, despike=FALSE, processingLog,
                             debug=getOption("oceDebug"),
@@ -447,13 +493,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     q <- array(raw(), dim=c(profilesToRead,  numberOfCells,  numberOfBeams)) # correlation
     velocityScale <- 1e-3              # FIXME: why not use the value in user$velocityScale?
     ## FIXME: why does 54 work, given 53 in docs? [see 38 of System Integrator Guide]
-    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30)
+    oShift <- switch(type, aquadoppHR=54, aquadoppProfiler=30, aquadopp=30)
     for (i in 1:profilesToRead) {
         o <- profileStart[i] + oShift
         ##oceDebug(debug, 'getting data chunk',i,' at file position',o,'\n')
-        v[i,,] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)],
-                                                 "integer", n=items, size=2, endian="little", signed=TRUE),
-                                         ncol=numberOfBeams, byrow=FALSE)
+        v[i,,] <- velocityScale * matrix(readBin(buf[o + seq(0, 2*items-1)], "integer", n=items, size=2, endian="little", signed=TRUE), ncol=numberOfBeams, byrow=FALSE)
         o <- o + items * 2
         a[i,,] <- matrix(buf[o + seq(0, items-1)], ncol=items, byrow=TRUE)
         o <- o + items
@@ -485,7 +529,7 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         orientation <- match.arg(orientation, c("sideward", "upward", "downward"))
     }
     metadata <- list(manufacturer="nortek",
-                     instrumentType="aquadopp-hr",
+                     instrumentType=type, #"aquadopp-hr",
                      filename=filename,
                      manufacturer="nortek",
                      latitude=latitude,

@@ -910,21 +910,23 @@ oceMagic <- function(file, debug=getOption("oceDebug"))
         oceDebug(debug, "user.configuration[1:2]", user.configuration[1:2], "(expect 0xa5 0x00)\n")
         if (user.configuration[1] != 0xa5 || user.configuration[2] != 0x00) return("unknown")
         next.two.bytes <- readBin(file, what="raw", n=2)
-        oceDebug(debug, "next.two.bytes:", next.two.bytes,"(e.g. 0x5 0x12 is adv/nortek/vector)\n")
+        oceDebug(debug, "next.two.bytes:", paste("0x", next.two.bytes[1], sep=''),
+                 paste("0x", next.two.bytes[2], sep=''),
+                 "(e.g. 0x5 0x12 is adv/nortek/vector)\n")
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x12) {
-            oceDebug(debug, "this is adv/nortek/vector\n")
+            oceDebug(debug, "these two bytes imply this is adv/nortek/vector\n")
             return("adv/nortek/vector")
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x01) {
-            oceDebug(debug, "this is adp/nortek/aqudopp\n")
-            return("adp/nortek/aquadopp") # p33 SIG
+            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudopp (see system-integrator-manual_jan2011.pdf Table 5.2)\n")
+            return("adp/nortek/aquadopp")
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x21)  {
-            oceDebug(debug, "this is adp/nortek/aqudoppProfiler\n")
+            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudoppProfiler\n")
             return("adp/nortek/aquadoppProfiler") # p37 SIG
         }
         if (next.two.bytes[1] == 0xa5 && next.two.bytes[2] == 0x2a)  {
-            oceDebug(debug, "this is adp/nortek/aqudoppHR\n")
+            oceDebug(debug, "these two bytes imply this is adp/nortek/aqudoppHR\n")
             return("adp/nortek/aquadoppHR") # p38 SIG
         }
         stop("some sort of nortek ... two bytes are 0x", next.two.bytes[1], " and 0x", next.two.bytes[2], " but cannot figure out what the type is")
@@ -990,11 +992,11 @@ read.oce <- function(file, ...)
     if (type == "adp/sontek")
         return(read.adp.sontek(file, processingLog=processingLog, ...)) # FIXME is pcadcp different?
     if (type == "adp/nortek/aquadopp")
-        stop("cannot read \"adp/nortek/aquadopp\" files")
+        return(read.aquadopp(file, processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppProfiler")
-        return(read.adp.nortek(file, type="aquadoppProfiler", processingLog=processingLog, ...))
+        return(read.aquadoppProfiler(file, processingLog=processingLog, ...))
     if (type == "adp/nortek/aquadoppHR")
-        return(read.adp.nortek(file, type="aquadoppHR", processingLog=processingLog, ...))
+        return(read.aquadoppHR(file, processingLog=processingLog, ...))
     if (type == "adv/nortek/vector")
         return(read.adv.nortek(file, processingLog=processingLog, ...))
     if (type == "adv/sontek/adr")

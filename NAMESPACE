@@ -139,7 +139,6 @@ export("+.section",
        rangeLimit,
        read.adp,
        read.adp.rdi,
-       read.adp.nortek,
        read.adp.sontek,
        read.adp.sontek.serial,
        read.adv,
@@ -147,6 +146,9 @@ export("+.section",
        read.adv.sontek.serial,
        read.adv.sontek.adr,
        read.adv.sontek.text,
+       read.aquadopp, # wrapper for read.adp.nortek()
+       read.aquadoppProfiler, # wrapper for read.adp.nortek()
+       read.aquadoppHR, # wrapper for read.adp.nortek()
        read.cm,
        read.coastline,
        read.coastline.shapefile,
