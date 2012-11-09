@@ -77,18 +77,18 @@ window.oce <- function(x, start = NULL, end = NULL, frequency = NULL, deltat = N
                     next
                 if (length(grep("^time", name)) || is.vector(res@data[[name]])) {
                     if (1 == length(agrep("Slow$", name))) {
-                        oceDebug(debug, "subsetting 'slow' variable data$", name, "\n", sep="")
+                        oceDebug(debug, "windowing 'slow' variable data$", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keepSlow]
                     } else {
-                        oceDebug(debug, "subsetting data@", name, "\n", sep="")
+                        oceDebug(debug, "windowing data@", name, "\n", sep="")
                         res@data[[name]] <- x@data[[name]][keep]
                     }
                 } else if (is.matrix(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data@", name, ", which is a matrix\n", sep="")
+                    oceDebug(debug, "windowing data@", name, ", which is a matrix\n", sep="")
                     res@data[[name]] <- x@data[[name]][keep,]
                 } else if (is.array(res@data[[name]])) {
-                    oceDebug(debug, "subsetting data@", name, ", which is an array\n", sep="")
-                    res@data[[name]] <- x@data[[name]][keep,,]
+                    oceDebug(debug, "windowing data@", name, ", which is an array\n", sep="")
+                    res@data[[name]] <- x@data[[name]][keep,,,drop=FALSE]
                 }
             }
         }
@@ -537,7 +537,8 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                         rval@data[[name]] <- x@data[[name]][keep,]
                     } else if (is.array(x@data[[name]])) {
                         oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                        rval@data[[name]] <- x@data[[name]][keep,,]
+                        tmp <- x@data[[name]][keep,,,drop=FALSE]
+                        rval@data[[name]] <- tmp
                     }
                 }
             } else if (length(grep("distance", subsetString))) {
