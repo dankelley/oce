@@ -537,10 +537,10 @@ subset.oce <- function (x, subset, indices=NULL, debug=getOption("oceDebug"), ..
                         rval@data[[name]] <- x@data[[name]][keep,]
                     } else if (is.array(x@data[[name]])) {
                         oceDebug(debug, "subsetting x@data$", name, ", which is an array\n", sep="")
-                        tmp <- x@data[[name]][keep,,,drop=FALSE]
-                        rval@data[[name]] <- tmp
+                        rval@data[[name]] <- x@data[[name]][keep,,,drop=FALSE]
                     }
                 }
+                #browser()
             } else if (length(grep("distance", subsetString))) {
                 oceDebug(debug, "subsetting an adp by distance\n")
                 keep <- eval(substitute(subset), x@data, parent.frame())
