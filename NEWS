@@ -1,4 +1,5 @@
 0.9-4
+- oce.plot.ts() and oce.axis.POSIXct(): add tformat argument
 - read.aquadopp() and cousins added [issue 253]
 - read.ctd() guesses waterDepth if not supplied [issue 253]
 - plotTS(): extend isopycnal range [issue 252]

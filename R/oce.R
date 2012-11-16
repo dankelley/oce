@@ -222,7 +222,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                         mai.palette=c(0, 1/8, 0, 3/8),
                         main="",
                         despike=FALSE,
-                        axes=TRUE,
+                        axes=TRUE, tformat,
                         marginsAsImage=FALSE,
                         grid=FALSE, grid.col="darkgray", grid.lty="dotted", grid.lwd=1,
                         debug=getOption("oceDebug"),
@@ -298,6 +298,7 @@ oce.plot.ts <- function(x, y, type="l", xlim, ylim, xlab, ylab,
                                       mgp=mgp,
                                       xlim=if(missing(xlim)) range(x) else xlim,
                                       cex=cex, cex.axis=cex.axis, cex.main=cex.main,
+                                      format=tformat,
                                       debug=debug-1)#, ...)
         }
         if (grid) {

@@ -30,7 +30,7 @@
   \item{cex.main}{see \code{\link[graphics]{par}}("cex.main").}
   \item{mar}{value for \code{par(mar)} for axis}
   \item{mgp}{value for \code{par(mgp)} for axis}
-  \item{main}{title of plot.}
+  \item{main}{title of plot}
   \item{debug}{a flag that turns on debugging.  Set to 1 to get a
     moderate amount of debugging information, or to 2 to get more.} 
   \item{\dots}{as for \code{\link{axis.POSIXct}}.}
