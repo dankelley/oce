@@ -386,7 +386,30 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     cellSize <- header$cellSize
     ##profilesInFile <- readBin(buf[header$offset + 2:3], what="integer", n=1, size=2, endian="little")
     oceDebug(debug, "profile data at buf[", header$offset, "] et seq.\n")
+    oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset+1], " 0x", buf[header$offset+2], '\n', sep="")
     profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
+
+    if (type == "aquadopp" && 10==debug) {
+        cat("TEST FEATURE for aquadopp (enacted by setting debug=10)\n")
+        diagnosticStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
+        cat("  Diagnostic sequences starting at offsets:")
+        str(diagnosticStart)
+        cat("  These should be distinct from normal sequences at offsets:")
+        str(profileStart)
+        diagnosticsToRead <- length(diagnosticStart)
+        diagnosticStart2 <- sort(c(diagnosticStart, diagnosticStart+1))
+        timeDiagnostic <- ISOdatetime(2000+bcdToInteger(buf[diagnosticStart+8]),
+                                      bcdToInteger(buf[diagnosticStart+9]), # month
+                                      bcdToInteger(buf[diagnosticStart+6]), # day
+                                      bcdToInteger(buf[diagnosticStart+7]), # hour
+                                      bcdToInteger(buf[diagnosticStart+4]), # min
+                                      bcdToInteger(buf[diagnosticStart+5]), # sec
+                                      tz=tz)
+        temperatureDiagnostic <- 0.01 * readBin(buf[diagnosticStart2+28], "integer", n=diagnosticsToRead,
+                                                size=2, endian="little")
+        cat("  NEXT STEPS: test whether the extraction is OK; then extract other vars\n")
+    }
+
     profilesInFile <- length(profileStart)
     if (is.na(to))
         to <- profilesInFile
@@ -523,6 +546,11 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  heading=heading,
                  pitch=pitch,
                  roll=roll)
+    if (10 == debug) {
+        data$timeDiagnostic <- timeDiagnostic
+        data$temperatureDiagnostic <- temperatureDiagnostic
+    }
+
     if (missing(orientation)) {
         orientation <- header$head$tiltSensorOrientation
     } else {
