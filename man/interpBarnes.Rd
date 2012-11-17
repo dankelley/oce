@@ -6,8 +6,8 @@
 
 \description{Grid data using Barnes algorithm.}
 
-\usage{interpBarnes(x, y, z, w=NULL, xg=NULL, yg=NULL, xr=NULL, yr=NULL, 
-gamma=0.5, iterations=2)}
+\usage{interpBarnes(x, y, z, w, xg, yg, xr, yr, 
+    gamma=0.5, iterations=2, debug=getOption("oceDebug"))}
 
 \arguments{
   \item{x}{a vector of x locations.}
@@ -32,6 +32,9 @@ gamma=0.5, iterations=2)}
   \item{gamma}{grid-focussing parameter.  At each iteration, \code{xr}
     and \code{yr} are reduced by a factor of \code{sqrt(gamma)}.}
   \item{iterations}{number of iterations.}
+  \item{debug}{a flag that turns on debugging.  Set to 0 for no debugging
+      information, to 1 for more, etc; the value is reduced by 1 for each
+      descendent function call.}
 }
 
 \details{The algorithm follows that described by Koch et al. (1983).}
