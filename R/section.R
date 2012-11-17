@@ -889,59 +889,115 @@ sectionGrid <- function(section, p, method=c("approx","boxcar","lm"),
     res
 }
 
-sectionSmooth <- function(section, df, debug=getOption("oceDebug"), ...)
+sectionSmooth <- function(section, method=c("spline", "barnes"), debug=getOption("oceDebug"), ...)
 {
+    method <- match.arg(method)
     ## bugs: should ensure that every station has identical pressures
     ## FIXME: should have smoothing in the vertical also ... and is spline what I want??
-    oceDebug(debug, "\bsection.smooth(section,debug=", debug, ", ...) {\n", sep="")
+    oceDebug(debug, "\bsectionSmooth(section,method=\"", method, "\", ...) {\n", sep="")
     if (!inherits(section, "section"))
         stop("method is only for section objects")
     nstn <- length(section@data$station)
-    nprs <- length(section@data$station[[1]]@data$pressure)
-    if (missing(df))
-	df <- nstn / 5
-    oceDebug(debug, "nstn=", nstn, "nprs=", nprs, "df=", df, "\n")
-    res <- section
-    ## reorder stations by distance from first (this
-    ## is crucial if the files have been ordered by a
-    ## directory listing, and they are not named e.g. 01
-    ## to 10 etc but 1 to 10 etc.
-    x <- geodDist(section)
-    o <- order(x)
-    res@metadata$latitude <- section@metadata$latitude[o]
-    res@metadata$longitude <- section@metadata$longitude[o]
-    res@metadata$stationId <- section@metadata$stationId[o]
-    res@data$station <- section@data$station[o]
-    x <- geodDist(res)
-    temperatureMat <- array(dim=c(nprs, nstn))
-    salinityMat <- array(dim=c(nprs, nstn))
-    sigmaThetaMat <- array(dim=c(nprs, nstn))
-    for (s in 1:nstn) {
-        thisStation <- res@data$station[[s]]
-	temperatureMat[,s] <- thisStation@data$temperature
-	salinityMat[,s] <- thisStation@data$salinity
-	sigmaThetaMat[,s] <- thisStation@data$sigmaTheta
+    if (method == "spline") {
+        stn1pressure <- section[["station", 1]][["pressure"]]
+        npressure <- length(stn1pressure)
+        for (istn in 1:nstn) {
+            thisp <- section[["station", istn]][["pressure"]]
+            if (length(thisp) != npressure)
+                stop("pressure mismatch between station 1 and station", istn)
+            if (any(thisp != stn1pressure))
+                stop("pressure mismatch between station 1 and station", istn)
+        }
+        oceDebug(debug, "nstn=", nstn, "npressure=", npressure, "\n")
+        res <- section
+        ## reorder stations by distance from first (this
+        ## is crucial if the files have been ordered by a
+        ## directory listing, and they are not named e.g. 01
+        ## to 10 etc but 1 to 10 etc.
+        x <- geodDist(section)
+        o <- order(x)
+        res@metadata$latitude <- section@metadata$latitude[o]
+        res@metadata$longitude <- section@metadata$longitude[o]
+        res@metadata$stationId <- section@metadata$stationId[o]
+        res@data$station <- section@data$station[o]
+        x <- geodDist(res)
+        temperatureMat <- array(dim=c(npressure, nstn))
+        salinityMat <- array(dim=c(npressure, nstn))
+        sigmaThetaMat <- array(dim=c(npressure, nstn))
+        for (s in 1:nstn) {
+            thisStation <- res@data$station[[s]]
+            temperatureMat[,s] <- thisStation@data$temperature
+            salinityMat[,s] <- thisStation@data$salinity
+            sigmaThetaMat[,s] <- thisStation@data$sigmaTheta
+        }
+        ## turn off warnings about df being too small
+        o <- options('warn')
+        options(warn=-1) 
+        for (p in 1:npressure) {
+            ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
+            nok <- sum(ok)
+            iok <- (1:nstn)[ok]
+            if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
+                temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], ...), x)$y
+                salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], ...), x)$y
+                sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], ...), x)$y
+                ##oceDebug(debug, p, "dbar: smoothing, based on", nok, "good values\n")
+            } else {
+                ##oceDebug(debug, "pessure index=", p, ": not smoothing, since have only", nok, "good values\n")
+            }
+        }
+        options(warn=o$warn) 
+        for (s in 1:nstn) {
+            res@data$station[[s]]@data$temperature <- temperatureMat[,s]
+            res@data$station[[s]]@data$salinity <- salinityMat[,s]
+            res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
+        }
+    } else if (method == "barnes") {
+        vars <- names(section[["station", 1]]@data)
+        res <- section
+        x <- geodDist(section)
+        X <- p <- S <- NULL
+        stn1pressure <- section[["station", 1]][["pressure"]]
+        npressure <- length(stn1pressure)
+        for (istn in 1:nstn) {
+            stn <- section[["station", istn]]
+            if (length(stn[["pressure"]]) != npressure)
+                stop("pressure mismatch between station 1 and station", istn)
+            if (any(stn[["pressure"]] != stn1pressure))
+                stop("pressure mismatch between station 1 and station.", istn)
+        }
+        P <- rep(stn1pressure, nstn)
+        X <- rep(x, each=npressure)
+        for (var in vars) {
+            if (var == "scan" || var == "time" || var == "pressure"
+                || var == "depth" || var == "flag" || var == "quality")
+                next
+            v <- NULL
+            oceDebug(debug, "smoothing", var, "\n")
+            ## collect data
+            if (FALSE) {
+                for (istn in 1:nstn) {
+                    oceDebug(debug, "station", istn, "\n")
+                                        #browser()
+                    stn <- section[["station", istn]]
+                    v <- c(v, stn[[var]])
+                }
+            }
+            ## grid overall, then deposit into stations (trimming for NA)
+            v <- section[[var]]
+            smu <- interpBarnes(X, P, v, xg=x, yg=stn1pressure, ..., debug=debug-1)
+            for (istn in 1:nstn) {
+                res@data$station[[istn]]@data[[var]] <- smu$zg[istn,]
+                na <- is.na(section@data$station[[istn]][[var]])
+                res@data$station[[istn]]@data[[var]][na] <- NA
+            }
+        }
+    } else {
+        stop("unknown method \"", method, "\"") # cannot reach here
     }
-    for (p in 1:nprs) {
-	ok <- !is.na(temperatureMat[p,]) ## FIXME: ok to infer missingness from temperature alone?
-	nok <- sum(ok)
-	iok <- (1:nstn)[ok]
-	if (nok > 4) { ## Only fit spline if have 4 or more values; ignore bad values in fitting.
-	    temperatureMat[p,] <- predict(smooth.spline(x[ok], temperatureMat[p,ok], df=df, ...), x)$y
-	    salinityMat[p,]    <- predict(smooth.spline(x[ok],    salinityMat[p,ok], df=df, ...), x)$y
-	    sigmaThetaMat[p,]  <- predict(smooth.spline(x[ok],  sigmaThetaMat[p,ok], df=df, ...), x)$y
-	    ##oceDebug(debug, p, "dbar: smoothing, based on", nok, "good values\n")
-	} else {
-	    ##oceDebug(debug, "pessure index=", p, ": not smoothing, since have only", nok, "good values\n")
-	}
-    }
-    for (s in 1:nstn) {
-	res@data$station[[s]]@data$temperature <- temperatureMat[,s]
-	res@data$station[[s]]@data$salinity <- salinityMat[,s]
-	res@data$station[[s]]@data$sigmaTheta <- sigmaThetaMat[,s]
-    }
+
     res@processingLog <- processingLog(res@processingLog, paste(deparse(match.call()), sep="", collapse=""))
-    oceDebug(debug, "\b\b} # section.smooth()\n")
+    oceDebug(debug, "\b\b} # sectionSmooth()\n")
     res
 }
 
