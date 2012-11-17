@@ -102,7 +102,7 @@ read.adv <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                      start, deltat,
                      debug=getOption("oceDebug"), monitor=FALSE, processingLog)
 {
-    type = match.arg(type)
+    type <- match.arg(type)
     ## FIXME: all these read.adv variants should have the same argument list
     if (type == "nortek")
         read.adv.nortek(file=file, from=from, to=to, by=by, tz=tz,
