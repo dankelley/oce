@@ -2,9 +2,9 @@
 
 \alias{swSCTp}
 
-\title{Seawater salinity from conductivity, temperature and pressure}
+\title{Seawater salinity from electrical conductivity, temperature and pressure}
 
-\description{Compute salinity, given electrical conductivity, temperature, and pressure.}
+\description{Compute salinity based on electrical conductivity, temperature, and pressure.}
 
 \usage{swSCTp(conductivity, temperature, pressure, conductivityUnit=c("ratio", "mS/cm", "S/m"))}
 
