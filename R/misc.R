@@ -1000,46 +1000,65 @@ geodDist <- function (lat1, lon1=NULL, lat2=NULL, lon2=NULL, alongPath=FALSE)
     res / 1000
 }
 
-interpBarnes <- function(x, y, z, w=NULL, xg=NULL, yg=NULL,
-                         xr=NULL, yr=NULL, gamma=0.5, iterations=2)
+interpBarnes <- function(x, y, z, w, xg, yg,
+                         xr, yr, gamma=0.5, iterations=2,
+                         debug=getOption("oceDebug"))
+
 {
+    debug <- max(0, min(debug, 2))
+    oceDebug(debug, "\b\binterpBarnes(x, ...) {\n")
+    if (!is.vector(x))
+        stop("x must be a vector")
     n <- length(x)
     if (length(y) != n)
         stop("lengths of x and y disagree; they are ", n, " and ", length(y))
     if (length(z) != n)
         stop("lengths of x and z disagree; they are ", n, " and ", length(z))
-    if (is.null(w))
+    if (missing(w))
         w <- rep(1.0, length(x))
-    if (is.null(xg))
-        xg <- pretty(x, n=50)
-    if (is.null(yg)) {
+    if (missing(xg)) {
+        if (0 == diff(range(x))) {
+            xg <- x[1]
+        } else {
+            xg <- pretty(x, n=50)
+        }
+    }
+    if (missing(yg)) {
         if (0 == diff(range(y))) {
             yg <- y[1]
         } else {
             yg <- pretty(y, n=50)
         }
     }
-    if (is.null(xr)) {
+    if (missing(xr)) {
         xr <- diff(range(x)) / sqrt(n)
         if (xr == 0)
             xr <- 1
     }
-    if (is.null(yr)) {
+    if (missing(yr)) {
         yr <- diff(range(y)) / sqrt(n)
         if (yr == 0)
             yr <- 1
     }
+
+    oceDebug(debug, "xg:", xg, "\n")
+    oceDebug(debug, "yg:", yg, "\n")
+    oceDebug(debug, "xr:", xr, "yr:", yr, "\n")
+    oceDebug(debug, "gamma:", gamma, "iterations:", iterations, "\n")
+
+    ok <- !is.na(x) & !is.na(y) & !is.na(z) & !is.na(w)
     zg <- .Call("interp_barnes",
-                as.double(x),
-                as.double(y),
-                as.double(z),
-                as.double(w),
+                as.double(x[ok]),
+                as.double(y[ok]),
+                as.double(z[ok]),
+                as.double(w[ok]),
                 as.double(xg),
                 as.double(yg),
                 as.double(xr),
                 as.double(yr),
                 as.double(gamma),
                 as.integer(iterations))
+    oceDebug(debug, "\b\b} # interpBarnes(...)\n")
     list(xg=xg, yg=yg, zg=zg)
 }
 
