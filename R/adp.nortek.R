@@ -389,25 +389,30 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
     oceDebug(debug, "matching bytes: 0x", buf[header$offset], " 0x", buf[header$offset+1], " 0x", buf[header$offset+2], '\n', sep="")
     profileStart <- .Call("match3bytes", buf, buf[header$offset], buf[header$offset+1], buf[header$offset+2])
 
-    if (type == "aquadopp" && 10==debug) {
+    if (type == "aquadopp") {
         cat("TEST FEATURE for aquadopp (enacted by setting debug=10)\n")
-        diagnosticStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
+        diagStart <- .Call("match3bytes", buf, 0xa5, 0x80, 0x15)
         cat("  Diagnostic sequences starting at offsets:")
-        str(diagnosticStart)
+        str(diagStart)
         cat("  These should be distinct from normal sequences at offsets:")
         str(profileStart)
-        diagnosticsToRead <- length(diagnosticStart)
-        diagnosticStart2 <- sort(c(diagnosticStart, diagnosticStart+1))
-        timeDiagnostic <- ISOdatetime(2000+bcdToInteger(buf[diagnosticStart+8]),
-                                      bcdToInteger(buf[diagnosticStart+9]), # month
-                                      bcdToInteger(buf[diagnosticStart+6]), # day
-                                      bcdToInteger(buf[diagnosticStart+7]), # hour
-                                      bcdToInteger(buf[diagnosticStart+4]), # min
-                                      bcdToInteger(buf[diagnosticStart+5]), # sec
-                                      tz=tz)
-        temperatureDiagnostic <- 0.01 * readBin(buf[diagnosticStart2+28], "integer", n=diagnosticsToRead,
-                                                size=2, endian="little")
-        cat("  NEXT STEPS: test whether the extraction is OK; then extract other vars\n")
+        diagsToRead <- length(diagStart)
+        diagStart2 <- sort(c(diagStart, diagStart+1))
+        timeDiag <- ISOdatetime(2000+bcdToInteger(buf[diagStart+8]),
+                                bcdToInteger(buf[diagStart+9]), # month
+                                bcdToInteger(buf[diagStart+6]), # day
+                                bcdToInteger(buf[diagStart+7]), # hour
+                                bcdToInteger(buf[diagStart+4]), # min
+                                bcdToInteger(buf[diagStart+5]), # sec
+                                tz=tz)
+        headingDiag <- 0.1 * readBin(buf[diagStart2 + 18], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        pitchDiag <- 0.1 * readBin(buf[diagStart2 + 20], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        rollDiag <- 0.1 * readBin(buf[diagStart2 + 22], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        pressure.MSB <- readBin(buf[diagStart + 24], what="integer", n=diagsToRead, size=1, endian="little", signed=FALSE)
+        pressure.LSW <- readBin(buf[diagStart2 + 26], what="integer", n=diagsToRead, size=2, endian="little", signed=FALSE)
+        pressureDiag <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
+        temperatureDiag <- 0.01 * readBin(buf[diagStart2 + 28], what="integer", n=diagsToRead, size=2, endian="little")
+        cat("  NEXT STEP: extract velocity, backscatter, etc\n")
     }
 
     profilesInFile <- length(profileStart)
@@ -546,9 +551,13 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
                  heading=heading,
                  pitch=pitch,
                  roll=roll)
-    if (10 == debug) {
-        data$timeDiagnostic <- timeDiagnostic
-        data$temperatureDiagnostic <- temperatureDiagnostic
+    if (type == "aquadopp" && diagsToRead > 0) {
+        data$timeDiag <- timeDiag
+        data$headingDiag <- headingDiag
+        data$pitchDiag <- pitchDiag
+        data$rollDiag <- rollDiag
+        data$pressureDiag <- pressureDiag
+        data$temperatureDiag <- temperatureDiag
     }
 
     if (missing(orientation)) {
