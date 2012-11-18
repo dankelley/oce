@@ -1,7 +1,7 @@
 0.9-4
 - sectionSmooth(): add 'barnes' method
 - oce.plot.ts() and oce.axis.POSIXct(): add tformat argument
-- read.aquadopp() and cousins added [issue 253]
+- read.aquadopp() and cousins added [issues 253 and 258]
 - read.ctd() guesses waterDepth if not supplied [issue 253]
 - plotTS(): extend isopycnal range [issue 252]
 - plot.section() contouring improved

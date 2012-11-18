@@ -412,7 +412,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         pressure.LSW <- readBin(buf[diagStart2 + 26], what="integer", n=diagsToRead, size=2, endian="little", signed=FALSE)
         pressureDiag <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
         temperatureDiag <- 0.01 * readBin(buf[diagStart2 + 28], what="integer", n=diagsToRead, size=2, endian="little")
-        cat("  NEXT STEP: extract velocity, backscatter, etc\n")
+        u1Diag <- 0.001 * readBin(buf[diagStart2 + 30], what="integer", n=diagsToRead, size=2, endian="little")
+        u2Diag <- 0.001 * readBin(buf[diagStart2 + 32], what="integer", n=diagsToRead, size=2, endian="little")
+        u3Diag <- 0.001 * readBin(buf[diagStart2 + 34], what="integer", n=diagsToRead, size=2, endian="little")
     }
 
     profilesInFile <- length(profileStart)
@@ -558,6 +560,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         data$rollDiag <- rollDiag
         data$pressureDiag <- pressureDiag
         data$temperatureDiag <- temperatureDiag
+        data$u1Diag <- u1Diag
+        data$u2Diag <- u2Diag
+        data$u3Diag <- u3Diag
     }
 
     if (missing(orientation)) {
