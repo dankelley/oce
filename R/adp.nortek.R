@@ -412,9 +412,9 @@ read.adp.nortek <- function(file, from=1, to, by=1, tz=getOption("oceTz"),
         pressure.LSW <- readBin(buf[diagStart2 + 26], what="integer", n=diagsToRead, size=2, endian="little", signed=FALSE)
         pressureDiag <- (as.integer(pressure.MSB)*65536 + pressure.LSW) * 0.001 # CHECK
         temperatureDiag <- 0.01 * readBin(buf[diagStart2 + 28], what="integer", n=diagsToRead, size=2, endian="little")
-        u1Diag <- 0.001 * readBin(buf[diagStart2 + 30], what="integer", n=diagsToRead, size=2, endian="little")
-        u2Diag <- 0.001 * readBin(buf[diagStart2 + 32], what="integer", n=diagsToRead, size=2, endian="little")
-        u3Diag <- 0.001 * readBin(buf[diagStart2 + 34], what="integer", n=diagsToRead, size=2, endian="little")
+        u1Diag <- 0.001 * readBin(buf[diagStart2 + 30], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        u2Diag <- 0.001 * readBin(buf[diagStart2 + 32], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
+        u3Diag <- 0.001 * readBin(buf[diagStart2 + 34], what="integer", n=diagsToRead, size=2, endian="little", signed=TRUE)
     }
 
     profilesInFile <- length(profileStart)
